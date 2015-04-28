@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.hawkular</groupId>
+    <artifactId>hawkular-parent</artifactId>
+    <version>10</version>
+  </parent>
+
+  <groupId>org.hawkular.btm</groupId>
+  <artifactId>hawkular-btm</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Hawkular BTM</name>
+  <description>Hawkular Business Transaction Management</description>
+  <url>https://github.com/hawkular/hawkular-btm</url>
+  <inceptionYear>2015</inceptionYear>
+  <organization>
+    <name>Red Hat, Inc.</name>
+    <url>http://redhat.com/</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <distribution>repo</distribution>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+
+  <mailingLists>
+    <mailingList>
+      <name>Hawkular Developer List</name>
+      <subscribe>https://lists.jboss.org/mailman/listinfo/hawkular-dev</subscribe>
+      <unsubscribe>https://lists.jboss.org/mailman/listinfo/hawkular-dev</unsubscribe>
+      <archive>http://lists.jboss.org/pipermail/hawkular-dev</archive>
+    </mailingList>
+  </mailingLists>
+
+  <modules>
+    <module>api</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:git://github.com/hawkular/hawkular-btm.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/hawkular/hawkular-btm.git</developerConnection>
+    <url>https://github.com/hawkular/hawkular-btm</url>
+    <tag>HEAD</tag>
+  </scm>
+  <issueManagement>
+    <url>https://issues.jboss.org/browse/HWKBTM</url>
+    <system>jira</system>
+  </issueManagement>
+
+  <properties>
+<!--
+    <org.hawkular.wildfly.home>${project.basedir}/../../hawkular-bus/hawkular-nest/hawkular-nest-distro/target/wildfly-${version.org.wildfly}</org.hawkular.wildfly.home>
+    <org.hawkular.wildfly.deployments>${org.hawkular.wildfly.home}/modules/system/layers/base/org/hawkular/nest/main/deployments</org.hawkular.wildfly.deployments>
+
+    <plugin.version.ear>2.6</plugin.version.ear>
+    <plugin.version.org.codehaus.mojo>1.0</plugin.version.org.codehaus.mojo>
+    <plugin.version.com.agilejava.docbkx>2.0.14</plugin.version.com.agilejava.docbkx>
+    <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
+    <version.com.google.guava>16.0.1</version.com.google.guava>
+    <version.com.h2database>1.4.185</version.com.h2database>
+    <version.javaee.spec>7.0</version.javaee.spec>
+    <version.junit>4.12</version.junit>
+    <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
+    <version.org.codehaus.gmavenplus>1.2</version.org.codehaus.gmavenplus>
+    <version.org.codehaus.groovy>2.3.8</version.org.codehaus.groovy>
+    <version.org.codehaus.groovy.maven>1.0</version.org.codehaus.groovy.maven>
+    <version.org.codehaus.groovy.modules.http-builder>0.7</version.org.codehaus.groovy.modules.http-builder>
+    <version.org.drools>6.1.0.Final</version.org.drools>
+    <version.org.hawkular.nest>1.0.0-SNAPSHOT</version.org.hawkular.nest>
+    <version.org.rhq.helpers>4.11.0</version.org.rhq.helpers>
+    <version.org.slf4j>1.7.2</version.org.slf4j>
+    <version.org.wildfly>8.2.0.Final</version.org.wildfly>
+-->
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- this also includes the org.jboss.spec:jboss-javaee-7.0 dependencies -->
+      <dependency>
+        <groupId>org.wildfly.bom</groupId>
+        <artifactId>jboss-javaee-7.0-with-logging</artifactId>
+        <version>${version.org.wildfly}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+</project>
