@@ -13,7 +13,7 @@ script:
   -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
-    - secure: "iulQmX6ImXmXDUK0XKTlnjB8/vVekiZzif7EYOXU3f8wGMxm/DQ/WIsX5hhrgMfkPLrAGblkZVR1tQEpw19fj7/xtWsyW2qWjDZxsLm++zalSyDXBy6CAIEK4980xsvx0/7tnIxz9eqqyD4bKSeQwEJ72Ab1LMBPDOOvHjZaGlw="
-    - secure: "D6p9aHSP4Lzhe8CKfjNiD3sMatOEuK36LoFPd52A97NFkFSw3N1cqF0Crkz4uSHyBuunxS/c9aejoDmNowRgJ5x7g/Eg5f+tFZdxLwYHeZwMIxxSUiDODGo+kEEhL90l1rqTnzNqxynWcaXazIkNe+RvL+fiJyVlj9i72irMGmo="
+    # for pushing the swagger adoc documentation to the website repository
+    - secure: "GsVWW5tTX3LZhiuC4/T3rLNOfIjGcdLfBhKKk4My3/urSAcVPmLyS7fjtpJ4Eh6zw1a1ArtPEB4G46afW+z/LtGOVPg28VWOm5QBaKGvr4rzOfJLtB7PMuMbklCA0lBfTjp6VYOPicrJkIkWoVu9QYc3Zh4SEO8yHVENdHzmh3c="
 after_success:
-- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests
+- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh

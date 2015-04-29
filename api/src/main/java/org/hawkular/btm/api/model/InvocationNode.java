@@ -18,12 +18,14 @@ package org.hawkular.btm.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.wordnik.swagger.annotations.ApiModel;
 
 /**
  * This abstract class represents an invocation.
  *
  * @author gbrown
  */
+@ApiModel(parent=ContainerNode.class)
 public abstract class InvocationNode extends ContainerNode {
 
     @JsonInclude(Include.NON_NULL)
