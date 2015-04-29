@@ -13,6 +13,6 @@ script:
   -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
-  - secure: "aTsIo8LRD1A09y5+QyzsksFgC1J3WlX/RmlJxWeQ3hRshu7UcF+NeaSuLhjvO8GP+mMrcS8mmkO6Au3pbqCnjoFRi1h0CnNwQWfn1YJfjsPeqywc4VLz1lSgpBcuK9pxvhaTIpq3DT/cDgl0crvHehuZ08xc3gWlW/VfLFn9C/0="
+  - secure: "LVB0HIWMOEhYkhQw1F2JtYj0PUv5lLBxOH/iX/MgOqfn4kbdGVch1/QB3AEXHq/p+8RTXKBSxoeP8KH1OwVeJnZSuvNuAh0JSODcNey1t5WIOR1INpX/Oc/svGyYroPQBsj05gfanzNtNWScTaUcECE/Q1KQMVRdhxRFRe0Jz6M="
 after_success:
 - "./.travis.swagger.sh"
