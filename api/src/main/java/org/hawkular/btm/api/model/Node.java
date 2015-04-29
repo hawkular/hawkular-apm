@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wordnik.swagger.annotations.ApiModel;
 
 /**
  * This abstract class is the base for all nodes describing a business transaction
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = Producer.class),
     @Type(value = Service.class),
     @Type(value = Component.class) })
+@ApiModel(subTypes = {Consumer.class, Producer.class, Service.class, Component.class}, discriminator = "type")
 public abstract class Node {
 
     @JsonInclude

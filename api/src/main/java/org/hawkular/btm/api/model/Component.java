@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wordnik.swagger.annotations.ApiModel;
 
 /**
  * This class represents the invocation of a component.
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author gbrown
  *
  */
+@ApiModel(parent=InvocationNode.class)
 public class Component extends InvocationNode {
 
     @JsonInclude

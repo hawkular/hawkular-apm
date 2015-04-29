@@ -20,65 +20,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.wordnik.swagger.annotations.ApiModel;
 
 /**
- * This abstract class represents the base for all nodes that can contain
- * other nodes within the business transaction instance.
+ * This class represents a list of business transactions.
  *
  * @author gbrown
+ *
  */
-@ApiModel(parent=Node.class)
-public abstract class ContainerNode extends Node {
+public class BusinessTransactionList {
 
-    @JsonInclude(Include.NON_NULL)
-    private List<Node> nodes = new ArrayList<Node>();
+    @JsonInclude
+    private List<BusinessTransaction> transactions = new ArrayList<BusinessTransaction>();
 
-    public ContainerNode() {
+    public BusinessTransactionList() {
     }
 
     /**
-     * @return the nodes
+     * @return the transactions
      */
-    public List<Node> getNodes() {
-        return nodes;
+    public List<BusinessTransaction> getTransactions() {
+        return transactions;
     }
 
     /**
-     * @param nodes the nodes to set
+     * @param transactions the transactions to set
      */
-    public void setNodes(List<Node> nodes) {
-        this.nodes = nodes;
+    public void setTransactions(List<BusinessTransaction> transactions) {
+        this.transactions = transactions;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
+        int result = 1;
+        result = prime * result + ((transactions == null) ? 0 : transactions.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (!super.equals(obj)) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
-        ContainerNode other = (ContainerNode) obj;
-        if (nodes == null) {
-            if (other.nodes != null) {
+        BusinessTransactionList other = (BusinessTransactionList) obj;
+        if (transactions == null) {
+            if (other.transactions != null)
                 return false;
-            }
-        } else if (!nodes.equals(other.nodes)) {
+        } else if (!transactions.equals(other.transactions))
             return false;
-        }
         return true;
     }
 

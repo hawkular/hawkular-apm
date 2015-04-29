@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wordnik.swagger.annotations.ApiModel;
 
 /**
  * This class represents the situation where the business transaction flow
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author gbrown
  *
  */
+@ApiModel(parent=InvocationNode.class)
 public class Producer extends InvocationNode {
 
     @JsonInclude
