@@ -13,6 +13,8 @@ script:
   -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
-    secure: l/Z+Ed9xio7BpetS+UnkrdCKXqS2HcJfN0LqFiInHqhQlqNHcdIzoBfuSIVNULmsjt5XCNdz8VDI2BWLLxe4ICRbFSob+uQwPmc8tJyij9WlesCp03KItBy9YDL6ZIAc3tnlTUndChcocx+y6zsjoDgvG9tj3lxNTmyWazczapo=
+  - secure: GyCbrvSUeuXGs6LyMPevpmSqFSogAYOzRtTgUG655tOGDEDov5Gmls9KDiXZmpNzFqzDoMy4WLyoTKovgHynOQ+1dG/mGhDSeQiMxw5MA26H9CDM1PeKe7z69XCTwedecSpcbLEIaW57Pz+MmSIQCsXVjeVnmjdGbCQqTY0MfoA=
+  - secure: WBonIqdLXrBP8V4JFo4trnR339KuY5ZaUHmWUbqmgUJVIf6TB7ltEpCYKgfZx2WuYtZESmyEKTSPLUhhwGm6FnEEaiYTY4sZ+VXfmljVSUmHto0e8/sCBOoHtdqs5Uh4zm53A9g+qBNvu2QVTd4ITYv3sc5h9qBJgoXS4Homf74=
+  - secure: ejvT52tXTWDz88rvpyzpXejmKXCroJOePneBD+tX/rKgiYDdI1EcPMkmk1JuuN9znbXKoiebg1WKPPMu7gGjD0+BgB/eabmT1x/Pan8p8S493goOI904v/+4zTC+LzVQUTVFb95kZMcw6zAyTTlq0TFTUMqcNUy9NIXfOxcDbsg=
 after_success:
-- "./.travis.swagger.sh"
+- mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh
