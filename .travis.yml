@@ -14,7 +14,7 @@ script:
 env:
   global:
   - secure: GsVWW5tTX3LZhiuC4/T3rLNOfIjGcdLfBhKKk4My3/urSAcVPmLyS7fjtpJ4Eh6zw1a1ArtPEB4G46afW+z/LtGOVPg28VWOm5QBaKGvr4rzOfJLtB7PMuMbklCA0lBfTjp6VYOPicrJkIkWoVu9QYc3Zh4SEO8yHVENdHzmh3c=
-  - secure: DSDVLulHTR13qU0sHI7ECvTB1KLYdRnWGzfqVH1qygXjXz5mJnKNOFXae2sT4F1mzGJZPRzIkLYSwddkrFj/92nNvuk4g+WOv++lyh3DaE4iuHdZJSwv05J5kOzaWOi/Gjx+RfxQXErL+VHlXDSyiZgsIQetRxvPGKIEtd8TFGY=
-  - secure: mQ6e6ya9E2Qu5eQ85b+19gUDG98cgTEYV/Wyu5pauA5Zueg0Neb9edHgAkTAZ9xYe8M3hp430p7E7+Jzsfa/8BnjE4g+V0cAXOhGAxLfX7KPR7L3GPRrkWe1db12C8KIGxvWKVogHujQqWYPE5QVbjO5d6pHmMvRsuWTNelwCKA=
+  - secure: TQJ1pIBM6dGgCQj59OiYxmKI2Nk+0XIT9His/iBt4FGRXHQ4BqWZuMVbtiX0ngGJbyg6Ntq9mJwmioGNl3tyK3jY9eqD/pWg8XjA9YAn+UINSBS3ooPYgAwIjTuJp6o7x9xExLEKCdzyttFjQ0BG+AkNvIEVyjSTZq7ky/ngbP4=
+  - secure: FxylCjpefGYtjx8tclzaruX6oGirSxSPr2GX6LrRsQVBhTcsCMJAyVfQur3Xobbm1WaJOOvSqFi8CUz7e2Fy6wNX10HaPZs0jGIFgnISATzBYZd3gC9nQwSDDtsvqE9J1cztXYaVtbtmTazLSRpPy5jUi5Trcqx3e/ZCQ2fnt7M=
 after_success:
 - mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh
