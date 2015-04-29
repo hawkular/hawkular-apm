@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 notifications:
   irc:
     channels:
@@ -13,7 +13,9 @@ script:
   -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
-    # for pushing the swagger adoc documentation to the website repository
-    - secure: "GsVWW5tTX3LZhiuC4/T3rLNOfIjGcdLfBhKKk4My3/urSAcVPmLyS7fjtpJ4Eh6zw1a1ArtPEB4G46afW+z/LtGOVPg28VWOm5QBaKGvr4rzOfJLtB7PMuMbklCA0lBfTjp6VYOPicrJkIkWoVu9QYc3Zh4SEO8yHVENdHzmh3c="
+  - secure: GsVWW5tTX3LZhiuC4/T3rLNOfIjGcdLfBhKKk4My3/urSAcVPmLyS7fjtpJ4Eh6zw1a1ArtPEB4G46afW+z/LtGOVPg28VWOm5QBaKGvr4rzOfJLtB7PMuMbklCA0lBfTjp6VYOPicrJkIkWoVu9QYc3Zh4SEO8yHVENdHzmh3c=
+  - secure: e0yj76Ddy+zVzRlFIR4WlFXJeAOBupOQ/lahUWA96LCFkRCwnovlt8jPLxFUmFS+4aaht0qKnChp2ufdIujahOZsMeI3JA1r/z/SEonzloajDPPwtb/3+MNXdg0wRKVHEysA2/BUHzbQWrtkB/atZI0KOaQvjjgcSX5nwR/SOg0=
+  - secure: m2+4ZIqAx0CuyUKtl1ueoxc52oLuxR+cWrDTj8bJ0BUQ396vhzsNsfy3lY/erYSJ8B4SaqM9iVLZ/eNYHn7wSsbu1CmAWsxl7z13InbhZHap31aRkDOjaYCkcCC4BfDftSu/moAsUTg3AeBfVc0XFcYLZJGhsq9qrnLa2jd70as=
 after_success:
-- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh
+- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" &&
+  mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh
