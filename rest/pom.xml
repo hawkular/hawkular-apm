@@ -28,9 +28,9 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>hawkular-btm-rest-api</artifactId>
+  <artifactId>hawkular-btm-rest</artifactId>
   <packaging>war</packaging>
-  <name>Hawkular BTM REST API Web Application</name>
+  <name>Hawkular BTM REST Web Application</name>
 
   <properties>
   </properties>
