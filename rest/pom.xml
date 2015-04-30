@@ -30,7 +30,7 @@
 
   <artifactId>hawkular-btm-rest-api</artifactId>
   <packaging>war</packaging>
-  <name>Hawkular BTM REST API Web Application</name>
+  <name>Hawkular BTM REST Web Application</name>
 
   <properties>
   </properties>

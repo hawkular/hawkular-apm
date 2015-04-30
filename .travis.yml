@@ -13,6 +13,10 @@ script:
   -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
-  - secure: "NEYrmpEvI0YhLYkIFLE8O52bN/2a3xWb6NI6VWADYbyphNX2CUjIKu/LcioAjJ+5PHmRS4W7z3abX0u1QnsAnfIX5PQ3DSl3ouX9LhkzKpUMSfb4Wn9duGusGnr7irT4dPsBekQNR3h5arUy+UjP4leoB/70UF4YtVtfReFLZZ0="
+  # Nexus username and password
+  - secure: "Xoi160XSl/Gdn2bmgtMLxZLbEJq/9pUR0qk3a54BcjXhzB7EF/j5thzTOlPNvxTsmi6baO4ARtlcOOz+jUqHBfUsaVPzBDm3RPnz0YSwGS4FY9nhu1hZ7hYiMZo6PHpKpMGugiQZx8C/iSr8r7U84o4hRswAmLdyrghnftk3vAs="
+  - secure: "EiJ8GaA/UggzOd7ucYvMDxJgNfb5Wj4YL/54PHhmc/njrYnfVXVZWnXlv/exsD/wHWv4OTFhJLaCxmOgUkVFFBUo139b155PzvYYMiui35AjchSMvyJZolYopRlnSfCLL1GBdJrRhoXGNBZ3Z8G0ac4dYTlzd3dGqxr2JwxC598="
+  # Github deploy token
+  - secure: "T75Ketb2d0BIgRIMoi06FjL2pIfDMYCsUivJ2r1a3mXpkCxti0OcOk/ODmoHWsKrg1RU0RZ6ayJ0MygMhL5zBi4kI6P1x7nzrJsHLqndWxAP77oWsHSSCxI7i26VPLt4hCluBnLKqWX2mTlk8w3MMsbsXrgeV5/HpKZwXZQb8BE="
 after_success:
-- "./.travis.swagger.sh"
+- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh
