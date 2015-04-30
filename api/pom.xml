@@ -31,7 +31,7 @@
   <artifactId>hawkular-btm-api</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM Api</name>
+  <name>Hawkular BTM API</name>
 
   <dependencies>
 
