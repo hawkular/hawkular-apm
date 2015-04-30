@@ -43,7 +43,7 @@ import com.wordnik.swagger.annotations.ApiResponses;
 @Path("/")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
-@Api(value = "/", description = "REST interface for reporting and querying Business Transactions")
+@Api(value = "/", description = "Report and query Business Transactions")
 public class BusinessTransactionHandler {
 
     @POST
