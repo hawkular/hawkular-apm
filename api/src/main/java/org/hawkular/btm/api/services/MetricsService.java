@@ -16,23 +16,9 @@
  */
 package org.hawkular.btm.api.services;
 
-import java.util.List;
-
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-
 /**
- * This interface represents the service used to store and retrieve business
- * transactions.
- *
  * @author gbrown
  */
-public interface BusinessTransactionService {
-
-    /**
-     * This method stores the list of business transactions (fragments).
-     *
-     * @param btxns The list of business transactions
-     */
-    void store(List<BusinessTransaction> btxns);
+public interface MetricsService {
 
 }

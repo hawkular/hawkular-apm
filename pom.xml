@@ -58,7 +58,14 @@
 
   <modules>
     <module>api</module>
-    <module>rest</module>
+    <module>backend/rest</module>
+    <module>processors/metrics</module>
+    <module>repositories/btxn-elasticsearch</module>
+    <module>services/admin</module>
+    <module>services/btxn</module>
+    <module>services/metrics-elasticsearch</module>
+    <module>services/metrics-hawkular</module>
+    <module>services/presentation</module>
   </modules>
 
   <scm>
@@ -73,29 +80,7 @@
   </issueManagement>
 
   <properties>
-<!--
-    <org.hawkular.wildfly.home>${project.basedir}/../../hawkular-bus/hawkular-nest/hawkular-nest-distro/target/wildfly-${version.org.wildfly}</org.hawkular.wildfly.home>
-    <org.hawkular.wildfly.deployments>${org.hawkular.wildfly.home}/modules/system/layers/base/org/hawkular/nest/main/deployments</org.hawkular.wildfly.deployments>
-
-    <plugin.version.ear>2.6</plugin.version.ear>
-    <plugin.version.org.codehaus.mojo>1.0</plugin.version.org.codehaus.mojo>
-    <plugin.version.com.agilejava.docbkx>2.0.14</plugin.version.com.agilejava.docbkx>
-    <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
-    <version.com.google.guava>16.0.1</version.com.google.guava>
-    <version.com.h2database>1.4.185</version.com.h2database>
-    <version.javaee.spec>7.0</version.javaee.spec>
-    <version.junit>4.12</version.junit>
-    <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
-    <version.org.codehaus.gmavenplus>1.2</version.org.codehaus.gmavenplus>
-    <version.org.codehaus.groovy>2.3.8</version.org.codehaus.groovy>
-    <version.org.codehaus.groovy.maven>1.0</version.org.codehaus.groovy.maven>
-    <version.org.codehaus.groovy.modules.http-builder>0.7</version.org.codehaus.groovy.modules.http-builder>
-    <version.org.drools>6.1.0.Final</version.org.drools>
-    <version.org.hawkular.nest>1.0.0-SNAPSHOT</version.org.hawkular.nest>
-    <version.org.rhq.helpers>4.11.0</version.org.rhq.helpers>
-    <version.org.slf4j>1.7.2</version.org.slf4j>
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
--->
   </properties>
 
   <dependencyManagement>

@@ -14,25 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.services;
+package org.hawkular.btm.api.processors;
 
-import java.util.List;
-
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.BusinessTransactionList;
 
 /**
- * This interface represents the service used to store and retrieve business
- * transactions.
+ * This interface represents a processor invoked to handle business transactions
+ * reported to the Business Transaction Management server.
  *
  * @author gbrown
  */
-public interface BusinessTransactionService {
+public interface BusinessTransactionProcessor {
 
     /**
-     * This method stores the list of business transactions (fragments).
+     * This method is invoked to process a list of business transactions.
      *
-     * @param btxns The list of business transactions
+     * @param list The business transaction list
      */
-    void store(List<BusinessTransaction> btxns);
+    void process(BusinessTransactionList list);
 
 }
