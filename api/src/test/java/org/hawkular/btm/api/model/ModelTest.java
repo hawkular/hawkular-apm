@@ -22,7 +22,14 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import org.hawkular.btm.api.model.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
+import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.btxn.Message;
+import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.btxn.Service;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

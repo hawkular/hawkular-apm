@@ -14,25 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.services;
-
-import java.util.List;
-
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+package org.hawkular.btm.api.model.admin;
 
 /**
- * This interface represents the service used to store and retrieve business
- * transactions.
+ * This is the top level configuration object used to define how information should
+ * be collected from a business transaction execution environment.
  *
  * @author gbrown
  */
-public interface BusinessTransactionService {
-
-    /**
-     * This method stores the list of business transactions (fragments).
-     *
-     * @param btxns The list of business transactions
-     */
-    void store(List<BusinessTransaction> btxns);
+public class CollectorConfiguration {
 
 }

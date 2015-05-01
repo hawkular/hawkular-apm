@@ -16,23 +16,23 @@
  */
 package org.hawkular.btm.api.services;
 
-import java.util.List;
-
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 
 /**
- * This interface represents the service used to store and retrieve business
- * transactions.
+ * This interface represents the service used to manage business transaction
+ * administration capabilities.
  *
  * @author gbrown
  */
-public interface BusinessTransactionService {
+public interface AdministrationService {
 
     /**
-     * This method stores the list of business transactions (fragments).
+     * This method returns the business transaction collector configuration
+     * associated with the supplied resource.
      *
-     * @param btxns The list of business transactions
+     * @param resource The resource requesting the configuration
+     * @return The collector configuration
      */
-    void store(List<BusinessTransaction> btxns);
+    CollectorConfiguration getConfiguration(String resource);
 
 }
