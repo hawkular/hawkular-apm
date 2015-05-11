@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.hawkular.btm</groupId>
+    <artifactId>hawkular-btm</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>hawkular-btm-dist</artifactId>
+  <packaging>pom</packaging>
+  <name>Hawkular BTM::Distribution</name>
+  <description>Hawkular BTM distribution.</description>
+
+  <properties>
+    <kettle.build.type>production</kettle.build.type>
+    <kettle.dist.zip.root.dir>wildfly-${version.org.wildfly}</kettle.dist.zip.root.dir>
+    <hawkular.realm.template>hawkular-realm.json</hawkular.realm.template>
+
+    <version.org.hawkular>1.0.0-SNAPSHOT</version.org.hawkular>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-kettle</artifactId>
+      <version>${version.org.hawkular}</version>
+      <classifier>distribution</classifier>
+      <type>zip</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-builder-bus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-repository-server-bus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-server-rest</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-fault-detector-bus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-inventory-enricher-bus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-metrics-deriver-bus</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+
+    <plugins>
+      <!-- unpack the kettle distribution to get its configuration that we need to customize -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-kettle</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/kettle</outputDirectory>
+              <includeArtifactIds>hawkular-kettle</includeArtifactIds>
+              <!-- just unpack the config file - its all we need -->
+              <includes>*/standalone/configuration/standalone.xml</includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- further customize standalone.xml -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0</version> <!-- TODO remove after moving to parent pom 8 -->
+        <executions>
+          <execution>
+            <id>transform-standalone-xml</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <transformationSet>
+                  <dir>${basedir}/target/kettle/${kettle.dist.zip.root.dir}/standalone/configuration</dir>
+                  <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
+                  <includes>
+                    <include>standalone.xml</include>
+                  </includes>
+                  <outputDir>${basedir}/target/distro-resources/standalone/configuration</outputDir>
+                  <parameters>
+                    <parameter>
+                      <name>kettle.build.type</name>
+                      <value>${kettle.build.type}</value>
+                    </parameter>
+                  </parameters>
+                </transformationSet>
+              </transformationSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/scripts/distro-assembly.xml</descriptor>
+          </descriptors>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+        <executions>
+          <execution>
+            <id>distro-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- unzips the assembly so devs can run it right out of target/ -->
+    <profile>
+      <id>dev</id>
+      <properties>
+        <kettle.build.type>dev</kettle.build.type>
+        <!-- This special realm for dev purposes has a default user 'jdoe' with password 'password' -->
+        <hawkular.realm.template>hawkular-realm-for-dev.json</hawkular.realm.template>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unzip-distro</id>
+                <phase>install</phase>
+                <configuration>
+                  <target>
+                    <unzip src="${project.build.directory}/${project.build.finalName}.zip" dest="${project.build.directory}" />
+                    <chmod dir="${project.build.directory}/${kettle.dist.zip.root.dir}/bin" includes="*.sh"
+                      perm="u+x" type="file" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

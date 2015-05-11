@@ -26,12 +26,13 @@
     <groupId>org.hawkular.btm</groupId>
     <artifactId>hawkular-btm</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-api</artifactId>
+  <artifactId>hawkular-btm-metrics-deriver</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::API</name>
+  <name>Hawkular BTM::Processors::Metrics Deriver</name>
 
   <dependencies>
 
@@ -63,16 +64,6 @@
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-processor</artifactId>
       <scope>provided</scope>
-    </dependency>
-
-    <!-- REST documentation -->
-    <dependency>
-      <groupId>com.wordnik</groupId>
-      <artifactId>swagger-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.wordnik</groupId>
-      <artifactId>swagger-core_2.10</artifactId>
     </dependency>
 
     <dependency>

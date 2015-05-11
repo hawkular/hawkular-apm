@@ -29,10 +29,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-service-metrics-hwk</artifactId>
+  <artifactId>hawkular-btm-btxn-repository-cas-es</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM Service::Metrics::Hawkular</name>
+  <name>Hawkular BTM::Repository::Business Transaction Cassandra and Elasticsearch</name>
 
   <dependencies>
 
