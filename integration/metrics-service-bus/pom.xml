@@ -29,10 +29,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-processor-metrics</artifactId>
+  <artifactId>hawkular-btm-metrics-service-bus</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM Processor::Metrics</name>
+  <name>Hawkular BTM::Integration::Metrics Service Bus</name>
 
   <dependencies>
 

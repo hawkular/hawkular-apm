@@ -29,9 +29,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-rest</artifactId>
+  <artifactId>hawkular-btm-btxn-server-rest</artifactId>
   <packaging>war</packaging>
-  <name>Hawkular BTM REST Web Application</name>
+  <name>Hawkular BTM::Backend::Business Transaction Server REST</name>
 
   <properties>
   </properties>
@@ -51,6 +51,15 @@
   <dependencies>
 
     <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-repository-client-bus</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>
@@ -59,12 +68,6 @@
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-annotations</artifactId>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>

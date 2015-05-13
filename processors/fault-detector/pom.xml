@@ -29,10 +29,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-service-metrics-es</artifactId>
+  <artifactId>hawkular-btm-fault-detector</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM Service::Metrics::Elasticsearch</name>
+  <name>Hawkular BTM::Processors::Fault Detector</name>
 
   <dependencies>
 

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <baseDirectory>${project.build.finalName}</baseDirectory>
+
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/distro-resources</directory>
+      <outputDirectory>/${kettle.dist.zip.root.dir}</outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory>/${kettle.dist.zip.root.dir}/</outputDirectory>
+    </fileSet>
+  </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular:hawkular-kettle</include>
+      </includes>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
+        <excludes>
+          <exclude>${kettle.dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
+        </excludes>
+      </unpackOptions>
+    </dependencySet>
+
+    <dependencySet>
+      <outputDirectory>${kettle.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.btm:hawkular-btm-btxn-builder-bus:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-btxn-repository-bus:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-btxn-server-rest:war</include>
+        <include>org.hawkular.btm:hawkular-btm-fault-detector-bus:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-inventory-enricher-bus:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-metrics-deriver-bus:jar</include>
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+  </dependencySets>
+
+</assembly>
+

@@ -29,10 +29,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-repo-btxn-es</artifactId>
+  <artifactId>hawkular-btm-inventory-service-rest</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM Repository::Business Transaction::Elasticsearch</name>
+  <name>Hawkular BTM::Integration::Inventory Service REST</name>
 
   <dependencies>
 

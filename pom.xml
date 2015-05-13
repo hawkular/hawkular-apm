@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>10</version>
+    <version>11</version>
   </parent>
 
   <groupId>org.hawkular.btm</groupId>
@@ -58,14 +58,23 @@
 
   <modules>
     <module>api</module>
-    <module>backend/rest</module>
-    <module>processors/metrics</module>
-    <module>repositories/btxn-elasticsearch</module>
-    <module>services/admin</module>
-    <module>services/btxn</module>
-    <module>services/metrics-elasticsearch</module>
-    <module>services/metrics-hawkular</module>
-    <module>services/presentation</module>
+    <module>backend/btxn-server-rest</module>
+    <module>integration/btxn-builder-bus</module>
+    <module>integration/btxn-repository-client-bus</module>
+    <module>integration/btxn-repository-server-bus</module>
+    <module>integration/events-service-bus</module>
+    <module>integration/fault-detector-bus</module>
+    <module>integration/inventory-enricher-bus</module>
+    <module>integration/inventory-service-rest</module>
+    <module>integration/metrics-deriver-bus</module>
+    <module>integration/metrics-service-bus</module>
+    <module>processors/btxn-builder</module>
+    <module>processors/fault-detector</module>
+    <module>processors/inventory-enricher</module>
+    <module>processors/metrics-deriver</module>
+    <module>repository/btxn-cassandra-elasticsearch</module>
+    <module>services/btxn-server</module>
+    <module>dist</module>
   </modules>
 
   <scm>
@@ -93,6 +102,104 @@
         <version>${version.org.wildfly}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <!-- BTM API -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- BTM Backend -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-server-rest</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- BTM Integration -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-builder-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-repository-client-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-repository-server-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-events-service-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-fault-detector-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-inventory-enricher-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-inventory-service-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-metrics-deriver-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-metrics-service-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- BTM Processors -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-builder</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-fault-detector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-inventory-enricher</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-metrics-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- BTM Repository -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-repository-cas-es</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- BTM Services -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-server</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
     </dependencies>
