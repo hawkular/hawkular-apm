@@ -12,6 +12,20 @@ endif::[]
 The project will provide the capabilities to monitor the flow of a business transaction
 instance across servers, tiers, on-premises and in the cloud.
 
+== Build
+
+To build the project, run:
+
+```shell
+mvn clean install [ -Ptests ]
+```
+
+The optional 'tests' profile will automatically run integration tests within a WildFly instance
+configured with Hawkular Bus and BTM.
+
+The distribution (a preconfigured version of WildFly with all necessary Hawkular components) can be
+found here: _dist/target/hawkular-btm-dist-<version>.zip_.
+
 
 == Documentation
 
@@ -40,12 +54,10 @@ This folder contains various modules that enable BTM to integrate with other (Ha
 | processors |
 This folder contains the processor implementations that derive higher level information from the raw +
 business transaction fragments reported by execution environments.
-| repository |
-This folder contains repository implementations.
 | services |
 This folder contains the services provided by BTM.
 | tests |
-This folder contains the integration tests. (TBD)
+This folder contains the integration tests.
 |=======================
 
 

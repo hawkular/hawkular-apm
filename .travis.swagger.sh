@@ -20,7 +20,7 @@
 mvn clean compile -Pdocgen -DskipTests -Dcheckstyle.skip -Dlicense.skip
 
 FILE_NAME="rest-btm.adoc"
-FILE_PATH="backend/btxn-server-rest/target/generated/$FILE_NAME"
+FILE_PATH="backend/btxn-service-rest/target/generated/$FILE_NAME"
 
 # don't push the empty docs
 [[ -s $FILE_PATH ]] || echo "$FILE_PATH is empty" && exit 1

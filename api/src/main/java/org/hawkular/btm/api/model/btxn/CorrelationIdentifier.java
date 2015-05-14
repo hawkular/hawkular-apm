@@ -36,15 +36,15 @@ public class CorrelationIdentifier {
     private Scope scope;
 
     @JsonInclude(Include.NON_DEFAULT)
-    private long expiration = 0;
+    private int duration = 0;
 
     public CorrelationIdentifier() {
     }
 
-    public CorrelationIdentifier(String value, Scope scope, long expiration) {
+    public CorrelationIdentifier(String value, Scope scope, int duration) {
         this.value = value;
         this.scope = scope;
-        this.expiration = expiration;
+        this.duration = duration;
     }
 
     /**
@@ -76,24 +76,72 @@ public class CorrelationIdentifier {
     }
 
     /**
-     * @return the expiration
+     * @return the duration
      */
-    public long getExpiration() {
-        return expiration;
+    public int getDuration() {
+        return duration;
     }
 
     /**
-     * @param expiration the expiration to set
+     * @param duration the duration to set
      */
-    public void setExpiration(long expiration) {
-        this.expiration = expiration;
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    /**
+     * This method determines whether the supplied correlation identifier,
+     * associated with a base time, matches this correlation identifier
+     * associated with its own base time.
+     *
+     * @param thisBaseTime This correlation id's base time
+     * @param cid The correlation id to match against
+     * @param cidBaseTime The base time of the correlation id to match
+     * @return
+     */
+    public boolean match(long thisBaseTime, CorrelationIdentifier cid, long cidBaseTime) {
+
+        if (this.equals(cid)) {
+
+            if (getDuration() == 0 && cid.getDuration() == 0) {
+                return true;
+            } else {
+                return isOverlap(thisBaseTime, getDuration(), cidBaseTime, cid.getDuration());
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * This method determines whether there is an overlap between the time periods represented by
+     * the two base times and their durations.
+     *
+     * @param baseTime1 Base time 1
+     * @param duration1 Duration 1
+     * @param baseTime2 Base time 2
+     * @param duration2 Duration 2
+     * @return
+     */
+    protected static boolean isOverlap(long baseTime1, int duration1, long baseTime2, int duration2) {
+        long endTime1 = baseTime1 + duration1;
+        long endTime2 = baseTime2 + duration2;
+
+        if ((baseTime1 >= baseTime2 && baseTime1 <= endTime2)
+                || (baseTime2 >= baseTime1 && baseTime2 <= endTime1)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (expiration ^ (expiration >>> 32));
+
+        // NOTE: Duration should not be used as part of hashcode
+
         result = prime * result + ((scope == null) ? 0 : scope.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
@@ -111,9 +159,11 @@ public class CorrelationIdentifier {
             return false;
         }
         CorrelationIdentifier other = (CorrelationIdentifier) obj;
-        if (expiration != other.expiration) {
-            return false;
-        }
+
+        // NOTE: Duration should not be evaluated as part of equality,
+        // although will be relevant when evaluating whether the correlation
+        // identifier is relevant
+
         if (scope != other.scope) {
             return false;
         }

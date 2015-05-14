@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-inventory-service-rest</artifactId>
+      <artifactId>hawkular-btm-inventory-service-rest-client</artifactId>
     </dependency>
 
     <dependency>

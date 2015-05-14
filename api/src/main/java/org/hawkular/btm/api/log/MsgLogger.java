@@ -19,22 +19,35 @@ package org.hawkular.btm.api.log;
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
+import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.ValidIdRange;
 
 /**
- * Common log for INFO, WARN, ERROR and FATAL messages.
+ * Log for INFO, WARN, ERROR and FATAL messages.
  *
  * @author gbrown
  */
 @MessageLogger(projectCode = "HAWKBTM")
-@ValidIdRange(min = 300000, max = 309999)
+@ValidIdRange(min = 600000, max = 609999)
 public interface MsgLogger extends BasicLogger {
     MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
 
-    @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 300000, value = "Example message p1 [%s] and p2 [%s]")
-    void warnExample(String p1, String p2);
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 600000, value = "Failed to deserialize json [%s]")
+    void errorFailedToDeserializeJson(String json, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 600001, value = "Failed to serialize json")
+    void errorFailedToSerializeToJson(@Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 600002, value = "Failed to convert property [%s] to type [%s]")
+    void errorConvertingPropertyToType(String property, String targetType, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 600003, value = "Failed to send a message")
+    void errorSendingMessage(@Cause Throwable t);
 
 }

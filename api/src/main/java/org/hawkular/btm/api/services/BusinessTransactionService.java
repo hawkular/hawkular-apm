@@ -32,7 +32,26 @@ public interface BusinessTransactionService {
      * This method stores the list of business transactions (fragments).
      *
      * @param btxns The list of business transactions
+     * @throws Exception Failed to store business transactions
      */
-    void store(List<BusinessTransaction> btxns);
+    void store(List<BusinessTransaction> btxns) throws Exception;
+
+    /**
+     * This method returns the business transaction associated with the
+     * supplied id.
+     *
+     * @param id The id
+     * @return The business transaction, or null if not found
+     */
+    BusinessTransaction get(String id);
+
+    /**
+     * This method returns a set of business transactions that meet the
+     * supplied query criteria.
+     *
+     * @param criteria The query criteria
+     * @return The list of business transactions that meet the criteria
+     */
+    List<BusinessTransaction> query(BusinessTransactionCriteria criteria);
 
 }

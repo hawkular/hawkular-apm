@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-events-service-bus</artifactId>
+      <artifactId>hawkular-btm-events-service-bus-client</artifactId>
     </dependency>
 
     <dependency>
