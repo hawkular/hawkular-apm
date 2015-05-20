@@ -40,6 +40,6 @@ public interface PresentationService {
      * @return The instance or aggregated group view of the business transaction
      */
     BusinessTransaction getBusinessTransaction(Level[] levels, CorrelationIdentifier[] ids,
-                                Map<String,String> properties);
+            Map<String, String> properties);
 
 }

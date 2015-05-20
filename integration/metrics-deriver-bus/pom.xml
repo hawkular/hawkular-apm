@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-metrics-service-bus</artifactId>
+      <artifactId>hawkular-btm-metrics-service-bus-client</artifactId>
     </dependency>
 
     <dependency>

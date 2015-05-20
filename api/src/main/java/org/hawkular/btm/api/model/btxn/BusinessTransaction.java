@@ -18,8 +18,10 @@ package org.hawkular.btm.api.model.btxn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -37,12 +39,29 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class BusinessTransaction {
 
     @JsonInclude
+    private String id;
+
+    @JsonInclude
     private List<Node> nodes = new ArrayList<Node>();
 
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> properties = new HashMap<String, String>();
 
     public BusinessTransaction() {
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -71,6 +90,61 @@ public class BusinessTransaction {
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * This method returns the start time of the business
+     * transaction.
+     *
+     * @return The start time, or 0 if no time defined
+     */
+    public long startTime() {
+        long ret = 0;
+
+        if (getNodes().size() > 0) {
+            ret = getNodes().get(0).getStartTime();
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method returns the end time of the business
+     * transaction.
+     *
+     * @return The end time, or 0 if no time defined
+     */
+    public long endTime() {
+        long ret = 0;
+
+        for (Node node : getNodes()) {
+            long endTime = node.overallEndTime();
+
+            if (endTime > ret) {
+                ret = endTime;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method locates any node within the business transaction that
+     * is associated with the supplied correlation id.
+     *
+     * @param cid The correlation identifier
+     * @param baseTime The base time associated with the correlation identifier
+     * @return The nodes that were correlated with the supplied correlation identifier
+     *                      (and base time if relevant)
+     */
+    public Set<Node> getCorrelatedNodes(CorrelationIdentifier cid, long baseTime) {
+        Set<Node> ret = new HashSet<Node>();
+
+        for (Node n : getNodes()) {
+            n.findCorrelatedNodes(cid, baseTime, ret);
+        }
+
+        return ret;
     }
 
     @Override

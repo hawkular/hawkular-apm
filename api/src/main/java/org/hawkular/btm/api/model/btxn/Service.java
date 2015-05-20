@@ -25,7 +25,7 @@ import com.wordnik.swagger.annotations.ApiModel;
  * @author gbrown
  *
  */
-@ApiModel(parent=InvocationNode.class)
+@ApiModel(parent = InvocationNode.class)
 public class Service extends InvocationNode {
 
     @JsonInclude

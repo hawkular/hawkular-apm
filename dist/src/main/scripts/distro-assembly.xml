@@ -61,12 +61,8 @@
       <outputDirectory>${kettle.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.btm:hawkular-btm-btxn-builder-bus:jar</include>
-        <include>org.hawkular.btm:hawkular-btm-btxn-repository-bus:jar</include>
-        <include>org.hawkular.btm:hawkular-btm-btxn-server-rest:war</include>
-        <include>org.hawkular.btm:hawkular-btm-fault-detector-bus:jar</include>
-        <include>org.hawkular.btm:hawkular-btm-inventory-enricher-bus:jar</include>
-        <include>org.hawkular.btm:hawkular-btm-metrics-deriver-bus:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-btxn-service-mdb:war</include>
+        <include>org.hawkular.btm:hawkular-btm-btxn-service-rest:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>

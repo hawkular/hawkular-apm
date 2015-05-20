@@ -16,7 +16,9 @@
  */
 package org.hawkular.btm.api.processors;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransactionList;
+import java.util.List;
+
+import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 
 /**
  * This interface represents a processor invoked to handle business transactions
@@ -31,6 +33,6 @@ public interface BusinessTransactionProcessor {
      *
      * @param list The business transaction list
      */
-    void process(BusinessTransactionList list);
+    void process(List<BusinessTransaction> list);
 
 }

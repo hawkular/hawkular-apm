@@ -18,6 +18,7 @@ package org.hawkular.btm.api.model.btxn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,7 +30,7 @@ import com.wordnik.swagger.annotations.ApiModel;
  *
  * @author gbrown
  */
-@ApiModel(parent=Node.class)
+@ApiModel(parent = Node.class)
 public abstract class ContainerNode extends Node {
 
     @JsonInclude(Include.NON_NULL)
@@ -50,6 +51,36 @@ public abstract class ContainerNode extends Node {
      */
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
+    }
+
+    /**
+     * This method determines the overall end time of this node.
+     *
+     * @return The overall end time
+     */
+    @Override
+    protected long overallEndTime() {
+        long ret = super.overallEndTime();
+
+        for (Node child : nodes) {
+            long childEndTime = child.overallEndTime();
+
+            if (childEndTime > ret) {
+                ret = childEndTime;
+            }
+        }
+
+        return ret;
+    }
+
+    @Override
+    protected void findCorrelatedNodes(CorrelationIdentifier cid, long baseTime, Set<Node> nodes) {
+        super.findCorrelatedNodes(cid, baseTime, nodes);
+
+        // Propagate to child nodes
+        for (Node child : getNodes()) {
+            child.findCorrelatedNodes(cid, baseTime, nodes);
+        }
     }
 
     @Override

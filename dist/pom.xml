@@ -50,28 +50,13 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-builder-bus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-repository-server-bus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-server-rest</artifactId>
+      <artifactId>hawkular-btm-btxn-service-mdb</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-fault-detector-bus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-inventory-enricher-bus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-metrics-deriver-bus</artifactId>
+      <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+      <type>war</type>
     </dependency>
 
   </dependencies>

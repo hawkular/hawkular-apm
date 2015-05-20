@@ -51,10 +51,24 @@
       <xsl:copy-of select="./*"/>
       <admin-object use-java-context="true"
                     enabled="true"
-                    class-name="org.apache.activemq.command.ActiveMQTopic"
-                    jndi-name="java:/topic/HawkularBTMFragments"
-                    pool-name="HawkularBTMFragments">
-        <config-property name="PhysicalName">HawkularBTMFragments</config-property>
+                    class-name="org.apache.activemq.command.ActiveMQQueue"
+                    jndi-name="java:/queue/HawkularBTM.BTxnFragments"
+                    pool-name="HawkularBTM.BTxnFragments">
+        <config-property name="PhysicalName">HawkularBTM.BTxnFragments</config-property>
+      </admin-object>
+      <admin-object use-java-context="true"
+                    enabled="true"
+                    class-name="org.apache.activemq.command.ActiveMQQueue"
+                    jndi-name="java:/queue/HawkularBTM.BTxnService.Get"
+                    pool-name="HawkularBTM.BTxnService.Get">
+        <config-property name="PhysicalName">HawkularBTM.BTxnService.Get</config-property>
+      </admin-object>
+      <admin-object use-java-context="true"
+                    enabled="true"
+                    class-name="org.apache.activemq.command.ActiveMQQueue"
+                    jndi-name="java:/queue/HawkularBTM.BTxnService.Query"
+                    pool-name="HawkularBTM.BTxnService.Query">
+        <config-property name="PhysicalName">HawkularBTM.BTxnService.Query</config-property>
       </admin-object>
     </admin-objects>
   </xsl:template>

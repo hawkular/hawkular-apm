@@ -35,10 +35,10 @@ import com.wordnik.swagger.annotations.ApiModel;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Consumer.class),
-    @Type(value = Producer.class),
-    @Type(value = Service.class),
-    @Type(value = Component.class) })
-@ApiModel(subTypes = {Consumer.class, Producer.class, Service.class, Component.class}, discriminator = "type")
+        @Type(value = Producer.class),
+        @Type(value = Service.class),
+        @Type(value = Component.class) })
+@ApiModel(subTypes = { Consumer.class, Producer.class, Service.class, Component.class }, discriminator = "type")
 public abstract class Node {
 
     @JsonInclude
@@ -93,6 +93,64 @@ public abstract class Node {
      */
     public void setCorrelationIds(Set<CorrelationIdentifier> correlationIds) {
         this.correlationIds = correlationIds;
+    }
+
+    /**
+     * This method calculates the end time of this node based on the
+     * start time and duration. An end time will only be returned if
+     * the start time has been set.
+     *
+     * @return The end time, based on start time and duration, or 0 if
+     *                  not known
+     */
+    public long endTime() {
+        long ret = 0;
+
+        if (startTime > 0) {
+            ret = startTime + duration;
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method determines the overall end time of this node.
+     *
+     * @return The overall end time
+     */
+    protected long overallEndTime() {
+        return endTime();
+    }
+
+    /**
+     * This method identifies all of the nodes within a business transaction that
+     * are associated with the supplied correlation identifier.
+     *
+     * @param cid The correlation identifier
+     * @param baseTime The base time at which the correlation is being evaluated
+     * @param nodes The set of nodes that are associated with the correlation identifier
+     */
+    protected void findCorrelatedNodes(CorrelationIdentifier cid, long baseTime, Set<Node> nodes) {
+        if (isCorrelated(cid, baseTime)) {
+            nodes.add(this);
+        }
+    }
+
+    /**
+     * This method determines whether the node is correlated to the supplied
+     * identifier.
+     *
+     * @param cid The correlation id
+     * @param baseTime The base time at which the correlation is being evaluated
+     * @return Whether the node is correlated to the supplied id
+     */
+    protected boolean isCorrelated(CorrelationIdentifier cid, long baseTime) {
+        for (CorrelationIdentifier id : correlationIds) {
+            if (id.match(startTime, cid, baseTime)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
