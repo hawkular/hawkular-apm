@@ -61,7 +61,6 @@
       <outputDirectory>${kettle.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.btm:hawkular-btm-btxn-service-mdb:war</include>
         <include>org.hawkular.btm:hawkular-btm-btxn-service-rest:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>

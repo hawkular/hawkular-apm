@@ -50,11 +50,6 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-mdb</artifactId>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-btxn-service-rest</artifactId>
       <type>war</type>
     </dependency>
