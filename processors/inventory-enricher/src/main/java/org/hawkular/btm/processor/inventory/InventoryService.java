@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.services;
+package org.hawkular.btm.processor.inventory;
 
 /**
+ * This interface represents the Inventory service.
+ *
  * @author gbrown
  */
-public interface MetricsService {
+public interface InventoryService {
 
 }

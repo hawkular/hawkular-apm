@@ -21,18 +21,19 @@ import java.util.List;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 
 /**
- * This interface represents a processor invoked to handle business transactions
- * reported to the Business Transaction Management server.
+ * This interface represents a processor invoked to handle business transaction
+ * fragments reported to the Business Transaction Management server.
  *
  * @author gbrown
  */
-public interface BusinessTransactionProcessor {
+public interface BusinessTransactionFragmentHandler {
 
     /**
-     * This method is invoked to process a list of business transactions.
+     * This method is invoked to process a list of business transaction
+     * fragments.
      *
-     * @param list The business transaction list
+     * @param btxns The business transaction fragments
      */
-    void process(List<BusinessTransaction> list);
+    void handle(List<BusinessTransaction> btxns);
 
 }
