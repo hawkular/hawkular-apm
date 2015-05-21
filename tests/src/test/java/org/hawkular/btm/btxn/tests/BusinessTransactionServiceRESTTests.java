@@ -34,7 +34,6 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -407,7 +406,6 @@ public class BusinessTransactionServiceRESTTests {
     }
 
     @Test
-    @Ignore("Until HAWKULAR-225 is fixed")
     public void testStoreAndQueryPropertiesInclude() {
         WebTarget target1 = baseTarget.path("transactions");
 
@@ -466,7 +464,6 @@ public class BusinessTransactionServiceRESTTests {
     }
 
     @Test
-    @Ignore("Until HAWKULAR-225 is fixed")
     public void testStoreAndQueryPropertiesExclude() {
         WebTarget target1 = baseTarget.path("transactions");
 
@@ -524,7 +521,6 @@ public class BusinessTransactionServiceRESTTests {
     }
 
     @Test
-    @Ignore("Until HAWKULAR-225 is fixed")
     public void testStoreAndQueryCorrelationsInclude() {
         WebTarget target1 = baseTarget.path("transactions");
 
@@ -590,7 +586,6 @@ public class BusinessTransactionServiceRESTTests {
     }
 
     @Test
-    @Ignore("Until HAWKULAR-225 is fixed")
     public void testStoreAndQueryCorrelationsExclude() {
         WebTarget target1 = baseTarget.path("transactions");
 

@@ -56,7 +56,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-bus-client</artifactId>
+      <artifactId>hawkular-btm-btxn-service-cass-es</artifactId>
     </dependency>
 
     <dependency>

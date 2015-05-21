@@ -163,10 +163,9 @@
             <groupId>org.wildfly.plugins</groupId>
             <artifactId>wildfly-maven-plugin</artifactId>
             <configuration>
-              <groupId>org.hawkular.nest</groupId>
-              <artifactId>hawkular-nest-distro</artifactId>
+              <groupId>org.hawkular.accounts</groupId>
+              <artifactId>hawkular-accounts-distribution</artifactId>
               <version>1.0.0-SNAPSHOT</version>
-              <classifier>distribution</classifier>
               <skip>${skipTests}</skip>
               <port>${wildfly.management.port}</port>
             </configuration>
@@ -191,17 +190,6 @@
                     <javaOpt>-Xdebug</javaOpt>
                     <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                   </javaOpts>
-                </configuration>
-              </execution>
-              <execution>
-                <id>deploy-btxn-service-mdb</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>deploy-artifact</goal>
-                </goals>
-                <configuration>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>hawkular-btm-btxn-service-mdb</artifactId>
                 </configuration>
               </execution>
               <execution>
