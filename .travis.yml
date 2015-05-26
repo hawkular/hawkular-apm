@@ -9,14 +9,13 @@ notifications:
 install:
 - mvn -version -B
 script:
-- mvn -s .travis.maven.settings.xml verify -Ptests | grep -vF "[INFO] Downloading:" | grep
-  -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
+- mvn -s .travis.maven.settings.xml verify -Ptests | grep -vF "[INFO] Downloading:" | grep -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
-  # Nexus username and password
-  - secure: "Xoi160XSl/Gdn2bmgtMLxZLbEJq/9pUR0qk3a54BcjXhzB7EF/j5thzTOlPNvxTsmi6baO4ARtlcOOz+jUqHBfUsaVPzBDm3RPnz0YSwGS4FY9nhu1hZ7hYiMZo6PHpKpMGugiQZx8C/iSr8r7U84o4hRswAmLdyrghnftk3vAs="
-  - secure: "EiJ8GaA/UggzOd7ucYvMDxJgNfb5Wj4YL/54PHhmc/njrYnfVXVZWnXlv/exsD/wHWv4OTFhJLaCxmOgUkVFFBUo139b155PzvYYMiui35AjchSMvyJZolYopRlnSfCLL1GBdJrRhoXGNBZ3Z8G0ac4dYTlzd3dGqxr2JwxC598="
   # Github deploy token
-  - secure: "T75Ketb2d0BIgRIMoi06FjL2pIfDMYCsUivJ2r1a3mXpkCxti0OcOk/ODmoHWsKrg1RU0RZ6ayJ0MygMhL5zBi4kI6P1x7nzrJsHLqndWxAP77oWsHSSCxI7i26VPLt4hCluBnLKqWX2mTlk8w3MMsbsXrgeV5/HpKZwXZQb8BE="
+  - secure: T75Ketb2d0BIgRIMoi06FjL2pIfDMYCsUivJ2r1a3mXpkCxti0OcOk/ODmoHWsKrg1RU0RZ6ayJ0MygMhL5zBi4kI6P1x7nzrJsHLqndWxAP77oWsHSSCxI7i26VPLt4hCluBnLKqWX2mTlk8w3MMsbsXrgeV5/HpKZwXZQb8BE=
+  # Nexus deploy tokens
+  - secure: LQS+PsFgOMoMtUOPpQF1UotdO3I17Y5nSSqXn56MKA2OvPBWX4ANBe/tKcnkHKDs4+FV3i5d08xxjBIsu/pfQsNedXjhx/B2CZG301oumWyCKukgJ3FIf2IXoN69TDWHU4SSStfck7enbM2G9TV7IHyHL+4x5LIo2xJ+7xL9GxU=
+  - secure: W+HwWNFJHw0eXemHopbghj4cFz4WlBxb4aqsErE6DF0MjUfO27BVYy12lSZ/fMU4JpCOVwaceoNu9n2QnaenQkkEFDN4+N+fTpU2EK676NPcYxDYWFm6R6FRQtC75fWh4qT80PwtFLdaqEHtS5yOMx8aQHtFvHwbuGtLBdwwqmQ=
 after_success:
 - test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests && ./.travis.swagger.sh
