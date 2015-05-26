@@ -14,11 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.services;
+package org.hawkular.btm.api.processors;
+
+import java.util.List;
+
+import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
 
 /**
+ * This interface represents a processor invoked to handle business transaction
+ * traces.
+ *
  * @author gbrown
  */
-public interface EventsService {
+public interface BusinessTransactionTraceHandler {
+
+    /**
+     * This method is invoked to process a list of business transaction
+     * traces.
+     *
+     * @param traces The business transaction traces
+     */
+    void handle(List<BusinessTransactionTrace> traces);
 
 }

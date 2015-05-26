@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.log;
+package org.hawkular.btm.processor.inventory.log;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
-import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.ValidIdRange;
@@ -30,28 +29,12 @@ import org.jboss.logging.annotations.ValidIdRange;
  * @author gbrown
  */
 @MessageLogger(projectCode = "HAWKBTM")
-@ValidIdRange(min = 600000, max = 609999)
+@ValidIdRange(min = 612000, max = 612999)
 public interface MsgLogger extends BasicLogger {
     MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
 
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 600000, value = "Failed to deserialize json [%s]")
-    void errorFailedToDeserializeJson(String json, @Cause Throwable t);
-
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 600001, value = "Failed to serialize json")
-    void errorFailedToSerializeToJson(@Cause Throwable t);
-
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 600002, value = "Failed to convert property [%s] to type [%s]")
-    void errorConvertingPropertyToType(String property, String targetType, @Cause Throwable t);
-
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 600003, value = "Failed to send a message")
-    void errorSendingMessage(@Cause Throwable t);
-
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 600004, value = "Failed to process business transaction fragment")
-    void errorProcessingBusinessTransaction(@Cause Throwable t);
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 612000, value = "Inventory Service has not been found")
+    void warnNoInventoryService();
 
 }

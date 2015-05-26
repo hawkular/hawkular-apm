@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.services;
+package org.hawkular.btm.processor.metrics;
 
 /**
  * @author gbrown
  */
-public interface InventoryService {
+public class BTxnMetric {
 
 }

@@ -54,9 +54,29 @@
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-api</artifactId>
     </dependency>
+
+    <!-- Service implementation -->
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-btxn-service-cass-es</artifactId>
+    </dependency>
+
+    <!-- Business Transaction Fragment Processors -->
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-builder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-fault-detector</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-inventory-enricher</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-metrics-deriver</artifactId>
     </dependency>
 
     <dependency>
@@ -83,17 +103,14 @@
       <scope>provided</scope>
     </dependency>
 
-
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
-      <version>1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
-      <version>1.0-SP4</version>
       <scope>provided</scope>
     </dependency>
 

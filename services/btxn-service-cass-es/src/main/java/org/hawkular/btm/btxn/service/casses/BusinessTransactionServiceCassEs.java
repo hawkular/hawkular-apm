@@ -21,9 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.services.AbstractBusinessTransactionService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.jboss.logging.Logger;
 
 /**
@@ -32,38 +34,30 @@ import org.jboss.logging.Logger;
  *
  * @author gbrown
  */
-public class BusinessTransactionServiceCassEs implements BusinessTransactionService {
+@Singleton
+public class BusinessTransactionServiceCassEs extends AbstractBusinessTransactionService {
 
     private final Logger log = Logger.getLogger(BusinessTransactionServiceCassEs.class);
 
     private static Map<String, BusinessTransaction> idMap = new HashMap<String, BusinessTransaction>();
     private static List<BusinessTransaction> txns = new ArrayList<BusinessTransaction>();
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#store(java.util.List)
-     */
     @Override
-    public void store(List<BusinessTransaction> btxns) throws Exception {
-        log.tracef("Store business transaction: %s", btxns);
+    protected void doStore(BusinessTransaction btxn) throws Exception {
 
         synchronized (txns) {
-            for (BusinessTransaction btxn : btxns) {
-                BusinessTransaction old = idMap.put(btxn.getId(), btxn);
+            BusinessTransaction old = idMap.put(btxn.getId(), btxn);
 
-                if (old != null) {
-                    txns.remove(old);
-                }
-
-                txns.add(btxn);
+            if (old != null) {
+                txns.remove(old);
             }
+
+            txns.add(btxn);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String)
-     */
     @Override
-    public BusinessTransaction get(String id) {
+    protected BusinessTransaction doGet(String id) {
         BusinessTransaction ret = null;
 
         synchronized (txns) {
@@ -75,12 +69,8 @@ public class BusinessTransactionServiceCassEs implements BusinessTransactionServ
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#query(
-     *          org.hawkular.btm.api.services.BusinessTransactionQuery)
-     */
     @Override
-    public List<BusinessTransaction> query(BusinessTransactionCriteria criteria) {
+    protected List<BusinessTransaction> doQuery(BusinessTransactionCriteria criteria) {
         List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
 
         txns.stream().filter(p -> criteria.isValid(p)).forEach(p -> ret.add(p));
