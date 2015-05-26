@@ -80,11 +80,11 @@ public class InMemoryBTxnTraceScheduler implements BTxnTraceScheduler {
      * @see org.hawkular.btm.processor.btxn.builder.BTxnTraceScheduler#schedule(java.util.List, long)
      */
     @Override
-    public void schedule(List<BusinessTransactionTrace> traces, long timeValue) {
+    public void schedule(String tenantId, List<BusinessTransactionTrace> traces, long timeValue) {
         if (!initialised) {
             init();
         }
-        scheduledExecutorService.schedule(new BTxnTraceSchedulerTask(traces), timeValue,
+        scheduledExecutorService.schedule(new BTxnTraceSchedulerTask(tenantId, traces), timeValue,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -96,9 +96,11 @@ public class InMemoryBTxnTraceScheduler implements BTxnTraceScheduler {
      */
     private class BTxnTraceSchedulerTask implements Runnable {
 
+        private String tenantId;
         private List<BusinessTransactionTrace> traces;
 
-        public BTxnTraceSchedulerTask(List<BusinessTransactionTrace> traces) {
+        public BTxnTraceSchedulerTask(String tenantId, List<BusinessTransactionTrace> traces) {
+            this.tenantId = tenantId;
             this.traces = traces;
         }
 
@@ -108,7 +110,7 @@ public class InMemoryBTxnTraceScheduler implements BTxnTraceScheduler {
         @Override
         public void run() {
             for (int i = 0; i < traceHandlers.size(); i++) {
-                executorService.execute(new BTxnTraceHandlerTask(traceHandlers.get(i), traces));
+                executorService.execute(new BTxnTraceHandlerTask(tenantId, traceHandlers.get(i), traces));
             }
         }
 
@@ -122,11 +124,13 @@ public class InMemoryBTxnTraceScheduler implements BTxnTraceScheduler {
      */
     private static class BTxnTraceHandlerTask implements Runnable {
 
+        private String tenantId;
         private BusinessTransactionTraceHandler handler;
         private List<BusinessTransactionTrace> traces;
 
-        public BTxnTraceHandlerTask(BusinessTransactionTraceHandler handler,
+        public BTxnTraceHandlerTask(String tenantId, BusinessTransactionTraceHandler handler,
                 List<BusinessTransactionTrace> traces) {
+            this.tenantId = tenantId;
             this.handler = handler;
             this.traces = traces;
         }
@@ -136,7 +140,7 @@ public class InMemoryBTxnTraceScheduler implements BTxnTraceScheduler {
          */
         @Override
         public void run() {
-            handler.handle(traces);
+            handler.handle(tenantId, traces);
         }
 
     }

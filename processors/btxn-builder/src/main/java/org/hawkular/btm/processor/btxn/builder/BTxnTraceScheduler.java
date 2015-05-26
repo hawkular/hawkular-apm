@@ -29,9 +29,10 @@ public interface BTxnTraceScheduler {
      * This method requests that a list of business transaction traces
      * should be scheduled for resolution at a particular time interval.
      *
+     * @param tenantId The tenant
      * @param traces The list of traces
      * @param timeValue The time interval
      */
-    void schedule(List<BusinessTransactionTrace> traces, long timeValue);
+    void schedule(String tenantId, List<BusinessTransactionTrace> traces, long timeValue);
 
 }

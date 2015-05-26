@@ -33,6 +33,11 @@
 
   <name>Hawkular BTM::Tests</name>
 
+  <properties>
+    <jboss.home>${project.build.directory}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</jboss.home>
+    <server.config>standalone.xml</server.config>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -65,6 +70,13 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson-provider</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-dist</artifactId>
+      <type>zip</type>
       <scope>test</scope>
     </dependency>
 
@@ -102,37 +114,78 @@
       <id>tests</id>
       <properties>
         <hawkular.host>127.0.0.1</hawkular.host>
-        <hawkular.port>9977</hawkular.port>
+        <hawkular.port>8080</hawkular.port>
         <hawkular.path>/hawkular/btm/</hawkular.path>
         <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}${hawkular.path}</hawkular.base-uri>
         <!-- IMPORTANT: The port must be the port offset + 8080. -->
         <wildfly.port.offset>1897</wildfly.port.offset>
         <!-- IMPORTANT: The management port must be the port offset + 9990. -->
         <wildfly.management.port>11887</wildfly.management.port>
+        <hawkular.home>${project.build.directory}/hawkular</hawkular.home>
+        <hawkular.wildfly>${hawkular.home}/wildfly-${version.org.wildfly}</hawkular.wildfly>
+        <hawkular.configuration>${hawkular.wildfly}/standalone/configuration</hawkular.configuration>
+        <hawkular.data>${hawkular.wildfly}/standalone/data</hawkular.data>
+        <hawkular.deployments>${hawkular.wildfly}/modules/org/hawkular/nest/main/deployments</hawkular.deployments>
       </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
+            <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <id>copy-data-dir</id>
+                <id>unpack-hawkular</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>copy-resources</goal>
+                  <goal>unpack-dependencies</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>${project.build.directory}/wildfly-data</outputDirectory>
-                  <overwrite>true</overwrite>
-                  <resources>
-                    <resource>
-                      <directory>${project.basedir}/src/test/wildfly-data</directory>
-                      <includes>
-                        <include>**/*</include>
-                      </includes>
-                    </resource>
-                  </resources>
+                  <includeGroupIds>org.hawkular.btm</includeGroupIds>
+                  <includeArtifactIds>hawkular-btm-dist</includeArtifactIds>
+                  <outputDirectory>
+                    ${hawkular.home}
+                  </outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-patch-plugin</artifactId>
+            <version>${plugin.version.org.apache.maven.plugins}</version>
+            <executions>
+              <execution>
+                <id>add-demo-user-realm</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>apply</goal>
+                </goals>
+                <configuration>
+                  <patchFile>src/test/resources/hawkular-realm-patch.json</patchFile>
+                  <originalFile>${hawkular.configuration}/hawkular-realm.json</originalFile>
+                  <targetDirectory>${hawkular.configuration}</targetDirectory>
+                  <destFile>${hawkular.configuration}/hawkular-realm-dev.json</destFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>rename-hawkular-realm</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <copy file="${hawkular.configuration}/hawkular-realm.json"
+                          tofile="${hawkular.configuration}/hawkular-realm.json.backup" />
+                    <copy file="${hawkular.configuration}/hawkular-realm-dev.json"
+                          tofile="${hawkular.configuration}/hawkular-realm.json" />
+                  </target>
                 </configuration>
               </execution>
             </executions>
@@ -141,9 +194,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <includes>
-                <include>**/*Tests.java</include>
-              </includes>
               <systemPropertyVariables>
                 <hawkular.host>${hawkular.host}</hawkular.host>
                 <hawkular.port>${hawkular.port}</hawkular.port>
@@ -152,8 +202,19 @@
             </configuration>
             <executions>
               <execution>
+                <id>exec-rest-tests</id>
                 <goals>
                   <goal>integration-test</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/*Test.java</include>
+                  </includes>
+                </configuration>
+              </execution>
+              <execution>
+                <id>final-verify</id>
+                <goals>
                   <goal>verify</goal>
                 </goals>
               </execution>
@@ -163,11 +224,7 @@
             <groupId>org.wildfly.plugins</groupId>
             <artifactId>wildfly-maven-plugin</artifactId>
             <configuration>
-              <groupId>org.hawkular.accounts</groupId>
-              <artifactId>hawkular-accounts-distribution</artifactId>
-              <version>1.0.0-SNAPSHOT</version>
-              <skip>${skipTests}</skip>
-              <port>${wildfly.management.port}</port>
+              <jboss-home>${hawkular.wildfly}</jboss-home>
             </configuration>
             <executions>
               <execution>
@@ -184,23 +241,11 @@
                     <javaOpt>-Djava.net.preferIPv4Stack=true</javaOpt>
                     <javaOpt>-Dsun.rmi.dgc.client.gcInterval=3600000</javaOpt>
                     <javaOpt>-Dsun.rmi.dgc.server.gcInterval=3600000</javaOpt>
-                    <javaOpt>-Djboss.socket.binding.port-offset=${wildfly.port.offset}</javaOpt>
-                    <javaOpt>-Djboss.server.data.dir=${project.build.directory}/wildfly-data</javaOpt>
-                    <javaOpt>-Dhawkular-metrics.backend=embedded_cass</javaOpt>
                     <javaOpt>-Xdebug</javaOpt>
                     <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
+                    <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
                   </javaOpts>
-                </configuration>
-              </execution>
-              <execution>
-                <id>deploy-btxn-service-rest</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>deploy-artifact</goal>
-                </goals>
-                <configuration>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+                  <startup-timeout>120</startup-timeout>
                 </configuration>
               </execution>
               <execution>

@@ -52,10 +52,10 @@ public class FaultDetector implements BusinessTransactionFragmentHandler {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler#handle(java.util.List)
+     * @see org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(List<BusinessTransaction> btxns) {
+    public void handle(String tenantId, List<BusinessTransaction> btxns) {
         log.tracef("Fault Detector called with: %s", btxns);
     }
 

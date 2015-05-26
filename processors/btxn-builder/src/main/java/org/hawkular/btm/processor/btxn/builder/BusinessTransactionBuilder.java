@@ -90,11 +90,11 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.processors.BusinessTransactionProcessor#process(
+     * @see org.hawkular.btm.api.processors.BusinessTransactionProcessor#handle(java.lang.String,
      *                  org.hawkular.btm.api.model.btxn.BusinessTransaction)
      */
     @Override
-    public void handle(List<BusinessTransaction> btxns) {
+    public void handle(String tenantId, List<BusinessTransaction> btxns) {
         log.tracef("Business Transaction Builder called with: %s", btxns);
 
         List<BusinessTransaction> retry = null;
@@ -122,12 +122,12 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
 
         if (retry != null && getRetryHandler() != null) {
             log.tracef("Retrying %d traces", retry.size());
-            getRetryHandler().handle(retry);
+            getRetryHandler().handle(tenantId, retry);
         }
 
         if (traces != null && getTraceHandlers() != null) {
             for (int i = 0; i < getTraceHandlers().size(); i++) {
-                getTraceHandlers().get(i).handle(traces);
+                getTraceHandlers().get(i).handle(tenantId, traces);
             }
         }
     }

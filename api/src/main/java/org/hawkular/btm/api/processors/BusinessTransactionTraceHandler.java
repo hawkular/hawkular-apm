@@ -32,8 +32,9 @@ public interface BusinessTransactionTraceHandler {
      * This method is invoked to process a list of business transaction
      * traces.
      *
+     * @param tenantId The tenant
      * @param traces The business transaction traces
      */
-    void handle(List<BusinessTransactionTrace> traces);
+    void handle(String tenantId, List<BusinessTransactionTrace> traces);
 
 }

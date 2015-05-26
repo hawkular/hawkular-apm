@@ -86,10 +86,10 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.processors.BusinessTransactionTraceHandler#handle(java.util.List)
+     * @see org.hawkular.btm.api.processors.BusinessTransactionTraceHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(List<BusinessTransactionTrace> traces) {
+    public void handle(String tenantId, List<BusinessTransactionTrace> traces) {
         log.tracef("Trace Resolver called with: %s", traces);
 
         List<BusinessTransactionTrace> retry = null;
@@ -119,14 +119,14 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
 
         if (retry != null && getRetryHandler() != null) {
             log.tracef("Calling retry handler with: %d traces", retry.size());
-            getRetryHandler().handle(retry);
+            getRetryHandler().handle(tenantId, retry);
         }
 
         if (resolveTraces != null && !resolveTraces.isEmpty() && getScheduler() != null) {
             // TODO: Need to segment traces into time slots and call the
             // scheduler for each slot
             long interval=traceProcessor.getScheduleInterval(resolveTraces.get(0));
-            getScheduler().schedule(resolveTraces, interval);
+            getScheduler().schedule(tenantId, resolveTraces, interval);
         }
     }
 

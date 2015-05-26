@@ -80,8 +80,12 @@
   </issueManagement>
 
   <properties>
+    <plugin.version.org.apache.maven.plugins>1.2</plugin.version.org.apache.maven.plugins>
+
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
+    <version.org.hawkular>1.0.0-SNAPSHOT</version.org.hawkular>
+    <version.org.hawkular.accounts>1.0.1</version.org.hawkular.accounts>
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
   </properties>
 
@@ -147,7 +151,28 @@
         <version>${project.version}</version>
       </dependency>
 
+      <!-- BTM Services -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-dist</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+
       <!-- Other dependencies -->
+      <dependency>
+        <groupId>org.hawkular.accounts</groupId>
+        <artifactId>hawkular-accounts-api</artifactId>
+        <version>${version.org.hawkular.accounts}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-dist</artifactId>
+        <version>${version.org.hawkular}</version>
+        <type>zip</type>
+      </dependency>
+
       <dependency>
         <groupId>javax</groupId>
         <artifactId>javaee-api</artifactId>

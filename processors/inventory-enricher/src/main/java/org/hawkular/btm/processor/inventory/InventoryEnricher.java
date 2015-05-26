@@ -69,10 +69,10 @@ public class InventoryEnricher implements BusinessTransactionFragmentHandler {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler#handle(java.util.List)
+     * @see org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(List<BusinessTransaction> btxns) {
+    public void handle(String tenantId, List<BusinessTransaction> btxns) {
         log.tracef("Inventory Enricher called with: %s", btxns);
     }
 

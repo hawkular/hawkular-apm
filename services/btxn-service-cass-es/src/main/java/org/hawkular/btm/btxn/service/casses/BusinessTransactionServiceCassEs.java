@@ -43,7 +43,7 @@ public class BusinessTransactionServiceCassEs extends AbstractBusinessTransactio
     private static List<BusinessTransaction> txns = new ArrayList<BusinessTransaction>();
 
     @Override
-    protected void doStore(BusinessTransaction btxn) throws Exception {
+    protected void doStore(String tenantId, BusinessTransaction btxn) throws Exception {
 
         synchronized (txns) {
             BusinessTransaction old = idMap.put(btxn.getId(), btxn);
@@ -57,7 +57,7 @@ public class BusinessTransactionServiceCassEs extends AbstractBusinessTransactio
     }
 
     @Override
-    protected BusinessTransaction doGet(String id) {
+    protected BusinessTransaction doGet(String tenantId, String id) {
         BusinessTransaction ret = null;
 
         synchronized (txns) {
@@ -70,7 +70,7 @@ public class BusinessTransactionServiceCassEs extends AbstractBusinessTransactio
     }
 
     @Override
-    protected List<BusinessTransaction> doQuery(BusinessTransactionCriteria criteria) {
+    protected List<BusinessTransaction> doQuery(String tenantId, BusinessTransactionCriteria criteria) {
         List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
 
         txns.stream().filter(p -> criteria.isValid(p)).forEach(p -> ret.add(p));
