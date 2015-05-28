@@ -20,19 +20,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.DatatypeConverter;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -43,14 +49,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author gbrown
  */
-public class BusinessTransactionServiceRESTTests {
+public class BusinessTransactionServiceRESTTest {
 
-    private static Client client = new ResteasyClientBuilder().build();
+    private static Client client = ClientBuilder.newClient().register(new Authenticator("jdoe", "password"));
     private WebTarget baseTarget = client.target(System.getProperty("hawkular.base-uri"));
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-            };
+    };
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -647,5 +653,35 @@ public class BusinessTransactionServiceRESTTests {
             resp2.close();
         }
 
+    }
+
+    public static class Authenticator implements ClientRequestFilter {
+
+        private final String user;
+        private final String password;
+
+        public Authenticator(String user, String password) {
+            this.user = user;
+            this.password = password;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.ws.rs.client.ClientRequestFilter#filter(javax.ws.rs.client.ClientRequestContext)
+         */
+        @Override
+        public void filter(ClientRequestContext requestContext) throws IOException {
+            MultivaluedMap<String, Object> headers = requestContext.getHeaders();
+            getBasicAuthentication();
+            headers.add("Authorization", getBasicAuthentication());
+        }
+
+        private String getBasicAuthentication() {
+            String token = this.user + ":" + this.password;
+            try {
+                return "BASIC " + DatatypeConverter.printBase64Binary(token.getBytes("UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+                throw new IllegalStateException("Cannot encode with UTF-8", ex);
+            }
+        }
     }
 }

@@ -87,10 +87,10 @@ public class BTxnTraceMetricsDeriver implements BusinessTransactionTraceHandler 
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.processors.BusinessTransactionTraceHandler#handle(java.util.List)
+     * @see org.hawkular.btm.api.processors.BusinessTransactionTraceHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(List<BusinessTransactionTrace> traces) {
+    public void handle(String tenantId, List<BusinessTransactionTrace> traces) {
         log.tracef("Metrics Deriver called with: %s", traces);
 
         List<BusinessTransactionTrace> retry = null;
@@ -120,12 +120,12 @@ public class BTxnTraceMetricsDeriver implements BusinessTransactionTraceHandler 
 
         if (retry != null && getRetryHandler() != null) {
             log.tracef("Retry %d traces", retry.size());
-            getRetryHandler().handle(retry);
+            getRetryHandler().handle(tenantId, retry);
         }
 
         if (metrics != null && getMetricsService() != null) {
             try {
-                getMetricsService().report(metrics);
+                getMetricsService().report(tenantId, metrics);
             } catch (Exception e) {
                 // TODO: Error and decide how to handle metrics service failure - do
                 // a complete retry, but report error if no retry handler?

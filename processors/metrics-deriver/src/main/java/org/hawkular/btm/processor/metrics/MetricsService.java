@@ -29,9 +29,10 @@ public interface MetricsService {
      * This method reports a set of business transaction related
      * metrics.
      *
+     * @param tenantId The tenant
      * @param metrics The metrics
      * @throws Exception Failed to report the metrics
      */
-    void report(Set<BTxnMetric> metrics) throws Exception;
+    void report(String tenantId, Set<BTxnMetric> metrics) throws Exception;
 
 }

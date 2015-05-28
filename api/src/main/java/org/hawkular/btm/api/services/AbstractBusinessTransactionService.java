@@ -59,10 +59,10 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#store(java.util.List)
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#store(java.lang.String,java.util.List)
      */
     @Override
-    public void store(List<BusinessTransaction> btxns) throws Exception {
+    public void store(String tenantId, List<BusinessTransaction> btxns) throws Exception {
         log.tracef("Store business transactions: %s", btxns);
 
         if (btxns.size() == 0) {
@@ -70,7 +70,7 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
         }
 
         for (int i = 0; i < btxns.size(); i++) {
-            doStore(btxns.get(i));
+            doStore(tenantId, btxns.get(i));
         }
 
         if (handlers.size() > 0) {
@@ -80,9 +80,9 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
             // Process business transaction fragments
             for (int i = 0; i < handlers.size(); i++) {
                 if (executorService == null) {
-                    handlers.get(i).handle(btxns);
+                    handlers.get(i).handle(tenantId, btxns);
                 } else {
-                    executorService.execute(new BTxnFragmentHandlerTask(handlers.get(i), btxns));
+                    executorService.execute(new BTxnFragmentHandlerTask(tenantId, handlers.get(i), btxns));
                 }
             }
         }
@@ -92,17 +92,18 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
      * This method is overridden by the concrete business transaction service
      * to implement storing a business transaction.
      *
+     * @param tenantId The tenant
      * @param btxn
      * @throws Exception
      */
-    protected abstract void doStore(BusinessTransaction btxn) throws Exception;
+    protected abstract void doStore(String tenantId, BusinessTransaction btxn) throws Exception;
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String)
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String,java.lang.String)
      */
     @Override
-    public BusinessTransaction get(String id) {
-        BusinessTransaction ret = doGet(id);
+    public BusinessTransaction get(String tenantId, String id) {
+        BusinessTransaction ret = doGet(tenantId, id);
 
         log.tracef("Get business transaction with id[%s] is: %s", id, ret);
 
@@ -113,18 +114,19 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
      * This method is overridden by the concrete business transaction service
      * to implement retrieval of the business transaction.
      *
+     * @param tenantId The tenant
      * @param id The id
      * @return The business transaction
      */
-    protected abstract BusinessTransaction doGet(String id);
+    protected abstract BusinessTransaction doGet(String tenantId, String id);
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#query(
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#query(java.lang.String,
      *          org.hawkular.btm.api.services.BusinessTransactionQuery)
      */
     @Override
-    public List<BusinessTransaction> query(BusinessTransactionCriteria criteria) {
-        List<BusinessTransaction> ret = doQuery(criteria);
+    public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+        List<BusinessTransaction> ret = doQuery(tenantId, criteria);
 
         log.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
 
@@ -135,10 +137,11 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
      * This method is overridden by the concrete business transaction service
      * to implement querying for a set of business transactions.
      *
+     * @param tenantId The tenant
      * @param criteria The query criteria
      * @return The list of business transactions
      */
-    protected abstract List<BusinessTransaction> doQuery(BusinessTransactionCriteria criteria);
+    protected abstract List<BusinessTransaction> doQuery(String tenantId, BusinessTransactionCriteria criteria);
 
     /**
      * This task processes a list of business transaction fragments using a provided
@@ -148,11 +151,13 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
      */
     private static class BTxnFragmentHandlerTask implements Runnable {
 
+        private String tenantId;
         private BusinessTransactionFragmentHandler handler;
         private List<BusinessTransaction> businessTransactions;
 
-        public BTxnFragmentHandlerTask(BusinessTransactionFragmentHandler handler,
+        public BTxnFragmentHandlerTask(String tenantId, BusinessTransactionFragmentHandler handler,
                 List<BusinessTransaction> btxns) {
+            this.tenantId = tenantId;
             this.handler = handler;
             this.businessTransactions = btxns;
         }
@@ -162,7 +167,7 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
          */
         @Override
         public void run() {
-            handler.handle(businessTransactions);
+            handler.handle(tenantId, businessTransactions);
         }
 
     }

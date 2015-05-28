@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -35,6 +36,9 @@ import org.junit.Test;
  */
 public class BusinessTransactionServiceCassEsTest {
 
+    /**  */
+    private static final String TEST_TENANT = UUID.randomUUID().toString();
+
     private static BusinessTransactionService service = new BusinessTransactionServiceCassEs();
 
     private static List<BusinessTransaction> businessTransactions = transactions();
@@ -45,7 +49,7 @@ public class BusinessTransactionServiceCassEsTest {
         // TODO: Setup DB and ensure clean
 
         try {
-            service.store(businessTransactions);
+            service.store(TEST_TENANT, businessTransactions);
         } catch (Exception e) {
             fail("Failed to store business transactions: " + e);
         }
@@ -59,7 +63,7 @@ public class BusinessTransactionServiceCassEsTest {
     }
 
     protected void retrieveAndVerify(BusinessTransactionCriteria criteria) {
-        List<BusinessTransaction> results = service.query(criteria);
+        List<BusinessTransaction> results = service.query(TEST_TENANT, criteria);
 
         // Build expected result list
         List<BusinessTransaction> expected = new ArrayList<BusinessTransaction>();

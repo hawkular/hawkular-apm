@@ -20,68 +20,41 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:ds="urn:jboss:domain:datasources:2.0"
                 xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
-                xmlns:domain="urn:jboss:domain:2.2"
+                xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
                 version="2.0"
-                exclude-result-prefixes="xalan ra">
-
-  <!-- will indicate if this is a "dev" build or "production" build -->
-  <xsl:param name="kettle.build.type"/>
+                exclude-result-prefixes="xalan ds ra ejb3">
 
   <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" xalan:indent-amount="4" standalone="no"/>
   <xsl:strip-space elements="*"/>
-
-  <!-- add system properties -->
-  <xsl:template name="system-properties">
-    <system-properties>
-      <xsl:copy-of select="./*"/>
-      <property name="hawkular-metrics.url" value="http://localhost:8080" />
-      <property name="hawkular-alerts.url" value="http://localhost:8080" />
-      <property name="hawkular-inventory.url" value="http://localhost:8080" />
-    </system-properties>
-  </xsl:template>
-
-  <xsl:template match="domain:system-properties">
-    <xsl:call-template name="system-properties"/>
-  </xsl:template>
-
-  <!-- add our JMS queues/topices that are required to be defined as admin-objects -->
-  <xsl:template name="admin-objects">
-    <admin-objects>
-      <xsl:copy-of select="./*"/>
-      <admin-object use-java-context="true"
-                    enabled="true"
-                    class-name="org.apache.activemq.command.ActiveMQQueue"
-                    jndi-name="java:/queue/HawkularBTM.BTxnFragments"
-                    pool-name="HawkularBTM.BTxnFragments">
-        <config-property name="PhysicalName">HawkularBTM.BTxnFragments</config-property>
-      </admin-object>
-      <admin-object use-java-context="true"
-                    enabled="true"
-                    class-name="org.apache.activemq.command.ActiveMQQueue"
-                    jndi-name="java:/queue/HawkularBTM.BTxnService.Get"
-                    pool-name="HawkularBTM.BTxnService.Get">
-        <config-property name="PhysicalName">HawkularBTM.BTxnService.Get</config-property>
-      </admin-object>
-      <admin-object use-java-context="true"
-                    enabled="true"
-                    class-name="org.apache.activemq.command.ActiveMQQueue"
-                    jndi-name="java:/queue/HawkularBTM.BTxnService.Query"
-                    pool-name="HawkularBTM.BTxnService.Query">
-        <config-property name="PhysicalName">HawkularBTM.BTxnService.Query</config-property>
-      </admin-object>
-    </admin-objects>
-  </xsl:template>
-
-  <xsl:template match="ra:admin-objects">
-    <xsl:call-template name="admin-objects"/>
-  </xsl:template>
 
   <!-- copy everything else as-is -->
   <xsl:template match="node()|@*">
     <xsl:copy>
       <xsl:apply-templates select="node()|@*" />
     </xsl:copy>
+  </xsl:template>
+
+  <!-- Add new secure-deployment -->
+  <xsl:template match="node()[name(.)='secure-deployment'][last()]">
+
+    <xsl:variable name="newSecureDeployment">
+      <secure-deployment name="hawkular-btm-btxn-service-rest.war">
+        <realm>hawkular</realm>
+        <resource>hawkular-accounts-backend</resource>
+        <use-resource-role-mappings>true</use-resource-role-mappings>
+        <enable-cors>true</enable-cors>
+        <enable-basic-auth>true</enable-basic-auth>
+        <credential name="secret"><xsl:value-of select="node()[name(.)='credential'][last()]" /></credential>
+      </secure-deployment>
+    </xsl:variable>
+
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+    <xsl:copy-of select="$newSecureDeployment" />
+
   </xsl:template>
 
 </xsl:stylesheet>

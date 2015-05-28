@@ -31,27 +31,30 @@ public interface BusinessTransactionService {
     /**
      * This method stores the list of business transactions (fragments).
      *
+     * @param tenantId The tenant
      * @param btxns The list of business transactions
      * @throws Exception Failed to store business transactions
      */
-    void store(List<BusinessTransaction> btxns) throws Exception;
+    void store(String tenantId, List<BusinessTransaction> btxns) throws Exception;
 
     /**
      * This method returns the business transaction associated with the
      * supplied id.
      *
+     * @param tenantId The tenant
      * @param id The id
      * @return The business transaction, or null if not found
      */
-    BusinessTransaction get(String id);
+    BusinessTransaction get(String tenantId, String id);
 
     /**
      * This method returns a set of business transactions that meet the
      * supplied query criteria.
      *
+     * @param tenantId The tenant
      * @param criteria The query criteria
      * @return The list of business transactions that meet the criteria
      */
-    List<BusinessTransaction> query(BusinessTransactionCriteria criteria);
+    List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria);
 
 }

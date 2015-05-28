@@ -32,8 +32,9 @@ public interface BusinessTransactionFragmentHandler {
      * This method is invoked to process a list of business transaction
      * fragments.
      *
+     * @param tenantId The tenant
      * @param btxns The business transaction fragments
      */
-    void handle(List<BusinessTransaction> btxns);
+    void handle(String tenantId, List<BusinessTransaction> btxns);
 
 }

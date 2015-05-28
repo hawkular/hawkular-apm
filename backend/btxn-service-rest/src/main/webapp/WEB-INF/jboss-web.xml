@@ -19,4 +19,5 @@
 -->
 <jboss-web>
   <context-root>/hawkular/btm</context-root>
+  <security-domain>keycloak</security-domain>
 </jboss-web>

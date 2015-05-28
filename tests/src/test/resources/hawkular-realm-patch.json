@@ -1,0 +1,33 @@
+9,10c9
+<   "defaultRoles" : [ "user" ],
+<   "passwordPolicy" : "length(8) and lowerCase(1) and upperCase(1) and specialChars(1) and digits(1) and hashIterations(1024)",
+---
+>   "passwordPolicy" : "length(8) and lowerCase(1) and upperCase(1) and specialChars(1) and digits(1) and hashIterations(1)",
+13a13,35
+>   "defaultRoles" : [ "user" ],
+>   "users" : [ {
+>     "id" : "28026b36-8fe4-4332-84c8-524e173a68bf",
+>     "username" : "jdoe",
+>     "enabled" : true,
+>     "totp" : false,
+>     "emailVerified" : false,
+>     "firstName" : "John",
+>     "lastName" : "Doe",
+>     "email" : "jdoe@acme.com",
+>     "credentials" : [ {
+>       "type" : "password",
+>       "hashedSaltedValue" : "ltSl89y75f8LTzoT646xO9NPTrm114ubTauplgw+TQ62ZDy8K89+y7jFzp/jnSvEh9TENQ4RRvNA6vdGOUDcXg==",
+>       "salt" : "m8PY6Q9lICl9BHSS03D2Ug==",
+>       "hashIterations" : 1,
+>       "temporary" : false
+>     } ],
+>     "requiredActions" : [ ],
+>     "realmRoles" : [ "user" ],
+>     "applicationRoles" : {
+>       "account" : [ "view-profile", "manage-account" ]
+>     }
+>   } ],
+77c99
+<       "webOrigins": [],
+---
+>       "webOrigins": ["http://localhost:8080", "http://127.0.0.1:8080"],

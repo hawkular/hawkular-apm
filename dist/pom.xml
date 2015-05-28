@@ -32,19 +32,14 @@
   <description>Hawkular BTM distribution.</description>
 
   <properties>
-    <kettle.build.type>production</kettle.build.type>
-    <kettle.dist.zip.root.dir>wildfly-${version.org.wildfly}</kettle.dist.zip.root.dir>
-    <hawkular.realm.template>hawkular-realm.json</hawkular.realm.template>
-
     <version.org.hawkular>1.0.0-SNAPSHOT</version.org.hawkular>
+    <dist.zip.root.dir>wildfly-${version.org.wildfly}</dist.zip.root.dir>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.hawkular</groupId>
-      <artifactId>hawkular-kettle</artifactId>
-      <version>${version.org.hawkular}</version>
-      <classifier>distribution</classifier>
+      <artifactId>hawkular-dist</artifactId>
       <type>zip</type>
     </dependency>
 
@@ -59,19 +54,19 @@
   <build>
 
     <plugins>
-      <!-- unpack the kettle distribution to get its configuration that we need to customize -->
+      <!-- unpack the hawkular distribution to get its configuration that we need to customize -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-kettle</id>
+            <id>unpack-hawkular</id>
             <phase>prepare-package</phase>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/kettle</outputDirectory>
-              <includeArtifactIds>hawkular-kettle</includeArtifactIds>
+              <outputDirectory>${basedir}/target/hawkular</outputDirectory>
+              <includeArtifactIds>hawkular-dist</includeArtifactIds>
               <!-- just unpack the config file - its all we need -->
               <includes>*/standalone/configuration/standalone.xml</includes>
             </configuration>
@@ -94,18 +89,12 @@
             <configuration>
               <transformationSets>
                 <transformationSet>
-                  <dir>${basedir}/target/kettle/${kettle.dist.zip.root.dir}/standalone/configuration</dir>
+                  <dir>${basedir}/target/hawkular/${dist.zip.root.dir}/standalone/configuration</dir>
                   <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
                   <includes>
                     <include>standalone.xml</include>
                   </includes>
                   <outputDir>${basedir}/target/distro-resources/standalone/configuration</outputDir>
-                  <parameters>
-                    <parameter>
-                      <name>kettle.build.type</name>
-                      <value>${kettle.build.type}</value>
-                    </parameter>
-                  </parameters>
                 </transformationSet>
               </transformationSets>
             </configuration>
@@ -140,7 +129,6 @@
     <profile>
       <id>dev</id>
       <properties>
-        <kettle.build.type>dev</kettle.build.type>
         <!-- This special realm for dev purposes has a default user 'jdoe' with password 'password' -->
         <hawkular.realm.template>hawkular-realm-for-dev.json</hawkular.realm.template>
       </properties>
@@ -156,7 +144,7 @@
                 <configuration>
                   <target>
                     <unzip src="${project.build.directory}/${project.build.finalName}.zip" dest="${project.build.directory}" />
-                    <chmod dir="${project.build.directory}/${kettle.dist.zip.root.dir}/bin" includes="*.sh"
+                    <chmod dir="${project.build.directory}/${dist.zip.root.dir}/bin" includes="*.sh"
                       perm="u+x" type="file" />
                   </target>
                 </configuration>

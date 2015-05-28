@@ -39,6 +39,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Response;
 
+import org.hawkular.accounts.api.model.Persona;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
@@ -67,6 +68,9 @@ public class BusinessTransactionHandler {
     private static final Logger log = Logger.getLogger(BusinessTransactionHandler.class);
 
     @Inject
+    Persona currentPersona;
+
+    @Inject
     BusinessTransactionService btxnService;
 
     @POST
@@ -81,7 +85,7 @@ public class BusinessTransactionHandler {
             @ApiParam(value = "List of business transactions", required = true) List<BusinessTransaction> btxns) {
 
         try {
-            btxnService.store(btxns);
+            btxnService.store(currentPersona.getId(), btxns);
 
             response.resume(Response.status(Response.Status.OK).build());
 
@@ -108,7 +112,7 @@ public class BusinessTransactionHandler {
             @ApiParam(required = true, value = "id of required business transaction") @PathParam("id") String id) {
 
         try {
-            BusinessTransaction btxn = btxnService.get(id);
+            BusinessTransaction btxn = btxnService.get(currentPersona.getId(), id);
 
             if (btxn == null) {
                 log.tracef("Business transaction '" + id + "' not found");
@@ -165,7 +169,7 @@ public class BusinessTransactionHandler {
 
             log.tracef("Query Business transactions for criteria [%s]", criteria);
 
-            List<BusinessTransaction> btxns = btxnService.query(criteria);
+            List<BusinessTransaction> btxns = btxnService.query(currentPersona.getId(), criteria);
 
             log.tracef("Queried Business transactions for criteria [%s] = %s", criteria, btxns);
 
