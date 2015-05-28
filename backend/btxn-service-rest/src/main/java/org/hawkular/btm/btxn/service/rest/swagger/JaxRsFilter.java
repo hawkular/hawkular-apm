@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.rest.swagger;
+package org.hawkular.btm.btxn.service.rest.swagger;
 
 import java.util.List;
 import java.util.Map;
