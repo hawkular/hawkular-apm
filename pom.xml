@@ -165,6 +165,12 @@
         <artifactId>hawkular-accounts-api</artifactId>
         <version>${version.org.hawkular.accounts}</version>
       </dependency>
+      <dependency>
+        <groupId>org.hawkular.accounts</groupId>
+        <artifactId>hawkular-accounts-distribution</artifactId>
+        <version>${version.org.hawkular.accounts}</version>
+        <type>zip</type>
+      </dependency>
 
       <dependency>
         <groupId>org.hawkular</groupId>
