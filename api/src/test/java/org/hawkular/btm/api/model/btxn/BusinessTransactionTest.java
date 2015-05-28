@@ -131,8 +131,8 @@ public class BusinessTransactionTest {
         Consumer c1 = new Consumer();
         btxn.getNodes().add(c1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier("CID1", Scope.Global, 0));
-        c1.getCorrelationIds().add(new CorrelationIdentifier("CID2", Scope.Exchange, 0));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1", 0));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "CID2", 0));
         c1.setDuration(1000);
         c1.setStartTime(1);
         c1.setEndpointType("JMS");
@@ -154,7 +154,7 @@ public class BusinessTransactionTest {
         Service s1 = new Service();
         c1.getNodes().add(s1);
 
-        s1.getCorrelationIds().add(new CorrelationIdentifier("CID1", Scope.Global, 0));
+        s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1", 0));
         s1.setDuration(900);
         s1.setStartTime(2);
         s1.setOperation("Op1");
@@ -196,7 +196,7 @@ public class BusinessTransactionTest {
         Service s2 = new Service();
         s1.getNodes().add(s2);
 
-        s2.getCorrelationIds().add(new CorrelationIdentifier("CID3", Scope.Global, 0));
+        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3", 0));
         s2.setDuration(500);
         s2.setStartTime(3);
         s2.setOperation("Op2");
@@ -218,8 +218,8 @@ public class BusinessTransactionTest {
         Producer p1 = new Producer();
         s2.getNodes().add(p1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier("CID3", Scope.Global, 0));
-        c1.getCorrelationIds().add(new CorrelationIdentifier("CID4", Scope.Exchange, 1000));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3", 0));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "CID4", 1000));
         c1.setDuration(400);
         c1.setStartTime(4);
         c1.setEndpointType("HTTP");

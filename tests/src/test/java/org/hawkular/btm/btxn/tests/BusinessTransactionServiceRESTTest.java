@@ -20,54 +20,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.DatatypeConverter;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.junit.AfterClass;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author gbrown
  */
 public class BusinessTransactionServiceRESTTest {
 
-    private static Client client = ClientBuilder.newClient().register(new Authenticator("jdoe", "password"));
-    private WebTarget baseTarget = client.target(System.getProperty("hawkular.base-uri"));
-
-    private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
-            new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
-
-    ObjectMapper mapper = new ObjectMapper();
-
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+    /**  */
+    private static final String TEST_PASSWORD = "password";
+    /**  */
+    private static final String TEST_USERNAME = "jdoe";
 
     @Test
     public void testStoreAndRetrieveById() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -75,13 +53,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        Response resp1 = target1.request().post(Entity.json(btxns));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
+        try {
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
 
         // Wait to ensure record persisted
         try {
@@ -93,26 +69,17 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Retrieve stored business transaction
-        WebTarget target2 = baseTarget.path("transactions/1");
+        BusinessTransaction result = service.get(null, "1");
 
-        Response resp2 = target2.request().get();
-
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
-
-            BusinessTransaction result = resp2.readEntity(BusinessTransaction.class);
-
-            assertEquals("1", result.getId());
-        } finally {
-            resp1.close();
-        }
-
+        assertNotNull(result);
+        assertEquals("1", result.getId());
     }
 
     @Test
     public void testStoreAndQueryAll() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -120,20 +87,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -145,31 +103,18 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
 
-        Response resp2 = target2.request().get();
+        assertEquals(1, result.size());
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
-
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(1, result.size());
-
-            assertEquals("1", result.get(0).getId());
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryStartTimeInclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -181,20 +126,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -206,31 +142,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.setStartTime(100);
 
-        Response resp2 = target2.queryParam("startTime", "100").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(1, result.size());
-
-            assertEquals("1", result.get(0).getId());
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryStartTimeExclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -242,20 +168,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -267,30 +184,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.setStartTime(1100);
 
-        Response resp2 = target2.queryParam("startTime", "1100").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(0, result.size());
-
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryEndTimeInclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -303,20 +211,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -328,31 +227,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.setEndTime(2000);
 
-        Response resp2 = target2.queryParam("endTime", "2000").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(1, result.size());
-
-            assertEquals("1", result.get(0).getId());
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryEndTimeExclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -365,20 +254,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -390,30 +270,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.setEndTime(1100);
 
-        Response resp2 = target2.queryParam("endTime", "1100").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(0, result.size());
-
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryPropertiesInclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -422,20 +293,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -447,31 +309,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.getProperties().put("hello", "world");
 
-        Response resp2 = target2.queryParam("properties", "hello|world").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(1, result.size());
-
-            assertEquals("1", result.get(0).getId());
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryPropertiesExclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -480,20 +332,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -505,30 +348,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.getProperties().put("hello", "fred");
 
-        Response resp2 = target2.queryParam("properties", "hello|fred").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(0, result.size());
-
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryCorrelationsInclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -544,20 +378,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -569,31 +394,21 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "myid"));
 
-        Response resp2 = target2.queryParam("correlations", "Global|myid").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(1, result.size());
-
-            assertEquals("1", result.get(0).getId());
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
     @Test
     public void testStoreAndQueryCorrelationsExclude() {
-        WebTarget target1 = baseTarget.path("transactions");
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
@@ -609,20 +424,11 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
 
-        String json = null;
         try {
-            json = mapper.writeValueAsString(btxns);
-        } catch (JsonProcessingException e1) {
-            fail("Failed to serialize: " + e1);
+            service.store(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
         }
-
-        Response resp1 = target1.request().post(Entity.json(json));
-
-        assertNotNull(resp1);
-
-        assertEquals(200, resp1.getStatus());
-
-        resp1.close();
 
         // Wait to ensure record persisted
         try {
@@ -634,54 +440,14 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        WebTarget target2 = baseTarget.path("transactions");
+        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "notmyid"));
 
-        Response resp2 = target2.queryParam("correlations", "Exchange|notmyid").request().get();
+        List<BusinessTransaction> result = service.query(null, criteria);
 
-        try {
-            assertNotNull(resp2);
-            assertEquals(200, resp2.getStatus());
+        assertEquals(1, result.size());
 
-            List<BusinessTransaction> result = mapper.readValue(resp2.readEntity(String.class).getBytes(),
-                    BUSINESS_TXN_LIST);
-
-            assertEquals(0, result.size());
-
-        } catch (Exception e) {
-            fail("Failed to deserialize response: " + e);
-        } finally {
-            resp2.close();
-        }
-
+        assertEquals("1", result.get(0).getId());
     }
 
-    public static class Authenticator implements ClientRequestFilter {
-
-        private final String user;
-        private final String password;
-
-        public Authenticator(String user, String password) {
-            this.user = user;
-            this.password = password;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.ws.rs.client.ClientRequestFilter#filter(javax.ws.rs.client.ClientRequestContext)
-         */
-        @Override
-        public void filter(ClientRequestContext requestContext) throws IOException {
-            MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-            getBasicAuthentication();
-            headers.add("Authorization", getBasicAuthentication());
-        }
-
-        private String getBasicAuthentication() {
-            String token = this.user + ":" + this.password;
-            try {
-                return "BASIC " + DatatypeConverter.printBase64Binary(token.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException ex) {
-                throw new IllegalStateException("Cannot encode with UTF-8", ex);
-            }
-        }
-    }
 }
