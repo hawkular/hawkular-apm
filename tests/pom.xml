@@ -74,8 +74,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-dist</artifactId>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-distribution</artifactId>
       <type>zip</type>
       <scope>test</scope>
     </dependency>
@@ -122,10 +122,10 @@
         <!-- IMPORTANT: The management port must be the port offset + 9990. -->
         <wildfly.management.port>11887</wildfly.management.port>
         <hawkular.home>${project.build.directory}/hawkular</hawkular.home>
-        <hawkular.wildfly>${hawkular.home}/wildfly-${version.org.wildfly}</hawkular.wildfly>
-        <hawkular.configuration>${hawkular.wildfly}/standalone/configuration</hawkular.configuration>
-        <hawkular.data>${hawkular.wildfly}/standalone/data</hawkular.data>
-        <hawkular.deployments>${hawkular.wildfly}/modules/org/hawkular/nest/main/deployments</hawkular.deployments>
+        <hawkular.btm.dist>${hawkular.home}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</hawkular.btm.dist>
+        <hawkular.configuration>${hawkular.btm.dist}/standalone/configuration</hawkular.configuration>
+        <hawkular.data>${hawkular.btm.dist}/standalone/data</hawkular.data>
+        <hawkular.deployments>${hawkular.btm.dist}/standalone/deployments</hawkular.deployments>
       </properties>
       <build>
         <plugins>
@@ -140,52 +140,55 @@
                   <goal>unpack-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>org.hawkular.btm</includeGroupIds>
-                  <includeArtifactIds>hawkular-btm-dist</includeArtifactIds>
+                  <includeGroupIds>org.hawkular.accounts</includeGroupIds>
+                  <includeArtifactIds>hawkular-accounts-distribution</includeArtifactIds>
                   <outputDirectory>
                     ${hawkular.home}
                   </outputDirectory>
                 </configuration>
               </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-patch-plugin</artifactId>
-            <version>${plugin.version.org.apache.maven.plugins}</version>
-            <executions>
               <execution>
-                <id>add-demo-user-realm</id>
+                <id>update-hawkular-btm</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>apply</goal>
+                  <goal>copy</goal>
                 </goals>
                 <configuration>
-                  <patchFile>src/test/resources/hawkular-realm-patch.json</patchFile>
-                  <originalFile>${hawkular.configuration}/hawkular-realm.json</originalFile>
-                  <targetDirectory>${hawkular.configuration}</targetDirectory>
-                  <destFile>${hawkular.configuration}/hawkular-realm-dev.json</destFile>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular.btm</groupId>
+                      <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+                      <type>war</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.deployments}</outputDirectory>
+                      <destFileName>hawkular-btm-btxn-service-rest.war</destFileName>
+                    </artifactItem>
+                  </artifactItems>
                 </configuration>
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>rename-hawkular-realm</id>
+                <id>transform-standalone-xml</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>run</goal>
+                  <goal>transform</goal>
                 </goals>
                 <configuration>
-                  <target>
-                    <copy file="${hawkular.configuration}/hawkular-realm.json"
-                          tofile="${hawkular.configuration}/hawkular-realm.json.backup" />
-                    <copy file="${hawkular.configuration}/hawkular-realm-dev.json"
-                          tofile="${hawkular.configuration}/hawkular-realm.json" />
-                  </target>
+                  <transformationSets>
+                    <transformationSet>
+                      <dir>${hawkular.btm.dist}/standalone/configuration</dir>
+                      <stylesheet>src/test/resources/standalone.xsl</stylesheet>
+                      <includes>
+                        <include>standalone.xml</include>
+                      </includes>
+                      <outputDir>${hawkular.btm.dist}/standalone/configuration</outputDir>
+                    </transformationSet>
+                  </transformationSets>
                 </configuration>
               </execution>
             </executions>
@@ -224,7 +227,7 @@
             <groupId>org.wildfly.plugins</groupId>
             <artifactId>wildfly-maven-plugin</artifactId>
             <configuration>
-              <jboss-home>${hawkular.wildfly}</jboss-home>
+              <jboss-home>${hawkular.btm.dist}</jboss-home>
             </configuration>
             <executions>
               <execution>
