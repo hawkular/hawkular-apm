@@ -51,9 +51,11 @@ public class BusinessTransactionCriteria {
 
     /**
      * @param startTime the startTime to set
+     * @return The criteria
      */
-    public void setStartTime(long startTime) {
+    public BusinessTransactionCriteria setStartTime(long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     /**
@@ -65,9 +67,11 @@ public class BusinessTransactionCriteria {
 
     /**
      * @param endTime the endTime to set
+     * @return The criteria
      */
-    public void setEndTime(long endTime) {
+    public BusinessTransactionCriteria setEndTime(long endTime) {
         this.endTime = endTime;
+        return this;
     }
 
     /**
@@ -79,9 +83,11 @@ public class BusinessTransactionCriteria {
 
     /**
      * @param properties the properties to set
+     * @return The criteria
      */
-    public void setProperties(Map<String, String> properties) {
+    public BusinessTransactionCriteria setProperties(Map<String, String> properties) {
         this.properties = properties;
+        return this;
     }
 
     /**
@@ -93,9 +99,11 @@ public class BusinessTransactionCriteria {
 
     /**
      * @param correlationIds the correlationIds to set
+     * @return The criteria
      */
-    public void setCorrelationIds(Set<CorrelationIdentifier> correlationIds) {
+    public BusinessTransactionCriteria setCorrelationIds(Set<CorrelationIdentifier> correlationIds) {
         this.correlationIds = correlationIds;
+        return this;
     }
 
     /**
@@ -107,9 +115,11 @@ public class BusinessTransactionCriteria {
 
     /**
      * @param correlationTime the correlationTime to set
+     * @return The criteria
      */
-    public void setCorrelationTime(long correlationTime) {
+    public BusinessTransactionCriteria setCorrelationTime(long correlationTime) {
         this.correlationTime = correlationTime;
+        return this;
     }
 
     /**
@@ -158,5 +168,14 @@ public class BusinessTransactionCriteria {
         }
 
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "BusinessTransactionCriteria [startTime=" + startTime + ", endTime=" + endTime + ", properties="
+                + properties + ", correlationIds=" + correlationIds + ", correlationTime=" + correlationTime + "]";
     }
 }
