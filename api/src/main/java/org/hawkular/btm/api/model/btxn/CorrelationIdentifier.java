@@ -41,7 +41,12 @@ public class CorrelationIdentifier {
     public CorrelationIdentifier() {
     }
 
-    public CorrelationIdentifier(String value, Scope scope, int duration) {
+    public CorrelationIdentifier(Scope scope, String value) {
+        this.value = value;
+        this.scope = scope;
+    }
+
+    public CorrelationIdentifier(Scope scope, String value, int duration) {
         this.value = value;
         this.scope = scope;
         this.duration = duration;

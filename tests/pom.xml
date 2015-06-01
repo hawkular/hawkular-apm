@@ -42,34 +42,19 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-mdb</artifactId>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-rest</artifactId>
-      <type>war</type>
+      <artifactId>hawkular-btm-api</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jackson-provider</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -116,7 +101,7 @@
         <hawkular.host>127.0.0.1</hawkular.host>
         <hawkular.port>8080</hawkular.port>
         <hawkular.path>/hawkular/btm/</hawkular.path>
-        <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}${hawkular.path}</hawkular.base-uri>
+        <hawkular-btm.base-uri>http://${hawkular.host}:${hawkular.port}${hawkular.path}</hawkular-btm.base-uri>
         <!-- IMPORTANT: The port must be the port offset + 8080. -->
         <wildfly.port.offset>1897</wildfly.port.offset>
         <!-- IMPORTANT: The management port must be the port offset + 9990. -->
@@ -200,7 +185,7 @@
               <systemPropertyVariables>
                 <hawkular.host>${hawkular.host}</hawkular.host>
                 <hawkular.port>${hawkular.port}</hawkular.port>
-                <hawkular.base-uri>${hawkular.base-uri}</hawkular.base-uri>
+                <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>
               </systemPropertyVariables>
             </configuration>
             <executions>

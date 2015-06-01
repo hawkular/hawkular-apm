@@ -59,6 +59,7 @@
   <modules>
     <module>api</module>
     <module>backend/btxn-service-rest</module>
+    <module>client/btxn-service-rest-client</module>
     <module>processors/btxn-builder</module>
     <module>processors/fault-detector</module>
     <module>processors/inventory-enricher</module>
@@ -111,14 +112,15 @@
       <!-- BTM Backend -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-mdb</artifactId>
+        <artifactId>hawkular-btm-btxn-service-rest</artifactId>
         <type>war</type>
         <version>${project.version}</version>
       </dependency>
+
+      <!-- BTM Client -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-rest</artifactId>
-        <type>war</type>
+        <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 
