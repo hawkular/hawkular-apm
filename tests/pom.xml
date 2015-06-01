@@ -73,6 +73,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jboss.byteman</groupId>
+      <artifactId>byteman</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -95,6 +101,7 @@
         <configuration>
           <excludes combine.children="append">
             <exclude>**/*.data</exclude>
+            <exclude>**/*.btm</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -119,6 +126,7 @@
         <hawkular.configuration>${hawkular.btm.dist}/standalone/configuration</hawkular.configuration>
         <hawkular.data>${hawkular.btm.dist}/standalone/data</hawkular.data>
         <hawkular.deployments>${hawkular.btm.dist}/standalone/deployments</hawkular.deployments>
+        <hawkular.lib>${hawkular.btm.dist}/standalone/lib</hawkular.lib>
       </properties>
       <build>
         <plugins>
@@ -164,7 +172,34 @@
                       <outputDirectory>${hawkular.deployments}</outputDirectory>
                       <destFileName>camel-example-servlet-rest-tomcat.war</destFileName>
                     </artifactItem>
+                    <artifactItem>
+                      <groupId>org.jboss.byteman</groupId>
+                      <artifactId>byteman</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.lib}</outputDirectory>
+                      <destFileName>byteman.jar</destFileName>
+                    </artifactItem>
                   </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-resources</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${hawkular.configuration}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>src/test/resources/configuration</directory>
+                    </resource>
+                  </resources>
                 </configuration>
               </execution>
             </executions>
@@ -182,12 +217,12 @@
                 <configuration>
                   <transformationSets>
                     <transformationSet>
-                      <dir>${hawkular.btm.dist}/standalone/configuration</dir>
-                      <stylesheet>src/test/resources/standalone.xsl</stylesheet>
+                      <dir>${hawkular.configuration}</dir>
+                      <stylesheet>src/test/resources/scripts/standalone.xsl</stylesheet>
                       <includes>
                         <include>standalone.xml</include>
                       </includes>
-                      <outputDir>${hawkular.btm.dist}/standalone/configuration</outputDir>
+                      <outputDir>${hawkular.configuration}</outputDir>
                     </transformationSet>
                   </transformationSets>
                 </configuration>
@@ -249,6 +284,8 @@
                     <javaOpt>-Xdebug</javaOpt>
                     <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                     <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
+                    <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
+                    <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=script:${hawkular.configuration}/Test.btm,boot:${hawkular.lib}/byteman.jar</javaOpt>
                   </javaOpts>
                   <startup-timeout>120</startup-timeout>
                 </configuration>
