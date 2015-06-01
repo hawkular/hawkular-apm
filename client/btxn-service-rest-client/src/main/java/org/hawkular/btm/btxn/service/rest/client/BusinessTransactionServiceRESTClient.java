@@ -202,7 +202,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
         if (queryParameters != null && !queryParameters.isEmpty()) {
             for (String key : queryParameters.keySet()) {
-                target.queryParam(key, queryParameters.get(key));
+                target = target.queryParam(key, queryParameters.get(key));
             }
         }
 
@@ -282,6 +282,8 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
             ret.put("correlations", buf.toString());
         }
+
+        log.tracef("Criteria [%s] query parameters [%s]", criteria, ret);
 
         return ret;
     }

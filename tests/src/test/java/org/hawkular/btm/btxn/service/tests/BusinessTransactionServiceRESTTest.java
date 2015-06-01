@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.btxn.tests;
+package org.hawkular.btm.btxn.service.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -142,7 +142,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setStartTime(100);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -184,14 +184,12 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setStartTime(1100);
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -227,7 +225,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setEndTime(2000);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -270,14 +268,12 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setEndTime(1100);
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -309,7 +305,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.getProperties().put("hello", "world");
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -348,14 +344,12 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.getProperties().put("hello", "fred");
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -394,7 +388,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "myid"));
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -440,14 +434,12 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria();
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "notmyid"));
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
+        assertEquals(0, result.size());
     }
 
 }
