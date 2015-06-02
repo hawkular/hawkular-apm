@@ -51,6 +51,11 @@
       <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-client</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -75,6 +80,22 @@
     <dependency>
       <groupId>org.jboss.byteman</groupId>
       <artifactId>byteman</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -178,6 +199,41 @@
                       <overWrite>true</overWrite>
                       <outputDirectory>${hawkular.lib}</outputDirectory>
                       <destFileName>byteman.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>com.fasterxml.jackson.core</groupId>
+                      <artifactId>jackson-core</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.lib}</outputDirectory>
+                      <destFileName>jackson-core.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>com.fasterxml.jackson.core</groupId>
+                      <artifactId>jackson-databind</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.lib}</outputDirectory>
+                      <destFileName>jackson-databind.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>com.fasterxml.jackson.core</groupId>
+                      <artifactId>jackson-annotations</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.lib}</outputDirectory>
+                      <destFileName>jackson-annotations.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.hawkular.btm</groupId>
+                      <artifactId>hawkular-btm-api</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.lib}</outputDirectory>
+                      <destFileName>hawkular-btm-api.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.hawkular.btm</groupId>
+                      <artifactId>hawkular-btm-btxn-client</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular.lib}</outputDirectory>
+                      <destFileName>hawkular-btm-btxn-client.jar</destFileName>
                     </artifactItem>
                   </artifactItems>
                 </configuration>
@@ -285,7 +341,8 @@
                     <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                     <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
                     <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
-                    <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=script:${hawkular.configuration}/Test.btm,boot:${hawkular.lib}/byteman.jar</javaOpt>
+                    <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=manager:org.hawkular.btm.btxn.client.ClientManager,boot:${hawkular.lib}/byteman.jar,sys:${hawkular.lib}/jackson-core.jar,sys:${hawkular.lib}/jackson-annotations.jar,sys:${hawkular.lib}/jackson-databind.jar,sys:${hawkular.lib}/hawkular-btm-api.jar,sys:${hawkular.lib}/hawkular-btm-btxn-client.jar</javaOpt>
+                    <javaOpt>-Dhawkular-btm.config=${hawkular.configuration}/hawkular-btm-config.json</javaOpt>
                   </javaOpts>
                   <startup-timeout>120</startup-timeout>
                 </configuration>

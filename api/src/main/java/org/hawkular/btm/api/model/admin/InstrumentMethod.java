@@ -16,34 +16,50 @@
  */
 package org.hawkular.btm.api.model.admin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This is the top level configuration object used to define how information should
- * be collected from a business transaction execution environment.
+ * This type represents instrumentation of a method.
  *
  * @author gbrown
  */
-public class CollectorConfiguration {
+public class InstrumentMethod extends InstrumentType {
 
     @JsonInclude
-    private Map<String,Instrumentation> instrumentation = new HashMap<String,Instrumentation>();
+    private String methodName;
+
+    @JsonInclude
+    private List<String> parameterTypes = new ArrayList<String>();
 
     /**
-     * @return the instrumentation
+     * @return the methodName
      */
-    public Map<String,Instrumentation> getInstrumentation() {
-        return instrumentation;
+    public String getMethodName() {
+        return methodName;
     }
 
     /**
-     * @param instrumentation the instrumentation to set
+     * @param methodName the method to set
      */
-    public void setInstrumentation(Map<String,Instrumentation> instrumentation) {
-        this.instrumentation = instrumentation;
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    /**
+     * @return the parameterTypes
+     */
+    public List<String> getParameterTypes() {
+        return parameterTypes;
+    }
+
+    /**
+     * @param parameterTypes the parameterTypes to set
+     */
+    public void setParameterTypes(List<String> parameterTypes) {
+        this.parameterTypes = parameterTypes;
     }
 
 }
