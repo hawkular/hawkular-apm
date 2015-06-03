@@ -74,8 +74,8 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
         }
 
         if (handlers.size() > 0) {
-            log.tracef("Distribute business transactions to "+handlers.size()+
-                    " handlers: "+handlers+" (with executor="+executorService+")");
+            log.tracef("Distribute business transactions to " + handlers.size() +
+                    " handlers: " + handlers + " (with executor=" + executorService + ")");
 
             // Process business transaction fragments
             for (int i = 0; i < handlers.size(); i++) {

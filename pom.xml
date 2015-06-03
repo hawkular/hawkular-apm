@@ -60,6 +60,7 @@
     <module>api</module>
     <module>backend/btxn-service-rest</module>
     <module>client/btxn-service-rest-client</module>
+    <module>client/btxn-client</module>
     <module>processors/btxn-builder</module>
     <module>processors/fault-detector</module>
     <module>processors/inventory-enricher</module>
@@ -123,6 +124,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 

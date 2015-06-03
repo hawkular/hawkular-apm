@@ -1,6 +1,0 @@
-RULE trace thread start
-CLASS java.lang.Thread
-METHOD start()
-IF true
-DO System.out.println("Hello: "+$0)
-ENDRULE
