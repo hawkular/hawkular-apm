@@ -1,0 +1,11 @@
+= hawkular-btm
+:source-language: java
+
+== Client
+
+The client folder contains components to be used instrument the client environment. Therefore we need to minimise dependencies to reduce the footprint on the client. As a result, the following applies:
+
+* Use java.util.logging instead of JBoss logger (although currently there is an issue using JUL in wildfly that impacts startup of the JBoss logging module)
+
+* Use the ServiceResolver (based on the Java ServiceLoader mechanism) to locate service implementations, rather than CDI
+

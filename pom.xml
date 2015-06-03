@@ -59,15 +59,15 @@
   <modules>
     <module>api</module>
     <module>backend/btxn-service-rest</module>
-    <module>client/btxn-service-rest-client</module>
     <module>client/btxn-client</module>
+    <module>client/btxn-client-all</module>
+    <module>client/btxn-service-rest-client</module>
     <module>processors/btxn-builder</module>
     <module>processors/fault-detector</module>
     <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
     <module>services/btxn-service-cass-es</module>
     <module>dist</module>
-    <module>tests</module>
   </modules>
 
   <scm>
@@ -123,12 +123,17 @@
       <!-- BTM Client -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
+        <artifactId>hawkular-btm-btxn-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-client</artifactId>
+        <artifactId>hawkular-btm-btxn-client-all</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -229,5 +234,15 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>tests</id>
+      <modules>
+        <module>tests/standalone</module>
+        <module>tests/wildfly</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

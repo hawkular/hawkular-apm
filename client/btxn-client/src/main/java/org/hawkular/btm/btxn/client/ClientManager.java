@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.btxn.client;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +75,7 @@ public class ClientManager {
                 updateInstrumentation(config.getInstrumentation());
             } catch (Exception e) {
                 System.err.println("Failed to update instrumentation rules: " + e);
+                e.printStackTrace();
             }
         }
     }
@@ -105,6 +108,10 @@ public class ClientManager {
             }
         }
 
-        transformer.installScript(scripts, scriptNames, null);
+        PrintWriter writer=new PrintWriter(new StringWriter());
+
+        transformer.installScript(scripts, scriptNames, writer);
+
+        writer.close();
     }
 }
