@@ -1,0 +1,16 @@
+{
+  "instrumentation": {
+    "test": {
+      "description": "Test instrumentation",
+      "version": "1",
+      "types": [{
+        "type": "InstrumentMethod",
+        "ruleName": "trace thread start",
+        "className": "java.lang.Thread",
+        "methodName": "start",
+        "parameterTypes": [
+        ]
+      }]
+    }
+  }
+}

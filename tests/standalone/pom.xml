@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.hawkular.btm</groupId>
+    <artifactId>hawkular-btm</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>hawkular-btm-tests-standalone</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Hawkular BTM::Tests Standalone</name>
+
+  <properties>
+    <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
+    <hawkular-btm.configuration>${project.basedir}/src/main/configuration</hawkular-btm.configuration>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-client-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>get-client-all</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-btxn-client-all</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular-btm.lib}</outputDirectory>
+                  <destFileName>hawkular-btm-btxn-client-all.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <target>
+                <java classname="org.hawkular.btm.tests.standalone.AppMain" fork="true" failonerror="true">
+                  <classpath>
+                    <pathelement path="${project.build.outputDirectory}"/>
+                  </classpath>
+                  <jvmarg value="-Dorg.jboss.byteman.transform.all"/>
+                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-btxn-client-all.jar=manager:org.hawkular.btm.btxn.client.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-btxn-client-all.jar"/>
+                  <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json"/>
+                </java>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
