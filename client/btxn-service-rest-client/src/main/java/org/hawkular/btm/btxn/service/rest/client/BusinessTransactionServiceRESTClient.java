@@ -20,6 +20,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -29,12 +31,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.hawkular.btm.api.log.MsgLogger;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,9 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class BusinessTransactionServiceRESTClient implements BusinessTransactionService {
 
-    private static final MsgLogger msgLog = MsgLogger.LOGGER;
-
-    private static final Logger log = Logger.getLogger(BusinessTransactionServiceRESTClient.class);
+    private static final Logger log = Logger.getLogger(BusinessTransactionServiceRESTClient.class.getName());
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
@@ -120,7 +118,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
         try {
             if (resp.getStatus() != Status.OK.getStatusCode()) {
-                log.debugf("Failed to store business transactions: status=[%s]", resp.getStatusInfo());
+                log.finer("Failed to store business transactions: status="+resp.getStatusInfo());
                 throw new Exception(resp.getStatusInfo().getReasonPhrase());
             }
         } finally {
@@ -133,7 +131,9 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
      */
     @Override
     public BusinessTransaction get(String tenantId, String id) {
-        log.tracef("Get business transaction: tenantId=[%s] id=[%s]", tenantId, id);
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get business transaction: tenantId=["+tenantId+"] id=["+id+"]");
+        }
 
         Response resp = getTarget(tenantId, "transactions/" + id, null).get();
 
@@ -141,19 +141,23 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
             if (resp.getStatus() == Status.OK.getStatusCode()) {
                 String json = resp.readEntity(String.class);
 
-                log.tracef("Returned json=[%s]", json);
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=["+json+"]");
+                }
 
                 try {
                     return mapper.readValue(json.getBytes(), BusinessTransaction.class);
                 } catch (Throwable t) {
-                    msgLog.errorFailedToDeserializeJson(json, t);
+                    log.log(Level.SEVERE, "Failed to deserialize", t);
                 }
             }
         } finally {
             resp.close();
         }
 
-        log.debugf("Failed to get business transaction: status=[%s]", resp.getStatusInfo());
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Failed to get business transaction: status=["+resp.getStatusInfo()+"]");
+        }
 
         return null;
     }
@@ -164,7 +168,9 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
      */
     @Override
     public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
-        log.tracef("Get business transactions: tenantId=[%s] query=[%s]", tenantId, criteria);
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get business transactions: tenantId=["+tenantId+"] query=["+criteria+"]");
+        }
 
         Response resp = getTarget(tenantId, "transactions", getQueryParameters(criteria)).get();
 
@@ -176,14 +182,16 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
                     return mapper.readValue(json.getBytes(),
                             BUSINESS_TXN_LIST);
                 } catch (Exception e) {
-                    msgLog.errorFailedToDeserializeJson(json, e);
+                    log.log(Level.SEVERE, "Failed to deserialize", e);
                 }
             }
         } finally {
             resp.close();
         }
 
-        log.debugf("Failed to query business transaction: status=[%s]", resp.getStatusInfo());
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Failed to query business transaction: status=["+resp.getStatusInfo()+"]");
+        }
 
         return null;
     }
@@ -283,7 +291,9 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
             ret.put("correlations", buf.toString());
         }
 
-        log.tracef("Criteria [%s] query parameters [%s]", criteria, ret);
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Criteria ["+criteria+"] query parameters ["+ret+"]");
+        }
 
         return ret;
     }
