@@ -20,11 +20,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
-import org.jboss.logging.Logger;
 
 /**
  * This class represents the query criteria for retrieving a set of business
@@ -34,7 +35,7 @@ import org.jboss.logging.Logger;
  */
 public class BusinessTransactionCriteria {
 
-    private final Logger log = Logger.getLogger(BusinessTransactionCriteria.class);
+    private final Logger log = Logger.getLogger(BusinessTransactionCriteria.class.getName());
 
     private long startTime = 0L;
     private long endTime = 0L;
@@ -133,12 +134,16 @@ public class BusinessTransactionCriteria {
 
         // Validate criteria
         if (startTime > 0L && btxn.startTime() < startTime) {
-            log.debug("Start time out of range");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Start time out of range");
+            }
             return false;
         }
 
         if (endTime > 0L && btxn.endTime() > endTime) {
-            log.debug("End time out of range");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("End time out of range");
+            }
             return false;
         }
 
@@ -147,8 +152,10 @@ public class BusinessTransactionCriteria {
                 String value = properties.get(key);
                 String result = btxn.getProperties().get(key);
                 if (result == null || !value.equals(result)) {
-                    log.debug("Property '" + key + "' had value '" + result
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Property '" + key + "' had value '" + result
                             + "', expected '" + value + "'");
+                    }
                     return false;
                 }
             }
