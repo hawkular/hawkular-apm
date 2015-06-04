@@ -59,9 +59,11 @@
   <modules>
     <module>api</module>
     <module>backend/btxn-service-rest</module>
-    <module>client/btxn-client</module>
-    <module>client/btxn-client-all</module>
+    <module>client/btxn-collector</module>
     <module>client/btxn-service-rest-client</module>
+    <module>client/client-manager</module>
+    <module>client/client-se-rest</module>
+    <module>client/config-manager-rest-client</module>
     <module>processors/btxn-builder</module>
     <module>processors/fault-detector</module>
     <module>processors/inventory-enricher</module>
@@ -87,7 +89,7 @@
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
-    <version.org.hawkular>1.0.0-SNAPSHOT</version.org.hawkular>
+    <version.org.hawkular>1.0.0.Alpha1</version.org.hawkular>
     <version.org.hawkular.accounts>1.0.1</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
@@ -123,17 +125,27 @@
       <!-- BTM Client -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-client</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-client-all</artifactId>
+        <artifactId>hawkular-btm-btxn-collector</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-client-manager</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-client-se-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-config-manager-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 

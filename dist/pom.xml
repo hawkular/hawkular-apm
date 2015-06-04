@@ -32,7 +32,6 @@
   <description>Hawkular BTM distribution.</description>
 
   <properties>
-    <version.org.hawkular>1.0.0-SNAPSHOT</version.org.hawkular>
     <dist.zip.root.dir>wildfly-${version.org.wildfly}</dist.zip.root.dir>
   </properties>
 

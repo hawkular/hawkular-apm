@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This utility class provides service lookup and management of singletons
@@ -32,7 +33,7 @@ import java.util.ServiceLoader;
  */
 public class ServiceResolver {
 
-    private static Map<Class<?>, Object> singletons = new HashMap<Class<?>, Object>();
+    private static Map<Class<?>, CompletableFuture<?>> singletons = new HashMap<Class<?>, CompletableFuture<?>>();
 
     /**
      * This method identifies a service implementation that implements
@@ -43,19 +44,23 @@ public class ServiceResolver {
      * @return The service, or null if not found
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getSingletonService(Class<T> intf) {
-        T ret = null;
+    public static <T> CompletableFuture<T> getSingletonService(Class<T> intf) {
+        CompletableFuture<T> ret = null;
 
         synchronized (singletons) {
             if (singletons.containsKey(intf)) {
-                ret = (T) singletons.get(intf);
+                ret = (CompletableFuture<T>) singletons.get(intf);
             } else {
-                List<T> services=getServices(intf);
+                ret = new CompletableFuture<T>();
+                singletons.put(intf, ret);
+            }
+        }
 
-                if (!services.isEmpty()) {
-                    ret = services.get(0);
-                    singletons.put(intf, ret);
-                }
+        if (!ret.isDone()) {
+            List<T> services=getServices(intf);
+
+            if (!services.isEmpty()) {
+                ret.complete(services.get(0));
             }
         }
 
