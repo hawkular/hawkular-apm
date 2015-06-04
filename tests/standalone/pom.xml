@@ -43,7 +43,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-client-all</artifactId>
+      <artifactId>hawkular-btm-client-se-rest</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -71,10 +71,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-btxn-client-all</artifactId>
+                  <artifactId>hawkular-btm-client-se-rest</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-btxn-client-all.jar</destFileName>
+                  <destFileName>hawkular-btm-client-se-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -93,7 +93,7 @@
                     <pathelement path="${project.build.outputDirectory}"/>
                   </classpath>
                   <jvmarg value="-Dorg.jboss.byteman.transform.all"/>
-                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-btxn-client-all.jar=manager:org.hawkular.btm.btxn.client.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-btxn-client-all.jar"/>
+                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar"/>
                   <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json"/>
                 </java>
               </target>
