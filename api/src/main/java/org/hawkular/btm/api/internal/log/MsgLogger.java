@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.log;
+package org.hawkular.btm.api.internal.log;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;

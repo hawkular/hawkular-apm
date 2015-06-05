@@ -26,6 +26,8 @@ import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.client.BusinessTransactionCollector;
 import org.hawkular.btm.api.client.ConfigurationManager;
+import org.hawkular.btm.api.client.Logger;
+import org.hawkular.btm.api.client.Logger.Level;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.admin.Instrumentation;
 import org.hawkular.btm.api.util.ServiceResolver;
@@ -38,6 +40,8 @@ import org.jboss.byteman.agent.Retransformer;
  * @author gbrown
  */
 public class ClientManager {
+
+    private static final Logger log=Logger.getLogger(ClientManager.class.getName());
 
     private static Retransformer transformer;
 
@@ -53,7 +57,7 @@ public class ClientManager {
      */
     public static void initialize(Retransformer trans) {
         // NOTE: Using stdout/err as jul had a side effect initializing jboss logging
-        System.out.println("BTM: Initializing Client Manager");
+        log.info("BTM: Initializing Client Manager");
 
         transformer = trans;
 
@@ -65,7 +69,7 @@ public class ClientManager {
 
             @Override
             public void accept(BusinessTransactionCollector c, Throwable t) {
-                System.out.println("BTM: Initialising Business Transaction Collector: "+c+" exception="+t);
+                log.info("BTM: Initialising Business Transaction Collector: "+c+" exception="+t);
 
                 if (c != null) {
                     collector = c;
@@ -84,7 +88,7 @@ public class ClientManager {
 
             @Override
             public void accept(ConfigurationManager cm, Throwable t) {
-                System.out.println("BTM: Initialising Configuration Manager: "+cm+" exception="+t);
+                log.info("BTM: Initialising Configuration Manager: "+cm+" exception="+t);
 
                 configManager = cm;
 
@@ -97,11 +101,13 @@ public class ClientManager {
                     // Read configuration
                     CollectorConfiguration config = configManager.getConfiguration();
 
-                    try {
-                        updateInstrumentation(config.getInstrumentation());
-                    } catch (Exception e) {
-                        System.err.println("Failed to update instrumentation rules: " + e);
-                        e.printStackTrace();
+                    if (config != null) {
+                        try {
+                            updateInstrumentation(config.getInstrumentation());
+                        } catch (Exception e) {
+                            System.err.println("Failed to update instrumentation rules: " + e);
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -130,6 +136,11 @@ public class ClientManager {
         for (String name : instrumentTypes.keySet()) {
             Instrumentation types = instrumentTypes.get(name);
             String rules = ruleTransformer.transform(types);
+
+            if (log.isLoggable(Level.FINER)) {
+                log.finer("Update instrumentation script name="+name+" rules="+rules);
+            }
+
             if (rules != null) {
                 scriptNames.add(name);
                 scripts.add(rules);

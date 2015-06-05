@@ -59,9 +59,11 @@ public class BusinessTransaction {
 
     /**
      * @param id the id to set
+     * @return The business transaction
      */
-    public void setId(String id) {
+    public BusinessTransaction setId(String id) {
         this.id = id;
+        return this;
     }
 
     /**
@@ -73,9 +75,11 @@ public class BusinessTransaction {
 
     /**
      * @param nodes the nodes to set
+     * @return The business transaction
      */
-    public void setNodes(List<Node> nodes) {
+    public BusinessTransaction setNodes(List<Node> nodes) {
         this.nodes = nodes;
+        return this;
     }
 
     /**
@@ -87,9 +91,11 @@ public class BusinessTransaction {
 
     /**
      * @param properties the properties to set
+     * @return The business transaction
      */
-    public void setProperties(Map<String, String> properties) {
+    public BusinessTransaction setProperties(Map<String, String> properties) {
         this.properties = properties;
+        return this;
     }
 
     /**
@@ -184,6 +190,14 @@ public class BusinessTransaction {
             return false;
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "BusinessTransaction [id=" + id + ", nodes=" + nodes + ", properties=" + properties + "]";
     }
 
 }

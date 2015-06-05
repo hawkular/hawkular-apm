@@ -1,14 +1,43 @@
 {
   "instrumentation": {
-    "test": {
+    "testOp": {
       "description": "Test instrumentation",
       "version": "1",
       "types": [{
-        "type": "InstrumentMethod",
-        "ruleName": "trace thread start",
-        "className": "java.lang.Thread",
-        "methodName": "start",
+        "type": "InstrumentService",
+        "ruleName": "Trace testOp",
+        "className": "org.hawkular.btm.tests.standalone.TopLevelService",
+        "methodName": "testOp",
         "parameterTypes": [
+           "java.lang.String",
+           "int"
+        ],
+        "serviceTypeExpression": "\"TopLevelService\"",
+        "operationExpression": "\"testOp\"",
+        "requestValueExpressions": [
+          "$1",
+          "$2"
+        ],
+        "responseValueExpressions": [
+          "$!"
+        ]
+      },{
+        "type": "InstrumentService",
+        "ruleName": "Trace join",
+        "className": "org.hawkular.btm.tests.standalone.InnerService",
+        "methodName": "join",
+        "parameterTypes": [
+           "java.lang.String",
+           "int"
+        ],
+        "serviceTypeExpression": "\"InnerService\"",
+        "operationExpression": "\"join\"",
+        "requestValueExpressions": [
+          "$1",
+          "$2"
+        ],
+        "responseValueExpressions": [
+          "$!"
         ]
       }]
     }

@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.btxn.client.config;
+package org.hawkular.btm.client.manager.config;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.model.admin.InstrumentMethod;
+import org.hawkular.btm.api.internal.client.ArrayBuilder;
+import org.hawkular.btm.api.model.admin.InstrumentConsumer;
 import org.hawkular.btm.client.manager.ClientManager;
-import org.hawkular.btm.client.manager.config.InstrumentMethodTransformer;
 import org.junit.Test;
 
 /**
  * @author gbrown
  */
-public class InstrumentMethodTransformerTest {
+public class InstrumentConsumerTransformerTest {
 
     /**  */
     private static final String TEST_PARAM2 = "TestParam2";
@@ -39,25 +39,39 @@ public class InstrumentMethodTransformerTest {
     /**  */
     private static final String TEST_RULE = "TestRule";
 
-    private static final String ACTION = ClientManager.class.getName()+".collector().print(\"Hello BTM\")";
+    private static final String ACTION_PREFIX = ClientManager.class.getName()+".collector().";
 
     @Test
     public void testConvertToRule() {
-        InstrumentMethod im = new InstrumentMethod();
+        InstrumentConsumer im = new InstrumentConsumer();
 
         im.setRuleName(TEST_RULE);
         im.setClassName(TEST_CLASS);
         im.setMethodName(TEST_METHOD);
         im.getParameterTypes().add(TEST_PARAM1);
         im.getParameterTypes().add(TEST_PARAM2);
+        im.setEndpointTypeExpression("\"MyEndpoint\"");
+        im.setUriExpression("\"MyUri\"");
+        im.getRequestValueExpressions().add("$1");
+        im.getRequestValueExpressions().add("$2");
+        im.getResponseValueExpressions().add("$!");
 
-        InstrumentMethodTransformer transformer = new InstrumentMethodTransformer();
+        InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRule(im);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nIF true\r\n"
-                + "DO " + ACTION + "\r\n"
+        String startActionMethod="consumerStart(\"MyEndpoint\",\"MyUri\","
+                + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
+        String endActionMethod="consumerEnd(\"MyEndpoint\",\"MyUri\","
+                + ArrayBuilder.class.getName() + ".create().add($!).get())";
+
+        String expected = "RULE " + TEST_RULE + "_entry\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT ENTRY\r\nIF true\r\n"
+                + "DO " + ACTION_PREFIX + startActionMethod + "\r\n"
+                + "ENDRULE\r\n\r\n"
+                + "RULE " + TEST_RULE + "_exit\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT EXIT\r\nIF true\r\n"
+                + "DO " + ACTION_PREFIX + endActionMethod + "\r\n"
                 + "ENDRULE\r\n";
 
         assertEquals(expected, transformed);

@@ -110,4 +110,15 @@ public class Service extends InvocationNode {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Service [serviceType=" + serviceType + ", operation=" + operation + ", getRequest()=" + getRequest()
+                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
+                + getStartTime() + ", getDuration()=" + getDuration() + ", getCorrelationIds()=" + getCorrelationIds()
+                + "]";
+    }
+
 }

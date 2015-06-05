@@ -1,1 +1,4 @@
-org.hawkular.btm.client.manager.config.InstrumentMethodTransformer
+org.hawkular.btm.client.manager.config.InstrumentComponentTransformer
+org.hawkular.btm.client.manager.config.InstrumentConsumerTransformer
+org.hawkular.btm.client.manager.config.InstrumentProducerTransformer
+org.hawkular.btm.client.manager.config.InstrumentServiceTransformer

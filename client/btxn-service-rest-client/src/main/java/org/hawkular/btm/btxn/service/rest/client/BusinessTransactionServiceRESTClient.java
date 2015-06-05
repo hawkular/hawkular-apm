@@ -22,9 +22,9 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.hawkular.btm.api.client.Logger;
+import org.hawkular.btm.api.client.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -111,6 +111,11 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
      */
     @Override
     public void store(String tenantId, List<BusinessTransaction> btxns) throws Exception {
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Store btxns [tenant="+tenantId+"]: "+btxns);
+        }
+
         URL url = new URL(baseUrl + "transactions");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -133,6 +138,11 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         os.close();
 
         int statusCode = connection.getResponseCode();
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Status code is: "+statusCode);
+        }
+
         if (statusCode != 200) {
             if (log.isLoggable(Level.FINER)) {
                 log.finer("Failed to store business transactions: status=[" + statusCode + "]");

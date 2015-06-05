@@ -24,8 +24,78 @@ package org.hawkular.btm.api.client;
  */
 public interface BusinessTransactionCollector {
 
-    // TODO: Temporary action used by ByteMan rules - will be replaced
-    // by real actions
-    void print(String str);
+    /**
+     * This method indicates the start of a message being consumed.
+     *
+     * @param type The endpoint type
+     * @param uri The uri
+     * @param values The request values
+     */
+    void consumerStart(String type, String uri, Object... values);
+
+    /**
+     * This method indicates the end of a message being consumed.
+     *
+     * @param type The endpoint type
+     * @param uri The uri
+     * @param values The response values
+     */
+    void consumerEnd(String type, String uri, Object... values);
+
+    /**
+     * This method indicates the start of a service invocation.
+     *
+     * @param type The service type
+     * @param operation The operation
+     * @param values The request values
+     */
+    void serviceStart(String type, String operation, Object... values);
+
+    /**
+     * This method indicates the end of a service invocation.
+     *
+     * @param type The service type
+     * @param operation The operation
+     * @param values The response values
+     */
+    void serviceEnd(String type, String operation, Object... values);
+
+    /**
+     * This method indicates the start of a component invocation.
+     *
+     * @param type The component type
+     * @param operation The operation
+     * @param uri The uri
+     * @param values The request values
+     */
+    void componentStart(String type, String operation, String uri, Object... values);
+
+    /**
+     * This method indicates the end of a component invocation.
+     *
+     * @param type The component type
+     * @param operation The operation
+     * @param uri The uri
+     * @param values The response values
+     */
+    void componentEnd(String type, String operation, String uri, Object... values);
+
+    /**
+     * This method indicates the start of a message being produced.
+     *
+     * @param type The endpoint type
+     * @param uri The uri
+     * @param values The request values
+     */
+    void producerStart(String type, String uri, Object... values);
+
+    /**
+     * This method indicates the end of a message being produced.
+     *
+     * @param type The endpoint type
+     * @param uri The uri
+     * @param values The response values
+     */
+    void producerEnd(String type, String uri, Object... values);
 
 }
