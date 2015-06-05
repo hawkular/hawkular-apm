@@ -16,20 +16,14 @@
  */
 package org.hawkular.btm.btxn.service.rest.client;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
@@ -51,13 +45,11 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-            };
+    };
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
-
-    private static Client client = ClientBuilder.newClient();
 
     private String username = System.getProperty("hawkular-btm.username");
     private String password = System.getProperty("hawkular-btm.password");
@@ -78,6 +70,9 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
      */
     public void setUsername(String username) {
         this.username = username;
+
+        // Clear any previously computed authorization string
+        this.authorization = null;
     }
 
     /**
@@ -92,6 +87,9 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
      */
     public void setPassword(String password) {
         this.password = password;
+
+        // Clear any previously computed authorization string
+        this.authorization = null;
     }
 
     /**
@@ -113,16 +111,33 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
      */
     @Override
     public void store(String tenantId, List<BusinessTransaction> btxns) throws Exception {
-        String json = mapper.writeValueAsString(btxns);
-        Response resp = getTarget(tenantId, "transactions", null).post(Entity.json(json));
+        URL url = new URL(baseUrl + "transactions");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        try {
-            if (resp.getStatus() != Status.OK.getStatusCode()) {
-                log.finer("Failed to store business transactions: status="+resp.getStatusInfo());
-                throw new Exception(resp.getStatusInfo().getReasonPhrase());
+        connection.setRequestMethod("POST");
+
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
+
+        addHeaders(connection, tenantId);
+
+        java.io.OutputStream os = connection.getOutputStream();
+
+        os.write(mapper.writeValueAsBytes(btxns));
+
+        os.flush();
+        os.close();
+
+        int statusCode = connection.getResponseCode();
+        if (statusCode != 200) {
+            if (log.isLoggable(Level.FINER)) {
+                log.finer("Failed to store business transactions: status=[" + statusCode + "]");
             }
-        } finally {
-            resp.close();
+            throw new Exception(connection.getResponseMessage());
         }
     }
 
@@ -132,31 +147,49 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
     @Override
     public BusinessTransaction get(String tenantId, String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction: tenantId=["+tenantId+"] id=["+id+"]");
+            log.finest("Get business transaction: tenantId=[" + tenantId + "] id=[" + id + "]");
         }
 
-        Response resp = getTarget(tenantId, "transactions/" + id, null).get();
-
         try {
-            if (resp.getStatus() == Status.OK.getStatusCode()) {
-                String json = resp.readEntity(String.class);
+            URL url = new URL(baseUrl + "transactions/" + id);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            byte[] b = new byte[is.available()];
+
+            is.read(b);
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=["+json+"]");
+                    log.finest("Returned json=[" + new String(b) + "]");
                 }
-
                 try {
-                    return mapper.readValue(json.getBytes(), BusinessTransaction.class);
+                    return mapper.readValue(b, BusinessTransaction.class);
                 } catch (Throwable t) {
                     log.log(Level.SEVERE, "Failed to deserialize", t);
                 }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get business transaction: status=[" + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
             }
-        } finally {
-            resp.close();
-        }
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Failed to get business transaction: status=["+resp.getStatusInfo()+"]");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to send 'get' business transaction request", e);
         }
 
         return null;
@@ -169,55 +202,81 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
     @Override
     public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transactions: tenantId=["+tenantId+"] query=["+criteria+"]");
+            log.finest("Get business transactions: tenantId=[" + tenantId + "] query=[" + criteria + "]");
         }
 
-        Response resp = getTarget(tenantId, "transactions", getQueryParameters(criteria)).get();
+        StringBuilder builder = new StringBuilder().append(baseUrl).append("transactions");
+
+        Map<String, String> queryParams = getQueryParameters(criteria);
+
+        if (!queryParams.isEmpty()) {
+            builder.append('?');
+
+            for (String key : queryParams.keySet()) {
+                if (builder.length() > 0) {
+                    builder.append('&');
+                }
+                String value = queryParams.get(key);
+                builder.append(key);
+                builder.append('=');
+                builder.append(value);
+            }
+        }
 
         try {
-            if (resp.getStatus() == Status.OK.getStatusCode()) {
-                String json = resp.readEntity(String.class);
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            byte[] b = new byte[is.available()];
+
+            is.read(b);
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + new String(b) + "]");
+                }
                 try {
-                    return mapper.readValue(json.getBytes(),
-                            BUSINESS_TXN_LIST);
-                } catch (Exception e) {
-                    log.log(Level.SEVERE, "Failed to deserialize", e);
+                    return mapper.readValue(b, BUSINESS_TXN_LIST);
+                } catch (Throwable t) {
+                    log.log(Level.SEVERE, "Failed to deserialize", t);
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to query business transaction: status=[" + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
                 }
             }
-        } finally {
-            resp.close();
-        }
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Failed to query business transaction: status=["+resp.getStatusInfo()+"]");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to send 'query' business transaction request", e);
         }
 
         return null;
     }
 
     /**
-     * Create a builder, based on the supplied path, with an
-     * optional tenantId header value.
+     * Add the header values to the supplied connection.
      *
+     * @param connection The connection
      * @param tenantId The optional tenant id
-     * @param path The path
-     * @param queryParameters The optional query parameters
-     * @return The builder
      */
-    protected Builder getTarget(String tenantId, String path, Map<String, String> queryParameters) {
-        WebTarget target = client.target(baseUrl).path(path);
-
-        if (queryParameters != null && !queryParameters.isEmpty()) {
-            for (String key : queryParameters.keySet()) {
-                target = target.queryParam(key, queryParameters.get(key));
-            }
-        }
-
-        Builder builder = target.request();
-
+    protected void addHeaders(HttpURLConnection connection, String tenantId) {
         if (tenantId != null) {
-            builder = builder.header(HAWKULAR_PERSONA, tenantId);
+            connection.setRequestProperty(HAWKULAR_PERSONA, tenantId);
         }
 
         if (authorization == null && username != null) {
@@ -228,10 +287,8 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         }
 
         if (authorization != null) {
-            builder = builder.header("Authorization", authorization);
+            connection.setRequestProperty("Authorization", authorization);
         }
-
-        return builder;
     }
 
     /**
@@ -292,7 +349,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Criteria ["+criteria+"] query parameters ["+ret+"]");
+            log.finest("Criteria [" + criteria + "] query parameters [" + ret + "]");
         }
 
         return ret;
