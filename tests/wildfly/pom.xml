@@ -75,12 +75,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts-distribution</artifactId>
       <type>zip</type>

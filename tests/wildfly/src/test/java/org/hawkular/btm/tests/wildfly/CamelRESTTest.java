@@ -20,11 +20,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
-
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -38,9 +36,6 @@ import org.junit.Test;
  * @author gbrown
  */
 public class CamelRESTTest {
-
-    private WebTarget target = ClientBuilder.newClient().target(System.getProperty("hawkular.base-uri")
-            + "/camel-example-servlet-rest-tomcat/rest");
 
     /**  */
     private static final String TEST_PASSWORD = "password";
@@ -61,13 +56,36 @@ public class CamelRESTTest {
 
         long startTime = System.currentTimeMillis();
 
-        Response resp = target.path("user/123").request().get();
+        try {
+            URL url = new URL(System.getProperty("hawkular.base-uri")
+                    + "/camel-example-servlet-rest-tomcat/rest" + "/user/123");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        assertEquals(200, resp.getStatus());
+            connection.setRequestMethod("GET");
 
-        String user = resp.readEntity(String.class);
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
 
-        assertTrue("Response should contain user with name 'John Doe'", user.contains("John Doe"));
+            java.io.InputStream is = connection.getInputStream();
+
+            byte[] b = new byte[is.available()];
+
+            is.read(b);
+
+            is.close();
+
+            assertEquals(200, connection.getResponseCode());
+
+            String user = new String(b);
+
+            assertTrue("Response should contain user with name 'John Doe'", user.contains("John Doe"));
+        } catch (Exception e) {
+            fail("Failed to get user details: " + e);
+        }
 
         // Need to wait for business transaction fragment to be reported to server
         try {
@@ -83,7 +101,7 @@ public class CamelRESTTest {
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
 
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria().setStartTime(startTime);
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
 
         List<BusinessTransaction> btxns = service.query(null, criteria);
 
