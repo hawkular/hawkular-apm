@@ -18,20 +18,12 @@ package org.hawkular.btm.tests.standalone;
 
 import static io.undertow.Handlers.path;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
-
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-import io.undertow.util.Methods;
 
 /**
  * This class represents a test (standalone) application that will be instrumented.
@@ -47,13 +39,8 @@ public class StandaloneServerMain {
 
     private Undertow server = null;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
-            new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
-
-    private List<BusinessTransaction> businessTransactions = new ArrayList<BusinessTransaction>();
+    private String host=System.getProperty("hawkular-btm.testapp.host");
+    private int port=Integer.parseInt(System.getProperty("hawkular-btm.testapp.port"));
 
     /**
      * Main for the test app.
@@ -61,14 +48,14 @@ public class StandaloneServerMain {
      * @param args The arguments
      */
     public static void main(String[] args) {
-        log.info("************ TEST SERVER STARTED");
-
         StandaloneServerMain main = new StandaloneServerMain();
 
         main.run();
     }
 
     public void run() {
+        log.info("************ TEST STANDALONE APP STARTED: host="+host+" port="+port);
+
         // Create shutdown thread, just in case hangs
         Thread t = new Thread(new Runnable() {
             @Override
@@ -81,7 +68,7 @@ public class StandaloneServerMain {
                     }
                 }
 
-                log.severe("************** ABORTING TEST SERVER");
+                log.severe("************** ABORTING TEST STANDALONE APP");
                 System.exit(1);
             }
         });
@@ -91,7 +78,7 @@ public class StandaloneServerMain {
         TopLevelService main = new TopLevelService();
 
         server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
+                .addHttpListener(port, host)
                 .setHandler(path().addPrefixPath("testOp", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
@@ -114,44 +101,13 @@ public class StandaloneServerMain {
                         exchange.getResponseSender().send("ok");
                         shutdown();
                     }
-                }).addPrefixPath("hawkular/btm/transactions", new HttpHandler() {
-                    @Override
-                    public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        if (exchange.isInIoThread()) {
-                            exchange.dispatch(this);
-                            return;
-                        }
-
-                        log.info("Transactions request received: " + exchange);
-
-                        if (exchange.getRequestMethod() == Methods.POST) {
-
-                            exchange.startBlocking();
-
-                            java.io.InputStream is = exchange.getInputStream();
-                            byte[] b = new byte[is.available()];
-                            is.read(b);
-                            is.close();
-
-                            List<BusinessTransaction> btxns = mapper.readValue(new String(b), BUSINESS_TXN_LIST);
-
-                            businessTransactions.addAll(btxns);
-
-                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-                            exchange.getResponseSender().send("");
-                        } else if (exchange.getRequestMethod() == Methods.GET) {
-                            String btxns = mapper.writeValueAsString(businessTransactions);
-                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                            exchange.getResponseSender().send(btxns);
-                        }
-                    }
                 })).build();
 
         server.start();
     }
 
     public void shutdown() {
-        log.info("************ TEST SERVER EXITING");
+        log.info("************ TEST STANDALONE APP EXITING");
         server.stop();
 
         System.exit(0);

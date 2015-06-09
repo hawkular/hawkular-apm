@@ -56,7 +56,15 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
     private String authorization = null;
 
-    private String baseUrl = System.getProperty("hawkular-btm.base-uri");
+    private String baseUrl;
+
+    {
+        baseUrl = System.getProperty("hawkular-btm.base-uri");
+
+        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length()-1) != '/') {
+            baseUrl = baseUrl+'/';
+        }
+    }
 
     /**
      * @return the username

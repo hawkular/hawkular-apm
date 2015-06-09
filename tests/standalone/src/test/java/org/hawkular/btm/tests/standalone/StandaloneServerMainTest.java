@@ -37,7 +37,8 @@ import org.junit.Test;
  */
 public class StandaloneServerMainTest {
 
-    private static String baseUrl = "http://localhost:8080";
+    private static String baseUrl = System.getProperty("hawkular-btm.testapp.base-uri");
+    private static String testBTxnServerBaseUrl = System.getProperty("hawkular-btm.base-uri");
 
     /**  */
     private static final String TEST_PASSWORD = "password";
@@ -133,8 +134,37 @@ public class StandaloneServerMainTest {
 
     @AfterClass
     public static void shutdown() {
+        // Shutdown test standalone app
         try {
             URL url = new URL(baseUrl + "/shutdown");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            java.io.InputStream is = connection.getInputStream();
+
+            byte[] b = new byte[is.available()];
+
+            is.read(b);
+
+            is.close();
+
+            assertEquals("Failed to shutdown", 200, connection.getResponseCode());
+
+        } catch (Exception e) {
+            fail("Failed to shutdown: " + e);
+        }
+
+        // Shutdown Test BTxn Service
+        try {
+            URL url = new URL(testBTxnServerBaseUrl + "/shutdown");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");

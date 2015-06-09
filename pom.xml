@@ -178,6 +178,13 @@
         <version>${project.version}</version>
       </dependency>
 
+      <!-- BTM Tests -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-tests-btxn-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- BTM Services -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
@@ -257,6 +264,7 @@
     <profile>
       <id>tests</id>
       <modules>
+        <module>tests/test-btxn-service</module>
         <module>tests/standalone</module>
         <module>tests/wildfly</module>
       </modules>
