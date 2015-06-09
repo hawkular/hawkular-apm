@@ -44,7 +44,27 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerStart(\"MyEndpoint\",\"MyUri\",null,"
+        String expected = ACTION_PREFIX + "producerStart(\"MyEndpoint\",\"MyUri\",null,null,"
+                + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testConvertToRuleActionRequestWithId() {
+        InstrumentProducer im = new InstrumentProducer();
+
+        im.setEndpointTypeExpression("\"MyEndpoint\"");
+        im.setUriExpression("\"MyUri\"");
+        im.setIdExpression("\"MyId\"");
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
+
+        InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
+
+        String transformed = transformer.convertToRuleAction(im);
+
+        String expected = ACTION_PREFIX + "producerStart(\"MyEndpoint\",\"MyUri\",\"MyId\",null,"
                 + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
 
         assertEquals(expected, transformed);

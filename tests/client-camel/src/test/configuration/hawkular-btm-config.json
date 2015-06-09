@@ -1,0 +1,178 @@
+{
+  "instrumentation": {
+    "camel": {
+      "description": "Camel instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "Camel Inbound Component Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeCreated",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Request",
+          "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Camel Inbound Component End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Response",
+          "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Camel Outbound Component Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSending",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Request",
+          "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Camel Outbound Component End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSent",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint",
+           "long"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Response",
+          "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()"
+        }]
+      }]
+    },
+    "restlet": {
+      "description": "Restlet instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "Restlet Async Consumer Start",
+        "className": "org.restlet.Server",
+        "methodName": "handle",
+        "parameterTypes": [
+          "org.restlet.Request",
+          "org.restlet.Response"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "headers",
+          "type": "org.restlet.util.Series",
+          "expression": "$1.getAttributes().get(\"org.restlet.http.headers\")"
+        },{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Btmid\")"
+        }],
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "headers.removeAll(\"Btmid\")"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"REST\"",
+          "uriExpression": "$1.getResourceRef()",
+          "idExpression": "id",
+          "headersExpression": "headers.getValuesMap()"
+        }]
+      },{
+        "ruleName": "Restlet Async Consumer End",
+        "className": "org.restlet.Server",
+        "methodName": "handle",
+        "parameterTypes": [
+           "org.restlet.Request",
+           "org.restlet.Response"
+        ],
+        "location": "EXIT",
+        "binds": [{
+          "name": "headers",
+          "type": "org.restlet.util.Series",
+          "expression": "$2.getAttributes().get(\"org.restlet.http.headers\")"
+        }],
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"REST\"",
+          "uriExpression": "$1.getResourceRef()",
+          "headersExpression": "headers.getValuesMap()"
+        }]
+      },{
+        "ruleName": "Restlet Async Producer Start",
+        "className": "org.restlet.Restlet",
+        "methodName": "handle",
+        "parameterTypes": [
+           "org.restlet.Request",
+           "org.restlet.Uniform"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "headers",
+          "type": "org.restlet.util.Series",
+          "expression": "$1.getAttributes().get(\"org.restlet.http.headers\")"
+        },{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"REST\"",
+          "uriExpression": "$1.getResourceRef()",
+          "idExpression": "id",
+          "headersExpression": "headers.getValuesMap()"
+        },{
+          "type": "FreeFormAction",
+          "action": "headers.set(\"Btmid\",id)"
+        }]
+      },{
+        "ruleName": "Restlet Async Producer End",
+        "interfaceName": "^org.restlet.Uniform",
+        "methodName": "handle",
+        "parameterTypes": [
+           "org.restlet.Request",
+           "org.restlet.Response"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "headers",
+          "type": "org.restlet.util.Series",
+          "expression": "$2.getAttributes().get(\"org.restlet.http.headers\")"
+        }],
+        "condition": "callerEquals(\"ClientAdapter$1.handle\", true)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"REST\"",
+          "uriExpression": "$1.getResourceRef()",
+          "headersExpression": "headers.getValuesMap()"
+        }]
+      }]
+    }
+  }
+}

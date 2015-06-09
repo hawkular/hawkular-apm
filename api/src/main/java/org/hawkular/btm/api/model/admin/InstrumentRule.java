@@ -44,6 +44,9 @@ public class InstrumentRule {
     private List<String> parameterTypes = new ArrayList<String>();
 
     @JsonInclude
+    private String helper;
+
+    @JsonInclude
     private String location;
 
     @JsonInclude
@@ -123,6 +126,20 @@ public class InstrumentRule {
      */
     public void setParameterTypes(List<String> parameterTypes) {
         this.parameterTypes = parameterTypes;
+    }
+
+    /**
+     * @return the helper
+     */
+    public String getHelper() {
+        return helper;
+    }
+
+    /**
+     * @param helper the helper to set
+     */
+    public void setHelper(String helper) {
+        this.helper = helper;
     }
 
     /**

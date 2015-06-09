@@ -27,19 +27,15 @@ import java.util.Map;
 public interface BusinessTransactionCollector {
 
     /**
-     * This id represents the unique message id passed between producers and consumers.
-     */
-    String BTM_ID = "BTMID";
-
-    /**
      * This method indicates the start of a message being consumed.
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param id The unique interaction id
      * @param headers The header values
      * @param values The request values
      */
-    void consumerStart(String type, String uri, Map<String,?> headers, Object... values);
+    void consumerStart(String type, String uri, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a message being consumed.
@@ -77,9 +73,10 @@ public interface BusinessTransactionCollector {
      * @param type The component type
      * @param operation The operation
      * @param uri The uri
+     * @param headers The header values
      * @param values The request values
      */
-    void componentStart(String type, String operation, String uri, Object... values);
+    void componentStart(String type, String operation, String uri, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a component invocation.
@@ -87,19 +84,21 @@ public interface BusinessTransactionCollector {
      * @param type The component type
      * @param operation The operation
      * @param uri The uri
+     * @param headers The header values
      * @param values The response values
      */
-    void componentEnd(String type, String operation, String uri, Object... values);
+    void componentEnd(String type, String operation, String uri, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a message being produced.
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param id The unique interaction id
      * @param headers The header values
      * @param values The request values
      */
-    void producerStart(String type, String uri, Map<String,?> headers, Object... values);
+    void producerStart(String type, String uri, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a message being produced.

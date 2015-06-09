@@ -25,6 +25,7 @@ import org.hawkular.btm.api.model.admin.InstrumentBind;
 import org.hawkular.btm.api.model.admin.InstrumentRule;
 import org.hawkular.btm.api.model.admin.Instrumentation;
 import org.hawkular.btm.api.util.ServiceResolver;
+import org.hawkular.btm.client.manager.RuleHelper;
 
 /**
  * @author gbrown
@@ -81,6 +82,15 @@ public class Transformer {
 
             builder.append(')');
             builder.append("\r\n");
+
+            builder.append("HELPER ");
+            if (rule.getHelper() == null) {
+                builder.append(RuleHelper.class.getName());
+            } else {
+                builder.append(rule.getHelper());
+            }
+            builder.append("\r\n");
+
             builder.append("AT ");
             builder.append(rule.getLocation());
             builder.append("\r\n");

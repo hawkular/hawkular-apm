@@ -32,7 +32,7 @@
   <artifactId>hawkular-btm-tests-btxn-service</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests BTxn Service</name>
+  <name>Hawkular BTM::Tests::BTxn Service</name>
 
   <dependencies>
 

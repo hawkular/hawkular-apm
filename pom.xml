@@ -92,6 +92,7 @@
     <version.org.hawkular>1.0.0.Alpha1</version.org.hawkular>
     <version.org.hawkular.accounts>1.0.1</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
+    <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
   </properties>
 
@@ -220,6 +221,38 @@
       </dependency>
 
       <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-core</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-http</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-http4</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-restlet</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-stream</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+
+      <dependency>
         <groupId>io.undertow</groupId>
         <artifactId>undertow-core</artifactId>
         <version>${version.io.undertow}</version>
@@ -249,6 +282,18 @@
   </dependencyManagement>
 
   <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <exclude>**/*.data</exclude>
+            <exclude>**/*.btm</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -264,9 +309,10 @@
     <profile>
       <id>tests</id>
       <modules>
+        <module>tests/client-camel</module>
+        <module>tests/client-java</module>
+        <module>tests/server-wildfly</module>
         <module>tests/test-btxn-service</module>
-        <module>tests/standalone</module>
-        <module>tests/wildfly</module>
       </modules>
     </profile>
     <profile>

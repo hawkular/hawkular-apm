@@ -44,7 +44,27 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(\"MyEndpoint\",\"MyUri\",null,"
+        String expected = ACTION_PREFIX + "consumerStart(\"MyEndpoint\",\"MyUri\",null,null,"
+                + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testConvertToRuleActionRequestWithId() {
+        InstrumentConsumer im = new InstrumentConsumer();
+
+        im.setEndpointTypeExpression("\"MyEndpoint\"");
+        im.setUriExpression("\"MyUri\"");
+        im.setIdExpression("\"MyId\"");
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
+
+        InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
+
+        String transformed = transformer.convertToRuleAction(im);
+
+        String expected = ACTION_PREFIX + "consumerStart(\"MyEndpoint\",\"MyUri\",\"MyId\",null,"
                 + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
 
         assertEquals(expected, transformed);

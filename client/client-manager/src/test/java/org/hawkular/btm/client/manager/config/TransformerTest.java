@@ -22,6 +22,7 @@ import org.hawkular.btm.api.model.admin.FreeFormAction;
 import org.hawkular.btm.api.model.admin.InstrumentBind;
 import org.hawkular.btm.api.model.admin.InstrumentRule;
 import org.hawkular.btm.api.model.admin.Instrumentation;
+import org.hawkular.btm.client.manager.RuleHelper;
 import org.junit.Test;
 
 /**
@@ -76,7 +77,9 @@ public class TransformerTest {
         String transformed = transformer.transform(in);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT ENTRY\r\nIF TRUE\r\n"
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\nIF TRUE\r\n"
                 + "DO\r\n  " + im.getAction() + "\r\n"
                 + "ENDRULE\r\n\r\n";
 
@@ -106,7 +109,9 @@ public class TransformerTest {
         String transformed = transformer.transform(in);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT EXIT\r\nIF "
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT EXIT\r\nIF "
                 + TEST_CONDITION_1 + "\r\n"
                 + "DO\r\n  " + im.getAction() + "\r\n"
                 + "ENDRULE\r\n\r\n";
@@ -123,6 +128,7 @@ public class TransformerTest {
         ir.setRuleName(TEST_RULE);
         ir.setClassName(TEST_CLASS);
         ir.setMethodName(TEST_METHOD);
+        ir.setHelper("TestHelper");
         ir.setLocation("ENTRY");
         ir.setCondition(TEST_CONDITION_1);
         ir.getParameterTypes().add(TEST_PARAM1);
@@ -141,7 +147,9 @@ public class TransformerTest {
         String transformed = transformer.transform(in);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT ENTRY\r\nIF "
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
+                + "HELPER TestHelper\r\n"
+                + "AT ENTRY\r\nIF "
                 + TEST_CONDITION_1 + "\r\n"
                 + "DO\r\n  " + im1.getAction() + ";\r\n"
                 + "  " + im2.getAction() + "\r\n"
@@ -184,7 +192,9 @@ public class TransformerTest {
         String transformed = transformer.transform(in);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT ENTRY\r\n"
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\n"
                 + "BIND " + BIND_NAME1 + " : " + BIND_TYPE1 + " = " + BIND_EXPR1 + ";\r\n"
                 + "     " + BIND_NAME2 + " : " + BIND_TYPE2 + " = " + BIND_EXPR2 + ";\r\n"
                 + "IF TRUE\r\n"

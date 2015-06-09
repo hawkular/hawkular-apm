@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.BusinessTransactionCollector;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
@@ -167,13 +166,9 @@ public class DefaultBusinessTransactionCollectorTest {
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
 
-        Map<String, String> reqHeaders = new HashMap<String, String>();
-        reqHeaders.put("hello", "world");
-        reqHeaders.put(BusinessTransactionCollector.BTM_ID, "myid");
+        collector.consumerStart(null, null, "myid", null);
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION, reqHeaders);
-
-        collector.serviceEnd(SERVICE_TYPE, OPERATION, null);
+        collector.consumerEnd(null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
