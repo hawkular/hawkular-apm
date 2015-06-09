@@ -3,9 +3,13 @@
 
 == Client
 
-The client folder contains components to be used instrument the client environment. Therefore we need to minimise dependencies to reduce the footprint on the client. As a result, the following applies:
+The client folder contains components to be used instrument the client environment. Therefore we need to
+minimise dependencies to reduce the footprint on the client. As a result, the following applies:
 
-* Use java.util.logging instead of JBoss logger (although currently there is an issue using JUL in wildfly that impacts startup of the JBoss logging module)
+* Use java.util.logging instead of JBoss logger (although currently there is an issue using JUL in wildfly
+that impacts startup of the JBoss logging module, so use _org.hawkular.btm.api.client.Logger_ which is signature
+compatible for a subset of the methods, and can therefore be replaced by JUL when the Wildfly issue is resolved).
 
-* Use the ServiceResolver (based on the Java ServiceLoader mechanism) to locate service implementations, rather than CDI
+* Use the _org.hawkular.btm.api.util.ServiceResolver_ (based on the Java ServiceLoader mechanism) to
+locate service implementations, rather than CDI
 

@@ -37,9 +37,9 @@
   <properties>
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
-    <hawkular.path>/hawkular/btm/</hawkular.path>
     <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}</hawkular.base-uri>
-    <hawkular-btm.base-uri>${hawkular.base-uri}${hawkular.path}</hawkular-btm.base-uri>
+    <hawkular-btm.path>/hawkular/btm/</hawkular-btm.path>
+    <hawkular-btm.base-uri>${hawkular.base-uri}${hawkular-btm.path}</hawkular-btm.base-uri>
     <!-- IMPORTANT: The port must be the port offset + 8080. -->
     <wildfly.port.offset>1897</wildfly.port.offset>
     <!-- IMPORTANT: The management port must be the port offset + 9990. -->
@@ -303,6 +303,7 @@
                 <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
                 <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular.lib}/byteman.jar,sys:${hawkular.lib}/hawkular-btm-client-se-rest.jar</javaOpt>
                 <javaOpt>-Dhawkular-btm.config=${hawkular.configuration}/hawkular-btm-config.json</javaOpt>
+                <javaOpt>-Dorg.jboss.byteman.compileToBytecode</javaOpt>
               </javaOpts>
               <startup-timeout>120</startup-timeout>
             </configuration>

@@ -16,11 +16,6 @@
  */
 package org.hawkular.btm.api.model.admin;
 
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.api.model.btxn.Service;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -33,8 +28,12 @@ import com.wordnik.swagger.annotations.ApiModel;
  * @author gbrown
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = InstrumentMethod.class) })
-@ApiModel(subTypes = { Consumer.class, Producer.class, Service.class, Component.class }, discriminator = "type")
+@JsonSubTypes({ @Type(value = InstrumentComponent.class),
+    @Type(value = InstrumentConsumer.class),
+    @Type(value = InstrumentProducer.class),
+    @Type(value = InstrumentService.class)})
+@ApiModel(subTypes = { InstrumentComponent.class, InstrumentConsumer.class,
+        InstrumentProducer.class, InstrumentService.class }, discriminator = "type")
 public abstract class InstrumentType {
 
     @JsonInclude

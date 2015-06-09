@@ -32,6 +32,9 @@ public class Component extends InvocationNode {
     private String componentType;
 
     @JsonInclude
+    private String operation;
+
+    @JsonInclude
     private String uri;
 
     public Component() {
@@ -54,6 +57,20 @@ public class Component extends InvocationNode {
      */
     public void setComponentType(String componentType) {
         this.componentType = componentType;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation the operation to set
+     */
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     /**
@@ -89,6 +106,13 @@ public class Component extends InvocationNode {
         } else if (!componentType.equals(other.componentType)) {
             return false;
         }
+        if (operation == null) {
+            if (other.operation != null) {
+                return false;
+            }
+        } else if (!operation.equals(other.operation)) {
+            return false;
+        }
         if (uri == null) {
             if (other.uri != null) {
                 return false;
@@ -104,6 +128,7 @@ public class Component extends InvocationNode {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
+        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
@@ -112,6 +137,7 @@ public class Component extends InvocationNode {
     public String toString() {
         return "ComponentInvocation{" +
                 "uri=" + (uri == null ? null : '\'' + uri + '\'') +
+                ", operation='" + operation + '\'' +
                 ", type='" + componentType + '\'' +
                 '}';
     }

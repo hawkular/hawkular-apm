@@ -4,11 +4,22 @@
       "description": "Test instrumentation",
       "version": "1",
       "types": [{
-        "type": "InstrumentMethod",
-        "ruleName": "trace thread start",
-        "className": "java.lang.Thread",
-        "methodName": "start",
+        "type": "InstrumentService",
+        "ruleName": "Test trace a method",
+        "className": "org.hawkular.btm.tests.standalone.TestService",
+        "methodName": "testOp",
         "parameterTypes": [
+           "java.lang.String",
+           "int"
+        ],
+        "serviceTypeExpression": "\"MyService\"",
+        "operationExpression": "\"MyOperation\"",
+        "requestValueExpressions": [
+          "$1",
+          "$2"
+        ],
+        "responseValueExpressions": [
+          "$!"
         ]
       }]
     }

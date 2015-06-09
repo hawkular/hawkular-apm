@@ -109,4 +109,15 @@ public class Consumer extends InvocationNode {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Consumer [endpointType=" + endpointType + ", uri=" + uri + ", getRequest()=" + getRequest()
+                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
+                + getStartTime() + ", getDuration()=" + getDuration() + ", getCorrelationIds()=" + getCorrelationIds()
+                + "]";
+    }
+
 }

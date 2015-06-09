@@ -69,7 +69,6 @@
     <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
     <module>services/btxn-service-cass-es</module>
-    <module>dist</module>
   </modules>
 
   <scm>
@@ -86,6 +85,7 @@
   <properties>
     <plugin.version.org.apache.maven.plugins>1.2</plugin.version.org.apache.maven.plugins>
 
+    <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
@@ -213,6 +213,12 @@
       </dependency>
 
       <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-core</artifactId>
+        <version>${version.io.undertow}</version>
+      </dependency>
+
+      <dependency>
         <groupId>javax</groupId>
         <artifactId>javaee-api</artifactId>
         <version>${version.javaee.spec}</version>
@@ -253,6 +259,12 @@
       <modules>
         <module>tests/standalone</module>
         <module>tests/wildfly</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>release</id>
+      <modules>
+        <module>dist</module>
       </modules>
     </profile>
   </profiles>

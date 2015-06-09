@@ -17,28 +17,18 @@
 package org.hawkular.btm.tests.standalone;
 
 /**
- * This class represents a test (standalone) application that will be instrumented.
- *
  * @author gbrown
  */
-public class AppMain implements Runnable {
+public class InnerService {
 
     /**
-     * Main for the test app.
+     * This is a test method.
      *
-     * @param args The arguments
+     * @param p1
+     * @param p2
+     * @return
      */
-    public static void main(String[] args) {
-        System.out.println("************ TEST APP CALLED WITH "+args.length+" ARGUMENTS");
-
-        AppMain main=new AppMain();
-
-        Thread t=new Thread(main);
-
-        t.start();
-    }
-
-    public void run() {
-        System.out.println("************ TEST APP THREAD STARTED");
+    public String join(String p1, int p2) {
+        return p1+":"+p2;
     }
 }

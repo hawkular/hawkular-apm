@@ -109,4 +109,12 @@ public class Message {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Message [headers=" + headers + ", parameters=" + parameters + "]";
+    }
+
 }

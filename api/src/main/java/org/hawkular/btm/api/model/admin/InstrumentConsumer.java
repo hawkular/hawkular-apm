@@ -16,50 +16,47 @@
  */
 package org.hawkular.btm.api.model.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This type represents instrumentation of a method.
+ * This type represents instrumentation of a consumer.
  *
  * @author gbrown
  */
-public class InstrumentMethod extends InstrumentType {
+public class InstrumentConsumer extends InstrumentInvocation {
 
     @JsonInclude
-    private String methodName;
+    private String endpointTypeExpression;
 
     @JsonInclude
-    private List<String> parameterTypes = new ArrayList<String>();
+    private String uriExpression;
 
     /**
-     * @return the methodName
+     * @return the endpointTypeExpression
      */
-    public String getMethodName() {
-        return methodName;
+    public String getEndpointTypeExpression() {
+        return endpointTypeExpression;
     }
 
     /**
-     * @param methodName the method to set
+     * @param endpointTypeExpression the endpointTypeExpression to set
      */
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setEndpointTypeExpression(String endpointTypeExpression) {
+        this.endpointTypeExpression = endpointTypeExpression;
     }
 
     /**
-     * @return the parameterTypes
+     * @return the uriExpression
      */
-    public List<String> getParameterTypes() {
-        return parameterTypes;
+    public String getUriExpression() {
+        return uriExpression;
     }
 
     /**
-     * @param parameterTypes the parameterTypes to set
+     * @param uriExpression the uriExpression to set
      */
-    public void setParameterTypes(List<String> parameterTypes) {
-        this.parameterTypes = parameterTypes;
+    public void setUriExpression(String uriExpression) {
+        this.uriExpression = uriExpression;
     }
 
 }
