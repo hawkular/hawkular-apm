@@ -132,7 +132,7 @@ public class BusinessTransactionTest {
         btxn.getNodes().add(c1);
 
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1", 0));
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "CID2", 0));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID2", 0));
         c1.setDuration(1000);
         c1.setStartTime(1);
         c1.setEndpointType("JMS");
@@ -219,7 +219,7 @@ public class BusinessTransactionTest {
         s2.getNodes().add(p1);
 
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3", 0));
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "CID4", 1000));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID4", 1000));
         c1.setDuration(400);
         c1.setStartTime(4);
         c1.setEndpointType("HTTP");

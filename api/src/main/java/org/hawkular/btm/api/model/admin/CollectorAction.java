@@ -29,10 +29,27 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public abstract class CollectorAction extends InstrumentAction {
 
     @JsonInclude
+    private String headersExpression;
+
+    @JsonInclude
     private List<String> valueExpressions = new ArrayList<String>();
 
     @JsonInclude
     private Direction direction=Direction.Request;
+
+    /**
+     * @return the headersExpression
+     */
+    public String getHeadersExpression() {
+        return headersExpression;
+    }
+
+    /**
+     * @param headersExpression the headersExpression to set
+     */
+    public void setHeadersExpression(String headersExpression) {
+        this.headersExpression = headersExpression;
+    }
 
     /**
      * @return the valueExpressions

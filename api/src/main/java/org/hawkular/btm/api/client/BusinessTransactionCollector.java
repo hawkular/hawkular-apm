@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.api.client;
 
+import java.util.Map;
+
 /**
  * This interface represents the collector used to register activity
  * related to a business transaction execution.
@@ -25,40 +27,49 @@ package org.hawkular.btm.api.client;
 public interface BusinessTransactionCollector {
 
     /**
+     * This id represents the unique message id passed between producers and consumers.
+     */
+    String BTM_ID = "BTMID";
+
+    /**
      * This method indicates the start of a message being consumed.
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param headers The header values
      * @param values The request values
      */
-    void consumerStart(String type, String uri, Object... values);
+    void consumerStart(String type, String uri, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a message being consumed.
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param headers The header values
      * @param values The response values
      */
-    void consumerEnd(String type, String uri, Object... values);
+    void consumerEnd(String type, String uri, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a service invocation.
      *
      * @param type The service type
      * @param operation The operation
+     * @param headers The header values
      * @param values The request values
      */
-    void serviceStart(String type, String operation, Object... values);
+    void serviceStart(String type, String operation, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a service invocation.
      *
      * @param type The service type
      * @param operation The operation
+     * @param headers The header values
      * @param values The response values
      */
-    void serviceEnd(String type, String operation, Object... values);
+    void serviceEnd(String type, String operation, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a component invocation.
@@ -85,17 +96,19 @@ public interface BusinessTransactionCollector {
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param headers The header values
      * @param values The request values
      */
-    void producerStart(String type, String uri, Object... values);
+    void producerStart(String type, String uri, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a message being produced.
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param headers The header values
      * @param values The response values
      */
-    void producerEnd(String type, String uri, Object... values);
+    void producerEnd(String type, String uri, Map<String,?> headers, Object... values);
 
 }

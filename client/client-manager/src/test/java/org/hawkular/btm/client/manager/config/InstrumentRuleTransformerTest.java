@@ -45,7 +45,7 @@ public class InstrumentRuleTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "serviceStart(\"MyService\",\"MyOperation\","
+        String expected = ACTION_PREFIX + "serviceStart(\"MyService\",\"MyOperation\",null,"
                 + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
@@ -64,7 +64,7 @@ public class InstrumentRuleTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "serviceEnd(\"MyService\",\"MyOperation\","
+        String expected = ACTION_PREFIX + "serviceEnd(\"MyService\",\"MyOperation\",null,"
                 + ArrayBuilder.class.getName() + ".create().add($!).get())";
 
         assertEquals(expected, transformed);

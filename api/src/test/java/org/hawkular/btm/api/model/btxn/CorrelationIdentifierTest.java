@@ -114,59 +114,59 @@ public class CorrelationIdentifierTest {
     }
 
     @Test
-    public void testMatchExchangeSameValueNoDuration() {
+    public void testMatchInteractionSameValueNoDuration() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Exchange);
+        id1.setScope(Scope.Interaction);
         id1.setValue("Test");
 
         CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Exchange);
+        id2.setScope(Scope.Interaction);
         id2.setValue("Test");
 
-        assertTrue("Exchange ids should match", id1.match(100, id2, 200));
+        assertTrue("Interaction ids should match", id1.match(100, id2, 200));
     }
 
     @Test
-    public void testMatchExchangeDiffValueNoDuration() {
+    public void testMatchInteractionDiffValueNoDuration() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Exchange);
+        id1.setScope(Scope.Interaction);
         id1.setValue("Test");
 
         CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Exchange);
+        id2.setScope(Scope.Interaction);
         id2.setValue("Other");
 
-        assertFalse("Exchange ids should NOT match", id1.match(100, id2, 200));
+        assertFalse("Interaction ids should NOT match", id1.match(100, id2, 200));
     }
 
     @Test
-    public void testMatchExchangeSameValueWithDurationOverlap() {
+    public void testMatchInteractionSameValueWithDurationOverlap() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Exchange);
+        id1.setScope(Scope.Interaction);
         id1.setValue("Test");
         id1.setDuration(200);
 
         CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Exchange);
+        id2.setScope(Scope.Interaction);
         id2.setValue("Test");
         id2.setDuration(200);
 
-        assertTrue("Exchange ids should match", id1.match(100, id2, 200));
+        assertTrue("Interaction ids should match", id1.match(100, id2, 200));
     }
 
     @Test
-    public void testMatchExchangeSameValueWithDurationNoOverlap() {
+    public void testMatchInteractionSameValueWithDurationNoOverlap() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Exchange);
+        id1.setScope(Scope.Interaction);
         id1.setValue("Test");
         id1.setDuration(20);
 
         CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Exchange);
+        id2.setScope(Scope.Interaction);
         id2.setValue("Test");
         id2.setDuration(20);
 
-        assertFalse("Exchange ids should NOT match as no overlap", id1.match(100, id2, 200));
+        assertFalse("Interaction ids should NOT match as no overlap", id1.match(100, id2, 200));
     }
 
     @Test

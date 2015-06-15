@@ -435,7 +435,7 @@ public class BusinessTransactionServiceRESTTest {
 
         // Query stored business transaction
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Exchange, "notmyid"));
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "notmyid"));
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
