@@ -16,42 +16,31 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.CollectorAction;
+import org.hawkular.btm.api.model.admin.FreeFormAction;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.InstrumentService;
 
 /**
- * This class transforms the InstrumentService type.
+ * This class transforms the FreeFormAction type.
  *
  * @author gbrown
  */
-public class InstrumentServiceTransformer extends CollectorActionTransformer {
+public class FreeFormActionTransformer implements InstrumentActionTransformer {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.manager.config.InstrumentActionTransformer#getActionType()
      */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
-        return InstrumentService.class;
+        return FreeFormAction.class;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.manager.config.InstrumentActionTransformer#getEntity()
+     * @see org.hawkular.btm.client.manager.config.InstrumentActionTransformer#convertToRuleAction(
+     *                      org.hawkular.btm.api.model.admin.InstrumentAction)
      */
     @Override
-    protected String getEntity() {
-        return "service";
+    public String convertToRuleAction(InstrumentAction action) {
+        return ((FreeFormAction) action).getAction();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.client.manager.config.CollectorActionTransformer#getParameters(
-     *                          org.hawkular.btm.api.model.admin.CollectorAction)
-     */
-    @Override
-    protected String[] getParameters(CollectorAction invocation) {
-        String[] ret = new String[2];
-        ret[0] = ((InstrumentService) invocation).getServiceTypeExpression();
-        ret[1] = ((InstrumentService) invocation).getOperationExpression();
-        return (ret);
-    }
 }

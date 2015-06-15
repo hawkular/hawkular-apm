@@ -1,26 +1,45 @@
 {
   "instrumentation": {
-    "test": {
+    "testOp": {
       "description": "Test instrumentation",
       "version": "1",
-      "types": [{
-        "type": "InstrumentService",
-        "ruleName": "Test trace a method",
-        "className": "org.hawkular.btm.tests.standalone.TestService",
+      "rules": [{
+        "ruleName": "Trace testOp entry",
+        "className": "org.hawkular.btm.tests.standalone.TopLevelService",
         "methodName": "testOp",
+        "location": "ENTRY",
         "parameterTypes": [
            "java.lang.String",
            "int"
         ],
-        "serviceTypeExpression": "\"MyService\"",
-        "operationExpression": "\"MyOperation\"",
-        "requestValueExpressions": [
-          "$1",
-          "$2"
+        "actions": [{
+          "type": "InstrumentService",
+          "serviceTypeExpression": "\"TopLevelService\"",
+          "operationExpression": "\"testOp\"",
+          "valueExpressions": [
+            "$1",
+            "$2"
+          ]
+        }]
+      },{
+        "ruleName": "Trace testOp exit",
+        "className": "org.hawkular.btm.tests.standalone.TopLevelService",
+        "methodName": "testOp",
+        "location": "EXIT",
+        "parameterTypes": [
+           "java.lang.String",
+           "int"
         ],
-        "responseValueExpressions": [
-          "$!"
-        ]
+        "actions": [{
+          "type": "InstrumentService",
+          "serviceTypeExpression": "\"TopLevelService\"",
+          "operationExpression": "\"testOp\"",
+          "direction": "Response",
+          "valueExpressions": [
+            "$1",
+            "$2"
+          ]
+        }]
       }]
     }
   }

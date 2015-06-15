@@ -36,7 +36,7 @@ public class Instrumentation {
     private String description;
 
     @JsonInclude
-    private List<InstrumentType> types = new ArrayList<InstrumentType>();
+    private List<InstrumentRule> rules = new ArrayList<InstrumentRule>();
 
     /**
      * @return the version
@@ -67,17 +67,17 @@ public class Instrumentation {
     }
 
     /**
-     * @return the types
+     * @return the rules
      */
-    public List<InstrumentType> getTypes() {
-        return types;
+    public List<InstrumentRule> getRules() {
+        return rules;
     }
 
     /**
-     * @param types the types to set
+     * @param rules the rules to set
      */
-    public void setTypes(List<InstrumentType> types) {
-        this.types = types;
+    public void setRules(List<InstrumentRule> rules) {
+        this.rules = rules;
     }
 
 }

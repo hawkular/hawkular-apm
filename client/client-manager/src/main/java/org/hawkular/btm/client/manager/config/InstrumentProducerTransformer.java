@@ -16,22 +16,22 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.InstrumentInvocation;
+import org.hawkular.btm.api.model.admin.CollectorAction;
+import org.hawkular.btm.api.model.admin.InstrumentAction;
 import org.hawkular.btm.api.model.admin.InstrumentProducer;
-import org.hawkular.btm.api.model.admin.InstrumentType;
 
 /**
  * This class transforms the InstrumentProducer type.
  *
  * @author gbrown
  */
-public class InstrumentProducerTransformer extends InstrumentInvocationTransformer {
+public class InstrumentProducerTransformer extends CollectorActionTransformer {
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.byteman.InstrumentTypeTransformer#getInstrumentType()
+     * @see org.hawkular.btm.client.manager.config.InstrumentActionTransformer#getActionType()
      */
     @Override
-    public Class<? extends InstrumentType> getInstrumentType() {
+    public Class<? extends InstrumentAction> getActionType() {
         return InstrumentProducer.class;
     }
 
@@ -47,10 +47,10 @@ public class InstrumentProducerTransformer extends InstrumentInvocationTransform
      * @see org.hawkular.btm.client.manager.config.InstrumentInvocationTransformer#getParameters()
      */
     @Override
-    protected String[] getParameters(InstrumentInvocation invocation) {
-        String[] ret=new String[2];
-        ret[0] = ((InstrumentProducer)invocation).getEndpointTypeExpression();
-        ret[1] = ((InstrumentProducer)invocation).getUriExpression();
+    protected String[] getParameters(CollectorAction invocation) {
+        String[] ret = new String[2];
+        ret[0] = ((InstrumentProducer) invocation).getEndpointTypeExpression();
+        ret[1] = ((InstrumentProducer) invocation).getUriExpression();
         return (ret);
     }
 

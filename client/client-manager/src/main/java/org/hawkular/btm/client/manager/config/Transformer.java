@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.model.admin.InstrumentType;
+import org.hawkular.btm.api.model.admin.InstrumentAction;
+import org.hawkular.btm.api.model.admin.InstrumentRule;
 import org.hawkular.btm.api.model.admin.Instrumentation;
 import org.hawkular.btm.api.util.ServiceResolver;
 
@@ -29,12 +30,12 @@ import org.hawkular.btm.api.util.ServiceResolver;
  */
 public class Transformer {
 
-    private static Map<Class<? extends InstrumentType>, InstrumentTypeTransformer> transformers =
-            new HashMap<Class<? extends InstrumentType>, InstrumentTypeTransformer>();
+    private static Map<Class<? extends InstrumentAction>, InstrumentActionTransformer> transformers =
+            new HashMap<Class<? extends InstrumentAction>, InstrumentActionTransformer>();
 
     static {
-        List<InstrumentTypeTransformer> trms = ServiceResolver.getServices(InstrumentTypeTransformer.class);
-        trms.forEach(t -> transformers.put(t.getInstrumentType(), t));
+        List<InstrumentActionTransformer> trms = ServiceResolver.getServices(InstrumentActionTransformer.class);
+        trms.forEach(t -> transformers.put(t.getActionType(), t));
     }
 
     /**
@@ -47,17 +48,70 @@ public class Transformer {
     public String transform(Instrumentation types) {
         StringBuilder builder = new StringBuilder();
 
-        for (InstrumentType type : types.getTypes()) {
-            InstrumentTypeTransformer transformer = transformers.get(type.getClass());
-
-            if (transformer != null) {
-                if (builder.length() > 0) {
-                    builder.append("\r\n");
-                }
-                builder.append(transformer.convertToRule(type));
-            } else {
-                System.err.println("Transformer for type '" + type.getClass() + "' not found");
+        for (InstrumentRule rule : types.getRules()) {
+            if (builder.length() > 0) {
+                builder.append("\r\n");
             }
+
+            builder.append("RULE ");
+            builder.append(rule.getRuleName());
+            builder.append("\r\n");
+
+            if (rule.getClassName() != null) {
+                builder.append("CLASS ");
+                builder.append(rule.getClassName());
+                builder.append("\r\n");
+            } else if (rule.getInterfaceName() != null) {
+                builder.append("INTERFACE ");
+                builder.append(rule.getInterfaceName());
+                builder.append("\r\n");
+            }
+
+            builder.append("METHOD ");
+            builder.append(rule.getMethodName());
+            builder.append('(');
+
+            for (int i = 0; i < rule.getParameterTypes().size(); i++) {
+                if (i > 0) {
+                    builder.append(',');
+                }
+                builder.append(rule.getParameterTypes().get(i));
+            }
+
+            builder.append(')');
+            builder.append("\r\n");
+            builder.append("AT ");
+            builder.append(rule.getLocation());
+            builder.append("\r\n");
+
+            builder.append("IF ");
+            if (rule.getCondition() == null) {
+                builder.append("TRUE");
+            } else {
+                builder.append(rule.getCondition());
+            }
+            builder.append("\r\n");
+
+            builder.append("DO\r\n");
+
+            for (int i = 0; i < rule.getActions().size(); i++) {
+                InstrumentAction action = rule.getActions().get(i);
+
+                builder.append("  ");
+                InstrumentActionTransformer transformer = transformers.get(action.getClass());
+
+                if (transformer != null) {
+                    builder.append(transformer.convertToRuleAction(rule.getActions().get(i)));
+                    if (i < rule.getActions().size() - 1) {
+                        builder.append(";");
+                    }
+                    builder.append("\r\n");
+                } else {
+                    System.err.println("Transformer for action '" + action.getClass() + "' not found");
+                }
+            }
+
+            builder.append("ENDRULE\r\n\r\n");
         }
 
         return builder.toString();

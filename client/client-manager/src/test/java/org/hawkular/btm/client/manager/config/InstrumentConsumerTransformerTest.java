@@ -19,6 +19,7 @@ package org.hawkular.btm.client.manager.config;
 import static org.junit.Assert.assertEquals;
 
 import org.hawkular.btm.api.internal.client.ArrayBuilder;
+import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentConsumer;
 import org.hawkular.btm.client.manager.ClientManager;
 import org.junit.Test;
@@ -28,51 +29,42 @@ import org.junit.Test;
  */
 public class InstrumentConsumerTransformerTest {
 
-    /**  */
-    private static final String TEST_PARAM2 = "TestParam2";
-    /**  */
-    private static final String TEST_PARAM1 = "TestParam1";
-    /**  */
-    private static final String TEST_METHOD = "TestMethod";
-    /**  */
-    private static final String TEST_CLASS = "TestClass";
-    /**  */
-    private static final String TEST_RULE = "TestRule";
-
-    private static final String ACTION_PREFIX = ClientManager.class.getName()+".collector().";
+    private static final String ACTION_PREFIX = ClientManager.class.getName() + ".collector().";
 
     @Test
-    public void testConvertToRule() {
+    public void testConvertToRuleActionRequest() {
         InstrumentConsumer im = new InstrumentConsumer();
 
-        im.setRuleName(TEST_RULE);
-        im.setClassName(TEST_CLASS);
-        im.setMethodName(TEST_METHOD);
-        im.getParameterTypes().add(TEST_PARAM1);
-        im.getParameterTypes().add(TEST_PARAM2);
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.getRequestValueExpressions().add("$1");
-        im.getRequestValueExpressions().add("$2");
-        im.getResponseValueExpressions().add("$!");
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
-        String transformed = transformer.convertToRule(im);
+        String transformed = transformer.convertToRuleAction(im);
 
-        String startActionMethod="consumerStart(\"MyEndpoint\",\"MyUri\","
+        String expected = ACTION_PREFIX + "consumerStart(\"MyEndpoint\",\"MyUri\","
                 + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
-        String endActionMethod="consumerEnd(\"MyEndpoint\",\"MyUri\","
-                + ArrayBuilder.class.getName() + ".create().add($!).get())";
 
-        String expected = "RULE " + TEST_RULE + "_entry\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT ENTRY\r\nIF true\r\n"
-                + "DO " + ACTION_PREFIX + startActionMethod + "\r\n"
-                + "ENDRULE\r\n\r\n"
-                + "RULE " + TEST_RULE + "_exit\r\nCLASS " + TEST_CLASS + "\r\n"
-                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT EXIT\r\nIF true\r\n"
-                + "DO " + ACTION_PREFIX + endActionMethod + "\r\n"
-                + "ENDRULE\r\n";
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testConvertToRuleActionResponse() {
+        InstrumentConsumer im = new InstrumentConsumer();
+
+        im.setEndpointTypeExpression("\"MyEndpoint\"");
+        im.setUriExpression("\"MyUri\"");
+        im.getValueExpressions().add("$!");
+        im.setDirection(Direction.Response);
+
+        InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
+
+        String transformed = transformer.convertToRuleAction(im);
+
+        String expected = ACTION_PREFIX + "consumerEnd(\"MyEndpoint\",\"MyUri\","
+                + ArrayBuilder.class.getName() + ".create().add($!).get())";
 
         assertEquals(expected, transformed);
     }

@@ -16,31 +16,31 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.InstrumentType;
+import org.hawkular.btm.api.model.admin.InstrumentAction;
 
 /**
  * This interface represents a transformer to convert the instrumentation
- * type into a ByteMan rule.
+ * action into a ByteMan rule action.
  *
  * @author gbrown
  */
-public interface InstrumentTypeTransformer {
+public interface InstrumentActionTransformer {
 
     /**
-     * This method returns the instrument type associated with the
+     * This method returns the action type associated with the
      * transformer.
      *
-     * @return The instrument type
+     * @return The action type
      */
-    Class<? extends InstrumentType> getInstrumentType();
+    Class<? extends InstrumentAction> getActionType();
 
     /**
-     * This method converts the supplied instrumentation type into a
-     * ByteMan rule.
+     * This method converts the supplied instrumentation action into a
+     * ByteMan rule action.
      *
-     * @param type The instrument type
-     * @return The ByteMan rule
+     * @param action The instrument action
+     * @return The ByteMan rule action
      */
-    String convertToRule(InstrumentType type);
+    String convertToRuleAction(InstrumentAction action);
 
 }
