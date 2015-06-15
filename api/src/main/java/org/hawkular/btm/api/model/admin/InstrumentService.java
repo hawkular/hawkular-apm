@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  * @author gbrown
  */
-public class InstrumentService extends InstrumentInvocation {
+public class InstrumentService extends CollectorAction {
 
     @JsonInclude
     private String serviceTypeExpression;

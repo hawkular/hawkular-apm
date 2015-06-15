@@ -3,42 +3,79 @@
     "testOp": {
       "description": "Test instrumentation",
       "version": "1",
-      "types": [{
-        "type": "InstrumentService",
-        "ruleName": "Trace testOp",
+      "rules": [{
+        "ruleName": "Trace testOp entry",
         "className": "org.hawkular.btm.tests.standalone.TopLevelService",
         "methodName": "testOp",
+        "location": "ENTRY",
         "parameterTypes": [
            "java.lang.String",
            "int"
         ],
-        "serviceTypeExpression": "\"TopLevelService\"",
-        "operationExpression": "\"testOp\"",
-        "requestValueExpressions": [
-          "$1",
-          "$2"
-        ],
-        "responseValueExpressions": [
-          "$!"
-        ]
+        "actions": [{
+          "type": "InstrumentService",
+          "serviceTypeExpression": "\"TopLevelService\"",
+          "operationExpression": "\"testOp\"",
+          "valueExpressions": [
+            "$1",
+            "$2"
+          ]
+        }]
       },{
-        "type": "InstrumentService",
-        "ruleName": "Trace join",
+        "ruleName": "Trace testOp exit",
+        "className": "org.hawkular.btm.tests.standalone.TopLevelService",
+        "methodName": "testOp",
+        "location": "EXIT",
+        "parameterTypes": [
+           "java.lang.String",
+           "int"
+        ],
+        "actions": [{
+          "type": "InstrumentService",
+          "serviceTypeExpression": "\"TopLevelService\"",
+          "operationExpression": "\"testOp\"",
+          "direction": "Response",
+          "valueExpressions": [
+            "$1",
+            "$2"
+          ]
+        }]
+      },{
+        "ruleName": "Trace join entry",
         "className": "org.hawkular.btm.tests.standalone.InnerService",
         "methodName": "join",
         "parameterTypes": [
            "java.lang.String",
            "int"
         ],
-        "serviceTypeExpression": "\"InnerService\"",
-        "operationExpression": "\"join\"",
-        "requestValueExpressions": [
-          "$1",
-          "$2"
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentService",
+          "serviceTypeExpression": "\"InnerService\"",
+          "operationExpression": "\"join\"",
+          "valueExpressions": [
+            "$1",
+            "$2"
+          ]
+        }]
+      },{
+        "ruleName": "Trace join exit",
+        "className": "org.hawkular.btm.tests.standalone.InnerService",
+        "methodName": "join",
+        "parameterTypes": [
+           "java.lang.String",
+           "int"
         ],
-        "responseValueExpressions": [
-          "$!"
-        ]
+        "location": "EXIT",
+        "actions": [{
+          "type": "InstrumentService",
+          "serviceTypeExpression": "\"InnerService\"",
+          "operationExpression": "\"join\"",
+          "direction": "Response",
+          "valueExpressions": [
+            "$!"
+          ]
+        }]
       }]
     }
   }

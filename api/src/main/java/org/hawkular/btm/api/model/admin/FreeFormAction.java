@@ -19,44 +19,27 @@ package org.hawkular.btm.api.model.admin;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This type represents instrumentation of a producer.
+ * This action can be used to perform any legal action permitted by byteman.
  *
  * @author gbrown
  */
-public class InstrumentProducer extends CollectorAction {
+public class FreeFormAction extends InstrumentAction {
 
     @JsonInclude
-    private String endpointTypeExpression;
-
-    @JsonInclude
-    private String uriExpression;
+    private String action;
 
     /**
-     * @return the endpointTypeExpression
+     * @return the action
      */
-    public String getEndpointTypeExpression() {
-        return endpointTypeExpression;
+    public String getAction() {
+        return action;
     }
 
     /**
-     * @param endpointTypeExpression the endpointTypeExpression to set
+     * @param action the action to set
      */
-    public void setEndpointTypeExpression(String endpointTypeExpression) {
-        this.endpointTypeExpression = endpointTypeExpression;
-    }
-
-    /**
-     * @return the uriExpression
-     */
-    public String getUriExpression() {
-        return uriExpression;
-    }
-
-    /**
-     * @param uriExpression the uriExpression to set
-     */
-    public void setUriExpression(String uriExpression) {
-        this.uriExpression = uriExpression;
+    public void setAction(String action) {
+        this.action = action;
     }
 
 }

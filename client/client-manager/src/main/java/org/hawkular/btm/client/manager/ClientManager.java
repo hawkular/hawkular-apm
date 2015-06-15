@@ -41,7 +41,7 @@ import org.jboss.byteman.agent.Retransformer;
  */
 public class ClientManager {
 
-    private static final Logger log=Logger.getLogger(ClientManager.class.getName());
+    private static final Logger log = Logger.getLogger(ClientManager.class.getName());
 
     private static Retransformer transformer;
 
@@ -62,14 +62,14 @@ public class ClientManager {
         transformer = trans;
 
         // Obtain collector
-        CompletableFuture<BusinessTransactionCollector> colFuture=
+        CompletableFuture<BusinessTransactionCollector> colFuture =
                 ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
 
         colFuture.whenComplete(new BiConsumer<BusinessTransactionCollector, Throwable>() {
 
             @Override
             public void accept(BusinessTransactionCollector c, Throwable t) {
-                log.info("BTM: Initialising Business Transaction Collector: "+c+" exception="+t);
+                log.info("BTM: Initialising Business Transaction Collector: " + c + " exception=" + t);
 
                 if (c != null) {
                     collector = c;
@@ -81,14 +81,14 @@ public class ClientManager {
         });
 
         // Obtain the configuration manager
-        CompletableFuture<ConfigurationManager> cmFuture=
+        CompletableFuture<ConfigurationManager> cmFuture =
                 ServiceResolver.getSingletonService(ConfigurationManager.class);
 
         cmFuture.whenComplete(new BiConsumer<ConfigurationManager, Throwable>() {
 
             @Override
             public void accept(ConfigurationManager cm, Throwable t) {
-                log.info("BTM: Initialising Configuration Manager: "+cm+" exception="+t);
+                log.info("BTM: Initialising Configuration Manager: " + cm + " exception=" + t);
 
                 configManager = cm;
 
@@ -138,7 +138,7 @@ public class ClientManager {
             String rules = ruleTransformer.transform(types);
 
             if (log.isLoggable(Level.FINER)) {
-                log.finer("Update instrumentation script name="+name+" rules="+rules);
+                log.finer("Update instrumentation script name=" + name + " rules=" + rules);
             }
 
             if (rules != null) {

@@ -20,32 +20,32 @@ import static org.junit.Assert.assertEquals;
 
 import org.hawkular.btm.api.internal.client.ArrayBuilder;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
-import org.hawkular.btm.api.model.admin.InstrumentComponent;
+import org.hawkular.btm.api.model.admin.InstrumentService;
 import org.hawkular.btm.client.manager.ClientManager;
 import org.junit.Test;
 
 /**
  * @author gbrown
  */
-public class InstrumentComponentTransformerTest {
+public class InstrumentRuleTransformerTest {
 
     private static final String ACTION_PREFIX = ClientManager.class.getName() + ".collector().";
 
     @Test
     public void testConvertToRuleActionRequest() {
-        InstrumentComponent im = new InstrumentComponent();
+        InstrumentService im = new InstrumentService();
 
-        im.setComponentTypeExpression("\"MyComponent\"");
+        im.setServiceTypeExpression("\"MyService\"");
         im.setOperationExpression("\"MyOperation\"");
-        im.setUriExpression("\"MyUri\"");
         im.getValueExpressions().add("$1");
         im.getValueExpressions().add("$2");
+        im.setDirection(Direction.Request);
 
-        InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
+        InstrumentServiceTransformer transformer = new InstrumentServiceTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentStart(\"MyComponent\",\"MyOperation\",\"MyUri\","
+        String expected = ACTION_PREFIX + "serviceStart(\"MyService\",\"MyOperation\","
                 + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
@@ -53,19 +53,18 @@ public class InstrumentComponentTransformerTest {
 
     @Test
     public void testConvertToRuleActionResponse() {
-        InstrumentComponent im = new InstrumentComponent();
+        InstrumentService im = new InstrumentService();
 
-        im.setComponentTypeExpression("\"MyComponent\"");
+        im.setServiceTypeExpression("\"MyService\"");
         im.setOperationExpression("\"MyOperation\"");
-        im.setUriExpression("\"MyUri\"");
         im.getValueExpressions().add("$!");
         im.setDirection(Direction.Response);
 
-        InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
+        InstrumentServiceTransformer transformer = new InstrumentServiceTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentEnd(\"MyComponent\",\"MyOperation\",\"MyUri\","
+        String expected = ACTION_PREFIX + "serviceEnd(\"MyService\",\"MyOperation\","
                 + ArrayBuilder.class.getName() + ".create().add($!).get())";
 
         assertEquals(expected, transformed);
