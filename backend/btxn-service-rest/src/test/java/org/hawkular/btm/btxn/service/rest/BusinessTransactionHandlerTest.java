@@ -104,7 +104,7 @@ public class BusinessTransactionHandlerTest {
 
     @Test
     public void testDecodeCorrelationIdsMultiple() {
-        String encoded = "Global|world,Exchange|hello";
+        String encoded = "Global|world,Interaction|hello";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
         BusinessTransactionHandler.decodeCorrelationIdentifiers(correlations, encoded);
@@ -116,7 +116,7 @@ public class BusinessTransactionHandlerTest {
         cid1.setValue("world");
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
-        cid2.setScope(Scope.Exchange);
+        cid2.setScope(Scope.Interaction);
         cid2.setValue("hello");
 
         assertTrue(correlations.contains(cid1));

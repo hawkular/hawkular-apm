@@ -38,6 +38,7 @@ public class InstrumentComponentTransformerTest {
         im.setComponentTypeExpression("\"MyComponent\"");
         im.setOperationExpression("\"MyOperation\"");
         im.setUriExpression("\"MyUri\"");
+        im.setHeadersExpression("headers");
         im.getValueExpressions().add("$1");
         im.getValueExpressions().add("$2");
 
@@ -45,7 +46,7 @@ public class InstrumentComponentTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentStart(\"MyComponent\",\"MyOperation\",\"MyUri\","
+        String expected = ACTION_PREFIX + "componentStart(\"MyComponent\",\"MyOperation\",\"MyUri\",headers,"
                 + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
@@ -65,7 +66,7 @@ public class InstrumentComponentTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentEnd(\"MyComponent\",\"MyOperation\",\"MyUri\","
+        String expected = ACTION_PREFIX + "componentEnd(\"MyComponent\",\"MyOperation\",\"MyUri\",null,"
                 + ArrayBuilder.class.getName() + ".create().add($!).get())";
 
         assertEquals(expected, transformed);

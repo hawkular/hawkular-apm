@@ -210,9 +210,9 @@ public class CorrelationIdentifier {
         Local,
 
         /**
-         * The 'Exchange' scope means the identifier is only unique in relation
+         * The 'Interaction' scope means the identifier is only unique in relation
          * to a specific exchange between two (or more) participants.
          */
-        Exchange
+        Interaction
     }
 }

@@ -141,7 +141,7 @@ public class BusinessTransactionServiceRESTClientTest {
         criteria.getCorrelationIds().add(id1);
 
         CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Exchange);
+        id2.setScope(Scope.Interaction);
         id2.setValue("value2");
 
         criteria.getCorrelationIds().add(id2);
@@ -152,7 +152,7 @@ public class BusinessTransactionServiceRESTClientTest {
 
         assertTrue(queryParameters.containsKey("correlations"));
 
-        assertTrue(queryParameters.get("correlations").equals("Global|value1,Exchange|value2")
-                || queryParameters.get("correlations").equals("Exchange|value2,Global|value1"));
+        assertTrue(queryParameters.get("correlations").equals("Global|value1,Interaction|value2")
+                || queryParameters.get("correlations").equals("Interaction|value2,Global|value1"));
     }
 }

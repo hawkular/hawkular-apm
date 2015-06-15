@@ -21,10 +21,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hawkular.btm.api.client.BusinessTransactionCollector;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.junit.Test;
@@ -47,7 +52,7 @@ public class DefaultBusinessTransactionCollectorTest {
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(SERVICE_TYPE, OPERATION, null);
 
         // Delay, to provide a reasonable value for duration
         synchronized (this) {
@@ -58,7 +63,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         }
 
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -92,9 +97,9 @@ public class DefaultBusinessTransactionCollectorTest {
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(SERVICE_TYPE, OPERATION, null);
 
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -112,6 +117,89 @@ public class DefaultBusinessTransactionCollectorTest {
         assertNotNull("TenantId should not be null", btxnService.getTenantId());
 
         assertEquals("TenantId incorrect", TEST_TENANT, btxnService.getTenantId());
+    }
+
+    @Test
+    public void testIncludeHeaders() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionService(btxnService);
+
+        Map<String, String> reqHeaders = new HashMap<String, String>();
+        reqHeaders.put("hello", "world");
+
+        Map<String, String> respHeaders = new HashMap<String, String>();
+        respHeaders.put("joe", "bloggs");
+
+        collector.serviceStart(SERVICE_TYPE, OPERATION, reqHeaders);
+
+        collector.serviceEnd(SERVICE_TYPE, OPERATION, respHeaders);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals("Only 1 business transaction expected", 1, btxns.size());
+
+        BusinessTransaction btxn = btxns.get(0);
+
+        assertEquals("Single node", 1, btxn.getNodes().size());
+
+        Node node = btxn.getNodes().get(0);
+
+        Service service = (Service) node;
+
+        assertEquals(service.getRequest().getHeaders().get("hello"), "world");
+        assertEquals(service.getResponse().getHeaders().get("joe"), "bloggs");
+    }
+
+    @Test
+    public void testIncludeHeaderBTMID() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionService(btxnService);
+
+        Map<String, String> reqHeaders = new HashMap<String, String>();
+        reqHeaders.put("hello", "world");
+        reqHeaders.put(BusinessTransactionCollector.BTM_ID, "myid");
+
+        collector.serviceStart(SERVICE_TYPE, OPERATION, reqHeaders);
+
+        collector.serviceEnd(SERVICE_TYPE, OPERATION, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals("Only 1 business transaction expected", 1, btxns.size());
+
+        BusinessTransaction btxn = btxns.get(0);
+
+        assertEquals("Single node", 1, btxn.getNodes().size());
+
+        Node node = btxn.getNodes().get(0);
+
+        assertTrue("Should be 1 correlation id", node.getCorrelationIds().size() == 1);
+
+        CorrelationIdentifier cid = node.getCorrelationIds().iterator().next();
+        assertEquals(CorrelationIdentifier.Scope.Interaction, cid.getScope());
+        assertEquals("myid", cid.getValue());
     }
 
     public static class TestBTxnService implements BusinessTransactionService {

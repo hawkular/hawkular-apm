@@ -58,6 +58,13 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
             builder.append(',');
         }
 
+        if (collectorAction.getHeadersExpression() == null) {
+            builder.append("null");
+        } else {
+            builder.append(collectorAction.getHeadersExpression());
+        }
+        builder.append(',');
+
         builder.append(ArrayBuilder.class.getName());
         builder.append(".create()");
 
