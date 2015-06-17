@@ -157,15 +157,19 @@ public class TestBTxnService {
 
                             List<BusinessTransaction> btxns = mapper.readValue(new String(b), BUSINESS_TXN_LIST);
 
-                            businessTransactions.addAll(btxns);
+                            synchronized (businessTransactions) {
+                                businessTransactions.addAll(btxns);
+                            }
 
                             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
                             exchange.getResponseSender().send("");
                         } else if (exchange.getRequestMethod() == Methods.GET) {
                             // TODO: Currently returns all - support proper query
-                            String btxns = mapper.writeValueAsString(businessTransactions);
-                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                            exchange.getResponseSender().send(btxns);
+                            synchronized (businessTransactions) {
+                                String btxns = mapper.writeValueAsString(businessTransactions);
+                                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                                exchange.getResponseSender().send(btxns);
+                            }
                         }
                     }
                 })).build();

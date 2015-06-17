@@ -12,6 +12,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
+        "condition": "!isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Request",
@@ -27,6 +28,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
+        "condition": "!isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Response",
@@ -43,6 +45,7 @@
            "org.apache.camel.Endpoint"
         ],
         "location": "ENTRY",
+        "condition": "!isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Request",
@@ -60,10 +63,91 @@
            "long"
         ],
         "location": "ENTRY",
+        "condition": "!isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Response",
           "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Camel Inbound Consumer Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeCreated",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class)",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Request",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
+          "idExpression": "$2.getProperty(\"btmid\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.removeProperty(\"btmid\")"
+        }]
+      },{
+        "ruleName": "Camel Inbound Consumer End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class)",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Response",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Camel Outbound Producer Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSending",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "condition": "isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"btmid\",id)"
+        }]
+      },{
+        "ruleName": "Camel Outbound Producer End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSent",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint",
+           "long"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
           "uriExpression": "$3.getEndpointUri()"
         }]
       }]
