@@ -20,6 +20,7 @@ import java.util.Stack;
 import java.util.UUID;
 
 import org.hawkular.btm.api.client.Logger;
+import org.hawkular.btm.api.client.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
@@ -72,11 +73,17 @@ public class FragmentBuilder {
      */
     public void pushNode(Node node) {
         if (nodeStack.isEmpty()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Pushing top level node: "+node+" for txn: "+businessTransaction);
+            }
             businessTransaction.getNodes().add(node);
         } else {
             Node parent = nodeStack.peek();
 
             if (parent instanceof ContainerNode) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Add node: "+node+" to parent: "+parent+" in txn: "+businessTransaction);
+                }
                 ((ContainerNode) parent).getNodes().add(node);
             } else {
                 log.severe("Attempt to add node '"+node+"' under non-container node '"+parent+"'");

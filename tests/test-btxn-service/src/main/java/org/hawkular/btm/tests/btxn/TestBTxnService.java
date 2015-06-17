@@ -90,8 +90,23 @@ public class TestBTxnService {
         main.run();
     }
 
+    /**
+     * @return the businessTransactions
+     */
+    public List<BusinessTransaction> getBusinessTransactions() {
+        return businessTransactions;
+    }
+
+    /**
+     * @param businessTransactions the businessTransactions to set
+     */
+    public void setBusinessTransactions(List<BusinessTransaction> businessTransactions) {
+        this.businessTransactions = businessTransactions;
+    }
+
     public void run() {
         log.info("************** STARTED TEST BTXN SERVICE: host="+host+" port="+port);
+
         // Create shutdown thread, just in case hangs
         Thread t = new Thread(new Runnable() {
             @Override
@@ -161,7 +176,5 @@ public class TestBTxnService {
     public void shutdown() {
         log.info("************ TEST BTXN SERVICE EXITING");
         server.stop();
-
-        System.exit(0);
     }
 }

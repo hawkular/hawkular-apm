@@ -1,0 +1,210 @@
+#
+# Copyright 2015 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+# Instrument restlet consumer
+
+RULE Restlet Async Consumer Start
+CLASS org.restlet.Server
+METHOD handle(org.restlet.Request,org.restlet.Response)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+BIND headers : org.restlet.util.Series = $1.getAttributes().get("org.restlet.http.headers");
+     id : java.lang.String = headers.getFirstValue("Btmid");
+IF TRUE
+DO
+  headers.removeAll("Btmid");
+  System.out.println(">>> START CONSUMER[restlet/async] ["+Thread.currentThread()+"]: id="+id+" url="+$1.getResourceRef()+" req="+$1+" attrs="+$1.getAttributes())
+ENDRULE
+
+RULE Restlet Async Consumer End
+CLASS org.restlet.Server
+METHOD handle(org.restlet.Request,org.restlet.Response)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT EXIT
+IF TRUE
+DO
+  System.out.println(">>> END CONSUMER[restlet/async] ["+Thread.currentThread()+"]: resp="+$2+" attrs="+$2.getAttributes())
+ENDRULE
+
+
+
+# Instrument restlet producer
+
+RULE Restlet Async Producer Start
+CLASS org.restlet.Restlet
+METHOD handle(org.restlet.Request,org.restlet.Uniform)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+BIND headers : org.restlet.util.Series = $1.getAttributes().get("org.restlet.http.headers");
+IF TRUE
+DO
+  headers.set("Btmid",java.util.UUID.randomUUID().toString());
+  System.out.println(">>> START PRODUCER[restlet/async] ["+Thread.currentThread()+"]: url="+$1.getResourceRef()+" req="+$1+" attrs="+$1.getAttributes())
+ENDRULE
+
+RULE Restlet Async Producer End
+INTERFACE ^org.restlet.Uniform
+METHOD handle(org.restlet.Request,org.restlet.Response)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF callerEquals("ClientAdapter$1.handle", true)
+DO
+  System.out.println(">>> END PRODUCER[restlet/async] ["+Thread.currentThread()+"]: resp="+$2+" attrs="+$2.getAttributes());
+  $1.getAttributes().remove("BTMID")
+ENDRULE
+
+
+RULE Restlet Sync Producer Start
+CLASS org.restlet.Restlet
+METHOD handle(org.restlet.Request)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF TRUE
+DO
+  System.out.println(">>> START PRODUCER[restlet/sync] ["+Thread.currentThread()+"]: req="+$1+" attrs="+$1.getAttributes())
+ENDRULE
+
+RULE Restlet Sync Producer End
+CLASS org.restlet.Restlet
+METHOD handle(org.restlet.Request)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT EXIT
+IF TRUE
+DO
+  System.out.println(">>> END PRODUCER[restlet/sync] ["+Thread.currentThread()+"]: resp="+$!+" attrs="+$!.getAttributes())
+ENDRULE
+
+
+
+
+
+# Instrument Inbound Component
+
+RULE Camel Inbound Component Start
+CLASS org.apache.camel.util.EventHelper
+METHOD notifyExchangeCreated(org.apache.camel.CamelContext,org.apache.camel.Exchange)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF TRUE
+DO
+  System.out.println(">>> START INBOUND COMPONENT ["+Thread.currentThread()+"]: component="+removeSuffix(simpleClassName($2.getFromEndpoint()),"Endpoint")+" id="+$2.getExchangeId()+" exchange="+$2+" endpoint="+$2.getFromEndpoint().getEndpointConfiguration().getURI()+" headers="+$2.getIn().getHeaders())
+ENDRULE
+
+RULE Camel Inbound Component End
+CLASS org.apache.camel.util.EventHelper
+METHOD notifyExchangeDone(org.apache.camel.CamelContext,org.apache.camel.Exchange)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF TRUE
+DO
+  System.out.println(">>> END INBOUND COMPONENT ["+Thread.currentThread()+"]: id="+$2.getExchangeId()+" exchange="+$2+" endpoint="+$2.getFromEndpoint())
+ENDRULE
+
+# Instrument Outbound Component
+
+RULE Camel Outbound Component Start
+CLASS org.apache.camel.util.EventHelper
+METHOD notifyExchangeSending(org.apache.camel.CamelContext,org.apache.camel.Exchange,org.apache.camel.Endpoint)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF TRUE
+DO
+  System.out.println(">>> START OUTBOUND COMPONENT ["+Thread.currentThread()+"]: id="+$2.getExchangeId()+" exchange="+$2+" endpoint="+$3.getEndpointConfiguration().getURI()+" headers="+$2.getIn().getHeaders())
+ENDRULE
+
+RULE Camel Outbound Component End
+CLASS org.apache.camel.util.EventHelper
+METHOD notifyExchangeSent(org.apache.camel.CamelContext,org.apache.camel.Exchange,org.apache.camel.Endpoint,long)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF TRUE
+DO
+  System.out.println(">>> END OUTBOUND COMPONENT ["+Thread.currentThread()+"]: id="+$2.getExchangeId()+" exchange="+$2+" endpoint="+$3)
+ENDRULE
+
+
+
+
+
+
+# Instrument other structural elements
+
+RULE Camel Structure Start
+CLASS org.apache.camel.management.InstrumentationProcessor
+METHOD beginTime(org.apache.camel.Exchange)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF !isInstanceOf($0.processor,org.apache.camel.processor.SendProcessor.class)
+DO
+  System.out.println(">>> START ELEMENT ["+Thread.currentThread()+"]: id="+$1.getExchangeId()+" processor="+$0+" exchange="+$1);
+ENDRULE
+
+RULE Camel Structure End
+CLASS org.apache.camel.management.InstrumentationProcessor
+METHOD recordTime(org.apache.camel.Exchange,long)
+HELPER org.hawkular.btm.client.manager.RuleHelper
+AT ENTRY
+IF !isInstanceOf($0.processor,org.apache.camel.processor.SendProcessor.class)
+DO
+  System.out.println(">>> END ELEMENT ["+Thread.currentThread()+"]: id="+$1.getExchangeId()+" processor="+$0+" exchange="+$1);
+ENDRULE
+
+
+
+
+
+
+
+
+#RULE Camel Producer Start
+#CLASS org.apache.camel.management.InstrumentationProcessor
+#METHOD beginTime(org.apache.camel.Exchange)
+#HELPER org.hawkular.btm.client.manager.RuleHelper
+#AT ENTRY
+#IF isInstanceOf($0.processor,org.apache.camel.processor.SendProcessor.class)
+#DO
+#  System.out.println(">>> START PRODUCER: processor="+$0.processor+" id="+$1.getExchangeId()+" exchange="+$1)
+#ENDRULE
+
+#RULE Camel Producer End
+#CLASS org.apache.camel.management.InstrumentationProcessor
+#METHOD recordTime(org.apache.camel.Exchange,long)
+#HELPER org.hawkular.btm.client.manager.RuleHelper
+#AT ENTRY
+#IF isInstanceOf($0.processor,org.apache.camel.processor.SendProcessor.class)
+#DO
+#  System.out.println(">>> END PRODUCER: processor="+$0.processor+" id="+$1.getExchangeId()+" exchange="+$1)
+#ENDRULE
+
+
+#RULE InstrumentationProcessor.process entry
+#CLASS org.apache.camel.management.InstrumentationProcessor
+#METHOD process(org.apache.camel.Exchange,org.apache.camel.AsyncCallback)
+#AT ENTRY
+#IF true
+#DO System.out.println(">>> ENTRY InstrumentationProcessor.process: "+$0+" id="+$1.getExchangeId()+" exchange="+$1)
+#ENDRULE
+
+#RULE InstrumentationProcessor.process exit
+#CLASS org.apache.camel.management.InstrumentationProcessor
+#METHOD process(org.apache.camel.Exchange,org.apache.camel.AsyncCallback)
+#AT EXIT
+#IF true
+#DO System.out.println(">>> EXIT InstrumentationProcessor.process: "+$0+" id="+$1.getExchangeId()+" exchange="+$1)
+#ENDRULE
+

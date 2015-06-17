@@ -31,6 +31,9 @@ public class InstrumentConsumer extends CollectorAction {
     @JsonInclude
     private String uriExpression;
 
+    @JsonInclude
+    private String idExpression;
+
     /**
      * @return the endpointTypeExpression
      */
@@ -57,6 +60,20 @@ public class InstrumentConsumer extends CollectorAction {
      */
     public void setUriExpression(String uriExpression) {
         this.uriExpression = uriExpression;
+    }
+
+    /**
+     * @return the idExpression
+     */
+    public String getIdExpression() {
+        return idExpression;
+    }
+
+    /**
+     * @param idExpression the idExpression to set
+     */
+    public void setIdExpression(String idExpression) {
+        this.idExpression = idExpression;
     }
 
 }

@@ -133,12 +133,15 @@ public class Component extends InvocationNode {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "ComponentInvocation{" +
-                "uri=" + (uri == null ? null : '\'' + uri + '\'') +
-                ", operation='" + operation + '\'' +
-                ", type='" + componentType + '\'' +
-                '}';
+        return "Component [componentType=" + componentType + ", operation=" + operation + ", uri=" + uri
+                + ", getRequest()=" + getRequest() + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes()
+                + ", getStartTime()=" + getStartTime() + ", getDuration()=" + getDuration() + ", getCorrelationIds()="
+                + getCorrelationIds() + "]";
     }
+
 }
