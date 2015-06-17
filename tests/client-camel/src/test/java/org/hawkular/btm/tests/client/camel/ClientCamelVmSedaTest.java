@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +39,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientCamelRestletTest extends ClientCamelTestBase {
+public class ClientCamelVmSedaTest extends ClientCamelTestBase {
 
     /**  */
     private static final String ORDER_CREATED = "Order created";
@@ -55,15 +54,8 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                     rest("/orders")
                             .get("/createOrder").to("direct:createOrder");
 
-                    rest("/inventory")
-                            .get("/checkStock").to("seda:checkStock");
-
-                    rest("/creditagency")
-                            .get("/checkCredit").to("vm:checkCredit");
-
                     from("direct:createOrder")
-                            .to("language:simple:" + URLEncoder.encode("Hello", "UTF-8"))
-                            .to("restlet:http://localhost:8180/inventory/checkStock")
+                            .to("seda:checkStock")
                             .choice()
                     .when(body().isEqualTo(true))
                             .to("direct:processOrder")
@@ -71,7 +63,7 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                             .transform().constant("Order NOT created: Out of Stock");
 
                     from("direct:processOrder")
-                            .to("restlet:http://localhost:8180/creditagency/checkCredit")
+                            .to("vm:checkCredit")
                             .choice()
                     .when(body().isEqualTo(true))
                             .transform().constant(ORDER_CREATED).endChoice()
@@ -127,7 +119,7 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         }
 
         // Check stored business transactions
-        assertEquals(5, getBtxnService().getBusinessTransactions().size());
+        assertEquals(3, getBtxnService().getBusinessTransactions().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;
@@ -147,9 +139,9 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                     && btxn.getNodes().get(0).getClass() == Consumer.class) {
                 Consumer consumer = (Consumer) btxn.getNodes().get(0);
 
-                if (consumer.getUri().equals("http://localhost:8180/inventory/checkStock")) {
+                if (consumer.getUri().equals("seda://checkStock")) {
                     checkStock = consumer;
-                } else if (consumer.getUri().equals("http://localhost:8180/creditagency/checkCredit")) {
+                } else if (consumer.getUri().equals("vm://checkCredit")) {
                     creditCheck = consumer;
                 } else if (consumer.getUri().equals("http://localhost:8180/orders/createOrder")) {
                     createOrder = consumer;
@@ -169,9 +161,9 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         Producer creditCheckProducer = null;
         Producer checkStockProducer = null;
         for (Producer p : producers) {
-            if (p.getUri().equals("http://localhost:8180/inventory/checkStock")) {
+            if (p.getUri().equals("seda://checkStock")) {
                 checkStockProducer = p;
-            } else if (p.getUri().equals("http://localhost:8180/creditagency/checkCredit")) {
+            } else if (p.getUri().equals("vm://checkCredit")) {
                 creditCheckProducer = p;
             }
         }
@@ -183,4 +175,5 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         checkInteractionCorrelationIdentifiers(creditCheckProducer, creditCheck);
         checkInteractionCorrelationIdentifiers(checkStockProducer, checkStock);
     }
+
 }
