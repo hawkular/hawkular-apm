@@ -19,6 +19,7 @@ package org.hawkular.btm.client.manager.config;
 import static org.junit.Assert.assertEquals;
 
 import org.hawkular.btm.api.model.admin.FreeFormAction;
+import org.hawkular.btm.api.model.admin.InstrumentBind;
 import org.hawkular.btm.api.model.admin.InstrumentRule;
 import org.hawkular.btm.api.model.admin.Instrumentation;
 import org.junit.Test;
@@ -28,6 +29,18 @@ import org.junit.Test;
  */
 public class TransformerTest {
 
+    /**  */
+    private static final String BIND_EXPR2 = "BindExpr2";
+    /**  */
+    private static final String BIND_TYPE2 = "BindType2";
+    /**  */
+    private static final String BIND_NAME2 = "BindName2";
+    /**  */
+    private static final String BIND_EXPR1 = "BindExpr1";
+    /**  */
+    private static final String BIND_TYPE1 = "BindType1";
+    /**  */
+    private static final String BIND_NAME1 = "BindName1";
     /**  */
     private static final String TEST_CONDITION_1 = "$1.getAttributes().contains(\"BTMID\")";
     /**  */
@@ -136,4 +149,49 @@ public class TransformerTest {
 
         assertEquals(expected, transformed);
     }
+
+    @Test
+    public void testTransformBind() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getParameterTypes().add(TEST_PARAM1);
+        ir.getParameterTypes().add(TEST_PARAM2);
+        ir.getActions().add(im);
+        im.setAction("Action1");
+
+        InstrumentBind bind1=new InstrumentBind();
+        bind1.setName(BIND_NAME1);
+        bind1.setType(BIND_TYPE1);
+        bind1.setExpression(BIND_EXPR1);
+        ir.getBinds().add(bind1);
+
+        InstrumentBind bind2=new InstrumentBind();
+        bind2.setName(BIND_NAME2);
+        bind2.setType(BIND_TYPE2);
+        bind2.setExpression(BIND_EXPR2);
+        ir.getBinds().add(bind2);
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in);
+
+        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\nAT ENTRY\r\n"
+                + "BIND " + BIND_NAME1 + " : " + BIND_TYPE1 + " = " + BIND_EXPR1 + ";\r\n"
+                + "     " + BIND_NAME2 + " : " + BIND_TYPE2 + " = " + BIND_EXPR2 + ";\r\n"
+                + "IF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
 }
