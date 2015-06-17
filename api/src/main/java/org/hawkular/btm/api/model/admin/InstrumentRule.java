@@ -47,6 +47,9 @@ public class InstrumentRule {
     private String location;
 
     @JsonInclude
+    private List<InstrumentBind> binds = new ArrayList<InstrumentBind>();
+
+    @JsonInclude
     private String condition;
 
     @JsonInclude
@@ -134,6 +137,20 @@ public class InstrumentRule {
      */
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    /**
+     * @return the binds
+     */
+    public List<InstrumentBind> getBinds() {
+        return binds;
+    }
+
+    /**
+     * @param binds the binds to set
+     */
+    public void setBinds(List<InstrumentBind> binds) {
+        this.binds = binds;
     }
 
     /**
