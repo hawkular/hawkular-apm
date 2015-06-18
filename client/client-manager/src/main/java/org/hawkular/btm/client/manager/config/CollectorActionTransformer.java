@@ -20,7 +20,6 @@ import org.hawkular.btm.api.internal.client.ArrayBuilder;
 import org.hawkular.btm.api.model.admin.CollectorAction;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.client.manager.ClientManager;
 
 /**
  * This class transforms the InstrumentInvocation type.
@@ -42,8 +41,7 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
         CollectorAction collectorAction = (CollectorAction) action;
         StringBuilder builder = new StringBuilder();
 
-        builder.append(ClientManager.class.getName());
-        builder.append(".collector().");
+        builder.append("collector().");
         builder.append(getEntity());
 
         if (collectorAction.getDirection() == Direction.Request) {

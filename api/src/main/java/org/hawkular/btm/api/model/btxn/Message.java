@@ -34,12 +34,29 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Message {
 
     @JsonInclude(Include.NON_EMPTY)
+    private String id;
+
+    @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> headers = new HashMap<String, String>();
 
     @JsonInclude
     private List<String> parameters = new ArrayList<String>();
 
     public Message() {
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -70,42 +87,46 @@ public class Message {
         this.parameters = parameters;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((headers == null) ? 0 : headers.hashCode());
-        result = prime * result
-                + ((parameters == null) ? 0 : parameters.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         Message other = (Message) obj;
         if (headers == null) {
-            if (other.headers != null) {
+            if (other.headers != null)
                 return false;
-            }
-        } else if (!headers.equals(other.headers)) {
+        } else if (!headers.equals(other.headers))
             return false;
-        }
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
         if (parameters == null) {
-            if (other.parameters != null) {
+            if (other.parameters != null)
                 return false;
-            }
-        } else if (!parameters.equals(other.parameters)) {
+        } else if (!parameters.equals(other.parameters))
             return false;
-        }
         return true;
     }
 
@@ -114,7 +135,7 @@ public class Message {
      */
     @Override
     public String toString() {
-        return "Message [headers=" + headers + ", parameters=" + parameters + "]";
+        return "Message [id=" + id + ", headers=" + headers + ", parameters=" + parameters + "]";
     }
 
 }

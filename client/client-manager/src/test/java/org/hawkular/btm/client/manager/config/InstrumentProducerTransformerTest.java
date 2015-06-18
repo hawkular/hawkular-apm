@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import org.hawkular.btm.api.internal.client.ArrayBuilder;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentProducer;
-import org.hawkular.btm.client.manager.ClientManager;
 import org.junit.Test;
 
 /**
@@ -29,7 +28,7 @@ import org.junit.Test;
  */
 public class InstrumentProducerTransformerTest {
 
-    private static final String ACTION_PREFIX = ClientManager.class.getName() + ".collector().";
+    private static final String ACTION_PREFIX = "collector().";
 
     @Test
     public void testConvertToRuleActionRequest() {
@@ -84,7 +83,28 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(\"MyEndpoint\",\"MyUri\",headers,"
+        String expected = ACTION_PREFIX + "producerEnd(\"MyEndpoint\",\"MyUri\",null,headers,"
+                + ArrayBuilder.class.getName() + ".create().add($!).get())";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testConvertToRuleActionResponseWithId() {
+        InstrumentProducer im = new InstrumentProducer();
+
+        im.setEndpointTypeExpression("\"MyEndpoint\"");
+        im.setUriExpression("\"MyUri\"");
+        im.setIdExpression("\"MyId\"");
+        im.setHeadersExpression("headers");
+        im.getValueExpressions().add("$!");
+        im.setDirection(Direction.Response);
+
+        InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
+
+        String transformed = transformer.convertToRuleAction(im);
+
+        String expected = ACTION_PREFIX + "producerEnd(\"MyEndpoint\",\"MyUri\",\"MyId\",headers,"
                 + ArrayBuilder.class.getName() + ".create().add($!).get())";
 
         assertEquals(expected, transformed);
