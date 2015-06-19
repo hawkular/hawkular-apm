@@ -16,8 +16,10 @@
  */
 package org.hawkular.btm.api.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
@@ -70,10 +72,30 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
         CollectorConfiguration config = null;
 
         try {
-            String json = new String(Files.readAllBytes(Paths.get(uri)));
+            Path path=Paths.get(uri);
 
-            config = mapper.readValue(json, CollectorConfiguration.class);
+            File file=path.toFile();
 
+            if (file.isDirectory()) {
+                for (File f : file.listFiles()) {
+                    Path child=path.resolve(f.getName());
+
+                    String json = new String(Files.readAllBytes(child));
+
+                    CollectorConfiguration childConfig = mapper.readValue(json,
+                            CollectorConfiguration.class);
+
+                    if (config == null) {
+                        config = childConfig;
+                    } else {
+                        config.merge(childConfig, false);
+                    }
+                }
+            } else {
+                String json = new String(Files.readAllBytes(path));
+
+                config = mapper.readValue(json, CollectorConfiguration.class);
+            }
         } catch (IOException e) {
             System.err.println("Failed to load BTM configuration: " + e);
             e.printStackTrace();
