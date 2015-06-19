@@ -46,4 +46,22 @@ public class CollectorConfiguration {
         this.instrumentation = instrumentation;
     }
 
+    /**
+     * This method merges the supplied configuration into this configuration. If
+     * a conflict is found, if overwrite is true then the supplied config element
+     * will be used, otherwise an exception will be raised.
+     *
+     * @param config The configuration to merge
+     * @param overwrite Whether to overwrite when conflict found
+     * @throws IllegalArgumentException Failed to merge due to a conflict
+     */
+    public void merge(CollectorConfiguration config, boolean override)
+                        throws IllegalArgumentException {
+        for (String key : config.getInstrumentation().keySet()) {
+            if (getInstrumentation().containsKey(key) && !override) {
+                throw new IllegalArgumentException("Instrumentation for '"+key+"' already exists");
+            }
+            getInstrumentation().put(key, config.getInstrumentation().get(key));
+        }
+    }
 }
