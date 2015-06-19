@@ -169,7 +169,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
-          <threadCount>1</threadCount>
+          <!-- Argline to use for debugging with Test.btm script
+              -javaagent:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar=script:src/test/scripts/Test.btm,boot:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar
+          -->
           <argLine>
               -Dorg.jboss.byteman.transform.all
               -javaagent:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar
