@@ -19,6 +19,8 @@ package org.hawkular.btm.api.model.btxn;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -93,6 +95,33 @@ public abstract class Node {
      */
     public void setCorrelationIds(Set<CorrelationIdentifier> correlationIds) {
         this.correlationIds = correlationIds;
+    }
+
+    /**
+     * This method adds an interaction correlation id.
+     *
+     * @param id The id
+     */
+    public void addInteractionId(String id) {
+        this.correlationIds.add(new CorrelationIdentifier(Scope.Interaction, id));
+    }
+
+    /**
+     * This method adds a global correlation id.
+     *
+     * @param id The id
+     */
+    public void addGlobalId(String id) {
+        this.correlationIds.add(new CorrelationIdentifier(Scope.Global, id));
+    }
+
+    /**
+     * This method adds a local correlation id.
+     *
+     * @param id The id
+     */
+    public void addLocalId(String id) {
+        this.correlationIds.add(new CorrelationIdentifier(Scope.Local, id));
     }
 
     /**

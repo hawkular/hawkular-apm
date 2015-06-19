@@ -44,7 +44,7 @@ public abstract class ClientCamelTestBase {
     @Before
     public void init() {
         try {
-            context.addRoutes(getRouteBuilder());
+            initContext(context);
 
             context.start();
         } catch (Exception e) {
@@ -59,11 +59,21 @@ public abstract class ClientCamelTestBase {
     }
 
     /**
+     * This method initialises the camel context.
+     *
+     * @param context The camel context
+     * @throws Exception Failed to initialise
+     */
+    protected void initContext(CamelContext context) throws Exception {
+        context.addRoutes(getRouteBuilder());
+    }
+
+    /**
      * This method defines the route to be tested.
      *
      * @return The route builder
      */
-    public abstract RouteBuilder getRouteBuilder();
+    protected abstract RouteBuilder getRouteBuilder();
 
     @After
     public void close() {

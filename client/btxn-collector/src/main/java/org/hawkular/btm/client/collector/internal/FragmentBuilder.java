@@ -16,6 +16,10 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
 
@@ -26,7 +30,9 @@ import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
 
 /**
- * This class represents the builder for a business transaction fragment.
+ * This class represents the builder for a business transaction fragment. NOTE: This
+ * class is not thread safe as the sequence of events within a thread of execution
+ * should be in sequence, and therefore should not result in any concurrent conflicts.
  *
  * @author gbrown
  */
@@ -39,13 +45,17 @@ public class FragmentBuilder {
 
     private Stack<Node> nodeStack = new Stack<Node>();
 
+    private Map<String,Node> retainedNodes = new HashMap<String,Node>();
+
+    private List<String> unlinkedIds=new ArrayList<String>();
+
     /**
      * This method determines if the fragment is complete.
      *
      * @return Whether the fragment is complete
      */
     public boolean isComplete() {
-        return nodeStack.isEmpty();
+        return nodeStack.isEmpty() && retainedNodes.isEmpty();
     }
 
     /**
@@ -100,5 +110,60 @@ public class FragmentBuilder {
      */
     public Node popNode() {
         return nodeStack.pop();
+    }
+
+    /**
+     * This method indicates that the current node, for this thread of execution, should
+     * be retained temporarily pending further changes.
+     *
+     * @param id The identifier used to later on to identify the node
+     */
+    public void retainNode(String id) {
+        Node current=getCurrentNode();
+
+        if (current != null) {
+            retainedNodes.put(id, current);
+        }
+    }
+
+    /**
+     * This method indicates that the identified node, for this thread of execution, should
+     * be released.
+     *
+     * @param id The identifier used to identify the node
+     */
+    public void releaseNode(String id) {
+        retainedNodes.remove(id);
+    }
+
+    /**
+     * This method returns the node associated, for this thread of execution, identified
+     * by the supplied id.
+     *
+     * @param id The identifier used to identify the node
+     * @return The node, or null if not found
+     */
+    public Node retrieveNode(String id) {
+        return retainedNodes.get(id);
+    }
+
+    /**
+     * This method returns the 'unlinked ids' list.
+     *
+     * @return The unlinked ids
+     */
+    public List<String> getUnlinkedIds() {
+        return unlinkedIds;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        StringBuilder info=new StringBuilder();
+        info.append("Fragment builder: current btxn=[");
+        info.append(businessTransaction);
+        info.append("]");
+        return (info.toString());
     }
 }

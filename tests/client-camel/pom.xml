@@ -79,6 +79,10 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-restlet</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jms</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -94,6 +98,25 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <!-- ActiveMQ dependencies -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-broker</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-camel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-spring</artifactId>
+      <version>3.18</version>
     </dependency>
 
     <dependency>
@@ -157,6 +180,7 @@
               -Dhawkular-btm.base-uri=http://localhost:8080/hawkular/btm
               -Dhawkular-btm.username=jdoe
               -Dhawkular-btm.password=password
+              -Djava.util.logging.config.file=${hawkular-btm.configuration}/logging.properties
           </argLine>
           <systemPropertyVariables>
             <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>

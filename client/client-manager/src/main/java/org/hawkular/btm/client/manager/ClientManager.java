@@ -119,7 +119,7 @@ public class ClientManager {
      *
      * @return The collector
      */
-    public static BusinessTransactionCollector collector() {
+    protected static BusinessTransactionCollector collector() {
         return collector;
     }
 

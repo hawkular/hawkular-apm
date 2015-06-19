@@ -88,6 +88,7 @@
     <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
+    <version.org.apache.activemq>5.11.1</version.org.apache.activemq>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
     <version.org.hawkular>1.0.0.Alpha1</version.org.hawkular>
     <version.org.hawkular.accounts>1.0.1</version.org.hawkular.accounts>
@@ -237,6 +238,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
+        <artifactId>camel-jms</artifactId>
+        <version>${version.org.apache.camel}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
         <artifactId>camel-restlet</artifactId>
         <version>${version.org.apache.camel}</version>
       </dependency>
@@ -244,6 +250,23 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-stream</artifactId>
         <version>${version.org.apache.camel}</version>
+      </dependency>
+
+      <!-- ActiveMQ dependencies -->
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-broker</artifactId>
+        <version>${version.org.apache.activemq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-client</artifactId>
+        <version>${version.org.apache.activemq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-camel</artifactId>
+        <version>${version.org.apache.activemq}</version>
       </dependency>
 
       <dependency>

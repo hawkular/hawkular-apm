@@ -16,6 +16,7 @@
  */
 package org.hawkular.btm.client.manager;
 
+import org.hawkular.btm.api.client.BusinessTransactionCollector;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
 
@@ -31,6 +32,15 @@ public class RuleHelper extends Helper {
      */
     protected RuleHelper(Rule rule) {
         super(rule);
+    }
+
+    /**
+     * This method returns the business transaction collector.
+     *
+     * @return The business transaction collector
+     */
+    public BusinessTransactionCollector collector() {
+        return ClientManager.collector();
     }
 
     /**

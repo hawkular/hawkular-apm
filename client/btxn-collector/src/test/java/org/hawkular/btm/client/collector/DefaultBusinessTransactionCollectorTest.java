@@ -17,6 +17,7 @@
 package org.hawkular.btm.client.collector;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
@@ -31,6 +33,7 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.junit.Test;
 
 /**
@@ -168,7 +171,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.consumerStart(null, null, "myid", null);
 
-        collector.consumerEnd(null, null, null);
+        collector.consumerEnd(null, null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -195,6 +198,31 @@ public class DefaultBusinessTransactionCollectorTest {
         CorrelationIdentifier cid = node.getCorrelationIds().iterator().next();
         assertEquals(CorrelationIdentifier.Scope.Interaction, cid.getScope());
         assertEquals("myid", cid.getValue());
+    }
+
+
+    @Test
+    public void testLink() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        final FragmentBuilder fragmentBuilder=collector.getFragmentManager().getFragmentBuilder();
+
+        collector.initiateLink("TestLink");
+
+        assertFalse(fragmentBuilder.getUnlinkedIds().isEmpty());
+
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            public void run() {
+                collector.completeLink("TestLink");
+
+                FragmentBuilder other=collector.getFragmentManager().getFragmentBuilder();
+
+                assertEquals("Builders should be the same", fragmentBuilder, other);
+
+                // Check link is no marked as unresolved
+                assertTrue(other.getUnlinkedIds().isEmpty());
+            }
+        });
     }
 
     public static class TestBTxnService implements BusinessTransactionService {

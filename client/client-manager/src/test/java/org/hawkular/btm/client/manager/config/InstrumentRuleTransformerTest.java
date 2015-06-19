@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import org.hawkular.btm.api.internal.client.ArrayBuilder;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentService;
-import org.hawkular.btm.client.manager.ClientManager;
 import org.junit.Test;
 
 /**
@@ -29,7 +28,7 @@ import org.junit.Test;
  */
 public class InstrumentRuleTransformerTest {
 
-    private static final String ACTION_PREFIX = ClientManager.class.getName() + ".collector().";
+    private static final String ACTION_PREFIX = "collector().";
 
     @Test
     public void testConvertToRuleActionRequest() {

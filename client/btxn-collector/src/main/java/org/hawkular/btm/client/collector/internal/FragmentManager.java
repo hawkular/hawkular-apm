@@ -26,6 +26,15 @@ public class FragmentManager {
     private ThreadLocal<FragmentBuilder> builders = new ThreadLocal<FragmentBuilder>();
 
     /**
+     * This method returns whether the current thread has a fragment builder.
+     *
+     * @return Whether the current thread of execution has a fragment builder
+     */
+    public boolean hasFragmentBuilder() {
+        return builders.get() != null;
+    }
+
+    /**
      * This method returns the appropriate fragment builder for the current
      * thread.
      *
@@ -40,6 +49,15 @@ public class FragmentManager {
         }
 
         return builder;
+    }
+
+    /**
+     * This method sets the builder for this thread of execution.
+     *
+     * @param builder The fragment builder
+     */
+    public void setFragmentBuilder(FragmentBuilder builder) {
+        builders.set(builder);
     }
 
     /**

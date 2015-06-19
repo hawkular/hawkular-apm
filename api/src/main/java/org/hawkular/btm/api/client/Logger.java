@@ -28,6 +28,7 @@ public class Logger {
     private static Level level = Level.valueOf(System.getProperty("hawkular-btm.log.level", Level.INFO.name()));
 
     private String className;
+    private String simpleClassName=null;
 
     /**
      * This construct is initialised with the class name.
@@ -36,6 +37,11 @@ public class Logger {
      */
     protected Logger(String className) {
         this.className = className;
+
+        int index=className.lastIndexOf('.');
+        if (index != -1) {
+            this.simpleClassName = className.substring(index+1);
+        }
     }
 
     /**
@@ -125,7 +131,9 @@ public class Logger {
             StringBuilder builder = new StringBuilder();
             builder.append(mesgLevel.name());
             builder.append(": [");
-            builder.append(className);
+            builder.append(simpleClassName != null ? simpleClassName : className);
+            builder.append("] [");
+            builder.append(Thread.currentThread());
             builder.append("] ");
             builder.append(mesg);
 

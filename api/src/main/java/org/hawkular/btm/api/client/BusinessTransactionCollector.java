@@ -42,10 +42,11 @@ public interface BusinessTransactionCollector {
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param id The unique interaction id
      * @param headers The header values
      * @param values The response values
      */
-    void consumerEnd(String type, String uri, Map<String,?> headers, Object... values);
+    void consumerEnd(String type, String uri, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a service invocation.
@@ -105,9 +106,18 @@ public interface BusinessTransactionCollector {
      *
      * @param type The endpoint type
      * @param uri The uri
+     * @param id The unique interaction id
      * @param headers The header values
      * @param values The response values
      */
-    void producerEnd(String type, String uri, Map<String,?> headers, Object... values);
+    void producerEnd(String type, String uri, String id, Map<String,?> headers, Object... values);
+
+    /**
+     * This method returns the session manager associated with the
+     * current thread of execution.
+     *
+     * @return The session manager
+     */
+    SessionManager session();
 
 }

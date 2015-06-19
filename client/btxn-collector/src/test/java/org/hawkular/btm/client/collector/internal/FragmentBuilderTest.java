@@ -139,4 +139,33 @@ public class FragmentBuilderTest {
         assertEquals("Consumer contained node2 incorrect", consumer.getNodes().get(1), service2);
     }
 
+    @Test
+    public void testPushSingleNodeAndRetain() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+
+        builder.pushNode(consumer);
+
+        builder.retainNode("testId");
+
+        builder.popNode();
+
+        assertFalse("Business transaction should NOT be complete", builder.isComplete());
+
+        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+
+        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+
+        Node retained = builder.retrieveNode("testId");
+
+        assertNotNull("Retained node should not be null", retained);
+
+        assertEquals("Retained node incorrect", retained, consumer);
+
+        builder.releaseNode("testId");
+
+        assertTrue("Business transaction should now be complete after release", builder.isComplete());
+    }
+
 }
