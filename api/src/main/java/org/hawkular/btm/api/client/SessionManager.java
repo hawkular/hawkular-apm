@@ -74,6 +74,11 @@ public interface SessionManager {
     void completeLink(String id);
 
     /**
+     * Unlink the current "linked" thread of execution from the target thread.
+     */
+    void unlink();
+
+    /**
      * This method asserts that the current thread of execution is complete. It has no
      * impact on business transaction reporting, but is used as a sanity check to ensure
      * the collection is working correctly.

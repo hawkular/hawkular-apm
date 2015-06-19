@@ -16,6 +16,11 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.hawkular.btm.api.client.Logger;
+import org.hawkular.btm.api.client.Logger.Level;
+
 /**
  * This class manages the set of business fragment builders.
  *
@@ -23,7 +28,18 @@ package org.hawkular.btm.client.collector.internal;
  */
 public class FragmentManager {
 
+    private static final Logger log=Logger.getLogger(FragmentManager.class.getName());
+
     private ThreadLocal<FragmentBuilder> builders = new ThreadLocal<FragmentBuilder>();
+
+    private AtomicInteger threadCounter=new AtomicInteger();
+
+    /**
+     * @return the threadCounter
+     */
+    protected int getThreadCounter() {
+        return threadCounter.get();
+    }
 
     /**
      * This method returns whether the current thread has a fragment builder.
@@ -46,6 +62,11 @@ public class FragmentManager {
         if (builder == null) {
             builder = new FragmentBuilder();
             builders.set(builder);
+
+            int currentCount=threadCounter.incrementAndGet();
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Associate Thread with FragmentBuilder(1): current count="+currentCount);
+            }
         }
 
         return builder;
@@ -57,6 +78,20 @@ public class FragmentManager {
      * @param builder The fragment builder
      */
     public void setFragmentBuilder(FragmentBuilder builder) {
+        FragmentBuilder currentBuilder=builders.get();
+
+        if (currentBuilder == null && builder != null) {
+            int currentCount=threadCounter.incrementAndGet();
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Associate Thread with FragmentBuilder(2): current count="+currentCount);
+            }
+        } else if (currentBuilder != null && builder == null) {
+            int currentCount=threadCounter.decrementAndGet();
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Disassociate Thread from FragmentBuilder(2): current count="+currentCount);
+            }
+        }
+
         builders.set(builder);
     }
 
@@ -65,6 +100,10 @@ public class FragmentManager {
      * current thread of execution.
      */
     public void clear() {
+        int currentCount=threadCounter.decrementAndGet();
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Disassociate Thread from FragmentBuilder(1): current count="+currentCount);
+        }
         builders.remove();
     }
 }
