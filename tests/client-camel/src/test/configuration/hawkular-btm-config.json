@@ -389,7 +389,7 @@
         "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "collector().session().assertComplete()"
+          "action": "collector().session().unlink()"
         }]
       },{
         "ruleName": "JMS Producer Set Identifier",

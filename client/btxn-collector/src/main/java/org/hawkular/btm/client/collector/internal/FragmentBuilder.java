@@ -163,7 +163,10 @@ public class FragmentBuilder {
         StringBuilder info=new StringBuilder();
         info.append("Fragment builder: current btxn=[");
         info.append(businessTransaction);
-        info.append("]");
+        info.append("] complete=");
+        info.append(isComplete());
+        info.append(" unlinkedIds=");
+        info.append(getUnlinkedIds());
         return (info.toString());
     }
 }

@@ -510,7 +510,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "retainNode failed", t);
+                log.log(warningLogLevel, "releaseNode failed", t);
             }
         }
     }
@@ -534,7 +534,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "retainNode failed", t);
+                log.log(warningLogLevel, "retrieveNode failed", t);
             }
         }
 
@@ -559,7 +559,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "retainNode failed", t);
+                log.log(warningLogLevel, "initiateLink failed", t);
             }
         }
     }
@@ -583,7 +583,27 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "retainNode failed", t);
+                log.log(warningLogLevel, "completeLink failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#unlink()
+     */
+    @Override
+    public void unlink() {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Unlink");
+        }
+
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                fragmentManager.clear();
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "unlink failed", t);
             }
         }
     }
@@ -599,8 +619,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
-                log.severe("Business transaction has not completed: "
+                FragmentBuilder builder=fragmentManager.getFragmentBuilder();
+
+                if (!builder.isComplete()) {
+                    log.severe("Business transaction has not completed: "
                             +fragmentManager.getFragmentBuilder());
+                }
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
