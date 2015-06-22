@@ -69,6 +69,7 @@
     <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
     <module>services/btxn-service-cass-es</module>
+    <module>services/btxn-service-inmemory</module>
   </modules>
 
   <scm>
@@ -168,6 +169,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-service-cass-es</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-service-inmemory</artifactId>
         <version>${project.version}</version>
       </dependency>
 
