@@ -17,6 +17,7 @@
 package org.hawkular.btm.tests.client.camel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -87,6 +88,13 @@ public abstract class ClientCamelTestBase {
             btxnService.shutdown();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait after test close");
         }
     }
 
