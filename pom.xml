@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>15</version>
+    <version>16</version>
   </parent>
 
   <groupId>org.hawkular.btm</groupId>
@@ -85,6 +85,7 @@
   <properties>
     <plugin.version.org.apache.maven.plugins>1.2</plugin.version.org.apache.maven.plugins>
 
+    <version.com.fasterxml.jackson.core>2.4.1</version.com.fasterxml.jackson.core>
     <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
@@ -94,20 +95,10 @@
     <version.org.hawkular.accounts>1.0.1</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
-    <version.org.wildfly>8.2.0.Final</version.org.wildfly>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-
-      <!-- this also includes the org.jboss.spec:jboss-javaee-7.0 dependencies -->
-      <dependency>
-        <groupId>org.wildfly.bom</groupId>
-        <artifactId>jboss-javaee-7.0-with-logging</artifactId>
-        <version>${version.org.wildfly}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
 
       <!-- BTM API -->
       <dependency>
@@ -250,6 +241,22 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-stream</artifactId>
         <version>${version.org.apache.camel}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${version.com.fasterxml.jackson.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${version.com.fasterxml.jackson.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${version.com.fasterxml.jackson.core}</version>
       </dependency>
 
       <!-- ActiveMQ dependencies -->
