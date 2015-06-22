@@ -53,6 +53,7 @@ public abstract class ClientCamelTestBase {
         }
 
         try {
+            btxnService.setShutdownTimer(-1); // Disable timer
             btxnService.run();
         } catch (Exception e) {
             e.printStackTrace();

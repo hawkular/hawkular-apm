@@ -18,6 +18,8 @@ package org.hawkular.btm.tests.btxn;
 
 import static io.undertow.Handlers.path;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -103,28 +105,40 @@ public class TestBTxnService {
     public void setBusinessTransactions(List<BusinessTransaction> businessTransactions) {
         this.businessTransactions = businessTransactions;
     }
+    /**
+     * This method sets the shutdown timer. If set to -1, then
+     * the timer is disabled. This value must be set before the run method
+     * is called.
+     *
+     * @param timer The shutdown timer (in milliseconds), or -1 to disable
+     */
+    public void setShutdownTimer(int timer) {
+        shutdown = timer;
+    }
 
     public void run() {
-        log.info("************** STARTED TEST BTXN SERVICE: host="+host+" port="+port);
+        log.info("************** STARTED TEST BTXN SERVICE: host="+host+" port="+port+" shutdownTimer="+shutdown);
 
-        // Create shutdown thread, just in case hangs
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    try {
-                        wait(shutdown);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        if (shutdown != -1) {
+            // Create shutdown thread, just in case hangs
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (this) {
+                        try {
+                            wait(shutdown);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                log.severe("************** ABORTING TEST BTXN SERVICE");
-                System.exit(1);
-            }
-        });
-        t.setDaemon(true);
-        t.start();
+                    log.severe("************** ABORTING TEST BTXN SERVICE");
+                    System.exit(1);
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+        }
 
         server = Undertow.builder()
                 .addHttpListener(port, host)
@@ -151,11 +165,18 @@ public class TestBTxnService {
                             exchange.startBlocking();
 
                             java.io.InputStream is = exchange.getInputStream();
-                            byte[] b = new byte[is.available()];
-                            is.read(b);
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+                            StringBuilder builder=new StringBuilder();
+                            String str=null;
+
+                            while ((str = reader.readLine()) != null) {
+                                builder.append(str);
+                            }
+
                             is.close();
 
-                            List<BusinessTransaction> btxns = mapper.readValue(new String(b), BUSINESS_TXN_LIST);
+                            List<BusinessTransaction> btxns = mapper.readValue(builder.toString(), BUSINESS_TXN_LIST);
 
                             synchronized (businessTransactions) {
                                 businessTransactions.addAll(btxns);
