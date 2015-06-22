@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -94,17 +96,24 @@ public class ClientCamelVmSedaTest extends ClientCamelTestBase {
             connection.setRequestProperty("Content-Type",
                     "application/json");
 
+            connection.connect();
+
             java.io.InputStream is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            is.read(b);
+            StringBuilder builder=new StringBuilder();
+            String str=null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
 
             is.close();
 
             assertEquals("Unexpected response code", 200, connection.getResponseCode());
 
-            assertEquals(ORDER_CREATED, new String(b));
+            assertEquals(ORDER_CREATED, builder.toString());
 
         } catch (Exception e) {
             fail("Failed to perform testOp: " + e);
