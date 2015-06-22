@@ -46,7 +46,7 @@
     <!-- Service implementation -->
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-cass-es</artifactId>
+      <artifactId>hawkular-btm-btxn-service-inmemory</artifactId>
     </dependency>
 
     <!-- Business Transaction Fragment Processors -->
