@@ -326,6 +326,7 @@
           <excludes combine.children="append">
             <exclude>**/*.data</exclude>
             <exclude>**/*.btm</exclude>
+            <exclude>**/*.sh</exclude>
           </excludes>
         </configuration>
       </plugin>

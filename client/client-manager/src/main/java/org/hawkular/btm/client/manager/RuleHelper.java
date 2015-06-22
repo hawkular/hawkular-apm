@@ -90,4 +90,13 @@ public class RuleHelper extends Helper {
         return original;
     }
 
+    /**
+     * This method creates a new parameter array builder.
+     *
+     * @return The parameter array builder
+     */
+    public ArrayBuilder createArrayBuilder() {
+        return (new ArrayBuilder());
+    }
+
 }

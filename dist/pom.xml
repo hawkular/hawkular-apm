@@ -47,12 +47,25 @@
       <artifactId>hawkular-btm-btxn-service-rest</artifactId>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-client-se-rest</artifactId>
+    </dependency>
 
   </dependencies>
 
   <build>
 
     <plugins>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <exclude>**/*.sh</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
       <!-- unpack the hawkular distribution to get its configuration that we need to customize -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
