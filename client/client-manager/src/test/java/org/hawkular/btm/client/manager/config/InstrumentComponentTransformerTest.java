@@ -18,7 +18,6 @@ package org.hawkular.btm.client.manager.config;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.internal.client.ArrayBuilder;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentComponent;
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class InstrumentComponentTransformerTest {
         String transformed = transformer.convertToRuleAction(im);
 
         String expected = ACTION_PREFIX + "componentStart(\"MyComponent\",\"MyOperation\",\"MyUri\",headers,"
-                + ArrayBuilder.class.getName() + ".create().add($1).add($2).get())";
+                + "createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }
@@ -66,7 +65,7 @@ public class InstrumentComponentTransformerTest {
         String transformed = transformer.convertToRuleAction(im);
 
         String expected = ACTION_PREFIX + "componentEnd(\"MyComponent\",\"MyOperation\",\"MyUri\",null,"
-                + ArrayBuilder.class.getName() + ".create().add($!).get())";
+                + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);
     }

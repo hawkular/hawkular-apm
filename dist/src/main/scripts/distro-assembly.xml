@@ -65,6 +65,17 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
+    <dependencySet>
+      <outputDirectory>/btm/client/lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.btm:hawkular-btm-client-se-rest:jar</include>
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
   </dependencySets>
 
 </assembly>

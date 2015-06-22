@@ -1,0 +1,159 @@
+{
+  "instrumentation": {
+    "jms": {
+      "description": "JMS instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "JMS Consumer Start",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "ENTRY",
+        "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"JMS\"",
+          "uriExpression": "$1.getJMSDestination()",
+          "idExpression": "$1.getJMSMessageID()"
+        }]
+      },{
+        "ruleName": "JMS Consumer End",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "EXIT",
+        "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"JMS\"",
+          "uriExpression": "$1.getJMSDestination()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().assertComplete()"
+        }]
+      },{
+        "ruleName": "JMS Producer Sync Start",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getJMSReplyTo() == null",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"JMS\"",
+          "uriExpression": "$1"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().retainNode(\"jmsProducer\")"
+        }]
+      },{
+        "ruleName": "JMS Producer Start",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getJMSReplyTo() != null && !isInstanceOf($1,javax.jms.TemporaryQueue.class)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"JMS\"",
+          "uriExpression": "$1"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().retainNode(\"jmsProducer\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().initiateLink($2.getJMSReplyTo())"
+        }]
+      },{
+        "ruleName": "JMS Producer Sync End",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "EXIT",
+        "condition": "$2.getJMSReplyTo() == null",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"JMS\"",
+          "uriExpression": "$1"
+        }]
+      },{
+        "ruleName": "JMS Producer Async End",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().session().completeLink($1.getJMSDestination())"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"JMS\""
+        }]
+      },{
+        "ruleName": "JMS Producer Async Response Thread Complete",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "EXIT",
+        "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().session().unlink()"
+        }]
+      },{
+        "ruleName": "JMS Producer Set Identifier",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "EXIT",
+        "condition": "!isInstanceOf($1,javax.jms.TemporaryQueue.class)",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().session().retrieveNode(\"jmsProducer\").addInteractionId($2.getJMSMessageID())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().releaseNode(\"jmsProducer\")"
+        }]
+      }]
+    }
+  }
+}

@@ -16,7 +16,6 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.internal.client.ArrayBuilder;
 import org.hawkular.btm.api.model.admin.CollectorAction;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
@@ -63,8 +62,7 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
         }
         builder.append(',');
 
-        builder.append(ArrayBuilder.class.getName());
-        builder.append(".create()");
+        builder.append("createArrayBuilder()");
 
         for (String expr : collectorAction.getValueExpressions()) {
             builder.append(".add(");
