@@ -346,6 +346,12 @@
       </modules>
     </profile>
     <profile>
+      <id>distribution</id>
+      <modules>
+        <module>dist</module>
+      </modules>
+    </profile>
+    <profile>
       <id>release</id>
       <modules>
         <module>dist</module>

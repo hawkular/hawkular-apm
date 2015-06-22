@@ -29,36 +29,33 @@
 
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/distro-resources</directory>
-      <outputDirectory>/${dist.zip.root.dir}</outputDirectory>
+      <directory>${project.build.directory}/hawkular/${dist.zip.root.dir}</directory>
+      <outputDirectory></outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/hawkular/${dist.zip.root.dir}</directory>
+      <outputDirectory></outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0777</fileMode>
+      <includes>
+        <include>**/*.sh</include>
+      </includes>
     </fileSet>
     <fileSet>
       <directory>src/main/resources</directory>
-      <outputDirectory>/${dist.zip.root.dir}/</outputDirectory>
+      <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>
 
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>org.hawkular:hawkular-dist</include>
-      </includes>
-      <unpack>true</unpack>
-      <unpackOptions>
-        <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
-        <excludes>
-          <exclude>${dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
-        </excludes>
-      </unpackOptions>
-    </dependencySet>
-
-    <dependencySet>
-      <outputDirectory>${dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
+      <outputDirectory>/standalone/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.btm:hawkular-btm-btxn-service-rest:war</include>

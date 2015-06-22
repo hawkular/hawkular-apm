@@ -32,13 +32,13 @@
   <description>Hawkular BTM distribution.</description>
 
   <properties>
-    <dist.zip.root.dir>wildfly-${version.org.wildfly}</dist.zip.root.dir>
+    <dist.zip.root.dir>hawkular-accounts-distribution-${version.org.hawkular.accounts}</dist.zip.root.dir>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.hawkular</groupId>
-      <artifactId>hawkular-dist</artifactId>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-distribution</artifactId>
       <type>zip</type>
     </dependency>
 
@@ -65,19 +65,14 @@
             </goals>
             <configuration>
               <outputDirectory>${basedir}/target/hawkular</outputDirectory>
-              <includeArtifactIds>hawkular-dist</includeArtifactIds>
-              <!-- just unpack the config file - its all we need -->
-              <includes>*/standalone/configuration/standalone.xml</includes>
+              <includeArtifactIds>hawkular-accounts-distribution</includeArtifactIds>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
-      <!-- further customize standalone.xml -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.0</version> <!-- TODO remove after moving to parent pom 8 -->
         <executions>
           <execution>
             <id>transform-standalone-xml</id>
@@ -93,14 +88,13 @@
                   <includes>
                     <include>standalone.xml</include>
                   </includes>
-                  <outputDir>${basedir}/target/distro-resources/standalone/configuration</outputDir>
+                  <outputDir>${basedir}/target/hawkular/${dist.zip.root.dir}/standalone/configuration</outputDir>
                 </transformationSet>
               </transformationSets>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -119,42 +113,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
-
-  <profiles>
-    <!-- unzips the assembly so devs can run it right out of target/ -->
-    <profile>
-      <id>dev</id>
-      <properties>
-        <!-- This special realm for dev purposes has a default user 'jdoe' with password 'password' -->
-        <hawkular.realm.template>hawkular-realm-for-dev.json</hawkular.realm.template>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unzip-distro</id>
-                <phase>install</phase>
-                <configuration>
-                  <target>
-                    <unzip src="${project.build.directory}/${project.build.finalName}.zip" dest="${project.build.directory}" />
-                    <chmod dir="${project.build.directory}/${dist.zip.root.dir}/bin" includes="*.sh"
-                      perm="u+x" type="file" />
-                  </target>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
