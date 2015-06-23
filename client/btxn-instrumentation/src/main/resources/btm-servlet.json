@@ -1,0 +1,51 @@
+{
+  "instrumentation": {
+    "servlet": {
+      "description": "Servlet instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "Servlet Consumer Start",
+        "interfaceName": "^javax.servlet.Servlet",
+        "methodName": "service",
+        "parameterTypes": [
+          "javax.servlet.http.HttpServletRequest",
+          "javax.servlet.http.HttpServletResponse"
+        ],
+        "location": "ENTRY",
+        "condition": "!$1.getRequestURI().startsWith(\"/auth\") && !$1.getRequestURI().startsWith(\"/hawkular/btm\")",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getRequestURL().toString()",
+          "idExpression": "$1.getHeader(\"Btmid\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"principal\",$1.getRemoteUser())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"remoteAddr\",$1.getRemoteAddr())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"remoteHost\",$1.getRemoteHost())"
+        }]
+      },{
+        "ruleName": "Servlet Consumer End",
+        "interfaceName": "^javax.servlet.Servlet",
+        "methodName": "service",
+        "parameterTypes": [
+          "javax.servlet.http.HttpServletRequest",
+          "javax.servlet.http.HttpServletResponse"
+        ],
+        "location": "EXIT",
+        "condition": "!$1.getRequestURI().startsWith(\"/auth\") && !$1.getRequestURI().startsWith(\"/hawkular/btm\")",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getRequestURL().toString()"
+        }]
+      }]
+    }
+  }
+}

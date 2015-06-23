@@ -117,8 +117,8 @@ public class Service extends InvocationNode {
     public String toString() {
         return "Service [serviceType=" + serviceType + ", operation=" + operation + ", getRequest()=" + getRequest()
                 + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
-                + getStartTime() + ", getDuration()=" + getDuration() + ", getCorrelationIds()=" + getCorrelationIds()
-                + "]";
+                + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
+                + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 
 }

@@ -120,11 +120,12 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
     @Override
     public void store(String tenantId, List<BusinessTransaction> btxns) throws Exception {
 
+        URL url = new URL(baseUrl + "transactions");
+
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Store btxns [tenant="+tenantId+"]: "+btxns);
+            log.finest("Store btxns [tenant="+tenantId+"][url="+url+"]: "+btxns);
         }
 
-        URL url = new URL(baseUrl + "transactions");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("POST");

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.hawkular.btm</groupId>
+    <artifactId>hawkular-btm</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>hawkular-btm-tests-client-wildfly</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Hawkular BTM::Tests::Client Wildfly</name>
+
+  <properties>
+    <hawkular.host>127.0.0.1</hawkular.host>
+    <hawkular.port>8080</hawkular.port>
+    <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}</hawkular.base-uri>
+    <hawkular-btm.path>/hawkular/btm/</hawkular-btm.path>
+    <hawkular-btm.base-uri>${hawkular.base-uri}${hawkular-btm.path}</hawkular-btm.base-uri>
+    <!-- IMPORTANT: The port must be the port offset + 8080. -->
+    <wildfly.port.offset>1897</wildfly.port.offset>
+    <!-- IMPORTANT: The management port must be the port offset + 9990. -->
+    <wildfly.management.port>11887</wildfly.management.port>
+    <hawkular.home>${project.build.directory}/hawkular</hawkular.home>
+    <hawkular.btm.dist>${hawkular.home}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</hawkular.btm.dist>
+    <hawkular.configuration>${hawkular.btm.dist}/standalone/configuration</hawkular.configuration>
+    <hawkular.data>${hawkular.btm.dist}/standalone/data</hawkular.data>
+    <hawkular.deployments>${hawkular.btm.dist}/standalone/deployments</hawkular.deployments>
+    <hawkular.lib>${hawkular.btm.dist}/standalone/lib</hawkular.lib>
+
+    <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
+    <hawkular-btm.instrumentation>${project.basedir}/target/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-btm.logging>${project.basedir}/src/test/configuration/logging.properties</hawkular-btm.logging>
+
+    <jboss.home>${project.build.directory}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</jboss.home>
+    <server.config>standalone.xml</server.config>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-client-manager</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-client-se-rest</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-distribution</artifactId>
+      <type>zip</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-example-servlet-rest-tomcat</artifactId>
+      <type>war</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.byteman</groupId>
+      <artifactId>byteman</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <exclude>**/*.data</exclude>
+            <exclude>**/*.btm</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>get-client-all</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-client-se-rest</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular-btm.lib}</outputDirectory>
+                  <destFileName>hawkular-btm-client-se-rest.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-hawkular</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeGroupIds>org.hawkular.accounts</includeGroupIds>
+              <includeArtifactIds>hawkular-accounts-distribution</includeArtifactIds>
+              <outputDirectory>
+                ${hawkular.home}
+              </outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>update-hawkular-btm</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular.deployments}</outputDirectory>
+                  <destFileName>hawkular-btm-btxn-service-rest.war</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.camel</groupId>
+                  <artifactId>camel-example-servlet-rest-tomcat</artifactId>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular.deployments}</outputDirectory>
+                  <destFileName>camel-example-servlet-rest-tomcat.war</destFileName>
+                </artifactItem>
+
+                <!-- BTM client configuration -->
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-client-se-rest</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular.lib}</outputDirectory>
+                  <destFileName>hawkular-btm-client-se-rest.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${hawkular.configuration}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/test/resources/configuration</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>transform-standalone-xml</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <transformationSet>
+                  <dir>${hawkular.configuration}</dir>
+                  <stylesheet>src/test/scripts/standalone.xsl</stylesheet>
+                  <includes>
+                    <include>standalone.xml</include>
+                  </includes>
+                  <outputDir>${hawkular.configuration}</outputDir>
+                </transformationSet>
+              </transformationSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <hawkular.host>${hawkular.host}</hawkular.host>
+            <hawkular.port>${hawkular.port}</hawkular.port>
+            <hawkular.base-uri>${hawkular.base-uri}</hawkular.base-uri>
+            <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <id>exec-rest-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>**/*Test.java</include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>final-verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>1.1.0.Alpha3-SNAPSHOT</version>
+        <configuration>
+          <jboss-home>${hawkular.btm.dist}</jboss-home>
+          <javaOpts>
+            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client</javaOpt>
+          </javaOpts>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-wildfly</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <javaOpts>
+                <javaOpt>-Xms64m</javaOpt>
+                <javaOpt>-Xmx512m</javaOpt>
+                <javaOpt>-Xss256k</javaOpt>
+                <javaOpt>-Djava.net.preferIPv4Stack=true</javaOpt>
+                <javaOpt>-Dsun.rmi.dgc.client.gcInterval=3600000</javaOpt>
+                <javaOpt>-Dsun.rmi.dgc.server.gcInterval=3600000</javaOpt>
+                <javaOpt>-Xdebug</javaOpt>
+                <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
+                <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
+                <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
+                <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar,sys:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar</javaOpt>
+                <javaOpt>-Dorg.jboss.byteman.compileToBytecode</javaOpt>
+                <javaOpt>-Dhawkular-btm.config=${hawkular-btm.instrumentation}</javaOpt>
+                <javaOpt>-Dhawkular-btm.base-uri=http://localhost:8080/hawkular/btm</javaOpt>
+                <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>
+                <javaOpt>-Dhawkular-btm.password=password</javaOpt>
+                <javaOpt>-Djava.util.logging.config.file=${hawkular-btm.logging}</javaOpt>
+                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client</javaOpt>
+                <javaOpt>-Dhawkular-btm.log.level=INFO</javaOpt>
+              </javaOpts>
+              <startup-timeout>120</startup-timeout>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-wildfly</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>shutdown</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

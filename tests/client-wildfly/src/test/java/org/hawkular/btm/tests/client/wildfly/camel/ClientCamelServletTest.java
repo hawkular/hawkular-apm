@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.tests.wildfly;
+package org.hawkular.btm.tests.client.wildfly.camel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
@@ -35,7 +36,7 @@ import org.junit.Test;
  *
  * @author gbrown
  */
-public class CamelRESTTest {
+public class ClientCamelServletTest {
 
     /**  */
     private static final String TEST_PASSWORD = "password";
@@ -105,8 +106,10 @@ public class CamelRESTTest {
 
         List<BusinessTransaction> btxns = service.query(null, criteria);
 
-        // TODO: Amend once collector capturing business transaction fragments
-        assertEquals(0, btxns.size());
+        assertEquals(1, btxns.size());
+
+        // Check top level node is a Consumer associated with the servlet
+        assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());
     }
 
 }

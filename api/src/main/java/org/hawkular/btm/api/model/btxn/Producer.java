@@ -116,8 +116,8 @@ public class Producer extends InvocationNode {
     public String toString() {
         return "Producer [endpointType=" + endpointType + ", uri=" + uri + ", getRequest()=" + getRequest()
                 + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
-                + getStartTime() + ", getDuration()=" + getDuration() + ", getCorrelationIds()=" + getCorrelationIds()
-                + "]";
+                + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
+                + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 
 }
