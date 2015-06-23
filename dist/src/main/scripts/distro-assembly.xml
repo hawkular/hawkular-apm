@@ -66,6 +66,15 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
+      <outputDirectory>/btm/client/config</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.btm:hawkular-btm-btxn-instrumentation:zip</include>
+      </includes>
+      <unpack>true</unpack>
+      <fileMode>0644</fileMode>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>/btm/client/lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>

@@ -60,6 +60,7 @@
     <module>api</module>
     <module>backend/btxn-service-rest</module>
     <module>client/btxn-collector</module>
+    <module>client/btxn-instrumentation</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
     <module>client/client-se-rest</module>
@@ -121,6 +122,12 @@
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-collector</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
