@@ -36,7 +36,8 @@
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.configuration>${project.basedir}/src/test/configuration</hawkular-btm.configuration>
+    <hawkular-btm.instrumentation>${project.basedir}/target/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-btm.logging>${project.basedir}/src/test/configuratio/logging.propertiesn</hawkular-btm.logging>
 
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
@@ -163,6 +164,23 @@
               </artifactItems>
             </configuration>
           </execution>
+          <execution>
+            <id>unpack</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -175,11 +193,11 @@
               -Dorg.jboss.byteman.transform.all
               -javaagent:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar
               -Dorg.jboss.byteman.compileToBytecode
-              -Dhawkular-btm.config=${hawkular-btm.configuration}/collector
+              -Dhawkular-btm.config=${hawkular-btm.instrumentation}
               -Dhawkular-btm.base-uri=http://localhost:8080/hawkular/btm
               -Dhawkular-btm.username=jdoe
               -Dhawkular-btm.password=password
-              -Djava.util.logging.config.file=${hawkular-btm.configuration}/logging.properties
+              -Djava.util.logging.config.file=${hawkular-btm.logging}
           </argLine>
           <systemPropertyVariables>
             <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>

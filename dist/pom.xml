@@ -51,6 +51,11 @@
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-client-se-rest</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+      <type>zip</type>
+    </dependency>
 
   </dependencies>
 
