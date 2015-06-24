@@ -65,7 +65,6 @@ public class BusinessTransactionServiceInMemory extends AbstractBusinessTransact
 
     @Override
     protected void doStore(String tenantId, BusinessTransaction btxn) throws Exception {
-
         synchronized (txns) {
             BusinessTransaction old = idMap.put(btxn.getId(), btxn);
 

@@ -27,7 +27,7 @@
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
-          "endpointTypeExpression": "\"REST\"",
+          "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
           "idExpression": "id",
           "headersExpression": "headers.getValuesMap()"
@@ -49,7 +49,7 @@
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",
-          "endpointTypeExpression": "\"REST\"",
+          "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
           "headersExpression": "headers.getValuesMap()"
         }]
@@ -74,7 +74,7 @@
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
-          "endpointTypeExpression": "\"REST\"",
+          "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
           "idExpression": "id",
           "headersExpression": "headers.getValuesMap()"
@@ -100,7 +100,7 @@
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
-          "endpointTypeExpression": "\"REST\"",
+          "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
           "headersExpression": "headers.getValuesMap()"
         }]

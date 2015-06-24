@@ -308,6 +308,56 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#setProperty(java.lang.String,
+     *                          java.lang.String)
+     */
+    @Override
+    public void setProperty(String name, String value) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Add property: name=" + name + " value=" + value);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                builder.getBusinessTransaction().getProperties().put(name, value);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setProperty failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#setDetail(java.lang.String,
+     *                          java.lang.String)
+     */
+    @Override
+    public void setDetail(String name, String value) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Add property: name=" + name + " value=" + value);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                builder.getCurrentNode().getDetails().put(name, value);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setDetail failed", t);
+            }
+        }
+    }
+
     /**
      * @return the businessTransactionService
      */

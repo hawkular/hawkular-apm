@@ -140,8 +140,8 @@ public class Component extends InvocationNode {
     public String toString() {
         return "Component [componentType=" + componentType + ", operation=" + operation + ", uri=" + uri
                 + ", getRequest()=" + getRequest() + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes()
-                + ", getStartTime()=" + getStartTime() + ", getDuration()=" + getDuration() + ", getCorrelationIds()="
-                + getCorrelationIds() + "]";
+                + ", getStartTime()=" + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()="
+                + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 
 }

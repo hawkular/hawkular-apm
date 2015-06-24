@@ -16,7 +16,9 @@
  */
 package org.hawkular.btm.api.model.btxn;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
@@ -50,6 +52,9 @@ public abstract class Node {
     private long duration = 0;
 
     @JsonInclude(Include.NON_EMPTY)
+    private Map<String, String> details = new HashMap<String, String>();
+
+    @JsonInclude(Include.NON_EMPTY)
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
 
     public Node() {
@@ -81,6 +86,22 @@ public abstract class Node {
      */
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    /**
+     * This method returns the specific details about the node.
+     *
+     * @return the details
+     */
+    public Map<String, String> getDetails() {
+        return details;
+    }
+
+    /**
+     * @param details the details to set
+     */
+    public void setDetails(Map<String, String> details) {
+        this.details = details;
     }
 
     /**
@@ -182,42 +203,46 @@ public abstract class Node {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((correlationIds == null) ? 0 : correlationIds.hashCode());
+        result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (startTime ^ (startTime >>> 32));
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         Node other = (Node) obj;
         if (correlationIds == null) {
-            if (other.correlationIds != null) {
+            if (other.correlationIds != null)
                 return false;
-            }
-        } else if (!correlationIds.equals(other.correlationIds)) {
+        } else if (!correlationIds.equals(other.correlationIds))
             return false;
-        }
-        if (duration != other.duration) {
+        if (duration != other.duration)
             return false;
-        }
-        if (startTime != other.startTime) {
+        if (details == null) {
+            if (other.details != null)
+                return false;
+        } else if (!details.equals(other.details))
             return false;
-        }
+        if (startTime != other.startTime)
+            return false;
         return true;
     }
 

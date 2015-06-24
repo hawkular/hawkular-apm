@@ -83,6 +83,9 @@ public class BusinessTransaction {
     }
 
     /**
+     * This method returns properties that can be used to search for
+     * the business transaction.
+     *
      * @return the properties
      */
     public Map<String, String> getProperties() {

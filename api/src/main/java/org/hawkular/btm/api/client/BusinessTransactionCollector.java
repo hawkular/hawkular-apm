@@ -113,6 +113,22 @@ public interface BusinessTransactionCollector {
     void producerEnd(String type, String uri, String id, Map<String,?> headers, Object... values);
 
     /**
+     * This method sets a property on the business transaction.
+     *
+     * @param name The property name
+     * @param value The property value
+     */
+    void setProperty(String name, String value);
+
+    /**
+     * This method sets a detail on the current node.
+     *
+     * @param name The detail name
+     * @param value The detail value
+     */
+    void setDetail(String name, String value);
+
+    /**
      * This method returns the session manager associated with the
      * current thread of execution.
      *
