@@ -19,11 +19,11 @@
         },{
           "name": "id",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Btmid\")"
+          "expression": "headers.getFirstValue(\"Hawkular-btm\")"
         }],
         "actions": [{
           "type": "FreeFormAction",
-          "action": "headers.removeAll(\"Btmid\")"
+          "action": "headers.removeAll(\"Hawkular-btm\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -80,7 +80,7 @@
           "headersExpression": "headers.getValuesMap()"
         },{
           "type": "FreeFormAction",
-          "action": "headers.set(\"Btmid\",id)"
+          "action": "headers.set(\"Hawkular-btm\",id)"
         }]
       },{
         "ruleName": "Restlet Async Producer End",
