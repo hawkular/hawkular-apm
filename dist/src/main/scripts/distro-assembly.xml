@@ -78,7 +78,7 @@
       <outputDirectory>/btm/client/lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.btm:hawkular-btm-client-se-rest:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-client-rest:jar</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>

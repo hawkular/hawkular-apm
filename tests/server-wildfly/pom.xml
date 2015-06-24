@@ -190,10 +190,10 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-se-rest</artifactId>
+                  <artifactId>hawkular-btm-client-rest</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-se-rest.jar</destFileName>
+                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -301,7 +301,7 @@
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
                 <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
-                <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular.lib}/byteman.jar,sys:${hawkular.lib}/hawkular-btm-client-se-rest.jar</javaOpt>
+                <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular.lib}/byteman.jar,sys:${hawkular.lib}/hawkular-btm-client-rest.jar</javaOpt>
                 <javaOpt>-Dhawkular-btm.config=${hawkular.configuration}/hawkular-btm-config.json</javaOpt>
                 <javaOpt>-Dorg.jboss.byteman.compileToBytecode</javaOpt>
               </javaOpts>

@@ -63,7 +63,7 @@
     <module>client/btxn-instrumentation</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
-    <module>client/client-se-rest</module>
+    <module>client/client-rest</module>
     <module>client/config-manager-rest-client</module>
     <module>processors/btxn-builder</module>
     <module>processors/fault-detector</module>
@@ -141,7 +141,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-client-se-rest</artifactId>
+        <artifactId>hawkular-btm-client-rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
