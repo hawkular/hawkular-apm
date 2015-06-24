@@ -52,7 +52,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-se-rest</artifactId>
+      <artifactId>hawkular-btm-client-rest</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -106,10 +106,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-se-rest</artifactId>
+                  <artifactId>hawkular-btm-client-rest</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-se-rest.jar</destFileName>
+                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -186,7 +186,7 @@
                     <pathelement path="${runtime_classpath}"/>
                   </classpath>
                   <jvmarg value="-Dorg.jboss.byteman.transform.all"/>
-                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-se-rest.jar"/>
+                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar"/>
                   <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json"/>
                   <jvmarg value="-Dorg.jboss.byteman.compileToBytecode"/>
                   <jvmarg value="-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}"/>

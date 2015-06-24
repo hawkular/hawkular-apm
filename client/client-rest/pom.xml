@@ -29,9 +29,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-client-se-rest</artifactId>
+  <artifactId>hawkular-btm-client-rest</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular BTM::Client::SE REST</name>
+  <name>Hawkular BTM::Client::REST</name>
 
   <dependencies>
 

@@ -49,7 +49,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-se-rest</artifactId>
+      <artifactId>hawkular-btm-client-rest</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
