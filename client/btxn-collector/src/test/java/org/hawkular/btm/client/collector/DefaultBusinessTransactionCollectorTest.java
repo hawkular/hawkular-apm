@@ -200,7 +200,6 @@ public class DefaultBusinessTransactionCollectorTest {
         assertEquals("myid", cid.getValue());
     }
 
-
     @Test
     public void testLink() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
@@ -223,6 +222,18 @@ public class DefaultBusinessTransactionCollectorTest {
                 assertTrue(other.getUnlinkedIds().isEmpty());
             }
         });
+    }
+
+    @Test
+    public void testIsActive() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        assertFalse(collector.isActive());
+
+        // Cause a fragment builder to be created
+        collector.getFragmentManager().getFragmentBuilder();
+
+        assertTrue(collector.isActive());
     }
 
     public static class TestBTxnService implements BusinessTransactionService {

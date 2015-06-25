@@ -521,6 +521,22 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        try {
+            return fragmentManager.hasFragmentBuilder();
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "isActive failed", t);
+            }
+        }
+
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#retainNode(java.lang.String)
      */
     @Override
