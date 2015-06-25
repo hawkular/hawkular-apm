@@ -27,6 +27,14 @@ import org.hawkular.btm.api.model.btxn.Node;
 public interface SessionManager {
 
     /**
+     * This method determines if there is an active session associated with
+     * this thread of execution.
+     *
+     * @return Whether the current thread of execution has an active session
+     */
+    boolean isActive();
+
+    /**
      * This method indicates that the current node, for this thread of execution, should
      * be retained temporarily pending further changes. IMPORTANT: Make sure the node
      * is released, as otherwise this will prevent the fragment from being completed
