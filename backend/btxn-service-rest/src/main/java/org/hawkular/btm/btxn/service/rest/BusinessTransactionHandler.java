@@ -107,7 +107,7 @@ public class BusinessTransactionHandler {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success, business transaction found and returned"),
             @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 400, message = "Unknown business transaction id") })
+            @ApiResponse(code = 404, message = "Unknown business transaction id") })
     public void getBusinessTransaction(@Suspended final AsyncResponse response,
             @ApiParam(required = true, value = "id of required business transaction") @PathParam("id") String id) {
 
@@ -116,7 +116,7 @@ public class BusinessTransactionHandler {
 
             if (btxn == null) {
                 log.tracef("Business transaction '" + id + "' not found");
-                response.resume(Response.status(Response.Status.BAD_REQUEST).type(APPLICATION_JSON_TYPE).build());
+                response.resume(Response.status(Response.Status.NOT_FOUND).type(APPLICATION_JSON_TYPE).build());
             } else {
                 log.tracef("Business transaction '" + id + "' found");
                 response.resume(Response.status(Response.Status.OK).entity(btxn).type(APPLICATION_JSON_TYPE)
