@@ -127,8 +127,8 @@ public class ClientCamelVmSedaTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        // Check stored business transactions
-        assertEquals(3, getBtxnService().getBusinessTransactions().size());
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(4, getBtxnService().getBusinessTransactions().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;

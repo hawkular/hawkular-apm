@@ -135,8 +135,8 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        // Check stored business transactions
-        assertEquals(5, getBtxnService().getBusinessTransactions().size());
+        // Check stored business transactions (including 1 for test client)
+        assertEquals(6, getBtxnService().getBusinessTransactions().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;

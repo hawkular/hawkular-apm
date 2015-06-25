@@ -85,10 +85,10 @@
           "direction": "Request",
           "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
-          "idExpression": "$2.getProperty(\"btmid\")"
+          "idExpression": "$2.getProperty(\"Hawkular-btm\")"
         },{
           "type": "FreeFormAction",
-          "action": "$2.removeProperty(\"btmid\")"
+          "action": "$2.removeProperty(\"Hawkular-btm\")"
         }]
       },{
         "ruleName": "Camel Inbound Consumer End",
@@ -130,7 +130,7 @@
           "idExpression": "id"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"btmid\",id)"
+          "action": "$2.setProperty(\"Hawkular-btm\",id)"
         }]
       },{
         "ruleName": "Camel Outbound Producer End",

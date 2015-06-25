@@ -1,0 +1,47 @@
+{
+  "instrumentation": {
+    "httpurlcon": {
+      "description": "HttpUrlConnection instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "HttpUrlConnection Producer Start",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "connect",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\")",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.getURL().toString()",
+          "idExpression": "id",
+          "headersExpression": "$0.getRequestProperties()"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
+        }]
+      },{
+        "ruleName": "HttpUrlConnection Producer End",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "connect",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\")",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.getURL().toString()"
+        }]
+      }]
+    }
+  }
+}
