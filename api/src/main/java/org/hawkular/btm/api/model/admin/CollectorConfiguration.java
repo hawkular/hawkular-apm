@@ -55,10 +55,10 @@ public class CollectorConfiguration {
      * @param overwrite Whether to overwrite when conflict found
      * @throws IllegalArgumentException Failed to merge due to a conflict
      */
-    public void merge(CollectorConfiguration config, boolean override)
+    public void merge(CollectorConfiguration config, boolean overwrite)
                         throws IllegalArgumentException {
         for (String key : config.getInstrumentation().keySet()) {
-            if (getInstrumentation().containsKey(key) && !override) {
+            if (getInstrumentation().containsKey(key) && !overwrite) {
                 throw new IllegalArgumentException("Instrumentation for '"+key+"' already exists");
             }
             getInstrumentation().put(key, config.getInstrumentation().get(key));

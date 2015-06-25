@@ -42,6 +42,8 @@ public class ServiceResolver {
      *
      * @param intf The interface
      * @return The service, or null if not found
+     *
+     * @param <T> The service interface
      */
     @SuppressWarnings("unchecked")
     public static <T> CompletableFuture<T> getSingletonService(Class<T> intf) {
@@ -73,6 +75,8 @@ public class ServiceResolver {
      *
      * @param intf The interface
      * @return The list
+     *
+     * @param <T> The service interface
      */
     public static <T> List<T> getServices(Class<T> intf) {
         List<T> ret=new ArrayList<T>();

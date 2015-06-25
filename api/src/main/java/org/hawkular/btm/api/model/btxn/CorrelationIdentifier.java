@@ -102,7 +102,7 @@ public class CorrelationIdentifier {
      * @param thisBaseTime This correlation id's base time
      * @param cid The correlation id to match against
      * @param cidBaseTime The base time of the correlation id to match
-     * @return
+     * @return Whether the correlation id matches
      */
     public boolean match(long thisBaseTime, CorrelationIdentifier cid, long cidBaseTime) {
 
@@ -126,7 +126,7 @@ public class CorrelationIdentifier {
      * @param duration1 Duration 1
      * @param baseTime2 Base time 2
      * @param duration2 Duration 2
-     * @return
+     * @return Whether there is an overlap
      */
     protected static boolean isOverlap(long baseTime1, int duration1, long baseTime2, int duration2) {
         long endTime1 = baseTime1 + duration1;

@@ -495,7 +495,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         if (builder.isComplete()) {
             BusinessTransaction btxn = builder.getBusinessTransaction();
 
-            log.info("Record business transaction: " + btxn);
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Record business transaction: " + btxn);
+            }
 
             if (businessTransactionService != null) {
                 Executors.newSingleThreadExecutor().execute(new Runnable() {

@@ -93,8 +93,8 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
      * to implement storing a business transaction.
      *
      * @param tenantId The tenant
-     * @param btxn
-     * @throws Exception
+     * @param btxn The business transaction
+     * @throws Exception Failed to store business transaction
      */
     protected abstract void doStore(String tenantId, BusinessTransaction btxn) throws Exception;
 
