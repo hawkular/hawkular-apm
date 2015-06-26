@@ -30,6 +30,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -41,8 +47,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -268,6 +279,132 @@ public class ClientHttpTest extends ClientTestBase {
 
         // Check stored business transactions (including 1 for the test client)
         assertEquals(1, getBtxnService().getBusinessTransactions().size());
+
+        List<Producer> producers = new ArrayList<Producer>();
+        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+
+        assertEquals("Expecting 1 producers", 1, producers.size());
+
+        Producer testProducer = producers.get(0);
+
+        assertEquals(SAY_HELLO_URL, testProducer.getUri());
+    }
+
+    @Test
+    public void testJaxRSClientGET() {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().get();
+        String value = response.readEntity(String.class);
+        response.close();
+
+        assertEquals(HELLO_WORLD, value);
+
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait for btxns to store");
+        }
+
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+
+        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        List<Producer> producers = new ArrayList<Producer>();
+        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+
+        assertEquals("Expecting 1 producers", 1, producers.size());
+
+        Producer testProducer = producers.get(0);
+
+        assertEquals(SAY_HELLO_URL, testProducer.getUri());
+    }
+
+    @Test
+    public void testJaxRSClientPOST() {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().post(Entity.<String>text("Hello"));
+        String value = response.readEntity(String.class);
+        response.close();
+
+        assertEquals(HELLO_WORLD, value);
+
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait for btxns to store");
+        }
+
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+
+        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        List<Producer> producers = new ArrayList<Producer>();
+        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+
+        assertEquals("Expecting 1 producers", 1, producers.size());
+
+        Producer testProducer = producers.get(0);
+
+        assertEquals(SAY_HELLO_URL, testProducer.getUri());
+    }
+
+    @Test
+    public void testJaxRSClientPUT() {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().put(Entity.<String>text("Hello"));
+        String value = response.readEntity(String.class);
+        response.close();
+
+        assertEquals(HELLO_WORLD, value);
+
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait for btxns to store");
+        }
+
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+
+        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         List<Producer> producers = new ArrayList<Producer>();
         findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);

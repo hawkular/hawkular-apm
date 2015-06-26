@@ -11,7 +11,7 @@
           "org.apache.http.client.methods.HttpUriRequest"
         ],
         "location": "ENTRY",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -38,7 +38,7 @@
           "org.apache.http.client.methods.HttpUriRequest"
         ],
         "location": "EXIT",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -54,7 +54,7 @@
           "org.apache.http.client.ResponseHandler"
         ],
         "location": "ENTRY",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -82,7 +82,7 @@
           "org.apache.http.client.ResponseHandler"
         ],
         "location": "EXIT",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",

@@ -1,0 +1,52 @@
+{
+  "instrumentation": {
+    "jboss-resteasy": {
+      "description": "JBoss RESTEasy Client instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "JBoss RESTEasy Client Producer Start",
+        "interfaceName": "^org.jboss.resteasy.client.jaxrs.ClientHttpEngine",
+        "methodName": "invoke",
+        "parameterTypes": [
+          "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getUri().toString()",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"jboss-resteasy\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_http_method\",$1.getMethod())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.getHeaders().header(\"Hawkular-btm\",id)"
+        }]
+      },{
+        "ruleName": "JBoss RESTEasy Client Producer End",
+        "interfaceName": "^org.jboss.resteasy.client.jaxrs.ClientHttpEngine",
+        "methodName": "invoke",
+        "parameterTypes": [
+          "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation"
+        ],
+        "location": "EXIT",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getUri().toString()"
+        }]
+      }]
+    }
+  }
+}
