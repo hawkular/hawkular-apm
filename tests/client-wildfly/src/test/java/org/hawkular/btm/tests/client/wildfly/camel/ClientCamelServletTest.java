@@ -44,6 +44,17 @@ public class ClientCamelServletTest {
     private static final String TEST_USERNAME = "jdoe";
 
     @Test
+    public void testPlaceholder() {
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+    }
+
+    @Test
     @org.junit.Ignore("Ignore until wildfly-maven-plugin 1.1.0.Alpha3 released. See HWKBTM-47")
     public void testInvokeCamelRESTService() {
 
