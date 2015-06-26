@@ -1,10 +1,10 @@
 {
   "instrumentation": {
-    "camel": {
-      "description": "Camel instrumentation",
+    "apache-camel": {
+      "description": "Apache Camel instrumentation",
       "version": "1",
       "rules": [{
-        "ruleName": "Camel Inbound Component Start",
+        "ruleName": "Apache Camel Inbound Component Start",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeCreated",
         "parameterTypes": [
@@ -18,9 +18,12 @@
           "direction": "Request",
           "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"apache-camel\")"
         }]
       },{
-        "ruleName": "Camel Inbound Component End",
+        "ruleName": "Apache Camel Inbound Component End",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeDone",
         "parameterTypes": [
@@ -36,7 +39,7 @@
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
         }]
       },{
-        "ruleName": "Camel Outbound Component Start",
+        "ruleName": "Apache Camel Outbound Component Start",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSending",
         "parameterTypes": [
@@ -51,9 +54,12 @@
           "direction": "Request",
           "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
           "uriExpression": "$3.getEndpointUri()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"apache-camel\")"
         }]
       },{
-        "ruleName": "Camel Outbound Component End",
+        "ruleName": "Apache Camel Outbound Component End",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSent",
         "parameterTypes": [
@@ -71,7 +77,7 @@
           "uriExpression": "$3.getEndpointUri()"
         }]
       },{
-        "ruleName": "Camel Inbound Consumer Start",
+        "ruleName": "Apache Camel Inbound Consumer Start",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeCreated",
         "parameterTypes": [
@@ -88,10 +94,13 @@
           "idExpression": "$2.getProperty(\"Hawkular-btm\")"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"apache-camel\")"
+        },{
+          "type": "FreeFormAction",
           "action": "$2.removeProperty(\"Hawkular-btm\")"
         }]
       },{
-        "ruleName": "Camel Inbound Consumer End",
+        "ruleName": "Apache Camel Inbound Consumer End",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeDone",
         "parameterTypes": [
@@ -107,7 +116,7 @@
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
         }]
       },{
-        "ruleName": "Camel Outbound Producer Start",
+        "ruleName": "Apache Camel Outbound Producer Start",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSending",
         "parameterTypes": [
@@ -130,10 +139,13 @@
           "idExpression": "id"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"apache-camel\")"
+        },{
+          "type": "FreeFormAction",
           "action": "$2.setProperty(\"Hawkular-btm\",id)"
         }]
       },{
-        "ruleName": "Camel Outbound Producer End",
+        "ruleName": "Apache Camel Outbound Producer End",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSent",
         "parameterTypes": [

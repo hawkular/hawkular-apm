@@ -29,10 +29,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tests-client-camel</artifactId>
+  <artifactId>hawkular-btm-tests-client</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Client Camel</name>
+  <name>Hawkular BTM::Tests::Client</name>
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>

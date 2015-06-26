@@ -32,7 +32,7 @@
   <artifactId>hawkular-btm-tests-client-wildfly</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Client Wildfly</name>
+  <name>Hawkular BTM::Tests::Client in Wildfly</name>
 
   <properties>
     <hawkular.host>127.0.0.1</hawkular.host>

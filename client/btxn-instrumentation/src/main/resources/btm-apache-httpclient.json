@@ -1,0 +1,95 @@
+{
+  "instrumentation": {
+    "apache-httpclient": {
+      "description": "Apache HttpClient instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "Apache HttpClient Producer Start",
+        "interfaceName": "^org.apache.http.client.HttpClient",
+        "methodName": "execute",
+        "parameterTypes": [
+          "org.apache.http.client.methods.HttpUriRequest"
+        ],
+        "location": "ENTRY",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getURI().toString()",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"apache-httpclient\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.setHeader(\"Hawkular-btm\",id)"
+        }]
+      },{
+        "ruleName": "Apache HttpClient Producer End",
+        "interfaceName": "^org.apache.http.client.HttpClient",
+        "methodName": "execute",
+        "parameterTypes": [
+          "org.apache.http.client.methods.HttpUriRequest"
+        ],
+        "location": "EXIT",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getURI().toString()"
+        }]
+      },{
+        "ruleName": "Apache HttpClient ResponseHandler Producer Start",
+        "interfaceName": "^org.apache.http.client.HttpClient",
+        "methodName": "execute",
+        "parameterTypes": [
+          "org.apache.http.client.methods.HttpUriRequest",
+          "org.apache.http.client.ResponseHandler"
+        ],
+        "location": "ENTRY",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getURI().toString()",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"apache-httpclient\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.setHeader(\"Hawkular-btm\",id)"
+        }]
+      },{
+        "ruleName": "Apache HttpClient ResponseHandler Producer End",
+        "interfaceName": "^org.apache.http.client.HttpClient",
+        "methodName": "execute",
+        "parameterTypes": [
+          "org.apache.http.client.methods.HttpUriRequest",
+          "org.apache.http.client.ResponseHandler"
+        ],
+        "location": "EXIT",
+        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\")",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getURI().toString()"
+        }]
+      }]
+    }
+  }
+}

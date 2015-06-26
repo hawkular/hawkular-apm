@@ -353,7 +353,7 @@
     <profile>
       <id>tests</id>
       <modules>
-        <module>tests/client-camel</module>
+        <module>tests/client</module>
         <module>tests/client-java</module>
         <module>tests/client-wildfly</module>
         <module>tests/server-wildfly</module>

@@ -32,7 +32,7 @@
   <artifactId>hawkular-btm-tests-client-java</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Client Java</name>
+  <name>Hawkular BTM::Tests::Client in Java App</name>
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>

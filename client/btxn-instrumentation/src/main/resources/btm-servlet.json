@@ -1,10 +1,10 @@
 {
   "instrumentation": {
-    "servlet": {
-      "description": "Servlet instrumentation",
+    "javax-servlet": {
+      "description": "Javax Servlet instrumentation",
       "version": "1",
       "rules": [{
-        "ruleName": "Servlet Consumer Start",
+        "ruleName": "Javax Servlet Consumer Start",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
         "parameterTypes": [
@@ -21,6 +21,9 @@
           "idExpression": "$1.getHeader(\"Hawkular-btm\")"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"javax-servlet\")"
+        },{
+          "type": "FreeFormAction",
           "action": "collector().setDetail(\"principal\",$1.getRemoteUser())"
         },{
           "type": "FreeFormAction",
@@ -30,7 +33,7 @@
           "action": "collector().setDetail(\"remoteHost\",$1.getRemoteHost())"
         }]
       },{
-        "ruleName": "Servlet Consumer End",
+        "ruleName": "Javax Servlet Consumer End",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
         "parameterTypes": [

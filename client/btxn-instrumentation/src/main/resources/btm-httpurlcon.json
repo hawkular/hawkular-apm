@@ -1,10 +1,10 @@
 {
   "instrumentation": {
-    "httpurlcon": {
-      "description": "HttpUrlConnection instrumentation",
+    "java-httpurlconnection": {
+      "description": "Java HttpUrlConnection instrumentation",
       "version": "1",
       "rules": [{
-        "ruleName": "HttpUrlConnection Producer Start",
+        "ruleName": "Java HttpUrlConnection Producer Start",
         "className": "^java.net.HttpURLConnection",
         "methodName": "connect",
         "parameterTypes": [
@@ -25,10 +25,13 @@
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+        },{
+          "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
         }]
       },{
-        "ruleName": "HttpUrlConnection Producer End",
+        "ruleName": "Java HttpUrlConnection Producer End",
         "className": "^java.net.HttpURLConnection",
         "methodName": "connect",
         "parameterTypes": [
