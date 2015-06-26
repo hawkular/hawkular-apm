@@ -1,7 +1,7 @@
 {
   "instrumentation": {
-    "jms": {
-      "description": "JMS instrumentation",
+    "javax-jms": {
+      "description": "Javax JMS instrumentation",
       "version": "1",
       "rules": [{
         "ruleName": "JMS Consumer Start",
@@ -18,9 +18,12 @@
           "endpointTypeExpression": "\"JMS\"",
           "uriExpression": "$1.getJMSDestination()",
           "idExpression": "$1.getJMSMessageID()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
         }]
       },{
-        "ruleName": "JMS Consumer End",
+        "ruleName": "Javax JMS Consumer End",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -38,7 +41,7 @@
           "action": "collector().session().assertComplete()"
         }]
       },{
-        "ruleName": "JMS Producer Sync Start",
+        "ruleName": "Javax JMS Producer Sync Start",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -57,10 +60,13 @@
           "uriExpression": "$1"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
+        },{
+          "type": "FreeFormAction",
           "action": "collector().session().retainNode(\"jmsProducer\")"
         }]
       },{
-        "ruleName": "JMS Producer Start",
+        "ruleName": "Javax JMS Producer Start",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -79,13 +85,16 @@
           "uriExpression": "$1"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
+        },{
+          "type": "FreeFormAction",
           "action": "collector().session().retainNode(\"jmsProducer\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().initiateLink($2.getJMSReplyTo())"
         }]
       },{
-        "ruleName": "JMS Producer Sync End",
+        "ruleName": "Javax JMS Producer Sync End",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -104,7 +113,7 @@
           "uriExpression": "$1"
         }]
       },{
-        "ruleName": "JMS Producer Async End",
+        "ruleName": "Javax JMS Producer Async End",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -121,7 +130,7 @@
           "endpointTypeExpression": "\"JMS\""
         }]
       },{
-        "ruleName": "JMS Producer Async Response Thread Complete",
+        "ruleName": "Javax JMS Producer Async Response Thread Complete",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -134,7 +143,7 @@
           "action": "collector().session().unlink()"
         }]
       },{
-        "ruleName": "JMS Producer Set Identifier",
+        "ruleName": "Javax JMS Producer Set Identifier",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [

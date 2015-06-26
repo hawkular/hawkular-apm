@@ -31,6 +31,9 @@
           "uriExpression": "$1.getResourceRef()",
           "idExpression": "id",
           "headersExpression": "headers.getValuesMap()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"restlet\")"
         }]
       },{
         "ruleName": "Restlet Async Consumer End",
@@ -48,57 +51,6 @@
         }],
         "actions": [{
           "type": "InstrumentConsumer",
-          "direction": "Response",
-          "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$1.getResourceRef()",
-          "headersExpression": "headers.getValuesMap()"
-        }]
-      },{
-        "ruleName": "Restlet Async Producer Start",
-        "className": "org.restlet.Restlet",
-        "methodName": "handle",
-        "parameterTypes": [
-           "org.restlet.Request",
-           "org.restlet.Uniform"
-        ],
-        "location": "ENTRY",
-        "binds": [{
-          "name": "headers",
-          "type": "org.restlet.util.Series",
-          "expression": "$1.getAttributes().get(\"org.restlet.http.headers\")"
-        },{
-          "name": "id",
-          "type": "java.lang.String",
-          "expression": "createUUID()"
-        }],
-        "actions": [{
-          "type": "InstrumentProducer",
-          "direction": "Request",
-          "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$1.getResourceRef()",
-          "idExpression": "id",
-          "headersExpression": "headers.getValuesMap()"
-        },{
-          "type": "FreeFormAction",
-          "action": "headers.set(\"Hawkular-btm\",id)"
-        }]
-      },{
-        "ruleName": "Restlet Async Producer End",
-        "interfaceName": "^org.restlet.Uniform",
-        "methodName": "handle",
-        "parameterTypes": [
-           "org.restlet.Request",
-           "org.restlet.Response"
-        ],
-        "location": "ENTRY",
-        "binds": [{
-          "name": "headers",
-          "type": "org.restlet.util.Series",
-          "expression": "$2.getAttributes().get(\"org.restlet.http.headers\")"
-        }],
-        "condition": "callerEquals(\"ClientAdapter$1.handle\", true)",
-        "actions": [{
-          "type": "InstrumentProducer",
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",

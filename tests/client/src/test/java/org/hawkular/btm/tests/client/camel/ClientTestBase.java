@@ -21,9 +21,6 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
@@ -36,22 +33,12 @@ import org.junit.Before;
 /**
  * @author gbrown
  */
-public abstract class ClientCamelTestBase {
-
-    private CamelContext context = new DefaultCamelContext();
+public abstract class ClientTestBase {
 
     private TestBTxnService btxnService = new TestBTxnService();
 
     @Before
     public void init() {
-        try {
-            initContext(context);
-
-            context.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         try {
             btxnService.setShutdownTimer(-1); // Disable timer
             btxnService.run();
@@ -60,31 +47,8 @@ public abstract class ClientCamelTestBase {
         }
     }
 
-    /**
-     * This method initialises the camel context.
-     *
-     * @param context The camel context
-     * @throws Exception Failed to initialise
-     */
-    protected void initContext(CamelContext context) throws Exception {
-        context.addRoutes(getRouteBuilder());
-    }
-
-    /**
-     * This method defines the route to be tested.
-     *
-     * @return The route builder
-     */
-    protected abstract RouteBuilder getRouteBuilder();
-
     @After
     public void close() {
-        try {
-            context.stop();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         try {
             btxnService.shutdown();
         } catch (Exception e) {
