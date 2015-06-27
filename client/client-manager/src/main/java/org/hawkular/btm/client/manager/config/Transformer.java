@@ -71,16 +71,21 @@ public class Transformer {
 
             builder.append("METHOD ");
             builder.append(rule.getMethodName());
-            builder.append('(');
 
-            for (int i = 0; i < rule.getParameterTypes().size(); i++) {
-                if (i > 0) {
-                    builder.append(',');
+            // Check if single parameter is "*", representing 'any' parameters
+            if (rule.getParameterTypes().size() != 1 || !rule.getParameterTypes().get(0).equals("*")) {
+                builder.append('(');
+
+                for (int i = 0; i < rule.getParameterTypes().size(); i++) {
+                    if (i > 0) {
+                        builder.append(',');
+                    }
+                    builder.append(rule.getParameterTypes().get(i));
                 }
-                builder.append(rule.getParameterTypes().get(i));
+
+                builder.append(')');
             }
 
-            builder.append(')');
             builder.append("\r\n");
 
             builder.append("HELPER ");

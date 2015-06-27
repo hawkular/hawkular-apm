@@ -31,6 +31,8 @@ import org.junit.Test;
 public class TransformerTest {
 
     /**  */
+    private static final String ANY_PARAMETERS = "*";
+    /**  */
     private static final String BIND_EXPR2 = "BindExpr2";
     /**  */
     private static final String BIND_TYPE2 = "BindType2";
@@ -54,6 +56,65 @@ public class TransformerTest {
     private static final String TEST_CLASS = "TestClass";
     /**  */
     private static final String TEST_RULE = "TestRule";
+
+    @Test
+    public void testTransformNoParameters() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in);
+
+        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "()\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\nIF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformAnyParameters() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.getParameterTypes().add(ANY_PARAMETERS);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in);
+
+        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\nIF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
 
     @Test
     public void testTransformNoConditionLocationEntry() {
