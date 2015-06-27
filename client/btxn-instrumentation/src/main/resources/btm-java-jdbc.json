@@ -1,0 +1,161 @@
+{
+  "instrumentation": {
+    "java-jdbc": {
+      "description": "Java JDBC instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "Java JDBC Query Component Start",
+        "interfaceName": "^java.sql.Statement",
+        "methodName": "executeQuery",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Request",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"statement\",$0)"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"action\",\"query\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        }]
+      },{
+        "ruleName": "Java JDBC Query Component End",
+        "interfaceName": "^java.sql.Statement",
+        "methodName": "executeQuery",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Response",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        }]
+      },{
+        "ruleName": "Java JDBC Prepared Query Component Start",
+        "interfaceName": "^java.sql.PreparedStatement",
+        "methodName": "executeQuery",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Request",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"statement\",$0)"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"action\",\"query\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        }]
+      },{
+        "ruleName": "Java JDBC Prepared Query Component End",
+        "interfaceName": "^java.sql.PreparedStatement",
+        "methodName": "executeQuery",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Response",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        }]
+      },{
+        "ruleName": "Java JDBC Update Component Start",
+        "interfaceName": "^java.sql.Statement",
+        "methodName": "executeUpdate",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Request",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"statement\",$0)"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"action\",\"update\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        }]
+      },{
+        "ruleName": "Java JDBC Update Component End",
+        "interfaceName": "^java.sql.Statement",
+        "methodName": "executeUpdate",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Response",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        }]
+      },{
+        "ruleName": "Java JDBC Prepared Update Component Start",
+        "interfaceName": "^java.sql.PreparedStatement",
+        "methodName": "executeUpdate",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Request",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"statement\",$0)"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"action\",\"update\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        }]
+      },{
+        "ruleName": "Java JDBC Prepared Update Component End",
+        "interfaceName": "^java.sql.PreparedStatement",
+        "methodName": "executeUpdate",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Response",
+          "componentTypeExpression": "\"Database\"",
+          "uriExpression": "$0.getConnection().getMetaData().getURL()"
+        }]
+      }]
+    }
+  }
+}
