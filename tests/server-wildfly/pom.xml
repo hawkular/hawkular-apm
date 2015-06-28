@@ -179,43 +179,7 @@
                   <outputDirectory>${hawkular.deployments}</outputDirectory>
                   <destFileName>camel-example-servlet-rest-tomcat.war</destFileName>
                 </artifactItem>
-
-                <!-- BTM client configuration -->
-                <artifactItem>
-                  <groupId>org.jboss.byteman</groupId>
-                  <artifactId>byteman</artifactId>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular.lib}</outputDirectory>
-                  <destFileName>byteman.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-rest</artifactId>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
-                </artifactItem>
               </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${hawkular.configuration}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/test/resources/configuration</directory>
-                </resource>
-              </resources>
             </configuration>
           </execution>
         </executions>
@@ -300,10 +264,6 @@
                 <javaOpt>-Xdebug</javaOpt>
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
-                <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
-                <javaOpt>-javaagent:${hawkular.lib}/byteman.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular.lib}/byteman.jar,sys:${hawkular.lib}/hawkular-btm-client-rest.jar</javaOpt>
-                <javaOpt>-Dhawkular-btm.config=${hawkular.configuration}/hawkular-btm-config.json</javaOpt>
-                <javaOpt>-Dorg.jboss.byteman.compileToBytecode</javaOpt>
               </javaOpts>
               <startup-timeout>120</startup-timeout>
             </configuration>

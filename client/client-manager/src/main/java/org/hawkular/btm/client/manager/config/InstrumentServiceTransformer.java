@@ -50,7 +50,7 @@ public class InstrumentServiceTransformer extends CollectorActionTransformer {
     @Override
     protected String[] getParameters(CollectorAction invocation) {
         String[] ret = new String[2];
-        ret[0] = ((InstrumentService) invocation).getServiceTypeExpression();
+        ret[0] = ((InstrumentService) invocation).getUriExpression();
         ret[1] = ((InstrumentService) invocation).getOperationExpression();
         return (ret);
     }

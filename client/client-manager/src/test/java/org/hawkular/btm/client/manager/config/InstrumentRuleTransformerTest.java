@@ -33,7 +33,7 @@ public class InstrumentRuleTransformerTest {
     public void testConvertToRuleActionRequest() {
         InstrumentService im = new InstrumentService();
 
-        im.setServiceTypeExpression("\"MyService\"");
+        im.setUriExpression("\"MyService\"");
         im.setOperationExpression("\"MyOperation\"");
         im.getValueExpressions().add("$1");
         im.getValueExpressions().add("$2");
@@ -53,7 +53,7 @@ public class InstrumentRuleTransformerTest {
     public void testConvertToRuleActionResponse() {
         InstrumentService im = new InstrumentService();
 
-        im.setServiceTypeExpression("\"MyService\"");
+        im.setUriExpression("\"MyService\"");
         im.setOperationExpression("\"MyOperation\"");
         im.getValueExpressions().add("$!");
         im.setDirection(Direction.Response);

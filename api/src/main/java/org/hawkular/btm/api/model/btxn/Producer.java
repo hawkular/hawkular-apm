@@ -26,21 +26,18 @@ import com.wordnik.swagger.annotations.ApiModel;
  * @author gbrown
  *
  */
-@ApiModel(parent = InvocationNode.class)
-public class Producer extends InvocationNode {
+@ApiModel(parent = InteractionNode.class)
+public class Producer extends InteractionNode {
 
     @JsonInclude
     private String endpointType;
 
-    @JsonInclude
-    private String uri;
-
     public Producer() {
     }
 
-    public Producer(String endpointType, String uri) {
+    public Producer(String uri, String endpointType) {
+        super(uri);
         this.endpointType = endpointType;
-        this.uri = uri;
     }
 
     /**
@@ -57,55 +54,34 @@ public class Producer extends InvocationNode {
         this.endpointType = endpointType;
     }
 
-    /**
-     * @return the uri
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
      */
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * @param uri the uri to set
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((endpointType == null) ? 0 : endpointType.hashCode());
-        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj))
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         Producer other = (Producer) obj;
         if (endpointType == null) {
-            if (other.endpointType != null) {
+            if (other.endpointType != null)
                 return false;
-            }
-        } else if (!endpointType.equals(other.endpointType)) {
+        } else if (!endpointType.equals(other.endpointType))
             return false;
-        }
-        if (uri == null) {
-            if (other.uri != null) {
-                return false;
-            }
-        } else if (!uri.equals(other.uri)) {
-            return false;
-        }
         return true;
     }
 
@@ -114,7 +90,7 @@ public class Producer extends InvocationNode {
      */
     @Override
     public String toString() {
-        return "Producer [endpointType=" + endpointType + ", uri=" + uri + ", getRequest()=" + getRequest()
+        return "Producer [endpointType=" + endpointType + ", getUri()=" + getUri() + ", getRequest()=" + getRequest()
                 + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
                 + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
                 + ", getCorrelationIds()=" + getCorrelationIds() + "]";

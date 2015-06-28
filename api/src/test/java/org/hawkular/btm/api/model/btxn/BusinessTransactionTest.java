@@ -158,7 +158,7 @@ public class BusinessTransactionTest {
         s1.setDuration(900);
         s1.setStartTime(2);
         s1.setOperation("Op1");
-        s1.setServiceType("ServiceType1");
+        s1.setUri("ServiceType1");
 
         Message req2 = new Message();
         req2.getHeaders().put(HEADER1, VALUE1);
@@ -180,16 +180,7 @@ public class BusinessTransactionTest {
         cp1.setStartTime(3);
         cp1.setUri("jdbc:TestDB");
         cp1.setComponentType("Database");
-
-        Message req3 = new Message();
-        req3.getParameters().add("select X from Y");
-
-        cp1.setRequest(req3);
-
-        Message resp3 = new Message();
-        resp3.getParameters().add("23");
-
-        cp1.setResponse(resp3);
+        cp1.setOperation("select X from Y");
 
         // Third level (service) node - this represents the service proxy
         // used by the consumer service
@@ -200,7 +191,7 @@ public class BusinessTransactionTest {
         s2.setDuration(500);
         s2.setStartTime(3);
         s2.setOperation("Op2");
-        s2.setServiceType("ServiceType2");
+        s2.setUri("ServiceType2");
 
         Message req4 = new Message();
         req4.getHeaders().put(HEADER1, VALUE1);

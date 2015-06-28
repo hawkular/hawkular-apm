@@ -46,6 +46,9 @@ import com.wordnik.swagger.annotations.ApiModel;
 public abstract class Node {
 
     @JsonInclude
+    private String uri;
+
+    @JsonInclude
     private long startTime = 0;
 
     @JsonInclude
@@ -58,6 +61,24 @@ public abstract class Node {
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
 
     public Node() {
+    }
+
+    public Node(String uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /**
@@ -211,9 +232,10 @@ public abstract class Node {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
-        result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((details == null) ? 0 : details.hashCode());
+        result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + (int) (startTime ^ (startTime >>> 32));
+        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
 
@@ -234,14 +256,19 @@ public abstract class Node {
                 return false;
         } else if (!correlationIds.equals(other.correlationIds))
             return false;
-        if (duration != other.duration)
-            return false;
         if (details == null) {
             if (other.details != null)
                 return false;
         } else if (!details.equals(other.details))
             return false;
+        if (duration != other.duration)
+            return false;
         if (startTime != other.startTime)
+            return false;
+        if (uri == null) {
+            if (other.uri != null)
+                return false;
+        } else if (!uri.equals(other.uri))
             return false;
         return true;
     }

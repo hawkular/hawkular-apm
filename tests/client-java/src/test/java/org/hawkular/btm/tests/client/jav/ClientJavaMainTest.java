@@ -120,7 +120,7 @@ public class ClientJavaMainTest {
         assertEquals("Expecting top node to be Service", Service.class, btxn.getNodes().get(0).getClass());
         assertEquals("Top level node operation incorrect", "testOp", ((Service)btxn.getNodes().get(0)).getOperation());
         assertEquals("Top level node service type incorrect", "TopLevelService",
-                                ((Service)btxn.getNodes().get(0)).getServiceType());
+                                ((Service)btxn.getNodes().get(0)).getUri());
 
         assertEquals("Expecting single child node", 1, ((Service)btxn.getNodes().get(0)).getNodes().size());
 
@@ -129,7 +129,7 @@ public class ClientJavaMainTest {
         assertEquals("Inner node operation incorrect", "join",
                         ((Service)((Service)btxn.getNodes().get(0)).getNodes().get(0)).getOperation());
         assertEquals("Inner node service type incorrect", "InnerService",
-                        ((Service)((Service)btxn.getNodes().get(0)).getNodes().get(0)).getServiceType());
+                        ((Service)((Service)btxn.getNodes().get(0)).getNodes().get(0)).getUri());
     }
 
     @AfterClass

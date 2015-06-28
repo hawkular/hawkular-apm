@@ -19,6 +19,7 @@ package org.hawkular.btm.client.manager.config;
 import org.hawkular.btm.api.model.admin.CollectorAction;
 import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
+import org.hawkular.btm.api.model.admin.InstrumentComponent;
 
 /**
  * This class transforms the InstrumentInvocation type.
@@ -51,26 +52,32 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
 
         String[] params = getParameters(collectorAction);
         for (int i = 0; i < params.length; i++) {
+            if (i > 0) {
+                builder.append(',');
+            }
             builder.append(params[i]);
+        }
+
+        if (getActionType() != InstrumentComponent.class) {
             builder.append(',');
+
+            if (collectorAction.getHeadersExpression() == null) {
+                builder.append("null");
+            } else {
+                builder.append(collectorAction.getHeadersExpression());
+            }
+            builder.append(',');
+
+            builder.append("createArrayBuilder()");
+
+            for (String expr : collectorAction.getValueExpressions()) {
+                builder.append(".add(");
+                builder.append(expr);
+                builder.append(')');
+            }
+
+            builder.append(".get()");
         }
-
-        if (collectorAction.getHeadersExpression() == null) {
-            builder.append("null");
-        } else {
-            builder.append(collectorAction.getHeadersExpression());
-        }
-        builder.append(',');
-
-        builder.append("createArrayBuilder()");
-
-        for (String expr : collectorAction.getValueExpressions()) {
-            builder.append(".add(");
-            builder.append(expr);
-            builder.append(')');
-        }
-
-        builder.append(".get()");
 
         builder.append(")");
 
