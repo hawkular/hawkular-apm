@@ -50,8 +50,8 @@ public class InstrumentConsumerTransformer extends CollectorActionTransformer {
     protected String[] getParameters(CollectorAction invocation) {
         String[] ret = new String[3];
 
-        ret[0] = ((InstrumentConsumer) invocation).getEndpointTypeExpression();
-        ret[1] = ((InstrumentConsumer) invocation).getUriExpression();
+        ret[0] = ((InstrumentConsumer) invocation).getUriExpression();
+        ret[1] = ((InstrumentConsumer) invocation).getEndpointTypeExpression();
         ret[2] = ((InstrumentConsumer) invocation).getIdExpression();
 
         return (ret);

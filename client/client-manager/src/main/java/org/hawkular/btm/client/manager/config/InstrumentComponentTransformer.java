@@ -49,9 +49,9 @@ public class InstrumentComponentTransformer extends CollectorActionTransformer {
     @Override
     protected String[] getParameters(CollectorAction invocation) {
         String[] ret = new String[3];
-        ret[0] = ((InstrumentComponent) invocation).getComponentTypeExpression();
-        ret[1] = ((InstrumentComponent) invocation).getOperationExpression();
-        ret[2] = ((InstrumentComponent) invocation).getUriExpression();
+        ret[0] = ((InstrumentComponent) invocation).getUriExpression();
+        ret[1] = ((InstrumentComponent) invocation).getComponentTypeExpression();
+        ret[2] = ((InstrumentComponent) invocation).getOperationExpression();
         return (ret);
     }
 

@@ -25,8 +25,8 @@ import com.wordnik.swagger.annotations.ApiModel;
  * @author gbrown
  *
  */
-@ApiModel(parent = InvocationNode.class)
-public class Component extends InvocationNode {
+@ApiModel(parent = ContainerNode.class)
+public class Component extends ContainerNode {
 
     @JsonInclude
     private String componentType;
@@ -34,15 +34,12 @@ public class Component extends InvocationNode {
     @JsonInclude
     private String operation;
 
-    @JsonInclude
-    private String uri;
-
     public Component() {
     }
 
-    public Component(String componentType, String uri) {
+    public Component(String uri, String componentType) {
+        super(uri);
         this.componentType = componentType;
-        this.uri = uri;
     }
 
     /**
@@ -73,64 +70,41 @@ public class Component extends InvocationNode {
         this.operation = operation;
     }
 
-    /**
-     * @return the uri
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
      */
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * @param uri the uri to set
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Component other = (Component) obj;
-        if (componentType == null) {
-            if (other.componentType != null) {
-                return false;
-            }
-        } else if (!componentType.equals(other.componentType)) {
-            return false;
-        }
-        if (operation == null) {
-            if (other.operation != null) {
-                return false;
-            }
-        } else if (!operation.equals(other.operation)) {
-            return false;
-        }
-        if (uri == null) {
-            if (other.uri != null) {
-                return false;
-            }
-        } else if (!uri.equals(other.uri)) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
-        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Component other = (Component) obj;
+        if (componentType == null) {
+            if (other.componentType != null)
+                return false;
+        } else if (!componentType.equals(other.componentType))
+            return false;
+        if (operation == null) {
+            if (other.operation != null)
+                return false;
+        } else if (!operation.equals(other.operation))
+            return false;
+        return true;
     }
 
     /* (non-Javadoc)
@@ -138,10 +112,9 @@ public class Component extends InvocationNode {
      */
     @Override
     public String toString() {
-        return "Component [componentType=" + componentType + ", operation=" + operation + ", uri=" + uri
-                + ", getRequest()=" + getRequest() + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes()
-                + ", getStartTime()=" + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()="
-                + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + "]";
+        return "Component [componentType=" + componentType + ", operation=" + operation + ", getNodes()=" + getNodes()
+                + ", getUri()=" + getUri() + ", getStartTime()=" + getStartTime() + ", getDuration()=" + getDuration()
+                + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 
 }

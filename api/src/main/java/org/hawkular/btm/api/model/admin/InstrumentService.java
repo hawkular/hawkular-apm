@@ -26,24 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class InstrumentService extends CollectorAction {
 
     @JsonInclude
-    private String serviceTypeExpression;
-
-    @JsonInclude
     private String operationExpression;
-
-    /**
-     * @return the serviceTypeExpression
-     */
-    public String getServiceTypeExpression() {
-        return serviceTypeExpression;
-    }
-
-    /**
-     * @param serviceTypeExpression the serviceTypeExpression to set
-     */
-    public void setServiceTypeExpression(String serviceTypeExpression) {
-        this.serviceTypeExpression = serviceTypeExpression;
-    }
 
     /**
      * @return the operationExpression

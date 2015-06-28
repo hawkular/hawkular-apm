@@ -26,7 +26,7 @@ import com.wordnik.swagger.annotations.ApiModel;
  * @author gbrown
  */
 @ApiModel(parent = ContainerNode.class)
-public abstract class InvocationNode extends ContainerNode {
+public abstract class InteractionNode extends ContainerNode {
 
     @JsonInclude(Include.NON_NULL)
     private Message request;
@@ -34,7 +34,11 @@ public abstract class InvocationNode extends ContainerNode {
     @JsonInclude(Include.NON_NULL)
     private Message response;
 
-    public InvocationNode() {
+    public InteractionNode() {
+    }
+
+    public InteractionNode(String uri) {
+        super(uri);
     }
 
     /**
@@ -65,42 +69,40 @@ public abstract class InvocationNode extends ContainerNode {
         this.response = response;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((request == null) ? 0 : request.hashCode());
-        result = prime * result
-                + ((response == null) ? 0 : response.hashCode());
+        result = prime * result + ((response == null) ? 0 : response.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj))
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
-        InvocationNode other = (InvocationNode) obj;
+        InteractionNode other = (InteractionNode) obj;
         if (request == null) {
-            if (other.request != null) {
+            if (other.request != null)
                 return false;
-            }
-        } else if (!request.equals(other.request)) {
+        } else if (!request.equals(other.request))
             return false;
-        }
         if (response == null) {
-            if (other.response != null) {
+            if (other.response != null)
                 return false;
-            }
-        } else if (!response.equals(other.response)) {
+        } else if (!response.equals(other.response))
             return false;
-        }
         return true;
     }
 

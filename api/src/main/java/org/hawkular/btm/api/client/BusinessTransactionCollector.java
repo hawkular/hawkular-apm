@@ -29,88 +29,84 @@ public interface BusinessTransactionCollector {
     /**
      * This method indicates the start of a message being consumed.
      *
-     * @param type The endpoint type
      * @param uri The uri
+     * @param type The endpoint type
      * @param id The unique interaction id
      * @param headers The header values
      * @param values The request values
      */
-    void consumerStart(String type, String uri, String id, Map<String,?> headers, Object... values);
+    void consumerStart(String uri, String type, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a message being consumed.
      *
-     * @param type The endpoint type
      * @param uri The uri
+     * @param type The endpoint type
      * @param id The unique interaction id
      * @param headers The header values
      * @param values The response values
      */
-    void consumerEnd(String type, String uri, String id, Map<String,?> headers, Object... values);
+    void consumerEnd(String uri, String type, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a service invocation.
      *
-     * @param type The service type
+     * @param uri The service type uri
      * @param operation The operation
      * @param headers The header values
      * @param values The request values
      */
-    void serviceStart(String type, String operation, Map<String,?> headers, Object... values);
+    void serviceStart(String uri, String operation, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a service invocation.
      *
-     * @param type The service type
+     * @param uri The service type uri
      * @param operation The operation
      * @param headers The header values
      * @param values The response values
      */
-    void serviceEnd(String type, String operation, Map<String,?> headers, Object... values);
+    void serviceEnd(String uri, String operation, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a component invocation.
      *
+     * @param uri The uri
      * @param type The component type
      * @param operation The operation
-     * @param uri The uri
-     * @param headers The header values
-     * @param values The request values
      */
-    void componentStart(String type, String operation, String uri, Map<String,?> headers, Object... values);
+    void componentStart(String uri, String type, String operation);
 
     /**
      * This method indicates the end of a component invocation.
      *
+     * @param uri The uri
      * @param type The component type
      * @param operation The operation
-     * @param uri The uri
-     * @param headers The header values
-     * @param values The response values
      */
-    void componentEnd(String type, String operation, String uri, Map<String,?> headers, Object... values);
+    void componentEnd(String uri, String type, String operation);
 
     /**
      * This method indicates the start of a message being produced.
      *
-     * @param type The endpoint type
      * @param uri The uri
+     * @param type The endpoint type
      * @param id The unique interaction id
      * @param headers The header values
      * @param values The request values
      */
-    void producerStart(String type, String uri, String id, Map<String,?> headers, Object... values);
+    void producerStart(String uri, String type, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the end of a message being produced.
      *
-     * @param type The endpoint type
      * @param uri The uri
+     * @param type The endpoint type
      * @param id The unique interaction id
      * @param headers The header values
      * @param values The response values
      */
-    void producerEnd(String type, String uri, String id, Map<String,?> headers, Object... values);
+    void producerEnd(String uri, String type, String id, Map<String,?> headers, Object... values);
 
     /**
      * This method sets a property on the business transaction.

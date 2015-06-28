@@ -39,6 +39,10 @@ public abstract class ContainerNode extends Node {
     public ContainerNode() {
     }
 
+    public ContainerNode(String uri) {
+        super(uri);
+    }
+
     /**
      * @return the nodes
      */

@@ -29,6 +29,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public abstract class CollectorAction extends InstrumentAction {
 
     @JsonInclude
+    private String uriExpression;
+
+    @JsonInclude
+    private String idExpression;
+
+    @JsonInclude
     private String headersExpression;
 
     @JsonInclude
@@ -36,6 +42,34 @@ public abstract class CollectorAction extends InstrumentAction {
 
     @JsonInclude
     private Direction direction=Direction.Request;
+
+    /**
+     * @return the uriExpression
+     */
+    public String getUriExpression() {
+        return uriExpression;
+    }
+
+    /**
+     * @param uriExpression the uriExpression to set
+     */
+    public void setUriExpression(String uriExpression) {
+        this.uriExpression = uriExpression;
+    }
+
+    /**
+     * @return the idExpression
+     */
+    public String getIdExpression() {
+        return idExpression;
+    }
+
+    /**
+     * @param idExpression the idExpression to set
+     */
+    public void setIdExpression(String idExpression) {
+        this.idExpression = idExpression;
+    }
 
     /**
      * @return the headersExpression

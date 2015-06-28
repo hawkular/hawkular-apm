@@ -42,7 +42,7 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerStart(\"MyEndpoint\",\"MyUri\",null,null,"
+        String expected = ACTION_PREFIX + "producerStart(\"MyUri\",\"MyEndpoint\",null,null,"
                 + "createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
@@ -62,7 +62,7 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerStart(\"MyEndpoint\",\"MyUri\",\"MyId\",null,"
+        String expected = ACTION_PREFIX + "producerStart(\"MyUri\",\"MyEndpoint\",\"MyId\",null,"
                 + "createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
@@ -82,7 +82,7 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(\"MyEndpoint\",\"MyUri\",null,headers,"
+        String expected = ACTION_PREFIX + "producerEnd(\"MyUri\",\"MyEndpoint\",null,headers,"
                 + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);
@@ -103,7 +103,7 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(\"MyEndpoint\",\"MyUri\",\"MyId\",headers,"
+        String expected = ACTION_PREFIX + "producerEnd(\"MyUri\",\"MyEndpoint\",\"MyId\",headers,"
                 + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);

@@ -31,9 +31,6 @@ public class InstrumentComponent extends CollectorAction {
     @JsonInclude
     private String operationExpression;
 
-    @JsonInclude
-    private String uriExpression;
-
     /**
      * @return the componentTypeExpression
      */
@@ -60,20 +57,6 @@ public class InstrumentComponent extends CollectorAction {
      */
     public void setOperationExpression(String operationExpression) {
         this.operationExpression = operationExpression;
-    }
-
-    /**
-     * @return the uriExpression
-     */
-    public String getUriExpression() {
-        return uriExpression;
-    }
-
-    /**
-     * @param uriExpression the uriExpression to set
-     */
-    public void setUriExpression(String uriExpression) {
-        this.uriExpression = uriExpression;
     }
 
 }

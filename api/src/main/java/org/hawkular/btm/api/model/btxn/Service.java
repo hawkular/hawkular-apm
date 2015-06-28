@@ -25,11 +25,8 @@ import com.wordnik.swagger.annotations.ApiModel;
  * @author gbrown
  *
  */
-@ApiModel(parent = InvocationNode.class)
-public class Service extends InvocationNode {
-
-    @JsonInclude
-    private String serviceType;
+@ApiModel(parent = InteractionNode.class)
+public class Service extends InteractionNode {
 
     @JsonInclude
     private String operation;
@@ -37,23 +34,9 @@ public class Service extends InvocationNode {
     public Service() {
     }
 
-    public Service(String serviceType, String operation) {
-        this.serviceType = serviceType;
+    public Service(String uri, String operation) {
+        super(uri);
         this.operation = operation;
-    }
-
-    /**
-     * @return the serviceType
-     */
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    /**
-     * @param serviceType the serviceType to set
-     */
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
     }
 
     /**
@@ -70,43 +53,34 @@ public class Service extends InvocationNode {
         this.operation = operation;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result
-                + ((operation == null) ? 0 : operation.hashCode());
-        result = prime * result
-                + ((serviceType == null) ? 0 : serviceType.hashCode());
+        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj))
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         Service other = (Service) obj;
         if (operation == null) {
-            if (other.operation != null) {
+            if (other.operation != null)
                 return false;
-            }
-        } else if (!operation.equals(other.operation)) {
+        } else if (!operation.equals(other.operation))
             return false;
-        }
-        if (serviceType == null) {
-            if (other.serviceType != null) {
-                return false;
-            }
-        } else if (!serviceType.equals(other.serviceType)) {
-            return false;
-        }
         return true;
     }
 
@@ -115,7 +89,7 @@ public class Service extends InvocationNode {
      */
     @Override
     public String toString() {
-        return "Service [serviceType=" + serviceType + ", operation=" + operation + ", getRequest()=" + getRequest()
+        return "Service [operation=" + operation + ", getUri()=" + getUri() + ", getRequest()=" + getRequest()
                 + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
                 + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
                 + ", getCorrelationIds()=" + getCorrelationIds() + "]";
