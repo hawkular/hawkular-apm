@@ -30,6 +30,10 @@ import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 /**
  * These tests invoke a Camel based REST service to cause business transaction information
  * to be reported to the BusinessTransactionService.
@@ -44,18 +48,6 @@ public class ClientCamelServletTest {
     private static final String TEST_USERNAME = "jdoe";
 
     @Test
-    public void testPlaceholder() {
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-    }
-
-    @Test
-    @org.junit.Ignore("Ignore until wildfly-maven-plugin 1.1.0.Alpha3 released. See HWKBTM-47")
     public void testInvokeCamelRESTService() {
 
         // Delay to avoid picking up previously reported txns
@@ -119,6 +111,16 @@ public class ClientCamelServletTest {
         List<BusinessTransaction> btxns = service.query(null, criteria);
 
         assertEquals(1, btxns.size());
+
+        for (BusinessTransaction btxn : btxns) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
 
         // Check top level node is a Consumer associated with the servlet
         assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());
