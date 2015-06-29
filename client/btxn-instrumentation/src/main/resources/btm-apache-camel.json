@@ -12,7 +12,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "!isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class)",
+        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Request",
@@ -31,7 +31,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "!isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class)",
+        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Response",
@@ -48,7 +48,7 @@
            "org.apache.camel.Endpoint"
         ],
         "location": "ENTRY",
-        "condition": "!isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class)",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Request",
@@ -69,7 +69,7 @@
            "long"
         ],
         "location": "ENTRY",
-        "condition": "!isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class)",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Response",
