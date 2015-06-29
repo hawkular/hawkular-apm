@@ -17,6 +17,8 @@
 package org.hawkular.btm.client.manager;
 
 import org.hawkular.btm.api.client.BusinessTransactionCollector;
+import org.hawkular.btm.api.client.Logger;
+import org.hawkular.btm.api.client.Logger.Level;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
 
@@ -26,6 +28,8 @@ import org.jboss.byteman.rule.helper.Helper;
  * @author gbrown
  */
 public class RuleHelper extends Helper {
+
+    private static final Logger log=Logger.getLogger(RuleHelper.class.getName());
 
     /**
      * @param rule
@@ -61,6 +65,12 @@ public class RuleHelper extends Helper {
      * @return Whether the object is an instance of the class
      */
     public boolean isInstanceOf(Object obj, Class<?> clz) {
+        if (obj == null || clz == null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("isInstanceOf error: obj="+obj+" clz="+clz);
+            }
+            return false;
+        }
         return clz.isAssignableFrom(obj.getClass());
     }
 
