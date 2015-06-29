@@ -4,13 +4,67 @@
       "description": "Java HttpUrlConnection instrumentation",
       "version": "1",
       "rules": [{
-        "ruleName": "Java HttpUrlConnection Producer Start",
+        "ruleName": "Java HttpUrlConnection connect Producer Start",
         "className": "^java.net.HttpURLConnection",
         "methodName": "connect",
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\")",
+        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\") && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.getURL().toString()",
+          "idExpression": "id",
+          "headersExpression": "$0.getRequestProperties()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection getOutputStream Producer Start",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getOutputStream",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\") && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.getURL().toString()",
+          "idExpression": "id",
+          "headersExpression": "$0.getRequestProperties()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection getInputStream Producer Start",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getInputStream",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\") && $0.getRequestProperty(\"Hawkular-btm\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
