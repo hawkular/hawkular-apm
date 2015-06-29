@@ -1,0 +1,40 @@
+{
+  "instrumentation": {
+    "switchyard": {
+      "description": "SwitchYard instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "SwitchYard Service Start",
+        "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentService",
+          "direction": "Request",
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"switchyard\")"
+        }]
+      },{
+        "ruleName": "SwitchYard Service End",
+        "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentService",
+          "direction": "Response",
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+        }]
+      }]
+    }
+  }
+}
