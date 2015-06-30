@@ -16,9 +16,15 @@
  */
 package org.hawkular.btm.client.manager;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.hawkular.btm.api.client.BusinessTransactionCollector;
+import org.hawkular.btm.api.client.HeadersFactory;
 import org.hawkular.btm.api.client.Logger;
 import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.util.ServiceResolver;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
 
@@ -30,6 +36,16 @@ import org.jboss.byteman.rule.helper.Helper;
 public class RuleHelper extends Helper {
 
     private static final Logger log=Logger.getLogger(RuleHelper.class.getName());
+
+    private static Map<String, HeadersFactory> headersFactories=new HashMap<String, HeadersFactory>();
+
+    static {
+        List<HeadersFactory> factories=ServiceResolver.getServices(HeadersFactory.class);
+
+        for (HeadersFactory factory : factories) {
+            headersFactories.put(factory.getTargetType(), factory);
+        }
+    }
 
     /**
      * @param rule
@@ -109,4 +125,29 @@ public class RuleHelper extends Helper {
         return (new ArrayBuilder());
     }
 
+    /**
+     * This method attempts to provide headers for the supplied target
+     * object.
+     *
+     * @param type The target type
+     * @param target The target instance
+     * @return
+     */
+    public Map<String,String> getHeaders(String type, Object target) {
+        HeadersFactory factory=getHeadersFactory(type);
+        if (factory != null) {
+            return factory.getHeaders(target);
+        }
+        return null;
+    }
+
+    /**
+     * This method returns the headers factory for the supplied type.
+     *
+     * @param type The type
+     * @return The headers factory, or null if not found
+     */
+    protected HeadersFactory getHeadersFactory(String type) {
+        return (headersFactories.get(type));
+    }
 }

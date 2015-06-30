@@ -48,6 +48,13 @@
       <artifactId>jackson-core</artifactId>
     </dependency>
 
+    <!-- Dependencies required for header factories -->
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
