@@ -27,7 +27,7 @@
           "action": "collector().setDetail(\"btm_source\",\"jboss-resteasy\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_http_method\",$1.getMethod())"
+          "action": "collector().setDetail(\"http_method\",$1.getMethod())"
         },{
           "type": "FreeFormAction",
           "action": "$1.getHeaders().header(\"Hawkular-btm\",id)"
