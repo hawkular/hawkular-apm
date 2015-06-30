@@ -28,6 +28,9 @@
           "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
+        },{
+          "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
         }]
       },{
@@ -55,6 +58,9 @@
           "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
+        },{
+          "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
         }]
       },{
@@ -80,6 +86,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
