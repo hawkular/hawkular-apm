@@ -71,6 +71,7 @@
     <module>processors/metrics-deriver</module>
     <module>services/btxn-service-cass-es</module>
     <module>services/btxn-service-inmemory</module>
+    <module>dist</module>
   </modules>
 
   <scm>
@@ -365,18 +366,6 @@
         <module>tests/client-wildfly</module>
         <module>tests/server-wildfly</module>
         <module>tests/test-btxn-service</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>distribution</id>
-      <modules>
-        <module>dist</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>release</id>
-      <modules>
-        <module>dist</module>
       </modules>
     </profile>
   </profiles>
