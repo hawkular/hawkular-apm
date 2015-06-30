@@ -17,15 +17,13 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.hawkular.btm</groupId>
     <artifactId>hawkular-btm</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -153,18 +151,17 @@
             <phase>pre-integration-test</phase>
             <configuration>
               <target>
-                <property name="runtime_classpath" refid="maven.runtime.classpath"/>
-                <echo message="runtime classpath: ${runtime_classpath}"/>
-                <java classname="org.hawkular.btm.tests.btxn.TestBTxnService" fork="true"
-                                                     spawn="true" >
+                <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                <echo message="runtime classpath: ${runtime_classpath}" />
+                <java classname="org.hawkular.btm.tests.btxn.TestBTxnService" fork="true" spawn="true">
                   <classpath>
-                    <pathelement path="${project.build.outputDirectory}"/>
-                    <pathelement path="${runtime_classpath}"/>
+                    <pathelement path="${project.build.outputDirectory}" />
+                    <pathelement path="${runtime_classpath}" />
                   </classpath>
-                  <jvmarg value="-Dhawkular-btm.test.btxnservice.host=${hawkular.host}"/>
-                  <jvmarg value="-Dhawkular-btm.test.btxnservice.port=${hawkular.port}"/>
-                  <jvmarg value="-Dhawkular-btm.test.btxnservice.shutdown=30000"/>
-                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-btxn-service-logging.properties"/>
+                  <jvmarg value="-Dhawkular-btm.test.btxnservice.host=${hawkular.host}" />
+                  <jvmarg value="-Dhawkular-btm.test.btxnservice.port=${hawkular.port}" />
+                  <jvmarg value="-Dhawkular-btm.test.btxnservice.shutdown=30000" />
+                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-btxn-service-logging.properties" />
                 </java>
               </target>
             </configuration>
@@ -177,22 +174,21 @@
             <phase>pre-integration-test</phase>
             <configuration>
               <target>
-                <property name="runtime_classpath" refid="maven.runtime.classpath"/>
-                <echo message="runtime classpath: ${runtime_classpath}"/>
-                <java classname="org.hawkular.btm.tests.client.jav.ClientJavaMain" fork="true"
-                                                     spawn="true" >
+                <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                <echo message="runtime classpath: ${runtime_classpath}" />
+                <java classname="org.hawkular.btm.tests.client.jav.ClientJavaMain" fork="true" spawn="true">
                   <classpath>
-                    <pathelement path="${project.build.outputDirectory}"/>
-                    <pathelement path="${runtime_classpath}"/>
+                    <pathelement path="${project.build.outputDirectory}" />
+                    <pathelement path="${runtime_classpath}" />
                   </classpath>
-                  <jvmarg value="-Dorg.jboss.byteman.transform.all"/>
-                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar"/>
-                  <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json"/>
-                  <jvmarg value="-Dorg.jboss.byteman.compileToBytecode"/>
-                  <jvmarg value="-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}"/>
-                  <jvmarg value="-Dhawkular-btm.testapp.host=${hawkular-btm.testapp.host}"/>
-                  <jvmarg value="-Dhawkular-btm.testapp.port=${hawkular-btm.testapp.port}"/>
-                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-app-logging.properties"/>
+                  <jvmarg value="-Dorg.jboss.byteman.transform.all" />
+                  <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar" />
+                  <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json" />
+                  <jvmarg value="-Dorg.jboss.byteman.compileToBytecode" />
+                  <jvmarg value="-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}" />
+                  <jvmarg value="-Dhawkular-btm.testapp.host=${hawkular-btm.testapp.host}" />
+                  <jvmarg value="-Dhawkular-btm.testapp.port=${hawkular-btm.testapp.port}" />
+                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-app-logging.properties" />
                 </java>
               </target>
             </configuration>
