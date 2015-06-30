@@ -28,7 +28,7 @@
 
   <groupId>org.hawkular.btm</groupId>
   <artifactId>hawkular-btm</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Hawkular BTM</name>
