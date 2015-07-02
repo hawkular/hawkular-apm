@@ -134,6 +134,7 @@ public class RuleHelper extends Helper {
      * @return The header map
      */
     public Map<String,String> getHeaders(String type, Object target) {
+System.out.println("GPB: RULE HELPER: type="+type);
         HeadersAccessor accessor=getHeadersAccessor(type);
 System.out.println("GPB: RULE HELPER: type="+type+" accessor="+accessor);
         if (accessor != null) {
