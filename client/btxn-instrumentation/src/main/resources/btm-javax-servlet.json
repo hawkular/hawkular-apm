@@ -23,6 +23,7 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()",
+          "headersExpression": "getHeaders(\"javax.servlet.http.HttpServletRequest\",req)",
           "idExpression": "req.getHeader(\"Hawkular-btm\")"
         },{
           "type": "FreeFormAction",
