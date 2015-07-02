@@ -461,14 +461,14 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             node.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
         }
 
+System.out.println("GPB: PROCESS VALUES: headers="+headers);
         if (headers != null) {
             // TODO: Need to have config to determine whether headers should be logged
             for (String key : headers.keySet()) {
-                Object value = headers.get(key);
+                String value = getHeaderValueText(headers.get(key));
 
-                // TODO: Type conversion based on provided config
-                if (value.getClass() == String.class) {
-                    m.getHeaders().put(key, (String) value);
+                if (value != null) {
+                    m.getHeaders().put(key, value);
                 }
             }
         }
@@ -477,6 +477,29 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         } else {
             node.setResponse(m);
         }
+    }
+
+    /**
+     * This method returns a textual representation of the supplied
+     * header value.
+     *
+     * @param value The original value
+     * @return The text representation, or null if no suitable found
+     */
+    protected String getHeaderValueText(Object value) {
+        // TODO: Type conversion based on provided config
+        if (value.getClass() == String.class) {
+            return (String)value;
+        } else if (value instanceof List) {
+            List<?> list=(List<?>)value;
+            if (list.size() == 1) {
+                return getHeaderValueText(list.get(0));
+            } else {
+                return list.toString();
+            }
+        }
+
+        return null;
     }
 
     /**

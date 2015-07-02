@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.client.BusinessTransactionCollector;
-import org.hawkular.btm.api.client.HeadersFactory;
+import org.hawkular.btm.api.client.HeadersAccessor;
 import org.hawkular.btm.api.client.Logger;
 import org.hawkular.btm.api.client.Logger.Level;
 import org.hawkular.btm.api.util.ServiceResolver;
@@ -37,13 +37,13 @@ public class RuleHelper extends Helper {
 
     private static final Logger log=Logger.getLogger(RuleHelper.class.getName());
 
-    private static Map<String, HeadersFactory> headersFactories=new HashMap<String, HeadersFactory>();
+    private static Map<String, HeadersAccessor> headersAccessors=new HashMap<String, HeadersAccessor>();
 
     static {
-        List<HeadersFactory> factories=ServiceResolver.getServices(HeadersFactory.class);
+        List<HeadersAccessor> accessors=ServiceResolver.getServices(HeadersAccessor.class);
 
-        for (HeadersFactory factory : factories) {
-            headersFactories.put(factory.getTargetType(), factory);
+        for (HeadersAccessor accessor : accessors) {
+            headersAccessors.put(accessor.getTargetType(), accessor);
         }
     }
 
@@ -131,23 +131,26 @@ public class RuleHelper extends Helper {
      *
      * @param type The target type
      * @param target The target instance
-     * @return
+     * @return The header map
      */
     public Map<String,String> getHeaders(String type, Object target) {
-        HeadersFactory factory=getHeadersFactory(type);
-        if (factory != null) {
-            return factory.getHeaders(target);
+        HeadersAccessor accessor=getHeadersAccessor(type);
+System.out.println("GPB: RULE HELPER: type="+type+" accessor="+accessor);
+        if (accessor != null) {
+            Map<String,String> ret= accessor.getHeaders(target);
+System.out.println("GPB: RULE HELPER: ret="+ret);
+            return ret;
         }
         return null;
     }
 
     /**
-     * This method returns the headers factory for the supplied type.
+     * This method returns the headers accessor for the supplied type.
      *
      * @param type The type
-     * @return The headers factory, or null if not found
+     * @return The headers accessor, or null if not found
      */
-    protected HeadersFactory getHeadersFactory(String type) {
-        return (headersFactories.get(type));
+    protected HeadersAccessor getHeadersAccessor(String type) {
+        return (headersAccessors.get(type));
     }
 }

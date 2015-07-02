@@ -17,6 +17,7 @@
 package org.hawkular.btm.tests.client.camel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -124,6 +125,8 @@ public class ClientHttpTest extends ClientTestBase {
             connection.setRequestProperty("Content-Type",
                     "application/json");
 
+            connection.setRequestProperty("test-header", "test-value");
+
             connection.connect();
 
             java.io.InputStream is = connection.getInputStream();
@@ -158,6 +161,17 @@ public class ClientHttpTest extends ClientTestBase {
         // Check stored business transactions (including 1 for the test client)
         assertEquals(1, getBtxnService().getBusinessTransactions().size());
 
+        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         List<Producer> producers = new ArrayList<Producer>();
         findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
@@ -166,6 +180,9 @@ public class ClientHttpTest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
+
+        // Check headers
+        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
     }
 
     @Test
@@ -186,6 +203,8 @@ public class ClientHttpTest extends ClientTestBase {
     protected void testHttpClientWithoutResponseHandler(HttpUriRequest request) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
+            request.addHeader("test-header", "test-value");
+
             HttpResponse response = httpclient.execute(request);
 
             int status = response.getStatusLine().getStatusCode();
@@ -215,6 +234,17 @@ public class ClientHttpTest extends ClientTestBase {
         // Check stored business transactions (including 1 for the test client)
         assertEquals(1, getBtxnService().getBusinessTransactions().size());
 
+        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         List<Producer> producers = new ArrayList<Producer>();
         findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
@@ -223,6 +253,9 @@ public class ClientHttpTest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
+
+        // Check headers
+        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
     }
 
     @Test
@@ -243,6 +276,8 @@ public class ClientHttpTest extends ClientTestBase {
     protected void testHttpClientWithResponseHandler(HttpUriRequest request) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
+            request.addHeader("test-header", "test-value");
+
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
@@ -280,6 +315,17 @@ public class ClientHttpTest extends ClientTestBase {
         // Check stored business transactions (including 1 for the test client)
         assertEquals(1, getBtxnService().getBusinessTransactions().size());
 
+        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         List<Producer> producers = new ArrayList<Producer>();
         findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
@@ -288,13 +334,16 @@ public class ClientHttpTest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
+
+        // Check headers
+        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
     }
 
     @Test
     public void testJaxRSClientGET() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().get();
+        Response response = target.request().header("test-header", "test-value").get();
         String value = response.readEntity(String.class);
         response.close();
 
@@ -330,13 +379,16 @@ public class ClientHttpTest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
+
+        // Check headers
+        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
     }
 
     @Test
     public void testJaxRSClientPOST() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().post(Entity.<String>text("Hello"));
+        Response response = target.request().header("test-header", "test-value").post(Entity.<String>text("Hello"));
         String value = response.readEntity(String.class);
         response.close();
 
@@ -372,13 +424,16 @@ public class ClientHttpTest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
+
+        // Check headers
+        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
     }
 
     @Test
     public void testJaxRSClientPUT() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().put(Entity.<String>text("Hello"));
+        Response response = target.request().header("test-header", "test-value").put(Entity.<String>text("Hello"));
         String value = response.readEntity(String.class);
         response.close();
 
@@ -414,5 +469,8 @@ public class ClientHttpTest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
+
+        // Check headers
+        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
     }
 }
