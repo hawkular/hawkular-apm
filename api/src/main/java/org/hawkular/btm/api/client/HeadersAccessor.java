@@ -14,31 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.manager;
+package org.hawkular.btm.api.client;
 
 import java.util.Map;
 
-import org.hawkular.btm.api.client.HeadersFactory;
-
 /**
+ * This class provides a factory for obtaining header information from a target object.
+ *
  * @author gbrown
  */
-public class TestHeadersFactory implements HeadersFactory {
+public interface HeadersAccessor {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getTargetType()
+    /**
+     * This method returns the target type associated with this factory.
+     *
+     * @return The target type
      */
-    @Override
-    public String getTargetType() {
-        return TestHeadersObject.class.getName();
-    }
+    String getTargetType();
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.headers.HeadersFactory#getHeaders(java.lang.Object)
+    /**
+     * This method returns the headers associated with the supplied target instance.
+     *
+     * @param target The target instance
+     * @return The headers associated with the target instance
      */
-    @Override
-    public Map<String, String> getHeaders(Object target) {
-        return ((TestHeadersObject)target).getProperties();
-    }
+    Map<String,String> getHeaders(Object target);
 
 }

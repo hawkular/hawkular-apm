@@ -17,6 +17,7 @@
 package org.hawkular.btm.tests.client.camel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -148,6 +149,12 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(topicProducer, topicConsumer);
         checkInteractionCorrelationIdentifiers(queueProducer, queueConsumer);
+
+        // Check headers
+        assertFalse("queueProducer has no headers", queueProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("topicProducer has no headers", topicProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("topicConsumer has no headers", topicConsumer.getRequest().getHeaders().isEmpty());
+        assertFalse("queueConsumer has no headers", queueConsumer.getRequest().getHeaders().isEmpty());
     }
 
     @Test
@@ -228,5 +235,11 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(topicProducer, topicConsumer);
         checkInteractionCorrelationIdentifiers(queueProducer, queueConsumer);
+
+        // Check headers
+        assertFalse("queueProducer has no headers", queueProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("topicProducer has no headers", topicProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("topicConsumer has no headers", topicConsumer.getRequest().getHeaders().isEmpty());
+        assertFalse("queueConsumer has no headers", queueConsumer.getRequest().getHeaders().isEmpty());
     }
 }
