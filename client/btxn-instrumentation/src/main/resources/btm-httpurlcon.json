@@ -17,6 +17,9 @@
           "expression": "createUUID()"
         }],
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "System.out.println(\"GPB: HTTP URL CONNECTION\")"
+        },{
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",

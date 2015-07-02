@@ -18,6 +18,9 @@
           "expression": "createUUID()"
         }],
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "System.out.println(\"GPB: APACHE HTTPCLIENT\")"
+        },{
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
