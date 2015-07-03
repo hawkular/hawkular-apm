@@ -22,6 +22,7 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getURI().toString()",
+          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)",
           "idExpression": "id"
         },{
           "type": "FreeFormAction",
@@ -68,6 +69,7 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getURI().toString()",
+          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)",
           "idExpression": "id"
         },{
           "type": "FreeFormAction",
