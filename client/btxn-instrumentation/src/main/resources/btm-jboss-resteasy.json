@@ -21,6 +21,7 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getUri().toString()",
+          "headersExpression": "getHeaders(\"org.jboss.resteasy.client.jaxrs.internal.ClientInvocation\",$1)",
           "idExpression": "id"
         },{
           "type": "FreeFormAction",
