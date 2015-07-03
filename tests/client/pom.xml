@@ -184,6 +184,7 @@
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
                   <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+                  <version>${project.version}</version>
                   <type>zip</type>
                 </artifactItem>
               </artifactItems>
