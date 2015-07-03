@@ -29,6 +29,9 @@
           "action": "collector().setDetail(\"btm_source\",\"apache-httpclient\")"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"GPB_HEADER_EXPRESSION\",getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1))"
+        },{
+          "type": "FreeFormAction",
           "action": "collector().setDetail(\"http_method\",$1.getMethod())"
         },{
           "type": "FreeFormAction",

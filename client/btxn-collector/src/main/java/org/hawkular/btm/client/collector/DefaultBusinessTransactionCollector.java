@@ -461,7 +461,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             node.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
         }
 
-System.out.println("GPB: PROCESS VALUES: headers="+headers);
+if (req) node.getDetails().put("processValues", "GPB: PROCESS VALUES: headers="+headers);
         if (headers != null) {
             // TODO: Need to have config to determine whether headers should be logged
             for (String key : headers.keySet()) {
