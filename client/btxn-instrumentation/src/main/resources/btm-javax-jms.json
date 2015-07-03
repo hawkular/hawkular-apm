@@ -18,7 +18,7 @@
           "endpointTypeExpression": "\"JMS\"",
           "uriExpression": "$1.getJMSDestination()",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$1)",
-          "idExpression": "$1.getJMSMessageID()"
+          "idExpression": "$1.getStringProperty(\"HawkularBTM\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
@@ -54,18 +54,24 @@
         ],
         "location": "ENTRY",
         "condition": "$2.getJMSReplyTo() == null",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"JMS\"",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$2)",
+          "idExpression": "id",
           "uriExpression": "$1"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().session().retainNode(\"jmsProducer\")"
+          "action": "$2.setStringProperty(\"HawkularBTM\",id)"
         }]
       },{
         "ruleName": "Javax JMS Producer Start",
@@ -80,21 +86,27 @@
         ],
         "location": "ENTRY",
         "condition": "$2.getJMSReplyTo() != null && !isInstanceOf($1,javax.jms.TemporaryQueue.class)",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"JMS\"",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$2)",
+          "idExpression": "id",
           "uriExpression": "$1"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().session().retainNode(\"jmsProducer\")"
+          "action": "collector().session().initiateLink($2.getJMSReplyTo())"
         },{
           "type": "FreeFormAction",
-          "action": "collector().session().initiateLink($2.getJMSReplyTo())"
+          "action": "$2.setStringProperty(\"HawkularBTM\",id)"
         }]
       },{
         "ruleName": "Javax JMS Producer Sync End",
@@ -144,26 +156,6 @@
         "actions": [{
           "type": "FreeFormAction",
           "action": "collector().session().unlink()"
-        }]
-      },{
-        "ruleName": "Javax JMS Producer Set Identifier",
-        "interfaceName": "^javax.jms.MessageProducer",
-        "methodName": "send",
-        "parameterTypes": [
-          "javax.jms.Destination",
-          "javax.jms.Message",
-          "int",
-          "int",
-          "long"
-        ],
-        "location": "EXIT",
-        "condition": "!isInstanceOf($1,javax.jms.TemporaryQueue.class)",
-        "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().retrieveNode(\"jmsProducer\").addInteractionId($2.getJMSMessageID())"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().session().releaseNode(\"jmsProducer\")"
         }]
       }]
     }
