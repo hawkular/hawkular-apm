@@ -9,7 +9,7 @@ notifications:
 install:
 - mvn -version -B
 script:
-- mvn -s .travis.maven.settings.xml -X verify -Ptests; test ${PIPESTATUS[0]} -eq 0
+- mvn -s .travis.maven.settings.xml verify -Ptests; test ${PIPESTATUS[0]} -eq 0
 env:
   global:
   # Github deploy token
