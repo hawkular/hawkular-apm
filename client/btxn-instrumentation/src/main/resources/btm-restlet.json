@@ -21,6 +21,7 @@
           "type": "java.lang.String",
           "expression": "headers.getFirstValue(\"Hawkular-btm\")"
         }],
+        "condition": "collector().session().activate($1.getResourceRef(),id)",
         "actions": [{
           "type": "FreeFormAction",
           "action": "headers.removeAll(\"Hawkular-btm\")"
@@ -49,6 +50,7 @@
           "type": "org.restlet.util.Series",
           "expression": "$2.getAttributes().get(\"org.restlet.http.headers\")"
         }],
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",

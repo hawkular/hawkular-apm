@@ -17,7 +17,7 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "!req.getRequestURI().startsWith(\"/auth\") && !req.getRequestURI().startsWith(\"/hawkular/btm\")",
+        "condition": "collector().session().activate(req.getRequestURI().toString(),req.getHeader(\"Hawkular-btm\"))",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -52,7 +52,7 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "!req.getRequestURI().startsWith(\"/auth\") && !req.getRequestURI().startsWith(\"/hawkular/btm\")",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",

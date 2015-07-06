@@ -25,9 +25,11 @@ import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.client.BusinessTransactionCollector;
+import org.hawkular.btm.api.client.ConfigurationManager;
 import org.hawkular.btm.api.client.Logger;
 import org.hawkular.btm.api.client.Logger.Level;
 import org.hawkular.btm.api.client.SessionManager;
+import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -40,6 +42,7 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.api.util.ServiceResolver;
+import org.hawkular.btm.client.collector.internal.FilterManager;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.hawkular.btm.client.collector.internal.FragmentManager;
 
@@ -55,6 +58,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     private String tenantId = System.getProperty("hawkular-btm.tenantId");
 
     private BusinessTransactionService businessTransactionService;
+
+    private CollectorConfiguration config;
+
+    private FilterManager filterManager;
 
     private Map<String,FragmentBuilder> links=new ConcurrentHashMap<String,FragmentBuilder>();
 
@@ -75,6 +82,22 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     } else {
                         log.info("Initialised Business Transaction Service: " + arg0 + " in this=" + this);
                     }
+                }
+            }
+        });
+
+        // Obtain the configuration
+        CompletableFuture<ConfigurationManager> cmFuture =
+                ServiceResolver.getSingletonService(ConfigurationManager.class);
+
+        cmFuture.whenComplete(new BiConsumer<ConfigurationManager, Throwable>() {
+
+            @Override
+            public void accept(ConfigurationManager cm, Throwable t) {
+                config = cm.getConfiguration();
+
+                if (config != null) {
+                    filterManager = new FilterManager(config);
                 }
             }
         });
@@ -409,6 +432,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             return null;
         }
 
+        if (builder.isSuppressed()) {
+            builder.popNode();
+            return null;
+        }
+
         if (builder.getCurrentNode() == null) {
             if (log.isLoggable(Level.WARNING)) {
                 log.warning("No 'current node' for this thread ("+Thread.currentThread()
@@ -512,29 +540,81 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         if (builder.isComplete()) {
             BusinessTransaction btxn = builder.getBusinessTransaction();
 
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("Record business transaction: " + btxn);
-            }
+            if (btxn != null && !btxn.getNodes().isEmpty()) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Record business transaction: " + btxn);
+                }
 
-            if (businessTransactionService != null) {
-                Executors.newSingleThreadExecutor().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-                        btxns.add(btxn);
-                        try {
-                            businessTransactionService.store(tenantId, btxns);
-                        } catch (Exception e) {
-                            log.log(Level.SEVERE, "Failed to store business transactions", e);
+                if (businessTransactionService != null) {
+                    Executors.newSingleThreadExecutor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+                            btxns.add(btxn);
+                            try {
+                                businessTransactionService.store(tenantId, btxns);
+                            } catch (Exception e) {
+                                log.log(Level.SEVERE, "Failed to store business transactions", e);
+                            }
                         }
-                    }
-                });
-            } else {
-                log.warning("Business transaction service is not available!");
+                    });
+                } else {
+                    log.warning("Business transaction service is not available!");
+                }
             }
 
             fragmentManager.clear();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#activate(java.lang.String)
+     */
+    @Override
+    public boolean activate(String uri) {
+        return activate(uri, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#activate(java.lang.String,java.lang.String)
+     */
+    @Override
+    public boolean activate(String uri, String id) {
+        // If already active, then just return
+        if (isActive()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("activate: Already active");
+            }
+            return true;
+        }
+
+        // If id is set, then fragment must be tracked
+        if (id != null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("activate: ID not null, so fragment will be traced");
+            }
+            return true;
+        }
+
+        if (uri != null) {
+            if (filterManager == null) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Unable to determine if fragment should be traced due to missing filter manager");
+                }
+            } else {
+                boolean valid=filterManager.isValid(uri);
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("activate: URI["+uri+"] isValid="+valid);
+                }
+                return valid;
+            }
+        }
+
+        // No URI, so for now we will assume should NOT be traced
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("activate: No URI, so returning false");
+        }
+        return false;
     }
 
     /* (non-Javadoc)
@@ -647,6 +727,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 log.log(warningLogLevel, "initiateLink failed", t);
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#isLinkActive(java.lang.String)
+     */
+    @Override
+    public boolean isLinkActive(String id) {
+        boolean linkActive=links.containsKey(id);
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Is link active? id=" + id + " result=" + linkActive);
+        }
+        return linkActive;
     }
 
     /* (non-Javadoc)

@@ -49,6 +49,10 @@ public class FragmentBuilder {
 
     private List<String> unlinkedIds=new ArrayList<String>();
 
+    private boolean suppress=false;
+
+    private int suppressCount=0;
+
     /**
      * This method determines if the fragment is complete.
      *
@@ -82,6 +86,13 @@ public class FragmentBuilder {
      * @param node The new node
      */
     public void pushNode(Node node) {
+
+        // Check if fragment is in suppression mode
+        if (suppress) {
+            suppressCount++;
+            return;
+        }
+
         if (nodeStack.isEmpty()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Pushing top level node: "+node+" for txn: "+businessTransaction);
@@ -109,6 +120,19 @@ public class FragmentBuilder {
      * @return The latest node
      */
     public Node popNode() {
+
+        // Check if fragment is in suppression mode
+        if (suppress) {
+            suppressCount--;
+
+            if (suppressCount >= 0) {
+                return null;
+            }
+
+            // If suppression parent popped, then canel the suppress mode
+            suppress = false;
+        }
+
         return nodeStack.pop();
     }
 
@@ -154,6 +178,23 @@ public class FragmentBuilder {
      */
     public List<String> getUnlinkedIds() {
         return unlinkedIds;
+    }
+
+    /**
+     * This method initiates suppression of any child node.
+     */
+    public void suppress() {
+        this.suppress = true;
+    }
+
+    /**
+     * This method returns whether the fragment is in suppression
+     * mode.
+     *
+     * @return Whether fragment is being suppressed
+     */
+    public boolean isSuppressed() {
+        return suppress;
     }
 
     /**

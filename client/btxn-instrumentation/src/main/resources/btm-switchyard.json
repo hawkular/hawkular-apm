@@ -11,6 +11,7 @@
           "org.switchyard.Exchange"
         ],
         "location": "ENTRY",
+        "condition": "collector().session().activate($1.getConsumer().getName())",
         "actions": [{
           "type": "InstrumentService",
           "direction": "Request",
@@ -28,6 +29,7 @@
           "org.switchyard.Exchange"
         ],
         "location": "ENTRY",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentService",
           "direction": "Response",

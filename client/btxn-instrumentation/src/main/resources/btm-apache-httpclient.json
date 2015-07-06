@@ -11,7 +11,7 @@
           "org.apache.http.client.methods.HttpUriRequest"
         ],
         "location": "ENTRY",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
+        "condition": "collector().session().activate($1.getURI().toString())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -42,7 +42,7 @@
           "org.apache.http.client.methods.HttpUriRequest"
         ],
         "location": "EXIT",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -58,7 +58,7 @@
           "org.apache.http.client.ResponseHandler"
         ],
         "location": "ENTRY",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
+        "condition": "collector().session().activate($1.getURI().toString())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -90,7 +90,7 @@
           "org.apache.http.client.ResponseHandler"
         ],
         "location": "EXIT",
-        "condition": "!$1.getURI().getPath().startsWith(\"/hawkular/btm\") && !$1.getURI().getPath().startsWith(\"/auth\")",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
