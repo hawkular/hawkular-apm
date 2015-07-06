@@ -82,7 +82,7 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(\"MyUri\",\"MyEndpoint\",null,headers,"
+        String expected = ACTION_PREFIX + "producerEnd(\"MyUri\",\"MyEndpoint\",headers,"
                 + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);
@@ -94,7 +94,6 @@ public class InstrumentProducerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.setIdExpression("\"MyId\"");
         im.setHeadersExpression("headers");
         im.getValueExpressions().add("$!");
         im.setDirection(Direction.Response);
@@ -103,7 +102,7 @@ public class InstrumentProducerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(\"MyUri\",\"MyEndpoint\",\"MyId\",headers,"
+        String expected = ACTION_PREFIX + "producerEnd(\"MyUri\",\"MyEndpoint\",headers,"
                 + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);

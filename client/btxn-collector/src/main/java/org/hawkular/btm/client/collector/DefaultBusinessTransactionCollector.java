@@ -131,13 +131,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#consumerEnd(
-     *              java.lang.String, java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
+     *              java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
      */
     @Override
-    public void consumerEnd(String uri, String type, String id, Map<String, ?> headers, Object... values) {
+    public void consumerEnd(String uri, String type, Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Consumer end: type=" + type + " uri=" + uri
-                    + " id=" + id + " headers=" + headers
+                    + " headers=" + headers
                     + " values=" + values);
         }
 
@@ -147,7 +147,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (builder != null) {
                 Consumer consumer = pop(builder, Consumer.class);
 
-                processValues(consumer, false, id, headers, values);
+                processValues(consumer, false, null, headers, values);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -296,13 +296,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#producerEnd(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
+     *                      java.lang.String, java.util.Map, java.lang.Object[])
      */
     @Override
-    public void producerEnd(String uri, String type, String id, Map<String, ?> headers, Object... values) {
+    public void producerEnd(String uri, String type, Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Producer end: type=" + type + " uri=" + uri
-                    + " id=" + id + " headers=" + headers
+                    + " headers=" + headers
                     + " values=" + values);
         }
 
@@ -312,7 +312,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (builder != null) {
                 Producer producer = pop(builder, Producer.class);
 
-                processValues(producer, false, id, headers, values);
+                processValues(producer, false, null, headers, values);
 
                 // Check for completion
                 checkForCompletion(builder);

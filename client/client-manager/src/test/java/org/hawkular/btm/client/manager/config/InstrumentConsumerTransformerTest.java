@@ -82,7 +82,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\",null,headers,"
+        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\",headers,"
                 + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);
@@ -103,7 +103,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\",\"MyId\",headers,"
+        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\",headers,"
                 + "createArrayBuilder().add($!).get())";
 
         assertEquals(expected, transformed);
