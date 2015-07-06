@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Service;
@@ -166,6 +167,73 @@ public class FragmentBuilderTest {
         builder.releaseNode("testId");
 
         assertTrue("Business transaction should now be complete after release", builder.isComplete());
+    }
+
+    @Test
+    public void testSuppressSingleChildNode() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+
+        builder.pushNode(consumer);
+
+        builder.suppress();
+
+        Component c1 = new Component();
+        builder.pushNode(c1);
+
+        builder.popNode();
+
+        assertTrue("Should be suppressed", builder.isSuppressed());
+
+        builder.popNode();
+
+        assertFalse("Should no longer be suppressed", builder.isSuppressed());
+
+        assertTrue("Business transaction should be complete", builder.isComplete());
+
+        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+
+        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+
+        assertTrue("Should have zero child nodes", ((Consumer) builder.getBusinessTransaction().getNodes().get(0))
+                .getNodes().size() == 0);
+    }
+
+    @Test
+    public void testSuppressDoubleChildNode() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+
+        builder.pushNode(consumer);
+
+        builder.suppress();
+
+        Component c1 = new Component();
+        builder.pushNode(c1);
+
+        builder.popNode();
+
+        Component c2 = new Component();
+        builder.pushNode(c2);
+
+        builder.popNode();
+
+        assertTrue("Should be suppressed", builder.isSuppressed());
+
+        builder.popNode();
+
+        assertFalse("Should no longer be suppressed", builder.isSuppressed());
+
+        assertTrue("Business transaction should be complete", builder.isComplete());
+
+        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+
+        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+
+        assertTrue("Should have zero child nodes", ((Consumer) builder.getBusinessTransaction().getNodes().get(0))
+                .getNodes().size() == 0);
     }
 
 }

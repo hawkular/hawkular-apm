@@ -16,6 +16,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
+        "condition": "collector().session().activate($1.getUri().toString())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -41,6 +42,7 @@
           "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation"
         ],
         "location": "EXIT",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",

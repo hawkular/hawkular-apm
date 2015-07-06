@@ -10,7 +10,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\") && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btm\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -40,7 +40,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\") && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btm\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -70,7 +70,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\") && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btm\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -100,7 +100,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "!$0.getURL().getPath().startsWith(\"/hawkular/btm\")",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",

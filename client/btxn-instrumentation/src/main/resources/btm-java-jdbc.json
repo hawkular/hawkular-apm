@@ -11,7 +11,7 @@
           "*"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().isActive()",
+        "condition": "collector().session().activate($0.getConnection().getMetaData().getURL())",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Request",

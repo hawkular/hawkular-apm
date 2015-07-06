@@ -32,6 +32,9 @@ public class CollectorConfiguration {
     @JsonInclude
     private Map<String,Instrumentation> instrumentation = new HashMap<String,Instrumentation>();
 
+    @JsonInclude
+    private Map<String,BusinessTxnConfig> businessTransactions = new HashMap<String,BusinessTxnConfig>();
+
     /**
      * @return the instrumentation
      */
@@ -44,6 +47,20 @@ public class CollectorConfiguration {
      */
     public void setInstrumentation(Map<String,Instrumentation> instrumentation) {
         this.instrumentation = instrumentation;
+    }
+
+    /**
+     * @return the businessTransactions
+     */
+    public Map<String, BusinessTxnConfig> getBusinessTransactions() {
+        return businessTransactions;
+    }
+
+    /**
+     * @param businessTransactions the businessTransactions to set
+     */
+    public void setBusinessTransactions(Map<String, BusinessTxnConfig> businessTransactions) {
+        this.businessTransactions = businessTransactions;
     }
 
     /**
@@ -62,6 +79,12 @@ public class CollectorConfiguration {
                 throw new IllegalArgumentException("Instrumentation for '"+key+"' already exists");
             }
             getInstrumentation().put(key, config.getInstrumentation().get(key));
+        }
+        for (String key : config.getBusinessTransactions().keySet()) {
+            if (getBusinessTransactions().containsKey(key) && !overwrite) {
+                throw new IllegalArgumentException("Business Transaction config for '"+key+"' already exists");
+            }
+            getBusinessTransactions().put(key, config.getBusinessTransactions().get(key));
         }
     }
 }
