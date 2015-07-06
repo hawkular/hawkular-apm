@@ -19,6 +19,7 @@ package org.hawkular.btm.client.manager.config;
 import org.hawkular.btm.api.model.admin.CollectorAction;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
 import org.hawkular.btm.api.model.admin.InstrumentProducer;
+import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
 
 /**
  * This class transforms the InstrumentProducer type.
@@ -48,11 +49,14 @@ public class InstrumentProducerTransformer extends CollectorActionTransformer {
      */
     @Override
     protected String[] getParameters(CollectorAction invocation) {
-        String[] ret = new String[3];
+        String[] ret = new String[invocation.getDirection() == Direction.Request ? 3 : 2];
 
         ret[0] = ((InstrumentProducer) invocation).getUriExpression();
         ret[1] = ((InstrumentProducer) invocation).getEndpointTypeExpression();
-        ret[2] = ((InstrumentProducer) invocation).getIdExpression();
+
+        if (invocation.getDirection() == Direction.Request) {
+            ret[2] = ((InstrumentProducer) invocation).getIdExpression();
+        }
 
         return (ret);
     }

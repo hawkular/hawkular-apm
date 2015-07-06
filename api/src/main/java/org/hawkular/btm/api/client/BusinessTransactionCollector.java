@@ -42,11 +42,10 @@ public interface BusinessTransactionCollector {
      *
      * @param uri The uri
      * @param type The endpoint type
-     * @param id The unique interaction id
      * @param headers The header values
      * @param values The response values
      */
-    void consumerEnd(String uri, String type, String id, Map<String,?> headers, Object... values);
+    void consumerEnd(String uri, String type, Map<String,?> headers, Object... values);
 
     /**
      * This method indicates the start of a service invocation.
@@ -102,11 +101,10 @@ public interface BusinessTransactionCollector {
      *
      * @param uri The uri
      * @param type The endpoint type
-     * @param id The unique interaction id
      * @param headers The header values
      * @param values The response values
      */
-    void producerEnd(String uri, String type, String id, Map<String,?> headers, Object... values);
+    void producerEnd(String uri, String type, Map<String,?> headers, Object... values);
 
     /**
      * This method sets a property on the business transaction.
