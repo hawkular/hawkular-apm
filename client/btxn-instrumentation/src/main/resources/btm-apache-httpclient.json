@@ -32,7 +32,10 @@
           "action": "collector().setDetail(\"http_method\",$1.getMethod())"
         },{
           "type": "FreeFormAction",
-          "action": "$1.setHeader(\"Hawkular-btm\",id)"
+          "action": "$1.setHeader(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.setHeader(\"Hawkular-btname\",collector().getName())"
         }]
       },{
         "ruleName": "Apache HttpClient Producer End",
@@ -79,7 +82,10 @@
           "action": "collector().setDetail(\"http_method\",$1.getMethod())"
         },{
           "type": "FreeFormAction",
-          "action": "$1.setHeader(\"Hawkular-btm\",id)"
+          "action": "$1.setHeader(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.setHeader(\"Hawkular-btname\",collector().getName())"
         }]
       },{
         "ruleName": "Apache HttpClient ResponseHandler Producer End",

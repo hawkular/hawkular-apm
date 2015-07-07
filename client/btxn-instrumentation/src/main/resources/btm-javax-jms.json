@@ -11,17 +11,20 @@
           "javax.jms.Message"
         ],
         "location": "ENTRY",
-        "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && collector().session().activate($1.getJMSDestination(),$1.getStringProperty(\"HawkularBTM\"))",
+        "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && collector().session().activate($1.getJMSDestination(),$1.getStringProperty(\"HawkularBTID\"))",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"JMS\"",
           "uriExpression": "$1.getJMSDestination()",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$1)",
-          "idExpression": "$1.getStringProperty(\"HawkularBTM\")"
+          "idExpression": "$1.getStringProperty(\"HawkularBTID\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setName($1.getStringProperty(\"HawkularBTName\"))"
         }]
       },{
         "ruleName": "Javax JMS Consumer End",
@@ -71,7 +74,10 @@
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTM\",id)"
+          "action": "$2.setStringProperty(\"HawkularBTID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setStringProperty(\"HawkularBTName\",collector().getName())"
         }]
       },{
         "ruleName": "Javax JMS Producer Start",
@@ -106,7 +112,10 @@
           "action": "collector().session().initiateLink($2.getJMSReplyTo())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTM\",id)"
+          "action": "$2.setStringProperty(\"HawkularBTID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setStringProperty(\"HawkularBTName\",collector().getName())"
         }]
       },{
         "ruleName": "Javax JMS Producer Sync End",

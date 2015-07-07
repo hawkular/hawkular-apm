@@ -85,19 +85,22 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && collector().session().activate($2.getFromEndpoint().getEndpointUri(),$2.getProperty(\"Hawkular-btm\"))",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && collector().session().activate($2.getFromEndpoint().getEndpointUri(),$2.getProperty(\"HawkularBTID\"))",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
-          "idExpression": "$2.getProperty(\"Hawkular-btm\")"
+          "idExpression": "$2.getProperty(\"HawkularBTID\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"apache-camel\")"
         },{
           "type": "FreeFormAction",
-          "action": "$2.removeProperty(\"Hawkular-btm\")"
+          "action": "collector().setName($2.getProperty(\"HawkularBTName\"))"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.removeProperty(\"HawkularBTID\")"
         }]
       },{
         "ruleName": "Apache Camel Inbound Consumer End",
@@ -142,7 +145,10 @@
           "action": "collector().setDetail(\"btm_source\",\"apache-camel\")"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkular-btm\",id)"
+          "action": "$2.setProperty(\"HawkularBTID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"HawkularBTName\",collector().getName())"
         }]
       },{
         "ruleName": "Apache Camel Outbound Producer End",

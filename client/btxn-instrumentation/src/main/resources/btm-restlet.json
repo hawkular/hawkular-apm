@@ -19,12 +19,16 @@
         },{
           "name": "id",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkular-btm\")"
+          "expression": "headers.getFirstValue(\"Hawkular-btid\")"
+        },{
+          "name": "btname",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Hawkular-btname\")"
         }],
         "condition": "collector().session().activate($1.getResourceRef(),id)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "headers.removeAll(\"Hawkular-btm\")"
+          "action": "headers.removeAll(\"Hawkular-btid\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -35,6 +39,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"restlet\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setName(btname)"
         }]
       },{
         "ruleName": "Restlet Async Consumer End",

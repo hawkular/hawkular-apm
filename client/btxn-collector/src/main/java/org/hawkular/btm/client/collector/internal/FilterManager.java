@@ -60,16 +60,21 @@ public class FilterManager {
     }
 
     /**
-     * This method determines whether the supplied URI should be processed.
+     * This method determines whether the supplied URI is associated with
+     * a defined business transaction, or valid due to global inclusion
+     * criteria.
      *
      * @param uri The URI
-     * @return Whether the URI should be processed
+     * @return The business transaction name, empty if URI globally valid,
+     *                  or null if URI should be excluded
      */
-    public boolean isValid(String uri) {
+    public String getBusinessTransactionName(String uri) {
+        String ret="";
+
         // First check if a global exclusion filter applies
         for (int i=0; i < globalExclusionFilters.size(); i++) {
             if (globalExclusionFilters.get(i).isExcluded(uri)) {
-                return false;
+                return null;
             }
         }
 
@@ -77,12 +82,13 @@ public class FilterManager {
         for (int i=0; i < btxnFilters.size(); i++) {
             if (btxnFilters.get(i).isIncluded(uri)) {
                 if (btxnFilters.get(i).isExcluded(uri)) {
-                    return false;
+                    return null;
                 }
+                ret = btxnFilters.get(i).getBusinessTransaction();
                 break;
             }
         }
 
-        return true;
+        return ret;
     }
 }

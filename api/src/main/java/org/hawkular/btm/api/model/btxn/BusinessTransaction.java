@@ -41,6 +41,9 @@ public class BusinessTransaction {
     @JsonInclude
     private String id;
 
+    @JsonInclude(Include.NON_EMPTY)
+    private String name;
+
     @JsonInclude
     private List<Node> nodes = new ArrayList<Node>();
 
@@ -64,6 +67,20 @@ public class BusinessTransaction {
     public BusinessTransaction setId(String id) {
         this.id = id;
         return this;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -156,42 +173,52 @@ public class BusinessTransaction {
         return ret;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
-        result = prime * result
-                + ((properties == null) ? 0 : properties.hashCode());
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         BusinessTransaction other = (BusinessTransaction) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
         if (nodes == null) {
-            if (other.nodes != null) {
+            if (other.nodes != null)
                 return false;
-            }
-        } else if (!nodes.equals(other.nodes)) {
+        } else if (!nodes.equals(other.nodes))
             return false;
-        }
         if (properties == null) {
-            if (other.properties != null) {
+            if (other.properties != null)
                 return false;
-            }
-        } else if (!properties.equals(other.properties)) {
+        } else if (!properties.equals(other.properties))
             return false;
-        }
         return true;
     }
 
@@ -200,7 +227,8 @@ public class BusinessTransaction {
      */
     @Override
     public String toString() {
-        return "BusinessTransaction [id=" + id + ", nodes=" + nodes + ", properties=" + properties + "]";
+        return "BusinessTransaction [id=" + id + ", name=" + name + ", nodes=" + nodes + ", properties=" + properties
+                + "]";
     }
 
 }

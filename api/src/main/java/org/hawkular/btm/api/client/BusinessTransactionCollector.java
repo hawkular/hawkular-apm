@@ -27,6 +27,20 @@ import java.util.Map;
 public interface BusinessTransactionCollector {
 
     /**
+     * This method sets the name of the business transaction.
+     *
+     * @param name The business transaction name
+     */
+    void setName(String name);
+
+    /**
+     * This method returns the name of the business transaction.
+     *
+     * @return The business transaction name, or empty string if not defined
+     */
+    String getName();
+
+    /**
      * This method indicates the start of a message being consumed.
      *
      * @param uri The uri
