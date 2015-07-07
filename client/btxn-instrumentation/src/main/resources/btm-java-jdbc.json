@@ -11,7 +11,7 @@
           "*"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getConnection().getMetaData().getURL())",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Request",
@@ -26,6 +26,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().suppress()"
         }]
       },{
         "ruleName": "Java JDBC Query Component End",
@@ -64,6 +67,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().suppress()"
         }]
       },{
         "ruleName": "Java JDBC Prepared Query Component End",
@@ -102,6 +108,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().suppress()"
         }]
       },{
         "ruleName": "Java JDBC Update Component End",
@@ -140,6 +149,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().suppress()"
         }]
       },{
         "ruleName": "Java JDBC Prepared Update Component End",

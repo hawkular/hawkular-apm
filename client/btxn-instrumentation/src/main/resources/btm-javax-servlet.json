@@ -17,7 +17,7 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "collector().session().activate(req.getRequestURI().toString(),req.getHeader(\"Hawkular-btm\"))",
+        "condition": "collector().session().activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btm\"))",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
