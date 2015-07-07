@@ -85,4 +85,23 @@ public class FilterManagerTest {
         assertFalse(fm.isValid("include and exclude"));
     }
 
+    @Test
+    public void testExcludeDefaults() {
+        CollectorConfiguration config = new CollectorConfiguration();
+        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        config.getBusinessTransactions().put("btc2", btc2);
+
+        // Business txn specific
+        Filter f2 = new Filter();
+        btc2.setFilter(f2);
+        f2.getExclusions().add("^https?://.*/hawkular/btm");
+        f2.getExclusions().add("^https?://.*/auth/");
+
+        FilterManager fm = new FilterManager(config);
+
+        assertFalse(fm.isValid("http://localhost:8080/hawkular/btm/transactions"));
+
+        assertFalse(fm.isValid("http://localhost:8080/auth/realms/artificer/protocol/openid-connect/token"));
+    }
+
 }

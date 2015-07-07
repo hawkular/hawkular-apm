@@ -786,6 +786,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#suppress()
+     */
+    @Override
+    public void suppress() {
+        FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+        if (builder != null) {
+            builder.suppress();
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.SessionManager#assertComplete()
      */
     @Override
