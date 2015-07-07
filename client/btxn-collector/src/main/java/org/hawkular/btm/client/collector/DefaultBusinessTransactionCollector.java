@@ -104,6 +104,69 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#setName(java.lang.String)
+     */
+    @Override
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Ignoring attempt to set business transaction name to null");
+            }
+            return;
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set business transaction name=" + name);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                builder.getBusinessTransaction().setName(name);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setName failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#getName()
+     */
+    @Override
+    public String getName() {
+        String ret=null;
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                ret = builder.getBusinessTransaction().getName();
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getName failed", t);
+            }
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get business transaction name=" + ret);
+        }
+
+        if (ret == null) {
+            ret = "";
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#consumerStart(java.lang.String,
      *                  java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
      */
@@ -602,11 +665,20 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     log.finest("Unable to determine if fragment should be traced due to missing filter manager");
                 }
             } else {
-                boolean valid=filterManager.isValid(uri);
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("activate: URI["+uri+"] isValid="+valid);
+                String btxnName=filterManager.getBusinessTransactionName(uri);
+
+                if (btxnName != null && !btxnName.trim().isEmpty()) {
+                    FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                    if (builder != null) {
+                        builder.getBusinessTransaction().setName(btxnName);
+                    }
                 }
-                return valid;
+
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("activate: URI["+uri+"] business transaction name="+btxnName);
+                }
+                return btxnName != null;
             }
         }
 

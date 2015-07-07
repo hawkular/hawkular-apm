@@ -16,8 +16,8 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
@@ -49,7 +49,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertFalse(fm.isValid("include"));
+        assertNull(fm.getBusinessTransactionName("include"));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertTrue(fm.isValid("include and exclude"));
+        assertNotNull(fm.getBusinessTransactionName("include and exclude"));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertFalse(fm.isValid("include and exclude"));
+        assertNull(fm.getBusinessTransactionName("include and exclude"));
     }
 
     @Test
@@ -99,9 +99,10 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertFalse(fm.isValid("http://localhost:8080/hawkular/btm/transactions"));
+        assertNull(fm.getBusinessTransactionName("http://localhost:8080/hawkular/btm/transactions"));
 
-        assertFalse(fm.isValid("http://localhost:8080/auth/realms/artificer/protocol/openid-connect/token"));
+        assertNull(fm.getBusinessTransactionName(
+                "http://localhost:8080/auth/realms/artificer/protocol/openid-connect/token"));
     }
 
 }

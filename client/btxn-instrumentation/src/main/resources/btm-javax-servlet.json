@@ -17,14 +17,14 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "collector().session().activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btm\"))",
+        "condition": "collector().session().activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btid\"))",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()",
           "headersExpression": "getHeaders(\"javax.servlet.http.HttpServletRequest\",req)",
-          "idExpression": "req.getHeader(\"Hawkular-btm\")"
+          "idExpression": "req.getHeader(\"Hawkular-btid\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax-servlet\")"
@@ -37,6 +37,9 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"remoteHost\",req.getRemoteHost())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setName(req.getHeader(\"Hawkular-btname\"))"
         }]
       },{
         "ruleName": "Javax Servlet Consumer End",

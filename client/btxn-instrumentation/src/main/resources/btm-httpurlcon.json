@@ -10,7 +10,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -31,7 +31,10 @@
           "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
+          "action": "$0.setRequestProperty(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btname\",collector().getName())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Start",
@@ -40,7 +43,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -61,7 +64,10 @@
           "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
+          "action": "$0.setRequestProperty(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btname\",collector().getName())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getInputStream Producer Start",
@@ -70,7 +76,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btm\") == null",
+        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -91,7 +97,10 @@
           "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkular-btm\",id)"
+          "action": "$0.setRequestProperty(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btname\",collector().getName())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End",

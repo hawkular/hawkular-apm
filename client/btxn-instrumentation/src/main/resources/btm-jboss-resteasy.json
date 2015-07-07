@@ -32,7 +32,10 @@
           "action": "collector().setDetail(\"http_method\",$1.getMethod())"
         },{
           "type": "FreeFormAction",
-          "action": "$1.getHeaders().header(\"Hawkular-btm\",id)"
+          "action": "$1.getHeaders().header(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.getHeaders().header(\"Hawkular-btname\",collector().getName())"
         }]
       },{
         "ruleName": "JBoss RESTEasy Client Producer End",
