@@ -1,0 +1,18 @@
+{
+  "businessTransactions": {
+    "webpages": {
+      "description": "Configuration for excluding Web pages and their resources",
+      "filter": {
+        "exclusions": [
+          "\\.html$",
+          "\\.js$",
+          "\\.gif$",
+          "\\.bmp$",
+          "\\.jpg$",
+          "\\.tif$",
+          "\\.png$"
+        ]
+      }
+    }
+  }
+}
