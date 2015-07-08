@@ -73,6 +73,18 @@ public class RuleHelper extends Helper {
     }
 
     /**
+     * This method returns an ID associated with the supplied
+     * type and object.
+     *
+     * @param type The type represents the use (or context) of the object
+     * @param obj The object
+     * @return The id
+     */
+    public String getID(String type, Object obj) {
+        return type + obj.hashCode();
+    }
+
+    /**
      * This method determines whether the supplied object is an
      * instance of the supplied class/interface.
      *
