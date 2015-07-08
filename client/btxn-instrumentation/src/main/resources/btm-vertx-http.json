@@ -1,0 +1,138 @@
+{
+  "instrumentation": {
+    "vertx-http": {
+      "description": "Vertx HTTP instrumentation",
+      "version": "1",
+      "rules": [{
+        "ruleName": "Vertx HTTP Consumer Start",
+        "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "EXIT",
+        "condition": "collector().session().activate($0.absoluteURI(),$0.getHeader(\"HawkularBTID\"))",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.absoluteURI()",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
+          "idExpression": "$0.getHeader(\"Hawkular-btid\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"vertx-http\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"remoteAddr\",$0.remoteAddress())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"http-method\",$0.method())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setName($0.getHeader(\"HawkularBTName\"))"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Consumer End",
+        "interfaceName": "^io.vertx.core.http.HttpServerResponse",
+        "methodName": "end",
+        "parameterTypes": [
+          "java.lang.String"
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Start",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "write",
+        "parameterTypes": [
+          "io.netty.buffer.ByteBuf",
+          "boolean"
+         ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        },{
+          "name": "uri",
+          "type": "java.lang.String",
+          "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
+        }],
+        "condition": "$2 == true && collector().session().activate(uri)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "uri",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().initiateLink(\"vertx-http\"+$0.hashCode())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"vertx-http\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"http_method\",$0.method())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkular-btname\",collector().getName())"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer End",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "handleResponse",
+        "parameterTypes": [
+          "io.vertx.core.http.impl.HttpClientResponseImpl"
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isLinkActive(\"vertx-http\"+$0.hashCode())",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().session().completeLink(\"vertx-http\"+$0.hashCode())"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Async Request Thread Complete",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "write",
+        "parameterTypes": [
+          "io.netty.buffer.ByteBuf",
+          "boolean"
+         ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().session().unlink()"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Async Response Thread Complete",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "handleResponse",
+        "parameterTypes": [
+          "io.vertx.core.http.impl.HttpClientResponseImpl"
+        ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().session().unlink()"
+        }]
+      }]
+    }
+  }
+}

@@ -116,6 +116,15 @@ public class TestBTxnService {
         shutdown = timer;
     }
 
+    /**
+     * This method sets the port.
+     *
+     * @param port The port
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     public void run() {
         log.info("************** STARTED TEST BTXN SERVICE: host="+host+" port="+port+" shutdownTimer="+shutdown);
 

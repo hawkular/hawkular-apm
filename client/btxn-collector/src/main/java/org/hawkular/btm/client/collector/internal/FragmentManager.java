@@ -60,12 +60,15 @@ public class FragmentManager {
         FragmentBuilder builder = builders.get();
 
         if (builder == null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Creating new FragmentBuilder");
+            }
             builder = new FragmentBuilder();
             builders.set(builder);
 
             int currentCount=threadCounter.incrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Associate Thread with FragmentBuilder(1): current count="+currentCount);
+                log.finest("Associate Thread with FragmentBuilder(1): current thread count="+currentCount);
             }
         }
 
@@ -83,12 +86,12 @@ public class FragmentManager {
         if (currentBuilder == null && builder != null) {
             int currentCount=threadCounter.incrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Associate Thread with FragmentBuilder(2): current count="+currentCount);
+                log.finest("Associate Thread with FragmentBuilder(2): current thread count="+currentCount);
             }
         } else if (currentBuilder != null && builder == null) {
             int currentCount=threadCounter.decrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Disassociate Thread from FragmentBuilder(2): current count="+currentCount);
+                log.finest("Disassociate Thread from FragmentBuilder(2): current thread count="+currentCount);
             }
         }
 
@@ -102,7 +105,7 @@ public class FragmentManager {
     public void clear() {
         int currentCount=threadCounter.decrementAndGet();
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Disassociate Thread from FragmentBuilder(1): current count="+currentCount);
+            log.finest("Clear: Disassociate Thread from FragmentBuilder(1): current thread count="+currentCount);
         }
         builders.remove();
     }
