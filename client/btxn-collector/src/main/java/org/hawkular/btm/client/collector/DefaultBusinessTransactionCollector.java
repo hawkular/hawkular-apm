@@ -208,7 +208,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Consumer consumer = pop(builder, Consumer.class);
+                Consumer consumer = pop(builder, Consumer.class, uri);
 
                 processValues(consumer, false, null, headers, values);
 
@@ -263,7 +263,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Service service = pop(builder, Service.class);
+                Service service = pop(builder, Service.class, uri);
 
                 processValues(service, false, null, headers, values);
 
@@ -317,7 +317,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                pop(builder, Component.class);
+                pop(builder, Component.class, uri);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -373,7 +373,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Producer producer = pop(builder, Producer.class);
+                Producer producer = pop(builder, Producer.class, uri);
 
                 processValues(producer, false, null, headers, values);
 
@@ -484,19 +484,16 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     /**
      * This method pops an existing node from the business transaction fragment.
      *
+     * @param The class to pop
+     * @param The optional URI to match
      * @return The node
      */
-    protected <T extends Node> T pop(FragmentBuilder builder, Class<T> cls) {
+    protected <T extends Node> T pop(FragmentBuilder builder, Class<T> cls, String uri) {
         if (builder == null) {
             if (log.isLoggable(Level.WARNING)) {
                 log.warning("No fragment builder for this thread ("+Thread.currentThread()
                         +") - trying to pop node of type: "+cls);
             }
-            return null;
-        }
-
-        if (builder.isSuppressed()) {
-            builder.popNode();
             return null;
         }
 
@@ -508,16 +505,15 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             return null;
         }
 
-        // Check node is of appropriate type
-        if (builder.getCurrentNode().getClass() == cls) {
-            Node node = builder.popNode();
+        Node node = builder.popNode(cls, uri);
+        if (node != null) {
             node.setDuration(System.currentTimeMillis() - node.getStartTime());
             return cls.cast(node);
         }
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Current node (type=" + builder.getCurrentNode().getClass()
-                    + ") does not match required cls=" + cls);
+                    + ") does not match required cls=" + cls + "and uri=" + uri);
         }
 
         return null;

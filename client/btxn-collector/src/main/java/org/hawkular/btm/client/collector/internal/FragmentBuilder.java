@@ -45,13 +45,13 @@ public class FragmentBuilder {
 
     private Stack<Node> nodeStack = new Stack<Node>();
 
+    private Stack<Node> suppressedNodeStack = new Stack<Node>();
+
     private Map<String,Node> retainedNodes = new HashMap<String,Node>();
 
     private List<String> unlinkedIds=new ArrayList<String>();
 
     private boolean suppress=false;
-
-    private int suppressCount=0;
 
     /**
      * This method determines if the fragment is complete.
@@ -59,7 +59,9 @@ public class FragmentBuilder {
      * @return Whether the fragment is complete
      */
     public boolean isComplete() {
-        return nodeStack.isEmpty() && retainedNodes.isEmpty();
+        synchronized (nodeStack) {
+            return nodeStack.isEmpty() && retainedNodes.isEmpty();
+        }
     }
 
     /**
@@ -76,7 +78,9 @@ public class FragmentBuilder {
      * @return The current node
      */
     public Node getCurrentNode() {
-        return (nodeStack.isEmpty() ? null : nodeStack.peek());
+        synchronized (nodeStack) {
+            return (nodeStack.isEmpty() ? null : nodeStack.peek());
+        }
     }
 
     /**
@@ -87,53 +91,110 @@ public class FragmentBuilder {
      */
     public void pushNode(Node node) {
 
-        // Check if fragment is in suppression mode
-        if (suppress) {
-            suppressCount++;
-            return;
-        }
-
-        if (nodeStack.isEmpty()) {
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("Pushing top level node: "+node+" for txn: "+businessTransaction);
+        synchronized (nodeStack) {
+            // Check if fragment is in suppression mode
+            if (suppress) {
+                suppressedNodeStack.push(node);
+                return;
             }
-            businessTransaction.getNodes().add(node);
-        } else {
-            Node parent = nodeStack.peek();
 
-            if (parent instanceof ContainerNode) {
+            if (nodeStack.isEmpty()) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Add node: "+node+" to parent: "+parent+" in txn: "+businessTransaction);
+                    log.finest("Pushing top level node: "+node+" for txn: "+businessTransaction);
                 }
-                ((ContainerNode) parent).getNodes().add(node);
+                businessTransaction.getNodes().add(node);
             } else {
-                log.severe("Attempt to add node '"+node+"' under non-container node '"+parent+"'");
+                Node parent = nodeStack.peek();
+
+                if (parent instanceof ContainerNode) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Add node: "+node+" to parent: "+parent+" in txn: "+businessTransaction);
+                    }
+                    ((ContainerNode) parent).getNodes().add(node);
+                } else {
+                    log.severe("Attempt to add node '"+node+"' under non-container node '"+parent+"'");
+                }
             }
+            nodeStack.push(node);
         }
-        nodeStack.push(node);
     }
 
     /**
      * This method pops the latest node from the business transaction
      * fragment hierarchy.
      *
-     * @return The latest node
+     * @param cls The type of node to pop
+     * @param uri The optional uri to match
+     * @return The node
      */
-    public Node popNode() {
+    public Node popNode(Class<? extends Node> cls, String uri) {
 
-        // Check if fragment is in suppression mode
-        if (suppress) {
-            suppressCount--;
+        synchronized (nodeStack) {
+            // Check if fragment is in suppression mode
+            if (suppress) {
+                if (!suppressedNodeStack.isEmpty()) {
 
-            if (suppressCount >= 0) {
-                return null;
+                    // Check if node is on the suppressed stack
+                    Node suppressed=popNode(suppressedNodeStack, cls, uri);
+                    if (suppressed != null) {
+                        // Popped node from suppressed stack
+                        return suppressed;
+                    }
+                } else {
+                    // If suppression parent popped, then canel the suppress mode
+                    suppress = false;
+                }
             }
 
-            // If suppression parent popped, then canel the suppress mode
-            suppress = false;
+            return popNode(nodeStack, cls, uri);
+        }
+    }
+
+    /**
+     * This method pops a node of the defined class and optional uri from the stack.
+     * If the uri is not defined, then the latest node of the approach class will
+     * be chosen.
+     *
+     * @param stack The stack
+     * @param cls The node type
+     * @param uri The optional uri to match
+     * @return The node, or null if no suitable candidate is found
+     */
+    protected Node popNode(Stack<Node> stack, Class<? extends Node> cls, String uri) {
+        Node top=stack.isEmpty() ? null : stack.peek();
+
+        if (top != null) {
+            if (nodeMatches(top, cls, uri)) {
+                return stack.pop();
+            } else {
+                // Scan for potential match, from -2 so don't repeat
+                // check of top node
+                for (int i=stack.size()-2; i >= 0; i--) {
+                    if (nodeMatches(stack.get(i), cls, uri)) {
+                        return stack.remove(i);
+                    }
+                }
+            }
         }
 
-        return nodeStack.pop();
+        return null;
+    }
+
+    /**
+     * This method determines whether the supplied node matches the specified class
+     * and optional URI.
+     *
+     * @param node The node
+     * @param cls The class
+     * @param uri The optional URI
+     * @return Whether the node is of the correct type and matches the optional URI
+     */
+    protected boolean nodeMatches(Node node, Class<? extends Node> cls, String uri) {
+        if (node.getClass() == cls) {
+            return uri == null || uri.equals(node.getUri());
+        }
+
+        return false;
     }
 
     /**
@@ -143,10 +204,12 @@ public class FragmentBuilder {
      * @param id The identifier used to later on to identify the node
      */
     public void retainNode(String id) {
-        Node current=getCurrentNode();
+        synchronized (retainedNodes) {
+            Node current=getCurrentNode();
 
-        if (current != null) {
-            retainedNodes.put(id, current);
+            if (current != null) {
+                retainedNodes.put(id, current);
+            }
         }
     }
 
@@ -157,7 +220,9 @@ public class FragmentBuilder {
      * @param id The identifier used to identify the node
      */
     public void releaseNode(String id) {
-        retainedNodes.remove(id);
+        synchronized (retainedNodes) {
+            retainedNodes.remove(id);
+        }
     }
 
     /**
@@ -168,7 +233,9 @@ public class FragmentBuilder {
      * @return The node, or null if not found
      */
     public Node retrieveNode(String id) {
-        return retainedNodes.get(id);
+        synchronized (retainedNodes) {
+            return retainedNodes.get(id);
+        }
     }
 
     /**
