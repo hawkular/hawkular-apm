@@ -66,7 +66,7 @@ public class FragmentBuilderTest {
 
         builder.pushNode(consumer);
 
-        Node result = builder.popNode();
+        Node result = builder.popNode(Consumer.class, null);
 
         assertTrue("Business transaction should be complete", builder.isComplete());
 
@@ -112,7 +112,7 @@ public class FragmentBuilderTest {
 
         builder.pushNode(service1);
 
-        Node poppedService1 = builder.popNode();
+        Node poppedService1 = builder.popNode(Service.class, null);
 
         assertEquals("Popped service1 incorrect", poppedService1, service1);
 
@@ -120,11 +120,11 @@ public class FragmentBuilderTest {
 
         builder.pushNode(service2);
 
-        Node poppedService2 = builder.popNode();
+        Node poppedService2 = builder.popNode(Service.class, null);
 
         assertEquals("Popped service2 incorrect", poppedService2, service2);
 
-        Node poppedConsumer = builder.popNode();
+        Node poppedConsumer = builder.popNode(Consumer.class, null);
 
         assertEquals("Popped consumer incorrect", poppedConsumer, consumer);
 
@@ -150,7 +150,7 @@ public class FragmentBuilderTest {
 
         builder.retainNode("testId");
 
-        builder.popNode();
+        builder.popNode(Consumer.class, null);
 
         assertFalse("Business transaction should NOT be complete", builder.isComplete());
 
@@ -182,11 +182,11 @@ public class FragmentBuilderTest {
         Component c1 = new Component();
         builder.pushNode(c1);
 
-        builder.popNode();
+        builder.popNode(Component.class, null);
 
         assertTrue("Should be suppressed", builder.isSuppressed());
 
-        builder.popNode();
+        builder.popNode(Consumer.class, null);
 
         assertFalse("Should no longer be suppressed", builder.isSuppressed());
 
@@ -213,16 +213,16 @@ public class FragmentBuilderTest {
         Component c1 = new Component();
         builder.pushNode(c1);
 
-        builder.popNode();
+        builder.popNode(Component.class, null);
 
         Component c2 = new Component();
         builder.pushNode(c2);
 
-        builder.popNode();
+        builder.popNode(Component.class, null);
 
         assertTrue("Should be suppressed", builder.isSuppressed());
 
-        builder.popNode();
+        builder.popNode(Consumer.class, null);
 
         assertFalse("Should no longer be suppressed", builder.isSuppressed());
 
@@ -236,4 +236,95 @@ public class FragmentBuilderTest {
                 .getNodes().size() == 0);
     }
 
+    @Test
+    public void testAsyncStackNoUri() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+        builder.pushNode(consumer);
+
+        Component c1 = new Component();
+        builder.pushNode(c1);
+
+        assertNotNull(builder.popNode(Consumer.class, null));
+
+        assertNotNull(builder.popNode(Component.class, null));
+
+        assertTrue(builder.isComplete());
+    }
+
+    @Test
+    public void testAsyncStackWithUriNotPassed() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+        consumer.setUri("ConsumerURI");
+        builder.pushNode(consumer);
+
+        Component c1 = new Component();
+        c1.setUri("ComponentURI");
+        builder.pushNode(c1);
+
+        assertNotNull(builder.popNode(Consumer.class, null));
+
+        assertNotNull(builder.popNode(Component.class, null));
+
+        assertTrue(builder.isComplete());
+    }
+
+    @Test
+    public void testAsyncStackWithUriPassed() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+        consumer.setUri("ConsumerURI");
+        builder.pushNode(consumer);
+
+        Component c1 = new Component();
+        c1.setUri("ComponentURI");
+        builder.pushNode(c1);
+
+        assertNotNull(builder.popNode(Consumer.class, "ConsumerURI"));
+
+        assertNotNull(builder.popNode(Component.class, "ComponentURI"));
+
+        assertTrue(builder.isComplete());
+
+        assertNotNull(builder.getBusinessTransaction());
+
+        assertEquals(1, builder.getBusinessTransaction().getNodes().size());
+
+        assertEquals(Consumer.class, builder.getBusinessTransaction().getNodes().get(0).getClass());
+
+        assertEquals(1, ((Consumer)builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
+    }
+
+    @Test
+    public void testAsyncStackSuppressed() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+        consumer.setUri("ConsumerURI");
+        builder.pushNode(consumer);
+
+        builder.suppress();
+
+        Component c1 = new Component();
+        c1.setUri("ComponentURI");
+        builder.pushNode(c1);
+
+        assertNotNull(builder.popNode(Consumer.class, "ConsumerURI"));
+
+        assertNotNull(builder.popNode(Component.class, "ComponentURI"));
+
+        assertTrue(builder.isComplete());
+
+        assertNotNull(builder.getBusinessTransaction());
+
+        assertEquals(1, builder.getBusinessTransaction().getNodes().size());
+
+        assertEquals(Consumer.class, builder.getBusinessTransaction().getNodes().get(0).getClass());
+
+        assertEquals(0, ((Consumer)builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
+    }
 }
