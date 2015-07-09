@@ -185,6 +185,36 @@ public abstract class Node {
     }
 
     /**
+     * This method calculates the time when all work initiated by this node
+     * has been completed. Where async execution is performed, this could
+     * mean the work continues beyond the scope of the node that initiates
+     * the work.
+     *
+     * @return The completed time
+     */
+    public long completedTime() {
+        return overallEndTime();
+    }
+
+    /**
+     * This method calculates the duration when all work initiated by this node
+     * has been completed. Where async execution is performed, this could
+     * mean the work continues beyond the scope of the node that initiates
+     * the work. This will only be calculated where a start time has been set.
+     *
+     * @return The completed time
+     */
+    public long completedDuration() {
+        long ret = 0;
+
+        if (startTime > 0) {
+            ret = overallEndTime() - startTime;
+        }
+
+        return ret;
+    }
+
+    /**
      * This method determines the overall end time of this node.
      *
      * @return The overall end time
