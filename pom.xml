@@ -371,10 +371,15 @@
       <modules>
         <module>tests/client</module>
         <module>tests/client-java</module>
-        <module>tests/client-vertx</module>
         <module>tests/client-wildfly</module>
         <module>tests/server-wildfly</module>
         <module>tests/test-btxn-service</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>vertx</id>
+      <modules>
+        <module>tests/client-vertx</module>
       </modules>
     </profile>
   </profiles>
