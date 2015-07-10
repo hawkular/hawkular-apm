@@ -5,13 +5,13 @@
       "version": "1",
       "rules": [{
         "ruleName": "Vertx EventBus Consumer Sync Start",
-        "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
-        "methodName": "receiveMessage",
+        "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
+        "methodName": "handle",
         "parameterTypes": [
-          "*"
+          "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$3 == null && !collector().session().isLinkActive(\"vertx-eventbus-producer\"+$1.address()) && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
+        "condition": "$1.replyAddress() == null && !collector().session().isLinkActive(\"vertx-eventbus-producer\"+$1.address()) && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -28,13 +28,13 @@
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Sync End",
-        "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
-        "methodName": "receiveMessage",
+        "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
+        "methodName": "handle",
         "parameterTypes": [
-          "*"
+          "io.vertx.core.eventbus.Message"
          ],
         "location": "EXIT",
-        "condition": "$3 == null && collector().session().isActive()",
+        "condition": "$1.replyAddress() == null && collector().session().isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",
@@ -42,10 +42,10 @@
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async Start",
-        "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
-        "methodName": "receiveMessage",
+        "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
+        "methodName": "handle",
         "parameterTypes": [
-          "*"
+          "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
         "condition": "$1.replyAddress() != null && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
@@ -68,18 +68,16 @@
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async End",
-        "className": "^io.vertx.core.eventbus.impl.MessageImpl",
-        "methodName": "reply",
+        "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
+        "methodName": "sendReply",
         "parameterTypes": [
-          "java.lang.Object",
-          "io.vertx.core.eventbus.DeliveryOptions",
-          "io.vertx.core.Handler"
+          "*"
          ],
         "location": "ENTRY",
-        "condition": "$0.replyAddress() != null && collector().session().isLinkActive(\"vertx-eventbus-consumer\"+$0.replyAddress()",
+        "condition": "collector().session().isLinkActive(\"vertx-eventbus-consumer\"+$2.address())",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "collector().session().completeLink(\"vertx-eventbus-consumer\"+$0.replyAddress())"
+          "action": "collector().session().completeLink(\"vertx-eventbus-consumer\"+$2.address())"
         },{
           "type": "InstrumentConsumer",
           "direction": "Response",
@@ -172,10 +170,10 @@
         }]
       },{
         "ruleName": "Vertx EventBus Producer Async End",
-        "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
-        "methodName": "receiveMessage",
+        "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
+        "methodName": "handle",
         "parameterTypes": [
-          "*"
+          "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
         "condition": "collector().session().isLinkActive(\"vertx-eventbus-producer\"+$1.address())",
@@ -188,14 +186,14 @@
           "endpointTypeExpression": "\"HTTP\""
         }]
       },{
-        "ruleName": "Vertx EventBus Producer Async Request Thread Complete",
-        "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
-        "methodName": "receiveMessageXX",
+        "ruleName": "Vertx EventBus Producer/Consumer Async Handler Thread Complete",
+        "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
+        "methodName": "handle",
         "parameterTypes": [
-          "*"
+          "io.vertx.core.eventbus.Message"
          ],
         "location": "EXIT",
-        "condition": "$3 != null && collector().session().isActive()",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "FreeFormAction",
           "action": "collector().session().unlink()"

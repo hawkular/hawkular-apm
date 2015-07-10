@@ -17,9 +17,9 @@
 package org.hawkular.btm.tests.client.vertx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -123,32 +123,7 @@ public class ClientVertxEventBusTest {
 
         mc.unregister();
 
-        // Check stored business transactions (including 1 for test client)
-        assertEquals(1, btxnService.getBusinessTransactions().size());
-
-        for (BusinessTransaction btxn : btxnService.getBusinessTransactions()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        List<Producer> producers = new ArrayList<Producer>();
-        findNodes(btxnService.getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
-
-        assertEquals("Expecting 1 producer", 1, producers.size());
-
-        List<Consumer> consumers = new ArrayList<Consumer>();
-        findNodes(btxnService.getBusinessTransactions().get(0).getNodes(), Consumer.class, consumers);
-
-        assertEquals("Expecting 1 consumer", 1, consumers.size());
-
-        // Check correlation identifiers match
-        checkInteractionCorrelationIdentifiers(producers.get(0), consumers.get(0));
+        checkBTxnFragments();
     }
 
     @Test
@@ -181,8 +156,15 @@ public class ClientVertxEventBusTest {
 
         mc.unregister();
 
+        checkBTxnFragments();
+    }
+
+    protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
-        assertEquals(1, btxnService.getBusinessTransactions().size());
+        assertEquals(2, btxnService.getBusinessTransactions().size());
+
+        Consumer consumer = null;
+        Producer producer = null;
 
         for (BusinessTransaction btxn : btxnService.getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -193,20 +175,21 @@ public class ClientVertxEventBusTest {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
+            if (!btxn.getNodes().isEmpty()) {
+                if (btxn.getNodes().get(0).getClass() == Producer.class) {
+                    producer = (Producer) btxn.getNodes().get(0);
+                } else if (btxn.getNodes().get(0).getClass() == Consumer.class) {
+                    consumer = (Consumer) btxn.getNodes().get(0);
+                }
+            }
         }
 
-        List<Producer> producers = new ArrayList<Producer>();
-        findNodes(btxnService.getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
-
-        assertEquals("Expecting 1 producer", 1, producers.size());
-
-        List<Consumer> consumers = new ArrayList<Consumer>();
-        findNodes(btxnService.getBusinessTransactions().get(0).getNodes(), Consumer.class, consumers);
-
-        assertEquals("Expecting 1 consumer", 1, consumers.size());
+        assertNotNull("consumer null", consumer);
+        assertNotNull("producer null", producer);
 
         // Check correlation identifiers match
-        checkInteractionCorrelationIdentifiers(producers.get(0), consumers.get(0));
+        checkInteractionCorrelationIdentifiers(producer, consumer);
     }
 
     /**
