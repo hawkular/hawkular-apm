@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
 
 /**
  * @author gbrown
@@ -45,12 +46,16 @@ public class ClientVertxHTTPTest {
 
     private static TestBTxnService btxnService = new TestBTxnService();
 
+    private static HttpServer server;
+
     @BeforeClass
     public static void init() {
-        Vertx.vertx().createHttpServer().requestHandler(req -> {
+        server = Vertx.vertx().createHttpServer();
+
+        server.requestHandler(req -> {
             req.response().putHeader("content-type", "text/html")
-                .end("<html><body><h1>Hello from vert.x!</h1></body></html>");
-          }).listen(8080);
+                    .end("<html><body><h1>Hello from vert.x!</h1></body></html>");
+        }).listen(8080);
 
         try {
             btxnService.setPort(8180);
@@ -63,6 +68,9 @@ public class ClientVertxHTTPTest {
 
     @AfterClass
     public static void close() {
+
+        server.close();
+
         try {
             btxnService.shutdown();
         } catch (Exception e) {
@@ -80,9 +88,9 @@ public class ClientVertxHTTPTest {
     @After
     public void afterTest() {
         System.out.println("Clearing previous business transactions: count="
-                        +btxnService.getBusinessTransactions().size());
+                + btxnService.getBusinessTransactions().size());
         btxnService.getBusinessTransactions().clear();
-        System.out.println("Cleared: count="+btxnService.getBusinessTransactions().size());
+        System.out.println("Cleared: count=" + btxnService.getBusinessTransactions().size());
     }
 
     @Test
@@ -90,9 +98,9 @@ public class ClientVertxHTTPTest {
         Vertx.vertx().createHttpClient().getNow(8080, "localhost", "/hello_get", resp -> {
             System.out.println("Got response " + resp.statusCode());
             resp.bodyHandler(body -> {
-              System.out.println("Got data " + body.toString("ISO-8859-1"));
+                System.out.println("Got data " + body.toString("ISO-8859-1"));
             });
-          });
+        });
 
         evaluateBTxnFragments();
     }
@@ -102,9 +110,9 @@ public class ClientVertxHTTPTest {
         Vertx.vertx().createHttpClient().put(8080, "localhost", "/hello_put", resp -> {
             System.out.println("Got response " + resp.statusCode());
             resp.bodyHandler(body -> {
-              System.out.println("Got data " + body.toString("ISO-8859-1"));
+                System.out.println("Got data " + body.toString("ISO-8859-1"));
             });
-          }).end();
+        }).end();
 
         evaluateBTxnFragments();
     }
@@ -114,9 +122,9 @@ public class ClientVertxHTTPTest {
         Vertx.vertx().createHttpClient().post(8080, "localhost", "/hello_put", resp -> {
             System.out.println("Got response " + resp.statusCode());
             resp.bodyHandler(body -> {
-              System.out.println("Got data " + body.toString("ISO-8859-1"));
+                System.out.println("Got data " + body.toString("ISO-8859-1"));
             });
-          }).end();
+        }).end();
 
         evaluateBTxnFragments();
     }
@@ -133,8 +141,8 @@ public class ClientVertxHTTPTest {
         // Check stored business transactions (including 1 for test client)
         assertEquals(2, btxnService.getBusinessTransactions().size());
 
-        Consumer consumer=null;
-        Producer producer=null;
+        Consumer consumer = null;
+        Producer producer = null;
 
         for (BusinessTransaction btxn : btxnService.getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -148,9 +156,9 @@ public class ClientVertxHTTPTest {
 
             if (!btxn.getNodes().isEmpty()) {
                 if (btxn.getNodes().get(0).getClass() == Producer.class) {
-                    producer = (Producer)btxn.getNodes().get(0);
+                    producer = (Producer) btxn.getNodes().get(0);
                 } else if (btxn.getNodes().get(0).getClass() == Consumer.class) {
-                    consumer = (Consumer)btxn.getNodes().get(0);
+                    consumer = (Consumer) btxn.getNodes().get(0);
                 }
             }
         }
