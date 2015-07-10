@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "java-httpurlconnection": {
+    "java.net": {
       "description": "Java HttpUrlConnection instrumentation",
       "version": "1",
       "rules": [{

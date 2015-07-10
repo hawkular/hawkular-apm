@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "java-jdbc": {
+    "java.sql": {
       "description": "Java JDBC instrumentation",
       "version": "1",
       "rules": [{

@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "apache-httpclient": {
+    "org.apache.http.client": {
       "description": "Apache HttpClient instrumentation",
       "version": "1",
       "rules": [{

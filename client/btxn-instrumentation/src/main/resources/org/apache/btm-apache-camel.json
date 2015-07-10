@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "apache-camel": {
+    "org.apache.camel": {
       "description": "Apache Camel instrumentation",
       "version": "1",
       "rules": [{

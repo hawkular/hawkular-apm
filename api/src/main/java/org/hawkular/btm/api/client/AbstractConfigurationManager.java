@@ -77,20 +77,7 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
             File file=path.toFile();
 
             if (file.isDirectory()) {
-                for (File f : file.listFiles()) {
-                    Path child=path.resolve(f.getName());
-
-                    String json = new String(Files.readAllBytes(child));
-
-                    CollectorConfiguration childConfig = mapper.readValue(json,
-                            CollectorConfiguration.class);
-
-                    if (config == null) {
-                        config = childConfig;
-                    } else {
-                        config.merge(childConfig, false);
-                    }
-                }
+                config = loadConfig(file, path);
             } else {
                 String json = new String(Files.readAllBytes(path));
 
@@ -104,4 +91,42 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
         return config;
     }
 
+    /**
+     * This method loads the configuration from the supplied directory.
+     *
+     * @param dir The directory
+     * @param parent The parent path
+     * @return The configuration
+     */
+    protected CollectorConfiguration loadConfig(File dir, Path parent) {
+        CollectorConfiguration config = null;
+
+        for (File f : dir.listFiles()) {
+            Path child=parent.resolve(f.getName());
+            CollectorConfiguration childConfig=null;
+
+            if (f.isDirectory()) {
+                childConfig = loadConfig(f, child);
+            } else {
+                try {
+                    String json = new String(Files.readAllBytes(child));
+
+                    childConfig = mapper.readValue(json, CollectorConfiguration.class);
+                } catch (IOException e) {
+                    System.err.println("Failed to load BTM configuration: " + e);
+                    e.printStackTrace();
+                }
+            }
+
+            if (childConfig != null) {
+                if (config == null) {
+                    config = childConfig;
+                } else {
+                    config.merge(childConfig, false);
+                }
+            }
+        }
+
+        return config;
+    }
 }
