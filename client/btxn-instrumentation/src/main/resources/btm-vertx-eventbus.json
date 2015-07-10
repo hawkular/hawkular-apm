@@ -84,7 +84,7 @@
           "endpointTypeExpression": "\"MOM\""
         }]
       },{
-        "ruleName": "Vertx EventBus Producer Sync Start",
+        "ruleName": "Vertx EventBus Queue Producer Sync Start",
         "interfaceName": "^io.vertx.core.eventbus.EventBus",
         "methodName": "send",
         "parameterTypes": [
@@ -118,7 +118,7 @@
           "action": "$3.addHeader(\"HawkularBTName\",collector().getName())"
         }]
       },{
-        "ruleName": "Vertx EventBus Producer Sync End",
+        "ruleName": "Vertx EventBus Queue Producer Sync End",
         "interfaceName": "^io.vertx.core.eventbus.EventBus",
         "methodName": "send",
         "parameterTypes": [
@@ -129,6 +129,58 @@
          ],
         "location": "EXIT",
         "condition": "$4 == null && collector().session().isActive()",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"MOM\""
+        }]
+      },{
+        "ruleName": "Vertx EventBus PubSub Producer Sync Start",
+        "interfaceName": "^io.vertx.core.eventbus.EventBus",
+        "methodName": "publish",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.Object",
+          "io.vertx.core.eventbus.DeliveryOptions"
+         ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "condition": "collector().session().activate($1)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"MOM\"",
+          "uriExpression": "$1",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"vertx-eventbus\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_publish\",\"true\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "$3.addHeader(\"HawkularBTID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$3.addHeader(\"HawkularBTName\",collector().getName())"
+        }]
+      },{
+        "ruleName": "Vertx EventBus PubSub Producer Sync End",
+        "interfaceName": "^io.vertx.core.eventbus.EventBus",
+        "methodName": "publish",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.Object",
+          "io.vertx.core.eventbus.DeliveryOptions"
+         ],
+        "location": "EXIT",
+        "condition": "collector().session().isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",

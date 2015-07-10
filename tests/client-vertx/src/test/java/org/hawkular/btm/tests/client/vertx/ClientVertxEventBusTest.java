@@ -159,6 +159,39 @@ public class ClientVertxEventBusTest {
         checkBTxnFragments();
     }
 
+    @Test
+    public void testEBPubSub() {
+        EventBus eb = Vertx.vertx().eventBus();
+
+        MessageConsumer<String> mc = eb.consumer("news.uk.sport.pubsub");
+        mc.handler(message -> {
+            System.out.println("I have received a message: " + message.body());
+        });
+
+        mc.completionHandler(res -> {
+            if (res.succeeded()) {
+                System.out.println("The handler registration has reached all nodes");
+
+                eb.publish("news.uk.sport.pubsub", "Yay! Someone kicked a ball");
+
+            } else {
+                System.out.println("Registration failed!");
+            }
+        });
+
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mc.unregister();
+
+        checkBTxnFragments();
+    }
+
     protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
         assertEquals(2, btxnService.getBusinessTransactions().size());
