@@ -109,4 +109,11 @@ public class FragmentManager {
         }
         builders.remove();
     }
+
+    /**
+     * This method reports diagnostic information to the log.
+     */
+    public void diagnostics() {
+        log.finest("Thread count = "+threadCounter);
+    }
 }

@@ -623,6 +623,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
 
             fragmentManager.clear();
+
+            diagnostics();
         }
     }
 
@@ -905,5 +907,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     protected FragmentManager getFragmentManager() {
         return fragmentManager;
+    }
+
+    /**
+     * This method reports diagnostic information to the log.
+     */
+    protected void diagnostics() {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            log.finest("BTM COLLECTOR DIAGNOSTICS:");
+            fragmentManager.diagnostics();
+            log.finest("Links ("+links.size()+"): "+links);
+            log.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        }
     }
 }
