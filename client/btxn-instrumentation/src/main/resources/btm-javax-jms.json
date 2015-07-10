@@ -15,7 +15,7 @@
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Request",
-          "endpointTypeExpression": "\"JMS\"",
+          "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.getJMSDestination()",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$1)",
           "idExpression": "$1.getStringProperty(\"HawkularBTID\")"
@@ -38,7 +38,7 @@
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",
-          "endpointTypeExpression": "\"JMS\"",
+          "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.getJMSDestination()"
         },{
           "type": "FreeFormAction",
@@ -65,7 +65,7 @@
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
-          "endpointTypeExpression": "\"JMS\"",
+          "endpointTypeExpression": "\"MOM\"",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$2)",
           "idExpression": "id",
           "uriExpression": "$1"
@@ -74,13 +74,16 @@
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
         },{
           "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_publish\",isInstanceOf($1,javax.jms.Topic.class))"
+        },{
+          "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HawkularBTID\",id)"
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HawkularBTName\",collector().getName())"
         }]
       },{
-        "ruleName": "Javax JMS Producer Start",
+        "ruleName": "Javax JMS Producer Async Start",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -100,13 +103,16 @@
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
-          "endpointTypeExpression": "\"JMS\"",
+          "endpointTypeExpression": "\"MOM\"",
           "headersExpression": "getHeaders(\"javax.jms.Message\",$2)",
           "idExpression": "id",
           "uriExpression": "$1"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax-jms\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_publish\",isInstanceOf($1,javax.jms.Topic.class))"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().initiateLink($2.getJMSReplyTo())"
@@ -133,7 +139,7 @@
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
-          "endpointTypeExpression": "\"JMS\"",
+          "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1"
         }]
       },{
@@ -151,7 +157,7 @@
         },{
           "type": "InstrumentProducer",
           "direction": "Response",
-          "endpointTypeExpression": "\"JMS\""
+          "endpointTypeExpression": "\"MOM\""
         }]
       },{
         "ruleName": "Javax JMS Producer Async Response Thread Complete",

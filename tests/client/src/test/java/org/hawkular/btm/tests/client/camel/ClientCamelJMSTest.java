@@ -146,6 +146,14 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         assertNotNull("queueProducer null", queueProducer);
         assertNotNull("topicProducer null", topicProducer);
 
+        // Check details
+        String publish=queueProducer.getDetails().get("btm_publish");
+        if (publish != null) {
+            assertEquals("false", publish);
+        }
+
+        assertEquals("true", topicProducer.getDetails().get("btm_publish"));
+
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(topicProducer, topicConsumer);
         checkInteractionCorrelationIdentifiers(queueProducer, queueConsumer);
@@ -231,6 +239,14 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
 
         assertNotNull("queueProducer null", queueProducer);
         assertNotNull("topicProducer null", topicProducer);
+
+        // Check details
+        String publish=queueProducer.getDetails().get("btm_publish");
+        if (publish != null) {
+            assertEquals("false", publish);
+        }
+
+        assertEquals("true", topicProducer.getDetails().get("btm_publish"));
 
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(topicProducer, topicConsumer);
