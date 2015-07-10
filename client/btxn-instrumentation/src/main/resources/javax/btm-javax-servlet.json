@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "javax-servlet": {
+    "javax.servlet": {
       "description": "Javax Servlet instrumentation",
       "version": "1",
       "rules": [{

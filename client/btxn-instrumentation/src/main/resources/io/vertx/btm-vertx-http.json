@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "vertx-http": {
+    "io.vertx.core.http": {
       "description": "Vertx HTTP instrumentation",
       "version": "1",
       "rules": [{

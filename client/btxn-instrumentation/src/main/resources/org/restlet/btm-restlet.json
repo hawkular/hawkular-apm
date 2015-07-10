@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "restlet": {
+    "org.restlet": {
       "description": "Restlet instrumentation",
       "version": "1",
       "rules": [{

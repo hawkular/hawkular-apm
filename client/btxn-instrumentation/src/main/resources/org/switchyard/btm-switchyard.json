@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "switchyard": {
+    "org.switchyard": {
       "description": "SwitchYard instrumentation",
       "version": "1",
       "rules": [{

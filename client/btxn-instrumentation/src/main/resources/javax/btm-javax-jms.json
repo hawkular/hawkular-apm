@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "javax-jms": {
+    "javax.jms": {
       "description": "Javax JMS instrumentation",
       "version": "1",
       "rules": [{

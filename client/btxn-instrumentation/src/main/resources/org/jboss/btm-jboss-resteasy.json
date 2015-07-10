@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "jboss-resteasy": {
+    "org.jboss.resteasy": {
       "description": "JBoss RESTEasy Client instrumentation",
       "version": "1",
       "rules": [{

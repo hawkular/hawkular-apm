@@ -1,6 +1,6 @@
 {
   "instrumentation": {
-    "vertx-eventbus": {
+    "io.vertx.core.eventbus": {
       "description": "Vertx EventBus instrumentation",
       "version": "1",
       "rules": [{
