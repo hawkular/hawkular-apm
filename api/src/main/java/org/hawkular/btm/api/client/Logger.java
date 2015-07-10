@@ -27,8 +27,18 @@ public class Logger {
 
     private static Level level = Level.valueOf(System.getProperty("hawkular-btm.log.level", Level.INFO.name()));
 
+    private static boolean logToConsole = Boolean.getBoolean("hawkular-btm.log.console");
+
+    private static java.util.logging.Logger logger = null;
+
     private String className;
-    private String simpleClassName=null;
+    private String simpleClassName = null;
+
+    static {
+        if (!logToConsole) {
+            logger = java.util.logging.Logger.getLogger(Logger.class.getName());
+        }
+    }
 
     /**
      * This construct is initialised with the class name.
@@ -38,9 +48,9 @@ public class Logger {
     protected Logger(String className) {
         this.className = className;
 
-        int index=className.lastIndexOf('.');
+        int index = className.lastIndexOf('.');
         if (index != -1) {
-            this.simpleClassName = className.substring(index+1);
+            this.simpleClassName = className.substring(index + 1);
         }
     }
 
@@ -138,9 +148,17 @@ public class Logger {
             builder.append(mesg);
 
             if (mesgLevel == Level.SEVERE) {
-                System.err.println(builder.toString());
+                if (logger != null) {
+                    logger.severe(builder.toString());
+                } else {
+                    System.err.println(builder.toString());
+                }
             } else {
-                System.out.println(builder.toString());
+                if (logger != null) {
+                    logger.info(builder.toString());
+                } else {
+                    System.out.println(builder.toString());
+                }
             }
 
             if (t != null) {
