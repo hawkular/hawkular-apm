@@ -18,7 +18,7 @@ package org.hawkular.btm.client.manager;
 
 import java.util.Map;
 
-import org.hawkular.btm.api.client.HeadersAccessor;
+import org.hawkular.btm.client.api.HeadersAccessor;
 
 /**
  * @author gbrown
@@ -38,7 +38,7 @@ public class TestHeadersAccessor implements HeadersAccessor {
      */
     @Override
     public Map<String, String> getHeaders(Object target) {
-        return ((TestHeadersObject)target).getProperties();
+        return ((TestHeadersObject) target).getProperties();
     }
 
 }

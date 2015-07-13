@@ -47,46 +47,47 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
     /**  */
     private static final String ORDER_CREATED = "Order created";
 
+    @Override
     public RouteBuilder getRouteBuilder() {
         return new RouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    restConfiguration().component("restlet").host("localhost").
-                            port(8180).bindingMode(RestBindingMode.auto);
+            @Override
+            public void configure() throws Exception {
+                restConfiguration().component("restlet").host("localhost").
+                        port(8180).bindingMode(RestBindingMode.auto);
 
-                    rest("/orders")
-                            .get("/createOrder").to("direct:createOrder");
+                rest("/orders")
+                        .get("/createOrder").to("direct:createOrder");
 
-                    rest("/inventory")
-                            .get("/checkStock").to("seda:checkStock");
+                rest("/inventory")
+                        .get("/checkStock").to("seda:checkStock");
 
-                    rest("/creditagency")
-                            .get("/checkCredit").to("vm:checkCredit");
+                rest("/creditagency")
+                        .get("/checkCredit").to("vm:checkCredit");
 
-                    from("direct:createOrder")
-                            .to("language:simple:" + URLEncoder.encode("Hello", "UTF-8"))
-                            .to("restlet:http://localhost:8180/inventory/checkStock")
-                            .choice()
-                    .when(body().isEqualTo(true))
-                            .to("direct:processOrder")
-                            .otherwise()
-                            .transform().constant("Order NOT created: Out of Stock");
+                from("direct:createOrder")
+                        .to("language:simple:" + URLEncoder.encode("Hello", "UTF-8"))
+                        .to("restlet:http://localhost:8180/inventory/checkStock")
+                        .choice()
+                        .when(body().isEqualTo(true))
+                        .to("direct:processOrder")
+                        .otherwise()
+                        .transform().constant("Order NOT created: Out of Stock");
 
-                    from("direct:processOrder")
-                            .to("restlet:http://localhost:8180/creditagency/checkCredit")
-                            .choice()
-                    .when(body().isEqualTo(true))
-                            .transform().constant(ORDER_CREATED).endChoice()
-                    .otherwise()
-                            .transform().constant("Order NOT created: Insufficient Credit");
+                from("direct:processOrder")
+                        .to("restlet:http://localhost:8180/creditagency/checkCredit")
+                        .choice()
+                        .when(body().isEqualTo(true))
+                        .transform().constant(ORDER_CREATED).endChoice()
+                        .otherwise()
+                        .transform().constant("Order NOT created: Insufficient Credit");
 
-                    from("seda:checkStock")
-                            .transform().constant(true);
+                from("seda:checkStock")
+                        .transform().constant(true);
 
-                    from("vm:checkCredit")
-                            .transform().constant(true);
-                }
-            };
+                from("vm:checkCredit")
+                        .transform().constant(true);
+            }
+        };
     }
 
     @Test
@@ -110,8 +111,8 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            StringBuilder builder=new StringBuilder();
-            String str=null;
+            StringBuilder builder = new StringBuilder();
+            String str = null;
 
             while ((str = reader.readLine()) != null) {
                 builder.append(str);

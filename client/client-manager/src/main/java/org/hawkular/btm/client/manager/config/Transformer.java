@@ -24,7 +24,7 @@ import org.hawkular.btm.api.model.admin.InstrumentAction;
 import org.hawkular.btm.api.model.admin.InstrumentBind;
 import org.hawkular.btm.api.model.admin.InstrumentRule;
 import org.hawkular.btm.api.model.admin.Instrumentation;
-import org.hawkular.btm.api.util.ServiceResolver;
+import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.manager.RuleHelper;
 
 /**
@@ -103,8 +103,8 @@ public class Transformer {
             if (!rule.getBinds().isEmpty()) {
                 builder.append("BIND ");
 
-                for (int i=0; i < rule.getBinds().size(); i++) {
-                    InstrumentBind bind=rule.getBinds().get(i);
+                for (int i = 0; i < rule.getBinds().size(); i++) {
+                    InstrumentBind bind = rule.getBinds().get(i);
                     if (i > 0) {
                         builder.append("     ");
                     }

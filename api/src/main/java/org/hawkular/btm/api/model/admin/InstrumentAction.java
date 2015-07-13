@@ -17,8 +17,8 @@
 package org.hawkular.btm.api.model.admin;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wordnik.swagger.annotations.ApiModel;
 
 /**
@@ -28,8 +28,8 @@ import com.wordnik.swagger.annotations.ApiModel;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = InstrumentService.class),
-        @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
-        @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class)})
+    @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
+    @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class) })
 @ApiModel(subTypes = { InstrumentService.class, InstrumentComponent.class, InstrumentConsumer.class,
         InstrumentProducer.class, FreeFormAction.class }, discriminator = "type")
 public abstract class InstrumentAction {

@@ -27,8 +27,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
-import org.hawkular.btm.api.processors.BusinessTransactionTraceHandler;
 import org.hawkular.btm.processor.metrics.log.MsgLogger;
+import org.hawkular.btm.server.api.processors.BusinessTransactionTraceHandler;
 import org.jboss.logging.Logger;
 
 /**

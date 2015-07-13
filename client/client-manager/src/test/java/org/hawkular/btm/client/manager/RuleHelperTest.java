@@ -16,7 +16,8 @@
  */
 package org.hawkular.btm.client.manager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
@@ -29,12 +30,12 @@ public class RuleHelperTest {
 
     @Test
     public void testHeaders() {
-        RuleHelper helper=new RuleHelper(null);
+        RuleHelper helper = new RuleHelper(null);
 
-        TestHeadersObject target=new TestHeadersObject();
+        TestHeadersObject target = new TestHeadersObject();
         target.getProperties().put("hello", "world");
 
-        Map<String,String> headers=helper.getHeaders(TestHeadersObject.class.getName(), target);
+        Map<String, String> headers = helper.getHeaders(TestHeadersObject.class.getName(), target);
 
         assertNotNull(headers);
         assertEquals(1, headers.size());

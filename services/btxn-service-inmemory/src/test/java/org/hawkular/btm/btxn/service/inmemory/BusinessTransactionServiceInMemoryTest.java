@@ -38,13 +38,13 @@ public class BusinessTransactionServiceInMemoryTest {
     public void testStoreMax() {
         BusinessTransactionServiceInMemory.setMaxTransactions(3);
 
-        BusinessTransactionServiceInMemory bts=new BusinessTransactionServiceInMemory();
+        BusinessTransactionServiceInMemory bts = new BusinessTransactionServiceInMemory();
 
         try {
             bts.store(null, createTransactions(1));
             bts.store(null, createTransactions(11));
         } catch (Exception e) {
-            fail("Failed to store txns: "+e);
+            fail("Failed to store txns: " + e);
         }
 
         // Check only 3 txns left
@@ -59,7 +59,7 @@ public class BusinessTransactionServiceInMemoryTest {
 
     protected static List<BusinessTransaction> createTransactions(int baseid) {
         BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId(""+baseid);
+        btxn1.setId("" + baseid);
 
         Consumer node1_1 = new Consumer();
         node1_1.setDuration(10000);
@@ -74,7 +74,7 @@ public class BusinessTransactionServiceInMemoryTest {
         btxn1.getNodes().add(node1_1);
 
         BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId(""+(baseid+1));
+        btxn2.setId("" + (baseid + 1));
 
         Consumer node2_1 = new Consumer();
         node2_1.setDuration(10000);

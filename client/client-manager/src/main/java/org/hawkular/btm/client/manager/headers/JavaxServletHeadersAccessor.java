@@ -21,9 +21,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.HeadersAccessor;
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.client.api.HeadersAccessor;
 
 /**
  * The headers accessor implementation for javax servlets.
@@ -32,7 +32,7 @@ import org.hawkular.btm.api.client.Logger.Level;
  */
 public class JavaxServletHeadersAccessor implements HeadersAccessor {
 
-    private static final Logger log=Logger.getLogger(JavaxServletHeadersAccessor.class.getName());
+    private static final Logger log = Logger.getLogger(JavaxServletHeadersAccessor.class.getName());
 
     /**  */
     private static final String TARGET_TYPE = "javax.servlet.http.HttpServletRequest";
@@ -52,18 +52,18 @@ public class JavaxServletHeadersAccessor implements HeadersAccessor {
     @Override
     public Map<String, String> getHeaders(Object target) {
         try {
-            Class<?> cls=Thread.currentThread().getContextClassLoader().
+            Class<?> cls = Thread.currentThread().getContextClassLoader().
                     loadClass(TARGET_TYPE);
-            Method getHeaderNamesMethod=cls.getMethod("getHeaderNames");
-            Method getHeaderMethod=cls.getMethod("getHeader",String.class);
+            Method getHeaderNamesMethod = cls.getMethod("getHeaderNames");
+            Method getHeaderMethod = cls.getMethod("getHeader", String.class);
 
             // Copy header values for now, but may be more efficient to create proxy onto request
-            Map<String,String> ret=new HashMap<String,String>();
+            Map<String, String> ret = new HashMap<String, String>();
 
-            Enumeration<String> iter=(Enumeration<String>) getHeaderNamesMethod.invoke(target);
+            Enumeration<String> iter = (Enumeration<String>) getHeaderNamesMethod.invoke(target);
             while (iter.hasMoreElements()) {
-                String key=iter.nextElement();
-                String value=(String)getHeaderMethod.invoke(target, key);
+                String key = iter.nextElement();
+                String value = (String) getHeaderMethod.invoke(target, key);
                 ret.put(key, value);
             }
 

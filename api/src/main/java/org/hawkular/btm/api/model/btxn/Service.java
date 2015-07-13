@@ -69,18 +69,23 @@ public class Service extends InteractionNode {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Service other = (Service) obj;
         if (operation == null) {
-            if (other.operation != null)
+            if (other.operation != null) {
                 return false;
-        } else if (!operation.equals(other.operation))
+            }
+        } else if (!operation.equals(other.operation)) {
             return false;
+        }
         return true;
     }
 

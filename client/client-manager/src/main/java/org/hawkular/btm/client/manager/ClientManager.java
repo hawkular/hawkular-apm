@@ -24,13 +24,13 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
-import org.hawkular.btm.api.client.BusinessTransactionCollector;
-import org.hawkular.btm.api.client.ConfigurationManager;
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.admin.Instrumentation;
-import org.hawkular.btm.api.util.ServiceResolver;
+import org.hawkular.btm.api.services.ConfigurationManager;
+import org.hawkular.btm.api.services.ServiceResolver;
+import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.manager.config.Transformer;
 import org.jboss.byteman.agent.Retransformer;
 

@@ -16,7 +16,8 @@
  */
 package org.hawkular.btm.api.model.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -27,10 +28,10 @@ public class CollectorConfigurationTest {
 
     @Test
     public void testMergeNoConflict() {
-        CollectorConfiguration c1=new CollectorConfiguration();
+        CollectorConfiguration c1 = new CollectorConfiguration();
         c1.getInstrumentation().put("i1", new Instrumentation());
 
-        CollectorConfiguration c2=new CollectorConfiguration();
+        CollectorConfiguration c2 = new CollectorConfiguration();
         c2.getInstrumentation().put("i2", new Instrumentation());
 
         c1.merge(c2, false);
@@ -40,11 +41,11 @@ public class CollectorConfigurationTest {
 
     @Test
     public void testMergeConflictOverwrite() {
-        CollectorConfiguration c1=new CollectorConfiguration();
+        CollectorConfiguration c1 = new CollectorConfiguration();
         c1.getInstrumentation().put("i1", new Instrumentation());
 
-        Instrumentation inst=new Instrumentation();
-        CollectorConfiguration c2=new CollectorConfiguration();
+        Instrumentation inst = new Instrumentation();
+        CollectorConfiguration c2 = new CollectorConfiguration();
         c2.getInstrumentation().put("i1", inst);
 
         c1.merge(c2, true);
@@ -55,11 +56,11 @@ public class CollectorConfigurationTest {
 
     @Test
     public void testMergeConflictNoOverwrite() {
-        CollectorConfiguration c1=new CollectorConfiguration();
+        CollectorConfiguration c1 = new CollectorConfiguration();
         c1.getInstrumentation().put("i1", new Instrumentation());
 
-        Instrumentation inst=new Instrumentation();
-        CollectorConfiguration c2=new CollectorConfiguration();
+        Instrumentation inst = new Instrumentation();
+        CollectorConfiguration c2 = new CollectorConfiguration();
         c2.getInstrumentation().put("i1", inst);
 
         try {

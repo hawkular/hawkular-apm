@@ -24,8 +24,8 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.services.AbstractBusinessTransactionService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.server.api.services.AbstractBusinessTransactionService;
 import org.jboss.logging.Logger;
 
 /**

@@ -39,8 +39,8 @@ public class ClientJavaMain {
 
     private Undertow server = null;
 
-    private String host=System.getProperty("hawkular-btm.testapp.host");
-    private int port=Integer.parseInt(System.getProperty("hawkular-btm.testapp.port"));
+    private String host = System.getProperty("hawkular-btm.testapp.host");
+    private int port = Integer.parseInt(System.getProperty("hawkular-btm.testapp.port"));
 
     /**
      * Main for the test app.
@@ -54,7 +54,7 @@ public class ClientJavaMain {
     }
 
     public void run() {
-        log.info("************ TEST CLIENT JAVA APP STARTED: host="+host+" port="+port);
+        log.info("************ TEST CLIENT JAVA APP STARTED: host=" + host + " port=" + port);
 
         // Create shutdown thread, just in case hangs
         Thread t = new Thread(new Runnable() {

@@ -24,19 +24,19 @@ import java.util.Map;
  */
 public class TestHeadersObject {
 
-    private Map<String,String> properties=new HashMap<String,String>();
+    private Map<String, String> properties = new HashMap<String, String>();
 
     /**
      * @return the properties
      */
-    public Map<String,String> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(Map<String,String> properties) {
+    public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 }

@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
 
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
@@ -38,7 +38,7 @@ import org.hawkular.btm.api.model.btxn.Node;
  */
 public class FragmentBuilder {
 
-    private static final Logger log=Logger.getLogger(FragmentBuilder.class.getName());
+    private static final Logger log = Logger.getLogger(FragmentBuilder.class.getName());
 
     private BusinessTransaction businessTransaction =
             new BusinessTransaction().setId(UUID.randomUUID().toString());
@@ -47,11 +47,11 @@ public class FragmentBuilder {
 
     private Stack<Node> suppressedNodeStack = new Stack<Node>();
 
-    private Map<String,Node> retainedNodes = new HashMap<String,Node>();
+    private Map<String, Node> retainedNodes = new HashMap<String, Node>();
 
-    private List<String> unlinkedIds=new ArrayList<String>();
+    private List<String> unlinkedIds = new ArrayList<String>();
 
-    private boolean suppress=false;
+    private boolean suppress = false;
 
     /**
      * This method determines if the fragment is complete.
@@ -100,7 +100,7 @@ public class FragmentBuilder {
 
             if (nodeStack.isEmpty()) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Pushing top level node: "+node+" for txn: "+businessTransaction);
+                    log.finest("Pushing top level node: " + node + " for txn: " + businessTransaction);
                 }
                 businessTransaction.getNodes().add(node);
             } else {
@@ -108,11 +108,11 @@ public class FragmentBuilder {
 
                 if (parent instanceof ContainerNode) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Add node: "+node+" to parent: "+parent+" in txn: "+businessTransaction);
+                        log.finest("Add node: " + node + " to parent: " + parent + " in txn: " + businessTransaction);
                     }
                     ((ContainerNode) parent).getNodes().add(node);
                 } else {
-                    log.severe("Attempt to add node '"+node+"' under non-container node '"+parent+"'");
+                    log.severe("Attempt to add node '" + node + "' under non-container node '" + parent + "'");
                 }
             }
             nodeStack.push(node);
@@ -135,7 +135,7 @@ public class FragmentBuilder {
                 if (!suppressedNodeStack.isEmpty()) {
 
                     // Check if node is on the suppressed stack
-                    Node suppressed=popNode(suppressedNodeStack, cls, uri);
+                    Node suppressed = popNode(suppressedNodeStack, cls, uri);
                     if (suppressed != null) {
                         // Popped node from suppressed stack
                         return suppressed;
@@ -161,7 +161,7 @@ public class FragmentBuilder {
      * @return The node, or null if no suitable candidate is found
      */
     protected Node popNode(Stack<Node> stack, Class<? extends Node> cls, String uri) {
-        Node top=stack.isEmpty() ? null : stack.peek();
+        Node top = stack.isEmpty() ? null : stack.peek();
 
         if (top != null) {
             if (nodeMatches(top, cls, uri)) {
@@ -169,7 +169,7 @@ public class FragmentBuilder {
             } else {
                 // Scan for potential match, from -2 so don't repeat
                 // check of top node
-                for (int i=stack.size()-2; i >= 0; i--) {
+                for (int i = stack.size() - 2; i >= 0; i--) {
                     if (nodeMatches(stack.get(i), cls, uri)) {
                         return stack.remove(i);
                     }
@@ -205,7 +205,7 @@ public class FragmentBuilder {
      */
     public void retainNode(String id) {
         synchronized (retainedNodes) {
-            Node current=getCurrentNode();
+            Node current = getCurrentNode();
 
             if (current != null) {
                 retainedNodes.put(id, current);
@@ -267,8 +267,9 @@ public class FragmentBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
-        StringBuilder info=new StringBuilder();
+        StringBuilder info = new StringBuilder();
         info.append("Fragment builder: current btxn=[");
         info.append(businessTransaction);
         info.append("] complete=");

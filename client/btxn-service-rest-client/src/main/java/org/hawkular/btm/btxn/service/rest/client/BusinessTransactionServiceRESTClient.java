@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -45,7 +45,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
+            };
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -61,8 +61,8 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
     {
         baseUrl = System.getProperty("hawkular-btm.base-uri");
 
-        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length()-1) != '/') {
-            baseUrl = baseUrl+'/';
+        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) != '/') {
+            baseUrl = baseUrl + '/';
         }
     }
 
@@ -123,7 +123,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         URL url = new URL(baseUrl + "transactions");
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Store btxns [tenant="+tenantId+"][url="+url+"]: "+btxns);
+            log.finest("Store btxns [tenant=" + tenantId + "][url=" + url + "]: " + btxns);
         }
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -149,7 +149,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         int statusCode = connection.getResponseCode();
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Status code is: "+statusCode);
+            log.finest("Status code is: " + statusCode);
         }
 
         if (statusCode != 200) {

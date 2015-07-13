@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.HeadersAccessor;
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.client.api.HeadersAccessor;
 
 /**
  * The headers accessor implementation for Apache HttpClient.
@@ -32,7 +32,7 @@ import org.hawkular.btm.api.client.Logger.Level;
  */
 public class ApacheHttpclientHeadersAccessor implements HeadersAccessor {
 
-    private static final Logger log=Logger.getLogger(ApacheHttpclientHeadersAccessor.class.getName());
+    private static final Logger log = Logger.getLogger(ApacheHttpclientHeadersAccessor.class.getName());
 
     /**  */
     private static final String TARGET_TYPE = "org.apache.http.client.methods.HttpUriRequest";
@@ -51,22 +51,22 @@ public class ApacheHttpclientHeadersAccessor implements HeadersAccessor {
     @Override
     public Map<String, String> getHeaders(Object target) {
         try {
-            Class<?> cls=Thread.currentThread().getContextClassLoader().
+            Class<?> cls = Thread.currentThread().getContextClassLoader().
                     loadClass(TARGET_TYPE);
-            Class<?> headercls=Thread.currentThread().getContextClassLoader().
+            Class<?> headercls = Thread.currentThread().getContextClassLoader().
                     loadClass("org.apache.http.Header");
-            Method getHeaderNamesMethod=cls.getMethod("headerIterator");
-            Method getNameMethod=headercls.getMethod("getName");
-            Method getValueMethod=headercls.getMethod("getValue");
+            Method getHeaderNamesMethod = cls.getMethod("headerIterator");
+            Method getNameMethod = headercls.getMethod("getName");
+            Method getValueMethod = headercls.getMethod("getValue");
 
             // Copy header values for now, but may be more efficient to create proxy onto request
-            Map<String,String> ret=new HashMap<String,String>();
+            Map<String, String> ret = new HashMap<String, String>();
 
-            Iterator<?> iter=(Iterator<?>) getHeaderNamesMethod.invoke(target);
+            Iterator<?> iter = (Iterator<?>) getHeaderNamesMethod.invoke(target);
             while (iter.hasNext()) {
-                Object header=iter.next();
-                String name=(String)getNameMethod.invoke(header);
-                String value=(String)getValueMethod.invoke(header);
+                Object header = iter.next();
+                String name = (String) getNameMethod.invoke(header);
+                String value = (String) getValueMethod.invoke(header);
                 ret.put(name, value);
             }
 

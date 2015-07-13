@@ -23,9 +23,9 @@ import java.util.logging.Logger;
  */
 public class TopLevelService {
 
-    private static final Logger log=Logger.getLogger(TopLevelService.class.getName());
+    private static final Logger log = Logger.getLogger(TopLevelService.class.getName());
 
-    private InnerService innerService=new InnerService();
+    private InnerService innerService = new InnerService();
 
     /**
      * This is a test method.
@@ -35,7 +35,7 @@ public class TopLevelService {
      * @return
      */
     public String testOp(String p1, int p2) {
-        log.info("testOp called with: "+p1+" "+p2);
+        log.info("testOp called with: " + p1 + " " + p2);
         return innerService.join(p1, p2);
     }
 }

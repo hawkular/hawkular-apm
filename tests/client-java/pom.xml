@@ -192,6 +192,8 @@
                   <jvmarg value="-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}"/>
                   <jvmarg value="-Dhawkular-btm.testapp.host=${hawkular-btm.testapp.host}"/>
                   <jvmarg value="-Dhawkular-btm.testapp.port=${hawkular-btm.testapp.port}"/>
+                  <jvmarg value="-Dhawkular-btm.log.level=INFO"/>
+                  <jvmarg value="-Dhawkular-btm.log.jul=true"/>
                   <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-app-logging.properties"/>
                 </java>
               </target>

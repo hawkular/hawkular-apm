@@ -34,8 +34,8 @@ public class FilterProcessor {
 
     private Filter filter;
 
-    private List<Predicate<String>> inclusions=new ArrayList<Predicate<String>>();
-    private List<Predicate<String>> exclusions=new ArrayList<Predicate<String>>();
+    private List<Predicate<String>> inclusions = new ArrayList<Predicate<String>>();
+    private List<Predicate<String>> exclusions = new ArrayList<Predicate<String>>();
 
     /**
      * This constructor initialises the processor with the business
@@ -54,10 +54,10 @@ public class FilterProcessor {
      * This method initialises the filter.
      */
     protected void init() {
-        for (int i=0; i < filter.getInclusions().size(); i++) {
+        for (int i = 0; i < filter.getInclusions().size(); i++) {
             inclusions.add(Pattern.compile(filter.getInclusions().get(i)).asPredicate());
         }
-        for (int i=0; i < filter.getExclusions().size(); i++) {
+        for (int i = 0; i < filter.getExclusions().size(); i++) {
             exclusions.add(Pattern.compile(filter.getExclusions().get(i)).asPredicate());
         }
     }
@@ -107,7 +107,7 @@ public class FilterProcessor {
      * @return Whether the supplied URI should be included
      */
     public boolean isIncluded(String uri) {
-        for (int i=0; i < inclusions.size(); i++) {
+        for (int i = 0; i < inclusions.size(); i++) {
             if (inclusions.get(i).test(uri)) {
                 return true;
             }
@@ -123,7 +123,7 @@ public class FilterProcessor {
      * @return Whether the supplied URI should be excluded
      */
     public boolean isExcluded(String uri) {
-        for (int i=0; i < exclusions.size(); i++) {
+        for (int i = 0; i < exclusions.size(); i++) {
             if (exclusions.get(i).test(uri)) {
                 return true;
             }

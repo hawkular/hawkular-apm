@@ -36,7 +36,7 @@ public class BTxnTraceProcessor {
      * @throws Exception Failed to initialise the trace
      */
     public BusinessTransactionTrace init(BusinessTransaction fragment) throws Exception {
-        BusinessTransactionTrace trace=new BusinessTransactionTrace();
+        BusinessTransactionTrace trace = new BusinessTransactionTrace();
         trace.setTrace(fragment);
         return trace;
     }

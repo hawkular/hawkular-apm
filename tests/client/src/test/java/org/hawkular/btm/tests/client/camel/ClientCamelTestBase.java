@@ -27,6 +27,7 @@ public abstract class ClientCamelTestBase extends ClientTestBase {
 
     private CamelContext context = new DefaultCamelContext();
 
+    @Override
     public void init() {
         try {
             initContext(context);
@@ -56,6 +57,7 @@ public abstract class ClientCamelTestBase extends ClientTestBase {
      */
     protected abstract RouteBuilder getRouteBuilder();
 
+    @Override
     public void close() {
         try {
             context.stop();

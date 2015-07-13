@@ -58,13 +58,13 @@ public class ClientJavaMainTest {
 
     @Test
     public void testInvokeTestOp() {
-        long startTime=System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
         try {
-            String mesg="hello";
-            String num="12";
+            String mesg = "hello";
+            String num = "12";
 
-            URL url = new URL(baseUrl + "/testOp?mesg="+mesg+"&num="+num);
+            URL url = new URL(baseUrl + "/testOp?mesg=" + mesg + "&num=" + num);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -86,7 +86,7 @@ public class ClientJavaMainTest {
 
             assertEquals("Failed to shutdown", 200, connection.getResponseCode());
 
-            assertEquals(mesg+":"+num, new String(b));
+            assertEquals(mesg + ":" + num, new String(b));
 
         } catch (Exception e) {
             fail("Failed to perform testOp: " + e);
@@ -106,30 +106,30 @@ public class ClientJavaMainTest {
         service.setPassword(TEST_PASSWORD);
 
         // Retrieve stored business transaction
-        BusinessTransactionCriteria criteria=new BusinessTransactionCriteria().setStartTime(startTime);
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
         List<BusinessTransaction> result = service.query(null, criteria);
 
         assertNotNull(result);
         assertEquals("Only expecting 1 business txn", 1, result.size());
 
-        BusinessTransaction btxn=result.get(0);
+        BusinessTransaction btxn = result.get(0);
 
         // Should be one top level Service node with another single Service node contained
         assertEquals("Expecting single top level node", 1, btxn.getNodes().size());
 
         assertEquals("Expecting top node to be Service", Service.class, btxn.getNodes().get(0).getClass());
-        assertEquals("Top level node operation incorrect", "testOp", ((Service)btxn.getNodes().get(0)).getOperation());
+        assertEquals("Top level node operation incorrect", "testOp", ((Service) btxn.getNodes().get(0)).getOperation());
         assertEquals("Top level node service type incorrect", "TopLevelService",
-                                ((Service)btxn.getNodes().get(0)).getUri());
+                ((Service) btxn.getNodes().get(0)).getUri());
 
-        assertEquals("Expecting single child node", 1, ((Service)btxn.getNodes().get(0)).getNodes().size());
+        assertEquals("Expecting single child node", 1, ((Service) btxn.getNodes().get(0)).getNodes().size());
 
         assertEquals("Expecting single child node to be Service", Service.class,
-                           ((Service)btxn.getNodes().get(0)).getNodes().get(0).getClass());
+                ((Service) btxn.getNodes().get(0)).getNodes().get(0).getClass());
         assertEquals("Inner node operation incorrect", "join",
-                        ((Service)((Service)btxn.getNodes().get(0)).getNodes().get(0)).getOperation());
+                ((Service) ((Service) btxn.getNodes().get(0)).getNodes().get(0)).getOperation());
         assertEquals("Inner node service type incorrect", "InnerService",
-                        ((Service)((Service)btxn.getNodes().get(0)).getNodes().get(0)).getUri());
+                ((Service) ((Service) btxn.getNodes().get(0)).getNodes().get(0)).getUri());
     }
 
     @AfterClass

@@ -24,7 +24,7 @@
 
 export BTM_CLIENT_JAR_PATH=$BTM_HOME/client/lib/hawkular-btm-client-rest.jar
 
-export BTM_CONFIG_PATH=$BTM_HOME/client/config
+export BTM_CONFIG_PATH=$BTM_HOME/client/btmconfig
 
 export JAVA_OPTS="-Dorg.jboss.byteman.transform.all \
     -javaagent:$BTM_CLIENT_JAR_PATH=manager:org.hawkular.btm.client.manager.ClientManager,boot:$BTM_CLIENT_JAR_PATH \

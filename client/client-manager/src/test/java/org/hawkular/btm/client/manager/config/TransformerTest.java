@@ -233,13 +233,13 @@ public class TransformerTest {
         ir.getActions().add(im);
         im.setAction("Action1");
 
-        InstrumentBind bind1=new InstrumentBind();
+        InstrumentBind bind1 = new InstrumentBind();
         bind1.setName(BIND_NAME1);
         bind1.setType(BIND_TYPE1);
         bind1.setExpression(BIND_EXPR1);
         ir.getBinds().add(bind1);
 
-        InstrumentBind bind2=new InstrumentBind();
+        InstrumentBind bind2 = new InstrumentBind();
         bind2.setName(BIND_NAME2);
         bind2.setType(BIND_TYPE2);
         bind2.setExpression(BIND_EXPR2);

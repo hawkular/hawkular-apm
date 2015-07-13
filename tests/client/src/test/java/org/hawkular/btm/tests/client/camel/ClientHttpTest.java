@@ -56,10 +56,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-import io.undertow.Undertow;
 
 /**
  * @author gbrown
@@ -74,6 +74,7 @@ public class ClientHttpTest extends ClientTestBase {
 
     private Undertow server = null;
 
+    @Override
     public void init() {
         server = Undertow.builder()
                 .addHttpListener(8180, "localhost")
@@ -90,6 +91,7 @@ public class ClientHttpTest extends ClientTestBase {
         super.init();
     }
 
+    @Override
     public void close() {
         server.stop();
 
@@ -133,8 +135,8 @@ public class ClientHttpTest extends ClientTestBase {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            StringBuilder builder=new StringBuilder();
-            String str=null;
+            StringBuilder builder = new StringBuilder();
+            String str = null;
 
             while ((str = reader.readLine()) != null) {
                 builder.append(str);
@@ -218,7 +220,7 @@ public class ClientHttpTest extends ClientTestBase {
             assertEquals(HELLO_WORLD, EntityUtils.toString(entity));
 
         } catch (Exception e) {
-            fail("Failed to perform get: "+e);
+            fail("Failed to perform get: " + e);
         } finally {
             httpclient.close();
         }
@@ -299,7 +301,7 @@ public class ClientHttpTest extends ClientTestBase {
             assertEquals(HELLO_WORLD, responseBody);
 
         } catch (Exception e) {
-            fail("Failed to perform get: "+e);
+            fail("Failed to perform get: " + e);
         } finally {
             httpclient.close();
         }
@@ -388,7 +390,7 @@ public class ClientHttpTest extends ClientTestBase {
     public void testJaxRSClientPOST() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").post(Entity.<String>text("Hello"));
+        Response response = target.request().header("test-header", "test-value").post(Entity.<String> text("Hello"));
         String value = response.readEntity(String.class);
         response.close();
 
@@ -433,7 +435,7 @@ public class ClientHttpTest extends ClientTestBase {
     public void testJaxRSClientPUT() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").put(Entity.<String>text("Hello"));
+        Response response = target.request().header("test-header", "test-value").put(Entity.<String> text("Hello"));
         String value = response.readEntity(String.class);
         response.close();
 

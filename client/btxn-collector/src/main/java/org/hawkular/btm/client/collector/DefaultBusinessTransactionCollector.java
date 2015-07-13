@@ -24,11 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
-import org.hawkular.btm.api.client.BusinessTransactionCollector;
-import org.hawkular.btm.api.client.ConfigurationManager;
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
-import org.hawkular.btm.api.client.SessionManager;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
@@ -41,7 +38,10 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.hawkular.btm.api.util.ServiceResolver;
+import org.hawkular.btm.api.services.ConfigurationManager;
+import org.hawkular.btm.api.services.ServiceResolver;
+import org.hawkular.btm.client.api.BusinessTransactionCollector;
+import org.hawkular.btm.client.api.SessionManager;
 import org.hawkular.btm.client.collector.internal.FilterManager;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.hawkular.btm.client.collector.internal.FragmentManager;
@@ -63,9 +63,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     private FilterManager filterManager;
 
-    private Map<String,FragmentBuilder> links=new ConcurrentHashMap<String,FragmentBuilder>();
+    private Map<String, FragmentBuilder> links = new ConcurrentHashMap<String, FragmentBuilder>();
 
-    private static final Level warningLogLevel=Level.WARNING;
+    private static final Level warningLogLevel = Level.WARNING;
 
     {
         CompletableFuture<BusinessTransactionService> bts =
@@ -139,7 +139,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public String getName() {
-        String ret=null;
+        String ret = null;
 
         try {
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -491,16 +491,16 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     protected <T extends Node> T pop(FragmentBuilder builder, Class<T> cls, String uri) {
         if (builder == null) {
             if (log.isLoggable(Level.WARNING)) {
-                log.warning("No fragment builder for this thread ("+Thread.currentThread()
-                        +") - trying to pop node of type: "+cls);
+                log.warning("No fragment builder for this thread (" + Thread.currentThread()
+                        + ") - trying to pop node of type: " + cls);
             }
             return null;
         }
 
         if (builder.getCurrentNode() == null) {
             if (log.isLoggable(Level.WARNING)) {
-                log.warning("No 'current node' for this thread ("+Thread.currentThread()
-                        +") - trying to pop node of type: "+cls);
+                log.warning("No 'current node' for this thread (" + Thread.currentThread()
+                        + ") - trying to pop node of type: " + cls);
             }
             return null;
         }
@@ -575,9 +575,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     protected String getHeaderValueText(Object value) {
         // TODO: Type conversion based on provided config
         if (value.getClass() == String.class) {
-            return (String)value;
+            return (String) value;
         } else if (value instanceof List) {
-            List<?> list=(List<?>)value;
+            List<?> list = (List<?>) value;
             if (list.size() == 1) {
                 return getHeaderValueText(list.get(0));
             } else {
@@ -663,7 +663,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     log.finest("Unable to determine if fragment should be traced due to missing filter manager");
                 }
             } else {
-                String btxnName=filterManager.getBusinessTransactionName(uri);
+                String btxnName = filterManager.getBusinessTransactionName(uri);
 
                 if (btxnName != null && !btxnName.trim().isEmpty()) {
                     FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -674,7 +674,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 }
 
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("activate: URI["+uri+"] business transaction name="+btxnName);
+                    log.finest("activate: URI[" + uri + "] business transaction name=" + btxnName);
                 }
                 return btxnName != null;
             }
@@ -755,7 +755,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public Node retrieveNode(String id) {
-        Node ret=null;
+        Node ret = null;
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Retrieve node: id=" + id);
@@ -804,7 +804,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isLinkActive(String id) {
-        boolean linkActive=links.containsKey(id);
+        boolean linkActive = links.containsKey(id);
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Is link active? id=" + id + " result=" + linkActive);
         }
@@ -878,11 +878,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
-                FragmentBuilder builder=fragmentManager.getFragmentBuilder();
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
                 if (!builder.isComplete()) {
                     log.severe("Business transaction has not completed: "
-                            +fragmentManager.getFragmentBuilder());
+                            + fragmentManager.getFragmentBuilder());
                 }
             }
         } catch (Throwable t) {
@@ -897,7 +897,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public SessionManager session() {
-         return this;
+        return this;
     }
 
     /**
@@ -917,7 +917,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             log.finest(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             log.finest("BTM COLLECTOR DIAGNOSTICS:");
             fragmentManager.diagnostics();
-            log.finest("Links ("+links.size()+"): "+links);
+            log.finest("Links (" + links.size() + "): " + links);
             log.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
     }

@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ArrayBuilder {
 
-    private List<Object> parameters=new ArrayList<Object>();
+    private List<Object> parameters = new ArrayList<Object>();
 
     /**
      * The default constructor.
