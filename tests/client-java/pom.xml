@@ -67,7 +67,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-tests-btxn-service</artifactId>
+      <artifactId>hawkular-btm-test-server</artifactId>
     </dependency>
 
     <dependency>
@@ -155,7 +155,7 @@
               <target>
                 <property name="runtime_classpath" refid="maven.runtime.classpath"/>
                 <echo message="runtime classpath: ${runtime_classpath}"/>
-                <java classname="org.hawkular.btm.tests.btxn.TestBTxnService" fork="true"
+                <java classname="org.hawkular.btm.tests.server.TestBTMServer" fork="true"
                                                      spawn="true" >
                   <classpath>
                     <pathelement path="${project.build.outputDirectory}"/>

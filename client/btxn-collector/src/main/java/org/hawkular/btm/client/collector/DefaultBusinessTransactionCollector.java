@@ -37,8 +37,8 @@ import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.btxn.Service;
+import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.hawkular.btm.api.services.ConfigurationManager;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.SessionManager;
@@ -58,8 +58,6 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     private String tenantId = System.getProperty("hawkular-btm.tenantId");
 
     private BusinessTransactionService businessTransactionService;
-
-    private CollectorConfiguration config;
 
     private FilterManager filterManager;
 
@@ -86,15 +84,15 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         });
 
-        // Obtain the configuration
-        CompletableFuture<ConfigurationManager> cmFuture =
-                ServiceResolver.getSingletonService(ConfigurationManager.class);
+        // Obtain the admin service
+        CompletableFuture<AdminService> asFuture =
+                ServiceResolver.getSingletonService(AdminService.class);
 
-        cmFuture.whenComplete(new BiConsumer<ConfigurationManager, Throwable>() {
+        asFuture.whenComplete(new BiConsumer<AdminService, Throwable>() {
 
             @Override
-            public void accept(ConfigurationManager cm, Throwable t) {
-                config = cm.getConfiguration();
+            public void accept(AdminService cm, Throwable t) {
+                CollectorConfiguration config = cm.getConfiguration(null, null, null);
 
                 if (config != null) {
                     filterManager = new FilterManager(config);

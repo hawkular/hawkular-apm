@@ -137,13 +137,13 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         }
 
         // Check stored business transactions (including 1 for test client)
-        assertEquals(6, getBtxnService().getBusinessTransactions().size());
+        assertEquals(6, getTestBTMServer().getBusinessTransactions().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;
         Consumer createOrder = null;
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

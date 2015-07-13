@@ -26,7 +26,7 @@ import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.tests.btxn.TestBTxnService;
+import org.hawkular.btm.tests.server.TestBTMServer;
 import org.junit.After;
 import org.junit.Before;
 
@@ -35,13 +35,13 @@ import org.junit.Before;
  */
 public abstract class ClientTestBase {
 
-    private TestBTxnService btxnService = new TestBTxnService();
+    private TestBTMServer testBTMServer = new TestBTMServer();
 
     @Before
     public void init() {
         try {
-            btxnService.setShutdownTimer(-1); // Disable timer
-            btxnService.run();
+            testBTMServer.setShutdownTimer(-1); // Disable timer
+            testBTMServer.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public abstract class ClientTestBase {
     @After
     public void close() {
         try {
-            btxnService.shutdown();
+            testBTMServer.shutdown();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,17 +64,17 @@ public abstract class ClientTestBase {
     }
 
     /**
-     * @return the btxnService
+     * @return the testBTMServer
      */
-    public TestBTxnService getBtxnService() {
-        return btxnService;
+    public TestBTMServer getTestBTMServer() {
+        return testBTMServer;
     }
 
     /**
-     * @param btxnService the btxnService to set
+     * @param testBTMServer the testBTMServer to set
      */
-    public void setBtxnService(TestBTxnService btxnService) {
-        this.btxnService = btxnService;
+    public void setTestBTMServer(TestBTMServer testBTMServer) {
+        this.testBTMServer = testBTMServer;
     }
 
     /**

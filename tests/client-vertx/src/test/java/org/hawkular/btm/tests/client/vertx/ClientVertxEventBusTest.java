@@ -28,7 +28,7 @@ import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.tests.btxn.TestBTxnService;
+import org.hawkular.btm.tests.server.TestBTMServer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -50,14 +50,14 @@ import io.vertx.core.eventbus.MessageConsumer;
  */
 public class ClientVertxEventBusTest {
 
-    private static TestBTxnService btxnService = new TestBTxnService();
+    private static TestBTMServer testServer = new TestBTMServer();
 
     @BeforeClass
     public static void init() {
         try {
-            btxnService.setPort(8180);
-            btxnService.setShutdownTimer(-1); // Disable timer
-            btxnService.run();
+            testServer.setPort(8180);
+            testServer.setShutdownTimer(-1); // Disable timer
+            testServer.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,13 +66,13 @@ public class ClientVertxEventBusTest {
     @AfterClass
     public static void close() {
         try {
-            btxnService.shutdown();
+            testServer.shutdown();
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            synchronized (btxnService) {
-                btxnService.wait(2000);
+            synchronized (testServer) {
+                testServer.wait(2000);
             }
         } catch (Exception e) {
             fail("Failed to wait after test close");
@@ -82,9 +82,9 @@ public class ClientVertxEventBusTest {
     @After
     public void afterTest() {
         System.out.println("Clearing previous business transactions: count="
-                + btxnService.getBusinessTransactions().size());
-        btxnService.getBusinessTransactions().clear();
-        System.out.println("Cleared: count=" + btxnService.getBusinessTransactions().size());
+                + testServer.getBusinessTransactions().size());
+        testServer.getBusinessTransactions().clear();
+        System.out.println("Cleared: count=" + testServer.getBusinessTransactions().size());
     }
 
     @Test
@@ -194,12 +194,12 @@ public class ClientVertxEventBusTest {
 
     protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
-        assertEquals(2, btxnService.getBusinessTransactions().size());
+        assertEquals(2, testServer.getBusinessTransactions().size());
 
         Consumer consumer = null;
         Producer producer = null;
 
-        for (BusinessTransaction btxn : btxnService.getBusinessTransactions()) {
+        for (BusinessTransaction btxn : testServer.getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

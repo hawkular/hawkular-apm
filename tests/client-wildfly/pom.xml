@@ -211,11 +211,11 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+                  <artifactId>hawkular-btm-server-rest</artifactId>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular.deployments}</outputDirectory>
-                  <destFileName>hawkular-btm-btxn-service-rest.war</destFileName>
+                  <destFileName>hawkular-btm-server-rest.war</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.camel</groupId>
