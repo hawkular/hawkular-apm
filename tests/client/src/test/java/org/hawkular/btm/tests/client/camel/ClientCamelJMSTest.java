@@ -67,7 +67,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
             @Override
             public void configure() throws Exception {
                 from("jms:queue:inboundq").to("jms:topic:outboundt")
-                    .to("language:simple:" + URLEncoder.encode("Hello", "UTF-8"));
+                        .to("language:simple:" + URLEncoder.encode("Hello", "UTF-8"));
 
                 from("jms:topic:outboundt").log("LOG: ${body}");
             }
@@ -147,7 +147,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         assertNotNull("topicProducer null", topicProducer);
 
         // Check details
-        String publish=queueProducer.getDetails().get("btm_publish");
+        String publish = queueProducer.getDetails().get("btm_publish");
         if (publish != null) {
             assertEquals("false", publish);
         }
@@ -167,7 +167,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
 
     @Test
     public void testJMSRequestResponse() {
-        Object resp=null;
+        Object resp = null;
         try {
             resp = template.sendBody("jms:queue:inboundq", ExchangePattern.InOut, "Test Message");
         } catch (Exception e) {
@@ -241,7 +241,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         assertNotNull("topicProducer null", topicProducer);
 
         // Check details
-        String publish=queueProducer.getDetails().get("btm_publish");
+        String publish = queueProducer.getDetails().get("btm_publish");
         if (publish != null) {
             assertEquals("false", publish);
         }

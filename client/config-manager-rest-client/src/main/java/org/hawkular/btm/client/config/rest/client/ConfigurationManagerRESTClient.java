@@ -16,8 +16,8 @@
  */
 package org.hawkular.btm.client.config.rest.client;
 
-import org.hawkular.btm.api.client.AbstractConfigurationManager;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.services.AbstractConfigurationManager;
 
 /**
  * This class provides the REST client implementation of the ConfigurationManager

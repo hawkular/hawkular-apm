@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.BusinessTransactionCollector;
-import org.hawkular.btm.api.client.HeadersAccessor;
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
-import org.hawkular.btm.api.util.ServiceResolver;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.services.ServiceResolver;
+import org.hawkular.btm.client.api.BusinessTransactionCollector;
+import org.hawkular.btm.client.api.HeadersAccessor;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
 
@@ -35,12 +35,12 @@ import org.jboss.byteman.rule.helper.Helper;
  */
 public class RuleHelper extends Helper {
 
-    private static final Logger log=Logger.getLogger(RuleHelper.class.getName());
+    private static final Logger log = Logger.getLogger(RuleHelper.class.getName());
 
-    private static Map<String, HeadersAccessor> headersAccessors=new HashMap<String, HeadersAccessor>();
+    private static Map<String, HeadersAccessor> headersAccessors = new HashMap<String, HeadersAccessor>();
 
     static {
-        List<HeadersAccessor> accessors=ServiceResolver.getServices(HeadersAccessor.class);
+        List<HeadersAccessor> accessors = ServiceResolver.getServices(HeadersAccessor.class);
 
         for (HeadersAccessor accessor : accessors) {
             headersAccessors.put(accessor.getTargetType(), accessor);
@@ -95,7 +95,7 @@ public class RuleHelper extends Helper {
     public boolean isInstanceOf(Object obj, Class<?> clz) {
         if (obj == null || clz == null) {
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("isInstanceOf error: obj="+obj+" clz="+clz);
+                log.finest("isInstanceOf error: obj=" + obj + " clz=" + clz);
             }
             return false;
         }
@@ -123,7 +123,7 @@ public class RuleHelper extends Helper {
      */
     public String removeSuffix(String original, String suffix) {
         if (original.endsWith(suffix)) {
-            return original.substring(0, original.length()-suffix.length());
+            return original.substring(0, original.length() - suffix.length());
         }
         return original;
     }
@@ -145,10 +145,10 @@ public class RuleHelper extends Helper {
      * @param target The target instance
      * @return The header map
      */
-    public Map<String,String> getHeaders(String type, Object target) {
-        HeadersAccessor accessor=getHeadersAccessor(type);
+    public Map<String, String> getHeaders(String type, Object target) {
+        HeadersAccessor accessor = getHeadersAccessor(type);
         if (accessor != null) {
-            Map<String,String> ret= accessor.getHeaders(target);
+            Map<String, String> ret = accessor.getHeaders(target);
             return ret;
         }
         return null;

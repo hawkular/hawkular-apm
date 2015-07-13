@@ -19,9 +19,9 @@ package org.hawkular.btm.client.manager.headers;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.HeadersAccessor;
-import org.hawkular.btm.api.client.Logger;
-import org.hawkular.btm.api.client.Logger.Level;
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.client.api.HeadersAccessor;
 
 /**
  * The headers accessor implementation for JBoss RESTEasy.
@@ -30,7 +30,7 @@ import org.hawkular.btm.api.client.Logger.Level;
  */
 public class JbossResteasyHeadersAccessor implements HeadersAccessor {
 
-    private static final Logger log=Logger.getLogger(JbossResteasyHeadersAccessor.class.getName());
+    private static final Logger log = Logger.getLogger(JbossResteasyHeadersAccessor.class.getName());
 
     /**  */
     private static final String TARGET_TYPE = "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation";
@@ -50,16 +50,16 @@ public class JbossResteasyHeadersAccessor implements HeadersAccessor {
     @Override
     public Map<String, String> getHeaders(Object target) {
         try {
-            Class<?> cls=Thread.currentThread().getContextClassLoader().
+            Class<?> cls = Thread.currentThread().getContextClassLoader().
                     loadClass(TARGET_TYPE);
-            Class<?> headerscls=Thread.currentThread().getContextClassLoader().
+            Class<?> headerscls = Thread.currentThread().getContextClassLoader().
                     loadClass("org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders");
-            Method getHeadersMethod=cls.getMethod("getHeaders");
-            Method asMapMethod=headerscls.getMethod("asMap");
+            Method getHeadersMethod = cls.getMethod("getHeaders");
+            Method asMapMethod = headerscls.getMethod("asMap");
 
-            Object headers=getHeadersMethod.invoke(target);
+            Object headers = getHeadersMethod.invoke(target);
 
-            return (Map<String,String>)asMapMethod.invoke(headers);
+            return (Map<String, String>) asMapMethod.invoke(headers);
         } catch (Throwable t) {
             if (log.isLoggable(Level.FINEST)) {
                 log.log(Level.FINEST, "Failed to obtain headers", t);

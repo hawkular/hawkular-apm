@@ -154,7 +154,7 @@ public class BusinessTransactionCriteria {
                 if (result == null || !value.equals(result)) {
                     if (log.isLoggable(Level.FINEST)) {
                         log.finest("Property '" + key + "' had value '" + result
-                            + "', expected '" + value + "'");
+                                + "', expected '" + value + "'");
                     }
                     return false;
                 }

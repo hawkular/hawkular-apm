@@ -204,17 +204,18 @@ public class DefaultBusinessTransactionCollectorTest {
     public void testLink() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
 
-        final FragmentBuilder fragmentBuilder=collector.getFragmentManager().getFragmentBuilder();
+        final FragmentBuilder fragmentBuilder = collector.getFragmentManager().getFragmentBuilder();
 
         collector.initiateLink("TestLink");
 
         assertFalse(fragmentBuilder.getUnlinkedIds().isEmpty());
 
         Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
             public void run() {
                 collector.completeLink("TestLink");
 
-                FragmentBuilder other=collector.getFragmentManager().getFragmentBuilder();
+                FragmentBuilder other = collector.getFragmentManager().getFragmentBuilder();
 
                 assertEquals("Builders should be the same", fragmentBuilder, other);
 

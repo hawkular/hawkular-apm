@@ -23,8 +23,8 @@ import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
-import org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler;
-import org.hawkular.btm.api.processors.BusinessTransactionTraceHandler;
+import org.hawkular.btm.server.api.processors.BusinessTransactionFragmentHandler;
+import org.hawkular.btm.server.api.processors.BusinessTransactionTraceHandler;
 import org.jboss.logging.Logger;
 
 /**
@@ -43,7 +43,7 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
 
     @Inject
     private List<BusinessTransactionTraceHandler> traceHandlers =
-                        new ArrayList<BusinessTransactionTraceHandler>();
+            new ArrayList<BusinessTransactionTraceHandler>();
 
     private BusinessTransactionFragmentHandler retryHandler;
 

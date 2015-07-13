@@ -22,7 +22,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
-import org.hawkular.btm.api.processors.BusinessTransactionTraceHandler;
+import org.hawkular.btm.server.api.processors.BusinessTransactionTraceHandler;
 import org.jboss.logging.Logger;
 
 /**
@@ -36,7 +36,7 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
 
     private static final Logger log = Logger.getLogger(BTxnTraceResolver.class);
 
-    private BTxnTraceProcessor traceProcessor=new BTxnTraceProcessor();
+    private BTxnTraceProcessor traceProcessor = new BTxnTraceProcessor();
 
     @Inject
     private BTxnTraceScheduler scheduler;
@@ -125,7 +125,7 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
         if (resolveTraces != null && !resolveTraces.isEmpty() && getScheduler() != null) {
             // TODO: Need to segment traces into time slots and call the
             // scheduler for each slot
-            long interval=traceProcessor.getScheduleInterval(resolveTraces.get(0));
+            long interval = traceProcessor.getScheduleInterval(resolveTraces.get(0));
             getScheduler().schedule(tenantId, resolveTraces, interval);
         }
     }

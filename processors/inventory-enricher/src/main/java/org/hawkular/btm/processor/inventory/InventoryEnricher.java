@@ -23,8 +23,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler;
 import org.hawkular.btm.processor.inventory.log.MsgLogger;
+import org.hawkular.btm.server.api.processors.BusinessTransactionFragmentHandler;
 import org.jboss.logging.Logger;
 
 /**

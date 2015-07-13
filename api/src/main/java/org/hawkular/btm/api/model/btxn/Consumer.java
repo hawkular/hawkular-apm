@@ -70,18 +70,23 @@ public class Consumer extends InteractionNode {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Consumer other = (Consumer) obj;
         if (endpointType == null) {
-            if (other.endpointType != null)
+            if (other.endpointType != null) {
                 return false;
-        } else if (!endpointType.equals(other.endpointType))
+            }
+        } else if (!endpointType.equals(other.endpointType)) {
             return false;
+        }
         return true;
     }
 

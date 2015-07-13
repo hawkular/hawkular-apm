@@ -29,8 +29,8 @@ import org.hawkular.btm.api.model.admin.CollectorConfiguration;
  */
 public class FilterManager {
 
-    private List<FilterProcessor> globalExclusionFilters=new ArrayList<FilterProcessor>();
-    private List<FilterProcessor> btxnFilters=new ArrayList<FilterProcessor>();
+    private List<FilterProcessor> globalExclusionFilters = new ArrayList<FilterProcessor>();
+    private List<FilterProcessor> btxnFilters = new ArrayList<FilterProcessor>();
 
     /**
      * This constructor initialises the filter manager with the configuration.
@@ -48,8 +48,8 @@ public class FilterManager {
      */
     protected void init(CollectorConfiguration config) {
         for (String btxn : config.getBusinessTransactions().keySet()) {
-            BusinessTxnConfig btc=config.getBusinessTransactions().get(btxn);
-            FilterProcessor fp=new FilterProcessor(btxn, btc.getFilter());
+            BusinessTxnConfig btc = config.getBusinessTransactions().get(btxn);
+            FilterProcessor fp = new FilterProcessor(btxn, btc.getFilter());
 
             if (fp.isIncludeAll()) {
                 globalExclusionFilters.add(fp);
@@ -69,17 +69,17 @@ public class FilterManager {
      *                  or null if URI should be excluded
      */
     public String getBusinessTransactionName(String uri) {
-        String ret="";
+        String ret = "";
 
         // First check if a global exclusion filter applies
-        for (int i=0; i < globalExclusionFilters.size(); i++) {
+        for (int i = 0; i < globalExclusionFilters.size(); i++) {
             if (globalExclusionFilters.get(i).isExcluded(uri)) {
                 return null;
             }
         }
 
         // Check if business transaction specific applies
-        for (int i=0; i < btxnFilters.size(); i++) {
+        for (int i = 0; i < btxnFilters.size(); i++) {
             if (btxnFilters.get(i).isIncluded(uri)) {
                 if (btxnFilters.get(i).isExcluded(uri)) {
                     return null;

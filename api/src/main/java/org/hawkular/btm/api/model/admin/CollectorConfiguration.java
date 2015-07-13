@@ -30,22 +30,22 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class CollectorConfiguration {
 
     @JsonInclude
-    private Map<String,Instrumentation> instrumentation = new HashMap<String,Instrumentation>();
+    private Map<String, Instrumentation> instrumentation = new HashMap<String, Instrumentation>();
 
     @JsonInclude
-    private Map<String,BusinessTxnConfig> businessTransactions = new HashMap<String,BusinessTxnConfig>();
+    private Map<String, BusinessTxnConfig> businessTransactions = new HashMap<String, BusinessTxnConfig>();
 
     /**
      * @return the instrumentation
      */
-    public Map<String,Instrumentation> getInstrumentation() {
+    public Map<String, Instrumentation> getInstrumentation() {
         return instrumentation;
     }
 
     /**
      * @param instrumentation the instrumentation to set
      */
-    public void setInstrumentation(Map<String,Instrumentation> instrumentation) {
+    public void setInstrumentation(Map<String, Instrumentation> instrumentation) {
         this.instrumentation = instrumentation;
     }
 
@@ -73,16 +73,16 @@ public class CollectorConfiguration {
      * @throws IllegalArgumentException Failed to merge due to a conflict
      */
     public void merge(CollectorConfiguration config, boolean overwrite)
-                        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         for (String key : config.getInstrumentation().keySet()) {
             if (getInstrumentation().containsKey(key) && !overwrite) {
-                throw new IllegalArgumentException("Instrumentation for '"+key+"' already exists");
+                throw new IllegalArgumentException("Instrumentation for '" + key + "' already exists");
             }
             getInstrumentation().put(key, config.getInstrumentation().get(key));
         }
         for (String key : config.getBusinessTransactions().keySet()) {
             if (getBusinessTransactions().containsKey(key) && !overwrite) {
-                throw new IllegalArgumentException("Business Transaction config for '"+key+"' already exists");
+                throw new IllegalArgumentException("Business Transaction config for '" + key + "' already exists");
             }
             getBusinessTransactions().put(key, config.getBusinessTransactions().get(key));
         }

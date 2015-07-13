@@ -29,6 +29,6 @@ public class InnerService {
      * @return
      */
     public String join(String p1, int p2) {
-        return p1+":"+p2;
+        return p1 + ":" + p2;
     }
 }

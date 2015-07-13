@@ -41,7 +41,7 @@ public abstract class CollectorAction extends InstrumentAction {
     private List<String> valueExpressions = new ArrayList<String>();
 
     @JsonInclude
-    private Direction direction=Direction.Request;
+    private Direction direction = Direction.Request;
 
     /**
      * @return the uriExpression

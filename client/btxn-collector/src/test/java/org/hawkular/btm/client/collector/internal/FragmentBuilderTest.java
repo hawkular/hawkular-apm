@@ -296,7 +296,7 @@ public class FragmentBuilderTest {
 
         assertEquals(Consumer.class, builder.getBusinessTransaction().getNodes().get(0).getClass());
 
-        assertEquals(1, ((Consumer)builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
+        assertEquals(1, ((Consumer) builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
     }
 
     @Test
@@ -325,6 +325,6 @@ public class FragmentBuilderTest {
 
         assertEquals(Consumer.class, builder.getBusinessTransaction().getNodes().get(0).getClass());
 
-        assertEquals(0, ((Consumer)builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
+        assertEquals(0, ((Consumer) builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
     }
 }

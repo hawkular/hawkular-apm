@@ -87,23 +87,30 @@ public class Component extends ContainerNode {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Component other = (Component) obj;
         if (componentType == null) {
-            if (other.componentType != null)
+            if (other.componentType != null) {
                 return false;
-        } else if (!componentType.equals(other.componentType))
+            }
+        } else if (!componentType.equals(other.componentType)) {
             return false;
+        }
         if (operation == null) {
-            if (other.operation != null)
+            if (other.operation != null) {
                 return false;
-        } else if (!operation.equals(other.operation))
+            }
+        } else if (!operation.equals(other.operation)) {
             return false;
+        }
         return true;
     }
 

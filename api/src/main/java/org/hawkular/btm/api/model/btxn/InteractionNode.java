@@ -86,23 +86,30 @@ public abstract class InteractionNode extends ContainerNode {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         InteractionNode other = (InteractionNode) obj;
         if (request == null) {
-            if (other.request != null)
+            if (other.request != null) {
                 return false;
-        } else if (!request.equals(other.request))
+            }
+        } else if (!request.equals(other.request)) {
             return false;
+        }
         if (response == null) {
-            if (other.response != null)
+            if (other.response != null) {
                 return false;
-        } else if (!response.equals(other.response))
+            }
+        } else if (!response.equals(other.response)) {
             return false;
+        }
         return true;
     }
 

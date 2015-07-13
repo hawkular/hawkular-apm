@@ -58,7 +58,7 @@
 
   <modules>
     <module>api</module>
-    <module>backend/btxn-service-rest</module>
+    <module>client/api</module>
     <module>client/btxn-collector</module>
     <module>client/btxn-instrumentation</module>
     <module>client/btxn-service-rest-client</module>
@@ -69,6 +69,8 @@
     <module>processors/fault-detector</module>
     <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
+    <module>server/api</module>
+    <module>server/btxn-service-rest</module>
     <module>services/btxn-service-cass-es</module>
     <module>services/btxn-service-inmemory</module>
     <module>dist</module>
@@ -112,15 +114,12 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- BTM Backend -->
+      <!-- BTM Client -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-rest</artifactId>
-        <type>war</type>
+        <artifactId>hawkular-btm-client-api</artifactId>
         <version>${project.version}</version>
       </dependency>
-
-      <!-- BTM Client -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-collector</artifactId>
@@ -130,7 +129,6 @@
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
         <version>${project.version}</version>
-        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
@@ -172,6 +170,19 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-metrics-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- BTM Server -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+        <type>war</type>
         <version>${project.version}</version>
       </dependency>
 

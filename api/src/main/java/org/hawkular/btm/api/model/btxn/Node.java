@@ -39,9 +39,9 @@ import com.wordnik.swagger.annotations.ApiModel;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Consumer.class),
-        @Type(value = Producer.class),
-        @Type(value = Service.class),
-        @Type(value = Component.class) })
+    @Type(value = Producer.class),
+    @Type(value = Service.class),
+    @Type(value = Component.class) })
 @ApiModel(subTypes = { Consumer.class, Producer.class, Service.class, Component.class }, discriminator = "type")
 public abstract class Node {
 
@@ -274,32 +274,43 @@ public abstract class Node {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Node other = (Node) obj;
         if (correlationIds == null) {
-            if (other.correlationIds != null)
+            if (other.correlationIds != null) {
                 return false;
-        } else if (!correlationIds.equals(other.correlationIds))
+            }
+        } else if (!correlationIds.equals(other.correlationIds)) {
             return false;
+        }
         if (details == null) {
-            if (other.details != null)
+            if (other.details != null) {
                 return false;
-        } else if (!details.equals(other.details))
+            }
+        } else if (!details.equals(other.details)) {
             return false;
-        if (duration != other.duration)
+        }
+        if (duration != other.duration) {
             return false;
-        if (startTime != other.startTime)
+        }
+        if (startTime != other.startTime) {
             return false;
+        }
         if (uri == null) {
-            if (other.uri != null)
+            if (other.uri != null) {
                 return false;
-        } else if (!uri.equals(other.uri))
+            }
+        } else if (!uri.equals(other.uri)) {
             return false;
+        }
         return true;
     }
 

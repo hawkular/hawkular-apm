@@ -39,6 +39,10 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-client-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-btxn-collector</artifactId>
     </dependency>
     <dependency>

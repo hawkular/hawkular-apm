@@ -21,7 +21,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hawkular.btm.api.client.HeadersFactory;
+import org.hawkular.btm.client.api.HeadersFactory;
 
 /**
  * The headers factory implementation for javax servlets.
@@ -48,18 +48,18 @@ public class JavaxServletHeadersFactory implements HeadersFactory {
     @Override
     public Map<String, String> getHeaders(Object target) {
         try {
-            Class<?> cls=Thread.currentThread().getContextClassLoader().
+            Class<?> cls = Thread.currentThread().getContextClassLoader().
                     loadClass(TARGET_TYPE);
-            Method getHeaderNamesMethod=cls.getMethod("getHeaderNames");
-            Method getHeaderMethod=cls.getMethod("getHeader",String.class);
+            Method getHeaderNamesMethod = cls.getMethod("getHeaderNames");
+            Method getHeaderMethod = cls.getMethod("getHeader", String.class);
 
             // Copy header values for now, but may be more efficient to create proxy onto request
-            Map<String,String> ret=new HashMap<String,String>();
+            Map<String, String> ret = new HashMap<String, String>();
 
-            Enumeration<String> iter=(Enumeration<String>) getHeaderNamesMethod.invoke(target);
+            Enumeration<String> iter = (Enumeration<String>) getHeaderNamesMethod.invoke(target);
             while (iter.hasMoreElements()) {
-                String key=iter.nextElement();
-                String value=(String)getHeaderMethod.invoke(target, key);
+                String key = iter.nextElement();
+                String value = (String) getHeaderMethod.invoke(target, key);
                 ret.put(key, value);
             }
 

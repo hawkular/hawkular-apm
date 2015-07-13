@@ -62,13 +62,13 @@ public class TestBTxnService {
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
+            };
 
     private List<BusinessTransaction> businessTransactions = new ArrayList<BusinessTransaction>();
 
-    private int port=8080;
-    private String host="localhost";
-    private int shutdown=DEFAULT_SHUTDOWN_TIMER;
+    private int port = 8080;
+    private String host = "localhost";
+    private int shutdown = DEFAULT_SHUTDOWN_TIMER;
 
     {
         if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_BTXNSERVICE_HOST)) {
@@ -105,6 +105,7 @@ public class TestBTxnService {
     public void setBusinessTransactions(List<BusinessTransaction> businessTransactions) {
         this.businessTransactions = businessTransactions;
     }
+
     /**
      * This method sets the shutdown timer. If set to -1, then
      * the timer is disabled. This value must be set before the run method
@@ -126,7 +127,8 @@ public class TestBTxnService {
     }
 
     public void run() {
-        log.info("************** STARTED TEST BTXN SERVICE: host="+host+" port="+port+" shutdownTimer="+shutdown);
+        log.info("************** STARTED TEST BTXN SERVICE: host=" + host + " port=" + port + " shutdownTimer="
+                + shutdown);
 
         if (shutdown != -1) {
             // Create shutdown thread, just in case hangs
@@ -176,8 +178,8 @@ public class TestBTxnService {
                             java.io.InputStream is = exchange.getInputStream();
                             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-                            StringBuilder builder=new StringBuilder();
-                            String str=null;
+                            StringBuilder builder = new StringBuilder();
+                            String str = null;
 
                             while ((str = reader.readLine()) != null) {
                                 builder.append(str);
