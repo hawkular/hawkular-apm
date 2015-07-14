@@ -36,7 +36,7 @@
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.basedir}/target/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
   </properties>
 
   <dependencies>
