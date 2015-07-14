@@ -68,7 +68,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-tests-btxn-service</artifactId>
+      <artifactId>hawkular-btm-test-server</artifactId>
       <scope>test</scope>
     </dependency>
 

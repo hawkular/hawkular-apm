@@ -58,7 +58,7 @@
       <outputDirectory>/standalone/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.btm:hawkular-btm-btxn-service-rest:war</include>
+        <include>org.hawkular.btm:hawkular-btm-server-rest:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
@@ -66,7 +66,7 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/btm/client</outputDirectory>
+      <outputDirectory>/standalone/data</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.btm:hawkular-btm-btxn-instrumentation</include>

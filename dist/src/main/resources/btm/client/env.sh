@@ -24,15 +24,12 @@
 
 export BTM_CLIENT_JAR_PATH=$BTM_HOME/client/lib/hawkular-btm-client-rest.jar
 
-export BTM_CONFIG_PATH=$BTM_HOME/client/btmconfig
-
 export JAVA_OPTS="-Dorg.jboss.byteman.transform.all \
     -javaagent:$BTM_CLIENT_JAR_PATH=manager:org.hawkular.btm.client.manager.ClientManager,boot:$BTM_CLIENT_JAR_PATH \
     -Dorg.jboss.byteman.compileToBytecode \
-    -Dhawkular-btm.config=$BTM_CONFIG_PATH \
     -Dhawkular-btm.base-uri=http://localhost:8180/hawkular/btm \
     -Dhawkular-btm.username=jdoe \
     -Dhawkular-btm.password=password"
 
 # Wildfly specific
-export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client -Dhawkular-btm.log.console=true"
+export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client"

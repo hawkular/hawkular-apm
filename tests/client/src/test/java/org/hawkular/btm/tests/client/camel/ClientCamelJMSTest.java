@@ -91,13 +91,13 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         }
 
         // Check stored business transactions - one btxn represents the test sender
-        assertEquals(3, getBtxnService().getBusinessTransactions().size());
+        assertEquals(3, getTestBTMServer().getBusinessTransactions().size());
 
         Consumer queueConsumer = null;
         Consumer topicConsumer = null;
         Component testComponent = null;
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -185,13 +185,13 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         }
 
         // Check stored business transactions - one btxn represents the test sender
-        assertEquals(3, getBtxnService().getBusinessTransactions().size());
+        assertEquals(3, getTestBTMServer().getBusinessTransactions().size());
 
         Consumer queueConsumer = null;
         Consumer topicConsumer = null;
         Component testComponent = null;
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

@@ -161,9 +161,9 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -175,7 +175,7 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -234,9 +234,9 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -248,7 +248,7 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -315,9 +315,9 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -329,7 +329,7 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -360,9 +360,9 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -374,7 +374,7 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -405,9 +405,9 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -419,7 +419,7 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -450,9 +450,9 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getBtxnService().getBusinessTransactions().size());
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
-        for (BusinessTransaction btxn : getBtxnService().getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -464,7 +464,7 @@ public class ClientHttpTest extends ClientTestBase {
         }
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getBtxnService().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

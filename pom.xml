@@ -59,18 +59,19 @@
   <modules>
     <module>api</module>
     <module>client/api</module>
+    <module>client/admin-service-rest-client</module>
     <module>client/btxn-collector</module>
     <module>client/btxn-instrumentation</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
     <module>client/client-rest</module>
-    <module>client/config-manager-rest-client</module>
     <module>processors/btxn-builder</module>
     <module>processors/fault-detector</module>
     <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
     <module>server/api</module>
-    <module>server/btxn-service-rest</module>
+    <module>server/rest</module>
+    <module>services/admin-service-inmemory</module>
     <module>services/btxn-service-cass-es</module>
     <module>services/btxn-service-inmemory</module>
     <module>dist</module>
@@ -118,6 +119,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-client-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-admin-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -181,12 +187,17 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-rest</artifactId>
+        <artifactId>hawkular-btm-server-rest</artifactId>
         <type>war</type>
         <version>${project.version}</version>
       </dependency>
 
       <!-- BTM Services -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-service-cass-es</artifactId>
@@ -201,7 +212,7 @@
       <!-- BTM Tests -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-tests-btxn-service</artifactId>
+        <artifactId>hawkular-btm-test-server</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -384,7 +395,7 @@
         <module>tests/client-java</module>
         <module>tests/client-wildfly</module>
         <module>tests/server-wildfly</module>
-        <module>tests/test-btxn-service</module>
+        <module>tests/test-server</module>
       </modules>
     </profile>
     <profile>

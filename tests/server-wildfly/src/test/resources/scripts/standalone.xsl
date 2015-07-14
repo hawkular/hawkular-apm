@@ -40,7 +40,7 @@
   <xsl:template match="node()[name(.)='secure-deployment'][last()]">
 
     <xsl:variable name="newSecureDeployment">
-      <secure-deployment name="hawkular-btm-btxn-service-rest.war">
+      <secure-deployment name="hawkular-btm-server-rest.war">
         <realm>hawkular</realm>
         <resource>hawkular-accounts-backend</resource>
         <use-resource-role-mappings>true</use-resource-role-mappings>
