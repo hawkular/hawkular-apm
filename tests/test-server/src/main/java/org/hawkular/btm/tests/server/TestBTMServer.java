@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.services.ConfigurationLoader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -213,15 +213,12 @@ public class TestBTMServer {
                             return;
                         }
 
-                        log.info("************************* &&&&&&&&&&&&&&&&&& Config request received: " + exchange);
+                        log.info("Config request received: " + exchange);
 
                         if (exchange.getRequestMethod() == Methods.GET) {
-                            // TODO: Currently returns all - support proper query
-                            synchronized (businessTransactions) {
-                                String cc = mapper.writeValueAsString(new CollectorConfiguration());
-                                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                                exchange.getResponseSender().send(cc);
-                            }
+                            String cc = mapper.writeValueAsString(ConfigurationLoader.getConfiguration());
+                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                            exchange.getResponseSender().send(cc);
                         }
                     }
                 })).build();
