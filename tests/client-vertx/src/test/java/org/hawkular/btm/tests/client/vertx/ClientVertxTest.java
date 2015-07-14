@@ -192,6 +192,9 @@ public class ClientVertxTest {
                     }
                 }
             }
+
+            // Check btxn name is set
+            assertEquals("Business transaction name should be 'testvertx'", "testvertx", btxn.getName());
         }
 
         assertNotNull("consumerREST null", consumerREST);
