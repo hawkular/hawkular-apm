@@ -58,6 +58,12 @@
       <artifactId>hawkular-btm-api</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-tests-common</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-test-server</artifactId>

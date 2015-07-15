@@ -18,14 +18,12 @@ package org.hawkular.btm.tests.client.vertx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.tests.server.TestBTMServer;
-import org.junit.After;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,55 +38,28 @@ import io.vertx.core.http.HttpServer;
 /**
  * @author gbrown
  */
-public class ClientVertxHTTPTest {
-
-    private static TestBTMServer testServer = new TestBTMServer();
+public class ClientVertxHTTPTest extends ClientTestBase {
 
     private static HttpServer server;
 
+    @Override
+    public int getPort() {
+        return 8180;
+    }
+
     @BeforeClass
-    public static void init() {
+    public static void initClass() {
         server = Vertx.vertx().createHttpServer();
 
         server.requestHandler(req -> {
             req.response().putHeader("content-type", "text/html")
             .end("<html><body><h1>Hello from vert.x!</h1></body></html>");
         }).listen(8080);
-
-        try {
-            testServer.setPort(8180);
-            testServer.setShutdownTimer(-1); // Disable timer
-            testServer.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @AfterClass
-    public static void close() {
-
+    public static void closeClass() {
         server.close();
-
-        try {
-            testServer.shutdown();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            synchronized (testServer) {
-                testServer.wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait after test close");
-        }
-    }
-
-    @After
-    public void afterTest() {
-        System.out.println("Clearing previous business transactions: count="
-                + testServer.getBusinessTransactions().size());
-        testServer.getBusinessTransactions().clear();
-        System.out.println("Cleared: count=" + testServer.getBusinessTransactions().size());
     }
 
     @Test
@@ -137,12 +108,12 @@ public class ClientVertxHTTPTest {
         }
 
         // Check stored business transactions (including 1 for test client)
-        assertEquals(2, testServer.getBusinessTransactions().size());
+        assertEquals(2, getTestBTMServer().getBusinessTransactions().size());
 
         Consumer consumer = null;
         Producer producer = null;
 
-        for (BusinessTransaction btxn : testServer.getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

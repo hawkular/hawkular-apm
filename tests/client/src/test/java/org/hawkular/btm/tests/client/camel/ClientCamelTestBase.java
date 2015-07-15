@@ -19,6 +19,7 @@ package org.hawkular.btm.tests.client.camel;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.hawkular.btm.tests.common.ClientTestBase;
 
 /**
  * @author gbrown

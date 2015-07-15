@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.tests.client.camel;
+package org.hawkular.btm.tests.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -37,9 +37,14 @@ public abstract class ClientTestBase {
 
     private TestBTMServer testBTMServer = new TestBTMServer();
 
+    public int getPort() {
+        return 8080;
+    }
+
     @Before
     public void init() {
         try {
+            testBTMServer.setPort(getPort());
             testBTMServer.setShutdownTimer(-1); // Disable timer
             testBTMServer.run();
         } catch (Exception e) {
