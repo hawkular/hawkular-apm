@@ -44,13 +44,13 @@ import io.undertow.util.Methods;
 public class TestBTMServer {
 
     /**  */
-    private static final String HAWKULAR_BTM_TEST_BTXNSERVICE_HOST = "hawkular-btm.test.btxnservice.host";
+    private static final String HAWKULAR_BTM_TEST_SERVER_HOST = "hawkular-btm.test.server.host";
 
     /**  */
-    private static final String HAWKULAR_BTM_TEST_BTXNSERVICE_PORT = "hawkular-btm.test.btxnservice.port";
+    private static final String HAWKULAR_BTM_TEST_SERVER_PORT = "hawkular-btm.test.server.port";
 
     /**  */
-    private static final String HAWKULAR_BTM_TEST_BTXNSERVICE_SHUTDOWN = "hawkular-btm.test.btxnservice.shutdown";
+    private static final String HAWKULAR_BTM_TEST_SERVER_SHUTDOWN = "hawkular-btm.test.server.shutdown";
 
     /**  */
     private static final int DEFAULT_SHUTDOWN_TIMER = 30000;
@@ -72,14 +72,14 @@ public class TestBTMServer {
     private int shutdown = DEFAULT_SHUTDOWN_TIMER;
 
     {
-        if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_BTXNSERVICE_HOST)) {
-            host = System.getProperty(HAWKULAR_BTM_TEST_BTXNSERVICE_HOST);
+        if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_SERVER_HOST)) {
+            host = System.getProperty(HAWKULAR_BTM_TEST_SERVER_HOST);
         }
-        if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_BTXNSERVICE_PORT)) {
-            port = Integer.parseInt(System.getProperty(HAWKULAR_BTM_TEST_BTXNSERVICE_PORT));
+        if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_SERVER_PORT)) {
+            port = Integer.parseInt(System.getProperty(HAWKULAR_BTM_TEST_SERVER_PORT));
         }
-        if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_BTXNSERVICE_SHUTDOWN)) {
-            shutdown = Integer.parseInt(System.getProperty(HAWKULAR_BTM_TEST_BTXNSERVICE_SHUTDOWN));
+        if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_SERVER_SHUTDOWN)) {
+            shutdown = Integer.parseInt(System.getProperty(HAWKULAR_BTM_TEST_SERVER_SHUTDOWN));
         }
     }
 

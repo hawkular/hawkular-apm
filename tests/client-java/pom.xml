@@ -161,9 +161,9 @@
                     <pathelement path="${project.build.outputDirectory}"/>
                     <pathelement path="${runtime_classpath}"/>
                   </classpath>
-                  <jvmarg value="-Dhawkular-btm.test.btxnservice.host=${hawkular.host}"/>
-                  <jvmarg value="-Dhawkular-btm.test.btxnservice.port=${hawkular.port}"/>
-                  <jvmarg value="-Dhawkular-btm.test.btxnservice.shutdown=30000"/>
+                  <jvmarg value="-Dhawkular-btm.test.server.host=${hawkular.host}"/>
+                  <jvmarg value="-Dhawkular-btm.test.server.port=${hawkular.port}"/>
+                  <jvmarg value="-Dhawkular-btm.test.server.shutdown=30000"/>
                   <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-btxn-service-logging.properties"/>
                 </java>
               </target>
