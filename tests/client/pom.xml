@@ -66,6 +66,11 @@
       <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-tests-common</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-test-server</artifactId>

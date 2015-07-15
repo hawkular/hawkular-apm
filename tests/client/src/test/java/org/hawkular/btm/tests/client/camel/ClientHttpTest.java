@@ -50,6 +50,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -18,20 +18,11 @@ package org.hawkular.btm.tests.client.vertx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
-import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.tests.server.TestBTMServer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,43 +39,11 @@ import io.vertx.core.eventbus.MessageConsumer;
 /**
  * @author gbrown
  */
-public class ClientVertxEventBusTest {
+public class ClientVertxEventBusTest extends ClientTestBase {
 
-    private static TestBTMServer testServer = new TestBTMServer();
-
-    @BeforeClass
-    public static void init() {
-        try {
-            testServer.setPort(8180);
-            testServer.setShutdownTimer(-1); // Disable timer
-            testServer.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @AfterClass
-    public static void close() {
-        try {
-            testServer.shutdown();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            synchronized (testServer) {
-                testServer.wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait after test close");
-        }
-    }
-
-    @After
-    public void afterTest() {
-        System.out.println("Clearing previous business transactions: count="
-                + testServer.getBusinessTransactions().size());
-        testServer.getBusinessTransactions().clear();
-        System.out.println("Cleared: count=" + testServer.getBusinessTransactions().size());
+    @Override
+    public int getPort() {
+        return 8180;
     }
 
     @Test
@@ -194,12 +153,12 @@ public class ClientVertxEventBusTest {
 
     protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
-        assertEquals(2, testServer.getBusinessTransactions().size());
+        assertEquals(2, getTestBTMServer().getBusinessTransactions().size());
 
         Consumer consumer = null;
         Producer producer = null;
 
-        for (BusinessTransaction btxn : testServer.getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -225,36 +184,4 @@ public class ClientVertxEventBusTest {
         checkInteractionCorrelationIdentifiers(producer, consumer);
     }
 
-    /**
-     * This method checks that two correlation identifiers are equivalent.
-     *
-     * @param producer The producer
-     * @param consumer The consumer
-     */
-    protected void checkInteractionCorrelationIdentifiers(Producer producer, Consumer consumer) {
-        CorrelationIdentifier pcid = producer.getCorrelationIds().iterator().next();
-        CorrelationIdentifier ccid = consumer.getCorrelationIds().iterator().next();
-
-        assertEquals(pcid, ccid);
-    }
-
-    /**
-     * This method finds nodes within a hierarchy of the required type.
-     *
-     * @param nodes The nodes to recursively check
-     * @param cls The class of interest
-     * @param results The results
-     */
-    @SuppressWarnings("unchecked")
-    protected <T extends Node> void findNodes(List<Node> nodes, Class<T> cls, List<T> results) {
-        for (Node n : nodes) {
-            if (n instanceof ContainerNode) {
-                findNodes(((ContainerNode) n).getNodes(), cls, results);
-            }
-
-            if (cls.isAssignableFrom(n.getClass())) {
-                results.add((T) n);
-            }
-        }
-    }
 }

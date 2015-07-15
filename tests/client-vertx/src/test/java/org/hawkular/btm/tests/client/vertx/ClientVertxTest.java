@@ -29,10 +29,7 @@ import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.tests.server.TestBTMServer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,43 +47,11 @@ import io.vertx.core.http.HttpServer;
 /**
  * @author gbrown
  */
-public class ClientVertxTest {
+public class ClientVertxTest extends ClientTestBase {
 
-    private static TestBTMServer testServer = new TestBTMServer();
-
-    @BeforeClass
-    public static void init() {
-        try {
-            testServer.setPort(8180);
-            testServer.setShutdownTimer(-1); // Disable timer
-            testServer.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @AfterClass
-    public static void close() {
-        try {
-            testServer.shutdown();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            synchronized (testServer) {
-                testServer.wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait after test close");
-        }
-    }
-
-    @After
-    public void afterTest() {
-        System.out.println("Clearing previous business transactions: count="
-                + testServer.getBusinessTransactions().size());
-        testServer.getBusinessTransactions().clear();
-        System.out.println("Cleared: count=" + testServer.getBusinessTransactions().size());
+    @Override
+    public int getPort() {
+        return 8180;
     }
 
     @Test
@@ -132,8 +97,8 @@ public class ClientVertxTest {
         }).listen(8080);
 
         try {
-            synchronized (testServer) {
-                testServer.wait(2000);
+            synchronized (this) {
+                wait(2000);
             }
         } catch (Exception e) {
             fail("Failed to wait for vertx service startup");
@@ -161,14 +126,14 @@ public class ClientVertxTest {
         }
 
         // Check stored business transactions (including 1 for test client)
-        assertEquals(4, testServer.getBusinessTransactions().size());
+        assertEquals(4, getTestBTMServer().getBusinessTransactions().size());
 
         Consumer consumerREST = null;
         Consumer consumerServiceA = null;
         Consumer consumerServiceB = null;
         Producer producerREST = null;
 
-        for (BusinessTransaction btxn : testServer.getBusinessTransactions()) {
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

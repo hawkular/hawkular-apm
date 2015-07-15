@@ -212,6 +212,11 @@
       <!-- BTM Tests -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-tests-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-test-server</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -391,6 +396,7 @@
     <profile>
       <id>tests</id>
       <modules>
+        <module>tests/common</module>
         <module>tests/client</module>
         <module>tests/client-java</module>
         <module>tests/client-wildfly</module>
