@@ -25,7 +25,7 @@
           "action": "collector().setDetail(\"action\",\"query\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.sql\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().suppress()"
@@ -66,7 +66,7 @@
           "action": "collector().setDetail(\"action\",\"query\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.sql\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().suppress()"
@@ -107,7 +107,7 @@
           "action": "collector().setDetail(\"action\",\"update\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.sql\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().suppress()"
@@ -148,7 +148,7 @@
           "action": "collector().setDetail(\"action\",\"update\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-jdbc\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.sql\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().suppress()"

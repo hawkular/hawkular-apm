@@ -27,7 +27,7 @@
           "idExpression": "req.getHeader(\"Hawkular-btid\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"javax-servlet\")"
+          "action": "collector().setDetail(\"btm_source\",\"javax.servlet\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"principal\",req.getRemoteUser())"

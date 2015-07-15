@@ -102,27 +102,29 @@ public class ConfigurationLoader {
             Files.walkFileTree(path, new FileVisitor<Path>() {
 
                 @Override
-                public FileVisitResult postVisitDirectory(Path arg0, IOException arg1) throws IOException {
+                public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path arg0, BasicFileAttributes arg1) throws IOException {
+                public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path arg0, BasicFileAttributes arg1) throws IOException {
-                    String json = new String(Files.readAllBytes(arg0));
-                    CollectorConfiguration childConfig = mapper.readValue(json, CollectorConfiguration.class);
-                    if (childConfig != null) {
-                        config.merge(childConfig, false);
+                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+                    if (path.toString().endsWith(".json")) {
+                        String json = new String(Files.readAllBytes(path));
+                        CollectorConfiguration childConfig = mapper.readValue(json, CollectorConfiguration.class);
+                        if (childConfig != null) {
+                            config.merge(childConfig, false);
+                        }
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFileFailed(Path arg0, IOException arg1) throws IOException {
+                public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
 

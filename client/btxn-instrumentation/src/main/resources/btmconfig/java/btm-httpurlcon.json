@@ -25,7 +25,7 @@
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.net\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
@@ -58,7 +58,7 @@
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.net\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
@@ -91,7 +91,7 @@
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"java-httpurlconnection\")"
+          "action": "collector().setDetail(\"btm_source\",\"java.net\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"http_method\",$0.getRequestMethod())"
