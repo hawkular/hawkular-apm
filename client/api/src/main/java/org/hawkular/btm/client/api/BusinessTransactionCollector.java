@@ -27,6 +27,21 @@ import java.util.Map;
 public interface BusinessTransactionCollector {
 
     /**
+     * The maximum number of business transactions to batch before sending to the server.
+     */
+    String BATCH_SIZE = "hawkular-btm.collector.batchsize";
+
+    /**
+     * The maximum time (in milliseconds) before sending a batch of business transactions to the server.
+     */
+    String BATCH_TIME = "hawkular-btm.collector.batchtime";
+
+    /**
+     * The thread pool size for reporting a batch of business transactions to the server.
+     */
+    String BATCH_THREADS = "hawkular-btm.collector.batchthreads";
+
+    /**
      * This method sets the name of the business transaction.
      *
      * @param name The business transaction name

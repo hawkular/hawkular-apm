@@ -19,6 +19,9 @@ package org.hawkular.btm.api.model.admin;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -29,11 +32,54 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class CollectorConfiguration {
 
+    private static final Logger log=Logger.getLogger(CollectorConfiguration.class.getName());
+
+    @JsonInclude
+    private Map<String, String> properties = new HashMap<String, String>();
+
     @JsonInclude
     private Map<String, Instrumentation> instrumentation = new HashMap<String, Instrumentation>();
 
     @JsonInclude
     private Map<String, BusinessTxnConfig> businessTransactions = new HashMap<String, BusinessTxnConfig>();
+
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     * This method returns the property associated with the supplied name. The
+     * system properties will be checked first, and if not available, then the
+     * collector configuration properties.
+     *
+     * @param name The name of the required property
+     * @param def The optional default value
+     * @return The property value, or if not found then the default
+     */
+    public String getProperty(String name, String def) {
+        String ret=def;
+
+        if (System.getProperties().containsKey(name)) {
+            ret = System.getProperty(name);
+        } else if (getProperties().containsKey(name)) {
+            ret = getProperties().get(name);
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get property '"+name+"' (default="+def+") = "+ret);
+        }
+        return ret;
+    }
 
     /**
      * @return the instrumentation
