@@ -16,12 +16,10 @@
  */
 package org.hawkular.btm.client.collector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
@@ -42,6 +40,7 @@ import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.SessionManager;
+import org.hawkular.btm.client.collector.internal.BusinessTransactionReporter;
 import org.hawkular.btm.client.collector.internal.FilterManager;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.hawkular.btm.client.collector.internal.FragmentManager;
@@ -55,35 +54,15 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     private FragmentManager fragmentManager = new FragmentManager();
 
-    private String tenantId = System.getProperty("hawkular-btm.tenantId");
-
-    private BusinessTransactionService businessTransactionService;
-
     private FilterManager filterManager;
+
+    private BusinessTransactionReporter reporter=new BusinessTransactionReporter();
 
     private Map<String, FragmentBuilder> links = new ConcurrentHashMap<String, FragmentBuilder>();
 
     private static final Level warningLogLevel = Level.WARNING;
 
     {
-        CompletableFuture<BusinessTransactionService> bts =
-                ServiceResolver.getSingletonService(BusinessTransactionService.class);
-
-        bts.whenCompleteAsync(new BiConsumer<BusinessTransactionService, Throwable>() {
-            @Override
-            public void accept(BusinessTransactionService arg0, Throwable arg1) {
-                if (businessTransactionService == null) {
-                    setBusinessTransactionService(arg0);
-
-                    if (arg1 != null) {
-                        log.severe("Failed to locate Business Transaction Service: " + arg1);
-                    } else {
-                        log.info("Initialised Business Transaction Service: " + arg0 + " in this=" + this);
-                    }
-                }
-            }
-        });
-
         // Obtain the admin service
         CompletableFuture<AdminService> asFuture =
                 ServiceResolver.getSingletonService(AdminService.class);
@@ -91,14 +70,53 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         asFuture.whenComplete(new BiConsumer<AdminService, Throwable>() {
 
             @Override
-            public void accept(AdminService cm, Throwable t) {
-                CollectorConfiguration config = cm.getConfiguration(null, null, null);
-
-                if (config != null) {
-                    filterManager = new FilterManager(config);
-                }
+            public void accept(AdminService as, Throwable t) {
+                setAdminService(as);
             }
         });
+    }
+
+    /**
+     * This method sets the admin service.
+     *
+     * @param as The admin service
+     */
+    public void setAdminService(AdminService as) {
+        CollectorConfiguration config = as.getConfiguration(null, null, null);
+
+        if (config != null) {
+            filterManager = new FilterManager(config);
+
+            reporter.init(config);
+        }
+    }
+
+    /**
+     * @return the businessTransactionService
+     */
+    public BusinessTransactionService getBusinessTransactionService() {
+        return reporter.getBusinessTransactionService();
+    }
+
+    /**
+     * @param businessTransactionService the businessTransactionService to set
+     */
+    public void setBusinessTransactionService(BusinessTransactionService businessTransactionService) {
+        reporter.setBusinessTransactionService(businessTransactionService);
+    }
+
+    /**
+     * @return the tenantId
+     */
+    public String getTenantId() {
+        return reporter.getTenantId();
+    }
+
+    /**
+     * @param tenantId the tenantId to set
+     */
+    public void setTenantId(String tenantId) {
+        reporter.setTenantId(tenantId);
     }
 
     /* (non-Javadoc)
@@ -394,7 +412,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void setProperty(String name, String value) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Add property: name=" + name + " value=" + value);
+            log.finest("Set business transaction property: name=" + name + " value=" + value);
         }
 
         try {
@@ -419,7 +437,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void setDetail(String name, String value) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Add property: name=" + name + " value=" + value);
+            log.finest("Set node detail: name=" + name + " value=" + value);
         }
 
         try {
@@ -435,34 +453,6 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 log.log(warningLogLevel, "setDetail failed", t);
             }
         }
-    }
-
-    /**
-     * @return the businessTransactionService
-     */
-    public BusinessTransactionService getBusinessTransactionService() {
-        return businessTransactionService;
-    }
-
-    /**
-     * @param businessTransactionService the businessTransactionService to set
-     */
-    public void setBusinessTransactionService(BusinessTransactionService businessTransactionService) {
-        this.businessTransactionService = businessTransactionService;
-    }
-
-    /**
-     * @return the tenantId
-     */
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    /**
-     * @param tenantId the tenantId to set
-     */
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
     }
 
     /**
@@ -602,22 +592,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     log.finest("Record business transaction: " + btxn);
                 }
 
-                if (businessTransactionService != null) {
-                    Executors.newSingleThreadExecutor().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-                            btxns.add(btxn);
-                            try {
-                                businessTransactionService.store(tenantId, btxns);
-                            } catch (Exception e) {
-                                log.log(Level.SEVERE, "Failed to store business transactions", e);
-                            }
-                        }
-                    });
-                } else {
-                    log.warning("Business transaction service is not available!");
-                }
+                reporter.report(btxn);
             }
 
             fragmentManager.clear();

@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Service;
+import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
@@ -53,6 +55,12 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
+        collector.setAdminService(new AdminService() {
+            @Override
+            public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
+                return new CollectorConfiguration();
+            }
+        });
 
         collector.serviceStart(SERVICE_TYPE, OPERATION, null);
 
@@ -98,6 +106,12 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
+        collector.setAdminService(new AdminService() {
+            @Override
+            public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
+                return new CollectorConfiguration();
+            }
+        });
 
         collector.serviceStart(SERVICE_TYPE, OPERATION, null);
 
@@ -126,6 +140,12 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
+        collector.setAdminService(new AdminService() {
+            @Override
+            public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
+                return new CollectorConfiguration();
+            }
+        });
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
@@ -168,10 +188,16 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);
+        collector.setAdminService(new AdminService() {
+            @Override
+            public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
+                return new CollectorConfiguration();
+            }
+        });
 
         collector.consumerStart(null, null, "myid", null);
 
-        collector.consumerEnd(null, null, null, null);
+        collector.consumerEnd(null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
