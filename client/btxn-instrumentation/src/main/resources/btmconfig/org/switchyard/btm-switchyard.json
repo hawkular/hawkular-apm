@@ -19,7 +19,7 @@
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"switchyard\")"
+          "action": "collector().setDetail(\"btm_source\",\"org.switchyard\")"
         }]
       },{
         "ruleName": "SwitchYard Service End",

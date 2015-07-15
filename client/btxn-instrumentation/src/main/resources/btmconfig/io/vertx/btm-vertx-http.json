@@ -21,7 +21,7 @@
           "idExpression": "$0.getHeader(\"Hawkular-btid\")"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"vertx-http\")"
+          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.http\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"remoteAddr\",$0.remoteAddress())"
@@ -74,10 +74,10 @@
           "idExpression": "id"
         },{
           "type": "FreeFormAction",
-          "action": "collector().session().initiateLink(\"vertx-http\"+$0.hashCode())"
+          "action": "collector().session().initiateLink(\"io.vertx.core.http-\"+$0.hashCode())"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"vertx-http\")"
+          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.http\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"http_method\",$0.method())"
@@ -96,10 +96,10 @@
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().isLinkActive(\"vertx-http\"+$0.hashCode())",
+        "condition": "collector().session().isLinkActive(\"io.vertx.core.http-\"+$0.hashCode())",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "collector().session().completeLink(\"vertx-http\"+$0.hashCode())"
+          "action": "collector().session().completeLink(\"io.vertx.core.http-\"+$0.hashCode())"
         },{
           "type": "InstrumentProducer",
           "direction": "Response",

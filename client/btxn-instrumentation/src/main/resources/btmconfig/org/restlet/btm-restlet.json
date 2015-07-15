@@ -38,7 +38,7 @@
           "headersExpression": "headers.getValuesMap()"
         },{
           "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"restlet\")"
+          "action": "collector().setDetail(\"btm_source\",\"org.restlet\")"
         },{
           "type": "FreeFormAction",
           "action": "collector().setName(btname)"
