@@ -93,6 +93,7 @@
 
     <version.com.fasterxml.jackson.core>2.4.1</version.com.fasterxml.jackson.core>
     <version.commons-io>2.1</version.commons-io>
+    <version.io.swagger>1.5.0</version.io.swagger>
     <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.io.vertx>3.0.0</version.io.vertx>
     <version.javaee.spec>7.0</version.javaee.spec>
@@ -353,6 +354,23 @@
         <groupId>io.vertx</groupId>
         <artifactId>vertx-core</artifactId>
         <version>${version.io.vertx}</version>
+      </dependency>
+
+      <!-- REST Doc dependencies -->
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${version.io.swagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>${version.io.swagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-jaxrs</artifactId>
+        <version>${version.io.swagger}</version>
       </dependency>
 
       <!-- Test dependencies -->
