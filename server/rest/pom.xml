@@ -120,16 +120,17 @@
     </dependency>
 
     <!-- docs -->
-
     <dependency>
-      <groupId>com.wordnik</groupId>
+      <groupId>io.swagger</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <scope>provided</scope>
     </dependency>
-
     <dependency>
-      <groupId>com.wordnik</groupId>
-      <artifactId>swagger-core_2.10</artifactId>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-jaxrs</artifactId>
     </dependency>
 
   </dependencies>
@@ -168,20 +169,57 @@
       <build>
         <!-- Document generation from the Swagger annotations on the REST-API. -->
         <plugins>
+          <!-- Uncomment when pulling templates from build tools
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular</groupId>
+                      <artifactId>hawkular-build-tools</artifactId>
+                      <version>${version.org.hawkular.hawkular-build-tools}</version>
+                      <type>jar</type>
+                      <includes>**/*.mustache</includes>
+                      <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          -->
           <plugin>
             <groupId>com.github.kongchen</groupId>
             <artifactId>swagger-maven-plugin</artifactId>
+            <version>3.1.0</version>
             <configuration>
               <apiSources>
                 <apiSource>
-                  <locations>org.hawkular.btm.btxn.service.rest</locations>
-                  <apiVersion>0.1</apiVersion>
-                  <basePath>http://localhost:8080/hawkular/btm</basePath>
-                  <outputTemplate>https://raw.githubusercontent.com/hawkular/hawkular.github.io/swagger/asciidoc.mustache</outputTemplate>
-                  <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
-                  <swaggerInternalFilter>org.hawkular.btm.btxn.service.rest.swagger.JaxRsFilter</swaggerInternalFilter>
-                  <swaggerApiReader>com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader</swaggerApiReader>
+                  <springmvc>false</springmvc>
+                  <locations>org.hawkular.btm.server.rest</locations>
+                  <schemes>http,https</schemes>
+                  <basePath>/hawkular/btm</basePath>
+                  <info>
+                    <title>Hawkular Business Transaction Management</title>
+                    <version>v1</version>
+                    <description>The REST API for the Hawkular Business Transaction Management server</description>
+                    <license>
+                      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+                      <name>Apache 2.0</name>
+                    </license>
+                  </info>
+                  <!-- templatePath>${project.build.directory}/dependency/hawkular-documentation/asciidoc.mustache</templatePath -->
+                  <templatePath>${project.basedir}/src/main/templates/asciidoc.mustache</templatePath>
                   <outputPath>${project.build.directory}/generated/rest-btm.adoc</outputPath>
+                  <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
                 </apiSource>
               </apiSources>
             </configuration>

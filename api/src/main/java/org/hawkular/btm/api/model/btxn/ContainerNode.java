@@ -21,8 +21,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.wordnik.swagger.annotations.ApiModel;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+
+import io.swagger.annotations.ApiModel;
 
 /**
  * This abstract class represents the base for all nodes that can contain
@@ -30,7 +34,11 @@ import com.wordnik.swagger.annotations.ApiModel;
  *
  * @author gbrown
  */
-@ApiModel(parent = Node.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = InteractionNode.class),
+    @Type(value = Component.class) })
+@ApiModel(parent = Node.class,
+    subTypes = { InteractionNode.class, Component.class }, discriminator = "type")
 public abstract class ContainerNode extends Node {
 
     @JsonInclude(Include.NON_NULL)
