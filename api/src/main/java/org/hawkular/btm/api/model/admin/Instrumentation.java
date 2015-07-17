@@ -30,27 +30,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Instrumentation {
 
     @JsonInclude(Include.NON_NULL)
-    private String version;
-
-    @JsonInclude(Include.NON_NULL)
     private String description;
 
     @JsonInclude
     private List<InstrumentRule> rules = new ArrayList<InstrumentRule>();
-
-    /**
-     * @return the version
-     */
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * @param version the version to set
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
 
     /**
      * @return the description

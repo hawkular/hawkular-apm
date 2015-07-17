@@ -2,7 +2,6 @@
   "instrumentation": {
     "java.net": {
       "description": "Java HttpUrlConnection instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Java HttpUrlConnection connect Producer Start",
         "className": "^java.net.HttpURLConnection",

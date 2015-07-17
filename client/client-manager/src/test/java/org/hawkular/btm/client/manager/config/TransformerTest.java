@@ -74,7 +74,117 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in);
+        String transformed = transformer.transform(in, null);
+
+        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "()\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\nIF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformNoParametersInvalidVersion() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        ir.setFromVersion("2.0.0");
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in, "1.0.0");
+
+        String expected = "";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformNoParametersInvalidNullVersion() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        ir.setToVersion("2.0.0");
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in, null);
+
+        String expected = "";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformNoParametersValidVersion() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        ir.setFromVersion("2.0.0");
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in, "2.0.0");
+
+        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "()\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\nIF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformNoParametersValidNullVersion() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        ir.setFromVersion("2.0.0");
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform(in, null);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
@@ -104,7 +214,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in);
+        String transformed = transformer.transform(in, null);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "\r\n"
@@ -135,7 +245,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in);
+        String transformed = transformer.transform(in, null);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
@@ -167,7 +277,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in);
+        String transformed = transformer.transform(in, null);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
@@ -205,7 +315,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in);
+        String transformed = transformer.transform(in, null);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
@@ -250,7 +360,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in);
+        String transformed = transformer.transform(in, null);
 
         String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"

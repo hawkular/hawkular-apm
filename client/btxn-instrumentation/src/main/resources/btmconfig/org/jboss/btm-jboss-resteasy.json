@@ -2,7 +2,6 @@
   "instrumentation": {
     "org.jboss.resteasy": {
       "description": "JBoss RESTEasy Client instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "JBoss RESTEasy Client Producer Start",
         "interfaceName": "^org.jboss.resteasy.client.jaxrs.ClientHttpEngine",

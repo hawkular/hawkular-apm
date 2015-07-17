@@ -103,7 +103,7 @@ public class ClientManager {
 
                     if (config != null) {
                         try {
-                            updateInstrumentation(config.getInstrumentation());
+                            updateInstrumentation(config);
                         } catch (Exception e) {
                             System.err.println("Failed to update instrumentation rules: " + e);
                             e.printStackTrace();
@@ -126,16 +126,17 @@ public class ClientManager {
     /**
      * This method updates the instrumentation instructions.
      *
-     * @param instrumentTypes The instrumentation types
+     * @param config The collector configuration
      * @throws Exception Failed to update instrumentation rules
      */
-    public static void updateInstrumentation(Map<String, Instrumentation> instrumentTypes) throws Exception {
+    public static void updateInstrumentation(CollectorConfiguration config) throws Exception {
         List<String> scripts = new ArrayList<String>();
         List<String> scriptNames = new ArrayList<String>();
+        Map<String, Instrumentation> instrumentTypes=config.getInstrumentation();
 
         for (String name : instrumentTypes.keySet()) {
             Instrumentation types = instrumentTypes.get(name);
-            String rules = ruleTransformer.transform(types);
+            String rules = ruleTransformer.transform(types, config.getProperty("version."+name, null));
 
             if (log.isLoggable(Level.FINER)) {
                 log.finer("Update instrumentation script name=" + name + " rules=" + rules);

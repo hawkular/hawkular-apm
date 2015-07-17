@@ -2,7 +2,6 @@
   "instrumentation": {
     "io.vertx.core.http": {
       "description": "Vertx HTTP instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Vertx HTTP Consumer Start",
         "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
