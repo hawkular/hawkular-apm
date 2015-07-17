@@ -2,7 +2,6 @@
   "instrumentation": {
     "org.apache.http.client": {
       "description": "Apache HttpClient instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Apache HttpClient Producer Start",
         "interfaceName": "^org.apache.http.client.HttpClient",

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * This class represents an instrumentation rule.
@@ -57,6 +58,12 @@ public class InstrumentRule {
 
     @JsonInclude
     private List<InstrumentAction> actions = new ArrayList<InstrumentAction>();
+
+    @JsonInclude(Include.NON_NULL)
+    private String fromVersion;
+
+    @JsonInclude(Include.NON_NULL)
+    private String toVersion;
 
     /**
      * @return the ruleName
@@ -198,4 +205,54 @@ public class InstrumentRule {
         this.actions = actions;
     }
 
+    /**
+     * @return the 'from' version
+     */
+    public String getFromVersion() {
+        return fromVersion;
+    }
+
+    /**
+     * @param version the 'from' version to set
+     */
+    public void setFromVersion(String version) {
+        this.fromVersion = version;
+    }
+
+    /**
+     * @return the 'to' version
+     */
+    public String getToVersion() {
+        return toVersion;
+    }
+
+    /**
+     * @param version the 'to' version to set
+     */
+    public void setToVersion(String version) {
+        this.toVersion = version;
+    }
+
+    /**
+     * This method determines if the rule is valid for the
+     * supplied version. If the supplied version is null, then
+     * it is assumed to represent 'latest version' and therefore
+     * any rule with a 'toVersion' set will not be valid.
+     *
+     * @param version The version
+     * @return Whether the rule is valid for the supplied version
+     */
+    public boolean isVersionValid(String version) {
+        if (fromVersion != null && version != null) {
+            if (version.compareTo(fromVersion) < 0) {
+                return false;
+            }
+        }
+        if (toVersion != null) {
+            if (version == null || version.compareTo(toVersion) >= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

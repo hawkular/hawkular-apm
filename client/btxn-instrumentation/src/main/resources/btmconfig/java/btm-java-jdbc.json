@@ -2,7 +2,6 @@
   "instrumentation": {
     "java.sql": {
       "description": "Java JDBC instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Java JDBC Query Component Start",
         "interfaceName": "^java.sql.Statement",

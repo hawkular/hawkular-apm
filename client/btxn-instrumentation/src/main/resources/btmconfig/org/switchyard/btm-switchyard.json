@@ -2,7 +2,6 @@
   "instrumentation": {
     "org.switchyard": {
       "description": "SwitchYard instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "SwitchYard Service Start",
         "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",

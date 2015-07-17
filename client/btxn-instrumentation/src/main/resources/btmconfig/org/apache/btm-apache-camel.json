@@ -2,7 +2,6 @@
   "instrumentation": {
     "org.apache.camel": {
       "description": "Apache Camel instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Apache Camel Inbound Component Start",
         "className": "org.apache.camel.util.EventHelper",

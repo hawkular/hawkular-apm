@@ -2,7 +2,6 @@
   "instrumentation": {
     "javax.jms": {
       "description": "Javax JMS instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "JMS Consumer Start",
         "interfaceName": "^javax.jms.MessageListener",

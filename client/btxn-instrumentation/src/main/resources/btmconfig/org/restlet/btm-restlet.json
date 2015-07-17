@@ -2,7 +2,6 @@
   "instrumentation": {
     "org.restlet": {
       "description": "Restlet instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Restlet Async Consumer Start",
         "className": "org.restlet.Server",

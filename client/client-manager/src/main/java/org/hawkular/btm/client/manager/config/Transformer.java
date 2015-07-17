@@ -45,12 +45,19 @@ public class Transformer {
      * ByteMan rule script.
      *
      * @param types The instrument types
+     * @param version The optional version
      * @return The rule script
      */
-    public String transform(Instrumentation types) {
+    public String transform(Instrumentation types, String version) {
         StringBuilder builder = new StringBuilder();
 
         for (InstrumentRule rule : types.getRules()) {
+
+            // Check version
+            if (!rule.isVersionValid(version)) {
+                continue;
+            }
+
             if (builder.length() > 0) {
                 builder.append("\r\n");
             }

@@ -2,7 +2,6 @@
   "instrumentation": {
     "javax.servlet": {
       "description": "Javax Servlet instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Javax Servlet Consumer Start",
         "interfaceName": "^javax.servlet.Servlet",

@@ -2,7 +2,6 @@
   "instrumentation": {
     "io.vertx.core.eventbus": {
       "description": "Vertx EventBus instrumentation",
-      "version": "1",
       "rules": [{
         "ruleName": "Vertx EventBus Consumer Sync Start",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
