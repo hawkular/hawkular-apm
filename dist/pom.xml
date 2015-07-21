@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.btm</groupId>
     <artifactId>hawkular-btm</artifactId>
-    <version>0.1.1.Final-SNAPSHOT</version>
+    <version>0.2.0.Final</version>
   </parent>
 
   <artifactId>hawkular-btm-dist</artifactId>
