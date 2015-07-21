@@ -32,6 +32,8 @@ public class FilterManager {
     private List<FilterProcessor> globalExclusionFilters = new ArrayList<FilterProcessor>();
     private List<FilterProcessor> btxnFilters = new ArrayList<FilterProcessor>();
 
+    private boolean onlyNamedTransactions = false;
+
     /**
      * This constructor initialises the filter manager with the configuration.
      *
@@ -57,6 +59,9 @@ public class FilterManager {
                 btxnFilters.add(fp);
             }
         }
+
+        onlyNamedTransactions = new Boolean(config.getProperty(
+                "hawkular-btm.collector.onlynamed", Boolean.FALSE.toString()));
     }
 
     /**
@@ -69,7 +74,7 @@ public class FilterManager {
      *                  or null if URI should be excluded
      */
     public String getBusinessTransactionName(String uri) {
-        String ret = "";
+        String ret = (onlyNamedTransactions ? null : "");
 
         // First check if a global exclusion filter applies
         for (int i = 0; i < globalExclusionFilters.size(); i++) {

@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -65,7 +67,9 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertNotNull(fm.getBusinessTransactionName("include and exclude"));
+        String name=fm.getBusinessTransactionName("include and exclude");
+        assertNotNull(name);
+        assertNotEquals(0, name.length());
     }
 
     @Test
@@ -103,6 +107,41 @@ public class FilterManagerTest {
 
         assertNull(fm.getBusinessTransactionName(
                 "http://localhost:8080/auth/realms/artificer/protocol/openid-connect/token"));
+    }
+
+    @Test
+    public void testBusinessTransactionIncludedByDefault() {
+        CollectorConfiguration config = new CollectorConfiguration();
+        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        config.getBusinessTransactions().put("btc2", btc2);
+
+        // Business txn specific
+        Filter f2 = new Filter();
+        btc2.setFilter(f2);
+        f2.getInclusions().add("include");
+
+        FilterManager fm = new FilterManager(config);
+
+        String name=fm.getBusinessTransactionName("notrecognised");
+        assertNotNull(name);
+        assertEquals(0, name.length());
+    }
+
+    @Test
+    public void testBusinessTransactionExcludedByDefault() {
+        CollectorConfiguration config = new CollectorConfiguration();
+        config.getProperties().put("hawkular-btm.collector.onlynamed", "true");
+        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        config.getBusinessTransactions().put("btc2", btc2);
+
+        // Business txn specific
+        Filter f2 = new Filter();
+        btc2.setFilter(f2);
+        f2.getInclusions().add("include");
+
+        FilterManager fm = new FilterManager(config);
+
+        assertNull(fm.getBusinessTransactionName("notrecognised"));
     }
 
 }
