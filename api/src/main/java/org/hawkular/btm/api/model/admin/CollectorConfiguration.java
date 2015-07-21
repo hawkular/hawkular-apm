@@ -132,5 +132,6 @@ public class CollectorConfiguration {
             }
             getBusinessTransactions().put(key, config.getBusinessTransactions().get(key));
         }
+        getProperties().putAll(config.getProperties());
     }
 }
