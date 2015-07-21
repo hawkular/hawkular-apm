@@ -18,6 +18,7 @@ package org.hawkular.btm.tests.client.jav;
 
 import static io.undertow.Handlers.path;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.undertow.Undertow;
@@ -50,7 +51,11 @@ public class ClientJavaMain {
     public static void main(String[] args) {
         ClientJavaMain main = new ClientJavaMain();
 
-        main.run();
+        try {
+            main.run();
+        } catch (Throwable t) {
+            log.log(Level.SEVERE, "Failed to run client java main", t);
+        }
     }
 
     public void run() {
