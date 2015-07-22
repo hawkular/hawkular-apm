@@ -44,7 +44,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-rest</artifactId>
+      <artifactId>hawkular-btm-server</artifactId>
       <type>war</type>
     </dependency>
     <dependency>

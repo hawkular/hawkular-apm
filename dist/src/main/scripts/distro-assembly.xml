@@ -58,7 +58,7 @@
       <outputDirectory>/standalone/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.btm:hawkular-btm-server-rest:war</include>
+        <include>org.hawkular.btm:hawkular-btm-server:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>

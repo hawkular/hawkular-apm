@@ -210,7 +210,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-server-rest</artifactId>
+                  <artifactId>hawkular-btm-server</artifactId>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular.deployments}</outputDirectory>
