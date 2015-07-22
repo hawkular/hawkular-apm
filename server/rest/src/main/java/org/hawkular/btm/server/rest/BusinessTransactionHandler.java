@@ -37,14 +37,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
-import org.hawkular.accounts.api.model.Persona;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.server.api.services.SecurityProvider;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -68,7 +70,7 @@ public class BusinessTransactionHandler {
     private static final Logger log = Logger.getLogger(BusinessTransactionHandler.class);
 
     @Inject
-    Persona currentPersona;
+    SecurityProvider securityProvider;
 
     @Inject
     BusinessTransactionService btxnService;
@@ -79,12 +81,13 @@ public class BusinessTransactionHandler {
             @ApiResponse(code = 200, message = "Adding business transactions succeeded."),
             @ApiResponse(code = 500, message = "Unexpected error happened while storing the business transactions") })
     public void addBusinessTransactions(
+            @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @HeaderParam("tenantId") final String tenantId,
             @ApiParam(value = "List of business transactions", required = true) List<BusinessTransaction> btxns) {
 
         try {
-            btxnService.store(currentPersona.getId(), btxns);
+            btxnService.store(securityProvider.getTenantId(context), btxns);
 
             response.resume(Response.status(Response.Status.OK).build());
 
@@ -107,11 +110,13 @@ public class BusinessTransactionHandler {
             @ApiResponse(code = 200, message = "Success, business transaction found and returned"),
             @ApiResponse(code = 500, message = "Internal server error"),
             @ApiResponse(code = 404, message = "Unknown business transaction id") })
-    public void getBusinessTransaction(@Suspended final AsyncResponse response,
+    public void getBusinessTransaction(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
             @ApiParam(required = true, value = "id of required business transaction") @PathParam("id") String id) {
 
         try {
-            BusinessTransaction btxn = btxnService.get(currentPersona.getId(), id);
+            BusinessTransaction btxn = btxnService.get(securityProvider.getTenantId(context), id);
 
             if (btxn == null) {
                 log.tracef("Business transaction '" + id + "' not found");
@@ -140,6 +145,7 @@ public class BusinessTransactionHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void queryBusinessTransactions(
+            @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "retrieve business transactions after this time,"
@@ -167,7 +173,7 @@ public class BusinessTransactionHandler {
 
             log.tracef("Query Business transactions for criteria [%s]", criteria);
 
-            List<BusinessTransaction> btxns = btxnService.query(currentPersona.getId(), criteria);
+            List<BusinessTransaction> btxns = btxnService.query(securityProvider.getTenantId(context), criteria);
 
             log.tracef("Queried Business transactions for criteria [%s] = %s", criteria, btxns);
 
