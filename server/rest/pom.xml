@@ -28,11 +28,8 @@
   </parent>
 
   <artifactId>hawkular-btm-server-rest</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <name>Hawkular BTM::Server::REST</name>
-
-  <properties>
-  </properties>
 
   <dependencies>
 
@@ -43,34 +40,6 @@
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-api</artifactId>
-    </dependency>
-
-    <!-- Service implementations -->
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-inmemory</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
-    </dependency>
-
-    <!-- Business Transaction Fragment Processors -->
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-builder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-fault-detector</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-inventory-enricher</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-metrics-deriver</artifactId>
     </dependency>
 
     <dependency>
@@ -134,34 +103,6 @@
     </dependency>
 
   </dependencies>
-
-  <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
-
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>${version.maven-war-plugin}</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-            <!-- <manifestEntries> <Build-Number>${buildNumber}</Build-Number>
-              </manifestEntries> -->
-          </archive>
-          <webResources>
-            <resource>
-              <filtering>false</filtering>
-              <directory>${basedir}/src/main/webapp</directory>
-            </resource>
-          </webResources>
-        </configuration>
-      </plugin>
-
-    </plugins>
-  </build>
 
   <profiles>
     <profile>
