@@ -25,17 +25,18 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
-import org.hawkular.accounts.api.model.Persona;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.services.AdminService;
+import org.hawkular.btm.server.api.services.SecurityProvider;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -59,7 +60,7 @@ public class AdminHandler {
     private static final Logger log = Logger.getLogger(AdminHandler.class);
 
     @Inject
-    Persona currentPersona;
+    SecurityProvider securityProvider;
 
     @Inject
     AdminService adminService;
@@ -74,8 +75,8 @@ public class AdminHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getConfiguration(
+            @Context SecurityContext context,
             @Suspended final AsyncResponse response,
-            @HeaderParam("tenantId") final String tenantId,
             @ApiParam(required = false,
             value = "optional host name") @QueryParam("host") String host,
             @ApiParam(required = false,
@@ -84,7 +85,8 @@ public class AdminHandler {
         try {
             log.tracef("Get collector configuration for host [%s] server [%s]", host, server);
 
-            CollectorConfiguration config = adminService.getConfiguration(tenantId, host, server);
+            CollectorConfiguration config = adminService.getConfiguration(securityProvider.getTenantId(context),
+                    host, server);
 
             log.tracef("Got collector configuration for host [%s] server [%s] config=[%s]", host, server, config);
 

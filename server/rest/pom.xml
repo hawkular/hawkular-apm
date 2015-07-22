@@ -43,11 +43,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>

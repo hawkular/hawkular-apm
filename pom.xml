@@ -71,6 +71,8 @@
     <module>processors/metrics-deriver</module>
     <module>server/api</module>
     <module>server/rest</module>
+    <module>server/security-hwkaccs</module>
+    <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>services/admin-service-inmemory</module>
     <module>services/btxn-service-cass-es</module>
@@ -184,6 +186,12 @@
       <!-- BTM Server -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -194,8 +202,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server</artifactId>
-        <type>war</type>
+        <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
         <version>${project.version}</version>
       </dependency>
 

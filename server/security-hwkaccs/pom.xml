@@ -27,38 +27,26 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-server-api</artifactId>
+  <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
   <packaging>jar</packaging>
-
-  <name>Hawkular BTM::Server::API</name>
+  <name>Hawkular BTM::Server::Security Provider::Hawkular Accounts</name>
 
   <dependencies>
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
-      <scope>provided</scope>
+      <artifactId>hawkular-btm-server-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-api</artifactId>
+    </dependency>
+
+    <!-- Wildfly provided -->
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-processor</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -70,11 +58,6 @@
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.enterprise.concurrent</groupId>
-      <artifactId>javax.enterprise.concurrent-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
