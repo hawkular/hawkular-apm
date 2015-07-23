@@ -32,4 +32,4 @@ export JAVA_OPTS="-Dorg.jboss.byteman.transform.all \
     -Dhawkular-btm.password=password"
 
 # Wildfly specific
-export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client"
+export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api"
