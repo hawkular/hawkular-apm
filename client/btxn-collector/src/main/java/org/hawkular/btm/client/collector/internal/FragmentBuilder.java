@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +42,7 @@ public class FragmentBuilder {
 
     private static final Logger log = Logger.getLogger(FragmentBuilder.class.getName());
 
-    private BusinessTransaction businessTransaction =
-            new BusinessTransaction().setId(UUID.randomUUID().toString());
+    private BusinessTransaction businessTransaction;
 
     private Stack<Node> nodeStack = new Stack<Node>();
 
@@ -52,6 +53,28 @@ public class FragmentBuilder {
     private List<String> unlinkedIds = new ArrayList<String>();
 
     private boolean suppress = false;
+
+    private static String hostName;
+    private static String hostAddress;
+
+    static {
+        try {
+            hostName = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            log.severe("Unable to determine host name");
+        }
+
+        try {
+            hostAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            log.severe("Unable to determine host address");
+        }
+    }
+
+    {
+        businessTransaction = new BusinessTransaction().setId(UUID.randomUUID().toString())
+                .setHostName(hostName).setHostAddress(hostAddress);
+    }
 
     /**
      * This method determines if the fragment is complete.

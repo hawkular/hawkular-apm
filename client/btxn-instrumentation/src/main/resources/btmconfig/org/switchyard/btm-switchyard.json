@@ -15,10 +15,14 @@
           "type": "InstrumentService",
           "direction": "Request",
           "uriExpression": "$1.getConsumer().getName()",
+          "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"org.switchyard\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"internal\",\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding())"
         }]
       },{
         "ruleName": "SwitchYard Service End",
@@ -33,6 +37,7 @@
           "type": "InstrumentService",
           "direction": "Response",
           "uriExpression": "$1.getConsumer().getName()",
+          "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
       }]

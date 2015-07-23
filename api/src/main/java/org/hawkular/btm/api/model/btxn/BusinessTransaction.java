@@ -44,6 +44,12 @@ public class BusinessTransaction {
     @JsonInclude(Include.NON_EMPTY)
     private String name;
 
+    @JsonInclude(Include.NON_EMPTY)
+    private String hostName;
+
+    @JsonInclude(Include.NON_EMPTY)
+    private String hostAddress;
+
     @JsonInclude
     private List<Node> nodes = new ArrayList<Node>();
 
@@ -78,9 +84,43 @@ public class BusinessTransaction {
 
     /**
      * @param name the name to set
+     * @return The business transaction
      */
-    public void setName(String name) {
+    public BusinessTransaction setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    /**
+     * @return the host name
+     */
+    public String getHostName() {
+        return hostName;
+    }
+
+    /**
+     * @param hostName the host name to set
+     * @return The business transaction
+     */
+    public BusinessTransaction setHostName(String hostName) {
+        this.hostName = hostName;
+        return this;
+    }
+
+    /**
+     * @return the host address
+     */
+    public String getHostAddress() {
+        return hostAddress;
+    }
+
+    /**
+     * @param hostAddress the host address to set
+     * @return The business transaction
+     */
+    public BusinessTransaction setHostAddress(String hostAddress) {
+        this.hostAddress = hostAddress;
+        return this;
     }
 
     /**
@@ -180,6 +220,8 @@ public class BusinessTransaction {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
+        result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
@@ -192,44 +234,43 @@ public class BusinessTransaction {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         BusinessTransaction other = (BusinessTransaction) obj;
+        if (hostAddress == null) {
+            if (other.hostAddress != null)
+                return false;
+        } else if (!hostAddress.equals(other.hostAddress))
+            return false;
+        if (hostName == null) {
+            if (other.hostName != null)
+                return false;
+        } else if (!hostName.equals(other.hostName))
+            return false;
         if (id == null) {
-            if (other.id != null) {
+            if (other.id != null)
                 return false;
-            }
-        } else if (!id.equals(other.id)) {
+        } else if (!id.equals(other.id))
             return false;
-        }
         if (name == null) {
-            if (other.name != null) {
+            if (other.name != null)
                 return false;
-            }
-        } else if (!name.equals(other.name)) {
+        } else if (!name.equals(other.name))
             return false;
-        }
         if (nodes == null) {
-            if (other.nodes != null) {
+            if (other.nodes != null)
                 return false;
-            }
-        } else if (!nodes.equals(other.nodes)) {
+        } else if (!nodes.equals(other.nodes))
             return false;
-        }
         if (properties == null) {
-            if (other.properties != null) {
+            if (other.properties != null)
                 return false;
-            }
-        } else if (!properties.equals(other.properties)) {
+        } else if (!properties.equals(other.properties))
             return false;
-        }
         return true;
     }
 
@@ -238,8 +279,8 @@ public class BusinessTransaction {
      */
     @Override
     public String toString() {
-        return "BusinessTransaction [id=" + id + ", name=" + name + ", nodes=" + nodes + ", properties=" + properties
-                + "]";
+        return "BusinessTransaction [id=" + id + ", name=" + name + ", hostName=" + hostName + ", hostAddress="
+                + hostAddress + ", nodes=" + nodes + ", properties=" + properties + "]";
     }
 
 }
