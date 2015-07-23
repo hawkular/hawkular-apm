@@ -50,6 +50,8 @@ public class ClientCamelServletTest {
     @Test
     public void testInvokeCamelRESTService() {
 
+        long startTime = System.currentTimeMillis();
+
         // Delay to avoid picking up previously reported txns
         try {
             synchronized (this) {
@@ -58,8 +60,6 @@ public class ClientCamelServletTest {
         } catch (Exception e) {
             fail("Failed to wait");
         }
-
-        long startTime = System.currentTimeMillis();
 
         try {
             URL url = new URL(System.getProperty("hawkular.base-uri")

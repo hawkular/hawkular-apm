@@ -214,7 +214,7 @@
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular.deployments}</outputDirectory>
-                  <destFileName>hawkular-btm-server-rest.war</destFileName>
+                  <destFileName>hawkular-btm-server.war</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.camel</groupId>
@@ -319,7 +319,7 @@
         <configuration>
           <jboss-home>${hawkular.btm.dist}</jboss-home>
           <javaOpts>
-            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client</javaOpt>
+            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
           </javaOpts>
         </configuration>
         <executions>
@@ -348,7 +348,7 @@
                 <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>
                 <javaOpt>-Dhawkular-btm.password=password</javaOpt>
                 <javaOpt>-Djava.util.logging.config.file=${hawkular-btm.logging}</javaOpt>
-                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.api.client</javaOpt>
+                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
                 <javaOpt>-Dhawkular-btm.log.level=INFO</javaOpt>
               </javaOpts>
               <startup-timeout>120</startup-timeout>

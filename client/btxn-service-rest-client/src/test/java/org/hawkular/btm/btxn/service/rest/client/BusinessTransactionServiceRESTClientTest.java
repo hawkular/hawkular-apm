@@ -155,4 +155,16 @@ public class BusinessTransactionServiceRESTClientTest {
         assertTrue(queryParameters.get("correlations").equals("Global|value1,Interaction|value2")
                 || queryParameters.get("correlations").equals("Interaction|value2,Global|value1"));
     }
+
+    @Test
+    public void testGetQueryURL() {
+        BusinessTransactionServiceRESTClient client=new BusinessTransactionServiceRESTClient();
+        client.setBaseUrl("base/");
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(100);
+
+        String url=client.getQueryURL(criteria);
+
+        assertEquals("base/transactions?startTime=100", url);
+    }
 }

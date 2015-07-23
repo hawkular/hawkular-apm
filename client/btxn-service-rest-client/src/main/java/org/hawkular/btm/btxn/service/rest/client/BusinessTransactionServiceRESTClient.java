@@ -45,7 +45,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-            };
+    };
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -224,26 +224,8 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
             log.finest("Get business transactions: tenantId=[" + tenantId + "] query=[" + criteria + "]");
         }
 
-        StringBuilder builder = new StringBuilder().append(baseUrl).append("transactions");
-
-        Map<String, String> queryParams = getQueryParameters(criteria);
-
-        if (!queryParams.isEmpty()) {
-            builder.append('?');
-
-            for (String key : queryParams.keySet()) {
-                if (builder.length() > 0) {
-                    builder.append('&');
-                }
-                String value = queryParams.get(key);
-                builder.append(key);
-                builder.append('=');
-                builder.append(value);
-            }
-        }
-
         try {
-            URL url = new URL(builder.toString());
+            URL url = new URL(getQueryURL(criteria));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -372,5 +354,36 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         }
 
         return ret;
+    }
+
+    /**
+     * This method returns a query URL associated with the supplied
+     * criteria.
+     *
+     * @param criteria The criteria
+     * @return The query URL
+     */
+    protected String getQueryURL(BusinessTransactionCriteria criteria) {
+        Map<String, String> queryParams = getQueryParameters(criteria);
+
+        StringBuilder builder = new StringBuilder().append(baseUrl).append("transactions");
+
+        if (!queryParams.isEmpty()) {
+            builder.append('?');
+
+            boolean first = true;
+            for (String key : queryParams.keySet()) {
+                if (!first) {
+                    builder.append('&');
+                }
+                String value = queryParams.get(key);
+                builder.append(key);
+                builder.append('=');
+                builder.append(value);
+                first = false;
+            }
+        }
+
+        return builder.toString();
     }
 }
