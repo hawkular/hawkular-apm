@@ -35,10 +35,11 @@ public class Component extends ContainerNode {
     private String operation;
 
     public Component() {
+        super(NodeType.Component);
     }
 
     public Component(String uri, String componentType) {
-        super(uri);
+        super(NodeType.Component, uri);
         this.componentType = componentType;
     }
 

@@ -102,8 +102,9 @@ public interface BusinessTransactionCollector {
      * @param uri The uri
      * @param type The component type
      * @param operation The operation
+     * @param values The request values
      */
-    void componentStart(String uri, String type, String operation);
+    void componentStart(String uri, String type, String operation, Object... values);
 
     /**
      * This method indicates the end of a component invocation.
@@ -111,8 +112,9 @@ public interface BusinessTransactionCollector {
      * @param uri The uri
      * @param type The component type
      * @param operation The operation
+     * @param values The response values
      */
-    void componentEnd(String uri, String type, String operation);
+    void componentEnd(String uri, String type, String operation, Object... values);
 
     /**
      * This method indicates the start of a message being produced.
@@ -134,6 +136,14 @@ public interface BusinessTransactionCollector {
      * @param values The response values
      */
     void producerEnd(String uri, String type, Map<String, ?> headers, Object... values);
+
+    /**
+     * This method sets a fault on the current node.
+     *
+     * @param value The fault value
+     * @param description The optional fault description
+     */
+    void setFault(String value, String description);
 
     /**
      * This method sets a property on the business transaction.

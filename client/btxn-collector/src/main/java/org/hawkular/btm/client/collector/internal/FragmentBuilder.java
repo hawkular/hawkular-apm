@@ -299,6 +299,8 @@ public class FragmentBuilder {
         info.append(isComplete());
         info.append(" unlinkedIds=");
         info.append(getUnlinkedIds());
+        info.append(" stack=");
+        info.append(nodeStack);
         return (info.toString());
     }
 }

@@ -44,6 +44,7 @@ import org.hawkular.btm.client.collector.internal.BusinessTransactionReporter;
 import org.hawkular.btm.client.collector.internal.FilterManager;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.hawkular.btm.client.collector.internal.FragmentManager;
+import org.hawkular.btm.client.collector.internal.ProcessorManager;
 
 /**
  * @author gbrown
@@ -56,7 +57,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     private FilterManager filterManager;
 
-    private BusinessTransactionReporter reporter=new BusinessTransactionReporter();
+    private ProcessorManager processorManager;
+
+    private BusinessTransactionReporter reporter = new BusinessTransactionReporter();
 
     private Map<String, FragmentBuilder> links = new ConcurrentHashMap<String, FragmentBuilder>();
 
@@ -86,8 +89,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         if (config != null) {
             filterManager = new FilterManager(config);
-
             reporter.init(config);
+            try {
+                processorManager = new ProcessorManager(config);
+            } catch (Throwable t) {
+                // TODO: log
+                t.printStackTrace();
+            }
         }
     }
 
@@ -194,13 +202,17 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
 
         try {
-            Consumer consumer = new Consumer();
-            consumer.setEndpointType(type);
-            consumer.setUri(uri);
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-            processValues(consumer, true, id, headers, values);
+            if (builder != null) {
+                Consumer consumer = new Consumer();
+                consumer.setEndpointType(type);
+                consumer.setUri(uri);
 
-            push(consumer);
+                processValues(builder.getBusinessTransaction(), consumer, true, id, headers, values);
+
+                push(builder, consumer);
+            }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "consumerStart failed", t);
@@ -226,7 +238,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (builder != null) {
                 Consumer consumer = pop(builder, Consumer.class, uri);
 
-                processValues(consumer, false, null, headers, values);
+                processValues(builder.getBusinessTransaction(), consumer, false, null, headers, values);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -251,13 +263,17 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
 
         try {
-            Service service = new Service();
-            service.setUri(uri);
-            service.setOperation(operation);
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-            processValues(service, true, null, headers, values);
+            if (builder != null) {
+                Service service = new Service();
+                service.setUri(uri);
+                service.setOperation(operation);
 
-            push(service);
+                processValues(builder.getBusinessTransaction(), service, true, null, headers, values);
+
+                push(builder, service);
+            }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "serviceStart failed", t);
@@ -281,7 +297,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (builder != null) {
                 Service service = pop(builder, Service.class, uri);
 
-                processValues(service, false, null, headers, values);
+                processValues(builder.getBusinessTransaction(), service, false, null, headers, values);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -297,21 +313,27 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#componentStart(
-     *                      java.lang.String, java.lang.String, java.lang.String)
+     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.Object[])
      */
     @Override
-    public void componentStart(String uri, String type, String operation) {
+    public void componentStart(String uri, String type, String operation, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Component start: type=" + type + " operation=" + operation + " uri=" + uri);
         }
 
         try {
-            Component component = new Component();
-            component.setComponentType(type);
-            component.setUri(uri);
-            component.setOperation(operation);
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-            push(component);
+            if (builder != null) {
+                Component component = new Component();
+                component.setComponentType(type);
+                component.setUri(uri);
+                component.setOperation(operation);
+
+                processValues(builder.getBusinessTransaction(), component, true, null, null, values);
+
+                push(builder, component);
+            }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "componentStart failed", t);
@@ -321,10 +343,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#componentEnd(
-     *                      java.lang.String, java.lang.String, java.lang.String)
+     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.Object[])
      */
     @Override
-    public void componentEnd(String uri, String type, String operation) {
+    public void componentEnd(String uri, String type, String operation, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Component end: type=" + type + " operation=" + operation + " uri=" + uri);
         }
@@ -333,7 +355,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                pop(builder, Component.class, uri);
+                Component component = pop(builder, Component.class, uri);
+
+                processValues(builder.getBusinessTransaction(), component, false, null, null, values);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -359,13 +383,17 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
 
         try {
-            Producer producer = new Producer();
-            producer.setEndpointType(type);
-            producer.setUri(uri);
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-            processValues(producer, true, id, headers, values);
+            if (builder != null) {
+                Producer producer = new Producer();
+                producer.setEndpointType(type);
+                producer.setUri(uri);
 
-            push(producer);
+                processValues(builder.getBusinessTransaction(), producer, true, id, headers, values);
+
+                push(builder, producer);
+            }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "producerStart failed", t);
@@ -391,7 +419,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (builder != null) {
                 Producer producer = pop(builder, Producer.class, uri);
 
-                processValues(producer, false, null, headers, values);
+                processValues(builder.getBusinessTransaction(), producer, false, null, headers, values);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -401,6 +429,30 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "producerEnd failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#setFault(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void setFault(String value, String description) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set fault: value=" + value + " description=" + description);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                builder.getCurrentNode().setFault(value).setFaultDescription(description);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setFault failed", t);
             }
         }
     }
@@ -458,15 +510,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     /**
      * This method pushes a new node into the business transaction fragment.
      *
+     * @param builder The fragment builder
      * @param node The node
      */
-    protected void push(Node node) {
-        FragmentBuilder builder = fragmentManager.getFragmentBuilder();
-
-        if (builder != null) {
-            node.setStartTime(System.currentTimeMillis());
-            builder.pushNode(node);
-        }
+    protected void push(FragmentBuilder builder, Node node) {
+        node.setStartTime(System.currentTimeMillis());
+        builder.pushNode(node);
     }
 
     /**
@@ -511,45 +560,44 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * This method processes the values associated with the start or end of a scoped
      * activity.
      *
+     * @param btxn The business transaction
      * @param node The node
      * @param req Whether processing a request
      * @param id The unique interaction id
      * @param headers The optional headers
      * @param values The values
      */
-    protected void processValues(InteractionNode node, boolean req, String id,
+    protected void processValues(BusinessTransaction btxn, Node node, boolean req, String id,
             Map<String, ?> headers, Object[] values) {
-        Message m = new Message();
-        m.setId(id);
-
-        if (values != null) {
-            for (int i = 0; i < values.length; i++) {
-                if (values[i] != null) {
-                    // TODO: Type conversion based on provided config
-                    m.getParameters().add(values[i].toString());
-                }
-            }
-        }
-
         // Only use the request based interaction id for correlation
         if (id != null && req) {
             node.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
         }
 
-        if (headers != null) {
-            // TODO: Need to have config to determine whether headers should be logged
-            for (String key : headers.keySet()) {
-                String value = getHeaderValueText(headers.get(key));
+        if (node.interactionNode()) {
+            Message m = new Message();
+            m.setId(id);
 
-                if (value != null) {
-                    m.getHeaders().put(key, value);
+            if (headers != null) {
+                // TODO: Need to have config to determine whether headers should be logged
+                for (String key : headers.keySet()) {
+                    String value = getHeaderValueText(headers.get(key));
+
+                    if (value != null) {
+                        m.getHeaders().put(key, value);
+                    }
                 }
             }
+
+            if (req) {
+                ((InteractionNode) node).setRequest(m);
+            } else {
+                ((InteractionNode) node).setResponse(m);
+            }
         }
-        if (req) {
-            node.setRequest(m);
-        } else {
-            node.setResponse(m);
+
+        if (processorManager != null) {
+            processorManager.process(btxn, node, req, headers, values);
         }
     }
 

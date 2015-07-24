@@ -58,6 +58,7 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
             builder.append(params[i]);
         }
 
+        // Don't pass headers for Component nodes
         if (getActionType() != InstrumentComponent.class) {
             builder.append(',');
 
@@ -66,18 +67,19 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
             } else {
                 builder.append(collectorAction.getHeadersExpression());
             }
-            builder.append(',');
-
-            builder.append("createArrayBuilder()");
-
-            for (String expr : collectorAction.getValueExpressions()) {
-                builder.append(".add(");
-                builder.append(expr);
-                builder.append(')');
-            }
-
-            builder.append(".get()");
         }
+
+        builder.append(',');
+
+        builder.append("createArrayBuilder()");
+
+        for (String expr : collectorAction.getValueExpressions()) {
+            builder.append(".add(");
+            builder.append(expr);
+            builder.append(')');
+        }
+
+        builder.append(".get()");
 
         builder.append(")");
 

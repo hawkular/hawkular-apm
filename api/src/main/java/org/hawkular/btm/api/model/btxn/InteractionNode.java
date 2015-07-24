@@ -43,11 +43,19 @@ public abstract class InteractionNode extends ContainerNode {
     @JsonInclude(Include.NON_NULL)
     private Message response;
 
-    public InteractionNode() {
+    public InteractionNode(NodeType type) {
+        super(type);
     }
 
-    public InteractionNode(String uri) {
-        super(uri);
+    public InteractionNode(NodeType type, String uri) {
+        super(type, uri);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean interactionNode() {
+        return true;
     }
 
     /**

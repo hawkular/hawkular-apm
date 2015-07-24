@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.model.btxn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.annotations.ApiModel;
 
 /**
@@ -33,10 +34,11 @@ public class Consumer extends InteractionNode {
     private String endpointType;
 
     public Consumer() {
+        super(NodeType.Consumer);
     }
 
     public Consumer(String uri, String endpointType) {
-        super(uri);
+        super(NodeType.Consumer, uri);
         this.endpointType = endpointType;
     }
 

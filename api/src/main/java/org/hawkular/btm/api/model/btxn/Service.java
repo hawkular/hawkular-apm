@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.model.btxn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.annotations.ApiModel;
 
 /**
@@ -32,10 +33,11 @@ public class Service extends InteractionNode {
     private String operation;
 
     public Service() {
+        super(NodeType.Service);
     }
 
     public Service(String uri, String operation) {
-        super(uri);
+        super(NodeType.Service, uri);
         this.operation = operation;
     }
 

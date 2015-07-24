@@ -16,9 +16,7 @@
  */
 package org.hawkular.btm.api.model.btxn;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,7 +38,7 @@ public class Message {
     private Map<String, String> headers = new HashMap<String, String>();
 
     @JsonInclude
-    private List<String> parameters = new ArrayList<String>();
+    private Map<String, Content> content = new HashMap<String, Content>();
 
     public Message() {
     }
@@ -74,17 +72,30 @@ public class Message {
     }
 
     /**
-     * @return the parameters
+     * @return the content
      */
-    public List<String> getParameters() {
-        return parameters;
+    public Map<String, Content> getContent() {
+        return content;
     }
 
     /**
-     * @param parameters the parameters to set
+     * @param content the content to set
      */
-    public void setParameters(List<String> parameters) {
-        this.parameters = parameters;
+    public void setContent(Map<String, Content> content) {
+        this.content = content;
+    }
+
+    /**
+     * This method adds new content.
+     *
+     * @param name The optional name
+     * @param type The optional type
+     * @param value The value
+     * @return This message
+     */
+    public Message addContent(String name, String type, String value) {
+        content.put(name, new Content(type, value));
+        return this;
     }
 
     /* (non-Javadoc)
@@ -94,9 +105,9 @@ public class Message {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((content == null) ? 0 : content.hashCode());
         result = prime * result + ((headers == null) ? 0 : headers.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
         return result;
     }
 
@@ -115,6 +126,13 @@ public class Message {
             return false;
         }
         Message other = (Message) obj;
+        if (content == null) {
+            if (other.content != null) {
+                return false;
+            }
+        } else if (!content.equals(other.content)) {
+            return false;
+        }
         if (headers == null) {
             if (other.headers != null) {
                 return false;
@@ -129,13 +147,6 @@ public class Message {
         } else if (!id.equals(other.id)) {
             return false;
         }
-        if (parameters == null) {
-            if (other.parameters != null) {
-                return false;
-            }
-        } else if (!parameters.equals(other.parameters)) {
-            return false;
-        }
         return true;
     }
 
@@ -144,7 +155,7 @@ public class Message {
      */
     @Override
     public String toString() {
-        return "Message [id=" + id + ", headers=" + headers + ", parameters=" + parameters + "]";
+        return "Message [id=" + id + ", headers=" + headers + ", content=" + content + "]";
     }
 
 }

@@ -16,8 +16,9 @@
  */
 package org.hawkular.btm.api.model.btxn;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import io.swagger.annotations.ApiModel;
 
 /**
@@ -43,6 +45,9 @@ import io.swagger.annotations.ApiModel;
 public abstract class Node {
 
     @JsonInclude
+    private NodeType type;
+
+    @JsonInclude
     private String uri;
 
     @JsonInclude
@@ -51,17 +56,50 @@ public abstract class Node {
     @JsonInclude
     private long duration = 0;
 
+    @JsonInclude(Include.NON_NULL)
+    private String fault;
+
+    @JsonInclude(Include.NON_NULL)
+    private String faultDescription;
+
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> details = new HashMap<String, String>();
 
     @JsonInclude(Include.NON_EMPTY)
-    private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
+    private List<CorrelationIdentifier> correlationIds = new ArrayList<CorrelationIdentifier>();
 
-    public Node() {
+    public Node(NodeType type) {
+        this.type = type;
     }
 
-    public Node(String uri) {
+    public Node(NodeType type, String uri) {
+        this(type);
         this.uri = uri;
+    }
+
+    /**
+     * This method indicates whether this is an interaction based node.
+     *
+     * @return Whether the node is interaction based
+     */
+    public boolean interactionNode() {
+        return false;
+    }
+
+    /**
+     * @return the type
+     */
+    public NodeType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     * @return The node
+     */
+    public Node setType(NodeType type) {
+        this.type = type;
+        return this;
     }
 
     /**
@@ -73,9 +111,11 @@ public abstract class Node {
 
     /**
      * @param uri the uri to set
+     * @return The node
      */
-    public void setUri(String uri) {
+    public Node setUri(String uri) {
         this.uri = uri;
+        return this;
     }
 
     /**
@@ -87,9 +127,11 @@ public abstract class Node {
 
     /**
      * @param startTime the startTime to set
+     * @return The node
      */
-    public void setStartTime(long startTime) {
+    public Node setStartTime(long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     /**
@@ -101,9 +143,43 @@ public abstract class Node {
 
     /**
      * @param duration the duration to set
+     * @return The node
      */
-    public void setDuration(long duration) {
+    public Node setDuration(long duration) {
         this.duration = duration;
+        return this;
+    }
+
+    /**
+     * @return the fault
+     */
+    public String getFault() {
+        return fault;
+    }
+
+    /**
+     * @param fault the fault to set
+     * @return The node
+     */
+    public Node setFault(String fault) {
+        this.fault = fault;
+        return this;
+    }
+
+    /**
+     * @return the faultDescription
+     */
+    public String getFaultDescription() {
+        return faultDescription;
+    }
+
+    /**
+     * @param faultDescription the faultDescription to set
+     * @return The node
+     */
+    public Node setFaultDescription(String faultDescription) {
+        this.faultDescription = faultDescription;
+        return this;
     }
 
     /**
@@ -117,23 +193,27 @@ public abstract class Node {
 
     /**
      * @param details the details to set
+     * @return The node
      */
-    public void setDetails(Map<String, String> details) {
+    public Node setDetails(Map<String, String> details) {
         this.details = details;
+        return this;
     }
 
     /**
      * @return the correlationIds
      */
-    public Set<CorrelationIdentifier> getCorrelationIds() {
+    public List<CorrelationIdentifier> getCorrelationIds() {
         return correlationIds;
     }
 
     /**
      * @param correlationIds the correlationIds to set
+     * @return The node
      */
-    public void setCorrelationIds(Set<CorrelationIdentifier> correlationIds) {
+    public Node setCorrelationIds(List<CorrelationIdentifier> correlationIds) {
         this.correlationIds = correlationIds;
+        return this;
     }
 
     /**
@@ -261,7 +341,9 @@ public abstract class Node {
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + (int) (startTime ^ (startTime >>> 32));
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
@@ -271,43 +353,39 @@ public abstract class Node {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         Node other = (Node) obj;
         if (correlationIds == null) {
-            if (other.correlationIds != null) {
+            if (other.correlationIds != null)
                 return false;
-            }
-        } else if (!correlationIds.equals(other.correlationIds)) {
+        } else if (!correlationIds.equals(other.correlationIds))
             return false;
-        }
         if (details == null) {
-            if (other.details != null) {
+            if (other.details != null)
                 return false;
-            }
-        } else if (!details.equals(other.details)) {
+        } else if (!details.equals(other.details))
             return false;
-        }
-        if (duration != other.duration) {
+        if (duration != other.duration)
             return false;
-        }
-        if (startTime != other.startTime) {
+        if (fault == null) {
+            if (other.fault != null)
+                return false;
+        } else if (!fault.equals(other.fault))
             return false;
-        }
+        if (startTime != other.startTime)
+            return false;
+        if (type != other.type)
+            return false;
         if (uri == null) {
-            if (other.uri != null) {
+            if (other.uri != null)
                 return false;
-            }
-        } else if (!uri.equals(other.uri)) {
+        } else if (!uri.equals(other.uri))
             return false;
-        }
         return true;
     }
 
