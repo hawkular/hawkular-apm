@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.model.btxn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.annotations.ApiModel;
 
 /**
@@ -33,10 +34,11 @@ public class Producer extends InteractionNode {
     private String endpointType;
 
     public Producer() {
+        super(NodeType.Producer);
     }
 
     public Producer(String uri, String endpointType) {
-        super(uri);
+        super(NodeType.Producer, uri);
         this.endpointType = endpointType;
     }
 

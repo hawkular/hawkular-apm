@@ -16,7 +16,10 @@
           "direction": "Request",
           "uriExpression": "$1.getConsumer().getName()",
           "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
-          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()",
+          "valueExpressions": [
+            "$1.getMessage().getContent()"
+          ]
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"org.switchyard\")"
@@ -25,20 +28,53 @@
           "action": "collector().setDetail(\"internal\",\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding())"
         }]
       },{
-        "ruleName": "SwitchYard Service End",
+        "ruleName": "SwitchYard Service Normal End",
         "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
         "methodName": "<init>",
         "parameterTypes": [
           "org.switchyard.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().isActive()",
+        "binds": [{
+          "name": "content",
+          "type": "java.lang.Object",
+          "expression": "$1.getMessage().getContent()"
+        }],
+        "condition": "collector().session().isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
         "actions": [{
           "type": "InstrumentService",
           "direction": "Response",
           "uriExpression": "$1.getConsumer().getName()",
           "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
-          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()",
+          "valueExpressions": [
+            "content"
+          ]
+        }]
+      },{
+        "ruleName": "SwitchYard Service Fault End",
+        "className": "^org.switchyard.bus.camel.CamelExchange",
+        "methodName": "sendFault",
+        "parameterTypes": [
+          "org.switchyard.Message"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "content",
+          "type": "java.lang.Throwable",
+          "expression": "$1.getContent()"
+        }],
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setFault(simpleClassName(content), content.getMessage())"
+        },{
+          "type": "InstrumentService",
+          "direction": "Response",
+          "uriExpression": "$0.getConsumer().getName()",
+          "valueExpressions": [
+            "content"
+          ]
         }]
       }]
     }

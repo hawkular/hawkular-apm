@@ -16,6 +16,9 @@
  */
 package org.hawkular.btm.api.model.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -31,6 +34,9 @@ public class BusinessTxnConfig {
 
     @JsonInclude
     private Filter filter;
+
+    @JsonInclude
+    private List<Processor> processors = new ArrayList<Processor>();
 
     /**
      * @return the description
@@ -58,6 +64,20 @@ public class BusinessTxnConfig {
      */
     public void setFilter(Filter filter) {
         this.filter = filter;
+    }
+
+    /**
+     * @return the processors
+     */
+    public List<Processor> getProcessors() {
+        return processors;
+    }
+
+    /**
+     * @param processors the processors to set
+     */
+    public void setProcessors(List<Processor> processors) {
+        this.processors = processors;
     }
 
 }

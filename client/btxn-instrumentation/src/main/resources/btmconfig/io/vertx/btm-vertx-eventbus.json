@@ -38,6 +38,9 @@
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"MOM\""
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().assertComplete()"
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async Start",
@@ -81,6 +84,9 @@
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"MOM\""
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().assertComplete()"
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync Start",

@@ -44,11 +44,12 @@ public abstract class ContainerNode extends Node {
     @JsonInclude(Include.NON_NULL)
     private List<Node> nodes = new ArrayList<Node>();
 
-    public ContainerNode() {
+    public ContainerNode(NodeType type) {
+        super(type);
     }
 
-    public ContainerNode(String uri) {
-        super(uri);
+    public ContainerNode(NodeType type, String uri) {
+        super(type, uri);
     }
 
     /**

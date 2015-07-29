@@ -36,12 +36,15 @@ public class InstrumentComponentTransformerTest {
         im.setComponentTypeExpression("\"MyComponent\"");
         im.setOperationExpression("\"MyOperation\"");
         im.setUriExpression("\"MyUri\"");
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
 
         InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentStart(\"MyUri\",\"MyComponent\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "componentStart(\"MyUri\",\"MyComponent\",\"MyOperation\","
+                + "createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }
@@ -54,12 +57,15 @@ public class InstrumentComponentTransformerTest {
         im.setOperationExpression("\"MyOperation\"");
         im.setUriExpression("\"MyUri\"");
         im.setDirection(Direction.Response);
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
 
         InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentEnd(\"MyUri\",\"MyComponent\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "componentEnd(\"MyUri\",\"MyComponent\",\"MyOperation\","
+                + "createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }

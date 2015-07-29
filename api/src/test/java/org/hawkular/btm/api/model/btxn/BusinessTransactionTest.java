@@ -140,13 +140,13 @@ public class BusinessTransactionTest {
 
         Message req1 = new Message();
         req1.getHeaders().put(HEADER1, VALUE1);
-        req1.getParameters().add("Parameter1");
+        req1.addContent("all", null, "Parameter1");
 
         c1.setRequest(req1);
 
         Message resp1 = new Message();
         resp1.getHeaders().put(HEADER2, VALUE2);
-        resp1.getParameters().add("Parameter2");
+        resp1.addContent("all", null, "Parameter2");
 
         c1.setResponse(resp1);
 
@@ -162,13 +162,13 @@ public class BusinessTransactionTest {
 
         Message req2 = new Message();
         req2.getHeaders().put(HEADER1, VALUE1);
-        req2.getParameters().add("Parameter1");
+        req2.addContent("all", null, "Parameter1");
 
         s1.setRequest(req2);
 
         Message resp2 = new Message();
         resp2.getHeaders().put(HEADER2, VALUE2);
-        resp2.getParameters().add("Parameter2");
+        resp2.addContent("all", null, "Parameter2");
 
         s1.setResponse(resp2);
 
@@ -195,13 +195,13 @@ public class BusinessTransactionTest {
 
         Message req4 = new Message();
         req4.getHeaders().put(HEADER1, VALUE1);
-        req4.getParameters().add("Parameter3");
+        req4.addContent("all", null, "Parameter3");
 
         s2.setRequest(req4);
 
         Message resp4 = new Message();
         resp4.getHeaders().put(HEADER2, VALUE2);
-        resp4.getParameters().add("Parameter4");
+        resp4.addContent("all", null, "Parameter4");
 
         s2.setResponse(resp4);
 
@@ -218,13 +218,13 @@ public class BusinessTransactionTest {
 
         Message req5 = new Message();
         req5.getHeaders().put(HEADER1, VALUE1);
-        req5.getParameters().add("Parameter5");
+        req5.addContent("all", null, "Parameter5");
 
         p1.setRequest(req5);
 
         Message resp5 = new Message();
         resp5.getHeaders().put(HEADER2, VALUE2);
-        resp5.getParameters().add("Parameter6");
+        resp5.addContent("all", null, "Parameter6");
 
         p1.setResponse(resp5);
 

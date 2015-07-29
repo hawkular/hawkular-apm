@@ -60,6 +60,9 @@
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().assertComplete()"
         }]
       }]
     }

@@ -63,6 +63,9 @@
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
           "headersExpression": "headers.getValuesMap()"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().assertComplete()"
         }]
       }]
     }
