@@ -9,7 +9,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
+        "condition": "!$0.connected && collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -42,7 +42,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
+        "condition": "!$0.connected && collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -75,7 +75,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
+        "condition": "!$0.connected && collector().session().activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",

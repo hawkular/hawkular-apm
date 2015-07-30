@@ -61,13 +61,13 @@
         "location": "ENTRY",
         "binds": [{
           "name": "content",
-          "type": "java.lang.Throwable",
+          "type": "java.lang.Object",
           "expression": "$1.getContent()"
         }],
         "condition": "collector().session().isActive()",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "collector().setFault(simpleClassName(content), content.getMessage())"
+          "action": "collector().setFault(faultName(content), faultDescription(content))"
         },{
           "type": "InstrumentService",
           "direction": "Response",

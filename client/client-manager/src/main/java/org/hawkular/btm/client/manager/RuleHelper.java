@@ -25,6 +25,7 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.HeadersAccessor;
+import org.hawkular.btm.client.manager.faults.FaultDescriptor;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
 
@@ -39,12 +40,16 @@ public class RuleHelper extends Helper {
 
     private static Map<String, HeadersAccessor> headersAccessors = new HashMap<String, HeadersAccessor>();
 
+    private static List<FaultDescriptor> faultDescriptors;
+
     static {
         List<HeadersAccessor> accessors = ServiceResolver.getServices(HeadersAccessor.class);
 
         for (HeadersAccessor accessor : accessors) {
             headersAccessors.put(accessor.getTargetType(), accessor);
         }
+
+        faultDescriptors = ServiceResolver.getServices(FaultDescriptor.class);
     }
 
     /**
@@ -111,6 +116,49 @@ public class RuleHelper extends Helper {
      */
     public String simpleClassName(Object obj) {
         return obj.getClass().getSimpleName();
+    }
+
+    /**
+     * This method attempts to locate a descriptor for the fault.
+     *
+     * @param fault The fault
+     * @return The descriptor, or null if not found
+     */
+    protected FaultDescriptor getFaultDescriptor(Object fault) {
+        for (int i=0; i < faultDescriptors.size(); i++) {
+            if (faultDescriptors.get(i).isValid(fault)) {
+                return faultDescriptors.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This method gets the name of the supplied fault.
+     *
+     * @param fault The fault
+     * @return The name
+     */
+    public String faultName(Object fault) {
+        FaultDescriptor fd=getFaultDescriptor(fault);
+        if (fd != null) {
+            return fd.getName(fault);
+        }
+        return fault.getClass().getSimpleName();
+    }
+
+    /**
+     * This method gets the description of the supplied fault.
+     *
+     * @param fault The fault
+     * @return The description
+     */
+    public String faultDescription(Object fault) {
+        FaultDescriptor fd=getFaultDescriptor(fault);
+        if (fd != null) {
+            return fd.getDescription(fault);
+        }
+        return fault.toString();
     }
 
     /**
