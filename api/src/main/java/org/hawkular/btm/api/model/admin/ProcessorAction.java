@@ -131,6 +131,15 @@ public class ProcessorAction {
         this.action = action;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ProcessorAction [name=" + name + ", type=" + type + ", scope=" + scope + ", actionType=" + actionType
+                + ", predicate=" + predicate + ", action=" + action + "]";
+    }
+
     /**
      * This enumerated type identifies the types of action that
      * can be performed.
