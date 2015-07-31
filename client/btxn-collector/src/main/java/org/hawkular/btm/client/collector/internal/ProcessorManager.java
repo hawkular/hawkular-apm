@@ -267,6 +267,8 @@ public class ProcessorManager {
                         log.fine("Initialised processor action '"+action.getAction()
                                 +"' = "+compiledAction);
                     }
+                } else {
+                    log.severe("No action expression defined for processor action=" + action);
                 }
             } catch (Throwable t) {
                 log.log(Level.SEVERE, "Failed to compile processor predicate '"
@@ -289,6 +291,12 @@ public class ProcessorManager {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("ProcessManager/Processor/Action["+action+"]: process btxn="+btxn+" node="+node
                         +" req="+req+" headers="+headers+" values="+values);
+
+                if (values != null) {
+                    for (int i=0; i < values.length; i++) {
+                        log.finest("        [value "+i+"] = "+values[i]);
+                    }
+                }
             }
 
             Map<String, Object> vars = new HashMap<String, Object>();

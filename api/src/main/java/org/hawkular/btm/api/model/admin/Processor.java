@@ -135,4 +135,13 @@ public class Processor {
         this.actions = actions;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Processor [nodeType=" + nodeType + ", request=" + request + ", uriFilter=" + uriFilter
+                + ", operation=" + operation + ", faultFilter=" + faultFilter + ", actions=" + actions + "]";
+    }
+
 }

@@ -33,9 +33,9 @@ import org.w3c.dom.Node;
 /**
  * @author gbrown
  */
-public class DOMHelper {
+public class XMLHelper {
 
-    private static final Logger log = Logger.getLogger(DOMHelper.class.getName());
+    private static final Logger log = Logger.getLogger(XMLHelper.class.getName());
 
     /**  */
     private static final String DEFAULT_INDENT = "yes";
@@ -43,14 +43,42 @@ public class DOMHelper {
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     /**
+     * This method serializes the supplied XML object to a string.
+     *
+     * @param node The node
+     * @return The string, or null if an error occurred
+     */
+    public static String serialize(Object node) {
+        if (node instanceof String) {
+            return (String)node;
+        } else if (node instanceof DOMSource) {
+            return serializeDOMSource((DOMSource)node);
+        } else if (node instanceof Node) {
+            return serializeNode((Node)node);
+        } else {
+            log.severe("Unable to serialize '"+node+"'");
+        }
+        return null;
+    }
+
+    /**
      * This method serializes the supplied DOM node to a string.
      *
      * @param node The node
      * @return The string, or null if an error occurred
      */
-    public static String serialize(Node node) {
+    public static String serializeNode(Node node) {
+        return serializeDOMSource(new DOMSource(node));
+    }
+
+    /**
+     * This method serializes the supplied DOM node to a string.
+     *
+     * @param domSource The DOM source
+     * @return The string, or null if an error occurred
+     */
+    public static String serializeDOMSource(DOMSource domSource) {
         try {
-            DOMSource domSource = new DOMSource(node);
             StringWriter writer = new StringWriter();
             StreamResult result = new StreamResult(writer);
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -60,7 +88,7 @@ public class DOMHelper {
             transformer.transform(domSource, result);
             writer.flush();
             return writer.toString();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.log(Level.SEVERE, "Failed to serialize node", e);
         }
         return null;
@@ -74,13 +102,39 @@ public class DOMHelper {
      * @param node The node
      * @return The result, or null if error occurred
      */
-    public static String evaluate(String xpath, Node node) {
+    public static String evaluate(String xpath, Object node) {
+        Node domNode = getNode(node);
+
+        if (domNode == null) {
+            log.severe("Unable to evaluate non DOM Node object");
+            return null;
+        }
+
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
         try {
             XPath xp = XPathFactory.newInstance().newXPath();
-            return xp.evaluate(xpath, node);
+            return xp.evaluate(xpath, domNode);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to evaluate xpath '"+xpath+"'", e);
+        }
+
+        return null;
+    }
+
+    /**
+     * This method converts the supplied object to a DOM
+     * node.
+     *
+     * @param node The object
+     * @return The node, or null if cannot convert
+     */
+    protected static Node getNode(Object node) {
+        if (node instanceof Node) {
+            return (Node)node;
+        } else if (node instanceof DOMSource) {
+            return ((DOMSource)node).getNode();
+        } else {
+            log.severe("Cannot convert '"+node+"' to DOM node");
         }
         return null;
     }
