@@ -75,7 +75,9 @@ public class ConfigurationLoader {
         File f = new File(uri);
 
         if (!f.isAbsolute()) {
-            if (System.getProperties().containsKey("jboss.server.data.dir")) {
+            if (f.exists()) {
+                uri = f.getAbsolutePath();
+            } else if (System.getProperties().containsKey("jboss.server.data.dir")) {
                 uri = System.getProperty("jboss.server.data.dir") + java.io.File.separatorChar + uri;
             } else {
                 try {
