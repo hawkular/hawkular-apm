@@ -1,0 +1,7 @@
+{
+  "businessTransactions": {
+    "reltest": {
+      "description": "Relative path test"
+    }
+  }
+}

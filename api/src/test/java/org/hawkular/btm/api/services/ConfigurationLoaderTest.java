@@ -16,10 +16,13 @@
  */
 package org.hawkular.btm.api.services;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.nio.file.Paths;
+
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -27,13 +30,54 @@ import org.junit.Test;
  */
 public class ConfigurationLoaderTest {
 
+    @After
+    public void endTest() {
+        System.setProperty("hawkular-btm.config", "");
+    }
+
     @Test
     public void testLoadConfigFromClasspath() {
+        System.setProperty("hawkular-btm.config", "cpconfig");
+
+        CollectorConfiguration cc = ConfigurationLoader.getConfiguration();
+
+        assertNotNull(cc);
+        assertNotNull(cc.getBusinessTransactions());
+        assertNotNull(cc.getBusinessTransactions().get("cptest"));
+
+        assertEquals("Classpath test", cc.getBusinessTransactions().get("cptest").getDescription());
+    }
+
+    @Test
+    public void testLoadConfigFromRelativePath() {
+        System.setProperty("hawkular-btm.config", "src/relconfig");
+
         CollectorConfiguration cc = ConfigurationLoader.getConfiguration();
 
         assertNotNull(cc);
 
-        assertNotEquals("Should be instrumentation entries", 0, cc.getInstrumentation().size());
+        assertNotNull(cc);
+        assertNotNull(cc.getBusinessTransactions());
+        assertNotNull(cc.getBusinessTransactions().get("reltest"));
+
+        assertEquals("Relative path test", cc.getBusinessTransactions().get("reltest").getDescription());
+    }
+
+    @Test
+    public void testLoadConfigFromAbsolutePath() {
+        String path=Paths.get("").toFile().getAbsolutePath()+
+                java.io.File.separator+"src"+java.io.File.separator+"absconfig";
+        System.setProperty("hawkular-btm.config", path);
+
+        CollectorConfiguration cc = ConfigurationLoader.getConfiguration();
+
+        assertNotNull(cc);
+
+        assertNotNull(cc);
+        assertNotNull(cc.getBusinessTransactions());
+        assertNotNull(cc.getBusinessTransactions().get("abstest"));
+
+        assertEquals("Absolute path test", cc.getBusinessTransactions().get("abstest").getDescription());
     }
 
 }
