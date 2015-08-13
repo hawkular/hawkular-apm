@@ -45,7 +45,7 @@ public class ProcessorAction {
     private String predicate;
 
     @JsonInclude
-    private String action;
+    private String expression;
 
     /**
      * @return the name
@@ -118,17 +118,17 @@ public class ProcessorAction {
     }
 
     /**
-     * @return the action
+     * @return the expression
      */
-    public String getAction() {
-        return action;
+    public String getExpression() {
+        return expression;
     }
 
     /**
-     * @param action the action to set
+     * @param expression the expression to set
      */
-    public void setAction(String action) {
-        this.action = action;
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 
     /* (non-Javadoc)
@@ -137,7 +137,7 @@ public class ProcessorAction {
     @Override
     public String toString() {
         return "ProcessorAction [name=" + name + ", type=" + type + ", scope=" + scope + ", actionType=" + actionType
-                + ", predicate=" + predicate + ", action=" + action + "]";
+                + ", predicate=" + predicate + ", expression=" + expression + "]";
     }
 
     /**

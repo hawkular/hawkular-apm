@@ -56,7 +56,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -87,7 +87,7 @@ public class ProcessorManagerTest {
         p1.getActions().add(pa1);
 
         pa1.setPredicate("true");
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -118,7 +118,7 @@ public class ProcessorManagerTest {
         p1.getActions().add(pa1);
 
         pa1.setPredicate("false");
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -148,7 +148,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -178,7 +178,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -209,7 +209,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -241,7 +241,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setAction("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -274,7 +274,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setAction("values[1]");
+        pa1.setExpression("values[1]");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -305,7 +305,7 @@ public class ProcessorManagerTest {
         p1.getActions().add(pa1);
 
         pa1.setActionType(ActionType.SetFault);
-        pa1.setAction("values[1]");
+        pa1.setExpression("values[1]");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -337,7 +337,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("test");
-        pa1.setAction("values[1]");
+        pa1.setExpression("values[1]");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -370,7 +370,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.AddContent);
         pa1.setName("test");
         pa1.setType("MessageType");
-        pa1.setAction("values[1]");
+        pa1.setExpression("values[1]");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -412,7 +412,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.AddCorrelationId);
         pa1.setScope(Scope.Global);
-        pa1.setAction("values[1]");
+        pa1.setExpression("values[1]");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -451,7 +451,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setAction("\"FaultRecorded\"");
+        pa1.setExpression("\"FaultRecorded\"");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -487,7 +487,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setAction("\"FaultRecorded\"");
+        pa1.setExpression("\"FaultRecorded\"");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -525,7 +525,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setAction("\"FaultRecorded\"");
+        pa1.setExpression("\"FaultRecorded\"");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -564,7 +564,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setAction("\"OperationFound\"");
+        pa1.setExpression("\"OperationFound\"");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -600,7 +600,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setAction("\"FaultRecorded\"");
+        pa1.setExpression("\"FaultRecorded\"");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -638,7 +638,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setAction("\"FaultRecorded\"");
+        pa1.setExpression("\"FaultRecorded\"");
 
         ProcessorManager pm = new ProcessorManager(cc);
 
