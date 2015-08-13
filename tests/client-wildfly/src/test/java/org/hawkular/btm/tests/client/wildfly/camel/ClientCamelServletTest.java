@@ -95,7 +95,7 @@ public class ClientCamelServletTest {
         // Need to wait for business transaction fragment to be reported to server
         try {
             synchronized (this) {
-                wait(2000);
+                wait(3000);
             }
         } catch (Exception e) {
             fail("Failed to wait");
