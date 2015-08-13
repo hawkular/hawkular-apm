@@ -258,13 +258,13 @@ public class ProcessorManager {
                                 +"' = "+compiledPredicate);
                     }
                 }
-                if (action.getAction() != null) {
-                    compiledAction = MVEL.compileExpression(action.getAction(), ctx);
+                if (action.getExpression() != null) {
+                    compiledAction = MVEL.compileExpression(action.getExpression(), ctx);
 
                     if (compiledAction == null) {
-                        log.severe("Failed to compile action '"+action.getAction()+"'");
+                        log.severe("Failed to compile action '"+action.getExpression()+"'");
                     } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor action '"+action.getAction()
+                        log.fine("Initialised processor action '"+action.getExpression()
                                 +"' = "+compiledAction);
                     }
                 } else {
@@ -272,7 +272,7 @@ public class ProcessorManager {
                 }
             } catch (Throwable t) {
                 log.log(Level.SEVERE, "Failed to compile processor predicate '"
-                            +action.getPredicate()+"' or action '"+action.getAction()+"'", t);
+                            +action.getPredicate()+"' or action '"+action.getExpression()+"'", t);
             }
         }
 
@@ -316,14 +316,14 @@ public class ProcessorManager {
 
                 if (result == null) {
                     log.warning("Result for action type '" + action.getActionType()
-                            + "' and action '" + action.getAction() + "' was null");
+                            + "' and action '" + action.getExpression() + "' was null");
                 } else {
                     String value = null;
 
                     if (result.getClass() != String.class) {
                         if (log.isLoggable(Level.FINEST)) {
                             log.finest("Converting result for action type '" + action.getActionType()
-                                    + "' and action '" + action.getAction()
+                                    + "' and action '" + action.getExpression()
                                     + "' to a String, was: "+result.getClass());
                         }
                         value = result.toString();
