@@ -18,25 +18,18 @@ package org.hawkular.btm.server.api.processors;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
-
 /**
- * This interface represents a processor invoked to handle business transaction
- * traces.
+ * This interface represents a retry handler.
  *
  * @author gbrown
  */
-public interface BusinessTransactionTraceHandler {
+public interface RetryHandler<T> {
 
     /**
-     * This method is invoked to process a list of business transaction
-     * traces.
+     * This method initiates a retry for a list of failed entries.
      *
-     * @param tenantId The tenant
-     * @param traces The business transaction traces
-     * @param retryHandler The optional retry handler
+     * @param entries
      */
-    void handle(String tenantId, List<BusinessTransactionTrace> traces,
-            RetryHandler<BusinessTransactionTrace> retryHandler);
+    void retry(List<T> entries);
 
 }

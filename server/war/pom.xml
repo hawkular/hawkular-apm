@@ -51,6 +51,10 @@
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-bus-inmemory</artifactId>
+    </dependency>
 
     <!-- Business Transaction Fragment Processors -->
     <dependency>

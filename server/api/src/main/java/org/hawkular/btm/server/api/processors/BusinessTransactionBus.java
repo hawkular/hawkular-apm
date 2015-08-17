@@ -18,15 +18,25 @@ package org.hawkular.btm.server.api.processors;
 
 import java.util.List;
 
+import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
 
 /**
- * This interface represents a processor invoked to handle business transaction
- * traces.
+ * This interface represents a bus used to distribute business transaction
+ * fragments and traces to modules interested in processing the information.
  *
  * @author gbrown
  */
-public interface BusinessTransactionTraceHandler {
+public interface BusinessTransactionBus {
+
+    /**
+     * This method is invoked to process a list of business transaction
+     * fragments.
+     *
+     * @param tenantId The tenant
+     * @param btxns The business transaction fragments
+     */
+    void processFragments(String tenantId, List<BusinessTransaction> btxns);
 
     /**
      * This method is invoked to process a list of business transaction
@@ -34,9 +44,7 @@ public interface BusinessTransactionTraceHandler {
      *
      * @param tenantId The tenant
      * @param traces The business transaction traces
-     * @param retryHandler The optional retry handler
      */
-    void handle(String tenantId, List<BusinessTransactionTrace> traces,
-            RetryHandler<BusinessTransactionTrace> retryHandler);
+    void processTraces(String tenantId, List<BusinessTransactionTrace> traces);
 
 }

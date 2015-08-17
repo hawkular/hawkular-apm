@@ -21,8 +21,8 @@ import java.util.List;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 
 /**
- * This interface represents a processor invoked to handle business transaction
- * fragments reported to the Business Transaction Management server.
+ * This interface represents a module that will process a list
+ * of business transaction fragments to derive additional information.
  *
  * @author gbrown
  */
@@ -34,7 +34,9 @@ public interface BusinessTransactionFragmentHandler {
      *
      * @param tenantId The tenant
      * @param btxns The business transaction fragments
+     * @param retryHandler The optional retry handler
      */
-    void handle(String tenantId, List<BusinessTransaction> btxns);
+    void handle(String tenantId, List<BusinessTransaction> btxns,
+            RetryHandler<BusinessTransaction> retryHandler);
 
 }

@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
 import org.hawkular.btm.processor.metrics.log.MsgLogger;
 import org.hawkular.btm.server.api.processors.BusinessTransactionTraceHandler;
+import org.hawkular.btm.server.api.processors.RetryHandler;
 import org.jboss.logging.Logger;
 
 /**
@@ -46,8 +47,6 @@ public class BTxnTraceMetricsDeriver implements BusinessTransactionTraceHandler 
     private Instance<MetricsService> injectedMetricsService;
 
     private MetricsService metricsService;
-
-    private BusinessTransactionTraceHandler retryHandler;
 
     @PostConstruct
     public void init() {
@@ -72,25 +71,12 @@ public class BTxnTraceMetricsDeriver implements BusinessTransactionTraceHandler 
         this.metricsService = metricsService;
     }
 
-    /**
-     * @return the retryHandler
-     */
-    public BusinessTransactionTraceHandler getRetryHandler() {
-        return retryHandler;
-    }
-
-    /**
-     * @param retryHandler the retryHandler to set
-     */
-    public void setRetryHandler(BusinessTransactionTraceHandler retryHandler) {
-        this.retryHandler = retryHandler;
-    }
-
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.processors.BusinessTransactionTraceHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(String tenantId, List<BusinessTransactionTrace> traces) {
+    public void handle(String tenantId, List<BusinessTransactionTrace> traces,
+            RetryHandler<BusinessTransactionTrace> retryHandler) {
         log.tracef("Metrics Deriver called with: %s", traces);
 
         List<BusinessTransactionTrace> retry = null;
@@ -118,9 +104,9 @@ public class BTxnTraceMetricsDeriver implements BusinessTransactionTraceHandler 
             }
         }
 
-        if (retry != null && getRetryHandler() != null) {
+        if (retry != null && retryHandler != null) {
             log.tracef("Retry %d traces", retry.size());
-            getRetryHandler().handle(tenantId, retry);
+            retryHandler.retry(retry);
         }
 
         if (metrics != null && getMetricsService() != null) {

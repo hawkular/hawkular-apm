@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
 import org.hawkular.btm.server.api.processors.BusinessTransactionTraceHandler;
+import org.hawkular.btm.server.api.processors.RetryHandler;
 import org.jboss.logging.Logger;
 
 /**
@@ -40,22 +41,6 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
 
     @Inject
     private BTxnTraceScheduler scheduler;
-
-    private BusinessTransactionTraceHandler retryHandler;
-
-    /**
-     * @return the retryHandler
-     */
-    public BusinessTransactionTraceHandler getRetryHandler() {
-        return retryHandler;
-    }
-
-    /**
-     * @param retryHandler the retryHandler to set
-     */
-    public void setRetryHandler(BusinessTransactionTraceHandler retryHandler) {
-        this.retryHandler = retryHandler;
-    }
 
     /**
      * @return the scheduler
@@ -89,7 +74,8 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
      * @see org.hawkular.btm.api.processors.BusinessTransactionTraceHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(String tenantId, List<BusinessTransactionTrace> traces) {
+    public void handle(String tenantId, List<BusinessTransactionTrace> traces,
+            RetryHandler<BusinessTransactionTrace> retryHandler) {
         log.tracef("Trace Resolver called with: %s", traces);
 
         List<BusinessTransactionTrace> retry = null;
@@ -117,9 +103,9 @@ public class BTxnTraceResolver implements BusinessTransactionTraceHandler {
             }
         }
 
-        if (retry != null && getRetryHandler() != null) {
+        if (retry != null && retryHandler != null) {
             log.tracef("Calling retry handler with: %d traces", retry.size());
-            getRetryHandler().handle(tenantId, retry);
+            retryHandler.retry(retry);
         }
 
         if (resolveTraces != null && !resolveTraces.isEmpty() && getScheduler() != null) {
