@@ -25,6 +25,7 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.trace.BusinessTransactionTrace;
 import org.hawkular.btm.server.api.processors.BusinessTransactionFragmentHandler;
 import org.hawkular.btm.server.api.processors.BusinessTransactionTraceHandler;
+import org.hawkular.btm.server.api.processors.RetryHandler;
 import org.jboss.logging.Logger;
 
 /**
@@ -45,8 +46,6 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
     private List<BusinessTransactionTraceHandler> traceHandlers =
             new ArrayList<BusinessTransactionTraceHandler>();
 
-    private BusinessTransactionFragmentHandler retryHandler;
-
     /**
      * @return the traceHandlers
      */
@@ -59,20 +58,6 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
      */
     public void setTraceHandlers(List<BusinessTransactionTraceHandler> traceHandlers) {
         this.traceHandlers = traceHandlers;
-    }
-
-    /**
-     * @return the retryHandler
-     */
-    public BusinessTransactionFragmentHandler getRetryHandler() {
-        return retryHandler;
-    }
-
-    /**
-     * @param retryHandler the retryHandler to set
-     */
-    public void setRetryHandler(BusinessTransactionFragmentHandler retryHandler) {
-        this.retryHandler = retryHandler;
     }
 
     /**
@@ -94,7 +79,8 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
      *                  org.hawkular.btm.api.model.btxn.BusinessTransaction)
      */
     @Override
-    public void handle(String tenantId, List<BusinessTransaction> btxns) {
+    public void handle(String tenantId, List<BusinessTransaction> btxns,
+            RetryHandler<BusinessTransaction> retryHandler) {
         log.tracef("Business Transaction Builder called with: %s", btxns);
 
         List<BusinessTransaction> retry = null;
@@ -120,14 +106,14 @@ public class BusinessTransactionBuilder implements BusinessTransactionFragmentHa
             }
         }
 
-        if (retry != null && getRetryHandler() != null) {
+        if (retry != null && retryHandler != null) {
             log.tracef("Retrying %d traces", retry.size());
-            getRetryHandler().handle(tenantId, retry);
+            retryHandler.retry(retry);
         }
 
         if (traces != null && getTraceHandlers() != null) {
             for (int i = 0; i < getTraceHandlers().size(); i++) {
-                getTraceHandlers().get(i).handle(tenantId, traces);
+                getTraceHandlers().get(i).handle(tenantId, traces, null);
             }
         }
     }

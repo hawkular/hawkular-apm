@@ -70,6 +70,7 @@
     <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
     <module>server/api</module>
+    <module>server/bus-inmemory</module>
     <module>server/rest</module>
     <module>server/security-hwkaccs</module>
     <module>server/security-jaxrs</module>
@@ -204,6 +205,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-bus-inmemory</artifactId>
         <version>${project.version}</version>
       </dependency>
 

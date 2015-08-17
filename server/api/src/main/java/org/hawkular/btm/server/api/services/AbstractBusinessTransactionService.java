@@ -16,17 +16,14 @@
  */
 package org.hawkular.btm.server.api.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.hawkular.btm.server.api.processors.BusinessTransactionFragmentHandler;
+import org.hawkular.btm.server.api.processors.BusinessTransactionBus;
 import org.jboss.logging.Logger;
 
 /**
@@ -40,25 +37,7 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
     private final Logger log = Logger.getLogger(AbstractBusinessTransactionService.class);
 
     @Inject
-    private List<BusinessTransactionFragmentHandler> handlers =
-    new ArrayList<BusinessTransactionFragmentHandler>();
-
-    @Resource
-    private ManagedExecutorService executorService;
-
-    /**
-     * @return the handlers
-     */
-    public List<BusinessTransactionFragmentHandler> getBusinessTransactionFragmentHandlers() {
-        return handlers;
-    }
-
-    /**
-     * @param handlers the handlers to set
-     */
-    public void setBusinessTransactionFragmentHandlers(List<BusinessTransactionFragmentHandler> handlers) {
-        this.handlers = handlers;
-    }
+    private BusinessTransactionBus bus;
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.BusinessTransactionService#store(java.lang.String,java.util.List)
@@ -75,18 +54,8 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
             doStore(tenantId, btxns.get(i));
         }
 
-        if (handlers.size() > 0) {
-            log.tracef("Distribute business transactions to " + handlers.size() +
-                    " handlers: " + handlers + " (with executor=" + executorService + ")");
-
-            // Process business transaction fragments
-            for (int i = 0; i < handlers.size(); i++) {
-                if (executorService == null) {
-                    handlers.get(i).handle(tenantId, btxns);
-                } else {
-                    executorService.execute(new BTxnFragmentHandlerTask(tenantId, handlers.get(i), btxns));
-                }
-            }
+        if (bus != null) {
+            bus.processFragments(tenantId, btxns);
         }
     }
 
@@ -145,32 +114,4 @@ public abstract class AbstractBusinessTransactionService implements BusinessTran
      */
     protected abstract List<BusinessTransaction> doQuery(String tenantId, BusinessTransactionCriteria criteria);
 
-    /**
-     * This task processes a list of business transaction fragments using a provided
-     * handler.
-     *
-     * @author gbrown
-     */
-    private static class BTxnFragmentHandlerTask implements Runnable {
-
-        private String tenantId;
-        private BusinessTransactionFragmentHandler handler;
-        private List<BusinessTransaction> businessTransactions;
-
-        public BTxnFragmentHandlerTask(String tenantId, BusinessTransactionFragmentHandler handler,
-                List<BusinessTransaction> btxns) {
-            this.tenantId = tenantId;
-            this.handler = handler;
-            this.businessTransactions = btxns;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Runnable#run()
-         */
-        @Override
-        public void run() {
-            handler.handle(tenantId, businessTransactions);
-        }
-
-    }
 }

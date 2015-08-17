@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.server.api.processors.BusinessTransactionFragmentHandler;
+import org.hawkular.btm.server.api.processors.RetryHandler;
 import org.jboss.logging.Logger;
 
 /**
@@ -55,7 +56,8 @@ public class FaultDetector implements BusinessTransactionFragmentHandler {
      * @see org.hawkular.btm.api.processors.BusinessTransactionFragmentHandler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(String tenantId, List<BusinessTransaction> btxns) {
+    public void handle(String tenantId, List<BusinessTransaction> btxns,
+            RetryHandler<BusinessTransaction> retryHandler) {
         log.tracef("Fault Detector called with: %s", btxns);
     }
 

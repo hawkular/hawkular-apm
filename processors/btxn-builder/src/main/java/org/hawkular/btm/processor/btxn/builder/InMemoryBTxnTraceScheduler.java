@@ -140,7 +140,7 @@ public class InMemoryBTxnTraceScheduler implements BTxnTraceScheduler {
          */
         @Override
         public void run() {
-            handler.handle(tenantId, traces);
+            handler.handle(tenantId, traces, null);
         }
 
     }
