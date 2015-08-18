@@ -12,6 +12,9 @@
         "location": "ENTRY",
         "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && collector().session().activate($1.getJMSDestination(),$1.getStringProperty(\"HawkularBTID\"))",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setName($1.getStringProperty(\"HawkularBTName\"))"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
@@ -21,9 +24,6 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax.jms\")"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().setName($1.getStringProperty(\"HawkularBTName\"))"
         }]
       },{
         "ruleName": "Javax JMS Consumer End",

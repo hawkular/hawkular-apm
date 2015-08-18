@@ -18,6 +18,9 @@
         }],
         "condition": "collector().session().activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btid\"))",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setName(req.getHeader(\"Hawkular-btname\"))"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
@@ -36,9 +39,6 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"remoteHost\",req.getRemoteHost())"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().setName(req.getHeader(\"Hawkular-btname\"))"
         }]
       },{
         "ruleName": "Javax Servlet Consumer End",
