@@ -12,6 +12,9 @@
         "location": "EXIT",
         "condition": "collector().session().activate($0.absoluteURI(),$0.getHeader(\"HawkularBTID\"))",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setName($0.getHeader(\"HawkularBTName\"))"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
@@ -27,9 +30,6 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"http-method\",$0.method())"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().setName($0.getHeader(\"HawkularBTName\"))"
         }]
       },{
         "ruleName": "Vertx HTTP Consumer End",

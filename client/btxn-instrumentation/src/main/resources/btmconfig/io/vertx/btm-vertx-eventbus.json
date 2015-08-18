@@ -12,6 +12,9 @@
         "location": "ENTRY",
         "condition": "$1.replyAddress() == null && !collector().session().isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address()) && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setName($1.headers().get(\"HawkularBTName\"))"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
@@ -21,9 +24,6 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().setName($1.headers().get(\"HawkularBTName\"))"
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Sync End",
@@ -52,6 +52,9 @@
         "location": "ENTRY",
         "condition": "$1.replyAddress() != null && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setName($1.headers().get(\"HawkularBTName\"))"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
@@ -64,9 +67,6 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().setName($1.headers().get(\"HawkularBTName\"))"
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async End",

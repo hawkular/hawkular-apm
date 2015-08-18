@@ -86,6 +86,9 @@
         "location": "ENTRY",
         "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && collector().session().activate($2.getFromEndpoint().getEndpointUri(),$2.getProperty(\"HawkularBTID\"))",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "collector().setName($2.getProperty(\"HawkularBTName\"))"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Request",
           "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
@@ -94,9 +97,6 @@
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"org.apache.camel\")"
-        },{
-          "type": "FreeFormAction",
-          "action": "collector().setName($2.getProperty(\"HawkularBTName\"))"
         },{
           "type": "FreeFormAction",
           "action": "$2.removeProperty(\"HawkularBTID\")"
