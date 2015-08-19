@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 
@@ -70,6 +71,8 @@ public class TestBTMServer {
     private int port = 8080;
     private String host = "localhost";
     private int shutdown = DEFAULT_SHUTDOWN_TIMER;
+
+    private CollectorConfiguration testConfig;
 
     {
         if (System.getProperties().containsKey(HAWKULAR_BTM_TEST_SERVER_HOST)) {
@@ -125,6 +128,15 @@ public class TestBTMServer {
      */
     public void setPort(int port) {
         this.port = port;
+    }
+
+    /**
+     * This method sets the test configuration.
+     *
+     * @param testConfig The test collector configuration
+     */
+    public void setTestConfig(CollectorConfiguration testConfig) {
+        this.testConfig = testConfig;
     }
 
     public void run() {
@@ -216,7 +228,13 @@ public class TestBTMServer {
                         log.info("Config request received: " + exchange);
 
                         if (exchange.getRequestMethod() == Methods.GET) {
-                            String cc = mapper.writeValueAsString(ConfigurationLoader.getConfiguration());
+                            CollectorConfiguration config=ConfigurationLoader.getConfiguration();
+
+                            if (testConfig != null) {
+                                config.merge(testConfig, true);
+                            }
+
+                            String cc = mapper.writeValueAsString(config);
                             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                             exchange.getResponseSender().send(cc);
                         }

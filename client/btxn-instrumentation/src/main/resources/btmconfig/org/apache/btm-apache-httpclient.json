@@ -21,8 +21,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getURI().toString()",
-          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)",
           "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"org.apache.http.client\")"
@@ -71,8 +74,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getURI().toString()",
-          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)",
           "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"org.apache.http.client\")"

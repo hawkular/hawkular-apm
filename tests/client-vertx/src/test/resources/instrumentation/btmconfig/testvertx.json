@@ -1,12 +1,66 @@
 {
   "businessTransactions": {
-    "testvertx": {
-      "description": "Configuration for Vertx tests",
+    "testvertx-end-to-end": {
+      "description": "Configuration for Vertx End to End tests",
       "filter": {
         "inclusions": [
           "http://localhost:8080/hello_end_to_end"
         ]
       }
+    },
+    "testvertx-http": {
+      "description": "Configuration for Vertx HTTP tests",
+      "filter": {
+        "inclusions": [
+          "http://localhost:8080/hello_put",
+          "http://localhost:8080/hello_post"
+        ]
+      },
+      "processors": [{
+        "nodeType": "Consumer",
+        "request": "true",
+        "uriFilter": "http://localhost:8080/hello_.*",
+        "actions": [{
+          "name": "hello",
+          "actionType": "SetDetail",
+          "expression": "\"Hello World\""
+        },{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "values[0]"
+        }]
+      },{
+        "nodeType": "Consumer",
+        "request": "false",
+        "uriFilter": "http://localhost:8080/hello_.*",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "values[0]"
+        }]
+      },{
+        "nodeType": "Producer",
+        "request": "true",
+        "uriFilter": "http://localhost:8080/hello_.*",
+        "actions": [{
+          "name": "hello",
+          "actionType": "SetDetail",
+          "expression": "\"Hello World\""
+        },{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "values[0]"
+        }]
+      },{
+        "nodeType": "Producer",
+        "request": "false",
+        "uriFilter": "http://localhost:8080/hello_.*",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "values[0]"
+        }]
+      }]
     }
   }
 }

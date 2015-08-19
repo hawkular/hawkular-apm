@@ -32,29 +32,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Message {
 
     @JsonInclude(Include.NON_EMPTY)
-    private String id;
-
-    @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> headers = new HashMap<String, String>();
 
     @JsonInclude
     private Map<String, Content> content = new HashMap<String, Content>();
 
     public Message() {
-    }
-
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
     }
 
     /**
@@ -107,7 +90,6 @@ public class Message {
         int result = 1;
         result = prime * result + ((content == null) ? 0 : content.hashCode());
         result = prime * result + ((headers == null) ? 0 : headers.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
@@ -140,13 +122,6 @@ public class Message {
         } else if (!headers.equals(other.headers)) {
             return false;
         }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
         return true;
     }
 
@@ -155,7 +130,7 @@ public class Message {
      */
     @Override
     public String toString() {
-        return "Message [id=" + id + ", headers=" + headers + ", content=" + content + "]";
+        return "Message [headers=" + headers + ", content=" + content + "]";
     }
 
 }

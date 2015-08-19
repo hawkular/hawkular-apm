@@ -19,8 +19,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.address()",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())",
           "idExpression": "$1.headers().get(\"HawkularBTID\")"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
@@ -59,8 +62,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.address()",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())",
           "idExpression": "$1.headers().get(\"HawkularBTID\")"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().initiateLink(\"io.vertx.core.eventbus-consumer\"+$1.replyAddress())"
@@ -110,8 +116,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())",
           "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
@@ -160,8 +169,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())",
           "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
@@ -210,8 +222,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$0.address()",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().initiateLink(\"io.vertx.core.eventbus-producer\"+$1)"

@@ -657,4 +657,141 @@ public class ProcessorManagerTest {
         assertEquals(1, btxn.getProperties().size());
         assertTrue(btxn.getProperties().containsKey("result"));
     }
+
+    @Test
+    public void testIsProcessedTrue() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setRequest(true);
+        p1.setOperation("MyOp");
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetProperty);
+        pa1.setName("result");
+        pa1.setExpression("\"FaultRecorded\"");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        service.setOperation("MyOp");
+
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        Message req = new Message();
+        service.setRequest(req);
+
+        assertTrue(pm.isProcessed(btxn, service, true));
+    }
+
+    @Test
+    public void testIsProcessedFalse() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setRequest(true);
+        p1.setUriFilter("include");
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        service.setUri("should exclude this");
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        assertFalse(pm.isProcessed(btxn, service, true));
+    }
+
+    @Test
+    public void testIsContentProcessedFalse() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setRequest(true);
+        p1.setOperation("MyOp");
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetProperty);
+        pa1.setName("result");
+        pa1.setExpression("\"FaultRecorded\"");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        service.setOperation("MyOp");
+
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        Message req = new Message();
+        service.setRequest(req);
+
+        assertFalse(pm.isContentProcessed(btxn, service, true));
+    }
+
+    @Test
+    public void testIsContentProcessedTrue() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setRequest(true);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.AddContent);
+        pa1.setName("test");
+        pa1.setType("MessageType");
+        pa1.setExpression("values[1]");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        Message req = new Message();
+        service.setRequest(req);
+
+        assertTrue(pm.isContentProcessed(btxn, service, true));
+    }
+
 }

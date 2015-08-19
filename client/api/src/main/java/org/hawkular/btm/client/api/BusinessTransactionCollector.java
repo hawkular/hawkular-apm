@@ -61,40 +61,32 @@ public interface BusinessTransactionCollector {
      * @param uri The uri
      * @param type The endpoint type
      * @param id The unique interaction id
-     * @param headers The header values
-     * @param values The request values
      */
-    void consumerStart(String uri, String type, String id, Map<String, ?> headers, Object... values);
+    void consumerStart(String uri, String type, String id);
 
     /**
      * This method indicates the end of a message being consumed.
      *
      * @param uri The uri
      * @param type The endpoint type
-     * @param headers The header values
-     * @param values The response values
      */
-    void consumerEnd(String uri, String type, Map<String, ?> headers, Object... values);
+    void consumerEnd(String uri, String type);
 
     /**
      * This method indicates the start of a service invocation.
      *
      * @param uri The service type uri
      * @param operation The operation
-     * @param headers The header values
-     * @param values The request values
      */
-    void serviceStart(String uri, String operation, Map<String, ?> headers, Object... values);
+    void serviceStart(String uri, String operation);
 
     /**
      * This method indicates the end of a service invocation.
      *
      * @param uri The service type uri
      * @param operation The operation
-     * @param headers The header values
-     * @param values The response values
      */
-    void serviceEnd(String uri, String operation, Map<String, ?> headers, Object... values);
+    void serviceEnd(String uri, String operation);
 
     /**
      * This method indicates the start of a component invocation.
@@ -102,9 +94,8 @@ public interface BusinessTransactionCollector {
      * @param uri The uri
      * @param type The component type
      * @param operation The operation
-     * @param values The request values
      */
-    void componentStart(String uri, String type, String operation, Object... values);
+    void componentStart(String uri, String type, String operation);
 
     /**
      * This method indicates the end of a component invocation.
@@ -112,9 +103,8 @@ public interface BusinessTransactionCollector {
      * @param uri The uri
      * @param type The component type
      * @param operation The operation
-     * @param values The response values
      */
-    void componentEnd(String uri, String type, String operation, Object... values);
+    void componentEnd(String uri, String type, String operation);
 
     /**
      * This method indicates the start of a message being produced.
@@ -122,20 +112,64 @@ public interface BusinessTransactionCollector {
      * @param uri The uri
      * @param type The endpoint type
      * @param id The unique interaction id
-     * @param headers The header values
-     * @param values The request values
      */
-    void producerStart(String uri, String type, String id, Map<String, ?> headers, Object... values);
+    void producerStart(String uri, String type, String id);
 
     /**
      * This method indicates the end of a message being produced.
      *
      * @param uri The uri
      * @param type The endpoint type
-     * @param headers The header values
-     * @param values The response values
      */
-    void producerEnd(String uri, String type, Map<String, ?> headers, Object... values);
+    void producerEnd(String uri, String type);
+
+    /**
+     * This method identifies whether the request data (content and headers) for the current
+     * business transaction and node will be processed to extract information.
+     *
+     * @return Whether the request is processed
+     */
+    boolean isRequestProcessed();
+
+    /**
+     * This method identifies whether the request content for the current
+     * business transaction and node will be processed to extract information.
+     *
+     * @return Whether the request content is processed
+     */
+    boolean isRequestContentProcessed();
+
+    /**
+     * This method identifies whether the response data (content and headers) for the current
+     * business transaction and node will be processed to extract information.
+     *
+     * @return Whether the response is processed
+     */
+    boolean isResponseProcessed();
+
+    /**
+     * This method identifies whether the response content for the current
+     * business transaction and node will be processed to extract information.
+     *
+     * @return Whether the response content is processed
+     */
+    boolean isResponseContentProcessed();
+
+    /**
+     * This method processes the supplied request headers and content.
+     *
+     * @param headers The header values
+     * @param values The values
+     */
+    void processRequest(Map<String, ?> headers, Object... values);
+
+    /**
+     * This method processes the supplied response headers and content.
+     *
+     * @param headers The header values
+     * @param values The values
+     */
+    void processResponse(Map<String, ?> headers, Object... values);
 
     /**
      * This method sets a fault on the current node.

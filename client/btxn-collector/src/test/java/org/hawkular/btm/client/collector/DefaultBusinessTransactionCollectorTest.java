@@ -62,7 +62,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION, null);
+        collector.serviceStart(SERVICE_TYPE, OPERATION);
 
         // Delay, to provide a reasonable value for duration
         synchronized (this) {
@@ -73,7 +73,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         }
 
-        collector.serviceEnd(SERVICE_TYPE, OPERATION, null);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -113,9 +113,9 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION, null);
+        collector.serviceStart(SERVICE_TYPE, OPERATION);
 
-        collector.serviceEnd(SERVICE_TYPE, OPERATION, null);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -153,9 +153,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> respHeaders = new HashMap<String, String>();
         respHeaders.put("joe", "bloggs");
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION, reqHeaders);
-
-        collector.serviceEnd(SERVICE_TYPE, OPERATION, respHeaders);
+        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.processRequest(reqHeaders);
+        collector.processResponse(respHeaders);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -195,9 +196,9 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.consumerStart(null, null, "myid", null);
+        collector.consumerStart(null, null, "myid");
 
-        collector.consumerEnd(null, null, null);
+        collector.consumerEnd(null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread

@@ -25,8 +25,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()",
-          "headersExpression": "getHeaders(\"javax.servlet.http.HttpServletRequest\",req)",
           "idExpression": "req.getHeader(\"Hawkular-btid\")"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"javax.servlet.http.HttpServletRequest\",req)"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax.servlet\")"

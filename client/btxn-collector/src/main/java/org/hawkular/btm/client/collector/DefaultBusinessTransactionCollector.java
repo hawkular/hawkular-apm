@@ -191,14 +191,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#consumerStart(java.lang.String,
-     *                  java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerStart(java.lang.String,
+     *                          java.lang.String, java.lang.String)
      */
     @Override
-    public void consumerStart(String uri, String type, String id, Map<String, ?> headers, Object... values) {
+    public void consumerStart(String uri, String type, String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Consumer start: type=" + type + " uri=" + uri + " id=" + id
-                    + " headers=" + headers + " values=" + values);
+            log.finest("Consumer start: type=" + type + " uri=" + uri + " id=" + id);
         }
 
         try {
@@ -209,7 +208,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 consumer.setEndpointType(type);
                 consumer.setUri(uri);
 
-                processValues(builder.getBusinessTransaction(), consumer, true, id, headers, values);
+                if (id != null) {
+                    consumer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
+                }
 
                 push(builder, consumer);
             }
@@ -221,24 +222,20 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#consumerEnd(
-     *              java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerEnd(java.lang.String,
+     *                              java.lang.String)
      */
     @Override
-    public void consumerEnd(String uri, String type, Map<String, ?> headers, Object... values) {
+    public void consumerEnd(String uri, String type) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Consumer end: type=" + type + " uri=" + uri
-                    + " headers=" + headers
-                    + " values=" + values);
+            log.finest("Consumer end: type=" + type + " uri=" + uri);
         }
 
         try {
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Consumer consumer = pop(builder, Consumer.class, uri);
-
-                processValues(builder.getBusinessTransaction(), consumer, false, null, headers, values);
+                pop(builder, Consumer.class, uri);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -253,13 +250,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#serviceStart(java.lang.String,
-     *                  java.lang.String, java.util.Map, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#serviceStart(java.lang.String,
+     *                                  java.lang.String)
      */
     @Override
-    public void serviceStart(String uri, String operation, Map<String, ?> headers, Object... values) {
+    public void serviceStart(String uri, String operation) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Service start: uri=" + uri + " operation=" + operation + " values=" + values);
+            log.finest("Service start: uri=" + uri + " operation=" + operation);
         }
 
         try {
@@ -269,8 +266,6 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 Service service = new Service();
                 service.setUri(uri);
                 service.setOperation(operation);
-
-                processValues(builder.getBusinessTransaction(), service, true, null, headers, values);
 
                 push(builder, service);
             }
@@ -282,22 +277,20 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#serviceEnd(java.lang.String,
-     *                  java.lang.String, java.util.Map, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#serviceEnd(java.lang.String,
+     *                                          java.lang.String)
      */
     @Override
-    public void serviceEnd(String uri, String operation, Map<String, ?> headers, Object... values) {
+    public void serviceEnd(String uri, String operation) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Service end: uri=" + uri + " operation=" + operation + " values=" + values);
+            log.finest("Service end: uri=" + uri + " operation=" + operation);
         }
 
         try {
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Service service = pop(builder, Service.class, uri);
-
-                processValues(builder.getBusinessTransaction(), service, false, null, headers, values);
+                pop(builder, Service.class, uri);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -312,11 +305,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#componentStart(
-     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#componentStart(java.lang.String,
+     *                                    java.lang.String, java.lang.String)
      */
     @Override
-    public void componentStart(String uri, String type, String operation, Object... values) {
+    public void componentStart(String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Component start: type=" + type + " operation=" + operation + " uri=" + uri);
         }
@@ -330,8 +323,6 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 component.setUri(uri);
                 component.setOperation(operation);
 
-                processValues(builder.getBusinessTransaction(), component, true, null, null, values);
-
                 push(builder, component);
             }
         } catch (Throwable t) {
@@ -342,11 +333,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#componentEnd(
-     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#componentEnd(java.lang.String,
+     *                                  java.lang.String, java.lang.String)
      */
     @Override
-    public void componentEnd(String uri, String type, String operation, Object... values) {
+    public void componentEnd(String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Component end: type=" + type + " operation=" + operation + " uri=" + uri);
         }
@@ -355,9 +346,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Component component = pop(builder, Component.class, uri);
-
-                processValues(builder.getBusinessTransaction(), component, false, null, null, values);
+                pop(builder, Component.class, uri);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -372,14 +361,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#producerStart(java.lang.String,
-     *                     java.lang.String, java.lang.String, java.util.Map, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#producerStart(java.lang.String,
+     *                                       java.lang.String, java.lang.String)
      */
     @Override
-    public void producerStart(String uri, String type, String id, Map<String, ?> headers, Object... values) {
+    public void producerStart(String uri, String type, String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Producer start: type=" + type + " uri=" + uri + " id=" + id
-                    + " headers=" + headers + " values=" + values);
+            log.finest("Producer start: type=" + type + " uri=" + uri + " id=" + id);
         }
 
         try {
@@ -390,7 +378,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 producer.setEndpointType(type);
                 producer.setUri(uri);
 
-                processValues(builder.getBusinessTransaction(), producer, true, id, headers, values);
+                if (id != null) {
+                    producer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
+                }
 
                 push(builder, producer);
             }
@@ -402,24 +392,20 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.BusinessTransactionCollector#producerEnd(java.lang.String,
-     *                      java.lang.String, java.util.Map, java.lang.Object[])
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#producerEnd(java.lang.String,
+     *                                          java.lang.String)
      */
     @Override
-    public void producerEnd(String uri, String type, Map<String, ?> headers, Object... values) {
+    public void producerEnd(String uri, String type) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Producer end: type=" + type + " uri=" + uri
-                    + " headers=" + headers
-                    + " values=" + values);
+            log.finest("Producer end: type=" + type + " uri=" + uri);
         }
 
         try {
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Producer producer = pop(builder, Producer.class, uri);
-
-                processValues(builder.getBusinessTransaction(), producer, false, null, headers, values);
+                pop(builder, Producer.class, uri);
 
                 // Check for completion
                 checkForCompletion(builder);
@@ -429,6 +415,152 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "producerEnd failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isRequestProcessed()
+     */
+    @Override
+    public boolean isRequestProcessed() {
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+
+                return processorManager.isProcessed(builder.getBusinessTransaction(),
+                        node, true);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "isRequestProcessed failed", t);
+            }
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isRequestContentProcessed()
+     */
+    @Override
+    public boolean isRequestContentProcessed() {
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+
+                return processorManager.isContentProcessed(builder.getBusinessTransaction(),
+                        node, true);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "isRequestContentProcessed failed", t);
+            }
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isResponseProcessed()
+     */
+    @Override
+    public boolean isResponseProcessed() {
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+
+                return processorManager.isProcessed(builder.getBusinessTransaction(),
+                        node, false);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "isResponseProcessed failed", t);
+            }
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isResponseContentProcessed()
+     */
+    @Override
+    public boolean isResponseContentProcessed() {
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+
+                return processorManager.isContentProcessed(builder.getBusinessTransaction(),
+                        node, false);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "isResponseContentProcessed failed", t);
+            }
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#processRequest(java.util.Map, java.lang.Object[])
+     */
+    @Override
+    public void processRequest(Map<String, ?> headers, Object... values) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Process request: headers=" + headers + " values=" + values);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
+                        true, headers, values);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setFault failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#processResponse(java.util.Map, java.lang.Object[])
+     */
+    @Override
+    public void processResponse(Map<String, ?> headers, Object... values) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Process response: headers=" + headers + " values=" + values);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
+                        false, headers, values);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setFault failed", t);
             }
         }
     }
@@ -563,20 +695,14 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * @param btxn The business transaction
      * @param node The node
      * @param req Whether processing a request
-     * @param id The unique interaction id
      * @param headers The optional headers
      * @param values The values
      */
-    protected void processValues(BusinessTransaction btxn, Node node, boolean req, String id,
+    protected void processValues(BusinessTransaction btxn, Node node, boolean req,
             Map<String, ?> headers, Object[] values) {
-        // Only use the request based interaction id for correlation
-        if (id != null && req) {
-            node.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
-        }
 
         if (node.interactionNode()) {
             Message m = new Message();
-            m.setId(id);
 
             if (headers != null) {
                 // TODO: Need to have config to determine whether headers should be logged
@@ -942,4 +1068,5 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             log.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
     }
+
 }

@@ -14,7 +14,9 @@
         "actions": [{
           "type": "InstrumentService",
           "uriExpression": "\"TopLevelService\"",
-          "operationExpression": "\"testOp\"",
+          "operationExpression": "\"testOp\""
+        },{
+          "type": "ProcessContent",
           "valueExpressions": [
             "$1",
             "$2"
@@ -30,14 +32,17 @@
            "int"
         ],
         "actions": [{
-          "type": "InstrumentService",
-          "uriExpression": "\"TopLevelService\"",
-          "operationExpression": "\"testOp\"",
+          "type": "ProcessContent",
           "direction": "Response",
           "valueExpressions": [
             "$1",
             "$2"
           ]
+        },{
+          "type": "InstrumentService",
+          "direction": "Response",
+          "uriExpression": "\"TopLevelService\"",
+          "operationExpression": "\"testOp\""
         }]
       },{
         "ruleName": "Trace join entry",
@@ -51,7 +56,9 @@
         "actions": [{
           "type": "InstrumentService",
           "uriExpression": "\"InnerService\"",
-          "operationExpression": "\"join\"",
+          "operationExpression": "\"join\""
+        },{
+          "type": "ProcessContent",
           "valueExpressions": [
             "$1",
             "$2"
@@ -67,13 +74,16 @@
         ],
         "location": "EXIT",
         "actions": [{
-          "type": "InstrumentService",
-          "uriExpression": "\"InnerService\"",
-          "operationExpression": "\"join\"",
+          "type": "ProcessContent",
           "direction": "Response",
           "valueExpressions": [
             "$!"
           ]
+        },{
+          "type": "InstrumentService",
+          "direction": "Response",
+          "uriExpression": "\"InnerService\"",
+          "operationExpression": "\"join\""
         }]
       }]
     }

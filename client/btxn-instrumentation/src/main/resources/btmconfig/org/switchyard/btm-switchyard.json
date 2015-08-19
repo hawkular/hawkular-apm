@@ -15,8 +15,11 @@
           "type": "InstrumentService",
           "direction": "Request",
           "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
           "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
-          "operationExpression": "$1.getContract().getConsumerOperation().getName()",
           "valueExpressions": [
             "$1.getMessage().getContent()"
           ]
@@ -42,14 +45,17 @@
         }],
         "condition": "collector().session().isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
         "actions": [{
-          "type": "InstrumentService",
+          "type": "ProcessContent",
           "direction": "Response",
-          "uriExpression": "$1.getConsumer().getName()",
           "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
-          "operationExpression": "$1.getContract().getConsumerOperation().getName()",
           "valueExpressions": [
             "content"
           ]
+        },{
+          "type": "InstrumentService",
+          "direction": "Response",
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
       },{
         "ruleName": "SwitchYard Service Fault End",
@@ -69,12 +75,15 @@
           "type": "FreeFormAction",
           "action": "collector().setFault(faultName(content), faultDescription(content))"
         },{
-          "type": "InstrumentService",
+          "type": "ProcessContent",
           "direction": "Response",
-          "uriExpression": "$0.getConsumer().getName()",
           "valueExpressions": [
             "content"
           ]
+        },{
+          "type": "InstrumentService",
+          "direction": "Response",
+          "uriExpression": "$0.getConsumer().getName()"
         }]
       }]
     }
