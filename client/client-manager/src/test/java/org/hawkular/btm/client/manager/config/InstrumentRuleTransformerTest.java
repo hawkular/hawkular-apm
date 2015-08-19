@@ -18,7 +18,7 @@ package org.hawkular.btm.client.manager.config;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
+import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentService;
 import org.junit.Test;
 
@@ -35,16 +35,13 @@ public class InstrumentRuleTransformerTest {
 
         im.setUriExpression("\"MyService\"");
         im.setOperationExpression("\"MyOperation\"");
-        im.getValueExpressions().add("$1");
-        im.getValueExpressions().add("$2");
         im.setDirection(Direction.Request);
 
         InstrumentServiceTransformer transformer = new InstrumentServiceTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "serviceStart(\"MyService\",\"MyOperation\",null,"
-                + "createArrayBuilder().add($1).add($2).get())";
+        String expected = ACTION_PREFIX + "serviceStart(\"MyService\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }
@@ -55,15 +52,13 @@ public class InstrumentRuleTransformerTest {
 
         im.setUriExpression("\"MyService\"");
         im.setOperationExpression("\"MyOperation\"");
-        im.getValueExpressions().add("$!");
         im.setDirection(Direction.Response);
 
         InstrumentServiceTransformer transformer = new InstrumentServiceTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "serviceEnd(\"MyService\",\"MyOperation\",null,"
-                + "createArrayBuilder().add($!).get())";
+        String expected = ACTION_PREFIX + "serviceEnd(\"MyService\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }

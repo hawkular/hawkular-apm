@@ -159,7 +159,8 @@ public class ClientVertxTest extends ClientTestBase {
             }
 
             // Check btxn name is set
-            assertEquals("Business transaction name should be 'testvertx'", "testvertx", btxn.getName());
+            assertEquals("Business transaction name should be 'testvertx-end-to-end'",
+                                "testvertx-end-to-end", btxn.getName());
         }
 
         assertNotNull("consumerREST null", consumerREST);

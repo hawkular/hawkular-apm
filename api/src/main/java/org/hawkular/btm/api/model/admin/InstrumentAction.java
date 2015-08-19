@@ -30,9 +30,10 @@ import io.swagger.annotations.ApiModel;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = InstrumentService.class),
     @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
-    @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class) })
+    @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class),
+    @Type(value = ProcessContent.class) })
 @ApiModel(subTypes = { InstrumentService.class, InstrumentComponent.class, InstrumentConsumer.class,
-        InstrumentProducer.class, FreeFormAction.class }, discriminator = "type")
+        InstrumentProducer.class, FreeFormAction.class, ProcessContent.class }, discriminator = "type")
 public abstract class InstrumentAction {
 
 }

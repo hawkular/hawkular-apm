@@ -19,7 +19,6 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.absoluteURI()",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "idExpression": "$0.getHeader(\"Hawkular-btid\")"
         },{
           "type": "FreeFormAction",
@@ -32,15 +31,38 @@
           "action": "collector().setDetail(\"http-method\",$0.method())"
         }]
       },{
-        "ruleName": "Vertx HTTP Consumer End",
-        "interfaceName": "^io.vertx.core.http.HttpServerResponse",
-        "methodName": "end",
+        "ruleName": "Vertx HTTP Consumer Start Values",
+        "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
+        "methodName": "handleData",
         "parameterTypes": [
-          "java.lang.String"
+          "*"
         ],
         "location": "ENTRY",
         "condition": "collector().session().isActive()",
         "actions": [{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
+          "valueExpressions": [
+            "$1"
+          ]
+        }]
+      },{
+        "ruleName": "Vertx HTTP Consumer End",
+        "interfaceName": "^io.vertx.core.http.HttpServerResponse",
+        "methodName": "end",
+        "parameterTypes": [
+          "io.vertx.core.buffer.Buffer"
+        ],
+        "location": "ENTRY",
+        "condition": "collector().session().isActive()",
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "Response",
+          "valueExpressions": [
+            "$1"
+          ]
+        },{
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\""
@@ -49,12 +71,11 @@
           "action": "collector().session().assertComplete()"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer Start",
+        "ruleName": "Vertx HTTP Producer Start 1",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
-        "methodName": "write",
+        "methodName": "end",
         "parameterTypes": [
-          "io.netty.buffer.ByteBuf",
-          "boolean"
+          "io.vertx.core.buffer.Buffer"
          ],
         "location": "ENTRY",
         "binds": [{
@@ -66,14 +87,63 @@
           "type": "java.lang.String",
           "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
         }],
-        "condition": "$2 == true && collector().session().activate(uri)",
+        "condition": "collector().session().activate(uri)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "uri",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
+          "valueExpressions": [
+            "$1"
+          ]
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().session().initiateLink(\"io.vertx.core.http-\"+$0.hashCode())"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.http\")"
+        },{
+          "type": "FreeFormAction",
+          "action": "collector().setDetail(\"http_method\",$0.method())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkular-btid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkular-btname\",collector().getName())"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Start 2",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "end",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        },{
+          "name": "uri",
+          "type": "java.lang.String",
+          "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
+        }],
+        "condition": "collector().session().activate(uri)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Request",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "uri",
+          "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().initiateLink(\"io.vertx.core.http-\"+$0.hashCode())"

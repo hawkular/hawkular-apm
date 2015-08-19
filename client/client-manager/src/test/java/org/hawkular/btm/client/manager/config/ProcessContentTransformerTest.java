@@ -19,47 +19,47 @@ package org.hawkular.btm.client.manager.config;
 import static org.junit.Assert.assertEquals;
 
 import org.hawkular.btm.api.model.admin.Direction;
-import org.hawkular.btm.api.model.admin.InstrumentComponent;
+import org.hawkular.btm.api.model.admin.ProcessContent;
 import org.junit.Test;
 
 /**
  * @author gbrown
  */
-public class InstrumentComponentTransformerTest {
+public class ProcessContentTransformerTest {
 
     private static final String ACTION_PREFIX = "collector().";
 
     @Test
     public void testConvertToRuleActionRequest() {
-        InstrumentComponent im = new InstrumentComponent();
+        ProcessContent im = new ProcessContent();
 
-        im.setComponentTypeExpression("\"MyComponent\"");
-        im.setOperationExpression("\"MyOperation\"");
-        im.setUriExpression("\"MyUri\"");
+        im.setHeadersExpression("headers");
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
 
-        InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
+        ProcessContentTransformer transformer = new ProcessContentTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentStart(\"MyUri\",\"MyComponent\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "processRequest(headers,createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }
 
     @Test
     public void testConvertToRuleActionResponse() {
-        InstrumentComponent im = new InstrumentComponent();
+        ProcessContent im = new ProcessContent();
 
-        im.setComponentTypeExpression("\"MyComponent\"");
-        im.setOperationExpression("\"MyOperation\"");
-        im.setUriExpression("\"MyUri\"");
         im.setDirection(Direction.Response);
+        im.setHeadersExpression("headers");
+        im.getValueExpressions().add("$1");
+        im.getValueExpressions().add("$2");
 
-        InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
+        ProcessContentTransformer transformer = new ProcessContentTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentEnd(\"MyUri\",\"MyComponent\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "processResponse(headers,createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }

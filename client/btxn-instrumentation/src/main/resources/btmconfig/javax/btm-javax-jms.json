@@ -19,8 +19,11 @@
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.getJMSDestination()",
-          "headersExpression": "getHeaders(\"javax.jms.Message\",$1)",
           "idExpression": "$1.getStringProperty(\"HawkularBTID\")"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"javax.jms.Message\",$1)"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax.jms\")"
@@ -65,9 +68,12 @@
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
-          "headersExpression": "getHeaders(\"javax.jms.Message\",$2)",
           "idExpression": "id",
           "uriExpression": "$1"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"javax.jms.Message\",$2)"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax.jms\")"
@@ -103,9 +109,12 @@
           "type": "InstrumentProducer",
           "direction": "Request",
           "endpointTypeExpression": "\"MOM\"",
-          "headersExpression": "getHeaders(\"javax.jms.Message\",$2)",
           "idExpression": "id",
           "uriExpression": "$1"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"javax.jms.Message\",$2)"
         },{
           "type": "FreeFormAction",
           "action": "collector().setDetail(\"btm_source\",\"javax.jms\")"

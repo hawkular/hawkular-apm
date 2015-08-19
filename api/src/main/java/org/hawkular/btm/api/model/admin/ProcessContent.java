@@ -16,50 +16,54 @@
  */
 package org.hawkular.btm.api.model.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This type represents instrumentation of an invocation.
+ * This type represents processing of a request or response content (i.e. headers
+ * or values).
  *
  * @author gbrown
  */
-public abstract class CollectorAction extends InstrumentAction {
+public class ProcessContent extends InstrumentAction {
 
     @JsonInclude
-    private String uriExpression;
+    private String headersExpression;
 
     @JsonInclude
-    private String idExpression;
+    private List<String> valueExpressions = new ArrayList<String>();
 
     @JsonInclude
     private Direction direction = Direction.Request;
 
     /**
-     * @return the uriExpression
+     * @return the headersExpression
      */
-    public String getUriExpression() {
-        return uriExpression;
+    public String getHeadersExpression() {
+        return headersExpression;
     }
 
     /**
-     * @param uriExpression the uriExpression to set
+     * @param headersExpression the headersExpression to set
      */
-    public void setUriExpression(String uriExpression) {
-        this.uriExpression = uriExpression;
+    public void setHeadersExpression(String headersExpression) {
+        this.headersExpression = headersExpression;
     }
 
     /**
-     * @return the idExpression
+     * @return the valueExpressions
      */
-    public String getIdExpression() {
-        return idExpression;
+    public List<String> getValueExpressions() {
+        return valueExpressions;
     }
 
     /**
-     * @param idExpression the idExpression to set
+     * @param valueExpressions the valueExpressions to set
      */
-    public void setIdExpression(String idExpression) {
-        this.idExpression = idExpression;
+    public void setValueExpressions(List<String> valueExpressions) {
+        this.valueExpressions = valueExpressions;
     }
 
     /**

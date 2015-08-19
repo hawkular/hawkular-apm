@@ -18,7 +18,7 @@ package org.hawkular.btm.client.manager.config;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.model.admin.CollectorAction.Direction;
+import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentConsumer;
 import org.junit.Test;
 
@@ -35,15 +35,12 @@ public class InstrumentConsumerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.getValueExpressions().add("$1");
-        im.getValueExpressions().add("$2");
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(\"MyUri\",\"MyEndpoint\",null,null,"
-                + "createArrayBuilder().add($1).add($2).get())";
+        String expected = ACTION_PREFIX + "consumerStart(\"MyUri\",\"MyEndpoint\",null)";
 
         assertEquals(expected, transformed);
     }
@@ -55,15 +52,12 @@ public class InstrumentConsumerTransformerTest {
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
         im.setIdExpression("\"MyId\"");
-        im.getValueExpressions().add("$1");
-        im.getValueExpressions().add("$2");
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(\"MyUri\",\"MyEndpoint\",\"MyId\",null,"
-                + "createArrayBuilder().add($1).add($2).get())";
+        String expected = ACTION_PREFIX + "consumerStart(\"MyUri\",\"MyEndpoint\",\"MyId\")";
 
         assertEquals(expected, transformed);
     }
@@ -74,16 +68,13 @@ public class InstrumentConsumerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.setHeadersExpression("headers");
-        im.getValueExpressions().add("$!");
         im.setDirection(Direction.Response);
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\",headers,"
-                + "createArrayBuilder().add($!).get())";
+        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\")";
 
         assertEquals(expected, transformed);
     }
@@ -95,16 +86,13 @@ public class InstrumentConsumerTransformerTest {
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
         im.setIdExpression("\"MyId\"");
-        im.setHeadersExpression("headers");
-        im.getValueExpressions().add("$!");
         im.setDirection(Direction.Response);
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\",headers,"
-                + "createArrayBuilder().add($!).get())";
+        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\")";
 
         assertEquals(expected, transformed);
     }

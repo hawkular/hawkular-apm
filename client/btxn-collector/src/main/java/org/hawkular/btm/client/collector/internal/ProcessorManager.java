@@ -85,6 +85,76 @@ public class ProcessorManager {
     }
 
     /**
+     * This method determines whether the business transaction, for the supplied node
+     * and request/response direction, will process available information.
+     *
+     * @param btxn The business transaction
+     * @param node The current node
+     * @param req Whether dealing with a request
+     * @return Whether processing instructions have been defined
+     */
+    public boolean isProcessed(BusinessTransaction btxn, Node node, boolean req) {
+        boolean ret=getMatchedProcessor(btxn, node, req) != null;
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("ProcessManager: isProcessed btxn="+btxn+" node="+node
+                    +" req="+req+"? "+ret);
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method determines whether the business transaction, for the supplied node
+     * and request/response direction, will process content information.
+     *
+     * @param btxn The business transaction
+     * @param node The current node
+     * @param req Whether dealing with a request
+     * @return Whether content processing instructions have been defined
+     */
+    public boolean isContentProcessed(BusinessTransaction btxn, Node node, boolean req) {
+        ProcessorWrapper processor=getMatchedProcessor(btxn, node, req);
+        boolean ret=false;
+
+        if (processor != null) {
+            ret = processor.hasAddContentAction();
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("ProcessManager: isContentProcessed btxn="+btxn+" node="+node
+                    +" req="+req+"? "+ret);
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method returns the processor associated with the supplied business
+     * transaction. node and interaction direction.
+     *
+     * @param btxn The business transaction
+     * @param node The node
+     * @param req Whether dealing with a request
+     * @return The processor associated with the details, or null if not found
+     */
+    protected ProcessorWrapper getMatchedProcessor(BusinessTransaction btxn, Node node, boolean req) {
+        ProcessorWrapper matchedProcessor=null;
+
+        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
+            List<ProcessorWrapper> procs = processors.get(btxn.getName());
+
+            for (int i = 0; matchedProcessor == null && i < procs.size(); i++) {
+                if (procs.get(i).isProcessed(btxn, node, req)) {
+                    matchedProcessor = procs.get(i);
+                }
+            }
+        }
+
+        return matchedProcessor;
+    }
+
+    /**
      * This method processes the supplied information against the configured processor
      * details for the business transaction.
      *
@@ -159,6 +229,51 @@ public class ProcessorManager {
             for (int i = 0; i < processor.getActions().size(); i++) {
                 actions.add(new ProcessorActionWrapper(processor.getActions().get(i)));
             }
+        }
+
+        /**
+         * This method checks that this processor matches the supplied business txn
+         * name and node details.
+         *
+         * @param btxn The business transaction
+         * @param node The node
+         * @param req Whether a request
+         * @return Whether the supplied details would be processed by this processor
+         */
+        public boolean isProcessed(BusinessTransaction btxn, Node node, boolean req) {
+            boolean ret=false;
+
+            if (processor.getNodeType() == node.getType()
+                    && processor.isRequest() == req) {
+
+                // If URI filter regex expression defined, then verify whether
+                // node URI matches
+                if (uriFilter == null
+                        || uriFilter.test(node.getUri())) {
+                    ret = true;
+                }
+            }
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("ProcessManager/Processor: isProcessed btxn="+btxn+" node="+node
+                        +" req="+req+"? "+ret);
+            }
+
+            return ret;
+        }
+
+        /**
+         * This method indicates whether this processor has an 'AddContent' action.
+         *
+         * @return Whether the processor has an 'AddContent' action
+         */
+        public boolean hasAddContentAction() {
+            for (int i=0; i < actions.size(); i++) {
+                if (actions.get(i).action.getActionType() == ProcessorAction.ActionType.AddContent) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /**

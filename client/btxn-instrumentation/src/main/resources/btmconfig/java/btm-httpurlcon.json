@@ -20,7 +20,10 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()",
-          "idExpression": "id",
+          "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",
@@ -53,7 +56,10 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()",
-          "idExpression": "id",
+          "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",
@@ -86,7 +92,10 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()",
-          "idExpression": "id",
+          "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "FreeFormAction",

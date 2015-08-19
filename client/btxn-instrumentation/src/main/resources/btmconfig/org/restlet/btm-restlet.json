@@ -36,7 +36,10 @@
           "direction": "Request",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
-          "idExpression": "id",
+          "idExpression": "id"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
           "headersExpression": "headers.getValuesMap()"
         },{
           "type": "FreeFormAction",
@@ -58,11 +61,14 @@
         }],
         "condition": "collector().session().isActive()",
         "actions": [{
+          "type": "ProcessContent",
+          "direction": "Response",
+          "headersExpression": "headers.getValuesMap()"
+        },{
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$1.getResourceRef()",
-          "headersExpression": "headers.getValuesMap()"
+          "uriExpression": "$1.getResourceRef()"
         },{
           "type": "FreeFormAction",
           "action": "collector().session().assertComplete()"
