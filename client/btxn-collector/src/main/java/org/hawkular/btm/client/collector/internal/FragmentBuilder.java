@@ -72,8 +72,11 @@ public class FragmentBuilder {
     }
 
     {
-        businessTransaction = new BusinessTransaction().setId(UUID.randomUUID().toString())
-                .setHostName(hostName).setHostAddress(hostAddress);
+        businessTransaction = new BusinessTransaction()
+                .setId(UUID.randomUUID().toString())
+                .setStartTime(System.currentTimeMillis())
+                .setHostName(hostName)
+                .setHostAddress(hostAddress);
     }
 
     /**

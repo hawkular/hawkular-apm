@@ -28,37 +28,7 @@ import org.junit.Test;
 public class CorrelationIdentifierTest {
 
     @Test
-    public void testIsOverlapNoDurationsDiffBaseTimes() {
-        assertFalse("Base times/durations shouldn't overlap",
-                CorrelationIdentifier.isOverlap(100, 0, 200, 0));
-    }
-
-    @Test
-    public void testIsOverlapWithDurationsDiffBaseTimes() {
-        assertFalse("Base times/durations shouldn't overlap",
-                CorrelationIdentifier.isOverlap(100, 50, 200, 50));
-    }
-
-    @Test
-    public void testIsOverlapBT1WithDurationOverlapBT2NoDuration() {
-        assertTrue("Base times/durations should overlap",
-                CorrelationIdentifier.isOverlap(100, 150, 200, 0));
-    }
-
-    @Test
-    public void testIsOverlapBT1WithDurationOverlapBT2WithDuration() {
-        assertTrue("Base times/durations should overlap",
-                CorrelationIdentifier.isOverlap(100, 150, 200, 100));
-    }
-
-    @Test
-    public void testIsOverlapBT1NoDurationOverlapBT2WithDuration() {
-        assertTrue("Base times/durations should overlap",
-                CorrelationIdentifier.isOverlap(250, 0, 200, 100));
-    }
-
-    @Test
-    public void testMatchGlobalSameValueNoDuration() {
+    public void testMatchGlobalSameValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Global);
         id1.setValue("Test");
@@ -67,11 +37,11 @@ public class CorrelationIdentifierTest {
         id2.setScope(Scope.Global);
         id2.setValue("Test");
 
-        assertTrue("Global ids should match", id1.match(100, id2, 200));
+        assertTrue("Global ids should match", id1.equals(id2));
     }
 
     @Test
-    public void testMatchGlobalDiffValueNoDuration() {
+    public void testMatchGlobalDiffValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Global);
         id1.setValue("Test");
@@ -80,41 +50,11 @@ public class CorrelationIdentifierTest {
         id2.setScope(Scope.Global);
         id2.setValue("Other");
 
-        assertFalse("Global ids should NOT match", id1.match(100, id2, 200));
+        assertFalse("Global ids should NOT match", id1.equals(id2));
     }
 
     @Test
-    public void testMatchGlobalSameValueWithDurationOverlap() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Global);
-        id1.setValue("Test");
-        id1.setDuration(200);
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Global);
-        id2.setValue("Test");
-        id2.setDuration(200);
-
-        assertTrue("Global ids should match", id1.match(100, id2, 200));
-    }
-
-    @Test
-    public void testMatchGlobalSameValueWithDurationNoOverlap() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Global);
-        id1.setValue("Test");
-        id1.setDuration(20);
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Global);
-        id2.setValue("Test");
-        id2.setDuration(20);
-
-        assertFalse("Global ids should NOT match as no overlap", id1.match(100, id2, 200));
-    }
-
-    @Test
-    public void testMatchInteractionSameValueNoDuration() {
+    public void testMatchInteractionSameValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Interaction);
         id1.setValue("Test");
@@ -123,11 +63,11 @@ public class CorrelationIdentifierTest {
         id2.setScope(Scope.Interaction);
         id2.setValue("Test");
 
-        assertTrue("Interaction ids should match", id1.match(100, id2, 200));
+        assertTrue("Interaction ids should match", id1.equals(id2));
     }
 
     @Test
-    public void testMatchInteractionDiffValueNoDuration() {
+    public void testMatchInteractionDiffValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Interaction);
         id1.setValue("Test");
@@ -136,41 +76,11 @@ public class CorrelationIdentifierTest {
         id2.setScope(Scope.Interaction);
         id2.setValue("Other");
 
-        assertFalse("Interaction ids should NOT match", id1.match(100, id2, 200));
+        assertFalse("Interaction ids should NOT match", id1.equals(id2));
     }
 
     @Test
-    public void testMatchInteractionSameValueWithDurationOverlap() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Interaction);
-        id1.setValue("Test");
-        id1.setDuration(200);
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Interaction);
-        id2.setValue("Test");
-        id2.setDuration(200);
-
-        assertTrue("Interaction ids should match", id1.match(100, id2, 200));
-    }
-
-    @Test
-    public void testMatchInteractionSameValueWithDurationNoOverlap() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Interaction);
-        id1.setValue("Test");
-        id1.setDuration(20);
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Interaction);
-        id2.setValue("Test");
-        id2.setDuration(20);
-
-        assertFalse("Interaction ids should NOT match as no overlap", id1.match(100, id2, 200));
-    }
-
-    @Test
-    public void testMatchLocalSameValueNoDuration() {
+    public void testMatchLocalSameValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Local);
         id1.setValue("Test");
@@ -179,11 +89,11 @@ public class CorrelationIdentifierTest {
         id2.setScope(Scope.Local);
         id2.setValue("Test");
 
-        assertTrue("Local ids should match", id1.match(100, id2, 200));
+        assertTrue("Local ids should match", id1.equals(id2));
     }
 
     @Test
-    public void testMatchLocalDiffValueNoDuration() {
+    public void testMatchLocalDiffValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Local);
         id1.setValue("Test");
@@ -192,37 +102,7 @@ public class CorrelationIdentifierTest {
         id2.setScope(Scope.Local);
         id2.setValue("Other");
 
-        assertFalse("Local ids should NOT match", id1.match(100, id2, 200));
-    }
-
-    @Test
-    public void testMatchLocalSameValueWithDurationOverlap() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Local);
-        id1.setValue("Test");
-        id1.setDuration(200);
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Local);
-        id2.setValue("Test");
-        id2.setDuration(200);
-
-        assertTrue("Local ids should match", id1.match(100, id2, 200));
-    }
-
-    @Test
-    public void testMatchLocalSameValueWithDurationNoOverlap() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Local);
-        id1.setValue("Test");
-        id1.setDuration(20);
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Local);
-        id2.setValue("Test");
-        id2.setDuration(20);
-
-        assertFalse("Local ids should NOT match as no overlap", id1.match(100, id2, 200));
+        assertFalse("Local ids should NOT match", id1.equals(id2));
     }
 
 }

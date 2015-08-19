@@ -51,7 +51,7 @@ public abstract class Node {
     private String uri;
 
     @JsonInclude
-    private long startTime = 0;
+    private long baseTime = 0;
 
     @JsonInclude
     private long duration = 0;
@@ -119,18 +119,18 @@ public abstract class Node {
     }
 
     /**
-     * @return the startTime
+     * @return the baseTime (in nanoseconds)
      */
-    public long getStartTime() {
-        return startTime;
+    public long getBaseTime() {
+        return baseTime;
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param baseTime the baseTime (in nanoseconds) to set
      * @return The node
      */
-    public Node setStartTime(long startTime) {
-        this.startTime = startTime;
+    public Node setBaseTime(long baseTime) {
+        this.baseTime = baseTime;
         return this;
     }
 
@@ -245,31 +245,31 @@ public abstract class Node {
 
     /**
      * This method calculates the end time of this node based on the
-     * start time and duration. An end time will only be returned if
-     * the start time has been set.
+     * base time and duration. An end time will only be returned if
+     * the base time has been set.
      *
-     * @return The end time, based on start time and duration, or 0 if
+     * @return The end time (in nanoseconds), based on base time and duration, or 0 if
      *                  not known
      */
-    public long endTime() {
+    protected long endTime() {
         long ret = 0;
 
-        if (startTime > 0) {
-            ret = startTime + duration;
+        if (baseTime > 0) {
+            ret = baseTime + duration;
         }
 
         return ret;
     }
 
     /**
-     * This method calculates the time when all work initiated by this node
-     * has been completed. Where async execution is performed, this could
+     * This method calculates the time (in nanoseconds) when all work initiated
+     * by this node has been completed. Where async execution is performed, this could
      * mean the work continues beyond the scope of the node that initiates
      * the work.
      *
-     * @return The completed time
+     * @return The completed time (in nanoseconds)
      */
-    public long completedTime() {
+    protected long completedTime() {
         return overallEndTime();
     }
 
@@ -277,15 +277,16 @@ public abstract class Node {
      * This method calculates the duration when all work initiated by this node
      * has been completed. Where async execution is performed, this could
      * mean the work continues beyond the scope of the node that initiates
-     * the work. This will only be calculated where a start time has been set.
+     * the work. This will only be calculated where a base time (in nanoseconds)
+     * has been set.
      *
-     * @return The completed time
+     * @return The completed duration (ns)
      */
-    public long completedDuration() {
+    protected long completedDuration() {
         long ret = 0;
 
-        if (startTime > 0) {
-            ret = overallEndTime() - startTime;
+        if (baseTime > 0) {
+            ret = overallEndTime() - baseTime;
         }
 
         return ret;
@@ -305,11 +306,10 @@ public abstract class Node {
      * are associated with the supplied correlation identifier.
      *
      * @param cid The correlation identifier
-     * @param baseTime The base time at which the correlation is being evaluated
      * @param nodes The set of nodes that are associated with the correlation identifier
      */
-    protected void findCorrelatedNodes(CorrelationIdentifier cid, long baseTime, Set<Node> nodes) {
-        if (isCorrelated(cid, baseTime)) {
+    protected void findCorrelatedNodes(CorrelationIdentifier cid, Set<Node> nodes) {
+        if (isCorrelated(cid)) {
             nodes.add(this);
         }
     }
@@ -319,12 +319,11 @@ public abstract class Node {
      * identifier.
      *
      * @param cid The correlation id
-     * @param baseTime The base time at which the correlation is being evaluated
      * @return Whether the node is correlated to the supplied id
      */
-    protected boolean isCorrelated(CorrelationIdentifier cid, long baseTime) {
+    protected boolean isCorrelated(CorrelationIdentifier cid) {
         for (CorrelationIdentifier id : correlationIds) {
-            if (id.match(startTime, cid, baseTime)) {
+            if (id.equals(cid)) {
                 return true;
             }
         }
@@ -342,7 +341,7 @@ public abstract class Node {
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
-        result = prime * result + (int) (startTime ^ (startTime >>> 32));
+        result = prime * result + (int) (baseTime ^ (baseTime >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
@@ -377,7 +376,7 @@ public abstract class Node {
                 return false;
         } else if (!fault.equals(other.fault))
             return false;
-        if (startTime != other.startTime)
+        if (baseTime != other.baseTime)
             return false;
         if (type != other.type)
             return false;

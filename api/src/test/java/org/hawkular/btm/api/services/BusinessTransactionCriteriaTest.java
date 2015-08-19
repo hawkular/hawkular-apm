@@ -45,9 +45,7 @@ public class BusinessTransactionCriteriaTest {
         criteria.setStartTime(100);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Consumer c1 = new Consumer();
-        c1.setStartTime(200);
-        btxn.getNodes().add(c1);
+        btxn.setStartTime(200);
 
         assertTrue("BTxn in start time range", criteria.isValid(btxn));
     }
@@ -59,7 +57,7 @@ public class BusinessTransactionCriteriaTest {
 
         BusinessTransaction btxn = new BusinessTransaction();
         Consumer c1 = new Consumer();
-        c1.setStartTime(20);
+        c1.setBaseTime(20);
         btxn.getNodes().add(c1);
 
         assertFalse("BTxn NOT in start time range", criteria.isValid(btxn));
@@ -72,7 +70,7 @@ public class BusinessTransactionCriteriaTest {
 
         BusinessTransaction btxn = new BusinessTransaction();
         Consumer c1 = new Consumer();
-        c1.setStartTime(20);
+        c1.setBaseTime(20);
         c1.setDuration(10);
         btxn.getNodes().add(c1);
 
@@ -85,10 +83,7 @@ public class BusinessTransactionCriteriaTest {
         criteria.setEndTime(100);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Consumer c1 = new Consumer();
-        c1.setStartTime(80);
-        c1.setDuration(50);
-        btxn.getNodes().add(c1);
+        btxn.setStartTime(110); // Criteria based on start time of btxn only
 
         assertFalse("BTxn NOT in end time range", criteria.isValid(btxn));
     }
@@ -138,31 +133,6 @@ public class BusinessTransactionCriteriaTest {
     }
 
     @Test
-    public void testIsValidCorrelationWithDurationTrue() {
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-
-        CorrelationIdentifier cid1 = new CorrelationIdentifier();
-        cid1.setScope(Scope.Global);
-        cid1.setValue("myid");
-        criteria.getCorrelationIds().add(cid1);
-        criteria.setCorrelationTime(200);
-
-        BusinessTransaction btxn = new BusinessTransaction();
-
-        CorrelationIdentifier cid2 = new CorrelationIdentifier();
-        cid2.setScope(Scope.Global);
-        cid2.setValue("myid");
-        cid2.setDuration(100);
-
-        Consumer c1 = new Consumer();
-        c1.setStartTime(150);
-        c1.getCorrelationIds().add(cid2);
-        btxn.getNodes().add(c1);
-
-        assertTrue("BTxn correlation with duration should be found", criteria.isValid(btxn));
-    }
-
-    @Test
     public void testIsValidCorrelationFalse() {
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
 
@@ -182,31 +152,6 @@ public class BusinessTransactionCriteriaTest {
         btxn.getNodes().add(c1);
 
         assertFalse("BTxn correlation should NOT be found", criteria.isValid(btxn));
-    }
-
-    @Test
-    public void testIsValidCorrelationWithDurationFalse() {
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-
-        CorrelationIdentifier cid1 = new CorrelationIdentifier();
-        cid1.setScope(Scope.Global);
-        cid1.setValue("myid");
-        criteria.getCorrelationIds().add(cid1);
-        criteria.setCorrelationTime(200);
-
-        BusinessTransaction btxn = new BusinessTransaction();
-
-        CorrelationIdentifier cid2 = new CorrelationIdentifier();
-        cid2.setScope(Scope.Global);
-        cid2.setValue("myid");
-        cid2.setDuration(100);
-
-        Consumer c1 = new Consumer();
-        c1.setStartTime(50);
-        c1.getCorrelationIds().add(cid2);
-        btxn.getNodes().add(c1);
-
-        assertFalse("BTxn correlation with duration should NOT be found", criteria.isValid(btxn));
     }
 
 }

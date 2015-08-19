@@ -97,8 +97,8 @@ public class Service extends InteractionNode {
     @Override
     public String toString() {
         return "Service [operation=" + operation + ", getUri()=" + getUri() + ", getRequest()=" + getRequest()
-                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
-                + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
+                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getBaseTime()="
+                + getBaseTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
                 + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 

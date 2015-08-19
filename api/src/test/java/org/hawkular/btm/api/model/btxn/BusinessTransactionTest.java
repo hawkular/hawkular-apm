@@ -43,32 +43,34 @@ public class BusinessTransactionTest {
     @Test
     public void testStartTime() {
         BusinessTransaction btxn = new BusinessTransaction();
+        btxn.setStartTime(100);
 
         Consumer node1 = new Consumer();
-        node1.setStartTime(100);
+        node1.setBaseTime(110);
         btxn.getNodes().add(node1);
 
-        assertEquals("Start time incorrect", 100L, btxn.startTime());
+        assertEquals("Start time incorrect", 100L, btxn.getStartTime());
     }
 
     @Test
     public void testEndTime() {
         BusinessTransaction btxn = new BusinessTransaction();
+        btxn.setStartTime(100);
 
         Consumer node1 = new Consumer();
-        node1.setStartTime(100);
+        node1.setBaseTime(100000000);
         btxn.getNodes().add(node1);
 
         Service node2 = new Service();
-        node2.setStartTime(150);
+        node2.setBaseTime(150000000);
         node2.setDuration(0);
         node1.getNodes().add(node2);
 
         // This node will have the latest time associated with the
         // business transaction, comprised of the start time + duration
         Producer node3 = new Producer();
-        node3.setStartTime(200);
-        node3.setDuration(50);
+        node3.setBaseTime(200000000);
+        node3.setDuration(50000000);
         node1.getNodes().add(node3);
 
         assertEquals("End time incorrect", 250L, btxn.endTime());
@@ -131,10 +133,10 @@ public class BusinessTransactionTest {
         Consumer c1 = new Consumer();
         btxn.getNodes().add(c1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1", 0));
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID2", 0));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID2"));
         c1.setDuration(1000);
-        c1.setStartTime(1);
+        c1.setBaseTime(1);
         c1.setEndpointType("JMS");
         c1.setUri("queue:test");
 
@@ -154,9 +156,9 @@ public class BusinessTransactionTest {
         Service s1 = new Service();
         c1.getNodes().add(s1);
 
-        s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1", 0));
+        s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1"));
         s1.setDuration(900);
-        s1.setStartTime(2);
+        s1.setBaseTime(2);
         s1.setOperation("Op1");
         s1.setUri("ServiceType1");
 
@@ -177,7 +179,7 @@ public class BusinessTransactionTest {
         s1.getNodes().add(cp1);
 
         cp1.setDuration(400);
-        cp1.setStartTime(3);
+        cp1.setBaseTime(3);
         cp1.setUri("jdbc:TestDB");
         cp1.setComponentType("Database");
         cp1.setOperation("select X from Y");
@@ -187,9 +189,9 @@ public class BusinessTransactionTest {
         Service s2 = new Service();
         s1.getNodes().add(s2);
 
-        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3", 0));
+        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3"));
         s2.setDuration(500);
-        s2.setStartTime(3);
+        s2.setBaseTime(3);
         s2.setOperation("Op2");
         s2.setUri("ServiceType2");
 
@@ -209,10 +211,10 @@ public class BusinessTransactionTest {
         Producer p1 = new Producer();
         s2.getNodes().add(p1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3", 0));
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID4", 1000));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID4"));
         c1.setDuration(400);
-        c1.setStartTime(4);
+        c1.setBaseTime(4);
         c1.setEndpointType("HTTP");
         c1.setUri("http://example.com/service");
 

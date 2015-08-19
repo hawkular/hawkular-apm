@@ -122,7 +122,7 @@ public class Component extends ContainerNode {
     @Override
     public String toString() {
         return "Component [componentType=" + componentType + ", operation=" + operation + ", getNodes()=" + getNodes()
-                + ", getUri()=" + getUri() + ", getStartTime()=" + getStartTime() + ", getDuration()=" + getDuration()
+                + ", getUri()=" + getUri() + ", getBaseTime()=" + getBaseTime() + ", getDuration()=" + getDuration()
                 + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 

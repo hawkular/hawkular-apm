@@ -63,12 +63,12 @@ public class BusinessTransactionServiceInMemoryTest {
 
         Consumer node1_1 = new Consumer();
         node1_1.setDuration(10000);
-        node1_1.setStartTime(100);
+        node1_1.setBaseTime(100);
         btxn1.getNodes().add(node1_1);
 
         Service node1_2 = new Service();
         node1_2.setDuration(9000);
-        node1_2.setStartTime(150);
+        node1_2.setBaseTime(150);
         node1_1.getNodes().add(node1_2);
 
         btxn1.getNodes().add(node1_1);
@@ -78,12 +78,12 @@ public class BusinessTransactionServiceInMemoryTest {
 
         Consumer node2_1 = new Consumer();
         node2_1.setDuration(10000);
-        node2_1.setStartTime(100);
+        node2_1.setBaseTime(100);
         btxn2.getNodes().add(node2_1);
 
         Service node2_2 = new Service();
         node2_2.setDuration(9000);
-        node2_2.setStartTime(150);
+        node2_2.setBaseTime(150);
         node2_1.getNodes().add(node2_2);
 
         btxn1.getNodes().add(node2_1);

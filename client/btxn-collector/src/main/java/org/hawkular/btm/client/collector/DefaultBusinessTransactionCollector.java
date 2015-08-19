@@ -646,7 +646,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * @param node The node
      */
     protected void push(FragmentBuilder builder, Node node) {
-        node.setStartTime(System.currentTimeMillis());
+        node.setBaseTime(System.nanoTime());
         builder.pushNode(node);
     }
 
@@ -676,7 +676,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         Node node = builder.popNode(cls, uri);
         if (node != null) {
-            node.setDuration(System.currentTimeMillis() - node.getStartTime());
+            node.setDuration(System.nanoTime() - node.getBaseTime());
             return cls.cast(node);
         }
 

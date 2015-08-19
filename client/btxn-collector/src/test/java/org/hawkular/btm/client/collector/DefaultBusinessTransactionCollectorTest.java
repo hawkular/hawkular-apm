@@ -95,7 +95,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Node node = btxn.getNodes().get(0);
 
-        assertTrue("Start time not set", node.getStartTime() > 0);
+        assertTrue("Start time not set", node.getBaseTime() > 0);
         assertTrue("Duration not set", node.getDuration() > 0);
     }
 

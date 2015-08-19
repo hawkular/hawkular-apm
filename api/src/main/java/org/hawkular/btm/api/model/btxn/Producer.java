@@ -98,8 +98,8 @@ public class Producer extends InteractionNode {
     @Override
     public String toString() {
         return "Producer [endpointType=" + endpointType + ", getUri()=" + getUri() + ", getRequest()=" + getRequest()
-                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getStartTime()="
-                + getStartTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
+                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getBaseTime()="
+                + getBaseTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
                 + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 
