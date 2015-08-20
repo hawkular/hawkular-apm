@@ -18,7 +18,7 @@
       },
       "processors": [{
         "nodeType": "Consumer",
-        "request": "true",
+        "direction": "Request",
         "uriFilter": "http://localhost:8080/hello_.*",
         "actions": [{
           "name": "hello",
@@ -31,7 +31,7 @@
         }]
       },{
         "nodeType": "Consumer",
-        "request": "false",
+        "direction": "Response",
         "uriFilter": "http://localhost:8080/hello_.*",
         "actions": [{
           "name": "all",
@@ -40,7 +40,7 @@
         }]
       },{
         "nodeType": "Producer",
-        "request": "true",
+        "direction": "Request",
         "uriFilter": "http://localhost:8080/hello_.*",
         "actions": [{
           "name": "hello",
@@ -53,7 +53,7 @@
         }]
       },{
         "nodeType": "Producer",
-        "request": "false",
+        "direction": "Response",
         "uriFilter": "http://localhost:8080/hello_.*",
         "actions": [{
           "name": "all",

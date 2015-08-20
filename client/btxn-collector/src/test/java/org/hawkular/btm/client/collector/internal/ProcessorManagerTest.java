@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.admin.Processor;
 import org.hawkular.btm.api.model.admin.ProcessorAction;
 import org.hawkular.btm.api.model.admin.ProcessorAction.ActionType;
@@ -51,7 +52,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -65,7 +66,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -81,7 +82,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -96,7 +97,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -112,7 +113,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -127,7 +128,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -143,7 +144,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -157,7 +158,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, false, null, "first", "second");
+        pm.process(btxn, service, Direction.Response, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -173,7 +174,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -187,7 +188,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -203,7 +204,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setUriFilter("include");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -219,7 +220,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -235,7 +236,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setUriFilter("include");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -251,7 +252,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -267,7 +268,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -283,7 +284,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -299,7 +300,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -314,7 +315,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals("second", service.getFault());
     }
@@ -330,7 +331,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -346,7 +347,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals("second", btxn.getProperties().get("test"));
     }
@@ -362,7 +363,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -382,7 +383,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(1, service.getRequest().getContent().size());
 
@@ -405,7 +406,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -424,7 +425,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(1, service.getCorrelationIds().size());
 
@@ -443,7 +444,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setFaultFilter("MyFault");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -463,7 +464,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
@@ -479,7 +480,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setFaultFilter("MyFault");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -501,7 +502,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
@@ -517,7 +518,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setFaultFilter("MyFault");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -539,7 +540,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(1, btxn.getProperties().size());
         assertTrue(btxn.getProperties().containsKey("result"));
@@ -556,7 +557,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -576,7 +577,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
@@ -592,7 +593,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -614,7 +615,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
@@ -630,7 +631,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -652,7 +653,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        pm.process(btxn, service, true, null, "first", "second");
+        pm.process(btxn, service, Direction.Request, null, "first", "second");
 
         assertEquals(1, btxn.getProperties().size());
         assertTrue(btxn.getProperties().containsKey("result"));
@@ -669,7 +670,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -691,7 +692,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        assertTrue(pm.isProcessed(btxn, service, true));
+        assertTrue(pm.isProcessed(btxn, service, Direction.Request));
     }
 
     @Test
@@ -705,7 +706,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setUriFilter("include");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -721,7 +722,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        assertFalse(pm.isProcessed(btxn, service, true));
+        assertFalse(pm.isProcessed(btxn, service, Direction.Request));
     }
 
     @Test
@@ -735,7 +736,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -757,7 +758,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        assertFalse(pm.isContentProcessed(btxn, service, true));
+        assertFalse(pm.isContentProcessed(btxn, service, Direction.Request));
     }
 
     @Test
@@ -771,7 +772,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Service);
-        p1.setRequest(true);
+        p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -791,7 +792,7 @@ public class ProcessorManagerTest {
         Message req = new Message();
         service.setRequest(req);
 
-        assertTrue(pm.isContentProcessed(btxn, service, true));
+        assertTrue(pm.isContentProcessed(btxn, service, Direction.Request));
     }
 
 }

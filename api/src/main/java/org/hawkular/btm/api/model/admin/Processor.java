@@ -37,7 +37,7 @@ public class Processor {
     private NodeType nodeType;
 
     @JsonInclude
-    private boolean request;
+    private Direction direction = Direction.Request;
 
     @JsonInclude
     private String uriFilter;
@@ -66,17 +66,17 @@ public class Processor {
     }
 
     /**
-     * @return the request
+     * @return the direction
      */
-    public boolean isRequest() {
-        return request;
+    public Direction getDirection() {
+        return direction;
     }
 
     /**
-     * @param request the request to set
+     * @param direction the direction to set
      */
-    public void setRequest(boolean request) {
-        this.request = request;
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     /**
@@ -140,7 +140,7 @@ public class Processor {
      */
     @Override
     public String toString() {
-        return "Processor [nodeType=" + nodeType + ", request=" + request + ", uriFilter=" + uriFilter
+        return "Processor [nodeType=" + nodeType + ", direction=" + direction + ", uriFilter=" + uriFilter
                 + ", operation=" + operation + ", faultFilter=" + faultFilter + ", actions=" + actions + "]";
     }
 

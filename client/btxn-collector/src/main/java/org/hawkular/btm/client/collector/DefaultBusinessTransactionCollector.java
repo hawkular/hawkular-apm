@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -431,7 +432,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 InteractionNode node=(InteractionNode)builder.getCurrentNode();
 
                 return processorManager.isProcessed(builder.getBusinessTransaction(),
-                        node, true);
+                        node, Direction.Request);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -455,7 +456,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 InteractionNode node=(InteractionNode)builder.getCurrentNode();
 
                 return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                        node, true);
+                        node, Direction.Request);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -479,7 +480,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 InteractionNode node=(InteractionNode)builder.getCurrentNode();
 
                 return processorManager.isProcessed(builder.getBusinessTransaction(),
-                        node, false);
+                        node, Direction.Response);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -503,7 +504,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 InteractionNode node=(InteractionNode)builder.getCurrentNode();
 
                 return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                        node, false);
+                        node, Direction.Response);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -529,7 +530,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
             if (builder != null) {
                 processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
-                        true, headers, values);
+                        Direction.Request, headers, values);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -554,7 +555,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
             if (builder != null) {
                 processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
-                        false, headers, values);
+                        Direction.Response, headers, values);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -694,11 +695,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      *
      * @param btxn The business transaction
      * @param node The node
-     * @param req Whether processing a request
+     * @param direction The direction
      * @param headers The optional headers
      * @param values The values
      */
-    protected void processValues(BusinessTransaction btxn, Node node, boolean req,
+    protected void processValues(BusinessTransaction btxn, Node node, Direction direction,
             Map<String, ?> headers, Object[] values) {
 
         if (node.interactionNode()) {
@@ -715,7 +716,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 }
             }
 
-            if (req) {
+            if (direction == Direction.Request) {
                 ((InteractionNode) node).setRequest(m);
             } else {
                 ((InteractionNode) node).setResponse(m);
@@ -723,7 +724,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
 
         if (processorManager != null) {
-            processorManager.process(btxn, node, req, headers, values);
+            processorManager.process(btxn, node, direction, headers, values);
         }
     }
 
