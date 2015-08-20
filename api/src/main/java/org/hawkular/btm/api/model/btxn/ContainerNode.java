@@ -87,12 +87,12 @@ public abstract class ContainerNode extends Node {
     }
 
     @Override
-    protected void findCorrelatedNodes(CorrelationIdentifier cid, long baseTime, Set<Node> nodes) {
-        super.findCorrelatedNodes(cid, baseTime, nodes);
+    protected void findCorrelatedNodes(CorrelationIdentifier cid, Set<Node> nodes) {
+        super.findCorrelatedNodes(cid, nodes);
 
         // Propagate to child nodes
         for (Node child : getNodes()) {
-            child.findCorrelatedNodes(cid, baseTime, nodes);
+            child.findCorrelatedNodes(cid, nodes);
         }
     }
 

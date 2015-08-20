@@ -28,7 +28,7 @@ public class NodeTest {
     @Test
     public void testEndTime() {
         Consumer node = new Consumer();
-        node.setStartTime(1000);
+        node.setBaseTime(1000);
         node.setDuration(500);
 
         assertEquals(1500, node.endTime());
@@ -37,11 +37,11 @@ public class NodeTest {
     @Test
     public void testCompletedTime() {
         Consumer node1 = new Consumer();
-        node1.setStartTime(1000);
+        node1.setBaseTime(1000);
         node1.setDuration(500);
 
         Producer node2 = new Producer();
-        node2.setStartTime(1200);
+        node2.setBaseTime(1200);
         node2.setDuration(800);
         node1.getNodes().add(node2);
 
@@ -51,11 +51,11 @@ public class NodeTest {
     @Test
     public void testCompletedDuration() {
         Consumer node1 = new Consumer();
-        node1.setStartTime(1000);
+        node1.setBaseTime(1000);
         node1.setDuration(500);
 
         Producer node2 = new Producer();
-        node2.setStartTime(1200);
+        node2.setBaseTime(1200);
         node2.setDuration(800);
         node1.getNodes().add(node2);
 

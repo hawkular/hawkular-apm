@@ -133,14 +133,14 @@ public class BusinessTransactionCriteria {
     public boolean isValid(BusinessTransaction btxn) {
 
         // Validate criteria
-        if (startTime > 0L && btxn.startTime() < startTime) {
+        if (startTime > 0L && btxn.getStartTime() < startTime) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Start time out of range");
             }
             return false;
         }
 
-        if (endTime > 0L && btxn.endTime() > endTime) {
+        if (endTime > 0L && btxn.getStartTime() > endTime) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("End time out of range");
             }
@@ -163,8 +163,7 @@ public class BusinessTransactionCriteria {
 
         if (!correlationIds.isEmpty()) {
             for (CorrelationIdentifier ci : correlationIds) {
-                Set<Node> nodes = btxn.getCorrelatedNodes(ci,
-                        (correlationTime == 0L ? System.currentTimeMillis() : correlationTime));
+                Set<Node> nodes = btxn.getCorrelatedNodes(ci);
 
                 if (!nodes.isEmpty()) {
                     return true;

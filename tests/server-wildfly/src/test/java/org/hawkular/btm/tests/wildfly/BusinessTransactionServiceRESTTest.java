@@ -117,10 +117,10 @@ public class BusinessTransactionServiceRESTTest {
         service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
         btxn1.setId("1");
 
         Consumer c1 = new Consumer();
-        c1.setStartTime(1000);
         btxn1.getNodes().add(c1);
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -159,10 +159,10 @@ public class BusinessTransactionServiceRESTTest {
         service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
         btxn1.setId("1");
 
         Consumer c1 = new Consumer();
-        c1.setStartTime(1000);
         btxn1.getNodes().add(c1);
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -199,11 +199,10 @@ public class BusinessTransactionServiceRESTTest {
         service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
         btxn1.setId("1");
 
         Consumer c1 = new Consumer();
-        c1.setStartTime(1000);
-        c1.setDuration(500);
         btxn1.getNodes().add(c1);
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -242,11 +241,10 @@ public class BusinessTransactionServiceRESTTest {
         service.setPassword(TEST_PASSWORD);
 
         BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1200);
         btxn1.setId("1");
 
         Consumer c1 = new Consumer();
-        c1.setStartTime(1000);
-        c1.setDuration(500);
         btxn1.getNodes().add(c1);
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();

@@ -17,7 +17,6 @@
 package org.hawkular.btm.api.model.btxn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * This class represents a Correlation Identifier. These identifies are used to
@@ -35,21 +34,12 @@ public class CorrelationIdentifier {
     @JsonInclude
     private Scope scope;
 
-    @JsonInclude(Include.NON_DEFAULT)
-    private int duration = 0;
-
     public CorrelationIdentifier() {
     }
 
     public CorrelationIdentifier(Scope scope, String value) {
         this.value = value;
         this.scope = scope;
-    }
-
-    public CorrelationIdentifier(Scope scope, String value, int duration) {
-        this.value = value;
-        this.scope = scope;
-        this.duration = duration;
     }
 
     /**
@@ -78,66 +68,6 @@ public class CorrelationIdentifier {
      */
     public void setScope(Scope scope) {
         this.scope = scope;
-    }
-
-    /**
-     * @return the duration
-     */
-    public int getDuration() {
-        return duration;
-    }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    /**
-     * This method determines whether the supplied correlation identifier,
-     * associated with a base time, matches this correlation identifier
-     * associated with its own base time.
-     *
-     * @param thisBaseTime This correlation id's base time
-     * @param cid The correlation id to match against
-     * @param cidBaseTime The base time of the correlation id to match
-     * @return Whether the correlation id matches
-     */
-    public boolean match(long thisBaseTime, CorrelationIdentifier cid, long cidBaseTime) {
-
-        if (this.equals(cid)) {
-
-            if (getDuration() == 0 && cid.getDuration() == 0) {
-                return true;
-            } else {
-                return isOverlap(thisBaseTime, getDuration(), cidBaseTime, cid.getDuration());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * This method determines whether there is an overlap between the time periods represented by
-     * the two base times and their durations.
-     *
-     * @param baseTime1 Base time 1
-     * @param duration1 Duration 1
-     * @param baseTime2 Base time 2
-     * @param duration2 Duration 2
-     * @return Whether there is an overlap
-     */
-    protected static boolean isOverlap(long baseTime1, int duration1, long baseTime2, int duration2) {
-        long endTime1 = baseTime1 + duration1;
-        long endTime2 = baseTime2 + duration2;
-
-        if ((baseTime1 >= baseTime2 && baseTime1 <= endTime2)
-                || (baseTime2 >= baseTime1 && baseTime2 <= endTime1)) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -187,7 +117,7 @@ public class CorrelationIdentifier {
      */
     @Override
     public String toString() {
-        return "CorrelationIdentifier [value=" + value + ", scope=" + scope + ", duration=" + duration + "]";
+        return "CorrelationIdentifier [value=" + value + ", scope=" + scope + "]";
     }
 
     /**
