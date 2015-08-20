@@ -10,10 +10,10 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() == null && !collector().session().isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address()) && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
+        "condition": "$1.replyAddress() == null && !isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().setName($1.headers().get(\"HawkularBTName\"))"
+          "type": "SetName",
+          "nameExpression": "$1.headers().get(\"HawkularBTName\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -25,8 +25,9 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.eventbus\""
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Sync End",
@@ -36,14 +37,13 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "EXIT",
-        "condition": "$1.replyAddress() == null && collector().session().isActive()",
+        "condition": "$1.replyAddress() == null && isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"MOM\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().assertComplete()"
+          "type": "AssertComplete"
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async Start",
@@ -53,10 +53,10 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() != null && collector().session().activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
+        "condition": "$1.replyAddress() != null && activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().setName($1.headers().get(\"HawkularBTName\"))"
+          "type": "SetName",
+          "nameExpression": "$1.headers().get(\"HawkularBTName\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -68,11 +68,12 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().initiateLink(\"io.vertx.core.eventbus-consumer\"+$1.replyAddress())"
+          "type": "InitiateLink",
+          "idExpression": "\"io.vertx.core.eventbus-consumer\"+$1.replyAddress()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.eventbus\""
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async End",
@@ -82,17 +83,16 @@
           "*"
          ],
         "location": "ENTRY",
-        "condition": "collector().session().isLinkActive(\"io.vertx.core.eventbus-consumer\"+$2.address())",
+        "condition": "isLinkActive(\"io.vertx.core.eventbus-consumer\"+$2.address())",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().completeLink(\"io.vertx.core.eventbus-consumer\"+$2.address())"
+          "type": "CompleteLink",
+          "idExpression": "\"io.vertx.core.eventbus-consumer\"+$2.address()"
         },{
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"MOM\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().assertComplete()"
+          "type": "AssertComplete"
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync Start",
@@ -110,7 +110,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "$4 == null && collector().session().activate($1)",
+        "condition": "$4 == null && activate($1)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -122,14 +122,15 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.eventbus\""
         },{
           "type": "FreeFormAction",
           "action": "$3.addHeader(\"HawkularBTID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"HawkularBTName\",collector().getName())"
+          "action": "$3.addHeader(\"HawkularBTName\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync End",
@@ -142,7 +143,7 @@
           "io.vertx.core.Handler"
          ],
         "location": "EXIT",
-        "condition": "$4 == null && collector().session().isActive()",
+        "condition": "$4 == null && isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -163,7 +164,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "collector().session().activate($1)",
+        "condition": "activate($1)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -175,17 +176,19 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.eventbus\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_publish\",\"true\")"
+          "type": "SetDetail",
+          "name": "btm_publish",
+          "valueExpression": "\"true\""
         },{
           "type": "FreeFormAction",
           "action": "$3.addHeader(\"HawkularBTID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"HawkularBTName\",collector().getName())"
+          "action": "$3.addHeader(\"HawkularBTName\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Vertx EventBus PubSub Producer Sync End",
@@ -197,7 +200,7 @@
           "io.vertx.core.eventbus.DeliveryOptions"
          ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -216,7 +219,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "collector().session().activate($0.address())",
+        "condition": "activate($0.address())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -229,16 +232,17 @@
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
         },{
           "type": "FreeFormAction",
-          "action": "collector().session().initiateLink(\"io.vertx.core.eventbus-producer\"+$1)"
+          "action": "initiateLink(\"io.vertx.core.eventbus-producer\"+$1)"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.eventbus\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.eventbus\""
         },{
           "type": "FreeFormAction",
           "action": "$0.headers().set(\"HawkularBTID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.headers().set(\"HawkularBTName\",collector().getName())"
+          "action": "$0.headers().set(\"HawkularBTName\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Vertx EventBus Producer Async End",
@@ -248,10 +252,10 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "collector().session().isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address())",
+        "condition": "isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address())",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().completeLink(\"io.vertx.core.eventbus-producer\"+$1.address())"
+          "type": "CompleteLink",
+          "idExpression": "\"io.vertx.core.eventbus-producer\"+$1.address()"
         },{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -265,10 +269,9 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().unlink()"
+          "type": "Unlink"
         }]
       }]
     }
