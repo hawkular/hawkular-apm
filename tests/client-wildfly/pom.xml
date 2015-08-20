@@ -50,7 +50,7 @@
     <hawkular.lib>${hawkular.btm.dist}/standalone/lib</hawkular.lib>
 
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.basedir}/target/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
     <hawkular-btm.logging>${project.basedir}/src/test/configuration/logging.properties</hawkular-btm.logging>
 
     <jboss.home>${project.build.directory}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</jboss.home>
@@ -92,6 +92,12 @@
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-example-servlet-rest-tomcat</artifactId>
+      <type>war</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-example-cxf-tomcat</artifactId>
       <type>war</type>
       <scope>test</scope>
     </dependency>
@@ -221,6 +227,14 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular.deployments}</outputDirectory>
                   <destFileName>camel-example-servlet-rest-tomcat.war</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.camel</groupId>
+                  <artifactId>camel-example-cxf-tomcat</artifactId>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular.deployments}</outputDirectory>
+                  <destFileName>camel-example-cxftomcat.war</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>

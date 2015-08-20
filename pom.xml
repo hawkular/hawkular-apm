@@ -415,6 +415,13 @@
         <type>war</type>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-example-cxf-tomcat</artifactId>
+        <version>${version.org.apache.camel}</version>
+        <type>war</type>
+        <scope>test</scope>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
