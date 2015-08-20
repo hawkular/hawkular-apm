@@ -22,9 +22,11 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.HeadersAccessor;
+import org.hawkular.btm.client.api.SessionManager;
 import org.hawkular.btm.client.manager.faults.FaultDescriptor;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
@@ -34,7 +36,7 @@ import org.jboss.byteman.rule.helper.Helper;
  *
  * @author gbrown
  */
-public class RuleHelper extends Helper {
+public class RuleHelper extends Helper implements SessionManager {
 
     private static final Logger log = Logger.getLogger(RuleHelper.class.getName());
 
@@ -210,5 +212,110 @@ public class RuleHelper extends Helper {
      */
     protected HeadersAccessor getHeadersAccessor(String type) {
         return (headersAccessors.get(type));
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#activate(java.lang.String, java.lang.String)
+     */
+    @Override
+    public boolean activate(String uri, String id) {
+        return collector().session().activate(uri, id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#activate(java.lang.String)
+     */
+    @Override
+    public boolean activate(String uri) {
+        return collector().session().activate(uri);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return collector().session().isActive();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#retainNode(java.lang.String)
+     */
+    @Override
+    public void retainNode(String id) {
+        collector().session().retainNode(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#releaseNode(java.lang.String)
+     */
+    @Override
+    public void releaseNode(String id) {
+        collector().session().releaseNode(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#retrieveNode(java.lang.String)
+     */
+    @Override
+    public Node retrieveNode(String id) {
+        return collector().session().retrieveNode(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#initiateLink(java.lang.String)
+     */
+    @Override
+    public void initiateLink(String id) {
+        collector().session().initiateLink(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#isLinkActive(java.lang.String)
+     */
+    @Override
+    public boolean isLinkActive(String id) {
+        return collector().session().isLinkActive(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#completeLink(java.lang.String)
+     */
+    @Override
+    public void completeLink(String id) {
+        collector().session().completeLink(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#unlink()
+     */
+    @Override
+    public void unlink() {
+        collector().session().unlink();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#suppress()
+     */
+    @Override
+    public void suppress() {
+        collector().session().suppress();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#assertComplete()
+     */
+    @Override
+    public void assertComplete() {
+        collector().session().assertComplete();
+    }
+
+    /**
+     * This method returns the business transaction name.
+     *
+     * @return The business transaction name
+     */
+    public String getBusinessTransactionName() {
+        return collector().getName();
     }
 }

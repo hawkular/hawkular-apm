@@ -31,9 +31,15 @@ import io.swagger.annotations.ApiModel;
 @JsonSubTypes({ @Type(value = InstrumentService.class),
     @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
     @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class),
-    @Type(value = ProcessContent.class) })
+    @Type(value = ProcessContent.class), @Type(value = SetDetail.class),
+    @Type(value = SetFault.class), @Type(value = SetName.class),
+    @Type(value = SetProperty.class), @Type(value = InitiateLink.class),
+    @Type(value = CompleteLink.class), @Type(value = Unlink.class),
+    @Type(value = AssertComplete.class), @Type(value = Suppress.class) })
 @ApiModel(subTypes = { InstrumentService.class, InstrumentComponent.class, InstrumentConsumer.class,
-        InstrumentProducer.class, FreeFormAction.class, ProcessContent.class }, discriminator = "type")
+        InstrumentProducer.class, FreeFormAction.class, ProcessContent.class,
+        SetDetail.class, SetFault.class, SetName.class, SetProperty.class, InitiateLink.class,
+        CompleteLink.class, Unlink.class, AssertComplete.class, Suppress.class }, discriminator = "type")
 public abstract class InstrumentAction {
 
 }

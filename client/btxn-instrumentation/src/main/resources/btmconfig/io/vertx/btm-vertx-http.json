@@ -10,10 +10,10 @@
           "*"
         ],
         "location": "EXIT",
-        "condition": "collector().session().activate($0.absoluteURI(),$0.getHeader(\"HawkularBTID\"))",
+        "condition": "activate($0.absoluteURI(),$0.getHeader(\"HawkularBTID\"))",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().setName($0.getHeader(\"HawkularBTName\"))"
+          "type": "SetName",
+          "nameExpression": "$0.getHeader(\"HawkularBTName\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -21,14 +21,17 @@
           "uriExpression": "$0.absoluteURI()",
           "idExpression": "$0.getHeader(\"Hawkular-btid\")"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.http\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.http\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"remoteAddr\",$0.remoteAddress())"
+          "type": "SetDetail",
+          "name": "remoteAddr",
+          "valueExpression": "$0.remoteAddress()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"http-method\",$0.method())"
+          "type": "SetDetail",
+          "name": "http-method",
+          "valueExpression": "$0.method()"
         }]
       },{
         "ruleName": "Vertx HTTP Consumer Start Values",
@@ -38,7 +41,7 @@
           "*"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "ProcessContent",
           "direction": "Request",
@@ -55,7 +58,7 @@
           "io.vertx.core.buffer.Buffer"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "ProcessContent",
           "direction": "Response",
@@ -67,8 +70,7 @@
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().assertComplete()"
+          "type": "AssertComplete"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Start 1",
@@ -87,7 +89,7 @@
           "type": "java.lang.String",
           "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
         }],
-        "condition": "collector().session().activate(uri)",
+        "condition": "activate(uri)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -102,20 +104,22 @@
             "$1"
           ]
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().initiateLink(\"io.vertx.core.http-\"+$0.hashCode())"
+          "type": "InitiateLink",
+          "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.http\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.http\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"http_method\",$0.method())"
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$0.method()"
         },{
           "type": "FreeFormAction",
           "action": "$0.putHeader(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btname\",collector().getName())"
+          "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Start 2",
@@ -133,7 +137,7 @@
           "type": "java.lang.String",
           "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
         }],
-        "condition": "collector().session().activate(uri)",
+        "condition": "activate(uri)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -145,20 +149,22 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().initiateLink(\"io.vertx.core.http-\"+$0.hashCode())"
+          "type": "InitiateLink",
+          "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"io.vertx.core.http\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"io.vertx.core.http\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"http_method\",$0.method())"
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$0.method()"
         },{
           "type": "FreeFormAction",
           "action": "$0.putHeader(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btname\",collector().getName())"
+          "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Vertx HTTP Producer End",
@@ -168,10 +174,10 @@
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().isLinkActive(\"io.vertx.core.http-\"+$0.hashCode())",
+        "condition": "isLinkActive(\"io.vertx.core.http-\"+$0.hashCode())",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().completeLink(\"io.vertx.core.http-\"+$0.hashCode())"
+          "type": "CompleteLink",
+          "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
         },{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -186,10 +192,9 @@
           "boolean"
          ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().unlink()"
+          "type": "Unlink"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Async Response Thread Complete",
@@ -199,10 +204,9 @@
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().session().unlink()"
+          "type": "Unlink"
         }]
       }]
     }

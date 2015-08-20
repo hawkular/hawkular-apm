@@ -16,10 +16,10 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "collector().session().activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btid\"))",
+        "condition": "activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btid\"))",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().setName(req.getHeader(\"Hawkular-btname\"))"
+          "type": "SetName",
+          "nameExpression": "req.getHeader(\"Hawkular-btname\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "Request",
@@ -31,17 +31,21 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"javax.servlet.http.HttpServletRequest\",req)"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"javax.servlet\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"javax.servlet\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"principal\",req.getRemoteUser())"
+          "type": "SetDetail",
+          "name": "principal",
+          "valueExpression": "req.getRemoteUser()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"remoteAddr\",req.getRemoteAddr())"
+          "type": "SetDetail",
+          "name": "remoteAddr",
+          "valueExpression": "req.getRemoteAddr()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"remoteHost\",req.getRemoteHost())"
+          "type": "SetDetail",
+          "name": "remoteHost",
+          "valueExpression": "req.getRemoteHost()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer End",
@@ -57,15 +61,14 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().session().assertComplete()"
+          "type": "AssertComplete"
         }]
       }]
     }

@@ -15,7 +15,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "collector().session().activate($1.getUri().toString())",
+        "condition": "activate($1.getUri().toString())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Request",
@@ -27,17 +27,19 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"org.jboss.resteasy.client.jaxrs.internal.ClientInvocation\",$1)"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"org.jboss.resteasy\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"org.jboss.resteasy\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"http_method\",$1.getMethod())"
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$1.getMethod()"
         },{
           "type": "FreeFormAction",
           "action": "$1.getHeaders().header(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$1.getHeaders().header(\"Hawkular-btname\",collector().getName())"
+          "action": "$1.getHeaders().header(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "JBoss RESTEasy Client Producer End",
@@ -47,7 +49,7 @@
           "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation"
         ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",

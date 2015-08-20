@@ -10,12 +10,12 @@
           "org.switchyard.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($1.getConsumer().getName())",
+        "condition": "activate($1.getConsumer().getBusinessTransactionName())",
         "actions": [{
           "type": "InstrumentService",
           "direction": "Request",
-          "uriExpression": "$1.getConsumer().getName()",
-          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+          "uriExpression": "$1.getConsumer().getBusinessTransactionName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getBusinessTransactionName()"
         },{
           "type": "ProcessContent",
           "direction": "Request",
@@ -24,11 +24,13 @@
             "$1.getMessage().getContent()"
           ]
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"org.switchyard\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"org.switchyard\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"internal\",\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding())"
+          "type": "SetDetail",
+          "name": "internal",
+          "valueExpression": "\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding()"
         }]
       },{
         "ruleName": "SwitchYard Service Normal End",
@@ -43,7 +45,7 @@
           "type": "java.lang.Object",
           "expression": "$1.getMessage().getContent()"
         }],
-        "condition": "collector().session().isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
+        "condition": "isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
         "actions": [{
           "type": "ProcessContent",
           "direction": "Response",
@@ -54,8 +56,8 @@
         },{
           "type": "InstrumentService",
           "direction": "Response",
-          "uriExpression": "$1.getConsumer().getName()",
-          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+          "uriExpression": "$1.getConsumer().getBusinessTransactionName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getBusinessTransactionName()"
         }]
       },{
         "ruleName": "SwitchYard Service Fault End",
@@ -70,10 +72,11 @@
           "type": "java.lang.Object",
           "expression": "$1.getContent()"
         }],
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "collector().setFault(faultName(content), faultDescription(content))"
+          "type": "SetFault",
+          "nameExpression": "faultName(content)",
+          "descriptionExpression": "faultDescription(content)"
         },{
           "type": "ProcessContent",
           "direction": "Response",
@@ -83,7 +86,7 @@
         },{
           "type": "InstrumentService",
           "direction": "Response",
-          "uriExpression": "$0.getConsumer().getName()"
+          "uriExpression": "$0.getConsumer().getBusinessTransactionName()"
         }]
       }]
     }

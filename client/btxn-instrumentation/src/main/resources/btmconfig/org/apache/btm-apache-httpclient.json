@@ -10,7 +10,7 @@
           "org.apache.http.client.methods.HttpUriRequest"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($1.getURI().toString())",
+        "condition": "activate($1.getURI().toString())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -27,17 +27,19 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"org.apache.http.client\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"org.apache.http.client\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"http_method\",$1.getMethod())"
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$1.getMethod()"
         },{
           "type": "FreeFormAction",
           "action": "$1.setHeader(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$1.setHeader(\"Hawkular-btname\",collector().getName())"
+          "action": "$1.setHeader(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Apache HttpClient Producer End",
@@ -47,7 +49,7 @@
           "org.apache.http.client.methods.HttpUriRequest"
         ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -63,7 +65,7 @@
           "org.apache.http.client.ResponseHandler"
         ],
         "location": "ENTRY",
-        "condition": "collector().session().activate($1.getURI().toString())",
+        "condition": "activate($1.getURI().toString())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -80,17 +82,19 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)"
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"btm_source\",\"org.apache.http.client\")"
+          "type": "SetDetail",
+          "name": "btm_source",
+          "valueExpression": "\"org.apache.http.client\""
         },{
-          "type": "FreeFormAction",
-          "action": "collector().setDetail(\"http_method\",$1.getMethod())"
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$1.getMethod()"
         },{
           "type": "FreeFormAction",
           "action": "$1.setHeader(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$1.setHeader(\"Hawkular-btname\",collector().getName())"
+          "action": "$1.setHeader(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
         "ruleName": "Apache HttpClient ResponseHandler Producer End",
@@ -101,7 +105,7 @@
           "org.apache.http.client.ResponseHandler"
         ],
         "location": "EXIT",
-        "condition": "collector().session().isActive()",
+        "condition": "isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
