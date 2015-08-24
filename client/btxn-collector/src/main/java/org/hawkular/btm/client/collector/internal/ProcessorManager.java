@@ -345,6 +345,9 @@ public class ProcessorManager {
 
         private Object compiledAction = null;
 
+        private boolean usesHeaders=false;
+        private boolean usesContent=false;
+
         /**
          * This constructor is initialised with the processor action.
          *
@@ -373,6 +376,10 @@ public class ProcessorManager {
                         log.fine("Initialised processor predicate '"+action.getPredicate()
                                 +"' = "+compiledPredicate);
                     }
+
+                    // Check if headers referenced
+                    usesHeaders = action.getExpression().indexOf("headers.") != -1;
+                    usesContent = action.getExpression().indexOf("values[") != -1;
                 }
                 if (action.getExpression() != null) {
                     compiledAction = MVEL.compileExpression(action.getExpression(), ctx);
@@ -382,6 +389,14 @@ public class ProcessorManager {
                     } else if (log.isLoggable(Level.FINE)) {
                         log.fine("Initialised processor action '"+action.getExpression()
                                 +"' = "+compiledAction);
+                    }
+
+                    // Check if headers referenced
+                    if (!usesHeaders) {
+                        usesHeaders = action.getExpression().indexOf("headers.") != -1;
+                    }
+                    if (!usesContent) {
+                        usesContent = action.getExpression().indexOf("values[") != -1;
                     }
                 } else {
                     log.severe("No action expression defined for processor action=" + action);
@@ -412,6 +427,27 @@ public class ProcessorManager {
                     for (int i=0; i < values.length; i++) {
                         log.finest("        [value "+i+"] = "+values[i]);
                     }
+                }
+            }
+
+            // If expressions don't use headers or content values, then just process each
+            // time process action is called, otherwise determine if the headers or content
+            // have been provided
+            if (usesHeaders || usesContent) {
+                // Check if headers supplied if expressions requires them
+                if (usesHeaders && (headers == null || headers.isEmpty())) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("ProcessManager/Processor/Action["+action+"]: uses headers but not supplied");
+                    }
+                    return;
+                }
+
+                // Check if content values supplied if expressions requires them
+                if (usesContent && (values == null || values.length == 0)) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("ProcessManager/Processor/Action["+action+"]: uses content values but not supplied");
+                    }
+                    return;
                 }
             }
 

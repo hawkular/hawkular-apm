@@ -185,7 +185,102 @@ public class DefaultBusinessTransactionCollectorTest {
     }
 
     @Test
-    public void testIncludeHeaderBTMID() {
+    public void testIncludeHeadersNotProcessedAgain() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionService(btxnService);
+        collector.setAdminService(new AdminService() {
+            @Override
+            public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
+                return new CollectorConfiguration();
+            }
+        });
+
+        Map<String, String> reqHeaders = new HashMap<String, String>();
+        reqHeaders.put("hello", "world");
+
+        // Second headers will not be processed - only the first
+        Map<String, String> reqHeaders2 = new HashMap<String, String>();
+        reqHeaders2.put("joe", "bloggs");
+
+        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.processRequest(reqHeaders);
+        collector.processRequest(reqHeaders2);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals("Only 1 business transaction expected", 1, btxns.size());
+
+        BusinessTransaction btxn = btxns.get(0);
+
+        assertEquals("Single node", 1, btxn.getNodes().size());
+
+        Node node = btxn.getNodes().get(0);
+
+        Service service = (Service) node;
+
+        assertEquals(service.getRequest().getHeaders().get("hello"), "world");
+        assertFalse(service.getRequest().getHeaders().containsKey("joe"));
+    }
+
+    @Test
+    public void testIncludeHeadersSuppliedSecondCall() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionService(btxnService);
+        collector.setAdminService(new AdminService() {
+            @Override
+            public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
+                return new CollectorConfiguration();
+            }
+        });
+
+        Map<String, String> reqHeaders = new HashMap<String, String>();
+        reqHeaders.put("hello", "world");
+
+        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.processRequest(null);
+        collector.processRequest(reqHeaders);
+        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals("Only 1 business transaction expected", 1, btxns.size());
+
+        BusinessTransaction btxn = btxns.get(0);
+
+        assertEquals("Single node", 1, btxn.getNodes().size());
+
+        Node node = btxn.getNodes().get(0);
+
+        Service service = (Service) node;
+
+        assertEquals(service.getRequest().getHeaders().get("hello"), "world");
+    }
+
+    @Test
+    public void testIncludeBTMID() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionService(btxnService);

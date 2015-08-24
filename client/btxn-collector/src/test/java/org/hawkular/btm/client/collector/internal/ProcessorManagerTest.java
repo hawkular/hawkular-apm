@@ -21,6 +21,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.admin.Direction;
@@ -795,4 +798,165 @@ public class ProcessorManagerTest {
         assertTrue(pm.isContentProcessed(btxn, service, Direction.Request));
     }
 
+    @Test
+    public void testProcessRequestNoHeadersOrContent() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setDirection(Direction.Request);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetDetail);
+        pa1.setName("test");
+        pa1.setExpression("\"hello\"");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.Request, null);
+
+        assertEquals("hello", service.getDetails().get("test"));
+    }
+
+    @Test
+    public void testProcessRequestNoHeaders() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setDirection(Direction.Request);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetDetail);
+        pa1.setName("test");
+        pa1.setExpression("headers.get(\"hello\")");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.Request, null);
+
+        assertFalse(service.getDetails().containsKey("test"));
+    }
+
+    @Test
+    public void testProcessRequestWithHeaders() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setDirection(Direction.Request);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetDetail);
+        pa1.setName("test");
+        pa1.setExpression("headers.get(\"hello\")");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        Map<String,String> headers=new HashMap<String,String>();
+        headers.put("hello", "world");
+        pm.process(btxn, service, Direction.Request, headers);
+
+        assertTrue(service.getDetails().containsKey("test"));
+    }
+
+    @Test
+    public void testProcessRequestNoContent() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setDirection(Direction.Request);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetDetail);
+        pa1.setName("test");
+        pa1.setExpression("values[0]");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.Request, null);
+
+        assertFalse(service.getDetails().containsKey("test"));
+    }
+
+    @Test
+    public void testProcessRequestWithContent() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Service);
+        p1.setDirection(Direction.Request);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetDetail);
+        pa1.setName("test");
+        pa1.setExpression("values[0]");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Service service = new Service();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.Request, null, "hello");
+
+        assertTrue(service.getDetails().containsKey("test"));
+    }
 }
