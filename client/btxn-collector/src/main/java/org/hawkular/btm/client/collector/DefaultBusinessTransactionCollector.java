@@ -703,9 +703,23 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             Map<String, ?> headers, Object[] values) {
 
         if (node.interactionNode()) {
-            Message m = new Message();
+            Message m = null;
 
-            if (headers != null) {
+            if (direction == Direction.Request) {
+                m = ((InteractionNode) node).getRequest();
+                if (m == null) {
+                    m = new Message();
+                    ((InteractionNode) node).setRequest(m);
+                }
+            } else {
+                m = ((InteractionNode) node).getResponse();
+                if (m == null) {
+                    m = new Message();
+                    ((InteractionNode) node).setResponse(m);
+                }
+            }
+
+            if (headers != null && m.getHeaders().isEmpty()) {
                 // TODO: Need to have config to determine whether headers should be logged
                 for (String key : headers.keySet()) {
                     String value = getHeaderValueText(headers.get(key));
@@ -714,12 +728,6 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                         m.getHeaders().put(key, value);
                     }
                 }
-            }
-
-            if (direction == Direction.Request) {
-                ((InteractionNode) node).setRequest(m);
-            } else {
-                ((InteractionNode) node).setResponse(m);
             }
         }
 
