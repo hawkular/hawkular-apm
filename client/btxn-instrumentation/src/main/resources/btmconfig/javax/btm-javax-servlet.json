@@ -70,6 +70,93 @@
         },{
           "type": "AssertComplete"
         }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Init",
+        "interfaceName": "^javax.servlet.ServletRequest",
+        "methodName": "getInputStream",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && collector().isRequestContentProcessed()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initRequestBuffer($!)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Append 1",
+        "className": "^javax.servlet.ServletInputStream",
+        "methodName": "read",
+        "parameterTypes": [
+          "byte[]"
+        ],
+        "location": "EXIT",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendRequestBuffer($0, $1, 0, $!)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Append 2",
+        "className": "^javax.servlet.ServletInputStream",
+        "methodName": "read",
+        "parameterTypes": [
+          "byte[]",
+          "int",
+          "int"
+        ],
+        "location": "EXIT",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendRequestBuffer($0, $1, $2, $!)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Record",
+        "className": "^javax.servlet.ServletInputStream",
+        "methodName": "close",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "recordRequestBuffer($0)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer OutputStream Init",
+        "className": "^javax.servlet.ServletOutputStream",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "*"
+        ],
+        "condition": "isActive() && collector().isResponseContentProcessed()",
+        "location": "EXIT",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initResponseBuffer($0)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer OutputStream Append 2",
+        "className": "^javax.servlet.ServletOutputStream",
+        "methodName": "write",
+        "parameterTypes": [
+          "byte[]",
+          "int",
+          "int"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendResponseBuffer($0, $1, $2, $3)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer OutputStream Record",
+        "className": "^javax.servlet.ServletOutputStream",
+        "methodName": "close",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "recordResponseBuffer($0)"
+        }]
       }]
     }
   }

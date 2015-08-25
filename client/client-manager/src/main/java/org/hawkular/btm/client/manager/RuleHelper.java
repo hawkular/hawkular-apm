@@ -16,6 +16,7 @@
  */
 package org.hawkular.btm.client.manager;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,11 @@ public class RuleHelper extends Helper implements SessionManager {
     private static Map<String, HeadersAccessor> headersAccessors = new HashMap<String, HeadersAccessor>();
 
     private static List<FaultDescriptor> faultDescriptors;
+
+    private static Map<Object, ByteArrayOutputStream> requestDataBuffers = new HashMap<Object,
+                                            ByteArrayOutputStream>();
+    private static Map<Object, ByteArrayOutputStream> responseDataBuffers = new HashMap<Object,
+                                            ByteArrayOutputStream>();
 
     static {
         List<HeadersAccessor> accessors = ServiceResolver.getServices(HeadersAccessor.class);
@@ -118,6 +124,16 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public String simpleClassName(Object obj) {
         return obj.getClass().getSimpleName();
+    }
+
+    /**
+     * This method returns the hash code for the supplied object.
+     *
+     * @param obj The object
+     * @return The hash code
+     */
+    public int hashCode(Object obj) {
+        return obj.hashCode();
     }
 
     /**
@@ -317,5 +333,135 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public String getBusinessTransactionName() {
         return collector().getName();
+    }
+
+    /**
+     * This method initialises a data buffer associated with the supplied request object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    public void initRequestBuffer(Object obj) {
+        if (!requestDataBuffers.containsKey(obj.hashCode())) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Init request data buffer: obj="+obj.hashCode());
+            }
+            requestDataBuffers.put(obj.hashCode(), new ByteArrayOutputStream());
+        }
+    }
+
+    /**
+     * This method determines if there is an active request data buffer for
+     * the supplied object.
+     *
+     * @param obj The object associated with the buffer
+     * @return Whether there is an active data buffer
+     */
+    public boolean isRequestBufferActive(Object obj) {
+        return requestDataBuffers.containsKey(obj.hashCode());
+    }
+
+    /**
+     * This method appends data to the buffer associated with the supplied request object.
+     *
+     * @param obj The object associated with the buffer
+     * @param data The data to be appended
+     * @param offset The offset of the data
+     * @param len The length of data
+     */
+    public void appendRequestBuffer(Object obj, byte[] data, int offset, int len) {
+        ByteArrayOutputStream baos=requestDataBuffers.get(obj.hashCode());
+        if (baos != null && len > 0) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Appending request data: obj="+obj.hashCode()+" datalen="+data.length+" offset="+
+                                        offset+" len="+len);
+            }
+            baos.write(data, offset, len);
+        }
+    }
+
+    /**
+     * This method records the data within a buffer associated with the supplied request
+     * object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    public void recordRequestBuffer(Object obj) {
+        ByteArrayOutputStream baos=requestDataBuffers.remove(obj.hashCode());
+        if (baos != null) {
+            try {
+                baos.close();
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Recording request data: obj="+obj.hashCode()+" data="+new String(baos.toByteArray()));
+                }
+                collector().processRequest(null, baos.toByteArray());
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to record request data", e);
+            }
+        }
+    }
+
+    /**
+     * This method initialises a data buffer associated with the supplied response object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    public void initResponseBuffer(Object obj) {
+        if (!responseDataBuffers.containsKey(obj.hashCode())) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Init response data buffer: obj="+obj.hashCode());
+            }
+            responseDataBuffers.put(obj.hashCode(), new ByteArrayOutputStream());
+        }
+    }
+
+    /**
+     * This method determines if there is an active response data buffer for
+     * the supplied object.
+     *
+     * @param obj The object associated with the buffer
+     * @return Whether there is an active data buffer
+     */
+    public boolean isResponseBufferActive(Object obj) {
+        return responseDataBuffers.containsKey(obj.hashCode());
+    }
+
+    /**
+     * This method appends data to the buffer associated with the supplied response object.
+     *
+     * @param obj The object associated with the buffer
+     * @param data The data to be appended
+     * @param offset The offset of the data
+     * @param len The length of data
+     */
+    public void appendResponseBuffer(Object obj, byte[] data, int offset, int len) {
+        ByteArrayOutputStream baos=responseDataBuffers.get(obj.hashCode());
+        if (baos != null && len > 0) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Appending response data: obj="+obj.hashCode()+" datalen="+data.length
+                                    +" offset="+offset+" len="+len);
+            }
+            baos.write(data, offset, len);
+        }
+    }
+
+    /**
+     * This method records the data within a buffer associated with the supplied response
+     * object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    public void recordResponseBuffer(Object obj) {
+        ByteArrayOutputStream baos=responseDataBuffers.remove(obj.hashCode());
+        if (baos != null) {
+            try {
+                baos.close();
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Recording response data: obj="+obj.hashCode()+" data="+new String(baos.toByteArray()));
+                }
+                collector().processResponse(null, baos.toByteArray());
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to record response data", e);
+            }
+        }
     }
 }

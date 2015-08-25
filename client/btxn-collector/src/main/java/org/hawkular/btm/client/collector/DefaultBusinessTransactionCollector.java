@@ -429,10 +429,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+                Node node=builder.getCurrentNode();
 
-                return processorManager.isProcessed(builder.getBusinessTransaction(),
-                        node, Direction.Request);
+                if (node != null && node.interactionNode()) {
+                    return processorManager.isProcessed(builder.getBusinessTransaction(),
+                            (InteractionNode)node, Direction.Request);
+                }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -453,10 +455,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+                Node node=builder.getCurrentNode();
 
-                return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                        node, Direction.Request);
+                if (node != null && node.interactionNode()) {
+                    return processorManager.isContentProcessed(builder.getBusinessTransaction(),
+                            (InteractionNode)node, Direction.Request);
+                }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -477,10 +481,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+                Node node=builder.getCurrentNode();
 
-                return processorManager.isProcessed(builder.getBusinessTransaction(),
-                        node, Direction.Response);
+                if (node != null && node.interactionNode()) {
+                    return processorManager.isProcessed(builder.getBusinessTransaction(),
+                            (InteractionNode)node, Direction.Response);
+                }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -501,10 +507,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                InteractionNode node=(InteractionNode)builder.getCurrentNode();
+                Node node=builder.getCurrentNode();
 
-                return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                        node, Direction.Response);
+                if (node != null && node.interactionNode()) {
+                    return processorManager.isContentProcessed(builder.getBusinessTransaction(),
+                            (InteractionNode)node, Direction.Response);
+                }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "No fragment builder for this thread", null);
             }
@@ -523,6 +531,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void processRequest(Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Process request: headers=" + headers + " values=" + values);
+        }
+
+        if (!fragmentManager.hasFragmentBuilder()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("No fragment builder available to process the request data");
+            }
+            return;
         }
 
         try {
@@ -548,6 +563,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void processResponse(Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Process response: headers=" + headers + " values=" + values);
+        }
+
+        if (!fragmentManager.hasFragmentBuilder()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("No fragment builder available to process the response data");
+            }
+            return;
         }
 
         try {

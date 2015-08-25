@@ -1,0 +1,31 @@
+{
+  "businessTransactions": {
+    "testcxf": {
+      "description": "Configuration for Wildfly Camel CXF tests",
+      "filter": {
+        "inclusions": [
+          "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident"
+        ]
+      },
+      "processors": [{
+        "nodeType": "Consumer",
+        "direction": "Request",
+        "uriFilter": "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "new String(values[0])"
+        }]
+      },{
+        "nodeType": "Consumer",
+        "direction": "Response",
+        "uriFilter": "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "new String(values[0])"
+        }]
+      }]
+    }
+  }
+}
