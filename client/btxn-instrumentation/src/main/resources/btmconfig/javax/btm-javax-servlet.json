@@ -92,7 +92,7 @@
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendRequestBuffer($0, $1, 0, $!)"
+          "action": "appendRequestBuffer($0, $1, 0, $!, $0.available()==0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Append 2",
@@ -106,7 +106,7 @@
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendRequestBuffer($0, $1, $2, $!)"
+          "action": "appendRequestBuffer($0, $1, $2, $!, $0.available()==0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Record",
@@ -121,16 +121,27 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Init",
-        "className": "^javax.servlet.ServletOutputStream",
-        "methodName": "<init>",
+        "interfaceName": "^javax.servlet.ServletResponse",
+        "methodName": "getOutputStream",
         "parameterTypes": [
-          "*"
         ],
         "condition": "isActive() && collector().isResponseContentProcessed()",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initResponseBuffer($0)"
+          "action": "initResponseBuffer($!)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer OutputStream Append 1",
+        "className": "^javax.servlet.ServletOutputStream",
+        "methodName": "write",
+        "parameterTypes": [
+          "byte[]"
+        ],
+        "location": "EXIT",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendResponseBuffer($0, $1, $2, $!, false)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Append 2",
@@ -144,7 +155,7 @@
         "location": "ENTRY",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer($0, $1, $2, $3)"
+          "action": "appendResponseBuffer($0, $1, $2, $3, false)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Record",
@@ -156,6 +167,18 @@
         "actions": [{
           "type": "FreeFormAction",
           "action": "recordResponseBuffer($0)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer BufferedWriter Init",
+        "interfaceName": "^javax.servlet.ServletResponse",
+        "methodName": "getWriter",
+        "parameterTypes": [
+        ],
+        "condition": "isActive() && collector().isResponseContentProcessed()",
+        "location": "EXIT",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initResponseBuffer($!)"
         }]
       }]
     }

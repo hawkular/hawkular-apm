@@ -367,8 +367,9 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param data The data to be appended
      * @param offset The offset of the data
      * @param len The length of data
+     * @param close Whether to close the buffer after appending the data
      */
-    public void appendRequestBuffer(Object obj, byte[] data, int offset, int len) {
+    public void appendRequestBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
         ByteArrayOutputStream baos=requestDataBuffers.get(obj.hashCode());
         if (baos != null && len > 0) {
             if (log.isLoggable(Level.FINEST)) {
@@ -376,6 +377,10 @@ public class RuleHelper extends Helper implements SessionManager {
                                         offset+" len="+len);
             }
             baos.write(data, offset, len);
+
+            if (close) {
+                recordRequestBuffer(obj);
+            }
         }
     }
 
@@ -432,8 +437,9 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param data The data to be appended
      * @param offset The offset of the data
      * @param len The length of data
+     * @param close Whether to close the buffer after appending the data
      */
-    public void appendResponseBuffer(Object obj, byte[] data, int offset, int len) {
+    public void appendResponseBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
         ByteArrayOutputStream baos=responseDataBuffers.get(obj.hashCode());
         if (baos != null && len > 0) {
             if (log.isLoggable(Level.FINEST)) {
@@ -441,6 +447,10 @@ public class RuleHelper extends Helper implements SessionManager {
                                     +" offset="+offset+" len="+len);
             }
             baos.write(data, offset, len);
+
+            if (close) {
+                recordResponseBuffer(obj);
+            }
         }
     }
 
