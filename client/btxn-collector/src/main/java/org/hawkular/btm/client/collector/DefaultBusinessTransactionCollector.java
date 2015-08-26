@@ -551,7 +551,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setFault failed", t);
+                log.log(warningLogLevel, "processRequest failed", t);
             }
         }
     }
@@ -583,7 +583,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setFault failed", t);
+                log.log(warningLogLevel, "processResponse failed", t);
             }
         }
     }
@@ -766,6 +766,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * @return The text representation, or null if no suitable found
      */
     protected String getHeaderValueText(Object value) {
+        if (value == null) {
+            return null;
+        }
+
         // TODO: Type conversion based on provided config
         if (value.getClass() == String.class) {
             return (String) value;
