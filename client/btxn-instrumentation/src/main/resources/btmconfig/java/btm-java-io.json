@@ -15,18 +15,6 @@
           "type": "FreeFormAction",
           "action": "appendResponseBuffer($0, $1.getBytes(), 0, $1.length(), false)"
         }]
-      },{
-        "ruleName": "Java IO PrintWriter Response Close",
-        "className": "^java.io.PrintWriter",
-        "methodName": "close",
-        "parameterTypes": [
-        ],
-        "location": "ENTRY",
-        "condition": "isResponseBufferActive($0)",
-        "actions": [{
-          "type": "FreeFormAction",
-          "action": "recordResponseBuffer($0)"
-        }]
       }]
     }
   }

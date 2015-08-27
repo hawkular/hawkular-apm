@@ -212,11 +212,9 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
         assertTrue(testConsumer.getRequest().getContent().containsKey("all"));
         assertEquals(GREETINGS_REQUEST, testConsumer.getRequest().getContent().get("all").getValue());
 
-        /* TODO: Awaiting solution for HWKBTM-137
         assertNotNull(testConsumer.getResponse());
         assertTrue(testConsumer.getResponse().getContent().containsKey("all"));
         assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getResponse().getContent().get("all").getValue());
-         */
     }
 
 }
