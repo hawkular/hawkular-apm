@@ -12,6 +12,7 @@
       "description": "Configuration for Vertx HTTP tests",
       "filter": {
         "inclusions": [
+          "http://localhost:8080/hello_get",
           "http://localhost:8080/hello_put",
           "http://localhost:8080/hello_post"
         ]
@@ -27,7 +28,7 @@
         },{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "values[0]"
+          "expression": "new String(values[0])"
         }]
       },{
         "nodeType": "Consumer",
@@ -36,7 +37,7 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "values[0]"
+          "expression": "new String(values[0])"
         }]
       },{
         "nodeType": "Producer",
@@ -49,7 +50,7 @@
         },{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "values[0]"
+          "expression": "new String(values[0])"
         }]
       },{
         "nodeType": "Producer",
@@ -58,7 +59,7 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "values[0]"
+          "expression": "new String(values[0])"
         }]
       }]
     }

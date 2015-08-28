@@ -47,7 +47,7 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "valueExpressions": [
-            "$1"
+            "$1.getBytes()"
           ]
         }]
       },{
@@ -63,7 +63,7 @@
           "type": "ProcessContent",
           "direction": "Response",
           "valueExpressions": [
-            "$1"
+            "$1.getBytes()"
           ]
         },{
           "type": "InstrumentConsumer",
@@ -101,7 +101,7 @@
           "direction": "Request",
           "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "valueExpressions": [
-            "$1"
+            "$1.getBytes()"
           ]
         },{
           "type": "InitiateLink",
@@ -167,7 +167,7 @@
           "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer End",
+        "ruleName": "Vertx HTTP Producer Establish Response Link",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "handleResponse",
         "parameterTypes": [
@@ -178,10 +178,6 @@
         "actions": [{
           "type": "CompleteLink",
           "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
-        },{
-          "type": "InstrumentProducer",
-          "direction": "Response",
-          "endpointTypeExpression": "\"HTTP\""
         }]
       },{
         "ruleName": "Vertx HTTP Producer Async Request Thread Complete",
@@ -197,15 +193,46 @@
           "type": "Unlink"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer Async Response Thread Complete",
+        "ruleName": "Vertx HTTP Producer Init Response Buffer",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "handleResponse",
         "parameterTypes": [
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
-        "location": "EXIT",
-        "condition": "isActive()",
+        "location": "ENTRY",
+        "condition": "isActive() && collector().isResponseContentProcessed()",
         "actions": [{
+          "type": "FreeFormAction",
+          "action": "initResponseBuffer($1)"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Write Response Buffer",
+        "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
+        "methodName": "handleChunk",
+        "parameterTypes": [
+          "io.vertx.core.buffer.Buffer"
+         ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendResponseBuffer($0, $1.getBytes(), 0, $1.length(), false)"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Record Buffer And End Response",
+        "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
+        "methodName": "handleEnd",
+        "parameterTypes": [
+          "*"
+         ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "recordResponseBuffer($0)"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\""
+        },{
           "type": "Unlink"
         }]
       }]
