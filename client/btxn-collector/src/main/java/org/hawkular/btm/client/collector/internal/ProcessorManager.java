@@ -142,6 +142,11 @@ public class ProcessorManager {
     protected ProcessorWrapper getMatchedProcessor(BusinessTransaction btxn, Node node, Direction direction) {
         ProcessorWrapper matchedProcessor=null;
 
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("ProcessManager: getMatchedProcessor btxn="+btxn+" node="+node
+                                +" direction="+direction);
+        }
+
         if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
             List<ProcessorWrapper> procs = processors.get(btxn.getName());
 

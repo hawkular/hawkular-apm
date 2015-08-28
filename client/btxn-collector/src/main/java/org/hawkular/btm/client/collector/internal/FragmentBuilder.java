@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -56,6 +58,11 @@ public class FragmentBuilder {
 
     private static String hostName;
     private static String hostAddress;
+
+    private int requestHashCode=0;
+    private ByteArrayOutputStream requestStream=null;
+    private int responseHashCode=0;
+    private ByteArrayOutputStream responseStream=null;
 
     static {
         try {
@@ -117,6 +124,9 @@ public class FragmentBuilder {
      */
     public void pushNode(Node node) {
 
+        // Reset request stream
+        requestStream = null;
+
         synchronized (nodeStack) {
             // Check if fragment is in suppression mode
             if (suppress) {
@@ -154,6 +164,10 @@ public class FragmentBuilder {
      * @return The node
      */
     public Node popNode(Class<? extends Node> cls, String uri) {
+
+        // Reset request and response streams
+        requestStream = null;
+        responseStream = null;
 
         synchronized (nodeStack) {
             // Check if fragment is in suppression mode
@@ -288,6 +302,116 @@ public class FragmentBuilder {
      */
     public boolean isSuppressed() {
         return suppress;
+    }
+
+    /**
+     * This method initialises the request data buffer.
+     *
+     * @param hashCode The hash code
+     */
+    public void initRequestBuffer(int hashCode) {
+        requestHashCode = hashCode;
+        requestStream = new ByteArrayOutputStream();
+    }
+
+    /**
+     * This method determines if the request data buffer is active.
+     *
+     * @param hashCode The hash code, or -1 to ignore the hash code
+     * @return Whether the data buffer is active
+     */
+    public boolean isRequestBufferActive(int hashCode) {
+        return requestStream != null && (hashCode == -1 || hashCode == requestHashCode);
+    }
+
+    /**
+     * This method writes data to the request buffer.
+     *
+     * @param hashCode The hash code, or -1 to ignore the hash code
+     * @param b The bytes
+     * @param offset The offset
+     * @param len The length
+     */
+    public void writeRequestData(int hashCode, byte[] b, int offset, int len) {
+        if (requestStream != null && (hashCode == -1 || hashCode == requestHashCode)) {
+            requestStream.write(b, offset, len);
+        }
+    }
+
+    /**
+     * This method returns the data associated with the request
+     * buffer and resets the buffer to be inactive.
+     *
+     * @param hashCode The hash code, or -1 to ignore the hash code
+     * @return The data
+     */
+    public byte[] getRequestData(int hashCode) {
+        if (requestStream != null && (hashCode == -1 || hashCode == requestHashCode)) {
+            try {
+                requestStream.close();
+            } catch (IOException e) {
+                log.severe("Failed to close request data stream: "+e);
+            }
+            byte[] b=requestStream.toByteArray();
+            requestStream = null;
+            return b;
+        }
+        return null;
+    }
+
+    /**
+     * This method initialises the response data buffer.
+     *
+     * @param hashCode The hash code
+     */
+    public void initResponseBuffer(int hashCode) {
+        responseHashCode = hashCode;
+        responseStream = new ByteArrayOutputStream();
+    }
+
+    /**
+     * This method determines if the response data buffer is active.
+     *
+     * @param hashCode The hash code, or -1 to ignore the hash code
+     * @return Whether the data buffer is active
+     */
+    public boolean isResponseBufferActive(int hashCode) {
+        return responseStream != null && (hashCode == -1 || hashCode == responseHashCode);
+    }
+
+    /**
+     * This method writes data to the response buffer.
+     *
+     * @param hashCode The hash code, or -1 to ignore the hash code
+     * @param b The bytes
+     * @param offset The offset
+     * @param len The length
+     */
+    public void writeResponseData(int hashCode, byte[] b, int offset, int len) {
+        if (responseStream != null && (hashCode == -1 || hashCode == responseHashCode)) {
+            responseStream.write(b, offset, len);
+        }
+    }
+
+    /**
+     * This method returns the data associated with the response
+     * buffer and resets the buffer to be inactive.
+     *
+     * @param hashCode The hash code, or -1 to ignore the hash code
+     * @return The data
+     */
+    public byte[] getResponseData(int hashCode) {
+        if (responseStream != null && (hashCode == -1 || hashCode == responseHashCode)) {
+            try {
+                responseStream.close();
+            } catch (IOException e) {
+                log.severe("Failed to close response data stream: "+e);
+            }
+            byte[] b=responseStream.toByteArray();
+            responseStream = null;
+            return b;
+        }
+        return null;
     }
 
     /**

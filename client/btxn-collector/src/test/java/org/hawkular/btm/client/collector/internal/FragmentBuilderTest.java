@@ -327,4 +327,115 @@ public class FragmentBuilderTest {
 
         assertEquals(0, ((Consumer) builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
     }
+
+    @Test
+    public void testInitRequestBuffer() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initRequestBuffer(1);
+        assertTrue(builder.isRequestBufferActive(1));
+    }
+
+    @Test
+    public void testInitRequestBufferIncorrectHashcode() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initRequestBuffer(1);
+        assertFalse(builder.isRequestBufferActive(2));
+    }
+
+    @Test
+    public void testInitRequestBufferIgnoreHashcode() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initRequestBuffer(1);
+        assertTrue(builder.isRequestBufferActive(-1));
+    }
+
+    @Test
+    public void testInitResponseBuffer() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initResponseBuffer(1);
+        assertTrue(builder.isResponseBufferActive(1));
+    }
+
+    @Test
+    public void testInitResponseBufferIncorrectHashcode() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initResponseBuffer(1);
+        assertFalse(builder.isResponseBufferActive(2));
+    }
+
+    @Test
+    public void testInitResponseBufferIgnoreHashcode() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initResponseBuffer(1);
+        assertTrue(builder.isResponseBufferActive(-1));
+    }
+
+    @Test
+    public void testWriteRequestData() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initRequestBuffer(1);
+
+        String data1="Hello ";
+        builder.writeRequestData(1, data1.getBytes(), 0, data1.length());
+
+        String data2="World";
+        builder.writeRequestData(1, data2.getBytes(), 0, data2.length());
+
+        assertTrue(builder.isRequestBufferActive(1));
+        assertEquals("Hello World", new String(builder.getRequestData(1)));
+
+        assertFalse(builder.isRequestBufferActive(1));
+    }
+
+    @Test
+    public void testWriteResponseData() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initResponseBuffer(1);
+
+        String data1="Hello ";
+        builder.writeResponseData(1, data1.getBytes(), 0, data1.length());
+
+        String data2="World";
+        builder.writeResponseData(1, data2.getBytes(), 0, data2.length());
+
+        assertTrue(builder.isResponseBufferActive(1));
+        assertEquals("Hello World", new String(builder.getResponseData(1)));
+
+        assertFalse(builder.isResponseBufferActive(1));
+    }
+
+    @Test
+    public void testWriteRequestDataIgnoreHashcode() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initRequestBuffer(1);
+
+        String data1="Hello ";
+        builder.writeRequestData(1, data1.getBytes(), 0, data1.length());
+
+        String data2="World";
+        builder.writeRequestData(1, data2.getBytes(), 0, data2.length());
+
+        assertTrue(builder.isRequestBufferActive(1));
+        assertEquals("Hello World", new String(builder.getRequestData(-1)));
+
+        assertFalse(builder.isRequestBufferActive(1));
+    }
+
+    @Test
+    public void testWriteResponseDataIgnoreHashcode() {
+        FragmentBuilder builder = new FragmentBuilder();
+        builder.initResponseBuffer(1);
+
+        String data1="Hello ";
+        builder.writeResponseData(1, data1.getBytes(), 0, data1.length());
+
+        String data2="World";
+        builder.writeResponseData(1, data2.getBytes(), 0, data2.length());
+
+        assertTrue(builder.isResponseBufferActive(1));
+        assertEquals("Hello World", new String(builder.getResponseData(-1)));
+
+        assertFalse(builder.isResponseBufferActive(1));
+    }
+
 }

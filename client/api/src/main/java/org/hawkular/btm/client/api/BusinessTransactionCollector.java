@@ -196,6 +196,74 @@ public interface BusinessTransactionCollector {
     void setDetail(String name, String value);
 
     /**
+     * This method initialises a data buffer associated with the supplied request object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    void initRequestBuffer(Object obj);
+
+    /**
+     * This method determines if there is an active request data buffer for
+     * the supplied object.
+     *
+     * @param obj The object associated with the buffer
+     * @return Whether there is an active data buffer
+     */
+    boolean isRequestBufferActive(Object obj);
+
+    /**
+     * This method appends data to the buffer associated with the supplied request object.
+     *
+     * @param obj The object associated with the buffer
+     * @param data The data to be appended
+     * @param offset The offset of the data
+     * @param len The length of data
+     */
+    void appendRequestBuffer(Object obj, byte[] data, int offset, int len);
+
+    /**
+     * This method records the data within a buffer associated with the supplied request
+     * object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    void recordRequestBuffer(Object obj);
+
+    /**
+     * This method initialises a data buffer associated with the supplied response object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    void initResponseBuffer(Object obj);
+
+    /**
+     * This method determines if there is an active response data buffer for
+     * the supplied object.
+     *
+     * @param obj The object associated with the buffer
+     * @return Whether there is an active data buffer
+     */
+    boolean isResponseBufferActive(Object obj);
+
+    /**
+     * This method appends data to the buffer associated with the supplied response object.
+     *
+     * @param obj The object associated with the buffer
+     * @param data The data to be appended
+     * @param offset The offset of the data
+     * @param len The length of data
+     */
+    void appendResponseBuffer(Object obj, byte[] data, int offset, int len);
+
+    /**
+     * This method records the data within a buffer associated with the supplied response
+     * object.
+     *
+     * @param obj The object associated with the buffer
+     */
+    void recordResponseBuffer(Object obj);
+
+    /**
      * This method returns the session manager associated with the
      * current thread of execution.
      *
