@@ -32,6 +32,10 @@
           "type": "SetDetail",
           "name": "http-method",
           "valueExpression": "$0.method()"
+        },{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
         }]
       },{
         "ruleName": "Vertx HTTP Consumer Start Values",
@@ -45,7 +49,6 @@
         "actions": [{
           "type": "ProcessContent",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "valueExpressions": [
             "$1.getBytes()"
           ]
