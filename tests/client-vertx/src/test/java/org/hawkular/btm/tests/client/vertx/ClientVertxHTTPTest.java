@@ -147,6 +147,10 @@ public class ClientVertxHTTPTest extends ClientTestBase {
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(producer, consumer);
 
+        // Details
+        assertEquals("Hello World", consumer.getDetails().get("hello"));
+        assertEquals("Hello World", producer.getDetails().get("hello"));
+
         assertTrue(consumer.getResponse().getContent().containsKey("all"));
         assertEquals(RESPONSE, consumer.getResponse().getContent().get("all").getValue());
 
@@ -155,9 +159,6 @@ public class ClientVertxHTTPTest extends ClientTestBase {
 
         // If not 'get' then check message content has been included
         if (!get) {
-            // Details
-            assertEquals("Hello World", consumer.getDetails().get("hello"));
-
             // Verify content
             assertTrue(consumer.getRequest().getContent().containsKey("all"));
             assertEquals(MY_REQUEST, consumer.getRequest().getContent().get("all").getValue());
