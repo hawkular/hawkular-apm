@@ -33,6 +33,9 @@ public class InstrumentRule {
     private String ruleName;
 
     @JsonInclude
+    private List<String> notes = new ArrayList<String>();
+
+    @JsonInclude
     private String className;
 
     @JsonInclude
@@ -77,6 +80,20 @@ public class InstrumentRule {
      */
     public void setRuleName(String ruleName) {
         this.ruleName = ruleName;
+    }
+
+    /**
+     * @return the notes
+     */
+    public List<String> getNotes() {
+        return notes;
+    }
+
+    /**
+     * @param notes the notes to set
+     */
+    public void setNotes(List<String> notes) {
+        this.notes = notes;
     }
 
     /**

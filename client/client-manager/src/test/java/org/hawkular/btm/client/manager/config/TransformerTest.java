@@ -74,9 +74,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -104,7 +104,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, "1.0.0");
+        String transformed = transformer.transform("test", in, "1.0.0");
 
         String expected = "";
 
@@ -129,7 +129,7 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
         String expected = "";
 
@@ -154,9 +154,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, "2.0.0");
+        String transformed = transformer.transform("test", in, "2.0.0");
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -184,9 +184,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -214,9 +214,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -245,9 +245,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -277,9 +277,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT EXIT\r\nIF "
@@ -315,9 +315,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER TestHelper\r\n"
                 + "AT ENTRY\r\nIF "
@@ -360,9 +360,9 @@ public class TransformerTest {
 
         Transformer transformer = new Transformer();
 
-        String transformed = transformer.transform(in, null);
+        String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\n"
