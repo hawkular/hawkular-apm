@@ -136,7 +136,8 @@ public class ClientManager {
 
         for (String name : instrumentTypes.keySet()) {
             Instrumentation types = instrumentTypes.get(name);
-            String rules = ruleTransformer.transform(types, config.getProperty("version."+name, null));
+            String rules = ruleTransformer.transform(name, types,
+                            config.getProperty("version."+name, null));
 
             if (log.isLoggable(Level.FINER)) {
                 log.finer("Update instrumentation script name=" + name + " rules=" + rules);

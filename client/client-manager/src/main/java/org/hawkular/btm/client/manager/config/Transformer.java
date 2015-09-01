@@ -44,14 +44,16 @@ public class Transformer {
      * This method transforms the list of instrument types into a
      * ByteMan rule script.
      *
+     * @param name The instrumentation rules name
      * @param types The instrument types
      * @param version The optional version
      * @return The rule script
      */
-    public String transform(Instrumentation types, String version) {
+    public String transform(String name, Instrumentation types, String version) {
         StringBuilder builder = new StringBuilder();
 
-        for (InstrumentRule rule : types.getRules()) {
+        for (int ruleno=0; ruleno < types.getRules().size(); ruleno++) {
+            InstrumentRule rule=types.getRules().get(ruleno);
 
             // Check version
             if (!rule.isVersionValid(version)) {
@@ -63,6 +65,10 @@ public class Transformer {
             }
 
             builder.append("RULE ");
+            builder.append(name);
+            builder.append('(');
+            builder.append(ruleno + 1);
+            builder.append(") ");
             builder.append(rule.getRuleName());
             builder.append("\r\n");
 
