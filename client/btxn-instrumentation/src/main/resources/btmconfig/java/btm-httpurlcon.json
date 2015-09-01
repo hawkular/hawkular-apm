@@ -22,7 +22,7 @@
           "uriExpression": "$0.getURL().toString()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
           "headersExpression": "$0.getRequestProperties()"
         },{
@@ -60,7 +60,7 @@
           "uriExpression": "$0.getURL().toString()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
           "headersExpression": "$0.getRequestProperties()"
         },{
@@ -98,7 +98,7 @@
           "uriExpression": "$0.getURL().toString()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
           "headersExpression": "$0.getRequestProperties()"
         },{

@@ -33,7 +33,6 @@ public class ProcessContentTransformerTest {
     public void testConvertToRuleActionRequest() {
         ProcessContent im = new ProcessContent();
 
-        im.setHeadersExpression("headers");
         im.getValueExpressions().add("$1");
         im.getValueExpressions().add("$2");
 
@@ -41,7 +40,7 @@ public class ProcessContentTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processRequest(headers,createArrayBuilder().add($1).add($2).get())";
+        String expected = ACTION_PREFIX + "processRequest(null,createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }
@@ -51,7 +50,6 @@ public class ProcessContentTransformerTest {
         ProcessContent im = new ProcessContent();
 
         im.setDirection(Direction.Response);
-        im.setHeadersExpression("headers");
         im.getValueExpressions().add("$1");
         im.getValueExpressions().add("$2");
 
@@ -59,7 +57,7 @@ public class ProcessContentTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processResponse(headers,createArrayBuilder().add($1).add($2).get())";
+        String expected = ACTION_PREFIX + "processResponse(null,createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }

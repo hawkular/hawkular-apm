@@ -23,9 +23,10 @@
           "uriExpression": "$1.getUri().toString()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"org.jboss.resteasy.client.jaxrs.internal.ClientInvocation\",$1)"
+          "originalType": "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation",
+          "headersExpression": "$1"
         },{
           "type": "SetDetail",
           "name": "btm_source",

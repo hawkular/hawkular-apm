@@ -27,9 +27,10 @@
           "uriExpression": "req.getRequestURL().toString()",
           "idExpression": "req.getHeader(\"Hawkular-btid\")"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"javax.servlet.http.HttpServletRequest\",req)"
+          "originalType": "javax.servlet.http.HttpServletRequest",
+          "headersExpression": "req"
         },{
           "type": "SetDetail",
           "name": "btm_source",
