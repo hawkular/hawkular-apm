@@ -17,9 +17,13 @@
           "uriExpression": "$1.getConsumer().getBusinessTransactionName()",
           "operationExpression": "$1.getContract().getConsumerOperation().getBusinessTransactionName()"
         },{
+          "type": "ProcessHeaders",
+          "direction": "Request",
+          "originalType": "org.switchyard.Context",
+          "headersExpression": "$1.getMessage().getContext()"
+        },{
           "type": "ProcessContent",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
           "valueExpressions": [
             "$1.getMessage().getContent()"
           ]
@@ -47,9 +51,13 @@
         }],
         "condition": "isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
         "actions": [{
+          "type": "ProcessHeaders",
+          "direction": "Response",
+          "originalType": "org.switchyard.Context",
+          "headersExpression": "$1.getMessage().getContext()"
+        },{
           "type": "ProcessContent",
           "direction": "Response",
-          "headersExpression": "getHeaders(\"org.switchyard.Context\",$1.getMessage().getContext())",
           "valueExpressions": [
             "content"
           ]

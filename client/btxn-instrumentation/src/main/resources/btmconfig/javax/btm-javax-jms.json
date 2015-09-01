@@ -21,9 +21,10 @@
           "uriExpression": "$1.getJMSDestination()",
           "idExpression": "$1.getStringProperty(\"HawkularBTID\")"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"javax.jms.Message\",$1)"
+          "originalType": "javax.jms.Message",
+          "headersExpression": "$1"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -71,9 +72,10 @@
           "idExpression": "id",
           "uriExpression": "$1"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"javax.jms.Message\",$2)"
+          "originalType": "javax.jms.Message",
+          "headersExpression": "$2"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -114,9 +116,10 @@
           "idExpression": "id",
           "uriExpression": "$1"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"javax.jms.Message\",$2)"
+          "originalType": "javax.jms.Message",
+          "headersExpression": "$2"
         },{
           "type": "SetDetail",
           "name": "btm_source",

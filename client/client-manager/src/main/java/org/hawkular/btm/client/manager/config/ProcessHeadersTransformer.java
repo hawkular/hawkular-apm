@@ -18,21 +18,21 @@ package org.hawkular.btm.client.manager.config;
 
 import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.ProcessContent;
+import org.hawkular.btm.api.model.admin.ProcessHeaders;
 
 /**
- * This class transforms the ProcessContent action type.
+ * This class transforms the ProcessHeaders action type.
  *
  * @author gbrown
  */
-public class ProcessContentTransformer implements InstrumentActionTransformer {
+public class ProcessHeadersTransformer implements InstrumentActionTransformer {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.manager.config.InstrumentActionTransformer#getActionType()
      */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
-        return ProcessContent.class;
+        return ProcessHeaders.class;
     }
 
     /* (non-Javadoc)
@@ -41,28 +41,30 @@ public class ProcessContentTransformer implements InstrumentActionTransformer {
      */
     @Override
     public String convertToRuleAction(InstrumentAction action) {
-        ProcessContent pcAction = (ProcessContent) action;
+        ProcessHeaders phAction = (ProcessHeaders) action;
         StringBuilder builder = new StringBuilder();
 
         builder.append("collector().");
 
-        if (pcAction.getDirection() == Direction.Request) {
+        if (phAction.getDirection() == Direction.Request) {
             builder.append("processRequest(");
         } else {
             builder.append("processResponse(");
         }
 
-        builder.append("null,createArrayBuilder()");
-
-        for (String expr : pcAction.getValueExpressions()) {
-            builder.append(".add(");
-            builder.append(expr);
-            builder.append(')');
+        if (phAction.getOriginalType() != null) {
+            builder.append("getHeaders(\"");
+            builder.append(phAction.getOriginalType());
+            builder.append("\",");
         }
 
-        builder.append(".get()");
+        builder.append(phAction.getHeadersExpression());
 
-        builder.append(")");
+        if (phAction.getOriginalType() != null) {
+            builder.append(")");
+        }
+
+        builder.append(",null)");
 
         return builder.toString();
     }

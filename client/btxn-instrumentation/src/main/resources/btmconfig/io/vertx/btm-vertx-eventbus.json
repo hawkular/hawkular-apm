@@ -21,9 +21,10 @@
           "uriExpression": "$1.address()",
           "idExpression": "$1.headers().get(\"HawkularBTID\")"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$1.headers()"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -64,9 +65,10 @@
           "uriExpression": "$1.address()",
           "idExpression": "$1.headers().get(\"HawkularBTID\")"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$1.headers())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$1.headers()"
         },{
           "type": "InitiateLink",
           "idExpression": "\"io.vertx.core.eventbus-consumer\"+$1.replyAddress()"
@@ -118,9 +120,10 @@
           "uriExpression": "$1",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$3.getHeaders()"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -172,9 +175,10 @@
           "uriExpression": "$1",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$3.getHeaders())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$3.getHeaders()"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -227,9 +231,10 @@
           "uriExpression": "$0.address()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
         },{
           "type": "FreeFormAction",
           "action": "initiateLink(\"io.vertx.core.eventbus-producer\"+$1)"

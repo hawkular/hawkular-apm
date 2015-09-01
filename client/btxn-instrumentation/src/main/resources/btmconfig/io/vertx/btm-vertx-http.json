@@ -33,9 +33,10 @@
           "name": "http-method",
           "valueExpression": "$0.method()"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
         }]
       },{
         "ruleName": "Vertx HTTP Consumer Start Values",
@@ -100,9 +101,13 @@
           "uriExpression": "uri",
           "idExpression": "id"
         },{
+          "type": "ProcessHeaders",
+          "direction": "Request",
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
+        },{
           "type": "ProcessContent",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())",
           "valueExpressions": [
             "$1.getBytes()"
           ]
@@ -148,9 +153,10 @@
           "uriExpression": "uri",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"io.vertx.core.MultiMap\",$0.headers())"
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
         },{
           "type": "InitiateLink",
           "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"

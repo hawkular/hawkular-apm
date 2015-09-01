@@ -16,36 +16,51 @@
  */
 package org.hawkular.btm.api.model.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This type represents processing of a request or response data content.
+ * This type represents processing of a request or response headers.
  *
  * @author gbrown
  */
-public class ProcessContent extends InstrumentAction {
+public class ProcessHeaders extends InstrumentAction {
 
     @JsonInclude
-    private List<String> valueExpressions = new ArrayList<String>();
+    private String headersExpression;
+
+    @JsonInclude(Include.NON_EMPTY)
+    private String originalType;
 
     @JsonInclude
     private Direction direction = Direction.Request;
 
     /**
-     * @return the valueExpressions
+     * @return the headersExpression
      */
-    public List<String> getValueExpressions() {
-        return valueExpressions;
+    public String getHeadersExpression() {
+        return headersExpression;
     }
 
     /**
-     * @param valueExpressions the valueExpressions to set
+     * @param headersExpression the headersExpression to set
      */
-    public void setValueExpressions(List<String> valueExpressions) {
-        this.valueExpressions = valueExpressions;
+    public void setHeadersExpression(String headersExpression) {
+        this.headersExpression = headersExpression;
+    }
+
+    /**
+     * @return the originalType
+     */
+    public String getOriginalType() {
+        return originalType;
+    }
+
+    /**
+     * @param originalType the originalType to set
+     */
+    public void setOriginalType(String originalType) {
+        this.originalType = originalType;
     }
 
     /**

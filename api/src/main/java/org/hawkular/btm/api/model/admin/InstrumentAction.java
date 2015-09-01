@@ -35,11 +35,13 @@ import io.swagger.annotations.ApiModel;
     @Type(value = SetFault.class), @Type(value = SetName.class),
     @Type(value = SetProperty.class), @Type(value = InitiateLink.class),
     @Type(value = CompleteLink.class), @Type(value = Unlink.class),
-    @Type(value = AssertComplete.class), @Type(value = Suppress.class) })
+    @Type(value = AssertComplete.class), @Type(value = Suppress.class),
+    @Type(value = ProcessHeaders.class) })
 @ApiModel(subTypes = { InstrumentService.class, InstrumentComponent.class, InstrumentConsumer.class,
         InstrumentProducer.class, FreeFormAction.class, ProcessContent.class,
         SetDetail.class, SetFault.class, SetName.class, SetProperty.class, InitiateLink.class,
-        CompleteLink.class, Unlink.class, AssertComplete.class, Suppress.class }, discriminator = "type")
+        CompleteLink.class, Unlink.class, AssertComplete.class, Suppress.class, ProcessHeaders.class },
+        discriminator = "type")
 public abstract class InstrumentAction {
 
 }

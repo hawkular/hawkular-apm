@@ -38,7 +38,7 @@
           "uriExpression": "$1.getResourceRef()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
           "headersExpression": "headers.getValuesMap()"
         },{
@@ -62,7 +62,7 @@
         }],
         "condition": "isActive()",
         "actions": [{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Response",
           "headersExpression": "headers.getValuesMap()"
         },{

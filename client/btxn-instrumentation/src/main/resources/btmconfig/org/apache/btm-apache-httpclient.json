@@ -23,9 +23,10 @@
           "uriExpression": "$1.getURI().toString()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)"
+          "originalType": "org.apache.http.client.methods.HttpUriRequest",
+          "headersExpression": "$1"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -78,9 +79,10 @@
           "uriExpression": "$1.getURI().toString()",
           "idExpression": "id"
         },{
-          "type": "ProcessContent",
+          "type": "ProcessHeaders",
           "direction": "Request",
-          "headersExpression": "getHeaders(\"org.apache.http.client.methods.HttpUriRequest\",$1)"
+          "originalType": "org.apache.http.client.methods.HttpUriRequest",
+          "headersExpression": "$1"
         },{
           "type": "SetDetail",
           "name": "btm_source",
