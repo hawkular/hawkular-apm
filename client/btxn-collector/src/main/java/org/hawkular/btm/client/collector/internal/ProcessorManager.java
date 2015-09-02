@@ -157,6 +157,10 @@ public class ProcessorManager {
             }
         }
 
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("ProcessManager: getMatchedProcessor return="+matchedProcessor);
+        }
+
         return matchedProcessor;
     }
 
@@ -332,6 +336,10 @@ public class ProcessorManager {
                     actions.get(i).process(btxn, node, direction, headers, values);
                 }
             }
+        }
+
+        public String toString() {
+            return processor.toString();
         }
     }
 

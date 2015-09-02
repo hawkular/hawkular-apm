@@ -66,6 +66,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     private static final Level warningLogLevel = Level.WARNING;
 
+    private static boolean testMode;
+
+    static {
+        testMode = Boolean.getBoolean("hawkular-btm.test.mode");
+    }
+
     {
         // Obtain the admin service
         CompletableFuture<AdminService> asFuture =
@@ -431,6 +437,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isRequestProcessed(String location) {
+
+        if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.headers")
+                && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
+            return false;
+        }
+
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -457,6 +469,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isRequestContentProcessed(String location) {
+
+        if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
+            return false;
+        }
+
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -483,6 +500,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isResponseProcessed(String location) {
+
+        if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.headers")
+                && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
+            return false;
+        }
+
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -509,6 +532,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isResponseContentProcessed(String location) {
+
+        if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
+            return false;
+        }
+
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -672,7 +700,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.initRequestBuffer(obj.hashCode());
+                builder.initRequestBuffer(getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("initRequestBuffer: No fragment builder for this thread");
             }
@@ -681,6 +709,19 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 log.log(warningLogLevel, "initRequestBuffer failed", t);
             }
         }
+    }
+
+    /**
+     * This method returns a code associated with the supplied object.
+     *
+     * @param obj The optional object
+     * @return The code, or 0 if no object supplied
+     */
+    protected int getCode(Object obj) {
+        if (obj == null) {
+            return 0;
+        }
+        return obj.hashCode();
     }
 
     /* (non-Javadoc)
@@ -697,7 +738,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                return builder.isRequestBufferActive(obj.hashCode());
+                return builder.isRequestBufferActive(getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("isRequestBufferActive: No fragment builder for this thread");
             }
@@ -723,7 +764,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.writeRequestData(obj.hashCode(), data, offset, len);
+                builder.writeRequestData(getCode(obj), data, offset, len);
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("appendRequestBuffer: No fragment builder for this thread");
             }
@@ -746,7 +787,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
-                processRequestContent(location, fragmentManager.getFragmentBuilder(), obj.hashCode());
+                processRequestContent(location, fragmentManager.getFragmentBuilder(), getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("recordRequestBuffer: No fragment builder for this thread");
             }
@@ -784,7 +825,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.initResponseBuffer(obj.hashCode());
+                builder.initResponseBuffer(getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("initResponseBuffer: No fragment builder for this thread");
             }
@@ -809,7 +850,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                return builder.isResponseBufferActive(obj.hashCode());
+                return builder.isResponseBufferActive(getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("isResponseBufferActive: No fragment builder for this thread");
             }
@@ -835,7 +876,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.writeResponseData(obj.hashCode(), data, offset, len);
+                builder.writeResponseData(getCode(obj), data, offset, len);
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("appendResponseBuffer: No fragment builder for this thread");
             }
@@ -858,7 +899,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
-                processResponseContent(location, fragmentManager.getFragmentBuilder(), obj.hashCode());
+                processResponseContent(location, fragmentManager.getFragmentBuilder(), getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("recordResponseBuffer: No fragment builder for this thread");
             }

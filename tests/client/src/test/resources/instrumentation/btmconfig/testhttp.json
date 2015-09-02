@@ -1,0 +1,35 @@
+{
+  "businessTransactions": {
+    "testhttp": {
+      "description": "Configuration for HTTP tests",
+      "filter": {
+        "inclusions": [
+          "http://localhost:8180/sayHello"
+        ]
+      },
+      "processors": [{
+        "nodeType": "Producer",
+        "direction": "Request",
+        "uriFilter": "http://localhost:8180/sayHello",
+        "actions": [{
+          "name": "hello",
+          "actionType": "SetDetail",
+          "expression": "\"Hello World\""
+        },{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "new String(values[0])"
+        }]
+      },{
+        "nodeType": "Producer",
+        "direction": "Response",
+        "uriFilter": "http://localhost:8180/sayHello",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "new String(values[0])"
+        }]
+      }]
+    }
+  }
+}
