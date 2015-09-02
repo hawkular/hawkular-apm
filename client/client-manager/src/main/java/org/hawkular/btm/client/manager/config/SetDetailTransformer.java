@@ -45,7 +45,7 @@ public class SetDetailTransformer implements InstrumentActionTransformer {
 
         builder.append("collector().");
 
-        builder.append("setDetail(\"");
+        builder.append("setDetail(getRuleName(),\"");
 
         builder.append(setAction.getName());
 

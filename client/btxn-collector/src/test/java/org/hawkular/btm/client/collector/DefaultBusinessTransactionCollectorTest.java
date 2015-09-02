@@ -62,7 +62,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
 
         // Delay, to provide a reasonable value for duration
         synchronized (this) {
@@ -73,7 +73,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         }
 
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -113,9 +113,9 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
 
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -153,10 +153,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> respHeaders = new HashMap<String, String>();
         respHeaders.put("joe", "bloggs");
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
-        collector.processRequest(reqHeaders);
-        collector.processResponse(respHeaders);
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.processRequest(null, reqHeaders);
+        collector.processResponse(null, respHeaders);
+        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -203,10 +203,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> reqHeaders2 = new HashMap<String, String>();
         reqHeaders2.put("joe", "bloggs");
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
-        collector.processRequest(reqHeaders);
-        collector.processRequest(reqHeaders2);
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.processRequest(null, reqHeaders);
+        collector.processRequest(null, reqHeaders2);
+        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -249,10 +249,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
 
-        collector.serviceStart(SERVICE_TYPE, OPERATION);
-        collector.processRequest(null);
-        collector.processRequest(reqHeaders);
-        collector.serviceEnd(SERVICE_TYPE, OPERATION);
+        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.processRequest(null, null);
+        collector.processRequest(null, reqHeaders);
+        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -291,9 +291,9 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.consumerStart(null, null, "myid");
+        collector.consumerStart(null, null, null, "myid");
 
-        collector.consumerEnd(null, null);
+        collector.consumerEnd(null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread

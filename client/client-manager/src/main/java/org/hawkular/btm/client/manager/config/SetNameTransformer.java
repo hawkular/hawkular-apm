@@ -45,7 +45,7 @@ public class SetNameTransformer implements InstrumentActionTransformer {
 
         builder.append("collector().");
 
-        builder.append("setName(");
+        builder.append("setName(getRuleName(),");
 
         if (setAction.getNameExpression() == null) {
             builder.append("null");

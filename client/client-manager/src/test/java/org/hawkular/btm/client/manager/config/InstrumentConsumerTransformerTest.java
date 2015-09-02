@@ -40,7 +40,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(\"MyUri\",\"MyEndpoint\",null)";
+        String expected = ACTION_PREFIX + "consumerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",null)";
 
         assertEquals(expected, transformed);
     }
@@ -57,7 +57,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(\"MyUri\",\"MyEndpoint\",\"MyId\")";
+        String expected = ACTION_PREFIX + "consumerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyId\")";
 
         assertEquals(expected, transformed);
     }
@@ -74,7 +74,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\")";
+        String expected = ACTION_PREFIX + "consumerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\")";
 
         assertEquals(expected, transformed);
     }
@@ -92,7 +92,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(\"MyUri\",\"MyEndpoint\")";
+        String expected = ACTION_PREFIX + "consumerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\")";
 
         assertEquals(expected, transformed);
     }

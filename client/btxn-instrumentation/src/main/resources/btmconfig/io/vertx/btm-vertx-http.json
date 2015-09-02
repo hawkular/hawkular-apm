@@ -209,7 +209,7 @@
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
         "location": "ENTRY",
-        "condition": "isActive() && collector().isResponseContentProcessed()",
+        "condition": "isActive() && isResponseContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
           "action": "initResponseBuffer($1)"

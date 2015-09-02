@@ -45,7 +45,7 @@ public class SetPropertyTransformer implements InstrumentActionTransformer {
 
         builder.append("collector().");
 
-        builder.append("setProperty(\"");
+        builder.append("setProperty(getRuleName(),\"");
 
         builder.append(setAction.getName());
 

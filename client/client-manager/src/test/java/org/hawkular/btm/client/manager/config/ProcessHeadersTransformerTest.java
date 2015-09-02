@@ -39,7 +39,7 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processRequest(headers,null)";
+        String expected = ACTION_PREFIX + "processRequest(getRuleName(),headers,null)";
 
         assertEquals(expected, transformed);
     }
@@ -55,7 +55,7 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processRequest(getHeaders(\"org.Type\",headers),null)";
+        String expected = ACTION_PREFIX + "processRequest(getRuleName(),getHeaders(\"org.Type\",headers),null)";
 
         assertEquals(expected, transformed);
     }
@@ -71,7 +71,7 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processResponse(headers,null)";
+        String expected = ACTION_PREFIX + "processResponse(getRuleName(),headers,null)";
 
         assertEquals(expected, transformed);
     }
@@ -88,7 +88,7 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processResponse(getHeaders(\"org.Type\",headers),null)";
+        String expected = ACTION_PREFIX + "processResponse(getRuleName(),getHeaders(\"org.Type\",headers),null)";
 
         assertEquals(expected, transformed);
     }

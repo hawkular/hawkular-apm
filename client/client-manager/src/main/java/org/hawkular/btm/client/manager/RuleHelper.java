@@ -62,6 +62,15 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
+     * This method returns the name of the instrumentation rule.
+     *
+     * @return The rule name
+     */
+    public String getRuleName() {
+        return (rule.getName());
+    }
+
+    /**
      * This method returns the business transaction collector.
      *
      * @return The business transaction collector
@@ -335,7 +344,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param obj The object associated with the buffer
      */
     public void initRequestBuffer(Object obj) {
-        collector().initRequestBuffer(obj);
+        collector().initRequestBuffer(getRuleName(), obj);
     }
 
     /**
@@ -346,7 +355,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return Whether there is an active data buffer
      */
     public boolean isRequestBufferActive(Object obj) {
-        return collector().isRequestBufferActive(obj);
+        return collector().isRequestBufferActive(getRuleName(), obj);
     }
 
     /**
@@ -360,10 +369,10 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public void appendRequestBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
         if (len > 0) {
-            collector().appendRequestBuffer(obj, data, offset, len);
+            collector().appendRequestBuffer(getRuleName(), obj, data, offset, len);
         }
         if (close) {
-            collector().recordRequestBuffer(obj);
+            collector().recordRequestBuffer(getRuleName(), obj);
         }
     }
 
@@ -374,7 +383,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param obj The object associated with the buffer
      */
     public void recordRequestBuffer(Object obj) {
-        collector().recordRequestBuffer(obj);
+        collector().recordRequestBuffer(getRuleName(), obj);
     }
 
     /**
@@ -383,7 +392,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param obj The object associated with the buffer
      */
     public void initResponseBuffer(Object obj) {
-        collector().initResponseBuffer(obj);
+        collector().initResponseBuffer(getRuleName(), obj);
     }
 
     /**
@@ -394,7 +403,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return Whether there is an active data buffer
      */
     public boolean isResponseBufferActive(Object obj) {
-        return collector().isResponseBufferActive(obj);
+        return collector().isResponseBufferActive(getRuleName(), obj);
     }
 
     /**
@@ -408,10 +417,10 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public void appendResponseBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
         if (len > 0) {
-            collector().appendResponseBuffer(obj, data, offset, len);
+            collector().appendResponseBuffer(getRuleName(), obj, data, offset, len);
         }
         if (close) {
-            collector().recordResponseBuffer(obj);
+            collector().recordResponseBuffer(getRuleName(), obj);
         }
     }
 
@@ -422,6 +431,42 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param obj The object associated with the buffer
      */
     public void recordResponseBuffer(Object obj) {
-        collector().recordResponseBuffer(obj);
+        collector().recordResponseBuffer(getRuleName(), obj);
+    }
+
+    /**
+     * This method determines if the request headers or content is processed.
+     *
+     * @return Whether the request headers or content is processed
+     */
+    public boolean isRequestProcessed() {
+        return (collector().isRequestProcessed(getRuleName()));
+    }
+
+    /**
+     * This method determines if the request content is processed.
+     *
+     * @return Whether the request content is processed
+     */
+    public boolean isRequestContentProcessed() {
+        return (collector().isRequestContentProcessed(getRuleName()));
+    }
+
+    /**
+     * This method determines if the response headers or content is processed.
+     *
+     * @return Whether the response headers or content is processed
+     */
+    public boolean isResponseProcessed() {
+        return (collector().isResponseProcessed(getRuleName()));
+    }
+
+    /**
+     * This method determines if the response content is processed.
+     *
+     * @return Whether the response content is processed
+     */
+    public boolean isResponseContentProcessed() {
+        return (collector().isResponseContentProcessed(getRuleName()));
     }
 }

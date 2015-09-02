@@ -41,7 +41,7 @@ public class InstrumentComponentTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentStart(\"MyUri\",\"MyComponent\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "componentStart(getRuleName(),\"MyUri\",\"MyComponent\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }
@@ -59,7 +59,7 @@ public class InstrumentComponentTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "componentEnd(\"MyUri\",\"MyComponent\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "componentEnd(getRuleName(),\"MyUri\",\"MyComponent\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }

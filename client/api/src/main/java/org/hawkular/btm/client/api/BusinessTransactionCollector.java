@@ -44,9 +44,10 @@ public interface BusinessTransactionCollector {
     /**
      * This method sets the name of the business transaction.
      *
+     * @param location The instrumentation location
      * @param name The business transaction name
      */
-    void setName(String name);
+    void setName(String location, String name);
 
     /**
      * This method returns the name of the business transaction.
@@ -58,210 +59,235 @@ public interface BusinessTransactionCollector {
     /**
      * This method indicates the start of a message being consumed.
      *
+     * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
      * @param id The unique interaction id
      */
-    void consumerStart(String uri, String type, String id);
+    void consumerStart(String location, String uri, String type, String id);
 
     /**
      * This method indicates the end of a message being consumed.
      *
+     * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
      */
-    void consumerEnd(String uri, String type);
+    void consumerEnd(String location, String uri, String type);
 
     /**
      * This method indicates the start of a service invocation.
      *
+     * @param location The instrumentation location
      * @param uri The service type uri
      * @param operation The operation
      */
-    void serviceStart(String uri, String operation);
+    void serviceStart(String location, String uri, String operation);
 
     /**
      * This method indicates the end of a service invocation.
      *
+     * @param location The instrumentation location
      * @param uri The service type uri
      * @param operation The operation
      */
-    void serviceEnd(String uri, String operation);
+    void serviceEnd(String location, String uri, String operation);
 
     /**
      * This method indicates the start of a component invocation.
      *
+     * @param location The instrumentation location
      * @param uri The uri
      * @param type The component type
      * @param operation The operation
      */
-    void componentStart(String uri, String type, String operation);
+    void componentStart(String location, String uri, String type, String operation);
 
     /**
      * This method indicates the end of a component invocation.
      *
+     * @param location The instrumentation location
      * @param uri The uri
      * @param type The component type
      * @param operation The operation
      */
-    void componentEnd(String uri, String type, String operation);
+    void componentEnd(String location, String uri, String type, String operation);
 
     /**
      * This method indicates the start of a message being produced.
      *
+     * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
      * @param id The unique interaction id
      */
-    void producerStart(String uri, String type, String id);
+    void producerStart(String location, String uri, String type, String id);
 
     /**
      * This method indicates the end of a message being produced.
      *
+     * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
      */
-    void producerEnd(String uri, String type);
+    void producerEnd(String location, String uri, String type);
 
     /**
      * This method identifies whether the request data (content and headers) for the current
      * business transaction and node will be processed to extract information.
      *
+     * @param location The instrumentation location
      * @return Whether the request is processed
      */
-    boolean isRequestProcessed();
+    boolean isRequestProcessed(String location);
 
     /**
      * This method identifies whether the request content for the current
      * business transaction and node will be processed to extract information.
      *
+     * @param location The instrumentation location
      * @return Whether the request content is processed
      */
-    boolean isRequestContentProcessed();
+    boolean isRequestContentProcessed(String location);
 
     /**
      * This method identifies whether the response data (content and headers) for the current
      * business transaction and node will be processed to extract information.
      *
+     * @param location The instrumentation location
      * @return Whether the response is processed
      */
-    boolean isResponseProcessed();
+    boolean isResponseProcessed(String location);
 
     /**
      * This method identifies whether the response content for the current
      * business transaction and node will be processed to extract information.
      *
+     * @param location The instrumentation location
      * @return Whether the response content is processed
      */
-    boolean isResponseContentProcessed();
+    boolean isResponseContentProcessed(String location);
 
     /**
      * This method processes the supplied request headers and content.
      *
+     * @param location The instrumentation location
      * @param headers The header values
      * @param values The values
      */
-    void processRequest(Map<String, ?> headers, Object... values);
+    void processRequest(String location, Map<String, ?> headers, Object... values);
 
     /**
      * This method processes the supplied response headers and content.
      *
+     * @param location The instrumentation location
      * @param headers The header values
      * @param values The values
      */
-    void processResponse(Map<String, ?> headers, Object... values);
+    void processResponse(String location, Map<String, ?> headers, Object... values);
 
     /**
      * This method sets a fault on the current node.
      *
+     * @param location The instrumentation location
      * @param value The fault value
      * @param description The optional fault description
      */
-    void setFault(String value, String description);
+    void setFault(String location, String value, String description);
 
     /**
      * This method sets a property on the business transaction.
      *
+     * @param location The instrumentation location
      * @param name The property name
      * @param value The property value
      */
-    void setProperty(String name, String value);
+    void setProperty(String location, String name, String value);
 
     /**
      * This method sets a detail on the current node.
      *
+     * @param location The instrumentation location
      * @param name The detail name
      * @param value The detail value
      */
-    void setDetail(String name, String value);
+    void setDetail(String location, String name, String value);
 
     /**
      * This method initialises a data buffer associated with the supplied request object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void initRequestBuffer(Object obj);
+    void initRequestBuffer(String location, Object obj);
 
     /**
      * This method determines if there is an active request data buffer for
      * the supplied object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      * @return Whether there is an active data buffer
      */
-    boolean isRequestBufferActive(Object obj);
+    boolean isRequestBufferActive(String location, Object obj);
 
     /**
      * This method appends data to the buffer associated with the supplied request object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      * @param data The data to be appended
      * @param offset The offset of the data
      * @param len The length of data
      */
-    void appendRequestBuffer(Object obj, byte[] data, int offset, int len);
+    void appendRequestBuffer(String location, Object obj, byte[] data, int offset, int len);
 
     /**
      * This method records the data within a buffer associated with the supplied request
      * object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void recordRequestBuffer(Object obj);
+    void recordRequestBuffer(String location, Object obj);
 
     /**
      * This method initialises a data buffer associated with the supplied response object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void initResponseBuffer(Object obj);
+    void initResponseBuffer(String location, Object obj);
 
     /**
      * This method determines if there is an active response data buffer for
      * the supplied object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      * @return Whether there is an active data buffer
      */
-    boolean isResponseBufferActive(Object obj);
+    boolean isResponseBufferActive(String location, Object obj);
 
     /**
      * This method appends data to the buffer associated with the supplied response object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      * @param data The data to be appended
      * @param offset The offset of the data
      * @param len The length of data
      */
-    void appendResponseBuffer(Object obj, byte[] data, int offset, int len);
+    void appendResponseBuffer(String location, Object obj, byte[] data, int offset, int len);
 
     /**
      * This method records the data within a buffer associated with the supplied response
      * object.
      *
+     * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void recordResponseBuffer(Object obj);
+    void recordResponseBuffer(String location, Object obj);
 
     /**
      * This method returns the session manager associated with the
