@@ -52,6 +52,8 @@ public class ProcessHeadersTransformer implements InstrumentActionTransformer {
             builder.append("processResponse(");
         }
 
+        builder.append("getRuleName(),");
+
         if (phAction.getOriginalType() != null) {
             builder.append("getHeaders(\"");
             builder.append(phAction.getOriginalType());

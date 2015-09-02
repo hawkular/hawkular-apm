@@ -25,7 +25,7 @@ import org.junit.Test;
 /**
  * @author gbrown
  */
-public class InstrumentRuleTransformerTest {
+public class InstrumentServiceTransformerTest {
 
     private static final String ACTION_PREFIX = "collector().";
 
@@ -41,7 +41,7 @@ public class InstrumentRuleTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "serviceStart(\"MyService\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "serviceStart(getRuleName(),\"MyService\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }
@@ -58,7 +58,7 @@ public class InstrumentRuleTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "serviceEnd(\"MyService\",\"MyOperation\")";
+        String expected = ACTION_PREFIX + "serviceEnd(getRuleName(),\"MyService\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }

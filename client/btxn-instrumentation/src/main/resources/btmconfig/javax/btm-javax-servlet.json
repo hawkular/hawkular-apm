@@ -78,7 +78,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && collector().isRequestContentProcessed()",
+        "condition": "isActive() && isRequestContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
           "action": "initRequestBuffer($!)"
@@ -126,7 +126,7 @@
         "methodName": "getOutputStream",
         "parameterTypes": [
         ],
-        "condition": "isActive() && collector().isResponseContentProcessed()",
+        "condition": "isActive() && isResponseContentProcessed()",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
@@ -175,7 +175,7 @@
         "methodName": "getWriter",
         "parameterTypes": [
         ],
-        "condition": "isActive() && collector().isResponseContentProcessed()",
+        "condition": "isActive() && isResponseContentProcessed()",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",

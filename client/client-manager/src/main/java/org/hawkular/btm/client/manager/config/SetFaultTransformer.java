@@ -45,7 +45,7 @@ public class SetFaultTransformer implements InstrumentActionTransformer {
 
         builder.append("collector().");
 
-        builder.append("setFault(");
+        builder.append("setFault(getRuleName(),");
 
         builder.append(setAction.getNameExpression());
 

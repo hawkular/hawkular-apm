@@ -49,6 +49,8 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
             builder.append("End(");
         }
 
+        builder.append("getRuleName(),");
+
         String[] params = getParameters(collectorAction);
         for (int i = 0; i < params.length; i++) {
             if (i > 0) {

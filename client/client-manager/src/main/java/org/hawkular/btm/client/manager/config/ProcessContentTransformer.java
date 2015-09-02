@@ -52,7 +52,7 @@ public class ProcessContentTransformer implements InstrumentActionTransformer {
             builder.append("processResponse(");
         }
 
-        builder.append("null,createArrayBuilder()");
+        builder.append("getRuleName(),null,createArrayBuilder()");
 
         for (String expr : pcAction.getValueExpressions()) {
             builder.append(".add(");
