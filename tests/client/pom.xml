@@ -34,7 +34,7 @@
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.basedir}/target/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
     <hawkular-btm.logging>${project.basedir}/src/test/configuratio/logging.propertiesn</hawkular-btm.logging>
 
     <hawkular.host>127.0.0.1</hawkular.host>
@@ -209,6 +209,7 @@
               -Dhawkular-btm.username=jdoe
               -Dhawkular-btm.password=password
               -Djava.util.logging.config.file=${hawkular-btm.logging}
+              -Dhawkular-btm.test.mode=true
               -Dhawkular-btm.log.level=INFO
           </argLine>
           <systemPropertyVariables>

@@ -79,6 +79,21 @@
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
+        "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Buffer",
+        "notes": [
+          "The actual written data will be captured using the java.io instrumentation rules"
+        ],
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getOutputStream",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && isRequestContentProcessed()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$! = createRequestOutputStream($!)"
+        }]
+      },{
         "ruleName": "Java HttpUrlConnection getInputStream Producer Start",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getInputStream",
@@ -117,18 +132,93 @@
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
-        "ruleName": "Java HttpUrlConnection Producer End",
+        "ruleName": "Java HttpUrlConnection Producer End Unsuccessful",
         "className": "^java.net.HttpURLConnection",
-        "methodName": "connect",
+        "methodName": "getResponseCode",
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive()",
+        "condition": "isActive() && $! != 200",
+        "actions": [{
+          "type": "SetFault",
+          "nameExpression": "$1",
+          "descriptionExpression": "$0.getResponseMessage()"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.getURL().toString()"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection Producer End Success No Content Required",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getResponseCode",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && $! == 200 && (!isResponseContentProcessed() || !$0.getDoOutput())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection HttpInputStream init",
+        "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initResponseBuffer(null)"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection HttpInputStream read 1",
+        "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
+        "methodName": "read",
+        "parameterTypes": [
+          "byte[]"
+        ],
+        "location": "EXIT",
+        "condition": "isResponseBufferActive(null) && $! != -1",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendResponseBuffer(null,$1,0,$!,false)"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection HttpInputStream read 2",
+        "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
+        "methodName": "read",
+        "parameterTypes": [
+          "byte[]",
+          "int",
+          "int"
+        ],
+        "location": "EXIT",
+        "condition": "isResponseBufferActive(null) && $! != -1",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendResponseBuffer(null,$1,$2,$!,false)"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection HttpInputStream close",
+        "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
+        "methodName": "close",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isResponseBufferActive(null)",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "recordResponseBuffer(null)"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\""
         }]
       }]
     }

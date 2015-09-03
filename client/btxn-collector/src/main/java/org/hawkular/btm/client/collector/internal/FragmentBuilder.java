@@ -165,10 +165,6 @@ public class FragmentBuilder {
      */
     public Node popNode(Class<? extends Node> cls, String uri) {
 
-        // Reset request and response streams
-        requestStream = null;
-        responseStream = null;
-
         synchronized (nodeStack) {
             // Check if fragment is in suppression mode
             if (suppress) {

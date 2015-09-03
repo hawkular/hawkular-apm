@@ -16,18 +16,23 @@
  */
 package org.hawkular.btm.client.manager;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.HeadersAccessor;
 import org.hawkular.btm.client.api.SessionManager;
 import org.hawkular.btm.client.manager.faults.FaultDescriptor;
+import org.hawkular.btm.client.manager.io.InstrumentedInputStream;
+import org.hawkular.btm.client.manager.io.InstrumentedOutputStream;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
 
@@ -468,5 +473,49 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public boolean isResponseContentProcessed() {
         return (collector().isResponseContentProcessed(getRuleName()));
+    }
+
+    /**
+     * This method returns an instrumented proxy output stream, to wrap
+     * the supplied output stream, which will record the written data.
+     *
+     * @param os The original output stream
+     * @return The instrumented output stream
+     */
+    public OutputStream createRequestOutputStream(OutputStream os) {
+        return new InstrumentedOutputStream(collector(), Direction.Request, os);
+    }
+
+    /**
+     * This method returns an instrumented proxy output stream, to wrap
+     * the supplied output stream, which will record the written data.
+     *
+     * @param os The original output stream
+     * @return The instrumented output stream
+     */
+    public OutputStream createResponseOutputStream(OutputStream os) {
+        return new InstrumentedOutputStream(collector(), Direction.Response, os);
+    }
+
+    /**
+     * This method returns an instrumented proxy input stream, to wrap
+     * the supplied output stream, which will record the written data.
+     *
+     * @param is The original input stream
+     * @return The instrumented input stream
+     */
+    public InputStream createRequestInputStream(InputStream is) {
+        return new InstrumentedInputStream(collector(), Direction.Request, is);
+    }
+
+    /**
+     * This method returns an instrumented proxy input stream, to wrap
+     * the supplied output stream, which will record the written data.
+     *
+     * @param is The original input stream
+     * @return The instrumented input stream
+     */
+    public InputStream createResponseInputStream(InputStream is) {
+        return new InstrumentedInputStream(collector(), Direction.Response, is);
     }
 }

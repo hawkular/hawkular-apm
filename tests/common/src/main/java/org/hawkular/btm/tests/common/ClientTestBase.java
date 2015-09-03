@@ -50,6 +50,9 @@ public abstract class ClientTestBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        setProcessHeaders(false);
+        setProcessContent(false);
     }
 
     @After
@@ -113,5 +116,21 @@ public abstract class ClientTestBase {
                 results.add((T) n);
             }
         }
+    }
+
+    protected void setProcessHeaders(boolean b) {
+        System.setProperty("hawkular-btm.test.process.headers", ""+b);
+    }
+
+    protected void setProcessContent(boolean b) {
+        System.setProperty("hawkular-btm.test.process.content", ""+b);
+    }
+
+    protected boolean isProcessHeaders() {
+        return Boolean.getBoolean("hawkular-btm.test.process.headers");
+    }
+
+    protected boolean isProcessContent() {
+        return Boolean.getBoolean("hawkular-btm.test.process.content");
     }
 }
