@@ -18,6 +18,7 @@ package org.hawkular.btm.tests.client.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static io.undertow.Handlers.path;
@@ -48,7 +49,7 @@ import io.undertow.util.Headers;
 /**
  * @author gbrown
  */
-public class JaxRSClientTest extends ClientTestBase {
+public class JBossRESTEasyClientTest extends ClientTestBase {
 
     /**  */
     private static final String SAY_HELLO_URL = "http://localhost:8180/sayHello";
@@ -68,8 +69,12 @@ public class JaxRSClientTest extends ClientTestBase {
                 .setHandler(path().addPrefixPath("sayHello", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-                        exchange.getResponseSender().send(HELLO_WORLD);
+                        if (!exchange.getRequestHeaders().contains("test-fault")) {
+                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+                            exchange.getResponseSender().send(HELLO_WORLD);
+                        } else {
+                            exchange.setResponseCode(401);
+                        }
                     }
                 })).build();
 
@@ -90,100 +95,77 @@ public class JaxRSClientTest extends ClientTestBase {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").get();
-        String value = response.readEntity(String.class);
-        response.close();
 
-        assertEquals(HELLO_WORLD, value);
+        processResponse(response, true, false);
+    }
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+    @Test
+    public void testJaxRSClientGETWithData() {
+        setProcessContent(true);
 
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().header("test-header", "test-value").get();
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
-
-        assertEquals("Expecting 1 producers", 1, producers.size());
-
-        Producer testProducer = producers.get(0);
-
-        assertEquals(SAY_HELLO_URL, testProducer.getUri());
-
-        // Check headers
-        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
+        processResponse(response, true, false);
     }
 
     @Test
     public void testJaxRSClientPOST() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").post(Entity.<String> text("Hello"));
-        String value = response.readEntity(String.class);
-        response.close();
+        Response response = target.request().header("test-header", "test-value").post(Entity.<String> text(SAY_HELLO));
 
-        assertEquals(HELLO_WORLD, value);
+        processResponse(response, false, false);
+    }
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+    @Test
+    public void testJaxRSClientPOSTWithData() {
+        setProcessContent(true);
 
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().header("test-header", "test-value").post(Entity.<String> text(SAY_HELLO));
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
-
-        assertEquals("Expecting 1 producers", 1, producers.size());
-
-        Producer testProducer = producers.get(0);
-
-        assertEquals(SAY_HELLO_URL, testProducer.getUri());
-
-        // Check headers
-        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
+        processResponse(response, false, false);
     }
 
     @Test
     public void testJaxRSClientPUT() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").put(Entity.<String> text("Hello"));
+        Response response = target.request().header("test-header", "test-value").put(Entity.<String> text(SAY_HELLO));
+
+        processResponse(response, false, false);
+    }
+
+    @Test
+    public void testJaxRSClientPUTWithData() {
+        setProcessContent(true);
+
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().header("test-header", "test-value").put(Entity.<String> text(SAY_HELLO));
+
+        processResponse(response, false, false);
+    }
+
+    @Test
+    public void testJaxRSClientGETWithFault() {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL);
+        Response response = target.request().header("test-fault", "true").get();
+
+        processResponse(response, true, true);
+    }
+
+    protected void processResponse(Response response, boolean get, boolean fault) {
         String value = response.readEntity(String.class);
         response.close();
 
-        assertEquals(HELLO_WORLD, value);
+        if (!fault) {
+            assertEquals(HELLO_WORLD, value);
+        }
 
         try {
             synchronized (this) {
@@ -192,9 +174,6 @@ public class JaxRSClientTest extends ClientTestBase {
         } catch (Exception e) {
             fail("Failed to wait for btxns to store");
         }
-
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
 
         for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -207,6 +186,9 @@ public class JaxRSClientTest extends ClientTestBase {
             }
         }
 
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
+
         List<Producer> producers = new ArrayList<Producer>();
         findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
 
@@ -218,6 +200,27 @@ public class JaxRSClientTest extends ClientTestBase {
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
+
+        if (fault) {
+            assertEquals("401", testProducer.getFault());
+
+            // TODO: Awaitin fix for HWKBTM-151
+            //assertEquals("Unauthorized", testProducer.getFaultDescription());
+        } else {
+
+            if (isProcessContent()) {
+                // Check request value
+                if (!get) {
+                    assertTrue(testProducer.getRequest().getContent().containsKey("all"));
+                    assertEquals(SAY_HELLO, testProducer.getRequest().getContent().get("all").getValue());
+                }
+                // Check response value
+                assertTrue(testProducer.getResponse().getContent().containsKey("all"));
+                assertEquals(HELLO_WORLD, testProducer.getResponse().getContent().get("all").getValue());
+            } else {
+                assertFalse(testProducer.getRequest().getContent().containsKey("all"));
+            }
+        }
     }
 
 }

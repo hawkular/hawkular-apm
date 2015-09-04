@@ -43,19 +43,60 @@
           "action": "$1.getHeaders().header(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
-        "ruleName": "JBoss RESTEasy Client Producer End",
+        "ruleName": "JBoss RESTEasy Client Producer Write Entity",
         "interfaceName": "^org.jboss.resteasy.client.jaxrs.ClientHttpEngine",
         "methodName": "invoke",
         "parameterTypes": [
           "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation"
         ],
+        "location": "ENTRY",
+        "condition": "isActive() && isRequestContentProcessed() && $1.getEntity() != null",
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "Request",
+          "valueExpressions": [
+            "$1.getEntity().toString().getBytes()"
+          ]
+        }]
+      },{
+        "ruleName": "JBoss RESTEasy Client Producer getInputStream",
+        "className": "org.jboss.resteasy.client.jaxrs.internal.ClientResponse",
+        "methodName": "getInputStream",
+        "parameterTypes": [
+        ],
         "location": "EXIT",
+        "condition": "isActive() && isResponseContentProcessed()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$! = createResponseInputStream($!)"
+        }]
+      },{
+        "ruleName": "JBoss RESTEasy Client Producer Fault",
+        "notes": [
+          "TODO: Currently not providing a fault description due to issue calling static method HWKBTM-151"
+        ],
+        "className": "org.jboss.resteasy.client.jaxrs.internal.ClientResponse",
+        "methodName": "close",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && $0.getStatus() != 200",
+        "actions": [{
+          "type": "SetFault",
+          "nameExpression": "$0.getStatus()"
+        }]
+      },{
+        "ruleName": "JBoss RESTEasy Client Producer Close",
+        "className": "org.jboss.resteasy.client.jaxrs.internal.ClientResponse",
+        "methodName": "close",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Response",
-          "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$1.getUri().toString()"
+          "endpointTypeExpression": "\"HTTP\""
         }]
       }]
     }
