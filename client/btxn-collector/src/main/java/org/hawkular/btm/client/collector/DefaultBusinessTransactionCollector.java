@@ -730,15 +730,19 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isRequestBufferActive(String location, Object obj) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("isRequestBufferActive: location=[" + location + "] obj=" +obj);
-        }
-
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                return builder.isRequestBufferActive(getCode(obj));
+                boolean ret=builder.isRequestBufferActive(getCode(obj));
+
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("isRequestBufferActive: location=[" + location + "] obj="
+                                + obj + "? " + ret);
+                }
+
+                return ret;
+
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("isRequestBufferActive: No fragment builder for this thread");
             }
@@ -842,15 +846,19 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean isResponseBufferActive(String location, Object obj) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("isResponseBufferActive: location=[" + location + "] obj=" +obj);
-        }
-
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                return builder.isResponseBufferActive(getCode(obj));
+                boolean ret=builder.isResponseBufferActive(getCode(obj));
+
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("isResponseBufferActive: location=[" + location + "] obj="
+                                + obj + "? " + ret);
+                }
+
+                return ret;
+
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("isResponseBufferActive: No fragment builder for this thread");
             }

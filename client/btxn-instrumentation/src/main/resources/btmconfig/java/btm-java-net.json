@@ -100,7 +100,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.connected && activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
+        "condition": "!$0.connected && !callerMatches(\"HttpURLConnection.*\",true) && activate($0.getURL().toString()) && $0.getRequestProperty(\"Hawkular-btid\") == null",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -141,8 +141,8 @@
         "condition": "isActive() && $! != 200",
         "actions": [{
           "type": "SetFault",
-          "nameExpression": "$1",
-          "descriptionExpression": "$0.getResponseMessage()"
+          "nameExpression": "$!",
+          "descriptionExpression": "$0.responseMessage"
         },{
           "type": "InstrumentProducer",
           "direction": "Response",
@@ -165,13 +165,12 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream init",
-        "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
-        "methodName": "<init>",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getInputStream",
         "parameterTypes": [
-          "*"
         ],
-        "location": "ENTRY",
-        "condition": "isActive()",
+        "location": "EXIT",
+        "condition": "isActive() && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
         "actions": [{
           "type": "FreeFormAction",
           "action": "initResponseBuffer(null)"
