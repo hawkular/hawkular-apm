@@ -68,8 +68,12 @@ public class JavaNetHttpTest extends ClientTestBase {
                 .setHandler(path().addPrefixPath("sayHello", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-                        exchange.getResponseSender().send(HELLO_WORLD);
+                        if (!exchange.getRequestHeaders().contains("test-fault")) {
+                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+                            exchange.getResponseSender().send(HELLO_WORLD);
+                        } else {
+                            exchange.setResponseCode(401);
+                        }
                     }
                 })).build();
 
@@ -87,41 +91,48 @@ public class JavaNetHttpTest extends ClientTestBase {
 
     @Test
     public void testHttpURLConnectionGET() {
-        testHttpURLConnection("GET", null);
+        testHttpURLConnection("GET", null, false);
     }
 
     @Test
     public void testHttpURLConnectionPUT() {
-        testHttpURLConnection("PUT", SAY_HELLO);
+        testHttpURLConnection("PUT", SAY_HELLO, false);
     }
 
     @Test
     public void testHttpURLConnectionPOST() {
-        testHttpURLConnection("POST", SAY_HELLO);
+        testHttpURLConnection("POST", SAY_HELLO, false);
     }
 
     @Test
     public void testHttpURLConnectionGETWithContent() {
         setProcessContent(true);
-        testHttpURLConnection("GET", null);
+        testHttpURLConnection("GET", null, false);
     }
 
     @Test
     public void testHttpURLConnectionPUTWithContent() {
         setProcessContent(true);
-        testHttpURLConnection("PUT", SAY_HELLO);
+        testHttpURLConnection("PUT", SAY_HELLO, false);
     }
 
     @Test
     public void testHttpURLConnectionPOSTWithContent() {
         setProcessContent(true);
-        testHttpURLConnection("POST", SAY_HELLO);
+        testHttpURLConnection("POST", SAY_HELLO, false);
     }
 
-    protected void testHttpURLConnection(String method, String data) {
+    @Test
+    public void testHttpURLConnectionGETWithFault() {
+        testHttpURLConnection("GET", null, true);
+    }
+
+    protected void testHttpURLConnection(String method, String data, boolean fault) {
+        HttpURLConnection connection = null;
+
         try {
             URL url = new URL(SAY_HELLO_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod(method);
 
@@ -133,34 +144,47 @@ public class JavaNetHttpTest extends ClientTestBase {
                     "application/json");
 
             connection.setRequestProperty("test-header", "test-value");
+            if (fault) {
+                connection.setRequestProperty("test-fault", "true");
+            }
 
-            if (data == null) {
-                connection.connect();
-            } else {
+            java.io.InputStream is=null;
+
+            if (data != null) {
                 OutputStream os = connection.getOutputStream();
 
                 os.write(data.getBytes());
 
                 os.flush();
                 os.close();
+            } else if (fault) {
+                connection.connect();
+            } else {
+                is = connection.getInputStream();
             }
 
-            assertEquals("Unexpected response code", 200, connection.getResponseCode());
+            if (!fault) {
+                assertEquals("Unexpected response code", 200, connection.getResponseCode());
 
-            java.io.InputStream is = connection.getInputStream();
+                if (is == null) {
+                    is = connection.getInputStream();
+                }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            StringBuilder builder = new StringBuilder();
-            String str = null;
+                StringBuilder builder = new StringBuilder();
+                String str = null;
 
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
+                while ((str = reader.readLine()) != null) {
+                    builder.append(str);
+                }
+
+                is.close();
+
+                assertEquals(HELLO_WORLD, builder.toString());
+            } else {
+                assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
             }
-
-            is.close();
-
-            assertEquals(HELLO_WORLD, builder.toString());
 
         } catch (Exception e) {
             fail("Failed to perform get: " + e);
@@ -202,17 +226,23 @@ public class JavaNetHttpTest extends ClientTestBase {
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
 
-        if (isProcessContent()) {
-            // Check request value
-            if (!method.equals("GET")) {
-                assertTrue(testProducer.getRequest().getContent().containsKey("all"));
-                assertEquals(SAY_HELLO, testProducer.getRequest().getContent().get("all").getValue());
-            }
-            // Check response value
-            assertTrue(testProducer.getResponse().getContent().containsKey("all"));
-            assertEquals(HELLO_WORLD, testProducer.getResponse().getContent().get("all").getValue());
+        if (fault) {
+            assertEquals("401", testProducer.getFault());
+            assertEquals("Unauthorized", testProducer.getFaultDescription());
         } else {
-            assertFalse(testProducer.getRequest().getContent().containsKey("all"));
+
+            if (isProcessContent()) {
+                // Check request value
+                if (!method.equals("GET")) {
+                    assertTrue(testProducer.getRequest().getContent().containsKey("all"));
+                    assertEquals(SAY_HELLO, testProducer.getRequest().getContent().get("all").getValue());
+                }
+                // Check response value
+                assertTrue(testProducer.getResponse().getContent().containsKey("all"));
+                assertEquals(HELLO_WORLD, testProducer.getResponse().getContent().get("all").getValue());
+            } else {
+                assertFalse(testProducer.getRequest().getContent().containsKey("all"));
+            }
         }
     }
 
