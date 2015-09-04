@@ -322,7 +322,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void componentStart(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Component start: location=[" + location + "] type=" + type + " operation="
-                                    + operation + " uri=" + uri);
+                    + operation + " uri=" + uri);
         }
 
         try {
@@ -351,7 +351,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void componentEnd(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Component end: location=[" + location + "] type=" + type + " operation="
-                                + operation + " uri=" + uri);
+                    + operation + " uri=" + uri);
         }
 
         try {
@@ -380,7 +380,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void producerStart(String location, String uri, String type, String id) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Producer start: location=[" + location + "] type=" + type
-                                    + " uri=" + uri + " id=" + id);
+                    + " uri=" + uri + " id=" + id);
         }
 
         try {
@@ -447,11 +447,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                Node node=builder.getCurrentNode();
+                Node node = builder.getCurrentNode();
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isProcessed(builder.getBusinessTransaction(),
-                            (InteractionNode)node, Direction.Request);
+                            node, Direction.Request);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "isRequestProcessed: No fragment builder for this thread", null);
@@ -478,11 +478,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                Node node=builder.getCurrentNode();
+                Node node = builder.getCurrentNode();
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                            (InteractionNode)node, Direction.Request);
+                            node, Direction.Request);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "isRequestContentProcessed: No fragment builder for this thread", null);
@@ -510,11 +510,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                Node node=builder.getCurrentNode();
+                Node node = builder.getCurrentNode();
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isProcessed(builder.getBusinessTransaction(),
-                            (InteractionNode)node, Direction.Response);
+                            node, Direction.Response);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "isResponseProcessed: No fragment builder for this thread", null);
@@ -541,11 +541,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                Node node=builder.getCurrentNode();
+                Node node = builder.getCurrentNode();
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                            (InteractionNode)node, Direction.Response);
+                            node, Direction.Response);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "isResponseContentProcessed: No fragment builder for this thread", null);
@@ -643,7 +643,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void setProperty(String location, String name, String value) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Set business transaction property: location=" + location +
-                                " name=" + name + " value=" + value);
+                    " name=" + name + " value=" + value);
         }
 
         try {
@@ -693,7 +693,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void initRequestBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("initRequestBuffer: location=[" + location + "] obj=" +obj);
+            log.finest("initRequestBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
@@ -734,11 +734,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                boolean ret=builder.isRequestBufferActive(getCode(obj));
+                boolean ret = builder.isRequestBufferActive(getCode(obj));
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("isRequestBufferActive: location=[" + location + "] obj="
-                                + obj + "? " + ret);
+                            + obj + "? " + ret);
                 }
 
                 return ret;
@@ -761,7 +761,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void appendRequestBuffer(String location, Object obj, byte[] data, int offset, int len) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("appendRequestBuffer: location=[" + location + "] obj=" +obj);
+            log.finest("appendRequestBuffer: location=[" + location + "] obj=" + obj + " data=" + data
+                    + " offset=" + offset + " len=" + len);
+        }
+
+        if (len == -1) {
+            return;
         }
 
         try {
@@ -786,7 +791,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void recordRequestBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("recordRequestBuffer: location=[" + location + "] obj=" +obj);
+            log.finest("recordRequestBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
@@ -822,7 +827,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void initResponseBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("initResponseBuffer: location=[" + location + "] obj=" +obj);
+            log.finest("initResponseBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
@@ -850,11 +855,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                boolean ret=builder.isResponseBufferActive(getCode(obj));
+                boolean ret = builder.isResponseBufferActive(getCode(obj));
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("isResponseBufferActive: location=[" + location + "] obj="
-                                + obj + "? " + ret);
+                            + obj + "? " + ret);
                 }
 
                 return ret;
@@ -877,7 +882,12 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void appendResponseBuffer(String location, Object obj, byte[] data, int offset, int len) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("appendResponseBuffer: location=[" + location + "] obj=" +obj);
+            log.finest("appendResponseBuffer: location=[" + location + "] obj=" + obj + " data=" + data
+                    + " offset=" + offset + " len=" + len);
+        }
+
+        if (len == -1) {
+            return;
         }
 
         try {
@@ -902,7 +912,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     @Override
     public void recordResponseBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("recordResponseBuffer: location=[" + location + "] obj=" +obj);
+            log.finest("recordResponseBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
