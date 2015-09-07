@@ -447,15 +447,6 @@
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.wildfly.plugins</groupId>
-          <artifactId>wildfly-maven-plugin</artifactId>
-          <version>1.1.0.Alpha2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <profiles>
@@ -466,7 +457,6 @@
         <module>tests/client</module>
         <module>tests/client-java</module>
         <module>tests/client-jetty</module>
-        <module>tests/client-wildfly</module>
         <module>tests/server-wildfly</module>
         <module>tests/test-server</module>
       </modules>
@@ -475,6 +465,12 @@
       <id>vertx</id>
       <modules>
         <module>tests/client-vertx</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wildfly</id>
+      <modules>
+        <module>tests/client-wildfly</module>
       </modules>
     </profile>
   </profiles>

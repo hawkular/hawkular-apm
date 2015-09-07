@@ -141,7 +141,6 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-<!-- HWKBTM-47 Don't run tests until wildfly maven plugin Alpha3 released
       <plugin>
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
@@ -327,7 +326,6 @@
       <plugin>
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-maven-plugin</artifactId>
-        <version>1.1.0.Alpha3-SNAPSHOT</version>
         <configuration>
           <jboss-home>${hawkular.btm.dist}</jboss-home>
           <javaOpts>
@@ -375,7 +373,6 @@
           </execution>
         </executions>
       </plugin>
--->
     </plugins>
   </build>
 
