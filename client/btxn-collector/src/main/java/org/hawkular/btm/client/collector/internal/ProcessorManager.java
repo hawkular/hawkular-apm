@@ -302,6 +302,12 @@ public class ProcessorManager {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("ProcessManager/Processor: process btxn="+btxn+" node="+node
                         +" direction="+direction+" headers="+headers+" values="+values);
+
+                if (values != null) {
+                    for (int i=0; i < values.length; i++) {
+                        log.finest("        [value "+i+"] = "+values[i]);
+                    }
+                }
             }
 
             if (processor.getNodeType() == node.getType()

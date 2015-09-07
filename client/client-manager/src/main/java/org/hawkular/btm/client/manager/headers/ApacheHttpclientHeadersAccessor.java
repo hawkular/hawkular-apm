@@ -35,7 +35,7 @@ public class ApacheHttpclientHeadersAccessor implements HeadersAccessor {
     private static final Logger log = Logger.getLogger(ApacheHttpclientHeadersAccessor.class.getName());
 
     /**  */
-    private static final String TARGET_TYPE = "org.apache.http.client.methods.HttpUriRequest";
+    private static final String TARGET_TYPE = "org.apache.http.HttpMessage";
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.HeadersFactory#getTargetType()

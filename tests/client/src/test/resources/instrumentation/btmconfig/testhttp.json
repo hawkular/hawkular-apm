@@ -18,7 +18,7 @@
         },{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "new String(values[0])"
+          "expression": "TextHelper.toString(values[0])"
         }]
       },{
         "nodeType": "Producer",
@@ -27,7 +27,7 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "new String(values[0])"
+          "expression": "TextHelper.toString(values[0])"
         }]
       }]
     }
