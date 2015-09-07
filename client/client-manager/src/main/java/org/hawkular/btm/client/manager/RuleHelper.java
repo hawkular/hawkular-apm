@@ -124,6 +124,22 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
+     * This method casts the supplied object to the nominated
+     * class. If the object cannot be cast to the provided type,
+     * then a null will be returned.
+     *
+     * @param obj The object
+     * @param clz The class to cast to
+     * @return The cast object, or null if the object cannot be cast
+     */
+    public <T> T cast(Object obj, Class<T> clz) {
+        if (!clz.isAssignableFrom(obj.getClass())) {
+            return null;
+        }
+        return clz.cast(obj);
+    }
+
+    /**
      * This method returns the simple class name of the supplied
      * object.
      *
@@ -132,6 +148,17 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public String simpleClassName(Object obj) {
         return obj.getClass().getSimpleName();
+    }
+
+    /**
+     * This method returns the string representation of the
+     * supplied object.
+     *
+     * @param obj The object
+     * @return The string representation
+     */
+    public String toString(Object obj) {
+        return obj.toString();
     }
 
     /**
