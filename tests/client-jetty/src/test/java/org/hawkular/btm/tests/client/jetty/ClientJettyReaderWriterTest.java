@@ -32,12 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Producer;
@@ -70,28 +70,10 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
     public static void initClass() {
         server = new Server(8180);
 
-        server.setHandler(new AbstractHandler() {
-
-            @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request,
-                    HttpServletResponse response)
-                    throws IOException, ServletException {
-
-                BufferedReader reader = request.getReader();
-
-                String str = reader.readLine();
-                System.out.println("REQUEST(READER) RECEIVED: " + str);
-
-                response.setContentType("text/html; charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                PrintWriter out = response.getWriter();
-
-                out.println(HELLO_WORLD_RESPONSE);
-
-                baseRequest.setHandled(true);
-            }
-        });
+        ServletContextHandler context = new ServletContextHandler();
+        context.setContextPath("/");
+        context.addServlet(EmbeddedServlet.class, "/hello");
+        server.setHandler(context);
 
         try {
             server.start();
@@ -215,6 +197,29 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
         assertNotNull(testConsumer.getResponse());
         assertTrue(testConsumer.getResponse().getContent().containsKey("all"));
         assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getResponse().getContent().get("all").getValue());
+    }
+
+    public static class EmbeddedServlet extends HttpServlet {
+
+        /**  */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void service(HttpServletRequest request, HttpServletResponse response)
+                throws ServletException, IOException {
+
+            BufferedReader reader = request.getReader();
+
+            String str = reader.readLine();
+            System.out.println("REQUEST(READER) RECEIVED: " + str);
+
+            response.setContentType("text/html; charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            PrintWriter out = response.getWriter();
+
+            out.println(HELLO_WORLD_RESPONSE);
+        }
     }
 
 }

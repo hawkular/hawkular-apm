@@ -429,6 +429,11 @@
         <artifactId>jetty-server</artifactId>
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
