@@ -33,12 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Producer;
@@ -65,43 +65,16 @@ public class ClientJettyStreamTest extends ClientTestBase {
     /**  */
     private static final String HELLO_WORLD_RESPONSE = "<h1>HELLO WORLD</h1>";
 
-    private static Server server=null;
+    private static Server server = null;
 
     @BeforeClass
     public static void initClass() {
         server = new Server(8180);
 
-        server.setHandler(new AbstractHandler() {
-
-            @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request,
-                    HttpServletResponse response)
-                            throws IOException, ServletException {
-
-                InputStream is = request.getInputStream();
-
-                byte[] b = new byte[is.available()];
-                is.read(b);
-
-                is.close();
-
-                System.out.println("REQUEST(INPUTSTREAM) RECEIVED: " + new String(b));
-
-                response.setContentType("text/html; charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                OutputStream os = response.getOutputStream();
-
-                byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
-
-                os.write(resp, 0, resp.length);
-
-                os.flush();
-                os.close();
-
-                baseRequest.setHandled(true);
-            }
-        });
+        ServletContextHandler context = new ServletContextHandler();
+        context.setContextPath("/");
+        context.addServlet(EmbeddedServlet.class, "/hello");
+        server.setHandler(context);
 
         try {
             server.start();
@@ -224,6 +197,38 @@ public class ClientJettyStreamTest extends ClientTestBase {
         assertTrue(testConsumer.getResponse().getContent().containsKey("all"));
         assertEquals(GREETINGS_REQUEST, testConsumer.getRequest().getContent().get("all").getValue());
         assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getResponse().getContent().get("all").getValue());
+    }
+
+    public static class EmbeddedServlet extends HttpServlet {
+
+        /**  */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void service(HttpServletRequest request, HttpServletResponse response)
+                throws ServletException, IOException {
+
+            InputStream is = request.getInputStream();
+
+            byte[] b = new byte[is.available()];
+            is.read(b);
+
+            is.close();
+
+            System.out.println("REQUEST(INPUTSTREAM) RECEIVED: " + new String(b));
+
+            response.setContentType("text/html; charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            OutputStream os = response.getOutputStream();
+
+            byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
+
+            os.write(resp, 0, resp.length);
+
+            os.flush();
+            os.close();
+        }
     }
 
 }
