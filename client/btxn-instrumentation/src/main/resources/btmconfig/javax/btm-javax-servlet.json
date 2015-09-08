@@ -49,7 +49,7 @@
           "valueExpression": "req.getRemoteHost()"
         }]
       },{
-        "ruleName": "Javax Servlet Consumer End",
+        "ruleName": "Javax Servlet Consumer End Sync",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
         "parameterTypes": [
@@ -62,7 +62,7 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
         }],
-        "condition": "isActive()",
+        "condition": "isActive() && !$1.isAsyncStarted()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Response",
@@ -70,6 +70,31 @@
           "uriExpression": "req.getRequestURL().toString()"
         },{
           "type": "AssertComplete"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer End Async",
+        "interfaceName": "^javax.servlet.Servlet",
+        "methodName": "service",
+        "parameterTypes": [
+          "javax.servlet.ServletRequest",
+          "javax.servlet.ServletResponse"
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && $1.isAsyncStarted()",
+        "actions": [{
+          "type": "Unlink"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Complete Async Link",
+        "interfaceName": "^javax.servlet.ServletRequest",
+        "methodName": "getInputStream",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isLinkActive(\"javax.servlet-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteLink",
+          "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Init",
@@ -119,6 +144,18 @@
         "actions": [{
           "type": "FreeFormAction",
           "action": "recordRequestBuffer($0)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer OutputStream Complete Async Link",
+        "interfaceName": "^javax.servlet.ServletResponse",
+        "methodName": "getOutputStream",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isLinkActive(\"javax.servlet-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteLink",
+          "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Init",
@@ -180,6 +217,33 @@
         "actions": [{
           "type": "FreeFormAction",
           "action": "initResponseBuffer($!)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer Start Async",
+        "interfaceName": "^javax.servlet.http.HttpServletRequest",
+        "methodName": "startAsync",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "InitiateLink",
+          "idExpression": "\"javax.servlet-async-\"+hashCode($!.getRequest())"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Init",
+        "interfaceName": "^javax.servlet.AsyncContext",
+        "methodName": "complete",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Response",
+          "endpointTypeExpression": "\"HTTP\""
+        },{
+          "type": "AssertComplete"
         }]
       }]
     }
