@@ -110,8 +110,6 @@ public class ClientCamelServletTest {
 
         List<BusinessTransaction> btxns = service.query(null, criteria);
 
-        assertEquals(1, btxns.size());
-
         for (BusinessTransaction btxn : btxns) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -121,6 +119,8 @@ public class ClientCamelServletTest {
                 e.printStackTrace();
             }
         }
+
+        assertEquals(1, btxns.size());
 
         // Check top level node is a Consumer associated with the servlet
         assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());

@@ -14,7 +14,7 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "new String(values[0])"
+          "expression": "TextHelper.toString(values[0])"
         }]
       },{
         "nodeType": "Consumer",
@@ -23,7 +23,25 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "new String(values[0])"
+          "expression": "TextHelper.toString(values[0])"
+        }]
+      },{
+        "nodeType": "Producer",
+        "direction": "Request",
+        "uriFilter": "http://localhost:8180/hello",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "TextHelper.toString(values[0])"
+        }]
+      },{
+        "nodeType": "Producer",
+        "direction": "Response",
+        "uriFilter": "http://localhost:8180/hello",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": "TextHelper.toString(values[0])"
         }]
       }]
     }
