@@ -245,10 +245,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                pop(location, builder, Consumer.class, uri);
+                Node node = pop(location, builder, Consumer.class, uri);
 
                 // Check for completion
-                checkForCompletion(builder);
+                checkForCompletion(builder, node);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "consumerEnd: No fragment builder for this thread", null);
             }
@@ -300,10 +300,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                pop(location, builder, Service.class, uri);
+                Node node = pop(location, builder, Service.class, uri);
 
                 // Check for completion
-                checkForCompletion(builder);
+                checkForCompletion(builder, node);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "serviceEnd: No fragment builder for this thread", null);
             }
@@ -358,10 +358,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                pop(location, builder, Component.class, uri);
+                Node node = pop(location, builder, Component.class, uri);
 
                 // Check for completion
-                checkForCompletion(builder);
+                checkForCompletion(builder, node);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "componentEnd: No fragment builder for this thread", null);
             }
@@ -418,10 +418,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                pop(location, builder, Producer.class, uri);
+                Node node = pop(location, builder, Producer.class, uri);
 
                 // Check for completion
-                checkForCompletion(builder);
+                checkForCompletion(builder, node);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "producerEnd: No fragment builder for this thread", null);
             }
@@ -817,6 +817,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     protected void processRequestContent(String location, FragmentBuilder builder, int hashCode) {
         if (builder.isRequestBufferActive(hashCode)) {
             processRequest(location, null, builder.getRequestData(hashCode));
+        } else if (log.isLoggable(Level.FINEST)) {
+            log.finest("processRequestContent: location=[" + location + "] hashCode=" + hashCode
+                    + " request buffer is not active");
         }
     }
 
@@ -938,6 +941,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     protected void processResponseContent(String location, FragmentBuilder builder, int hashCode) {
         if (builder.isResponseBufferActive(hashCode)) {
             processResponse(location, null, builder.getResponseData(hashCode));
+        } else if (log.isLoggable(Level.FINEST)) {
+            log.finest("processResponseContent: location=[" + location + "] hashCode=" + hashCode
+                    + " response buffer is not active");
         }
     }
 
@@ -975,8 +981,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
 
         if (builder.getCurrentNode() == null) {
-            if (log.isLoggable(Level.WARNING)) {
-                log.warning("No 'current node' for this thread (" + Thread.currentThread()
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("WARNING: No 'current node' for this thread (" + Thread.currentThread()
                         + ") - trying to pop node of type: " + cls);
             }
             return null;
@@ -1078,19 +1084,22 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * This method checks whether the supplied fragment has been completed
      * and therefore should be processed.
      *
+     * @param node The most recently popped node
      * @param builder The fragment builder
      */
-    protected void checkForCompletion(FragmentBuilder builder) {
+    protected void checkForCompletion(FragmentBuilder builder, Node node) {
         // Check if completed
         if (builder.isComplete()) {
-            BusinessTransaction btxn = builder.getBusinessTransaction();
+            if (node != null) {
+                BusinessTransaction btxn = builder.getBusinessTransaction();
 
-            if (btxn != null && !btxn.getNodes().isEmpty()) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Record business transaction: " + btxn);
+                if (btxn != null && !btxn.getNodes().isEmpty()) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Record business transaction: " + btxn);
+                    }
+
+                    reporter.report(btxn);
                 }
-
-                reporter.report(btxn);
             }
 
             fragmentManager.clear();
@@ -1209,10 +1218,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                builder.releaseNode(id);
+                Node node = builder.releaseNode(id);
 
                 // Check for completion
-                checkForCompletion(builder);
+                checkForCompletion(builder, node);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {

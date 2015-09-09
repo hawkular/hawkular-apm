@@ -80,8 +80,10 @@ public class ApacheHttpClientTest extends ClientTestBase {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
                         if (!exchange.getRequestHeaders().contains("test-fault")) {
-                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-                            exchange.getResponseSender().send(HELLO_WORLD);
+                            if (!exchange.getRequestHeaders().contains("test-no-data")) {
+                                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+                                exchange.getResponseSender().send(HELLO_WORLD);
+                            }
                         } else {
                             exchange.setResponseCode(401);
                         }
@@ -102,55 +104,63 @@ public class ApacheHttpClientTest extends ClientTestBase {
 
     @Test
     public void testHttpClientWithoutResponseHandlerGET() throws IOException {
-        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false);
+        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false, true);
     }
 
     @Test
-    public void testHttpClientWithoutResponseHandlerGETWithData() throws IOException {
+    public void testHttpClientWithoutResponseHandlerGETNoData() throws IOException {
+        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false, false);
+    }
+
+    @Test
+    public void testHttpClientWithoutResponseHandlerGETWithContent() throws IOException {
         setProcessContent(true);
-        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false);
+        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false, true);
     }
 
     @Test
     public void testHttpClientWithoutResponseHandlerPUT() throws IOException {
-        testHttpClientWithoutResponseHandler(new HttpPut(SAY_HELLO_URL), null, false);
+        testHttpClientWithoutResponseHandler(new HttpPut(SAY_HELLO_URL), null, false, true);
     }
 
     @Test
-    public void testHttpClientWithoutResponseHandlerPUTWithData() throws IOException {
+    public void testHttpClientWithoutResponseHandlerPUTWithContent() throws IOException {
         setProcessContent(true);
-        testHttpClientWithoutResponseHandler(new HttpPut(SAY_HELLO_URL), SAY_HELLO, false);
+        testHttpClientWithoutResponseHandler(new HttpPut(SAY_HELLO_URL), SAY_HELLO, false, true);
     }
 
     @Test
     public void testHttpClientWithoutResponseHandlerPOST() throws IOException {
-        testHttpClientWithoutResponseHandler(new HttpPost(SAY_HELLO_URL), null, false);
+        testHttpClientWithoutResponseHandler(new HttpPost(SAY_HELLO_URL), null, false, true);
     }
 
     @Test
-    public void testHttpClientWithoutResponseHandlerPOSTWithData() throws IOException {
+    public void testHttpClientWithoutResponseHandlerPOSTWithContent() throws IOException {
         setProcessContent(true);
-        testHttpClientWithoutResponseHandler(new HttpPost(SAY_HELLO_URL), SAY_HELLO, false);
+        testHttpClientWithoutResponseHandler(new HttpPost(SAY_HELLO_URL), SAY_HELLO, false, true);
     }
 
     @Test
     public void testHttpClientWithoutResponseHandlerGETWithFault() throws IOException {
-        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, true);
+        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, true, true);
     }
 
     protected void testHttpClientWithoutResponseHandler(HttpUriRequest request, String data,
-                                boolean fault) throws IOException {
+            boolean fault, boolean respexpected) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             request.addHeader("test-header", "test-value");
             if (fault) {
                 request.addHeader("test-fault", "true");
             }
+            if (!respexpected) {
+                request.addHeader("test-no-data", "true");
+            }
 
             if (data != null && request instanceof HttpEntityEnclosingRequest) {
                 StringEntity entity = new StringEntity(data,
                         ContentType.create("text/plain", "UTF-8"));
-                ((HttpEntityEnclosingRequest)request).setEntity(entity);
+                ((HttpEntityEnclosingRequest) request).setEntity(entity);
             }
 
             HttpResponse response = httpclient.execute(request);
@@ -160,11 +170,13 @@ public class ApacheHttpClientTest extends ClientTestBase {
             if (!fault) {
                 assertEquals("Unexpected response code", 200, status);
 
-                HttpEntity entity = response.getEntity();
+                if (respexpected) {
+                    HttpEntity entity = response.getEntity();
 
-                assertNotNull(entity);
+                    assertNotNull(entity);
 
-                assertEquals(HELLO_WORLD, EntityUtils.toString(entity));
+                    assertEquals(HELLO_WORLD, EntityUtils.toString(entity));
+                }
             } else {
                 assertEquals("Unexpected fault response code", 401, status);
             }
@@ -221,8 +233,10 @@ public class ApacheHttpClientTest extends ClientTestBase {
                     assertEquals(SAY_HELLO, testProducer.getRequest().getContent().get("all").getValue());
                 }
                 // Check response value
-                assertTrue(testProducer.getResponse().getContent().containsKey("all"));
-                assertEquals(HELLO_WORLD, testProducer.getResponse().getContent().get("all").getValue());
+                if (respexpected) {
+                    assertTrue(testProducer.getResponse().getContent().containsKey("all"));
+                    assertEquals(HELLO_WORLD, testProducer.getResponse().getContent().get("all").getValue());
+                }
             } else {
                 assertFalse(testProducer.getRequest().getContent().containsKey("all"));
             }
@@ -235,7 +249,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
     }
 
     @Test
-    public void testHttpClientWithResponseHandlerGETWithData() throws IOException {
+    public void testHttpClientWithResponseHandlerGETWithContent() throws IOException {
         setProcessContent(true);
         testHttpClientWithResponseHandler(new HttpGet(SAY_HELLO_URL), null, false);
     }
@@ -246,7 +260,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
     }
 
     @Test
-    public void testHttpClientWithResponseHandlerPUTWithData() throws IOException {
+    public void testHttpClientWithResponseHandlerPUTWithContent() throws IOException {
         setProcessContent(true);
         testHttpClientWithResponseHandler(new HttpPut(SAY_HELLO_URL), SAY_HELLO, false);
     }
@@ -257,13 +271,13 @@ public class ApacheHttpClientTest extends ClientTestBase {
     }
 
     @Test
-    public void testHttpClientWithResponseHandlerPOSTWithData() throws IOException {
+    public void testHttpClientWithResponseHandlerPOSTWithContent() throws IOException {
         setProcessContent(true);
         testHttpClientWithResponseHandler(new HttpPost(SAY_HELLO_URL), SAY_HELLO, false);
     }
 
     protected void testHttpClientWithResponseHandler(HttpUriRequest request, String data,
-                            boolean fault) throws IOException {
+            boolean fault) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             request.addHeader("test-header", "test-value");
@@ -274,7 +288,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
             if (data != null && request instanceof HttpEntityEnclosingRequest) {
                 StringEntity entity = new StringEntity(data,
                         ContentType.create("text/plain", "UTF-8"));
-                ((HttpEntityEnclosingRequest)request).setEntity(entity);
+                ((HttpEntityEnclosingRequest) request).setEntity(entity);
             }
 
             // Create a custom response handler
