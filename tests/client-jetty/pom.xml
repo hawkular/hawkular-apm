@@ -156,6 +156,7 @@
               -Dhawkular-btm.username=jdoe
               -Dhawkular-btm.password=password
               -Djava.util.logging.config.file=${hawkular-btm.logging}
+              -Dhawkular-btm.test.mode=true
               -Dhawkular-btm.log.level=INFO
           </argLine>
           <systemPropertyVariables>

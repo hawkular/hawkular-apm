@@ -18,7 +18,6 @@ package org.hawkular.btm.tests.client.jetty;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -93,12 +92,49 @@ public class ClientJettyStreamTest extends ClientTestBase {
     }
 
     @Test
-    public void test() {
+    public void testGet() {
+        testJettyServlet("GET", null, false, true);
+    }
+
+    @Test
+    public void testGetNoResponse() {
+        testJettyServlet("GET", null, false, false);
+    }
+
+    @Test
+    public void testGetWithContent() {
+        setProcessContent(true);
+        testJettyServlet("GET", null, false, true);
+    }
+
+    @Test
+    public void testPut() {
+        testJettyServlet("PUT", GREETINGS_REQUEST, false, true);
+    }
+
+    @Test
+    public void testPutWithContent() {
+        setProcessContent(true);
+        testJettyServlet("PUT", GREETINGS_REQUEST, false, true);
+    }
+
+    @Test
+    public void testPost() {
+        testJettyServlet("POST", GREETINGS_REQUEST, false, true);
+    }
+
+    @Test
+    public void testPostWithContent() {
+        setProcessContent(true);
+        testJettyServlet("POST", GREETINGS_REQUEST, false, true);
+    }
+
+    protected void testJettyServlet(String method, String reqdata, boolean fault, boolean respexpected) {
         try {
             URL url = new URL(HELLO_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod(method);
 
             connection.setDoOutput(true);
             connection.setDoInput(true);
@@ -108,30 +144,52 @@ public class ClientJettyStreamTest extends ClientTestBase {
                     "application/json");
 
             connection.setRequestProperty(TEST_HEADER, "test-value");
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(GREETINGS_REQUEST.getBytes());
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
+            if (fault) {
+                connection.setRequestProperty("test-fault", "true");
+            }
+            if (!respexpected) {
+                connection.setRequestProperty("test-no-data", "true");
             }
 
-            is.close();
+            java.io.InputStream is = null;
 
-            assertEquals("Unexpected response code", 200, connection.getResponseCode());
+            if (reqdata != null) {
+                java.io.OutputStream os = connection.getOutputStream();
 
-            assertEquals(HELLO_WORLD_RESPONSE, builder.toString());
+                os.write(reqdata.getBytes());
+
+                os.flush();
+                os.close();
+            } else if (fault || !respexpected) {
+                connection.connect();
+            } else if (respexpected) {
+                is = connection.getInputStream();
+            }
+
+            if (!fault) {
+                assertEquals("Unexpected response code", 200, connection.getResponseCode());
+
+                if (respexpected) {
+                    if (is == null) {
+                        is = connection.getInputStream();
+                    }
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+                    StringBuilder builder = new StringBuilder();
+                    String str = null;
+
+                    while ((str = reader.readLine()) != null) {
+                        builder.append(str);
+                    }
+
+                    is.close();
+
+                    assertEquals(HELLO_WORLD_RESPONSE, builder.toString());
+                }
+            } else {
+                assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
+            }
 
         } catch (Exception e) {
             fail("Failed to perform get: " + e);
@@ -184,19 +242,31 @@ public class ClientJettyStreamTest extends ClientTestBase {
 
         assertEquals(HELLO_URL, testConsumer.getUri());
 
-        assertNotNull(testConsumer.getRequest());
-        assertNotNull(testConsumer.getResponse());
-
         // Check headers
         assertFalse("testConsumer has no headers", testConsumer.getRequest().getHeaders().isEmpty());
         assertTrue("testConsumer does not have test header",
                 testConsumer.getRequest().getHeaders().containsKey(TEST_HEADER));
 
-        // Check contents
-        assertTrue(testConsumer.getRequest().getContent().containsKey("all"));
-        assertTrue(testConsumer.getResponse().getContent().containsKey("all"));
-        assertEquals(GREETINGS_REQUEST, testConsumer.getRequest().getContent().get("all").getValue());
-        assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getResponse().getContent().get("all").getValue());
+        if (fault) {
+            assertEquals("401", testProducer.getFault());
+            assertEquals("Unauthorized", testProducer.getFaultDescription());
+        } else {
+
+            if (isProcessContent()) {
+                // Check request value
+                if (!method.equals("GET")) {
+                    assertTrue(testConsumer.getRequest().getContent().containsKey("all"));
+                    assertEquals(GREETINGS_REQUEST, testConsumer.getRequest().getContent().get("all").getValue());
+                }
+                // Check response value
+                if (respexpected) {
+                    assertTrue(testConsumer.getResponse().getContent().containsKey("all"));
+                    assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getResponse().getContent().get("all").getValue());
+                }
+            } else {
+                assertFalse(testProducer.getRequest().getContent().containsKey("all"));
+            }
+        }
     }
 
     public static class EmbeddedServlet extends HttpServlet {
@@ -220,14 +290,16 @@ public class ClientJettyStreamTest extends ClientTestBase {
             response.setContentType("text/html; charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
 
-            OutputStream os = response.getOutputStream();
+            if (request.getHeader("test-no-data") == null) {
+                OutputStream os = response.getOutputStream();
 
-            byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
+                byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
 
-            os.write(resp, 0, resp.length);
+                os.write(resp, 0, resp.length);
 
-            os.flush();
-            os.close();
+                os.flush();
+                os.close();
+            }
         }
     }
 

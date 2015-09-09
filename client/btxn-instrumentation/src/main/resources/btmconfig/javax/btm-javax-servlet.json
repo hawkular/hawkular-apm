@@ -72,19 +72,6 @@
           "type": "AssertComplete"
         }]
       },{
-        "ruleName": "Javax Servlet Consumer End Async",
-        "interfaceName": "^javax.servlet.Servlet",
-        "methodName": "service",
-        "parameterTypes": [
-          "javax.servlet.ServletRequest",
-          "javax.servlet.ServletResponse"
-        ],
-        "location": "EXIT",
-        "condition": "isActive() && $1.isAsyncStarted()",
-        "actions": [{
-          "type": "Unlink"
-        }]
-      },{
         "ruleName": "Javax Servlet Consumer InputStream Complete Async Link",
         "interfaceName": "^javax.servlet.ServletRequest",
         "methodName": "getInputStream",
@@ -107,6 +94,52 @@
         "actions": [{
           "type": "FreeFormAction",
           "action": "initRequestBuffer($!)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer GetReader Complete Link",
+        "interfaceName": "^javax.servlet.ServletRequest",
+        "methodName": "getReader",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isLinkActive(\"javax.servlet-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteLink",
+          "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Init on Read 1",
+        "notes": [
+          "Required to work around issue where getting caches the input stream so may not get retrieved to initiate buffer"
+        ],
+        "className": "^javax.servlet.ServletInputStream",
+        "methodName": "read",
+        "parameterTypes": [
+          "byte[]"
+        ],
+        "location": "EXIT",
+        "condition": "!isRequestBufferActive($0) && isActive() && isRequestContentProcessed() && $! > 0",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initRequestBuffer($0)"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer InputStream Init on Read 2",
+        "notes": [
+          "Required to work around issue where getting caches the input stream so may not get retrieved to initiate buffer"
+        ],
+        "className": "^javax.servlet.ServletInputStream",
+        "methodName": "read",
+        "parameterTypes": [
+          "byte[]",
+          "int",
+          "int"
+        ],
+        "location": "EXIT",
+        "condition": "!isRequestBufferActive($0) && isActive() && isRequestContentProcessed() && $! > 0",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initRequestBuffer($0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Append 1",
@@ -229,9 +262,11 @@
         "actions": [{
           "type": "InitiateLink",
           "idExpression": "\"javax.servlet-async-\"+hashCode($!.getRequest())"
+        },{
+          "type": "Unlink"
         }]
       },{
-        "ruleName": "Javax Servlet Consumer InputStream Init",
+        "ruleName": "Javax Servlet Consumer Complete Async Context",
         "interfaceName": "^javax.servlet.AsyncContext",
         "methodName": "complete",
         "parameterTypes": [

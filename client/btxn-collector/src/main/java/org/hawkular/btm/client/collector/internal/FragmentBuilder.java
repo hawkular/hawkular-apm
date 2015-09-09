@@ -254,10 +254,11 @@ public class FragmentBuilder {
      * be released.
      *
      * @param id The identifier used to identify the node
+     * @return The node, or null if not found
      */
-    public void releaseNode(String id) {
+    public Node releaseNode(String id) {
         synchronized (retainedNodes) {
-            retainedNodes.remove(id);
+            return retainedNodes.remove(id);
         }
     }
 
