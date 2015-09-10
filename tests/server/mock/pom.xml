@@ -24,13 +24,13 @@
     <groupId>org.hawkular.btm</groupId>
     <artifactId>hawkular-btm</artifactId>
     <version>0.3.1.Final-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-test-server</artifactId>
+  <artifactId>hawkular-btm-tests-server-mock</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Test Server</name>
+  <name>Hawkular BTM::Tests::Server::Mock</name>
 
   <dependencies>
 

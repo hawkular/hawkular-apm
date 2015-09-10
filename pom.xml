@@ -238,7 +238,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-test-server</artifactId>
+        <artifactId>hawkular-btm-tests-server-mock</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -458,23 +458,23 @@
       <id>tests</id>
       <modules>
         <module>tests/common</module>
-        <module>tests/client</module>
-        <module>tests/client-java</module>
-        <module>tests/client-jetty</module>
-        <module>tests/server-wildfly</module>
-        <module>tests/test-server</module>
+        <module>tests/instrumentation</module>
+        <module>tests/container/standalone</module>
+        <module>tests/container/jetty</module>
+        <module>tests/server/wildfly</module>
+        <module>tests/server/mock</module>
       </modules>
     </profile>
     <profile>
       <id>vertx</id>
       <modules>
-        <module>tests/client-vertx</module>
+        <module>tests/container/vertx</module>
       </modules>
     </profile>
     <profile>
       <id>wildfly</id>
       <modules>
-        <module>tests/client-wildfly</module>
+        <module>tests/container/wildfly</module>
       </modules>
     </profile>
   </profiles>

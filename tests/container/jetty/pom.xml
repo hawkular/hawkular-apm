@@ -24,26 +24,30 @@
     <groupId>org.hawkular.btm</groupId>
     <artifactId>hawkular-btm</artifactId>
     <version>0.3.1.Final-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tests-client-vertx</artifactId>
+  <artifactId>hawkular-btm-tests-containers-jetty</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Client Vertx</name>
+  <name>Hawkular BTM::Tests::Containers::Jetty</name>
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
     <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-btm.logging>${project.basedir}/src/test/configuration/logging.propertiesn</hawkular-btm.logging>
+
+    <hawkular.host>127.0.0.1</hawkular.host>
+    <hawkular.port>8080</hawkular.port>
+    <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}</hawkular.base-uri>
+    <hawkular-btm.path>/hawkular/btm</hawkular-btm.path>
+    <hawkular-btm.base-uri>${hawkular.base-uri}${hawkular-btm.path}</hawkular-btm.base-uri>
+    <hawkular-btm.testapp.host>127.0.0.1</hawkular-btm.testapp.host>
+    <hawkular-btm.testapp.port>8180</hawkular-btm.testapp.port>
+    <hawkular-btm.testapp.base-uri>http://${hawkular-btm.testapp.host}:${hawkular-btm.testapp.port}</hawkular-btm.testapp.base-uri>
   </properties>
 
   <dependencies>
-
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-core</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
@@ -54,34 +58,30 @@
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-tests-common</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-test-server</artifactId>
+      <artifactId>hawkular-btm-tests-server-mock</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <scope>test</scope>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <scope>test</scope>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
     </dependency>
 
     <dependency>
@@ -152,11 +152,17 @@
               -javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar
               -Dorg.jboss.byteman.compileToBytecode
               -Dhawkular-btm.config=${hawkular-btm.instrumentation}
-              -Dhawkular-btm.base-uri=http://localhost:8180/hawkular/btm
+              -Dhawkular-btm.base-uri=http://localhost:8080/hawkular/btm
               -Dhawkular-btm.username=jdoe
               -Dhawkular-btm.password=password
+              -Djava.util.logging.config.file=${hawkular-btm.logging}
+              -Dhawkular-btm.test.mode=true
               -Dhawkular-btm.log.level=INFO
           </argLine>
+          <systemPropertyVariables>
+            <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>
+            <hawkular-btm.testapp.base-uri>${hawkular-btm.testapp.base-uri}</hawkular-btm.testapp.base-uri>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -180,5 +186,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
