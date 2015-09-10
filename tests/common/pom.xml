@@ -36,7 +36,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-test-server</artifactId>
+      <artifactId>hawkular-btm-tests-server-mock</artifactId>
     </dependency>
 
     <dependency>
