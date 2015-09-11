@@ -30,11 +30,14 @@ public class InstrumentedOutputStream extends OutputStream {
     private BusinessTransactionCollector collector;
     private Direction direction;
     private OutputStream os;
+    private String initiateLinkId;
 
-    public InstrumentedOutputStream(BusinessTransactionCollector collector, Direction direction, OutputStream os) {
+    public InstrumentedOutputStream(BusinessTransactionCollector collector, Direction direction,
+                        OutputStream os, String initiateLinkId) {
         this.collector = collector;
         this.direction = direction;
         this.os = os;
+        this.initiateLinkId = initiateLinkId;
 
         if (direction == Direction.Request) {
             collector.initRequestBuffer(null, this);
@@ -88,6 +91,10 @@ public class InstrumentedOutputStream extends OutputStream {
             collector.recordRequestBuffer(null, this);
         } else {
             collector.recordResponseBuffer(null, this);
+        }
+        if (initiateLinkId != null) {
+            collector.session().initiateLink(initiateLinkId);
+            collector.session().unlink();
         }
         os.close();
     }

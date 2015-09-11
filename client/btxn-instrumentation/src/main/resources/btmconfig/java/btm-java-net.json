@@ -39,6 +39,11 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
+        },{
+          "type": "InitiateLink",
+          "idExpression": "\"java.net-async-\"+hashCode($0)"
+        },{
+          "type": "Unlink"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Start",
@@ -91,7 +96,24 @@
         "condition": "isActive() && isRequestContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "$! = createRequestOutputStream($!)"
+          "action": "$! = createRequestOutputStream($!,\"java.net-async-\"+hashCode($0))"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Link",
+        "notes": [
+          "The actual written data will be captured using the java.io instrumentation rules"
+        ],
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getOutputStream",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && !isRequestContentProcessed()",
+        "actions": [{
+          "type": "InitiateLink",
+          "idExpression": "\"java.net-async-\"+hashCode($0)"
+        },{
+          "type": "Unlink"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getInputStream Producer Start",
@@ -132,6 +154,18 @@
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
+        "ruleName": "Java HttpUrlConnection Producer End Complete Async Link",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getResponseCode",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isLinkActive(\"java.net-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteLink",
+          "idExpression": "\"java.net-async-\"+$0.hashCode()"
+        }]
+      },{
         "ruleName": "Java HttpUrlConnection Producer End Unsuccessful",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getResponseCode",
@@ -162,6 +196,18 @@
           "direction": "Response",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()"
+        }]
+      },{
+        "ruleName": "Java HttpUrlConnection HttpInputStream Complete Async Link",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "getInputStream",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isLinkActive(\"java.net-async-\"+$0.hashCode()) && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
+        "actions": [{
+          "type": "CompleteLink",
+          "idExpression": "\"java.net-async-\"+$0.hashCode()"
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream init",
