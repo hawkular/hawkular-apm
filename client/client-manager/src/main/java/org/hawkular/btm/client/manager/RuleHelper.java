@@ -510,7 +510,21 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return The instrumented output stream
      */
     public OutputStream createRequestOutputStream(OutputStream os) {
-        return new InstrumentedOutputStream(collector(), Direction.Request, os);
+        return new InstrumentedOutputStream(collector(), Direction.Request, os, null);
+    }
+
+    /**
+     * This method returns an instrumented proxy output stream, to wrap
+     * the supplied output stream, which will record the written data. The
+     * optional link id can be used to initiate a link with the specified
+     * id (and disassociate the business txn from the current thread).
+     *
+     * @param os The original output stream
+     * @param linkId The optional link id
+     * @return The instrumented output stream
+     */
+    public OutputStream createRequestOutputStream(OutputStream os, String linkId) {
+        return new InstrumentedOutputStream(collector(), Direction.Request, os, linkId);
     }
 
     /**
@@ -521,7 +535,21 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return The instrumented output stream
      */
     public OutputStream createResponseOutputStream(OutputStream os) {
-        return new InstrumentedOutputStream(collector(), Direction.Response, os);
+        return new InstrumentedOutputStream(collector(), Direction.Response, os, null);
+    }
+
+    /**
+     * This method returns an instrumented proxy output stream, to wrap
+     * the supplied output stream, which will record the written data. The
+     * optional link id can be used to initiate a link with the specified
+     * id (and disassociate the business txn from the current thread).
+     *
+     * @param os The original output stream
+     * @param linkId The optional link id
+     * @return The instrumented output stream
+     */
+    public OutputStream createResponseOutputStream(OutputStream os, String linkId) {
+        return new InstrumentedOutputStream(collector(), Direction.Response, os, linkId);
     }
 
     /**

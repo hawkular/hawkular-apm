@@ -423,8 +423,12 @@ public class FragmentBuilder {
         info.append(isComplete());
         info.append(" unlinkedIds=");
         info.append(getUnlinkedIds());
-        info.append(" stack=");
-        info.append(nodeStack);
+        info.append(" stack=\r\n");
+        for (Node node : nodeStack) {
+            info.append("         node: ");
+            info.append(node);
+            info.append("\r\n");
+        }
         return (info.toString());
     }
 }
