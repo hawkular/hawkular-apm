@@ -328,21 +328,21 @@ public class DefaultBusinessTransactionCollectorTest {
 
         final FragmentBuilder fragmentBuilder = collector.getFragmentManager().getFragmentBuilder();
 
-        collector.initiateLink("TestLink");
+        collector.initiateCorrelation("TestLink");
 
-        assertFalse(fragmentBuilder.getUnlinkedIds().isEmpty());
+        assertFalse(fragmentBuilder.getUncompletedCorrelationIds().isEmpty());
 
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                collector.completeLink("TestLink");
+                collector.completeCorrelation("TestLink");
 
                 FragmentBuilder other = collector.getFragmentManager().getFragmentBuilder();
 
                 assertEquals("Builders should be the same", fragmentBuilder, other);
 
                 // Check link is no marked as unresolved
-                assertTrue(other.getUnlinkedIds().isEmpty());
+                assertTrue(other.getUncompletedCorrelationIds().isEmpty());
             }
         });
     }

@@ -129,7 +129,7 @@
           "name": "btm_publish",
           "valueExpression": "isInstanceOf($1,javax.jms.Topic.class)"
         },{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "$2.getJMSReplyTo()"
         },{
           "type": "FreeFormAction",
@@ -165,9 +165,9 @@
           "javax.jms.Message"
         ],
         "location": "ENTRY",
-        "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isLinkActive($1.getJMSDestination())",
+        "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isCorrelated($1.getJMSDestination())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "$1.getJMSDestination()"
         },{
           "type": "InstrumentProducer",

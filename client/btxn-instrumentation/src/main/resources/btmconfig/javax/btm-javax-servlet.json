@@ -78,9 +78,9 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"javax.servlet-async-\"+$0.hashCode())",
+        "condition": "isCorrelated(\"javax.servlet-async-\"+$0.hashCode())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
         }]
       },{
@@ -102,9 +102,9 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"javax.servlet-async-\"+$0.hashCode())",
+        "condition": "isCorrelated(\"javax.servlet-async-\"+$0.hashCode())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
         }]
       },{
@@ -185,9 +185,9 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"javax.servlet-async-\"+$0.hashCode())",
+        "condition": "isCorrelated(\"javax.servlet-async-\"+$0.hashCode())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
         }]
       },{
@@ -260,7 +260,7 @@
         "location": "EXIT",
         "condition": "isActive()",
         "actions": [{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "\"javax.servlet-async-\"+hashCode($!.getRequest())"
         },{
           "type": "Unlink"

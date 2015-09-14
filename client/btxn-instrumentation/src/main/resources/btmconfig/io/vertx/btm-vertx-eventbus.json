@@ -10,7 +10,7 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() == null && !isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
+        "condition": "$1.replyAddress() == null && !isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),$1.headers().get(\"HawkularBTID\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$1.headers().get(\"HawkularBTName\")"
@@ -70,7 +70,7 @@
           "originalType": "io.vertx.core.MultiMap",
           "headersExpression": "$1.headers()"
         },{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "\"io.vertx.core.eventbus-consumer\"+$1.replyAddress()"
         },{
           "type": "SetDetail",
@@ -85,9 +85,9 @@
           "*"
          ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"io.vertx.core.eventbus-consumer\"+$2.address())",
+        "condition": "isCorrelated(\"io.vertx.core.eventbus-consumer\"+$2.address())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"io.vertx.core.eventbus-consumer\"+$2.address()"
         },{
           "type": "InstrumentConsumer",
@@ -236,8 +236,8 @@
           "originalType": "io.vertx.core.MultiMap",
           "headersExpression": "$0.headers()"
         },{
-          "type": "FreeFormAction",
-          "action": "initiateLink(\"io.vertx.core.eventbus-producer\"+$1)"
+          "type": "InitiateCorrelation",
+          "idExpression": "\"io.vertx.core.eventbus-producer\"+$1"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -257,9 +257,9 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"io.vertx.core.eventbus-producer\"+$1.address())",
+        "condition": "isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"io.vertx.core.eventbus-producer\"+$1.address()"
         },{
           "type": "InstrumentProducer",

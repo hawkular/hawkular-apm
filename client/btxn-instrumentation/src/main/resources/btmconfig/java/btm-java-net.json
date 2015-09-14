@@ -40,7 +40,7 @@
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         },{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "\"java.net-async-\"+hashCode($0)"
         },{
           "type": "Unlink"
@@ -110,7 +110,7 @@
         "location": "EXIT",
         "condition": "isActive() && !isRequestContentProcessed()",
         "actions": [{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "\"java.net-async-\"+hashCode($0)"
         },{
           "type": "Unlink"
@@ -160,9 +160,9 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"java.net-async-\"+$0.hashCode())",
+        "condition": "isCorrelated(\"java.net-async-\"+$0.hashCode())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"java.net-async-\"+$0.hashCode()"
         }]
       },{
@@ -204,9 +204,9 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isLinkActive(\"java.net-async-\"+$0.hashCode()) && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
+        "condition": "isCorrelated(\"java.net-async-\"+$0.hashCode()) && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"java.net-async-\"+$0.hashCode()"
         }]
       },{

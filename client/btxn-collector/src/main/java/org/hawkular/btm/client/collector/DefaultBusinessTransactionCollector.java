@@ -62,7 +62,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     private BusinessTransactionReporter reporter = new BusinessTransactionReporter();
 
-    private Map<String, FragmentBuilder> links = new ConcurrentHashMap<String, FragmentBuilder>();
+    private Map<String, FragmentBuilder> correlations = new ConcurrentHashMap<String, FragmentBuilder>();
 
     private static final Level warningLogLevel = Level.WARNING;
 
@@ -1257,60 +1257,82 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.SessionManager#initiateLink(java.lang.String)
+     * @see org.hawkular.btm.api.client.SessionManager#initiateCorrelation(java.lang.String)
      */
     @Override
-    public void initiateLink(String id) {
+    public void initiateCorrelation(String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Initiate link: id=" + id);
+            log.finest("Initiate correlation: id=" + id);
         }
 
         try {
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                builder.getUnlinkedIds().add(id);
-                links.put(id, builder);
+                builder.getUncompletedCorrelationIds().add(id);
+                correlations.put(id, builder);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "initiateLink failed", t);
+                log.log(warningLogLevel, "initiateCorrelation failed", t);
             }
         }
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.SessionManager#isLinkActive(java.lang.String)
+     * @see org.hawkular.btm.api.client.SessionManager#isCorrelated(java.lang.String)
      */
     @Override
-    public boolean isLinkActive(String id) {
-        boolean linkActive = links.containsKey(id);
+    public boolean isCorrelated(String id) {
+        boolean correlationActive = correlations.containsKey(id);
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Is link active? id=" + id + " result=" + linkActive);
+            log.finest("Is correlated? id=" + id + " result=" + correlationActive);
         }
-        return linkActive;
+        return correlationActive;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.SessionManager#completeLink(java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#correlate(java.lang.String)
      */
     @Override
-    public void completeLink(String id) {
+    public void correlate(String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Complete link: id=" + id);
+            log.finest("Correlate: id=" + id);
         }
 
         try {
-            FragmentBuilder builder = links.get(id);
+            FragmentBuilder builder = correlations.get(id);
 
             if (builder != null) {
-                builder.getUnlinkedIds().remove(id);
-                links.remove(id);
                 fragmentManager.setFragmentBuilder(builder);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "completeLink failed", t);
+                log.log(warningLogLevel, "correlate failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#completeCorrelation(java.lang.String)
+     */
+    @Override
+    public void completeCorrelation(String id) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Complete correlation: id=" + id);
+        }
+
+        try {
+            FragmentBuilder builder = correlations.get(id);
+
+            if (builder != null) {
+                builder.getUncompletedCorrelationIds().remove(id);
+                correlations.remove(id);
+                fragmentManager.setFragmentBuilder(builder);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "completeCorrelation failed", t);
             }
         }
     }
@@ -1397,7 +1419,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             log.finest(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             log.finest("BTM COLLECTOR DIAGNOSTICS:");
             fragmentManager.diagnostics();
-            log.finest("Links (" + links.size() + "): " + links);
+            log.finest("Links (" + correlations.size() + "): " + correlations);
             log.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
     }

@@ -112,7 +112,7 @@
             "$1.getBytes()"
           ]
         },{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
         },{
           "type": "SetDetail",
@@ -158,7 +158,7 @@
           "originalType": "io.vertx.core.MultiMap",
           "headersExpression": "$0.headers()"
         },{
-          "type": "InitiateLink",
+          "type": "InitiateCorrelation",
           "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
         },{
           "type": "SetDetail",
@@ -183,9 +183,9 @@
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
         "location": "ENTRY",
-        "condition": "isLinkActive(\"io.vertx.core.http-\"+$0.hashCode())",
+        "condition": "isCorrelated(\"io.vertx.core.http-\"+$0.hashCode())",
         "actions": [{
-          "type": "CompleteLink",
+          "type": "CompleteCorrelation",
           "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
         }]
       },{

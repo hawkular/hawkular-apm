@@ -317,24 +317,32 @@ public class RuleHelper extends Helper implements SessionManager {
      * @see org.hawkular.btm.client.api.SessionManager#initiateLink(java.lang.String)
      */
     @Override
-    public void initiateLink(String id) {
-        collector().session().initiateLink(id);
+    public void initiateCorrelation(String id) {
+        collector().session().initiateCorrelation(id);
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.SessionManager#isLinkActive(java.lang.String)
      */
     @Override
-    public boolean isLinkActive(String id) {
-        return collector().session().isLinkActive(id);
+    public boolean isCorrelated(String id) {
+        return collector().session().isCorrelated(id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#joinLink(java.lang.String)
+     */
+    @Override
+    public void correlate(String id) {
+        collector().session().correlate(id);
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.SessionManager#completeLink(java.lang.String)
      */
     @Override
-    public void completeLink(String id) {
-        collector().session().completeLink(id);
+    public void completeCorrelation(String id) {
+        collector().session().completeCorrelation(id);
     }
 
     /* (non-Javadoc)
