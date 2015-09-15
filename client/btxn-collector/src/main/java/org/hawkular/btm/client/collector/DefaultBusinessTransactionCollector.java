@@ -1104,6 +1104,15 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
             fragmentManager.clear();
 
+            // Remove uncompleted correlation ids
+            // NOTE: Synchronization should not be required as ids should be
+            // unique to the session
+            List<String> ids=builder.getUncompletedCorrelationIds();
+
+            for (int i=0; i < ids.size(); i++) {
+                correlations.remove(ids.get(i));
+            }
+
             diagnostics();
         }
     }
@@ -1419,7 +1428,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             log.finest(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             log.finest("BTM COLLECTOR DIAGNOSTICS:");
             fragmentManager.diagnostics();
-            log.finest("Links (" + correlations.size() + "): " + correlations);
+            log.finest("Correlation (" + correlations.size() + "): " + correlations);
             log.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
     }
