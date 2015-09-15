@@ -19,12 +19,12 @@ package org.hawkular.btm.api.model.admin;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This type represents the session action for linking the current
+ * This type represents the session action for correlating the current
  * thread of execution with another, identified by an id.
  *
  * @author gbrown
  */
-public class CompleteLink extends SessionAction {
+public class Correlate extends SessionAction {
 
     @JsonInclude
     private String idExpression;

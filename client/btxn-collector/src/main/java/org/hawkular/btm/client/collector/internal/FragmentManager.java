@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.client.collector.internal;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.btm.api.logging.Logger;
@@ -33,6 +35,7 @@ public class FragmentManager {
     private ThreadLocal<FragmentBuilder> builders = new ThreadLocal<FragmentBuilder>();
 
     private AtomicInteger threadCounter = new AtomicInteger();
+    private Set<String> threadNames = new HashSet<String>();
 
     /**
      * @return the threadCounter
@@ -69,6 +72,7 @@ public class FragmentManager {
             int currentCount = threadCounter.incrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Associate Thread with FragmentBuilder(1): current thread count=" + currentCount);
+                threadNames.add(Thread.currentThread().getName());
             }
         }
 
@@ -87,11 +91,13 @@ public class FragmentManager {
             int currentCount = threadCounter.incrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Associate Thread with FragmentBuilder(2): current thread count=" + currentCount);
+                threadNames.add(Thread.currentThread().getName());
             }
         } else if (currentBuilder != null && builder == null) {
             int currentCount = threadCounter.decrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Disassociate Thread from FragmentBuilder(2): current thread count=" + currentCount);
+                threadNames.remove(Thread.currentThread().getName());
             }
         }
 
@@ -106,6 +112,7 @@ public class FragmentManager {
         int currentCount = threadCounter.decrementAndGet();
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Clear: Disassociate Thread from FragmentBuilder(1): current thread count=" + currentCount);
+            threadNames.remove(Thread.currentThread().getName());
         }
         builders.remove();
     }
@@ -115,5 +122,11 @@ public class FragmentManager {
      */
     public void diagnostics() {
         log.finest("Thread count = " + threadCounter);
+        if (threadCounter.get() > 0) {
+            log.finest("Thread names:");
+            for (String name : threadNames) {
+                log.finest("\t"+name);
+            }
+        }
     }
 }

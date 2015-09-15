@@ -21,6 +21,23 @@
           "type": "SetDetail",
           "name": "btm_source",
           "valueExpression": "\"org.apache.camel\""
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Component Pre End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "!isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
         }]
       },{
         "ruleName": "Apache Camel Inbound Component End",
@@ -37,6 +54,24 @@
           "direction": "Response",
           "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Component Pre Start",
+        "notes": [
+          "If the exchange has an active correlation, but the thread is not currently active, then correlate the thread to the session"
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSending",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint"
+        ],
+        "location": "ENTRY",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && !isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
         }]
       },{
         "ruleName": "Apache Camel Outbound Component Start",
@@ -60,7 +95,29 @@
           "valueExpression": "\"org.apache.camel\""
         }]
       },{
+        "ruleName": "Apache Camel Outbound Component Pre End",
+        "notes": [
+          "If the exchange has an active correlation, but the thread is not currently active, then correlate the thread to the session"
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSent",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint",
+           "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && !isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
         "ruleName": "Apache Camel Outbound Component End",
+        "notes": [
+          "Unlink after handling the end of the component, as may not continue with other activities on this thread"
+        ],
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSent",
         "parameterTypes": [
@@ -76,6 +133,8 @@
           "direction": "Response",
           "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
           "uriExpression": "$3.getEndpointUri()"
+        },{
+          "type": "Unlink"
         }]
       },{
         "ruleName": "Apache Camel Inbound Consumer Start",

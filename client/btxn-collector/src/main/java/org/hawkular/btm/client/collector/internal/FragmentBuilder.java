@@ -52,7 +52,7 @@ public class FragmentBuilder {
 
     private Map<String, Node> retainedNodes = new HashMap<String, Node>();
 
-    private List<String> unlinkedIds = new ArrayList<String>();
+    private List<String> uncompletedCorrelationIds = new ArrayList<String>();
 
     private boolean suppress = false;
 
@@ -276,12 +276,12 @@ public class FragmentBuilder {
     }
 
     /**
-     * This method returns the 'unlinked ids' list.
+     * This method returns the un-completed correlation ids list.
      *
-     * @return The unlinked ids
+     * @return The uncompleted correlation ids
      */
-    public List<String> getUnlinkedIds() {
-        return unlinkedIds;
+    public List<String> getUncompletedCorrelationIds() {
+        return uncompletedCorrelationIds;
     }
 
     /**
@@ -422,7 +422,7 @@ public class FragmentBuilder {
         info.append("] complete=");
         info.append(isComplete());
         info.append(" unlinkedIds=");
-        info.append(getUnlinkedIds());
+        info.append(getUncompletedCorrelationIds());
         info.append(" stack=\r\n");
         for (Node node : nodeStack) {
             info.append("         node: ");

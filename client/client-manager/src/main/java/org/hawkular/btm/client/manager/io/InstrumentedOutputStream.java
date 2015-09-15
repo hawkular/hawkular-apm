@@ -93,7 +93,7 @@ public class InstrumentedOutputStream extends OutputStream {
             collector.recordResponseBuffer(null, this);
         }
         if (initiateLinkId != null) {
-            collector.session().initiateLink(initiateLinkId);
+            collector.session().initiateCorrelation(initiateLinkId);
             collector.session().unlink();
         }
         os.close();

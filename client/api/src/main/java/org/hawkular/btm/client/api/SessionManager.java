@@ -95,31 +95,37 @@ public interface SessionManager {
     Node retrieveNode(String id);
 
     /**
-     * This method initiates a link between this thread of execution and another one based
+     * This method initiates a correlation between this thread of execution and one or more based
      * on the supplied id.
      *
      * @param id The id
      */
-    void initiateLink(String id);
+    void initiateCorrelation(String id);
 
     /**
-     * This method identifies whether a link with the supplied id is currently active
+     * This method identifies whether a correlation with the supplied id is currently active
      * (i.e. awaiting completion).
      *
      * @param id The id
-     * @return Whether the link is active
+     * @return Whether the correlation is active
      */
-    boolean isLinkActive(String id);
+    boolean isCorrelated(String id);
 
     /**
-     * This method completes the link between the current thread of execution and another
-     * associated with the supplied id. The association with the target thread will be
-     * maintained until either the target thread completes, or this method is called again
-     * with a different id.
+     * This method associates the current thread of execution with the session associated
+     * with the supplied correlation id.
      *
      * @param id The id associated with the target thread of execution
      */
-    void completeLink(String id);
+    void correlate(String id);
+
+    /**
+     * This method ends the correlation between the current thread of execution and another
+     * associated with the supplied id.
+     *
+     * @param id The id associated with the target thread of execution
+     */
+    void completeCorrelation(String id);
 
     /**
      * Unlink the current "linked" thread of execution from the target thread.

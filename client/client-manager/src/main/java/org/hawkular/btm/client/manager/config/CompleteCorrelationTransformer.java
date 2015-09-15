@@ -16,22 +16,22 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.InitiateLink;
+import org.hawkular.btm.api.model.admin.CompleteCorrelation;
 import org.hawkular.btm.api.model.admin.InstrumentAction;
 
 /**
- * This class transforms the InitiateLink action type.
+ * This class transforms the CompleteCorrelation action type.
  *
  * @author gbrown
  */
-public class InitiateLinkTransformer implements InstrumentActionTransformer {
+public class CompleteCorrelationTransformer implements InstrumentActionTransformer {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.manager.config.InstrumentActionTransformer#getActionType()
      */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
-        return InitiateLink.class;
+        return CompleteCorrelation.class;
     }
 
     /* (non-Javadoc)
@@ -40,12 +40,12 @@ public class InitiateLinkTransformer implements InstrumentActionTransformer {
      */
     @Override
     public String convertToRuleAction(InstrumentAction action) {
-        InitiateLink linkAction = (InitiateLink) action;
+        CompleteCorrelation completeAction = (CompleteCorrelation) action;
         StringBuilder builder = new StringBuilder();
 
-        builder.append("initiateLink(");
+        builder.append("completeCorrelation(");
 
-        builder.append(linkAction.getIdExpression());
+        builder.append(completeAction.getIdExpression());
 
         builder.append(")");
 
