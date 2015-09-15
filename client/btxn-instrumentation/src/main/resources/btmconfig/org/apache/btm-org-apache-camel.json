@@ -3,6 +3,36 @@
     "org.apache.camel": {
       "description": "Apache Camel instrumentation",
       "rules": [{
+        "ruleName": "Apache Camel Exchange Constructor Correlation",
+        "className": "org.apache.camel.impl.DefaultExchange",
+        "methodName": "<init>",
+        "parameterTypes": [
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "!isActive() && isCorrelated(\"org.apache.camel-component\"+$1.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$1.getExchangeId()"
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"org.apache.camel-component\"+$0.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Component Pre Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeCreated",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class) && !isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
         "ruleName": "Apache Camel Inbound Component Start",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeCreated",
@@ -34,7 +64,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "!isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "condition": "!isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId()) && $2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class)",
         "actions": [{
           "type": "CompleteCorrelation",
           "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
