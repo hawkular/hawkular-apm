@@ -22,7 +22,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This type represents processing of a request or response data content.
+ * This type represents processing of a request/in or response/out data content.
  *
  * @author gbrown
  */
@@ -32,7 +32,7 @@ public class ProcessContent extends InstrumentAction {
     private List<String> valueExpressions = new ArrayList<String>();
 
     @JsonInclude
-    private Direction direction = Direction.Request;
+    private Direction direction = Direction.In;
 
     /**
      * @return the valueExpressions

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This type represents processing of a request or response headers.
+ * This type represents processing of a request/in or response/out headers.
  *
  * @author gbrown
  */
@@ -33,7 +33,7 @@ public class ProcessHeaders extends InstrumentAction {
     private String originalType;
 
     @JsonInclude
-    private Direction direction = Direction.Request;
+    private Direction direction = Direction.In;
 
     /**
      * @return the headersExpression

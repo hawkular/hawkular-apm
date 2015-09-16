@@ -115,58 +115,58 @@ public interface BusinessTransactionCollector {
     void producerEnd(String location, String uri, String type);
 
     /**
-     * This method identifies whether the request data (content and headers) for the current
+     * This method identifies whether the in data (content and headers) for the current
      * business transaction and node will be processed to extract information.
      *
      * @param location The instrumentation location
-     * @return Whether the request is processed
+     * @return Whether the in message is processed
      */
-    boolean isRequestProcessed(String location);
+    boolean isInProcessed(String location);
 
     /**
-     * This method identifies whether the request content for the current
+     * This method identifies whether the in content for the current
      * business transaction and node will be processed to extract information.
      *
      * @param location The instrumentation location
-     * @return Whether the request content is processed
+     * @return Whether the in content is processed
      */
-    boolean isRequestContentProcessed(String location);
+    boolean isInContentProcessed(String location);
 
     /**
-     * This method identifies whether the response data (content and headers) for the current
+     * This method identifies whether the out data (content and headers) for the current
      * business transaction and node will be processed to extract information.
      *
      * @param location The instrumentation location
-     * @return Whether the response is processed
+     * @return Whether the out message is processed
      */
-    boolean isResponseProcessed(String location);
+    boolean isOutProcessed(String location);
 
     /**
-     * This method identifies whether the response content for the current
+     * This method identifies whether the out content for the current
      * business transaction and node will be processed to extract information.
      *
      * @param location The instrumentation location
-     * @return Whether the response content is processed
+     * @return Whether the out content is processed
      */
-    boolean isResponseContentProcessed(String location);
+    boolean isOutContentProcessed(String location);
 
     /**
-     * This method processes the supplied request headers and content.
+     * This method processes the supplied in headers and content.
      *
      * @param location The instrumentation location
      * @param headers The header values
      * @param values The values
      */
-    void processRequest(String location, Map<String, ?> headers, Object... values);
+    void processIn(String location, Map<String, ?> headers, Object... values);
 
     /**
-     * This method processes the supplied response headers and content.
+     * This method processes the supplied out headers and content.
      *
      * @param location The instrumentation location
      * @param headers The header values
      * @param values The values
      */
-    void processResponse(String location, Map<String, ?> headers, Object... values);
+    void processOut(String location, Map<String, ?> headers, Object... values);
 
     /**
      * This method sets a fault on the current node.
@@ -196,25 +196,25 @@ public interface BusinessTransactionCollector {
     void setDetail(String location, String name, String value);
 
     /**
-     * This method initialises a data buffer associated with the supplied request object.
+     * This method initialises a data buffer associated with the supplied object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void initRequestBuffer(String location, Object obj);
+    void initInBuffer(String location, Object obj);
 
     /**
-     * This method determines if there is an active request data buffer for
+     * This method determines if there is an active in data buffer for
      * the supplied object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
      * @return Whether there is an active data buffer
      */
-    boolean isRequestBufferActive(String location, Object obj);
+    boolean isInBufferActive(String location, Object obj);
 
     /**
-     * This method appends data to the buffer associated with the supplied request object.
+     * This method appends data to the buffer associated with the supplied object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
@@ -222,37 +222,37 @@ public interface BusinessTransactionCollector {
      * @param offset The offset of the data
      * @param len The length of data
      */
-    void appendRequestBuffer(String location, Object obj, byte[] data, int offset, int len);
+    void appendInBuffer(String location, Object obj, byte[] data, int offset, int len);
 
     /**
-     * This method records the data within a buffer associated with the supplied request
+     * This method records the data within a buffer associated with the supplied in
      * object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void recordRequestBuffer(String location, Object obj);
+    void recordInBuffer(String location, Object obj);
 
     /**
-     * This method initialises a data buffer associated with the supplied response object.
+     * This method initialises a data buffer associated with the supplied out object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void initResponseBuffer(String location, Object obj);
+    void initOutBuffer(String location, Object obj);
 
     /**
-     * This method determines if there is an active response data buffer for
+     * This method determines if there is an active out data buffer for
      * the supplied object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
      * @return Whether there is an active data buffer
      */
-    boolean isResponseBufferActive(String location, Object obj);
+    boolean isOutBufferActive(String location, Object obj);
 
     /**
-     * This method appends data to the buffer associated with the supplied response object.
+     * This method appends data to the buffer associated with the supplied out object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
@@ -260,16 +260,16 @@ public interface BusinessTransactionCollector {
      * @param offset The offset of the data
      * @param len The length of data
      */
-    void appendResponseBuffer(String location, Object obj, byte[] data, int offset, int len);
+    void appendOutBuffer(String location, Object obj, byte[] data, int offset, int len);
 
     /**
-     * This method records the data within a buffer associated with the supplied response
+     * This method records the data within a buffer associated with the supplied
      * object.
      *
      * @param location The instrumentation location
      * @param obj The object associated with the buffer
      */
-    void recordResponseBuffer(String location, Object obj);
+    void recordOutBuffer(String location, Object obj);
 
     /**
      * This method returns the session manager associated with the

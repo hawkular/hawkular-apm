@@ -9,7 +9,7 @@
       },
       "processors": [{
         "nodeType": "Consumer",
-        "direction": "Request",
+        "direction": "In",
         "uriFilter": "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident",
         "actions": [{
           "name": "all",
@@ -18,7 +18,7 @@
         }]
       },{
         "nodeType": "Consumer",
-        "direction": "Response",
+        "direction": "Out",
         "uriFilter": "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident",
         "actions": [{
           "name": "all",

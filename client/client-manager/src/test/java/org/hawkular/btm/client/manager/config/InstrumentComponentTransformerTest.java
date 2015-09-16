@@ -30,7 +30,7 @@ public class InstrumentComponentTransformerTest {
     private static final String ACTION_PREFIX = "collector().";
 
     @Test
-    public void testConvertToRuleActionRequest() {
+    public void testConvertToRuleActionIn() {
         InstrumentComponent im = new InstrumentComponent();
 
         im.setComponentTypeExpression("\"MyComponent\"");
@@ -47,13 +47,13 @@ public class InstrumentComponentTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionResponse() {
+    public void testConvertToRuleActionOut() {
         InstrumentComponent im = new InstrumentComponent();
 
         im.setComponentTypeExpression("\"MyComponent\"");
         im.setOperationExpression("\"MyOperation\"");
         im.setUriExpression("\"MyUri\"");
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
 
         InstrumentComponentTransformer transformer = new InstrumentComponentTransformer();
 

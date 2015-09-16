@@ -87,7 +87,7 @@ public class ProcessorManager {
 
     /**
      * This method determines whether the business transaction, for the supplied node
-     * and request/response direction, will process available information.
+     * and in/out direction, will process available information.
      *
      * @param btxn The business transaction
      * @param node The current node
@@ -107,7 +107,7 @@ public class ProcessorManager {
 
     /**
      * This method determines whether the business transaction, for the supplied node
-     * and request/response direction, will process content information.
+     * and in/out direction, will process content information.
      *
      * @param btxn The business transaction
      * @param node The current node
@@ -515,11 +515,11 @@ public class ProcessorManager {
                             break;
                         case AddContent:
                             if (node.interactionNode()) {
-                                if (direction == Direction.Request) {
-                                    ((InteractionNode) node).getRequest().addContent(action.getName(),
+                                if (direction == Direction.In) {
+                                    ((InteractionNode) node).getIn().addContent(action.getName(),
                                             action.getType(), value);
                                 } else {
-                                    ((InteractionNode) node).getResponse().addContent(action.getName(),
+                                    ((InteractionNode) node).getOut().addContent(action.getName(),
                                             action.getType(), value);
                                 }
                             } else {

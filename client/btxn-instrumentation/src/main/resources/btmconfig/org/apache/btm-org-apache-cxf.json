@@ -21,13 +21,13 @@
           "nameExpression": "$2.getHeader(\"Hawkular-btname\")"
         },{
           "type": "InstrumentConsumer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$2.getRequestURL().toString()",
           "idExpression": "$2.getHeader(\"Hawkular-btid\")"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "javax.servlet.http.HttpServletRequest",
           "headersExpression": "$2"
         },{

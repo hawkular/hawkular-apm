@@ -32,7 +32,7 @@ public abstract class CollectorAction extends InstrumentAction {
     private String idExpression;
 
     @JsonInclude
-    private Direction direction = Direction.Request;
+    private Direction direction = Direction.In;
 
     /**
      * @return the uriExpression

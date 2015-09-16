@@ -30,7 +30,7 @@ public class InstrumentProducerTransformerTest {
     private static final String ACTION_PREFIX = "collector().";
 
     @Test
-    public void testConvertToRuleActionRequest() {
+    public void testConvertToRuleActionIn() {
         InstrumentProducer im = new InstrumentProducer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
@@ -46,7 +46,7 @@ public class InstrumentProducerTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionRequestWithId() {
+    public void testConvertToRuleActionInWithId() {
         InstrumentProducer im = new InstrumentProducer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
@@ -63,12 +63,12 @@ public class InstrumentProducerTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionResponse() {
+    public void testConvertToRuleActionOut() {
         InstrumentProducer im = new InstrumentProducer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
 
         InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
 
@@ -80,12 +80,12 @@ public class InstrumentProducerTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionResponseWithId() {
+    public void testConvertToRuleActionOutWithId() {
         InstrumentProducer im = new InstrumentProducer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
 
         InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
 

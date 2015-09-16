@@ -30,7 +30,7 @@ public class ProcessHeadersTransformerTest {
     private static final String ACTION_PREFIX = "collector().";
 
     @Test
-    public void testConvertToRuleActionRequest() {
+    public void testConvertToRuleActionIn() {
         ProcessHeaders im = new ProcessHeaders();
 
         im.setHeadersExpression("headers");
@@ -39,13 +39,13 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processRequest(getRuleName(),headers,null)";
+        String expected = ACTION_PREFIX + "processIn(getRuleName(),headers,null)";
 
         assertEquals(expected, transformed);
     }
 
     @Test
-    public void testConvertToRuleActionRequestWithOriginalType() {
+    public void testConvertToRuleActionInWithOriginalType() {
         ProcessHeaders im = new ProcessHeaders();
 
         im.setHeadersExpression("headers");
@@ -55,32 +55,32 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processRequest(getRuleName(),getHeaders(\"org.Type\",headers),null)";
+        String expected = ACTION_PREFIX + "processIn(getRuleName(),getHeaders(\"org.Type\",headers),null)";
 
         assertEquals(expected, transformed);
     }
 
     @Test
-    public void testConvertToRuleActionResponse() {
+    public void testConvertToRuleActionOut() {
         ProcessHeaders im = new ProcessHeaders();
 
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
         im.setHeadersExpression("headers");
 
         ProcessHeadersTransformer transformer = new ProcessHeadersTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processResponse(getRuleName(),headers,null)";
+        String expected = ACTION_PREFIX + "processOut(getRuleName(),headers,null)";
 
         assertEquals(expected, transformed);
     }
 
     @Test
-    public void testConvertToRuleActionResponseWithOriginalType() {
+    public void testConvertToRuleActionOutWithOriginalType() {
         ProcessHeaders im = new ProcessHeaders();
 
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
         im.setHeadersExpression("headers");
         im.setOriginalType("org.Type");
 
@@ -88,7 +88,7 @@ public class ProcessHeadersTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "processResponse(getRuleName(),getHeaders(\"org.Type\",headers),null)";
+        String expected = ACTION_PREFIX + "processOut(getRuleName(),getHeaders(\"org.Type\",headers),null)";
 
         assertEquals(expected, transformed);
     }

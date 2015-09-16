@@ -46,10 +46,10 @@ public class ProcessContentTransformer implements InstrumentActionTransformer {
 
         builder.append("collector().");
 
-        if (pcAction.getDirection() == Direction.Request) {
-            builder.append("processRequest(");
+        if (pcAction.getDirection() == Direction.In) {
+            builder.append("processIn(");
         } else {
-            builder.append("processResponse(");
+            builder.append("processOut(");
         }
 
         builder.append("getRuleName(),null,createArrayBuilder()");

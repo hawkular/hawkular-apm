@@ -97,8 +97,8 @@ public class Consumer extends InteractionNode {
      */
     @Override
     public String toString() {
-        return "Consumer [endpointType=" + endpointType + ", getUri()=" + getUri() + ", getRequest()=" + getRequest()
-                + ", getResponse()=" + getResponse() + ", getNodes()=" + getNodes() + ", getBaseTime()="
+        return "Consumer [endpointType=" + endpointType + ", getUri()=" + getUri() + ", getIn()=" + getIn()
+                + ", getOut()=" + getOut() + ", getNodes()=" + getNodes() + ", getBaseTime()="
                 + getBaseTime() + ", getDuration()=" + getDuration() + ", getDetails()=" + getDetails()
                 + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }

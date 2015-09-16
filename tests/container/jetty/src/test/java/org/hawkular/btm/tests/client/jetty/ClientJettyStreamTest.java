@@ -228,9 +228,9 @@ public class ClientJettyStreamTest extends ClientTestBase {
         assertEquals(HELLO_URL, testProducer.getUri());
 
         // Check headers
-        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
         assertTrue("testProducer does not have test header",
-                testProducer.getRequest().getHeaders().containsKey(TEST_HEADER));
+                testProducer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         List<Consumer> consumers = new ArrayList<Consumer>();
         findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Consumer.class, consumers);
@@ -243,9 +243,9 @@ public class ClientJettyStreamTest extends ClientTestBase {
         assertEquals(HELLO_URL, testConsumer.getUri());
 
         // Check headers
-        assertFalse("testConsumer has no headers", testConsumer.getRequest().getHeaders().isEmpty());
+        assertFalse("testConsumer has no headers", testConsumer.getIn().getHeaders().isEmpty());
         assertTrue("testConsumer does not have test header",
-                testConsumer.getRequest().getHeaders().containsKey(TEST_HEADER));
+                testConsumer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         if (fault) {
             assertEquals("401", testProducer.getFault());
@@ -255,16 +255,16 @@ public class ClientJettyStreamTest extends ClientTestBase {
             if (isProcessContent()) {
                 // Check request value
                 if (!method.equals("GET")) {
-                    assertTrue(testConsumer.getRequest().getContent().containsKey("all"));
-                    assertEquals(GREETINGS_REQUEST, testConsumer.getRequest().getContent().get("all").getValue());
+                    assertTrue(testConsumer.getIn().getContent().containsKey("all"));
+                    assertEquals(GREETINGS_REQUEST, testConsumer.getIn().getContent().get("all").getValue());
                 }
                 // Check response value
                 if (respexpected) {
-                    assertTrue(testConsumer.getResponse().getContent().containsKey("all"));
-                    assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getResponse().getContent().get("all").getValue());
+                    assertTrue(testConsumer.getOut().getContent().containsKey("all"));
+                    assertEquals(HELLO_WORLD_RESPONSE, testConsumer.getOut().getContent().get("all").getValue());
                 }
             } else {
-                assertFalse(testProducer.getRequest().getContent().containsKey("all"));
+                assertFalse(testProducer.getIn().getContent().containsKey("all"));
             }
         }
     }

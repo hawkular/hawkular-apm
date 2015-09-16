@@ -22,13 +22,13 @@
           "nameExpression": "req.getHeader(\"Hawkular-btname\")"
         },{
           "type": "InstrumentConsumer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()",
           "idExpression": "req.getHeader(\"Hawkular-btid\")"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "javax.servlet.http.HttpServletRequest",
           "headersExpression": "req"
         },{
@@ -65,7 +65,7 @@
         "condition": "isActive() && !$1.isAsyncStarted()",
         "actions": [{
           "type": "InstrumentConsumer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()"
         },{
@@ -90,10 +90,10 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && isRequestContentProcessed()",
+        "condition": "isActive() && isInContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initRequestBuffer($!)"
+          "action": "initInBuffer($!)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer GetReader Complete Link",
@@ -118,10 +118,10 @@
           "byte[]"
         ],
         "location": "EXIT",
-        "condition": "!isRequestBufferActive($0) && isActive() && isRequestContentProcessed() && $! > 0",
+        "condition": "!isInBufferActive($0) && isActive() && isInContentProcessed() && $! > 0",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initRequestBuffer($0)"
+          "action": "initInBuffer($0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Init on Read 2",
@@ -136,10 +136,10 @@
           "int"
         ],
         "location": "EXIT",
-        "condition": "!isRequestBufferActive($0) && isActive() && isRequestContentProcessed() && $! > 0",
+        "condition": "!isInBufferActive($0) && isActive() && isInContentProcessed() && $! > 0",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initRequestBuffer($0)"
+          "action": "initInBuffer($0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Append 1",
@@ -151,7 +151,7 @@
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendRequestBuffer($0, $1, 0, $!, $0.available()==0)"
+          "action": "appendInBuffer($0, $1, 0, $!, $0.available()==0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Append 2",
@@ -165,7 +165,7 @@
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendRequestBuffer($0, $1, $2, $!, $0.available()==0)"
+          "action": "appendInBuffer($0, $1, $2, $!, $0.available()==0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Record",
@@ -176,7 +176,7 @@
         "location": "ENTRY",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "recordRequestBuffer($0)"
+          "action": "recordInBuffer($0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Complete Async Link",
@@ -196,11 +196,11 @@
         "methodName": "getOutputStream",
         "parameterTypes": [
         ],
-        "condition": "isActive() && isResponseContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed()",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initResponseBuffer($!)"
+          "action": "initOutBuffer($!)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Append 1",
@@ -212,7 +212,7 @@
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer($0, $1, $2, $!, false)"
+          "action": "appendOutBuffer($0, $1, $2, $!, false)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Append 2",
@@ -226,7 +226,7 @@
         "location": "ENTRY",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer($0, $1, $2, $3, false)"
+          "action": "appendOutBuffer($0, $1, $2, $3, false)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Record",
@@ -237,7 +237,7 @@
         "location": "ENTRY",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "recordResponseBuffer($0)"
+          "action": "recordOutBuffer($0)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer BufferedWriter Init",
@@ -245,11 +245,11 @@
         "methodName": "getWriter",
         "parameterTypes": [
         ],
-        "condition": "isActive() && isResponseContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed()",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initResponseBuffer($!)"
+          "action": "initOutBuffer($!)"
         }]
       },{
         "ruleName": "Javax Servlet Consumer Start Async",
@@ -275,7 +275,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\""
         },{
           "type": "AssertComplete"

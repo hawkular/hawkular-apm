@@ -16,7 +16,7 @@
           "nameExpression": "$0.getHeader(\"HawkularBTName\")"
         },{
           "type": "InstrumentConsumer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.absoluteURI()",
           "idExpression": "$0.getHeader(\"Hawkular-btid\")"
@@ -34,7 +34,7 @@
           "valueExpression": "$0.method()"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "io.vertx.core.MultiMap",
           "headersExpression": "$0.headers()"
         }]
@@ -49,7 +49,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "ProcessContent",
-          "direction": "Request",
+          "direction": "In",
           "valueExpressions": [
             "$1.getBytes()"
           ]
@@ -65,13 +65,13 @@
         "condition": "isActive()",
         "actions": [{
           "type": "ProcessContent",
-          "direction": "Response",
+          "direction": "Out",
           "valueExpressions": [
             "$1.getBytes()"
           ]
         },{
           "type": "InstrumentConsumer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\""
         },{
           "type": "AssertComplete"
@@ -96,18 +96,18 @@
         "condition": "activate(uri)",
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "uri",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "io.vertx.core.MultiMap",
           "headersExpression": "$0.headers()"
         },{
           "type": "ProcessContent",
-          "direction": "Request",
+          "direction": "In",
           "valueExpressions": [
             "$1.getBytes()"
           ]
@@ -148,13 +148,13 @@
         "condition": "activate(uri)",
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "uri",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "io.vertx.core.MultiMap",
           "headersExpression": "$0.headers()"
         },{
@@ -176,7 +176,7 @@
           "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer Establish Response Link",
+        "ruleName": "Vertx HTTP Producer Establish Out Link",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "handleResponse",
         "parameterTypes": [
@@ -202,20 +202,20 @@
           "type": "Unlink"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer Init Response Buffer",
+        "ruleName": "Vertx HTTP Producer Init Out Buffer",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "handleResponse",
         "parameterTypes": [
           "io.vertx.core.http.impl.HttpClientResponseImpl"
         ],
         "location": "ENTRY",
-        "condition": "isActive() && isResponseContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initResponseBuffer($1)"
+          "action": "initOutBuffer($1)"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer Write Response Buffer",
+        "ruleName": "Vertx HTTP Producer Write Out Buffer",
         "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
         "methodName": "handleChunk",
         "parameterTypes": [
@@ -224,10 +224,10 @@
         "location": "ENTRY",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer($0, $1.getBytes(), 0, $1.length(), false)"
+          "action": "appendOutBuffer($0, $1.getBytes(), 0, $1.length(), false)"
         }]
       },{
-        "ruleName": "Vertx HTTP Producer Record Buffer And End Response",
+        "ruleName": "Vertx HTTP Producer Record Buffer And End Out",
         "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
         "methodName": "handleEnd",
         "parameterTypes": [
@@ -236,10 +236,10 @@
         "location": "ENTRY",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "recordResponseBuffer($0)"
+          "action": "recordOutBuffer($0)"
         },{
           "type": "InstrumentProducer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\""
         },{
           "type": "Unlink"

@@ -17,13 +17,13 @@
         }],
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "SetDetail",
@@ -60,13 +60,13 @@
         }],
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "SetDetail",
@@ -93,10 +93,10 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && isRequestContentProcessed()",
+        "condition": "isActive() && isInContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "$! = createRequestOutputStream($!,\"java.net-async-\"+hashCode($0))"
+          "action": "$! = createInOutputStream($!,\"java.net-async-\"+hashCode($0))"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Link",
@@ -108,7 +108,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && !isRequestContentProcessed()",
+        "condition": "isActive() && !isInContentProcessed()",
         "actions": [{
           "type": "InitiateCorrelation",
           "idExpression": "\"java.net-async-\"+hashCode($0)"
@@ -130,13 +130,13 @@
         }],
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "headersExpression": "$0.getRequestProperties()"
         },{
           "type": "SetDetail",
@@ -179,7 +179,7 @@
           "descriptionExpression": "$0.responseMessage"
         },{
           "type": "InstrumentProducer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()"
         }]
@@ -190,10 +190,10 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && $! == 200 && (!isResponseContentProcessed() || !$0.getDoOutput())",
+        "condition": "isActive() && $! == 200 && (!isOutContentProcessed() || !$0.getDoOutput())",
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.getURL().toString()"
         }]
@@ -219,7 +219,7 @@
         "condition": "isActive() && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "initResponseBuffer(null)"
+          "action": "initOutBuffer(null)"
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream read 1",
@@ -229,10 +229,10 @@
           "byte[]"
         ],
         "location": "EXIT",
-        "condition": "isResponseBufferActive(null) && $! != -1",
+        "condition": "isOutBufferActive(null) && $! != -1",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer(null,$1,0,$!,false)"
+          "action": "appendOutBuffer(null,$1,0,$!,false)"
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream read 2",
@@ -244,10 +244,10 @@
           "int"
         ],
         "location": "EXIT",
-        "condition": "isResponseBufferActive(null) && $! != -1",
+        "condition": "isOutBufferActive(null) && $! != -1",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer(null,$1,$2,$!,false)"
+          "action": "appendOutBuffer(null,$1,$2,$!,false)"
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream close",
@@ -256,13 +256,13 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "isResponseBufferActive(null)",
+        "condition": "isOutBufferActive(null)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "recordResponseBuffer(null)"
+          "action": "recordOutBuffer(null)"
         },{
           "type": "InstrumentProducer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\""
         }]
       }]

@@ -49,12 +49,12 @@ public class InstrumentProducerTransformer extends CollectorActionTransformer {
      */
     @Override
     protected String[] getParameters(CollectorAction invocation) {
-        String[] ret = new String[invocation.getDirection() == Direction.Request ? 3 : 2];
+        String[] ret = new String[invocation.getDirection() == Direction.In ? 3 : 2];
 
         ret[0] = ((InstrumentProducer) invocation).getUriExpression();
         ret[1] = ((InstrumentProducer) invocation).getEndpointTypeExpression();
 
-        if (invocation.getDirection() == Direction.Request) {
+        if (invocation.getDirection() == Direction.In) {
             ret[2] = ((InstrumentProducer) invocation).getIdExpression();
         }
 

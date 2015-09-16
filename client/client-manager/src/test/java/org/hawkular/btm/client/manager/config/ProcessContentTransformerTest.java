@@ -30,7 +30,7 @@ public class ProcessContentTransformerTest {
     private static final String ACTION_PREFIX = "collector().";
 
     @Test
-    public void testConvertToRuleActionRequest() {
+    public void testConvertToRuleActionIn() {
         ProcessContent im = new ProcessContent();
 
         im.getValueExpressions().add("$1");
@@ -41,16 +41,16 @@ public class ProcessContentTransformerTest {
         String transformed = transformer.convertToRuleAction(im);
 
         String expected = ACTION_PREFIX +
-                "processRequest(getRuleName(),null,createArrayBuilder().add($1).add($2).get())";
+                "processIn(getRuleName(),null,createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }
 
     @Test
-    public void testConvertToRuleActionResponse() {
+    public void testConvertToRuleActionOut() {
         ProcessContent im = new ProcessContent();
 
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
         im.getValueExpressions().add("$1");
         im.getValueExpressions().add("$2");
 
@@ -59,7 +59,7 @@ public class ProcessContentTransformerTest {
         String transformed = transformer.convertToRuleAction(im);
 
         String expected = ACTION_PREFIX +
-                "processResponse(getRuleName(),null,createArrayBuilder().add($1).add($2).get())";
+                "processOut(getRuleName(),null,createArrayBuilder().add($1).add($2).get())";
 
         assertEquals(expected, transformed);
     }

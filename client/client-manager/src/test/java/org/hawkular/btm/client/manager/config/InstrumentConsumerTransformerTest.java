@@ -30,7 +30,7 @@ public class InstrumentConsumerTransformerTest {
     private static final String ACTION_PREFIX = "collector().";
 
     @Test
-    public void testConvertToRuleActionRequest() {
+    public void testConvertToRuleActionIn() {
         InstrumentConsumer im = new InstrumentConsumer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
@@ -46,7 +46,7 @@ public class InstrumentConsumerTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionRequestWithId() {
+    public void testConvertToRuleActionInWithId() {
         InstrumentConsumer im = new InstrumentConsumer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
@@ -63,12 +63,12 @@ public class InstrumentConsumerTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionResponse() {
+    public void testConvertToRuleActionOut() {
         InstrumentConsumer im = new InstrumentConsumer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
@@ -80,13 +80,13 @@ public class InstrumentConsumerTransformerTest {
     }
 
     @Test
-    public void testConvertToRuleActionResponseWithId() {
+    public void testConvertToRuleActionOutWithId() {
         InstrumentConsumer im = new InstrumentConsumer();
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
         im.setIdExpression("\"MyId\"");
-        im.setDirection(Direction.Response);
+        im.setDirection(Direction.Out);
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 

@@ -377,10 +377,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isRequestProcessed(java.lang.String)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isInProcessed(java.lang.String)
      */
     @Override
-    public boolean isRequestProcessed(String location) {
+    public boolean isInProcessed(String location) {
 
         if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.headers")
                 && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
@@ -395,24 +395,24 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isProcessed(builder.getBusinessTransaction(),
-                            node, Direction.Request);
+                            node, Direction.In);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isRequestProcessed: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "isInProcessed: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isRequestProcessed failed", t);
+                log.log(warningLogLevel, "isInProcessed failed", t);
             }
         }
         return false;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isRequestContentProcessed(java.lang.String)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isInContentProcessed(java.lang.String)
      */
     @Override
-    public boolean isRequestContentProcessed(String location) {
+    public boolean isInContentProcessed(String location) {
 
         if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
             return false;
@@ -426,24 +426,24 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                            node, Direction.Request);
+                            node, Direction.In);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isRequestContentProcessed: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "isInContentProcessed: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isRequestContentProcessed failed", t);
+                log.log(warningLogLevel, "isInContentProcessed failed", t);
             }
         }
         return false;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isResponseProcessed(java.lang.String)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isOutProcessed(java.lang.String)
      */
     @Override
-    public boolean isResponseProcessed(String location) {
+    public boolean isOutProcessed(String location) {
 
         if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.headers")
                 && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
@@ -458,24 +458,24 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isProcessed(builder.getBusinessTransaction(),
-                            node, Direction.Response);
+                            node, Direction.Out);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isResponseProcessed: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "isOutProcessed: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isResponseProcessed failed", t);
+                log.log(warningLogLevel, "isOutProcessed failed", t);
             }
         }
         return false;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isResponseContentProcessed(java.lang.String)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isOutContentProcessed(java.lang.String)
      */
     @Override
-    public boolean isResponseContentProcessed(String location) {
+    public boolean isOutContentProcessed(String location) {
 
         if (testMode && !Boolean.getBoolean("hawkular-btm.test.process.content")) {
             return false;
@@ -489,27 +489,27 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
                 if (node != null && node.interactionNode()) {
                     return processorManager.isContentProcessed(builder.getBusinessTransaction(),
-                            node, Direction.Response);
+                            node, Direction.Out);
                 }
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isResponseContentProcessed: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "isOutContentProcessed: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isResponseContentProcessed failed", t);
+                log.log(warningLogLevel, "isOutContentProcessed failed", t);
             }
         }
         return false;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#processRequest(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#processIn(java.lang.String,
      *                          java.util.Map, java.lang.Object[])
      */
     @Override
-    public void processRequest(String location, Map<String, ?> headers, Object... values) {
+    public void processIn(String location, Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Process request: location=[" + location + "] headers=" + headers + " values=" + values);
+            log.finest("Process in: location=[" + location + "] headers=" + headers + " values=" + values);
         }
 
         try {
@@ -517,25 +517,25 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
                 processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
-                        Direction.Request, headers, values);
+                        Direction.In, headers, values);
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("processRequest: No fragment builder available to process the request data");
+                log.finest("processIn: No fragment builder available to process the in data");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "processRequest failed", t);
+                log.log(warningLogLevel, "processIn failed", t);
             }
         }
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#processResponse(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#processOut(java.lang.String,
      *                                      java.util.Map, java.lang.Object[])
      */
     @Override
-    public void processResponse(String location, Map<String, ?> headers, Object... values) {
+    public void processOut(String location, Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Process response: location=[" + location + "] headers=" + headers + " values=" + values);
+            log.finest("Process out: location=[" + location + "] headers=" + headers + " values=" + values);
         }
 
         try {
@@ -543,13 +543,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
                 processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
-                        Direction.Response, headers, values);
+                        Direction.Out, headers, values);
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("processResponse: No fragment builder available to process the response data");
+                log.finest("processOut: No fragment builder available to process the out data");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "processResponse failed", t);
+                log.log(warningLogLevel, "processOut failed", t);
             }
         }
     }
@@ -631,26 +631,26 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#initRequestBuffer(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#initInBuffer(java.lang.String,
      *                                       java.lang.Object)
      */
     @Override
-    public void initRequestBuffer(String location, Object obj) {
+    public void initInBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("initRequestBuffer: location=[" + location + "] obj=" + obj);
+            log.finest("initInBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.initRequestBuffer(getCode(obj));
+                builder.initInBuffer(getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("initRequestBuffer: No fragment builder for this thread");
+                log.finest("initInBuffer: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "initRequestBuffer failed", t);
+                log.log(warningLogLevel, "initInBuffer failed", t);
             }
         }
     }
@@ -669,43 +669,43 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isRequestBufferActive(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isInBufferActive(java.lang.String,
      *                                      java.lang.Object)
      */
     @Override
-    public boolean isRequestBufferActive(String location, Object obj) {
+    public boolean isInBufferActive(String location, Object obj) {
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                boolean ret = builder.isRequestBufferActive(getCode(obj));
+                boolean ret = builder.isInBufferActive(getCode(obj));
 
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("isRequestBufferActive: location=[" + location + "] obj="
+                    log.finest("isInBufferActive: location=[" + location + "] obj="
                             + obj + "? " + ret);
                 }
 
                 return ret;
 
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("isRequestBufferActive: No fragment builder for this thread");
+                log.finest("isInBufferActive: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isRequestBufferActive failed", t);
+                log.log(warningLogLevel, "isInBufferActive failed", t);
             }
         }
         return false;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#appendRequestBuffer(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#appendInBuffer(java.lang.String,
      *                                  java.lang.Object, byte[], int, int)
      */
     @Override
-    public void appendRequestBuffer(String location, Object obj, byte[] data, int offset, int len) {
+    public void appendInBuffer(String location, Object obj, byte[] data, int offset, int len) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("appendRequestBuffer: location=[" + location + "] obj=" + obj + " data=" + data
+            log.finest("appendInBuffer: location=[" + location + "] obj=" + obj + " data=" + data
                     + " offset=" + offset + " len=" + len);
         }
 
@@ -717,119 +717,119 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.writeRequestData(getCode(obj), data, offset, len);
+                builder.writeInData(getCode(obj), data, offset, len);
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("appendRequestBuffer: No fragment builder for this thread");
+                log.finest("appendInBuffer: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "appendRequestBuffer failed", t);
+                log.log(warningLogLevel, "appendInBuffer failed", t);
             }
         }
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#recordRequestBuffer(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#recordInBuffer(java.lang.String,
      *                                      java.lang.Object)
      */
     @Override
-    public void recordRequestBuffer(String location, Object obj) {
+    public void recordInBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("recordRequestBuffer: location=[" + location + "] obj=" + obj);
+            log.finest("recordInBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
-                processRequestContent(location, fragmentManager.getFragmentBuilder(), getCode(obj));
+                processInContent(location, fragmentManager.getFragmentBuilder(), getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("recordRequestBuffer: No fragment builder for this thread");
+                log.finest("recordInBuffer: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "recordRequestBuffer failed", t);
+                log.log(warningLogLevel, "recordInBuffer failed", t);
             }
         }
     }
 
     /**
-     * This method processes the request content if available.
+     * This method processes the in content if available.
      *
      * @param location The instrumentation location
      * @param builder The builder
      * @param hashCode The hash code, or -1 to ignore the hash code
      */
-    protected void processRequestContent(String location, FragmentBuilder builder, int hashCode) {
-        if (builder.isRequestBufferActive(hashCode)) {
-            processRequest(location, null, builder.getRequestData(hashCode));
+    protected void processInContent(String location, FragmentBuilder builder, int hashCode) {
+        if (builder.isInBufferActive(hashCode)) {
+            processIn(location, null, builder.getInData(hashCode));
         } else if (log.isLoggable(Level.FINEST)) {
-            log.finest("processRequestContent: location=[" + location + "] hashCode=" + hashCode
-                    + " request buffer is not active");
+            log.finest("processInContent: location=[" + location + "] hashCode=" + hashCode
+                    + " in buffer is not active");
         }
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#initResponseBuffer(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#initOutBuffer(java.lang.String,
      *                              java.lang.Object)
      */
     @Override
-    public void initResponseBuffer(String location, Object obj) {
+    public void initOutBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("initResponseBuffer: location=[" + location + "] obj=" + obj);
+            log.finest("initOutBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.initResponseBuffer(getCode(obj));
+                builder.initOutBuffer(getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("initResponseBuffer: No fragment builder for this thread");
+                log.finest("initOutBuffer: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "initResponseBuffer failed", t);
+                log.log(warningLogLevel, "initOutBuffer failed", t);
             }
         }
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isResponseBufferActive(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#isOutBufferActive(java.lang.String,
      *                                      java.lang.Object)
      */
     @Override
-    public boolean isResponseBufferActive(String location, Object obj) {
+    public boolean isOutBufferActive(String location, Object obj) {
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                boolean ret = builder.isResponseBufferActive(getCode(obj));
+                boolean ret = builder.isOutBufferActive(getCode(obj));
 
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("isResponseBufferActive: location=[" + location + "] obj="
+                    log.finest("isOutBufferActive: location=[" + location + "] obj="
                             + obj + "? " + ret);
                 }
 
                 return ret;
 
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("isResponseBufferActive: No fragment builder for this thread");
+                log.finest("isOutBufferActive: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "isResponseBufferActive failed", t);
+                log.log(warningLogLevel, "isOutBufferActive failed", t);
             }
         }
         return false;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#appendResponseBuffer(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#appendOutBuffer(java.lang.String,
      *                          java.lang.Object, byte[], int, int)
      */
     @Override
-    public void appendResponseBuffer(String location, Object obj, byte[] data, int offset, int len) {
+    public void appendOutBuffer(String location, Object obj, byte[] data, int offset, int len) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("appendResponseBuffer: location=[" + location + "] obj=" + obj + " data=" + data
+            log.finest("appendOutBuffer: location=[" + location + "] obj=" + obj + " data=" + data
                     + " offset=" + offset + " len=" + len);
         }
 
@@ -841,53 +841,53 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.writeResponseData(getCode(obj), data, offset, len);
+                builder.writeOutData(getCode(obj), data, offset, len);
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("appendResponseBuffer: No fragment builder for this thread");
+                log.finest("appendOutBuffer: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "appendResponseBuffer failed", t);
+                log.log(warningLogLevel, "appendOutBuffer failed", t);
             }
         }
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#recordResponseBuffer(java.lang.String,
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#recordOutBuffer(java.lang.String,
      *                                      java.lang.Object)
      */
     @Override
-    public void recordResponseBuffer(String location, Object obj) {
+    public void recordOutBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("recordResponseBuffer: location=[" + location + "] obj=" + obj);
+            log.finest("recordOutBuffer: location=[" + location + "] obj=" + obj);
         }
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
-                processResponseContent(location, fragmentManager.getFragmentBuilder(), getCode(obj));
+                processOutContent(location, fragmentManager.getFragmentBuilder(), getCode(obj));
             } else if (log.isLoggable(Level.FINEST)) {
-                log.finest("recordResponseBuffer: No fragment builder for this thread");
+                log.finest("recordOutBuffer: No fragment builder for this thread");
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "recordResponseBuffer failed", t);
+                log.log(warningLogLevel, "recordOutBuffer failed", t);
             }
         }
     }
 
     /**
-     * This method processes the response content if available.
+     * This method processes the out content if available.
      *
      * @param location The instrumentation location
      * @param builder The builder
      * @param hashCode The hash code, or -1 to ignore the hash code
      */
-    protected void processResponseContent(String location, FragmentBuilder builder, int hashCode) {
-        if (builder.isResponseBufferActive(hashCode)) {
-            processResponse(location, null, builder.getResponseData(hashCode));
+    protected void processOutContent(String location, FragmentBuilder builder, int hashCode) {
+        if (builder.isOutBufferActive(hashCode)) {
+            processOut(location, null, builder.getOutData(hashCode));
         } else if (log.isLoggable(Level.FINEST)) {
-            log.finest("processResponseContent: location=[" + location + "] hashCode=" + hashCode
-                    + " response buffer is not active");
+            log.finest("processOutContent: location=[" + location + "] hashCode=" + hashCode
+                    + " out buffer is not active");
         }
     }
 
@@ -900,8 +900,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     protected void push(String location, FragmentBuilder builder, Node node) {
 
-        // Check if any request content should be processed for the current node
-        processRequestContent(location, builder, -1);
+        // Check if any in content should be processed for the current node
+        processInContent(location, builder, -1);
 
         node.setBaseTime(System.nanoTime());
         builder.pushNode(node);
@@ -932,9 +932,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             return null;
         }
 
-        // Check if any request or response content should be processed for the current node
-        processRequestContent(location, builder, -1);
-        processResponseContent(location, builder, -1);
+        // Check if any in or out content should be processed for the current node
+        processInContent(location, builder, -1);
+        processOutContent(location, builder, -1);
 
         Node node = builder.popNode(cls, uri);
         if (node != null) {
@@ -966,17 +966,17 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         if (node.interactionNode()) {
             Message m = null;
 
-            if (direction == Direction.Request) {
-                m = ((InteractionNode) node).getRequest();
+            if (direction == Direction.In) {
+                m = ((InteractionNode) node).getIn();
                 if (m == null) {
                     m = new Message();
-                    ((InteractionNode) node).setRequest(m);
+                    ((InteractionNode) node).setIn(m);
                 }
             } else {
-                m = ((InteractionNode) node).getResponse();
+                m = ((InteractionNode) node).getOut();
                 if (m == null) {
                     m = new Message();
-                    ((InteractionNode) node).setResponse(m);
+                    ((InteractionNode) node).setOut(m);
                 }
             }
 

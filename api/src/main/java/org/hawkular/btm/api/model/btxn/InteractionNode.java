@@ -37,10 +37,10 @@ import io.swagger.annotations.ApiModel;
 public abstract class InteractionNode extends ContainerNode {
 
     @JsonInclude(Include.NON_NULL)
-    private Message request;
+    private Message in;
 
     @JsonInclude(Include.NON_NULL)
-    private Message response;
+    private Message out;
 
     public InteractionNode(NodeType type) {
         super(type);
@@ -58,31 +58,31 @@ public abstract class InteractionNode extends ContainerNode {
     }
 
     /**
-     * @return the request
+     * @return the in message
      */
-    public Message getRequest() {
-        return request;
+    public Message getIn() {
+        return in;
     }
 
     /**
-     * @param request the request to set
+     * @param in the in message to set
      */
-    public void setRequest(Message request) {
-        this.request = request;
+    public void setIn(Message in) {
+        this.in = in;
     }
 
     /**
-     * @return the response
+     * @return the out message
      */
-    public Message getResponse() {
-        return response;
+    public Message getOut() {
+        return out;
     }
 
     /**
-     * @param response the response to set
+     * @param out the out message to set
      */
-    public void setResponse(Message response) {
-        this.response = response;
+    public void setOut(Message out) {
+        this.out = out;
     }
 
     /* (non-Javadoc)
@@ -92,8 +92,8 @@ public abstract class InteractionNode extends ContainerNode {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((request == null) ? 0 : request.hashCode());
-        result = prime * result + ((response == null) ? 0 : response.hashCode());
+        result = prime * result + ((in == null) ? 0 : in.hashCode());
+        result = prime * result + ((out == null) ? 0 : out.hashCode());
         return result;
     }
 
@@ -112,18 +112,18 @@ public abstract class InteractionNode extends ContainerNode {
             return false;
         }
         InteractionNode other = (InteractionNode) obj;
-        if (request == null) {
-            if (other.request != null) {
+        if (in == null) {
+            if (other.in != null) {
                 return false;
             }
-        } else if (!request.equals(other.request)) {
+        } else if (!in.equals(other.in)) {
             return false;
         }
-        if (response == null) {
-            if (other.response != null) {
+        if (out == null) {
+            if (other.out != null) {
                 return false;
             }
-        } else if (!response.equals(other.response)) {
+        } else if (!out.equals(other.out)) {
             return false;
         }
         return true;

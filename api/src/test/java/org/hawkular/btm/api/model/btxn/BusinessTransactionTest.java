@@ -144,13 +144,13 @@ public class BusinessTransactionTest {
         req1.getHeaders().put(HEADER1, VALUE1);
         req1.addContent("all", null, "Parameter1");
 
-        c1.setRequest(req1);
+        c1.setIn(req1);
 
         Message resp1 = new Message();
         resp1.getHeaders().put(HEADER2, VALUE2);
         resp1.addContent("all", null, "Parameter2");
 
-        c1.setResponse(resp1);
+        c1.setOut(resp1);
 
         // Second level (component) node
         Component s1 = new Component();
@@ -198,13 +198,13 @@ public class BusinessTransactionTest {
         req5.getHeaders().put(HEADER1, VALUE1);
         req5.addContent("all", null, "Parameter5");
 
-        p1.setRequest(req5);
+        p1.setIn(req5);
 
         Message resp5 = new Message();
         resp5.getHeaders().put(HEADER2, VALUE2);
         resp5.addContent("all", null, "Parameter6");
 
-        p1.setResponse(resp5);
+        p1.setOut(resp5);
 
         return (btxn);
     }

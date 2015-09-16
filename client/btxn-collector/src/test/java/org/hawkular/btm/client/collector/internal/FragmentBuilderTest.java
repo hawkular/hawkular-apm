@@ -328,113 +328,113 @@ public class FragmentBuilderTest {
     }
 
     @Test
-    public void testInitRequestBuffer() {
+    public void testInitInBuffer() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initRequestBuffer(1);
-        assertTrue(builder.isRequestBufferActive(1));
+        builder.initInBuffer(1);
+        assertTrue(builder.isInBufferActive(1));
     }
 
     @Test
-    public void testInitRequestBufferIncorrectHashcode() {
+    public void testInitInBufferIncorrectHashcode() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initRequestBuffer(1);
-        assertFalse(builder.isRequestBufferActive(2));
+        builder.initInBuffer(1);
+        assertFalse(builder.isInBufferActive(2));
     }
 
     @Test
-    public void testInitRequestBufferIgnoreHashcode() {
+    public void testInitInBufferIgnoreHashcode() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initRequestBuffer(1);
-        assertTrue(builder.isRequestBufferActive(-1));
+        builder.initInBuffer(1);
+        assertTrue(builder.isInBufferActive(-1));
     }
 
     @Test
-    public void testInitResponseBuffer() {
+    public void testInitOutBuffer() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initResponseBuffer(1);
-        assertTrue(builder.isResponseBufferActive(1));
+        builder.initOutBuffer(1);
+        assertTrue(builder.isOutBufferActive(1));
     }
 
     @Test
-    public void testInitResponseBufferIncorrectHashcode() {
+    public void testInitOutBufferIncorrectHashcode() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initResponseBuffer(1);
-        assertFalse(builder.isResponseBufferActive(2));
+        builder.initOutBuffer(1);
+        assertFalse(builder.isOutBufferActive(2));
     }
 
     @Test
-    public void testInitResponseBufferIgnoreHashcode() {
+    public void testInitOutBufferIgnoreHashcode() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initResponseBuffer(1);
-        assertTrue(builder.isResponseBufferActive(-1));
+        builder.initOutBuffer(1);
+        assertTrue(builder.isOutBufferActive(-1));
     }
 
     @Test
-    public void testWriteRequestData() {
+    public void testWriteInData() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initRequestBuffer(1);
+        builder.initInBuffer(1);
 
         String data1="Hello ";
-        builder.writeRequestData(1, data1.getBytes(), 0, data1.length());
+        builder.writeInData(1, data1.getBytes(), 0, data1.length());
 
         String data2="World";
-        builder.writeRequestData(1, data2.getBytes(), 0, data2.length());
+        builder.writeInData(1, data2.getBytes(), 0, data2.length());
 
-        assertTrue(builder.isRequestBufferActive(1));
-        assertEquals("Hello World", new String(builder.getRequestData(1)));
+        assertTrue(builder.isInBufferActive(1));
+        assertEquals("Hello World", new String(builder.getInData(1)));
 
-        assertFalse(builder.isRequestBufferActive(1));
+        assertFalse(builder.isInBufferActive(1));
     }
 
     @Test
-    public void testWriteResponseData() {
+    public void testWriteOutData() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initResponseBuffer(1);
+        builder.initOutBuffer(1);
 
         String data1="Hello ";
-        builder.writeResponseData(1, data1.getBytes(), 0, data1.length());
+        builder.writeOutData(1, data1.getBytes(), 0, data1.length());
 
         String data2="World";
-        builder.writeResponseData(1, data2.getBytes(), 0, data2.length());
+        builder.writeOutData(1, data2.getBytes(), 0, data2.length());
 
-        assertTrue(builder.isResponseBufferActive(1));
-        assertEquals("Hello World", new String(builder.getResponseData(1)));
+        assertTrue(builder.isOutBufferActive(1));
+        assertEquals("Hello World", new String(builder.getOutData(1)));
 
-        assertFalse(builder.isResponseBufferActive(1));
+        assertFalse(builder.isOutBufferActive(1));
     }
 
     @Test
-    public void testWriteRequestDataIgnoreHashcode() {
+    public void testWriteInDataIgnoreHashcode() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initRequestBuffer(1);
+        builder.initInBuffer(1);
 
         String data1="Hello ";
-        builder.writeRequestData(1, data1.getBytes(), 0, data1.length());
+        builder.writeInData(1, data1.getBytes(), 0, data1.length());
 
         String data2="World";
-        builder.writeRequestData(1, data2.getBytes(), 0, data2.length());
+        builder.writeInData(1, data2.getBytes(), 0, data2.length());
 
-        assertTrue(builder.isRequestBufferActive(1));
-        assertEquals("Hello World", new String(builder.getRequestData(-1)));
+        assertTrue(builder.isInBufferActive(1));
+        assertEquals("Hello World", new String(builder.getInData(-1)));
 
-        assertFalse(builder.isRequestBufferActive(1));
+        assertFalse(builder.isInBufferActive(1));
     }
 
     @Test
-    public void testWriteResponseDataIgnoreHashcode() {
+    public void testWriteOutDataIgnoreHashcode() {
         FragmentBuilder builder = new FragmentBuilder();
-        builder.initResponseBuffer(1);
+        builder.initOutBuffer(1);
 
         String data1="Hello ";
-        builder.writeResponseData(1, data1.getBytes(), 0, data1.length());
+        builder.writeOutData(1, data1.getBytes(), 0, data1.length());
 
         String data2="World";
-        builder.writeResponseData(1, data2.getBytes(), 0, data2.length());
+        builder.writeOutData(1, data2.getBytes(), 0, data2.length());
 
-        assertTrue(builder.isResponseBufferActive(1));
-        assertEquals("Hello World", new String(builder.getResponseData(-1)));
+        assertTrue(builder.isOutBufferActive(1));
+        assertEquals("Hello World", new String(builder.getOutData(-1)));
 
-        assertFalse(builder.isResponseBufferActive(1));
+        assertFalse(builder.isOutBufferActive(1));
     }
 
 }
