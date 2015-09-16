@@ -61,7 +61,7 @@ public class BusinessTransactionTest {
         node1.setBaseTime(100000000);
         btxn.getNodes().add(node1);
 
-        Service node2 = new Service();
+        Component node2 = new Component();
         node2.setBaseTime(150000000);
         node2.setDuration(0);
         node1.getNodes().add(node2);
@@ -152,8 +152,8 @@ public class BusinessTransactionTest {
 
         c1.setResponse(resp1);
 
-        // Second level (service) node
-        Service s1 = new Service();
+        // Second level (component) node
+        Component s1 = new Component();
         c1.getNodes().add(s1);
 
         s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1"));
@@ -161,18 +161,6 @@ public class BusinessTransactionTest {
         s1.setBaseTime(2);
         s1.setOperation("Op1");
         s1.setUri("ServiceType1");
-
-        Message req2 = new Message();
-        req2.getHeaders().put(HEADER1, VALUE1);
-        req2.addContent("all", null, "Parameter1");
-
-        s1.setRequest(req2);
-
-        Message resp2 = new Message();
-        resp2.getHeaders().put(HEADER2, VALUE2);
-        resp2.addContent("all", null, "Parameter2");
-
-        s1.setResponse(resp2);
 
         // Third level (component) node
         Component cp1 = new Component();
@@ -184,9 +172,9 @@ public class BusinessTransactionTest {
         cp1.setComponentType("Database");
         cp1.setOperation("select X from Y");
 
-        // Third level (service) node - this represents the service proxy
+        // Third level (component) node - this represents the service proxy
         // used by the consumer service
-        Service s2 = new Service();
+        Component s2 = new Component();
         s1.getNodes().add(s2);
 
         s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3"));
@@ -194,18 +182,6 @@ public class BusinessTransactionTest {
         s2.setBaseTime(3);
         s2.setOperation("Op2");
         s2.setUri("ServiceType2");
-
-        Message req4 = new Message();
-        req4.getHeaders().put(HEADER1, VALUE1);
-        req4.addContent("all", null, "Parameter3");
-
-        s2.setRequest(req4);
-
-        Message resp4 = new Message();
-        resp4.getHeaders().put(HEADER2, VALUE2);
-        resp4.addContent("all", null, "Parameter4");
-
-        s2.setResponse(resp4);
 
         // Fourth level (producer) node
         Producer p1 = new Producer();

@@ -31,11 +31,11 @@ import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.admin.Processor;
 import org.hawkular.btm.api.model.admin.ProcessorAction;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.NodeType;
-import org.hawkular.btm.api.model.btxn.Service;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 
@@ -320,9 +320,9 @@ public class ProcessorManager {
                     return;
                 }
 
-                // Check if operation has been specified, and node is Service
-                if (processor.getOperation() != null && node.getType() == NodeType.Service
-                        && !processor.getOperation().equals(((Service)node).getOperation())) {
+                // Check if operation has been specified, and node is Component
+                if (processor.getOperation() != null && node.getType() == NodeType.Component
+                        && !processor.getOperation().equals(((Component)node).getOperation())) {
                     return;
                 }
 

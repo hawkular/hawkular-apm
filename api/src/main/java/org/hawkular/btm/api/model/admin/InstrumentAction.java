@@ -28,8 +28,7 @@ import io.swagger.annotations.ApiModel;
  * @author gbrown
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = InstrumentService.class),
-    @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
+@JsonSubTypes({ @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
     @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class),
     @Type(value = ProcessContent.class), @Type(value = SetDetail.class),
     @Type(value = SetFault.class), @Type(value = SetName.class),
@@ -37,7 +36,7 @@ import io.swagger.annotations.ApiModel;
     @Type(value = CompleteCorrelation.class), @Type(value = Correlate.class),
     @Type(value = Unlink.class), @Type(value = AssertComplete.class), @Type(value = Suppress.class),
     @Type(value = ProcessHeaders.class) })
-@ApiModel(subTypes = { InstrumentService.class, InstrumentComponent.class, InstrumentConsumer.class,
+@ApiModel(subTypes = { InstrumentComponent.class, InstrumentConsumer.class,
         InstrumentProducer.class, FreeFormAction.class, ProcessContent.class,
         SetDetail.class, SetFault.class, SetName.class, SetProperty.class, InitiateCorrelation.class,
         CompleteCorrelation.class, Correlate.class, Unlink.class, AssertComplete.class, Suppress.class,

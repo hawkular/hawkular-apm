@@ -12,7 +12,7 @@
            "int"
         ],
         "actions": [{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "uriExpression": "\"TopLevelService\"",
           "operationExpression": "\"testOp\""
         },{
@@ -39,7 +39,7 @@
             "$2"
           ]
         },{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "direction": "Response",
           "uriExpression": "\"TopLevelService\"",
           "operationExpression": "\"testOp\""
@@ -54,7 +54,7 @@
         ],
         "location": "ENTRY",
         "actions": [{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "uriExpression": "\"InnerService\"",
           "operationExpression": "\"join\""
         },{
@@ -80,7 +80,7 @@
             "$!"
           ]
         },{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "direction": "Response",
           "uriExpression": "\"InnerService\"",
           "operationExpression": "\"join\""

@@ -76,24 +76,6 @@ public interface BusinessTransactionCollector {
     void consumerEnd(String location, String uri, String type);
 
     /**
-     * This method indicates the start of a service invocation.
-     *
-     * @param location The instrumentation location
-     * @param uri The service type uri
-     * @param operation The operation
-     */
-    void serviceStart(String location, String uri, String operation);
-
-    /**
-     * This method indicates the end of a service invocation.
-     *
-     * @param location The instrumentation location
-     * @param uri The service type uri
-     * @param operation The operation
-     */
-    void serviceEnd(String location, String uri, String operation);
-
-    /**
      * This method indicates the start of a component invocation.
      *
      * @param location The instrumentation location
