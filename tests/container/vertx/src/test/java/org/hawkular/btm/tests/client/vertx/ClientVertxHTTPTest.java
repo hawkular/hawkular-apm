@@ -151,20 +151,20 @@ public class ClientVertxHTTPTest extends ClientTestBase {
         assertEquals("Hello World", consumer.getDetails().get("hello"));
         assertEquals("Hello World", producer.getDetails().get("hello"));
 
-        assertTrue(consumer.getResponse().getContent().containsKey("all"));
-        assertEquals(RESPONSE, consumer.getResponse().getContent().get("all").getValue());
+        assertTrue(consumer.getOut().getContent().containsKey("all"));
+        assertEquals(RESPONSE, consumer.getOut().getContent().get("all").getValue());
 
-        assertTrue(producer.getResponse().getContent().containsKey("all"));
-        assertEquals(RESPONSE, producer.getResponse().getContent().get("all").getValue());
+        assertTrue(producer.getOut().getContent().containsKey("all"));
+        assertEquals(RESPONSE, producer.getOut().getContent().get("all").getValue());
 
         // If not 'get' then check message content has been included
         if (!get) {
             // Verify content
-            assertTrue(consumer.getRequest().getContent().containsKey("all"));
-            assertEquals(MY_REQUEST, consumer.getRequest().getContent().get("all").getValue());
+            assertTrue(consumer.getIn().getContent().containsKey("all"));
+            assertEquals(MY_REQUEST, consumer.getIn().getContent().get("all").getValue());
 
-            assertTrue(producer.getRequest().getContent().containsKey("all"));
-            assertEquals(MY_REQUEST, producer.getRequest().getContent().get("all").getValue());
+            assertTrue(producer.getIn().getContent().containsKey("all"));
+            assertEquals(MY_REQUEST, producer.getIn().getContent().get("all").getValue());
         }
     }
 

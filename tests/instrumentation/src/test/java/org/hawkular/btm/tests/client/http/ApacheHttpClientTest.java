@@ -219,7 +219,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
 
         // Check headers
-        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
 
         if (fault) {
             assertEquals("401", testProducer.getFault());
@@ -229,16 +229,16 @@ public class ApacheHttpClientTest extends ClientTestBase {
             if (isProcessContent()) {
                 // Check request value
                 if (!request.getMethod().equals("GET")) {
-                    assertTrue(testProducer.getRequest().getContent().containsKey("all"));
-                    assertEquals(SAY_HELLO, testProducer.getRequest().getContent().get("all").getValue());
+                    assertTrue(testProducer.getIn().getContent().containsKey("all"));
+                    assertEquals(SAY_HELLO, testProducer.getIn().getContent().get("all").getValue());
                 }
                 // Check response value
                 if (respexpected) {
-                    assertTrue(testProducer.getResponse().getContent().containsKey("all"));
-                    assertEquals(HELLO_WORLD, testProducer.getResponse().getContent().get("all").getValue());
+                    assertTrue(testProducer.getOut().getContent().containsKey("all"));
+                    assertEquals(HELLO_WORLD, testProducer.getOut().getContent().get("all").getValue());
                 }
             } else {
-                assertFalse(testProducer.getRequest().getContent().containsKey("all"));
+                assertFalse(testProducer.getIn().getContent().containsKey("all"));
             }
         }
     }
@@ -349,7 +349,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
         assertEquals(SAY_HELLO_URL, testProducer.getUri());
 
         // Check headers
-        assertFalse("testProducer has no headers", testProducer.getRequest().getHeaders().isEmpty());
+        assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
     }
 
 }

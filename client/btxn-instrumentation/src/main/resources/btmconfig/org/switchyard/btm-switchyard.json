@@ -13,17 +13,17 @@
         "condition": "activate($1.getConsumer().getName())",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Request",
+          "direction": "In",
           "uriExpression": "$1.getConsumer().getName()",
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "org.switchyard.Context",
           "headersExpression": "$1.getMessage().getContext()"
         },{
           "type": "ProcessContent",
-          "direction": "Request",
+          "direction": "In",
           "valueExpressions": [
             "$1.getMessage().getContent()"
           ]
@@ -52,18 +52,18 @@
         "condition": "isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
         "actions": [{
           "type": "ProcessHeaders",
-          "direction": "Response",
+          "direction": "Out",
           "originalType": "org.switchyard.Context",
           "headersExpression": "$1.getMessage().getContext()"
         },{
           "type": "ProcessContent",
-          "direction": "Response",
+          "direction": "Out",
           "valueExpressions": [
             "content"
           ]
         },{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "uriExpression": "$1.getConsumer().getName()",
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
@@ -87,13 +87,13 @@
           "descriptionExpression": "faultDescription(content)"
         },{
           "type": "ProcessContent",
-          "direction": "Response",
+          "direction": "Out",
           "valueExpressions": [
             "content"
           ]
         },{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "uriExpression": "$0.getConsumer().getName()"
         }]
       }]

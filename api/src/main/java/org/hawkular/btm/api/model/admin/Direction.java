@@ -17,12 +17,12 @@
 package org.hawkular.btm.api.model.admin;
 
 /**
- * This enum represents whether an instrument action is associated with a request
- * or response.
+ * This enum represents whether an instrument action is associated with a request (in)
+ * or response (out).
  *
  * @author gbrown
  */
 public enum Direction {
-    Request,
-    Response
+    In,
+    Out
 }

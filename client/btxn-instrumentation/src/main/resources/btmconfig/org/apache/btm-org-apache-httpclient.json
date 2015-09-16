@@ -18,13 +18,13 @@
         }],
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$2.getRequestLine().getUri()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "originalType": "org.apache.http.HttpMessage",
           "headersExpression": "$2"
         },{
@@ -55,10 +55,10 @@
           "expression": "cast($2,org.apache.http.client.methods.HttpEntityEnclosingRequestBase.class)"
         }],
         "location": "ENTRY",
-        "condition": "isActive() && isRequestContentProcessed() && req != null",
+        "condition": "isActive() && isInContentProcessed() && req != null",
         "actions": [{
           "type": "ProcessContent",
-          "direction": "Request",
+          "direction": "In",
           "valueExpressions": [
             "org.apache.http.util.EntityUtils.toString(req.getEntity())"
           ]
@@ -89,10 +89,10 @@
           "java.util.Locale"
         ],
         "location": "ENTRY",
-        "condition": "isActive() && ($1.getStatusCode() != 200 || !isResponseContentProcessed())",
+        "condition": "isActive() && ($1.getStatusCode() != 200 || !isOutContentProcessed())",
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\""
         }]
       },{
@@ -102,10 +102,10 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && isResponseContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed()",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "$! = createResponseInputStream($!)"
+          "action": "$! = createOutInputStream($!)"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Close",
@@ -114,10 +114,10 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "isActive() && isResponseContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed()",
         "actions": [{
           "type": "InstrumentProducer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\""
         }]
       }]

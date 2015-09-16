@@ -59,10 +59,10 @@ public class FragmentBuilder {
     private static String hostName;
     private static String hostAddress;
 
-    private int requestHashCode=0;
-    private ByteArrayOutputStream requestStream=null;
-    private int responseHashCode=0;
-    private ByteArrayOutputStream responseStream=null;
+    private int inHashCode=0;
+    private ByteArrayOutputStream inStream=null;
+    private int outHashCode=0;
+    private ByteArrayOutputStream outStream=null;
 
     static {
         try {
@@ -124,8 +124,8 @@ public class FragmentBuilder {
      */
     public void pushNode(Node node) {
 
-        // Reset request stream
-        requestStream = null;
+        // Reset in stream
+        inStream = null;
 
         synchronized (nodeStack) {
             // Check if fragment is in suppression mode
@@ -302,110 +302,110 @@ public class FragmentBuilder {
     }
 
     /**
-     * This method initialises the request data buffer.
+     * This method initialises the in data buffer.
      *
      * @param hashCode The hash code
      */
-    public void initRequestBuffer(int hashCode) {
-        requestHashCode = hashCode;
-        requestStream = new ByteArrayOutputStream();
+    public void initInBuffer(int hashCode) {
+        inHashCode = hashCode;
+        inStream = new ByteArrayOutputStream();
     }
 
     /**
-     * This method determines if the request data buffer is active.
+     * This method determines if the in data buffer is active.
      *
      * @param hashCode The hash code, or -1 to ignore the hash code
      * @return Whether the data buffer is active
      */
-    public boolean isRequestBufferActive(int hashCode) {
-        return requestStream != null && (hashCode == -1 || hashCode == requestHashCode);
+    public boolean isInBufferActive(int hashCode) {
+        return inStream != null && (hashCode == -1 || hashCode == inHashCode);
     }
 
     /**
-     * This method writes data to the request buffer.
+     * This method writes data to the in buffer.
      *
      * @param hashCode The hash code, or -1 to ignore the hash code
      * @param b The bytes
      * @param offset The offset
      * @param len The length
      */
-    public void writeRequestData(int hashCode, byte[] b, int offset, int len) {
-        if (requestStream != null && (hashCode == -1 || hashCode == requestHashCode)) {
-            requestStream.write(b, offset, len);
+    public void writeInData(int hashCode, byte[] b, int offset, int len) {
+        if (inStream != null && (hashCode == -1 || hashCode == inHashCode)) {
+            inStream.write(b, offset, len);
         }
     }
 
     /**
-     * This method returns the data associated with the request
+     * This method returns the data associated with the in
      * buffer and resets the buffer to be inactive.
      *
      * @param hashCode The hash code, or -1 to ignore the hash code
      * @return The data
      */
-    public byte[] getRequestData(int hashCode) {
-        if (requestStream != null && (hashCode == -1 || hashCode == requestHashCode)) {
+    public byte[] getInData(int hashCode) {
+        if (inStream != null && (hashCode == -1 || hashCode == inHashCode)) {
             try {
-                requestStream.close();
+                inStream.close();
             } catch (IOException e) {
-                log.severe("Failed to close request data stream: "+e);
+                log.severe("Failed to close in data stream: "+e);
             }
-            byte[] b=requestStream.toByteArray();
-            requestStream = null;
+            byte[] b=inStream.toByteArray();
+            inStream = null;
             return b;
         }
         return null;
     }
 
     /**
-     * This method initialises the response data buffer.
+     * This method initialises the out data buffer.
      *
      * @param hashCode The hash code
      */
-    public void initResponseBuffer(int hashCode) {
-        responseHashCode = hashCode;
-        responseStream = new ByteArrayOutputStream();
+    public void initOutBuffer(int hashCode) {
+        outHashCode = hashCode;
+        outStream = new ByteArrayOutputStream();
     }
 
     /**
-     * This method determines if the response data buffer is active.
+     * This method determines if the out data buffer is active.
      *
      * @param hashCode The hash code, or -1 to ignore the hash code
      * @return Whether the data buffer is active
      */
-    public boolean isResponseBufferActive(int hashCode) {
-        return responseStream != null && (hashCode == -1 || hashCode == responseHashCode);
+    public boolean isOutBufferActive(int hashCode) {
+        return outStream != null && (hashCode == -1 || hashCode == outHashCode);
     }
 
     /**
-     * This method writes data to the response buffer.
+     * This method writes data to the out buffer.
      *
      * @param hashCode The hash code, or -1 to ignore the hash code
      * @param b The bytes
      * @param offset The offset
      * @param len The length
      */
-    public void writeResponseData(int hashCode, byte[] b, int offset, int len) {
-        if (responseStream != null && (hashCode == -1 || hashCode == responseHashCode)) {
-            responseStream.write(b, offset, len);
+    public void writeOutData(int hashCode, byte[] b, int offset, int len) {
+        if (outStream != null && (hashCode == -1 || hashCode == outHashCode)) {
+            outStream.write(b, offset, len);
         }
     }
 
     /**
-     * This method returns the data associated with the response
+     * This method returns the data associated with the out
      * buffer and resets the buffer to be inactive.
      *
      * @param hashCode The hash code, or -1 to ignore the hash code
      * @return The data
      */
-    public byte[] getResponseData(int hashCode) {
-        if (responseStream != null && (hashCode == -1 || hashCode == responseHashCode)) {
+    public byte[] getOutData(int hashCode) {
+        if (outStream != null && (hashCode == -1 || hashCode == outHashCode)) {
             try {
-                responseStream.close();
+                outStream.close();
             } catch (IOException e) {
-                log.severe("Failed to close response data stream: "+e);
+                log.severe("Failed to close out data stream: "+e);
             }
-            byte[] b=responseStream.toByteArray();
-            responseStream = null;
+            byte[] b=outStream.toByteArray();
+            outStream = null;
             return b;
         }
         return null;

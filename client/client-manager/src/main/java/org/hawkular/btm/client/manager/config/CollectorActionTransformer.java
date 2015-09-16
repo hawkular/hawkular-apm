@@ -43,7 +43,7 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
         builder.append("collector().");
         builder.append(getEntity());
 
-        if (collectorAction.getDirection() == Direction.Request) {
+        if (collectorAction.getDirection() == Direction.In) {
             builder.append("Start(");
         } else {
             builder.append("End(");

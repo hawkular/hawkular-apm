@@ -156,14 +156,14 @@ public class ClientCamelCXFTest {
         // Check that there is request and response message content
         Consumer consumer=(Consumer)btxns.get(0).getNodes().get(0);
 
-        assertNotNull(consumer.getRequest());
-        assertNotNull(consumer.getResponse());
-        assertTrue(consumer.getRequest().getContent().containsKey("all"));
-        assertTrue(consumer.getResponse().getContent().containsKey("all"));
-        assertNotNull(consumer.getRequest().getContent().get("all").getValue());
-        assertNotNull(consumer.getResponse().getContent().get("all").getValue());
-        assertTrue(consumer.getRequest().getContent().get("all").getValue().length() > 0);
-        assertTrue(consumer.getResponse().getContent().get("all").getValue().length() > 0);
+        assertNotNull(consumer.getIn());
+        assertNotNull(consumer.getOut());
+        assertTrue(consumer.getIn().getContent().containsKey("all"));
+        assertTrue(consumer.getOut().getContent().containsKey("all"));
+        assertNotNull(consumer.getIn().getContent().get("all").getValue());
+        assertNotNull(consumer.getOut().getContent().get("all").getValue());
+        assertTrue(consumer.getIn().getContent().get("all").getValue().length() > 0);
+        assertTrue(consumer.getOut().getContent().get("all").getValue().length() > 0);
     }
 
 }

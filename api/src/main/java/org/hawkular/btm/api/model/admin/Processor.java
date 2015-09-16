@@ -37,7 +37,7 @@ public class Processor {
     private NodeType nodeType;
 
     @JsonInclude
-    private Direction direction = Direction.Request;
+    private Direction direction = Direction.In;
 
     @JsonInclude
     private String uriFilter;

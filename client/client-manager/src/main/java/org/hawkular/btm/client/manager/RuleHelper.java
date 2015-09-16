@@ -379,27 +379,27 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
-     * This method initialises a data buffer associated with the supplied request object.
+     * This method initialises a data buffer associated with the supplied object.
      *
      * @param obj The object associated with the buffer
      */
-    public void initRequestBuffer(Object obj) {
-        collector().initRequestBuffer(getRuleName(), obj);
+    public void initInBuffer(Object obj) {
+        collector().initInBuffer(getRuleName(), obj);
     }
 
     /**
-     * This method determines if there is an active request data buffer for
+     * This method determines if there is an active in data buffer for
      * the supplied object.
      *
      * @param obj The object associated with the buffer
      * @return Whether there is an active data buffer
      */
-    public boolean isRequestBufferActive(Object obj) {
-        return collector().isRequestBufferActive(getRuleName(), obj);
+    public boolean isInBufferActive(Object obj) {
+        return collector().isInBufferActive(getRuleName(), obj);
     }
 
     /**
-     * This method appends data to the buffer associated with the supplied request object.
+     * This method appends data to the buffer associated with the supplied object.
      *
      * @param obj The object associated with the buffer
      * @param data The data to be appended
@@ -407,47 +407,47 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param len The length of data
      * @param close Whether to close the buffer after appending the data
      */
-    public void appendRequestBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
+    public void appendInBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
         if (len > 0) {
-            collector().appendRequestBuffer(getRuleName(), obj, data, offset, len);
+            collector().appendInBuffer(getRuleName(), obj, data, offset, len);
         }
         if (close) {
-            collector().recordRequestBuffer(getRuleName(), obj);
+            collector().recordInBuffer(getRuleName(), obj);
         }
     }
 
     /**
-     * This method records the data within a buffer associated with the supplied request
+     * This method records the data within a buffer associated with the supplied
      * object.
      *
      * @param obj The object associated with the buffer
      */
-    public void recordRequestBuffer(Object obj) {
-        collector().recordRequestBuffer(getRuleName(), obj);
+    public void recordInBuffer(Object obj) {
+        collector().recordInBuffer(getRuleName(), obj);
     }
 
     /**
-     * This method initialises a data buffer associated with the supplied response object.
+     * This method initialises a data buffer associated with the supplied object.
      *
      * @param obj The object associated with the buffer
      */
-    public void initResponseBuffer(Object obj) {
-        collector().initResponseBuffer(getRuleName(), obj);
+    public void initOutBuffer(Object obj) {
+        collector().initOutBuffer(getRuleName(), obj);
     }
 
     /**
-     * This method determines if there is an active response data buffer for
+     * This method determines if there is an active out data buffer for
      * the supplied object.
      *
      * @param obj The object associated with the buffer
      * @return Whether there is an active data buffer
      */
-    public boolean isResponseBufferActive(Object obj) {
-        return collector().isResponseBufferActive(getRuleName(), obj);
+    public boolean isOutBufferActive(Object obj) {
+        return collector().isOutBufferActive(getRuleName(), obj);
     }
 
     /**
-     * This method appends data to the buffer associated with the supplied response object.
+     * This method appends data to the buffer associated with the supplied object.
      *
      * @param obj The object associated with the buffer
      * @param data The data to be appended
@@ -455,59 +455,59 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param len The length of data
      * @param close Whether to close the buffer after appending the data
      */
-    public void appendResponseBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
+    public void appendOutBuffer(Object obj, byte[] data, int offset, int len, boolean close) {
         if (len > 0) {
-            collector().appendResponseBuffer(getRuleName(), obj, data, offset, len);
+            collector().appendOutBuffer(getRuleName(), obj, data, offset, len);
         }
         if (close) {
-            collector().recordResponseBuffer(getRuleName(), obj);
+            collector().recordOutBuffer(getRuleName(), obj);
         }
     }
 
     /**
-     * This method records the data within a buffer associated with the supplied response
+     * This method records the data within a buffer associated with the supplied
      * object.
      *
      * @param obj The object associated with the buffer
      */
-    public void recordResponseBuffer(Object obj) {
-        collector().recordResponseBuffer(getRuleName(), obj);
+    public void recordOutBuffer(Object obj) {
+        collector().recordOutBuffer(getRuleName(), obj);
     }
 
     /**
-     * This method determines if the request headers or content is processed.
+     * This method determines if the in headers or content is processed.
      *
-     * @return Whether the request headers or content is processed
+     * @return Whether the in headers or content is processed
      */
-    public boolean isRequestProcessed() {
-        return (collector().isRequestProcessed(getRuleName()));
+    public boolean isInProcessed() {
+        return (collector().isInProcessed(getRuleName()));
     }
 
     /**
-     * This method determines if the request content is processed.
+     * This method determines if the in content is processed.
      *
-     * @return Whether the request content is processed
+     * @return Whether the in content is processed
      */
-    public boolean isRequestContentProcessed() {
-        return (collector().isRequestContentProcessed(getRuleName()));
+    public boolean isInContentProcessed() {
+        return (collector().isInContentProcessed(getRuleName()));
     }
 
     /**
-     * This method determines if the response headers or content is processed.
+     * This method determines if the out headers or content is processed.
      *
-     * @return Whether the response headers or content is processed
+     * @return Whether the out headers or content is processed
      */
-    public boolean isResponseProcessed() {
-        return (collector().isResponseProcessed(getRuleName()));
+    public boolean isOutProcessed() {
+        return (collector().isOutProcessed(getRuleName()));
     }
 
     /**
-     * This method determines if the response content is processed.
+     * This method determines if the out content is processed.
      *
-     * @return Whether the response content is processed
+     * @return Whether the out content is processed
      */
-    public boolean isResponseContentProcessed() {
-        return (collector().isResponseContentProcessed(getRuleName()));
+    public boolean isOutContentProcessed() {
+        return (collector().isOutContentProcessed(getRuleName()));
     }
 
     /**
@@ -517,8 +517,8 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param os The original output stream
      * @return The instrumented output stream
      */
-    public OutputStream createRequestOutputStream(OutputStream os) {
-        return new InstrumentedOutputStream(collector(), Direction.Request, os, null);
+    public OutputStream createInOutputStream(OutputStream os) {
+        return new InstrumentedOutputStream(collector(), Direction.In, os, null);
     }
 
     /**
@@ -531,8 +531,8 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param linkId The optional link id
      * @return The instrumented output stream
      */
-    public OutputStream createRequestOutputStream(OutputStream os, String linkId) {
-        return new InstrumentedOutputStream(collector(), Direction.Request, os, linkId);
+    public OutputStream createInOutputStream(OutputStream os, String linkId) {
+        return new InstrumentedOutputStream(collector(), Direction.In, os, linkId);
     }
 
     /**
@@ -542,8 +542,8 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param os The original output stream
      * @return The instrumented output stream
      */
-    public OutputStream createResponseOutputStream(OutputStream os) {
-        return new InstrumentedOutputStream(collector(), Direction.Response, os, null);
+    public OutputStream createOutOutputStream(OutputStream os) {
+        return new InstrumentedOutputStream(collector(), Direction.Out, os, null);
     }
 
     /**
@@ -556,8 +556,8 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param linkId The optional link id
      * @return The instrumented output stream
      */
-    public OutputStream createResponseOutputStream(OutputStream os, String linkId) {
-        return new InstrumentedOutputStream(collector(), Direction.Response, os, linkId);
+    public OutputStream createOutOutputStream(OutputStream os, String linkId) {
+        return new InstrumentedOutputStream(collector(), Direction.Out, os, linkId);
     }
 
     /**
@@ -567,8 +567,8 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param is The original input stream
      * @return The instrumented input stream
      */
-    public InputStream createRequestInputStream(InputStream is) {
-        return new InstrumentedInputStream(collector(), Direction.Request, is);
+    public InputStream createInInputStream(InputStream is) {
+        return new InstrumentedInputStream(collector(), Direction.In, is);
     }
 
     /**
@@ -578,7 +578,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @param is The original input stream
      * @return The instrumented input stream
      */
-    public InputStream createResponseInputStream(InputStream is) {
-        return new InstrumentedInputStream(collector(), Direction.Response, is);
+    public InputStream createOutInputStream(InputStream is) {
+        return new InstrumentedInputStream(collector(), Direction.Out, is);
     }
 }

@@ -9,7 +9,7 @@
       },
       "processors": [{
         "nodeType": "Producer",
-        "direction": "Request",
+        "direction": "In",
         "uriFilter": "http://localhost:8180/sayHello",
         "actions": [{
           "name": "hello",
@@ -22,7 +22,7 @@
         }]
       },{
         "nodeType": "Producer",
-        "direction": "Response",
+        "direction": "Out",
         "uriFilter": "http://localhost:8180/sayHello",
         "actions": [{
           "name": "all",

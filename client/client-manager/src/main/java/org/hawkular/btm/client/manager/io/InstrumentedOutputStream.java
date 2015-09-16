@@ -39,29 +39,29 @@ public class InstrumentedOutputStream extends OutputStream {
         this.os = os;
         this.initiateLinkId = initiateLinkId;
 
-        if (direction == Direction.Request) {
-            collector.initRequestBuffer(null, this);
+        if (direction == Direction.In) {
+            collector.initInBuffer(null, this);
         } else {
-            collector.initResponseBuffer(null, this);
+            collector.initOutBuffer(null, this);
         }
     }
 
     @Override
     public void write(byte[] b) throws IOException {
-        if (direction == Direction.Request) {
-            collector.appendRequestBuffer(null, this, b, 0, b.length);
+        if (direction == Direction.In) {
+            collector.appendInBuffer(null, this, b, 0, b.length);
         } else {
-            collector.appendResponseBuffer(null, this, b, 0, b.length);
+            collector.appendOutBuffer(null, this, b, 0, b.length);
         }
         os.write(b);
     }
 
     @Override
     public void write(byte[] b, int offset, int len) throws IOException {
-        if (direction == Direction.Request) {
-            collector.appendRequestBuffer(null, this, b, offset, len);
+        if (direction == Direction.In) {
+            collector.appendInBuffer(null, this, b, offset, len);
         } else {
-            collector.appendResponseBuffer(null, this, b, offset, len);
+            collector.appendOutBuffer(null, this, b, offset, len);
         }
         os.write(b, offset, len);
     }
@@ -87,10 +87,10 @@ public class InstrumentedOutputStream extends OutputStream {
      */
     @Override
     public void close() throws IOException {
-        if (direction == Direction.Request) {
-            collector.recordRequestBuffer(null, this);
+        if (direction == Direction.In) {
+            collector.recordInBuffer(null, this);
         } else {
-            collector.recordResponseBuffer(null, this);
+            collector.recordOutBuffer(null, this);
         }
         if (initiateLinkId != null) {
             collector.session().initiateCorrelation(initiateLinkId);

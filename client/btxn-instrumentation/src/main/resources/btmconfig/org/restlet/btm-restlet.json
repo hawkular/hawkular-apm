@@ -33,13 +33,13 @@
           "nameExpression": "btname"
         },{
           "type": "InstrumentConsumer",
-          "direction": "Request",
+          "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
-          "direction": "Request",
+          "direction": "In",
           "headersExpression": "headers.getValuesMap()"
         },{
           "type": "SetDetail",
@@ -63,11 +63,11 @@
         "condition": "isActive()",
         "actions": [{
           "type": "ProcessHeaders",
-          "direction": "Response",
+          "direction": "Out",
           "headersExpression": "headers.getValuesMap()"
         },{
           "type": "InstrumentConsumer",
-          "direction": "Response",
+          "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef()"
         },{

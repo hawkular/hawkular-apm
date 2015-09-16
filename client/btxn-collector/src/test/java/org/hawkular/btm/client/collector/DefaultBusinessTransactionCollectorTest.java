@@ -154,8 +154,8 @@ public class DefaultBusinessTransactionCollectorTest {
         respHeaders.put("joe", "bloggs");
 
         collector.consumerStart(null, URI, TYPE, null);
-        collector.processRequest(null, reqHeaders);
-        collector.processResponse(null, respHeaders);
+        collector.processIn(null, reqHeaders);
+        collector.processOut(null, respHeaders);
         collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
@@ -180,8 +180,8 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Consumer service = (Consumer) node;
 
-        assertEquals(service.getRequest().getHeaders().get("hello"), "world");
-        assertEquals(service.getResponse().getHeaders().get("joe"), "bloggs");
+        assertEquals(service.getIn().getHeaders().get("hello"), "world");
+        assertEquals(service.getOut().getHeaders().get("joe"), "bloggs");
     }
 
     @Test
@@ -204,8 +204,8 @@ public class DefaultBusinessTransactionCollectorTest {
         reqHeaders2.put("joe", "bloggs");
 
         collector.consumerStart(null, URI, TYPE, null);
-        collector.processRequest(null, reqHeaders);
-        collector.processRequest(null, reqHeaders2);
+        collector.processIn(null, reqHeaders);
+        collector.processIn(null, reqHeaders2);
         collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
@@ -230,8 +230,8 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Consumer service = (Consumer) node;
 
-        assertEquals(service.getRequest().getHeaders().get("hello"), "world");
-        assertFalse(service.getRequest().getHeaders().containsKey("joe"));
+        assertEquals(service.getIn().getHeaders().get("hello"), "world");
+        assertFalse(service.getIn().getHeaders().containsKey("joe"));
     }
 
     @Test
@@ -250,8 +250,8 @@ public class DefaultBusinessTransactionCollectorTest {
         reqHeaders.put("hello", "world");
 
         collector.consumerStart(null, URI, TYPE, null);
-        collector.processRequest(null, null);
-        collector.processRequest(null, reqHeaders);
+        collector.processIn(null, null);
+        collector.processIn(null, reqHeaders);
         collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
@@ -276,7 +276,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Consumer service = (Consumer) node;
 
-        assertEquals(service.getRequest().getHeaders().get("hello"), "world");
+        assertEquals(service.getIn().getHeaders().get("hello"), "world");
     }
 
     @Test

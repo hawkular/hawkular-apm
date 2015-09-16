@@ -9,7 +9,7 @@
       },
       "processors": [{
         "nodeType": "Consumer",
-        "direction": "Request",
+        "direction": "In",
         "uriFilter": "http://localhost:8180/hello",
         "actions": [{
           "name": "all",
@@ -18,7 +18,7 @@
         }]
       },{
         "nodeType": "Consumer",
-        "direction": "Response",
+        "direction": "Out",
         "uriFilter": "http://localhost:8180/hello",
         "actions": [{
           "name": "all",
@@ -27,7 +27,7 @@
         }]
       },{
         "nodeType": "Producer",
-        "direction": "Request",
+        "direction": "In",
         "uriFilter": "http://localhost:8180/hello",
         "actions": [{
           "name": "all",
@@ -36,7 +36,7 @@
         }]
       },{
         "nodeType": "Producer",
-        "direction": "Response",
+        "direction": "Out",
         "uriFilter": "http://localhost:8180/hello",
         "actions": [{
           "name": "all",

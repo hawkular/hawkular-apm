@@ -46,10 +46,10 @@ public class ProcessHeadersTransformer implements InstrumentActionTransformer {
 
         builder.append("collector().");
 
-        if (phAction.getDirection() == Direction.Request) {
-            builder.append("processRequest(");
+        if (phAction.getDirection() == Direction.In) {
+            builder.append("processIn(");
         } else {
-            builder.append("processResponse(");
+            builder.append("processOut(");
         }
 
         builder.append("getRuleName(),");

@@ -10,10 +10,10 @@
           "java.lang.String"
         ],
         "location": "ENTRY",
-        "condition": "isResponseBufferActive($0)",
+        "condition": "isOutBufferActive($0)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "appendResponseBuffer($0, $1.getBytes(), 0, $1.length(), false)"
+          "action": "appendOutBuffer($0, $1.getBytes(), 0, $1.length(), false)"
         }]
       }]
     }

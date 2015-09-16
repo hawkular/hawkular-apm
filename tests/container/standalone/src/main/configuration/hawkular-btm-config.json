@@ -33,14 +33,14 @@
         ],
         "actions": [{
           "type": "ProcessContent",
-          "direction": "Response",
+          "direction": "Out",
           "valueExpressions": [
             "$1",
             "$2"
           ]
         },{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "uriExpression": "\"TopLevelService\"",
           "operationExpression": "\"testOp\""
         }]
@@ -75,13 +75,13 @@
         "location": "EXIT",
         "actions": [{
           "type": "ProcessContent",
-          "direction": "Response",
+          "direction": "Out",
           "valueExpressions": [
             "$!"
           ]
         },{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "uriExpression": "\"InnerService\"",
           "operationExpression": "\"join\""
         }]

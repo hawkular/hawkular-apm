@@ -13,7 +13,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Request",
+          "direction": "In",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
@@ -42,7 +42,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         }]
@@ -56,7 +56,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Request",
+          "direction": "In",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
@@ -84,7 +84,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         }]
@@ -99,7 +99,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Request",
+          "direction": "In",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
@@ -128,7 +128,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         }]
@@ -142,7 +142,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Request",
+          "direction": "In",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
@@ -170,7 +170,7 @@
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
-          "direction": "Response",
+          "direction": "Out",
           "componentTypeExpression": "\"Database\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         }]

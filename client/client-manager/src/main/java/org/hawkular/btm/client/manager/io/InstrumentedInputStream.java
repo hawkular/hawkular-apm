@@ -45,10 +45,10 @@ public class InstrumentedInputStream extends InputStream {
         this.direction = direction;
         this.is = is;
 
-        if (direction == Direction.Request) {
-            collector.initRequestBuffer(null, this);
+        if (direction == Direction.In) {
+            collector.initInBuffer(null, this);
         } else {
-            collector.initResponseBuffer(null, this);
+            collector.initOutBuffer(null, this);
         }
     }
 
@@ -90,10 +90,10 @@ public class InstrumentedInputStream extends InputStream {
     @Override
     public int read(byte[] b) throws IOException {
         int len=is.read(b);
-        if (direction == Direction.Request) {
-            collector.appendRequestBuffer(null, this, b, 0, len);
+        if (direction == Direction.In) {
+            collector.appendInBuffer(null, this, b, 0, len);
         } else {
-            collector.appendResponseBuffer(null, this, b, 0, len);
+            collector.appendOutBuffer(null, this, b, 0, len);
         }
         return len;
     }
@@ -104,10 +104,10 @@ public class InstrumentedInputStream extends InputStream {
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int actuallen=is.read(b, off, len);
-        if (direction == Direction.Request) {
-            collector.appendRequestBuffer(null, this, b, off, actuallen);
+        if (direction == Direction.In) {
+            collector.appendInBuffer(null, this, b, off, actuallen);
         } else {
-            collector.appendResponseBuffer(null, this, b, off, actuallen);
+            collector.appendOutBuffer(null, this, b, off, actuallen);
         }
         return actuallen;
     }
@@ -133,10 +133,10 @@ public class InstrumentedInputStream extends InputStream {
      */
     @Override
     public void close() throws IOException {
-        if (direction == Direction.Request) {
-            collector.recordRequestBuffer(null, this);
+        if (direction == Direction.In) {
+            collector.recordInBuffer(null, this);
         } else {
-            collector.recordResponseBuffer(null, this);
+            collector.recordOutBuffer(null, this);
         }
         is.close();
     }

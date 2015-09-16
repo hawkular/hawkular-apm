@@ -46,7 +46,7 @@ import org.junit.Test;
 public class ProcessorManagerTest {
 
     @Test
-    public void testNodeTypeRequestNoURIFilter() {
+    public void testNodeTypeInNoURIFilter() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -56,7 +56,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -70,13 +70,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
 
     @Test
-    public void testNodeTypeRequestNoURIFilterWithPredicate() {
+    public void testNodeTypeInNoURIFilterWithPredicate() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -86,7 +86,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -101,13 +101,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
 
     @Test
-    public void testNodeTypeRequestNoURIFilterWithPredicateNoAction() {
+    public void testNodeTypeInNoURIFilterWithPredicateNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -117,7 +117,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -132,13 +132,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testNodeTypeResponseNoURIFilterNoAction() {
+    public void testNodeTypeOutNoURIFilterNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -148,7 +148,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -162,13 +162,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Response, null, "first", "second");
+        pm.process(btxn, service, Direction.Out, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testMismatchedNodeTypeRequestNoURIFilterNoAction() {
+    public void testMismatchedNodeTypeInNoURIFilterNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -178,7 +178,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -192,13 +192,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testNodeTypeRequestWithURIFilter() {
+    public void testNodeTypeInWithURIFilter() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -208,7 +208,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -224,13 +224,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
 
     @Test
-    public void testNodeTypeRequestWithURIFilterNoAction() {
+    public void testNodeTypeInWithURIFilterNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -240,7 +240,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -256,13 +256,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testNodeTypeRequestNoURIFilterSetDetails() {
+    public void testNodeTypeInNoURIFilterSetDetails() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -272,7 +272,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -288,13 +288,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
 
     @Test
-    public void testNodeTypeRequestNoURIFilterSetFault() {
+    public void testNodeTypeInNoURIFilterSetFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -304,7 +304,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -319,13 +319,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getFault());
     }
 
     @Test
-    public void testNodeTypeRequestNoURIFilterSetProperty() {
+    public void testNodeTypeInNoURIFilterSetProperty() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -335,7 +335,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -351,13 +351,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals("second", btxn.getProperties().get("test"));
     }
 
     @Test
-    public void testNodeTypeRequestNoURIFilterAddContent() {
+    public void testNodeTypeInNoURIFilterAddContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -367,7 +367,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -385,13 +385,13 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
-        assertEquals(1, service.getRequest().getContent().size());
+        assertEquals(1, service.getIn().getContent().size());
 
-        Content content = service.getRequest().getContent().get("test");
+        Content content = service.getIn().getContent().get("test");
 
         assertNotNull(content);
 
@@ -400,7 +400,7 @@ public class ProcessorManagerTest {
     }
 
     @Test
-    public void testNodeTypeRequestAddCorrelationId() {
+    public void testNodeTypeInAddCorrelationId() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -410,7 +410,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -427,9 +427,9 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(1, service.getCorrelationIds().size());
 
@@ -438,7 +438,7 @@ public class ProcessorManagerTest {
     }
 
     @Test
-    public void testNodeTypeRequestFaultFilterNoFault() {
+    public void testNodeTypeInFaultFilterNoFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -448,7 +448,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setFaultFilter("MyFault");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -466,15 +466,15 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
 
     @Test
-    public void testNodeTypeRequestFaultFilterWithMismatchFault() {
+    public void testNodeTypeInFaultFilterWithMismatchFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -484,7 +484,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setFaultFilter("MyFault");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -504,15 +504,15 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
 
     @Test
-    public void testNodeTypeRequestFaultFilterWithMatchingFault() {
+    public void testNodeTypeInFaultFilterWithMatchingFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -522,7 +522,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setFaultFilter("MyFault");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -542,16 +542,16 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(1, btxn.getProperties().size());
         assertTrue(btxn.getProperties().containsKey("result"));
     }
 
     @Test
-    public void testNodeTypeRequestNoOperation() {
+    public void testNodeTypeInNoOperation() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -561,7 +561,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -578,13 +578,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
 
     @Test
-    public void testNodeTypeRequestWithMismatchOperation() {
+    public void testNodeTypeInWithMismatchOperation() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -594,7 +594,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -613,13 +613,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(0, btxn.getProperties().size());
     }
 
     @Test
-    public void testNodeTypeRequestWithMatchingFault() {
+    public void testNodeTypeInWithMatchingFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -629,7 +629,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -648,7 +648,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "first", "second");
+        pm.process(btxn, service, Direction.In, null, "first", "second");
 
         assertEquals(1, btxn.getProperties().size());
         assertTrue(btxn.getProperties().containsKey("result"));
@@ -665,7 +665,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -684,7 +684,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        assertTrue(pm.isProcessed(btxn, service, Direction.Request));
+        assertTrue(pm.isProcessed(btxn, service, Direction.In));
     }
 
     @Test
@@ -698,7 +698,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -714,7 +714,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        assertFalse(pm.isProcessed(btxn, service, Direction.Request));
+        assertFalse(pm.isProcessed(btxn, service, Direction.In));
     }
 
     @Test
@@ -728,7 +728,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -746,9 +746,9 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        assertFalse(pm.isContentProcessed(btxn, service, Direction.Request));
+        assertFalse(pm.isContentProcessed(btxn, service, Direction.In));
     }
 
     @Test
@@ -762,7 +762,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Consumer);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -780,13 +780,13 @@ public class ProcessorManagerTest {
         btxn.setName("testapp");
 
         Message req = new Message();
-        service.setRequest(req);
+        service.setIn(req);
 
-        assertTrue(pm.isContentProcessed(btxn, service, Direction.Request));
+        assertTrue(pm.isContentProcessed(btxn, service, Direction.In));
     }
 
     @Test
-    public void testProcessRequestNoHeadersOrContent() {
+    public void testProcessInNoHeadersOrContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -796,7 +796,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -812,13 +812,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null);
+        pm.process(btxn, service, Direction.In, null);
 
         assertEquals("hello", service.getDetails().get("test"));
     }
 
     @Test
-    public void testProcessRequestNoHeaders() {
+    public void testProcessInNoHeaders() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -828,7 +828,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -844,13 +844,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null);
+        pm.process(btxn, service, Direction.In, null);
 
         assertFalse(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testProcessRequestWithHeaders() {
+    public void testProcessInWithHeaders() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -860,7 +860,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -878,13 +878,13 @@ public class ProcessorManagerTest {
 
         Map<String,String> headers=new HashMap<String,String>();
         headers.put("hello", "world");
-        pm.process(btxn, service, Direction.Request, headers);
+        pm.process(btxn, service, Direction.In, headers);
 
         assertTrue(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testProcessRequestNoContent() {
+    public void testProcessInNoContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -894,7 +894,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -910,13 +910,13 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null);
+        pm.process(btxn, service, Direction.In, null);
 
         assertFalse(service.getDetails().containsKey("test"));
     }
 
     @Test
-    public void testProcessRequestWithContent() {
+    public void testProcessInWithContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -926,7 +926,7 @@ public class ProcessorManagerTest {
         btc.getProcessors().add(p1);
 
         p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.Request);
+        p1.setDirection(Direction.In);
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -942,7 +942,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        pm.process(btxn, service, Direction.Request, null, "hello");
+        pm.process(btxn, service, Direction.In, null, "hello");
 
         assertTrue(service.getDetails().containsKey("test"));
     }

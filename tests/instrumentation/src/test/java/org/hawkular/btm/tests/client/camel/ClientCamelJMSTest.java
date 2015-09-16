@@ -159,10 +159,10 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         checkInteractionCorrelationIdentifiers(queueProducer, queueConsumer);
 
         // Check headers
-        assertFalse("queueProducer has no headers", queueProducer.getRequest().getHeaders().isEmpty());
-        assertFalse("topicProducer has no headers", topicProducer.getRequest().getHeaders().isEmpty());
-        assertFalse("topicConsumer has no headers", topicConsumer.getRequest().getHeaders().isEmpty());
-        assertFalse("queueConsumer has no headers", queueConsumer.getRequest().getHeaders().isEmpty());
+        assertFalse("queueProducer has no headers", queueProducer.getIn().getHeaders().isEmpty());
+        assertFalse("topicProducer has no headers", topicProducer.getIn().getHeaders().isEmpty());
+        assertFalse("topicConsumer has no headers", topicConsumer.getIn().getHeaders().isEmpty());
+        assertFalse("queueConsumer has no headers", queueConsumer.getIn().getHeaders().isEmpty());
     }
 
     @Test
@@ -253,9 +253,9 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         checkInteractionCorrelationIdentifiers(queueProducer, queueConsumer);
 
         // Check headers
-        assertFalse("queueProducer has no headers", queueProducer.getRequest().getHeaders().isEmpty());
-        assertFalse("topicProducer has no headers", topicProducer.getRequest().getHeaders().isEmpty());
-        assertFalse("topicConsumer has no headers", topicConsumer.getRequest().getHeaders().isEmpty());
-        assertFalse("queueConsumer has no headers", queueConsumer.getRequest().getHeaders().isEmpty());
+        assertFalse("queueProducer has no headers", queueProducer.getIn().getHeaders().isEmpty());
+        assertFalse("topicProducer has no headers", topicProducer.getIn().getHeaders().isEmpty());
+        assertFalse("topicConsumer has no headers", topicConsumer.getIn().getHeaders().isEmpty());
+        assertFalse("queueConsumer has no headers", queueConsumer.getIn().getHeaders().isEmpty());
     }
 }
