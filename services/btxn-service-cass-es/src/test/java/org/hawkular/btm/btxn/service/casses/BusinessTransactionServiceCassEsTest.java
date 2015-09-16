@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.junit.BeforeClass;
@@ -86,7 +86,7 @@ public class BusinessTransactionServiceCassEsTest {
         node1_1.setBaseTime(100);
         btxn1.getNodes().add(node1_1);
 
-        Service node1_2 = new Service();
+        Component node1_2 = new Component();
         node1_2.setDuration(9000);
         node1_2.setBaseTime(150);
         node1_1.getNodes().add(node1_2);
@@ -101,7 +101,7 @@ public class BusinessTransactionServiceCassEsTest {
         node2_1.setBaseTime(100);
         btxn2.getNodes().add(node2_1);
 
-        Service node2_2 = new Service();
+        Component node2_2 = new Component();
         node2_2.setDuration(9000);
         node2_2.setBaseTime(150);
         node2_1.getNodes().add(node2_2);

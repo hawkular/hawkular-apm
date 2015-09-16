@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Service;
 import org.junit.Test;
 
 /**
@@ -85,7 +84,7 @@ public class FragmentBuilderTest {
 
         builder.pushNode(consumer);
 
-        Service service = new Service();
+        Component service = new Component();
 
         builder.pushNode(service);
 
@@ -108,19 +107,19 @@ public class FragmentBuilderTest {
 
         builder.pushNode(consumer);
 
-        Service service1 = new Service();
+        Component service1 = new Component();
 
         builder.pushNode(service1);
 
-        Node poppedService1 = builder.popNode(Service.class, null);
+        Node poppedService1 = builder.popNode(Component.class, null);
 
         assertEquals("Popped service1 incorrect", poppedService1, service1);
 
-        Service service2 = new Service();
+        Component service2 = new Component();
 
         builder.pushNode(service2);
 
-        Node poppedService2 = builder.popNode(Service.class, null);
+        Node poppedService2 = builder.popNode(Component.class, null);
 
         assertEquals("Popped service2 incorrect", poppedService2, service2);
 

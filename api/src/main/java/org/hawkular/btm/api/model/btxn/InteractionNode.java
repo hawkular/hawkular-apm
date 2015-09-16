@@ -31,10 +31,9 @@ import io.swagger.annotations.ApiModel;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Consumer.class),
-    @Type(value = Producer.class),
-    @Type(value = Service.class) })
+    @Type(value = Producer.class), @Type(value = Component.class) })
 @ApiModel(parent = ContainerNode.class,
-    subTypes = { Consumer.class, Producer.class, Service.class }, discriminator = "type")
+    subTypes = { Consumer.class, Producer.class, Component.class }, discriminator = "type")
 public abstract class InteractionNode extends ContainerNode {
 
     @JsonInclude(Include.NON_NULL)

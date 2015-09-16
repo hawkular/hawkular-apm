@@ -25,7 +25,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Service;
+import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.AfterClass;
@@ -114,22 +114,23 @@ public class ClientJavaMainTest {
 
         BusinessTransaction btxn = result.get(0);
 
-        // Should be one top level Service node with another single Service node contained
+        // Should be one top level Component node with another single Component node contained
         assertEquals("Expecting single top level node", 1, btxn.getNodes().size());
 
-        assertEquals("Expecting top node to be Service", Service.class, btxn.getNodes().get(0).getClass());
-        assertEquals("Top level node operation incorrect", "testOp", ((Service) btxn.getNodes().get(0)).getOperation());
+        assertEquals("Expecting top node to be Component", Component.class, btxn.getNodes().get(0).getClass());
+        assertEquals("Top level node operation incorrect", "testOp",
+                ((Component) btxn.getNodes().get(0)).getOperation());
         assertEquals("Top level node service type incorrect", "TopLevelService",
-                ((Service) btxn.getNodes().get(0)).getUri());
+                ((Component) btxn.getNodes().get(0)).getUri());
 
-        assertEquals("Expecting single child node", 1, ((Service) btxn.getNodes().get(0)).getNodes().size());
+        assertEquals("Expecting single child node", 1, ((Component) btxn.getNodes().get(0)).getNodes().size());
 
-        assertEquals("Expecting single child node to be Service", Service.class,
-                ((Service) btxn.getNodes().get(0)).getNodes().get(0).getClass());
+        assertEquals("Expecting single child node to be Service", Component.class,
+                ((Component) btxn.getNodes().get(0)).getNodes().get(0).getClass());
         assertEquals("Inner node operation incorrect", "join",
-                ((Service) ((Service) btxn.getNodes().get(0)).getNodes().get(0)).getOperation());
+                ((Component) ((Component) btxn.getNodes().get(0)).getNodes().get(0)).getOperation());
         assertEquals("Inner node service type incorrect", "InnerService",
-                ((Service) ((Service) btxn.getNodes().get(0)).getNodes().get(0)).getUri());
+                ((Component) ((Component) btxn.getNodes().get(0)).getNodes().get(0)).getUri());
     }
 
     @AfterClass

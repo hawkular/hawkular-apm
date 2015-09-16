@@ -26,8 +26,8 @@ import io.swagger.annotations.ApiModel;
  * @author gbrown
  *
  */
-@ApiModel(parent = ContainerNode.class)
-public class Component extends ContainerNode {
+@ApiModel(parent = InteractionNode.class)
+public class Component extends InteractionNode {
 
     @JsonInclude
     private String componentType;

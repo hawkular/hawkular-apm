@@ -35,7 +35,6 @@ import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.api.services.ServiceResolver;
@@ -255,61 +254,6 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "consumerEnd failed", t);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#serviceStart(java.lang.String,
-     *                          java.lang.String, java.lang.String)
-     */
-    @Override
-    public void serviceStart(String location, String uri, String operation) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Service start: location=[" + location + "] uri=" + uri + " operation=" + operation);
-        }
-
-        try {
-            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
-
-            if (builder != null) {
-                Service service = new Service();
-                service.setUri(uri);
-                service.setOperation(operation);
-
-                push(location, builder, service);
-            }
-        } catch (Throwable t) {
-            if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "serviceStart failed", t);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#serviceEnd(java.lang.String,
-     *                          java.lang.String, java.lang.String)
-     */
-    @Override
-    public void serviceEnd(String location, String uri, String operation) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Service end: location=[" + location + "] uri=" + uri + " operation=" + operation);
-        }
-
-        try {
-            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
-
-            if (builder != null) {
-                Node node = pop(location, builder, Service.class, uri);
-
-                // Check for completion
-                checkForCompletion(builder, node);
-            } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "serviceEnd: No fragment builder for this thread", null);
-            }
-        } catch (Throwable t) {
-            if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "serviceEnd failed", t);
             }
         }
     }

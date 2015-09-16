@@ -29,9 +29,9 @@ import java.util.concurrent.Executors;
 
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Service;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
@@ -46,9 +46,9 @@ public class DefaultBusinessTransactionCollectorTest {
     /**  */
     private static final String TEST_TENANT = "TestTenant";
     /**  */
-    private static final String OPERATION = "Operation";
+    private static final String TYPE = "TestType";
     /**  */
-    private static final String SERVICE_TYPE = "ServiceType";
+    private static final String URI = "TestURI";
 
     @Test
     public void testSetStartTimeAndDuration() {
@@ -62,7 +62,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.consumerStart(null, URI, TYPE, null);
 
         // Delay, to provide a reasonable value for duration
         synchronized (this) {
@@ -73,7 +73,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         }
 
-        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
+        collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -113,9 +113,9 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         });
 
-        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.consumerStart(null, URI, TYPE, null);
 
-        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
+        collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -153,10 +153,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> respHeaders = new HashMap<String, String>();
         respHeaders.put("joe", "bloggs");
 
-        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.consumerStart(null, URI, TYPE, null);
         collector.processRequest(null, reqHeaders);
         collector.processResponse(null, respHeaders);
-        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
+        collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -178,7 +178,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Node node = btxn.getNodes().get(0);
 
-        Service service = (Service) node;
+        Consumer service = (Consumer) node;
 
         assertEquals(service.getRequest().getHeaders().get("hello"), "world");
         assertEquals(service.getResponse().getHeaders().get("joe"), "bloggs");
@@ -203,10 +203,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> reqHeaders2 = new HashMap<String, String>();
         reqHeaders2.put("joe", "bloggs");
 
-        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.consumerStart(null, URI, TYPE, null);
         collector.processRequest(null, reqHeaders);
         collector.processRequest(null, reqHeaders2);
-        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
+        collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -228,7 +228,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Node node = btxn.getNodes().get(0);
 
-        Service service = (Service) node;
+        Consumer service = (Consumer) node;
 
         assertEquals(service.getRequest().getHeaders().get("hello"), "world");
         assertFalse(service.getRequest().getHeaders().containsKey("joe"));
@@ -249,10 +249,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
 
-        collector.serviceStart(null, SERVICE_TYPE, OPERATION);
+        collector.consumerStart(null, URI, TYPE, null);
         collector.processRequest(null, null);
         collector.processRequest(null, reqHeaders);
-        collector.serviceEnd(null, SERVICE_TYPE, OPERATION);
+        collector.consumerEnd(null, URI, TYPE);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -274,7 +274,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         Node node = btxn.getNodes().get(0);
 
-        Service service = (Service) node;
+        Consumer service = (Consumer) node;
 
         assertEquals(service.getRequest().getHeaders().get("hello"), "world");
     }

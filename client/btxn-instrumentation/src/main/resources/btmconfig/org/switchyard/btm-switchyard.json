@@ -10,12 +10,12 @@
           "org.switchyard.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "activate($1.getConsumer().getBusinessTransactionName())",
+        "condition": "activate($1.getConsumer().getName())",
         "actions": [{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "direction": "Request",
-          "uriExpression": "$1.getConsumer().getBusinessTransactionName()",
-          "operationExpression": "$1.getContract().getConsumerOperation().getBusinessTransactionName()"
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         },{
           "type": "ProcessHeaders",
           "direction": "Request",
@@ -62,10 +62,10 @@
             "content"
           ]
         },{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "direction": "Response",
-          "uriExpression": "$1.getConsumer().getBusinessTransactionName()",
-          "operationExpression": "$1.getContract().getConsumerOperation().getBusinessTransactionName()"
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
       },{
         "ruleName": "SwitchYard Service Fault End",
@@ -92,9 +92,9 @@
             "content"
           ]
         },{
-          "type": "InstrumentService",
+          "type": "InstrumentComponent",
           "direction": "Response",
-          "uriExpression": "$0.getConsumer().getBusinessTransactionName()"
+          "uriExpression": "$0.getConsumer().getName()"
         }]
       }]
     }

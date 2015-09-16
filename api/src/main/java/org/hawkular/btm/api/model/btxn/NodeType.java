@@ -27,7 +27,5 @@ public enum NodeType {
 
     Producer,
 
-    Component,
-
-    Service
+    Component
 }

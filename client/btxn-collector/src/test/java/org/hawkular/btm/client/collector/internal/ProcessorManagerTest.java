@@ -31,12 +31,13 @@ import org.hawkular.btm.api.model.admin.Processor;
 import org.hawkular.btm.api.model.admin.ProcessorAction;
 import org.hawkular.btm.api.model.admin.ProcessorAction.ActionType;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
+import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Content;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.NodeType;
-import org.hawkular.btm.api.model.btxn.Service;
 import org.junit.Test;
 
 /**
@@ -54,7 +55,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -65,7 +66,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -84,7 +85,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -96,7 +97,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -115,7 +116,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -127,7 +128,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -146,7 +147,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -157,7 +158,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -187,7 +188,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -206,7 +207,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setUriFilter("include");
 
@@ -218,7 +219,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         service.setUri("should include this");
         btxn.getNodes().add(service);
         btxn.setName("testapp");
@@ -238,7 +239,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setUriFilter("include");
 
@@ -250,7 +251,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         service.setUri("should exclude this");
         btxn.getNodes().add(service);
         btxn.setName("testapp");
@@ -270,7 +271,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -283,7 +284,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -302,7 +303,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -314,7 +315,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -333,7 +334,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -346,7 +347,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -365,7 +366,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -379,7 +380,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -408,7 +409,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -421,7 +422,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -446,7 +447,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
         p1.setFaultFilter("MyFault");
 
@@ -460,7 +461,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -482,7 +483,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
         p1.setFaultFilter("MyFault");
 
@@ -496,7 +497,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         service.setFault("NotSameFault");
 
         btxn.getNodes().add(service);
@@ -520,7 +521,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
         p1.setFaultFilter("MyFault");
 
@@ -534,7 +535,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         service.setFault("MyFault");
 
         btxn.getNodes().add(service);
@@ -559,7 +560,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
@@ -573,12 +574,9 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
-
-        Message req = new Message();
-        service.setRequest(req);
 
         pm.process(btxn, service, Direction.Request, null, "first", "second");
 
@@ -595,7 +593,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
@@ -609,14 +607,11 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         service.setOperation("NotSameOperation");
 
         btxn.getNodes().add(service);
         btxn.setName("testapp");
-
-        Message req = new Message();
-        service.setRequest(req);
 
         pm.process(btxn, service, Direction.Request, null, "first", "second");
 
@@ -633,7 +628,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
@@ -647,14 +642,11 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         service.setOperation("MyOp");
 
         btxn.getNodes().add(service);
         btxn.setName("testapp");
-
-        Message req = new Message();
-        service.setRequest(req);
 
         pm.process(btxn, service, Direction.Request, null, "first", "second");
 
@@ -672,7 +664,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setOperation("MyOp");
 
@@ -686,14 +678,11 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         service.setOperation("MyOp");
 
         btxn.getNodes().add(service);
         btxn.setName("testapp");
-
-        Message req = new Message();
-        service.setRequest(req);
 
         assertTrue(pm.isProcessed(btxn, service, Direction.Request));
     }
@@ -708,7 +697,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
         p1.setUriFilter("include");
 
@@ -720,7 +709,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         service.setUri("should exclude this");
         btxn.getNodes().add(service);
         btxn.setName("testapp");
@@ -738,9 +727,8 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
-        p1.setOperation("MyOp");
 
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
@@ -752,8 +740,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
-        service.setOperation("MyOp");
+        Consumer service = new Consumer();
 
         btxn.getNodes().add(service);
         btxn.setName("testapp");
@@ -774,7 +761,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -788,7 +775,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Consumer service = new Consumer();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -808,7 +795,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -821,7 +808,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -840,7 +827,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -853,7 +840,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -872,7 +859,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -885,7 +872,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -906,7 +893,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -919,7 +906,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
@@ -938,7 +925,7 @@ public class ProcessorManagerTest {
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
 
-        p1.setNodeType(NodeType.Service);
+        p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.Request);
 
         ProcessorAction pa1 = new ProcessorAction();
@@ -951,7 +938,7 @@ public class ProcessorManagerTest {
         ProcessorManager pm = new ProcessorManager(cc);
 
         BusinessTransaction btxn = new BusinessTransaction();
-        Service service = new Service();
+        Component service = new Component();
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 

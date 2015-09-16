@@ -1,7 +1,6 @@
 org.hawkular.btm.client.manager.config.InstrumentComponentTransformer
 org.hawkular.btm.client.manager.config.InstrumentConsumerTransformer
 org.hawkular.btm.client.manager.config.InstrumentProducerTransformer
-org.hawkular.btm.client.manager.config.InstrumentServiceTransformer
 org.hawkular.btm.client.manager.config.FreeFormActionTransformer
 org.hawkular.btm.client.manager.config.ProcessContentTransformer
 org.hawkular.btm.client.manager.config.ProcessHeadersTransformer
