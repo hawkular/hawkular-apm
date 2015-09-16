@@ -3,7 +3,29 @@
     "org.switchyard": {
       "description": "SwitchYard instrumentation",
       "rules": [{
-        "ruleName": "SwitchYard Service Start",
+        "ruleName": "SwitchYard Service Consumer Start",
+        "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && $1.getConsumer().getServiceMetadata().getRegistrant().isBinding()",
+        "actions": [{
+          "type": "SetDetail",
+          "name": "btm_serviceType",
+          "valueExpression": "$1.getConsumer().getName()",
+          "nodeType": "Consumer",
+          "onStack": "true"
+        },{
+          "type": "SetDetail",
+          "name": "btm_serviceOperation",
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()",
+          "nodeType": "Consumer",
+          "onStack": "true"
+        }]
+      },{
+        "ruleName": "SwitchYard Service Component Start",
         "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
         "methodName": "<init>",
         "parameterTypes": [
@@ -14,6 +36,7 @@
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "In",
+          "componentTypeExpression": "\"Service\"",
           "uriExpression": "$1.getConsumer().getName()",
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         },{
@@ -33,11 +56,46 @@
           "valueExpression": "\"org.switchyard\""
         },{
           "type": "SetDetail",
-          "name": "internal",
+          "name": "btm_serviceType",
+          "valueExpression": "$1.getConsumer().getName()"
+        },{
+          "type": "SetDetail",
+          "name": "btm_serviceOperation",
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()"
+        },{
+          "type": "SetDetail",
+          "name": "btm_serviceInternal",
           "valueExpression": "\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding()"
         }]
       },{
-        "ruleName": "SwitchYard Service Normal End",
+        "ruleName": "SwitchYard Service Producer Normal End",
+        "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "content",
+          "type": "java.lang.Object",
+          "expression": "$1.getMessage().getContent()"
+        }],
+        "condition": "isActive() && $1.getProvider().getServiceMetadata().getRegistrant().isBinding()",
+        "actions": [{
+          "type": "SetDetail",
+          "name": "btm_serviceType",
+          "valueExpression": "$1.getProvider().getName()",
+          "nodeType": "Producer",
+          "onStack": "false"
+        },{
+          "type": "SetDetail",
+          "name": "btm_serviceOperation",
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()",
+          "nodeType": "Producer",
+          "onStack": "false"
+        }]
+      },{
+        "ruleName": "SwitchYard Service Component Normal End",
         "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
         "methodName": "<init>",
         "parameterTypes": [
@@ -68,7 +126,7 @@
           "operationExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
       },{
-        "ruleName": "SwitchYard Service Fault End",
+        "ruleName": "SwitchYard Service Component Fault End",
         "className": "^org.switchyard.bus.camel.CamelExchange",
         "methodName": "sendFault",
         "parameterTypes": [

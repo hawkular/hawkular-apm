@@ -31,6 +31,12 @@ public class SetDetail extends InstrumentAction {
     @JsonInclude
     private String valueExpression;
 
+    @JsonInclude
+    private String nodeType;
+
+    @JsonInclude
+    private boolean onStack;
+
     /**
      * @return the name
      */
@@ -57,6 +63,34 @@ public class SetDetail extends InstrumentAction {
      */
     public void setValueExpression(String valueExpression) {
         this.valueExpression = valueExpression;
+    }
+
+    /**
+     * @return the nodeType
+     */
+    public String getNodeType() {
+        return nodeType;
+    }
+
+    /**
+     * @param nodeType the nodeType to set
+     */
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    /**
+     * @return the onStack
+     */
+    public boolean isOnStack() {
+        return onStack;
+    }
+
+    /**
+     * @param onStack the onStack to set
+     */
+    public void setOnStack(boolean onStack) {
+        this.onStack = onStack;
     }
 
 }

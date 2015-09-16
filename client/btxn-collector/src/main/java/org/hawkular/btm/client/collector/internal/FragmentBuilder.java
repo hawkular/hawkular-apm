@@ -48,6 +48,8 @@ public class FragmentBuilder {
 
     private Stack<Node> nodeStack = new Stack<Node>();
 
+    private Stack<Node> poppedNodes = new Stack<Node>();
+
     private Stack<Node> suppressedNodeStack = new Stack<Node>();
 
     private Map<String, Node> retainedNodes = new HashMap<String, Node>();
@@ -117,6 +119,25 @@ public class FragmentBuilder {
     }
 
     /**
+     * This method returns the node stack.
+     *
+     * @return The node stack
+     */
+    public Stack<Node> getNodeStack() {
+        return nodeStack;
+    }
+
+    /**
+     * This method returns the popped nodes within the scope of the current
+     * node.
+     *
+     * @return The popped nodes
+     */
+    public Stack<Node> getPoppedNodes() {
+        return poppedNodes;
+    }
+
+    /**
      * This method pushes a new node into the business transaction
      * fragment hierarchy.
      *
@@ -128,6 +149,10 @@ public class FragmentBuilder {
         inStream = null;
 
         synchronized (nodeStack) {
+
+            // Clear popped stack
+            poppedNodes.clear();
+
             // Check if fragment is in suppression mode
             if (suppress) {
                 suppressedNodeStack.push(node);
@@ -201,13 +226,17 @@ public class FragmentBuilder {
 
         if (top != null) {
             if (nodeMatches(top, cls, uri)) {
-                return stack.pop();
+                Node node = stack.pop();
+                poppedNodes.push(node);
+                return node;
             } else {
                 // Scan for potential match, from -2 so don't repeat
                 // check of top node
                 for (int i = stack.size() - 2; i >= 0; i--) {
                     if (nodeMatches(stack.get(i), cls, uri)) {
-                        return stack.remove(i);
+                        Node node = stack.remove(i);
+                        poppedNodes.push(node);
+                        return node;
                     }
                 }
             }

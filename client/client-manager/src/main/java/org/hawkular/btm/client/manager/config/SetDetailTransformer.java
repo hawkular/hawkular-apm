@@ -57,6 +57,20 @@ public class SetDetailTransformer implements InstrumentActionTransformer {
             builder.append(setAction.getValueExpression());
         }
 
+        builder.append(",");
+
+        if (setAction.getNodeType() == null) {
+            builder.append("null");
+        } else {
+            builder.append("\"");
+            builder.append(setAction.getNodeType());
+            builder.append("\"");
+        }
+
+        builder.append(",");
+
+        builder.append(setAction.isOnStack());
+
         builder.append(")");
 
         return builder.toString();

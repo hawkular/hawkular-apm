@@ -187,13 +187,19 @@ public interface BusinessTransactionCollector {
     void setProperty(String location, String name, String value);
 
     /**
-     * This method sets a detail on the current node.
+     * This method sets a detail on the current node. If the optional node
+     * type is specified, then the details will be applied to the first node
+     * of the named type that appears on either the stack (if onStack is true)
+     * or recently popped (in scope of the current node). If not node of the
+     * correct type is found, then the details will not be applied.
      *
      * @param location The instrumentation location
      * @param name The detail name
      * @param value The detail value
+     * @param nodeType The optional node type
+     * @param onStack The optional indicator of whether the nodeType is on the stack
      */
-    void setDetail(String location, String name, String value);
+    void setDetail(String location, String name, String value, String nodeType, boolean onStack);
 
     /**
      * This method initialises a data buffer associated with the supplied object.
