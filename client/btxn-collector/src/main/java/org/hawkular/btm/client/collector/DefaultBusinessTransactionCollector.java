@@ -18,6 +18,7 @@ package org.hawkular.btm.client.collector;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
@@ -607,19 +608,50 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#setDetail(java.lang.String,
-     *                                      java.lang.String, java.lang.String)
+     *                                      java.lang.String, java.lang.String, java.lang.String, boolean)
      */
     @Override
-    public void setDetail(String location, String name, String value) {
+    public void setDetail(String location, String name, String value, String nodeType, boolean onStack) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set node detail: location=[" + location + "] name=" + name + " value=" + value);
+            log.finest("Set node detail: location=[" + location + "] name=" + name + " value=" + value
+                    + " nodeType=" + nodeType + " onStack=" + onStack);
         }
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.getCurrentNode().getDetails().put(name, value);
+                Node node = null;
+
+                if (nodeType == null) {
+                    node = builder.getCurrentNode();
+                } else {
+                    Stack<Node> stack = (onStack ? builder.getNodeStack() : builder.getPoppedNodes());
+
+                    for (int i = 0; node == null && i < stack.size(); i++) {
+                        Node n = stack.elementAt(i);
+
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.finest("Set node details: checking node type '" + nodeType
+                                    + "' against '" + n.getClass().getSimpleName()
+                                    + "' with node=" + n);
+                        }
+
+                        if (n.getClass().getSimpleName().equals(nodeType)) {
+                            node = n;
+                        }
+                    }
+                }
+
+                if (node != null) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Set node details: using node=" + node);
+                    }
+                    node.getDetails().put(name, value);
+                } else if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Set node details: failed to find node to set");
+                }
+
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setDetail: No fragment builder for this thread", null);
             }
@@ -944,7 +976,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Current node (type=" + builder.getCurrentNode().getClass()
-                    + ") does not match required cls=" + cls + "and uri=" + uri);
+                    + ") does not match required cls=" + cls + " and uri=" + uri
+                    + " at location=" + location);
         }
 
         return null;
@@ -1051,9 +1084,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             // Remove uncompleted correlation ids
             // NOTE: Synchronization should not be required as ids should be
             // unique to the session
-            List<String> ids=builder.getUncompletedCorrelationIds();
+            List<String> ids = builder.getUncompletedCorrelationIds();
 
-            for (int i=0; i < ids.size(); i++) {
+            for (int i = 0; i < ids.size(); i++) {
                 correlations.remove(ids.get(i));
             }
 

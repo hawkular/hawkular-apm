@@ -55,6 +55,8 @@ public class FragmentBuilderTest {
         assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
 
         assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+
+        assertEquals(1, builder.getNodeStack().size());
     }
 
     @Test
@@ -74,6 +76,29 @@ public class FragmentBuilderTest {
         assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
 
         assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+
+        assertEquals(0, builder.getNodeStack().size());
+
+        assertEquals(1, builder.getPoppedNodes().size());
+    }
+
+    @Test
+    public void testPoppedNodesClearedAfterPush() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+
+        builder.pushNode(consumer);
+
+        builder.popNode(Consumer.class, null);
+
+        Component comp = new Component();
+
+        builder.pushNode(comp);
+
+        assertEquals(1, builder.getNodeStack().size());
+
+        assertEquals(0, builder.getPoppedNodes().size());
     }
 
     @Test
@@ -374,10 +399,10 @@ public class FragmentBuilderTest {
         FragmentBuilder builder = new FragmentBuilder();
         builder.initInBuffer(1);
 
-        String data1="Hello ";
+        String data1 = "Hello ";
         builder.writeInData(1, data1.getBytes(), 0, data1.length());
 
-        String data2="World";
+        String data2 = "World";
         builder.writeInData(1, data2.getBytes(), 0, data2.length());
 
         assertTrue(builder.isInBufferActive(1));
@@ -391,10 +416,10 @@ public class FragmentBuilderTest {
         FragmentBuilder builder = new FragmentBuilder();
         builder.initOutBuffer(1);
 
-        String data1="Hello ";
+        String data1 = "Hello ";
         builder.writeOutData(1, data1.getBytes(), 0, data1.length());
 
-        String data2="World";
+        String data2 = "World";
         builder.writeOutData(1, data2.getBytes(), 0, data2.length());
 
         assertTrue(builder.isOutBufferActive(1));
@@ -408,10 +433,10 @@ public class FragmentBuilderTest {
         FragmentBuilder builder = new FragmentBuilder();
         builder.initInBuffer(1);
 
-        String data1="Hello ";
+        String data1 = "Hello ";
         builder.writeInData(1, data1.getBytes(), 0, data1.length());
 
-        String data2="World";
+        String data2 = "World";
         builder.writeInData(1, data2.getBytes(), 0, data2.length());
 
         assertTrue(builder.isInBufferActive(1));
@@ -425,10 +450,10 @@ public class FragmentBuilderTest {
         FragmentBuilder builder = new FragmentBuilder();
         builder.initOutBuffer(1);
 
-        String data1="Hello ";
+        String data1 = "Hello ";
         builder.writeOutData(1, data1.getBytes(), 0, data1.length());
 
-        String data2="World";
+        String data2 = "World";
         builder.writeOutData(1, data2.getBytes(), 0, data2.length());
 
         assertTrue(builder.isOutBufferActive(1));

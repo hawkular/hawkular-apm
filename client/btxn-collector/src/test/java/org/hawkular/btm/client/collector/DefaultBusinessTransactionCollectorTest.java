@@ -29,9 +29,11 @@ import java.util.concurrent.Executors;
 
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
@@ -323,7 +325,7 @@ public class DefaultBusinessTransactionCollectorTest {
     }
 
     @Test
-    public void testLink() {
+    public void testCorrelation() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
 
         final FragmentBuilder fragmentBuilder = collector.getFragmentManager().getFragmentBuilder();
@@ -357,6 +359,99 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.getFragmentManager().getFragmentBuilder();
 
         assertTrue(collector.isActive());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSetDetailsCurrentNode() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        // Cause a fragment builder to be created
+        FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
+
+        collector.consumerStart(null, "testconsumer", "testtype", "testid");
+
+        Node node = builder.getCurrentNode();
+
+        assertNotNull(node);
+
+        collector.setDetail(null, "testname", "testvalue", null, true);
+
+        assertTrue(node.getDetails().containsKey("testname"));
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSetDetailsOnStack() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        // Cause a fragment builder to be created
+        FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
+
+        collector.consumerStart(null, "testconsumer", "testtype", "testid");
+
+        Consumer consumer = (Consumer) builder.getCurrentNode();
+
+        assertNotNull(consumer);
+
+        collector.componentStart(null, "testcomponent", "testcomptype", "testcompop");
+
+        Component component = (Component) builder.getCurrentNode();
+
+        assertNotNull(component);
+
+        collector.setDetail(null, "testname", "testvalue", "Consumer", true);
+
+        assertTrue(consumer.getDetails().containsKey("testname"));
+        assertFalse(component.getDetails().containsKey("testname"));
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSetDetailsPoppedNode() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        // Cause a fragment builder to be created
+        FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
+
+        collector.consumerStart(null, "testconsumer", "testcontype", "testconid");
+
+        Consumer consumer = (Consumer) builder.getCurrentNode();
+
+        assertNotNull(consumer);
+
+        collector.componentStart(null, "testcomponent1", "testcomptype", "testcompop");
+
+        Component component1 = (Component) builder.getCurrentNode();
+
+        assertNotNull(component1);
+
+        collector.componentStart(null, "testcomponent2", "testcomptype", "testcompop");
+
+        Component component2 = (Component) builder.getCurrentNode();
+
+        assertNotNull(component2);
+
+        collector.producerStart(null, "testproducer", "testprodtype", "tesprodid");
+
+        Producer producer = (Producer) builder.getCurrentNode();
+
+        assertNotNull(producer);
+
+        // Pop the producer and one of the components
+        collector.producerEnd(null, "testproducer", "testprodtype");
+        collector.componentEnd(null, "testcomponent2", "testcomptype", "testcompop");
+
+        collector.setDetail(null, "testname", "testvalue", "Producer", false);
+
+        assertTrue(producer.getDetails().containsKey("testname"));
+        assertFalse(consumer.getDetails().containsKey("testname"));
+        assertFalse(component1.getDetails().containsKey("testname"));
+
+        collector.getFragmentManager().clear();
     }
 
     public static class TestBTxnService implements BusinessTransactionService {
