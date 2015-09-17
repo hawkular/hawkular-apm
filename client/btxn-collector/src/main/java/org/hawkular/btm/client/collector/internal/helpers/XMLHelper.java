@@ -16,14 +16,18 @@
  */
 package org.hawkular.btm.client.collector.internal.helpers;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.hawkular.btm.api.logging.Logger;
@@ -51,6 +55,8 @@ public class XMLHelper {
     public static String serialize(Object node) {
         if (node instanceof String) {
             return (String)node;
+        } else if (node instanceof byte[]) {
+            return new String((byte[])node);
         } else if (node instanceof DOMSource) {
             return serializeDOMSource((DOMSource)node);
         } else if (node instanceof Node) {
@@ -95,6 +101,48 @@ public class XMLHelper {
     }
 
     /**
+     * This method serializes the supplied XML object to a string.
+     *
+     * @param node The node
+     * @return The string, or null if an error occurred
+     */
+    public static Node deserialize(Object node) {
+        if (node instanceof Node) {
+            return (Node)node;
+        } else if (node instanceof byte[]) {
+            return deserializeString(new String((byte[])node));
+        } else if (node instanceof String) {
+            return deserializeString((String)node);
+        } else {
+            log.severe("Unable to serialize '"+node+"'");
+        }
+        return null;
+    }
+
+    /**
+     * This method deserializes the supplied document.
+     *
+     * @param doc The XML document
+     * @return The DOM node, or null if an error occurred
+     */
+    public static Node deserializeString(String doc) {
+        try {
+            StringReader reader=new StringReader(doc);
+            StreamSource source=new StreamSource(reader);
+            DOMResult result = new DOMResult();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.ENCODING, DEFAULT_ENCODING);
+            transformer.setOutputProperty(OutputKeys.INDENT, DEFAULT_INDENT);
+            transformer.transform(source, result);
+            return result.getNode();
+        } catch (Throwable e) {
+            log.log(Level.SEVERE, "Failed to serialize node", e);
+        }
+        return null;
+    }
+
+    /**
      * This method evaluates the xpath expression on the supplied
      * node.
      *
@@ -122,6 +170,33 @@ public class XMLHelper {
     }
 
     /**
+     * This method obtains the node, identified by the xpath
+     * expression, from the supplied node.
+     *
+     * @param xpath The xpath expression
+     * @param node The root node
+     * @return The selected node, or null if not found
+     */
+    public static Node selectNode(String xpath, Object node) {
+        Node domNode = getNode(node);
+
+        if (domNode == null) {
+            log.severe("Unable to select node for non DOM Node object");
+            return null;
+        }
+
+        // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
+        try {
+            XPath xp = XPathFactory.newInstance().newXPath();
+            return (Node)xp.evaluate(xpath, domNode, XPathConstants.NODE);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to select node for xpath '"+xpath+"'", e);
+        }
+
+        return null;
+    }
+
+    /**
      * This method converts the supplied object to a DOM
      * node.
      *
@@ -134,7 +209,13 @@ public class XMLHelper {
         } else if (node instanceof DOMSource) {
             return ((DOMSource)node).getNode();
         } else {
-            log.severe("Cannot convert '"+node+"' to DOM node");
+            Node n=deserialize(node);
+
+            if (n == null) {
+                log.severe("Cannot convert '"+node+"' to DOM node");
+            } else {
+                return n;
+            }
         }
         return null;
     }
