@@ -4,13 +4,16 @@
       "description": "Javax JMS instrumentation",
       "rules": [{
         "ruleName": "JMS Consumer Start",
+        "notes": [
+          "Need to check if already active, as Hornetq results in multiple layers of onMessage being called"
+        ],
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
           "javax.jms.Message"
         ],
         "location": "ENTRY",
-        "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),$1.getStringProperty(\"HawkularBTID\"))",
+        "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),$1.getStringProperty(\"HawkularBTID\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$1.getStringProperty(\"HawkularBTName\")"
