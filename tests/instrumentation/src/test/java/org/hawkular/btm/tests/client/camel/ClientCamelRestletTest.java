@@ -157,11 +157,11 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                     && btxn.getNodes().get(0).getClass() == Consumer.class) {
                 Consumer consumer = (Consumer) btxn.getNodes().get(0);
 
-                if (consumer.getUri().equals("http://localhost:8180/inventory/checkStock")) {
+                if (consumer.getUri().equals("/inventory/checkStock")) {
                     checkStock = consumer;
-                } else if (consumer.getUri().equals("http://localhost:8180/creditagency/checkCredit")) {
+                } else if (consumer.getUri().equals("/creditagency/checkCredit")) {
                     creditCheck = consumer;
-                } else if (consumer.getUri().equals("http://localhost:8180/orders/createOrder")) {
+                } else if (consumer.getUri().equals("/orders/createOrder")) {
                     createOrder = consumer;
                 }
             }
@@ -179,9 +179,9 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         Producer creditCheckProducer = null;
         Producer checkStockProducer = null;
         for (Producer p : producers) {
-            if (p.getUri().equals("http://localhost:8180/inventory/checkStock")) {
+            if (p.getUri().equals("/inventory/checkStock")) {
                 checkStockProducer = p;
-            } else if (p.getUri().equals("http://localhost:8180/creditagency/checkCredit")) {
+            } else if (p.getUri().equals("/creditagency/checkCredit")) {
                 creditCheckProducer = p;
             }
         }

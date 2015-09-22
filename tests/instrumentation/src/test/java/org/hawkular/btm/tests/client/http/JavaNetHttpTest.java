@@ -182,7 +182,7 @@ public class JavaNetHttpTest extends ClientTestBase {
 
     protected void testHttpURLConnection(String method, String reqdata, boolean fault, boolean respexpected,
             boolean async) {
-        Thread testThread=Thread.currentThread();
+        Thread testThread = Thread.currentThread();
 
         try {
             URL url = new URL(SAY_HELLO_URL);
@@ -296,7 +296,15 @@ public class JavaNetHttpTest extends ClientTestBase {
 
         Producer testProducer = producers.get(0);
 
-        assertEquals(SAY_HELLO_URL, testProducer.getUri());
+        String path = null;
+
+        try {
+            path = new URL(SAY_HELLO_URL).getPath();
+        } catch (Exception e) {
+            fail("Failed to get path: " + e);
+        }
+
+        assertEquals(path, testProducer.getUri());
 
         assertEquals("Hello World", testProducer.getDetails().get("hello"));
 

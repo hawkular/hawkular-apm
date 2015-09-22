@@ -129,8 +129,11 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
     }
 
     protected void testJettyServlet(String method, String reqdata, boolean fault, boolean respexpected) {
+        String path=null;
+
         try {
             URL url = new URL(HELLO_URL);
+            path = url.getPath();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod(method);
@@ -224,7 +227,7 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
 
         Producer testProducer = producers.get(0);
 
-        assertEquals(HELLO_URL, testProducer.getUri());
+        assertEquals(path, testProducer.getUri());
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
@@ -239,7 +242,7 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
 
         Consumer testConsumer = consumers.get(0);
 
-        assertEquals(HELLO_URL, testConsumer.getUri());
+        assertEquals(path, testConsumer.getUri());
 
         // Check headers
         assertFalse("testConsumer has no headers", testConsumer.getIn().getHeaders().isEmpty());

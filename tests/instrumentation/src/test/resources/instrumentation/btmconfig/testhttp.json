@@ -4,13 +4,13 @@
       "description": "Configuration for HTTP tests",
       "filter": {
         "inclusions": [
-          "http://localhost:8180/sayHello"
+          "/sayHello"
         ]
       },
       "processors": [{
         "nodeType": "Producer",
         "direction": "In",
-        "uriFilter": "http://localhost:8180/sayHello",
+        "uriFilter": "/sayHello",
         "actions": [{
           "name": "hello",
           "actionType": "SetDetail",
@@ -23,7 +23,7 @@
       },{
         "nodeType": "Producer",
         "direction": "Out",
-        "uriFilter": "http://localhost:8180/sayHello",
+        "uriFilter": "/sayHello",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",

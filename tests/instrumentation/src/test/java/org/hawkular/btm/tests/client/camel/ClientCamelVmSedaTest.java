@@ -153,7 +153,7 @@ public class ClientCamelVmSedaTest extends ClientCamelTestBase {
                     checkStock = consumer;
                 } else if (consumer.getUri().equals("vm://checkCredit")) {
                     creditCheck = consumer;
-                } else if (consumer.getUri().equals("http://localhost:8180/orders/createOrder")) {
+                } else if (consumer.getUri().equals("/orders/createOrder")) {
                     createOrder = consumer;
                 }
             }

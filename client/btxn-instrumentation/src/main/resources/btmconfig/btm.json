@@ -4,8 +4,8 @@
       "description": "Configuration for the Business Transaction Management system",
       "filter": {
         "exclusions": [
-          "^https?://.*/hawkular/btm",
-          "^https?://.*/auth/"
+          "^/hawkular/btm",
+          "^/auth/"
         ]
       }
     }
