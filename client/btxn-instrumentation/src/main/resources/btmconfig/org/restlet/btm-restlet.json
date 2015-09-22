@@ -24,7 +24,7 @@
           "type": "java.lang.String",
           "expression": "headers.getFirstValue(\"Hawkular-btname\")"
         }],
-        "condition": "activate($1.getResourceRef(),id)",
+        "condition": "activate($1.getResourceRef().getPath(),id)",
         "actions": [{
           "type": "FreeFormAction",
           "action": "headers.removeAll(\"Hawkular-btid\")"
@@ -35,7 +35,7 @@
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$1.getResourceRef()",
+          "uriExpression": "$1.getResourceRef().getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -45,6 +45,14 @@
           "type": "SetDetail",
           "name": "btm_source",
           "valueExpression": "\"org.restlet\""
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$1.getResourceRef().getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$1.getResourceRef().getHostPort()"
         }]
       },{
         "ruleName": "Restlet Async Consumer End",
@@ -69,7 +77,7 @@
           "type": "InstrumentConsumer",
           "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$1.getResourceRef()"
+          "uriExpression": "$1.getResourceRef().getPath()"
         },{
           "type": "AssertComplete"
         }]

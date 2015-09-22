@@ -4,13 +4,13 @@
       "description": "Configuration for Jetty tests",
       "filter": {
         "inclusions": [
-          "http://localhost:8180/hello"
+          "/hello"
         ]
       },
       "processors": [{
         "nodeType": "Consumer",
         "direction": "In",
-        "uriFilter": "http://localhost:8180/hello",
+        "uriFilter": "/hello",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
@@ -19,7 +19,7 @@
       },{
         "nodeType": "Consumer",
         "direction": "Out",
-        "uriFilter": "http://localhost:8180/hello",
+        "uriFilter": "/hello",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
@@ -28,7 +28,7 @@
       },{
         "nodeType": "Producer",
         "direction": "In",
-        "uriFilter": "http://localhost:8180/hello",
+        "uriFilter": "/hello",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
@@ -37,7 +37,7 @@
       },{
         "nodeType": "Producer",
         "direction": "Out",
-        "uriFilter": "http://localhost:8180/hello",
+        "uriFilter": "/hello",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",

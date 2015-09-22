@@ -9,7 +9,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.connected && activate($0.getURL().toString()) && !callerMatches(\"HttpURLConnection.*\",true)",
+        "condition": "!$0.connected && activate($0.getURL().getPath()) && !callerMatches(\"HttpURLConnection.*\",true)",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -19,7 +19,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$0.getURL().toString()",
+          "uriExpression": "$0.getURL().getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -33,6 +33,18 @@
           "type": "SetDetail",
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$0.getURL().getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.getURL().getHost()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.getURL().getPort()"
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btid\",id)"
@@ -52,7 +64,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.connected && activate($0.getURL().toString())",
+        "condition": "!$0.connected && activate($0.getURL().getPath())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -62,7 +74,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$0.getURL().toString()",
+          "uriExpression": "$0.getURL().getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -76,6 +88,18 @@
           "type": "SetDetail",
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$0.getURL().getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.getURL().getHost()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.getURL().getPort()"
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btid\",id)"
@@ -122,7 +146,7 @@
         "parameterTypes": [
         ],
         "location": "ENTRY",
-        "condition": "!$0.connected && !callerMatches(\"HttpURLConnection.*\",true) && activate($0.getURL().toString())",
+        "condition": "!$0.connected && !callerMatches(\"HttpURLConnection.*\",true) && activate($0.getURL().getPath())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -132,7 +156,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$0.getURL().toString()",
+          "uriExpression": "$0.getURL().getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -146,6 +170,18 @@
           "type": "SetDetail",
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$0.getURL().getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.getURL().getHost()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.getURL().getPort()"
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btid\",id)"
@@ -181,7 +217,7 @@
           "type": "InstrumentProducer",
           "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$0.getURL().toString()"
+          "uriExpression": "$0.getURL().getPath()"
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End Success No Content Required",
@@ -195,7 +231,7 @@
           "type": "InstrumentProducer",
           "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$0.getURL().toString()"
+          "uriExpression": "$0.getURL().getPath()"
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream Complete Async Link",

@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import static io.undertow.Handlers.path;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -216,7 +217,9 @@ public class ApacheHttpClientTest extends ClientTestBase {
 
         Producer testProducer = producers.get(0);
 
-        assertEquals(SAY_HELLO_URL, testProducer.getUri());
+        String path = URI.create(SAY_HELLO_URL).getPath();
+
+        assertEquals(path, testProducer.getUri());
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
@@ -346,7 +349,9 @@ public class ApacheHttpClientTest extends ClientTestBase {
 
         Producer testProducer = producers.get(0);
 
-        assertEquals(SAY_HELLO_URL, testProducer.getUri());
+        String path = URI.create(SAY_HELLO_URL).getPath();
+
+        assertEquals(path, testProducer.getUri());
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());

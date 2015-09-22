@@ -4,13 +4,13 @@
       "description": "Configuration for Wildfly Camel CXF tests",
       "filter": {
         "inclusions": [
-          "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident"
+          "/camel-example-cxftomcat/webservices/incident"
         ]
       },
       "processors": [{
         "nodeType": "Consumer",
         "direction": "In",
-        "uriFilter": "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident",
+        "uriFilter": "/camel-example-cxftomcat/webservices/incident",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
@@ -19,7 +19,7 @@
       },{
         "nodeType": "Consumer",
         "direction": "Out",
-        "uriFilter": "http://127.0.0.1:8080/camel-example-cxftomcat/webservices/incident",
+        "uriFilter": "/camel-example-cxftomcat/webservices/incident",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",

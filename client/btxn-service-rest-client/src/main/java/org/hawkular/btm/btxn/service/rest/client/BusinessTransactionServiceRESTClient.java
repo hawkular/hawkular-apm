@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.btxn.service.rest.client;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
@@ -241,18 +243,23 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
 
             java.io.InputStream is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            is.read(b);
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
 
             is.close();
 
             if (connection.getResponseCode() == 200) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + new String(b) + "]");
+                    log.finest("Returned json=[" + builder.toString() + "]");
                 }
                 try {
-                    return mapper.readValue(b, BUSINESS_TXN_LIST);
+                    return mapper.readValue(builder.toString(), BUSINESS_TXN_LIST);
                 } catch (Throwable t) {
                     log.log(Level.SEVERE, "Failed to deserialize", t);
                 }

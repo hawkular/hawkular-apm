@@ -15,8 +15,12 @@
           "name": "req",
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$1"
+        },{
+          "name": "uri",
+          "type": "java.net.URI",
+          "expression": "java.net.URI.create(req.getRequestURI())"
         }],
-        "condition": "activate(req.getRequestURL().toString(),req.getHeader(\"Hawkular-btid\"))",
+        "condition": "activate(uri.getPath(),req.getHeader(\"Hawkular-btid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "req.getHeader(\"Hawkular-btname\")"
@@ -24,7 +28,7 @@
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "req.getRequestURL().toString()",
+          "uriExpression": "uri.getPath()",
           "idExpression": "req.getHeader(\"Hawkular-btid\")"
         },{
           "type": "ProcessHeaders",
@@ -35,6 +39,18 @@
           "type": "SetDetail",
           "name": "btm_source",
           "valueExpression": "\"javax.servlet\""
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "req.getQueryString()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "req.getServerName()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "req.getServerPort()"
         },{
           "type": "SetDetail",
           "name": "principal",
@@ -67,7 +83,7 @@
           "type": "InstrumentConsumer",
           "direction": "Out",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "req.getRequestURL().toString()"
+          "uriExpression": "java.net.URI.create(req.getRequestURI()).getPath()"
         },{
           "type": "AssertComplete"
         }]

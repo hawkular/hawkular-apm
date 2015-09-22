@@ -10,7 +10,7 @@
           "*"
         ],
         "location": "EXIT",
-        "condition": "activate($0.absoluteURI(),$0.getHeader(\"HawkularBTID\"))",
+        "condition": "activate($0.path(),$0.getHeader(\"HawkularBTID\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$0.getHeader(\"HawkularBTName\")"
@@ -18,7 +18,7 @@
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$0.absoluteURI()",
+          "uriExpression": "$0.path()",
           "idExpression": "$0.getHeader(\"Hawkular-btid\")"
         },{
           "type": "SetDetail",
@@ -30,8 +30,12 @@
           "valueExpression": "$0.remoteAddress()"
         },{
           "type": "SetDetail",
-          "name": "http-method",
+          "name": "http_method",
           "valueExpression": "$0.method()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$0.query()"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
@@ -90,15 +94,15 @@
           "expression": "createUUID()"
         },{
           "name": "uri",
-          "type": "java.lang.String",
-          "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
+          "type": "java.net.URI",
+          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
         }],
-        "condition": "activate(uri)",
+        "condition": "activate(uri.getPath())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "uri",
+          "uriExpression": "uri.getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -123,6 +127,18 @@
           "name": "http_method",
           "valueExpression": "$0.method()"
         },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.host"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.port"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "uri.getQuery()"
+        },{
           "type": "FreeFormAction",
           "action": "$0.putHeader(\"Hawkular-btid\",id)"
         },{
@@ -142,15 +158,15 @@
           "expression": "createUUID()"
         },{
           "name": "uri",
-          "type": "java.lang.String",
-          "expression": "new java.net.URL(\"http\",$0.host,$0.port,$0.request.getUri())"
+          "type": "java.net.URI",
+          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
         }],
-        "condition": "activate(uri)",
+        "condition": "activate(uri.getPath())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "uri",
+          "uriExpression": "uri.getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -168,6 +184,18 @@
           "type": "SetDetail",
           "name": "http_method",
           "valueExpression": "$0.method()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.host"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.port"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "uri.getQuery()"
         },{
           "type": "FreeFormAction",
           "action": "$0.putHeader(\"Hawkular-btid\",id)"

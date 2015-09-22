@@ -595,7 +595,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.getBusinessTransaction().getProperties().put(name, value);
+                if (value == null) {
+                    builder.getBusinessTransaction().getProperties().remove(name);
+                } else {
+                    builder.getBusinessTransaction().getProperties().put(name, value);
+                }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setProperty: No fragment builder for this thread", null);
             }
@@ -647,7 +651,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     if (log.isLoggable(Level.FINEST)) {
                         log.finest("Set node details: using node=" + node);
                     }
-                    node.getDetails().put(name, value);
+                    if (value == null) {
+                        node.getDetails().remove(name);
+                    } else {
+                        node.getDetails().put(name, value);
+                    }
                 } else if (log.isLoggable(Level.FINEST)) {
                     log.finest("Set node details: failed to find node to set");
                 }

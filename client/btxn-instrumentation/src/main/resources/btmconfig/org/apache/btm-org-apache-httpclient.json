@@ -10,17 +10,21 @@
           "*"
         ],
         "location": "ENTRY",
-        "condition": "activate($2.getRequestLine().getUri())",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
           "expression": "createUUID()"
+        },{
+          "name": "uri",
+          "type": "java.net.URI",
+          "expression": "new java.net.URI($2.getRequestLine().getUri())"
         }],
+        "condition": "activate(uri.getPath())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$2.getRequestLine().getUri()",
+          "uriExpression": "uri.getPath()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -35,6 +39,18 @@
           "type": "SetDetail",
           "name": "http_method",
           "valueExpression": "$2.getRequestLine().getMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "uri.getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "uri.getHost()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "uri.getPort()"
         },{
           "type": "FreeFormAction",
           "action": "$2.setHeader(\"Hawkular-btid\",id)"
