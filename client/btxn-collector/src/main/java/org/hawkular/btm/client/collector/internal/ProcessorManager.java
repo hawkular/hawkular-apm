@@ -513,6 +513,9 @@ public class ProcessorManager {
                         case SetFault:
                             node.setFault(value);
                             break;
+                        case SetFaultDescription:
+                            node.setFaultDescription(value);
+                            break;
                         case AddContent:
                             if (node.interactionNode()) {
                                 if (direction == Direction.In) {
