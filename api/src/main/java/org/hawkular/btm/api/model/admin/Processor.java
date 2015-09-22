@@ -48,6 +48,9 @@ public class Processor {
     @JsonInclude(Include.NON_NULL)
     private String faultFilter;
 
+    @JsonInclude(Include.NON_NULL)
+    private String predicate;
+
     @JsonInclude
     private List<ProcessorAction> actions = new ArrayList<ProcessorAction>();
 
@@ -122,6 +125,20 @@ public class Processor {
     }
 
     /**
+     * @return the predicate
+     */
+    public String getPredicate() {
+        return predicate;
+    }
+
+    /**
+     * @param predicate the predicate to set
+     */
+    public void setPredicate(String predicate) {
+        this.predicate = predicate;
+    }
+
+    /**
      * @return the actions
      */
     public List<ProcessorAction> getActions() {
@@ -141,7 +158,8 @@ public class Processor {
     @Override
     public String toString() {
         return "Processor [nodeType=" + nodeType + ", direction=" + direction + ", uriFilter=" + uriFilter
-                + ", operation=" + operation + ", faultFilter=" + faultFilter + ", actions=" + actions + "]";
+                + ", operation=" + operation + ", faultFilter=" + faultFilter + ", predicate=" + predicate
+                + ", actions=" + actions + "]";
     }
 
 }

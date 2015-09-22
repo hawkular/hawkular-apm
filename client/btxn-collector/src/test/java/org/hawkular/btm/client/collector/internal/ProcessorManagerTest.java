@@ -907,7 +907,7 @@ public class ProcessorManagerTest {
         btxn.getNodes().add(service);
         btxn.setName("testapp");
 
-        Map<String,String> headers=new HashMap<String,String>();
+        Map<String, String> headers = new HashMap<String, String>();
         headers.put("hello", "world");
         pm.process(btxn, service, Direction.In, headers);
 
@@ -977,4 +977,69 @@ public class ProcessorManagerTest {
 
         assertTrue(service.getDetails().containsKey("test"));
     }
+
+    @Test
+    public void testProcessorPredicateTrue() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Component);
+        p1.setDirection(Direction.In);
+
+        p1.setPredicate("true");
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Component service = new Component();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.In, null, "first", "second");
+
+        assertEquals("second", service.getDetails().get("test"));
+    }
+
+    @Test
+    public void testProcessorPredicateFalse() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Component);
+        p1.setDirection(Direction.In);
+
+        p1.setPredicate("false");
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Component service = new Component();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.In, null, "first", "second");
+
+        assertFalse(service.getDetails().containsKey("test"));
+    }
+
 }

@@ -69,8 +69,8 @@ public class ProcessorManager {
             BusinessTxnConfig btc = config.getBusinessTransactions().get(btxn);
 
             if (log.isLoggable(Level.FINE)) {
-                log.fine("ProcessManager: initialise btxn '"+btxn+"' config="+btc
-                        +" processors="+btc.getProcessors().size());
+                log.fine("ProcessManager: initialise btxn '" + btxn + "' config=" + btc
+                        + " processors=" + btc.getProcessors().size());
             }
 
             if (btc.getProcessors() != null && !btc.getProcessors().isEmpty()) {
@@ -95,11 +95,11 @@ public class ProcessorManager {
      * @return Whether processing instructions have been defined
      */
     public boolean isProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-        boolean ret=getMatchedProcessor(btxn, node, direction) != null;
+        boolean ret = getMatchedProcessor(btxn, node, direction) != null;
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: isProcessed btxn="+btxn+" node="+node
-                    +" direction="+direction+"? "+ret);
+            log.finest("ProcessManager: isProcessed btxn=" + btxn + " node=" + node
+                    + " direction=" + direction + "? " + ret);
         }
 
         return ret;
@@ -115,16 +115,16 @@ public class ProcessorManager {
      * @return Whether content processing instructions have been defined
      */
     public boolean isContentProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-        ProcessorWrapper processor=getMatchedProcessor(btxn, node, direction);
-        boolean ret=false;
+        ProcessorWrapper processor = getMatchedProcessor(btxn, node, direction);
+        boolean ret = false;
 
         if (processor != null) {
             ret = processor.hasAddContentAction();
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: isContentProcessed btxn="+btxn+" node="+node
-                    +" direction="+direction+"? "+ret);
+            log.finest("ProcessManager: isContentProcessed btxn=" + btxn + " node=" + node
+                    + " direction=" + direction + "? " + ret);
         }
 
         return ret;
@@ -140,11 +140,11 @@ public class ProcessorManager {
      * @return The processor associated with the details, or null if not found
      */
     protected ProcessorWrapper getMatchedProcessor(BusinessTransaction btxn, Node node, Direction direction) {
-        ProcessorWrapper matchedProcessor=null;
+        ProcessorWrapper matchedProcessor = null;
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: getMatchedProcessor btxn="+btxn+" node="+node
-                                +" direction="+direction);
+            log.finest("ProcessManager: getMatchedProcessor btxn=" + btxn + " node=" + node
+                    + " direction=" + direction);
         }
 
         if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
@@ -158,7 +158,7 @@ public class ProcessorManager {
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: getMatchedProcessor return="+matchedProcessor);
+            log.finest("ProcessManager: getMatchedProcessor return=" + matchedProcessor);
         }
 
         return matchedProcessor;
@@ -178,16 +178,16 @@ public class ProcessorManager {
             Map<String, ?> headers, Object... values) {
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: process btxn="+btxn+" node="+node
-                    +" direction="+direction+" headers="+headers+" values="+values
-                    +" : available processors="+processors);
+            log.finest("ProcessManager: process btxn=" + btxn + " node=" + node
+                    + " direction=" + direction + " headers=" + headers + " values=" + values
+                    + " : available processors=" + processors);
         }
 
         if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
             List<ProcessorWrapper> procs = processors.get(btxn.getName());
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager: btxn name="+btxn.getName()+" processors="+procs);
+                log.finest("ProcessManager: btxn name=" + btxn.getName() + " processors=" + procs);
             }
 
             for (int i = 0; i < procs.size(); i++) {
@@ -210,6 +210,8 @@ public class ProcessorManager {
         private Predicate<String> uriFilter = null;
 
         private Predicate<String> faultFilter = null;
+
+        private Object compiledPredicate = null;
 
         private List<ProcessorActionWrapper> actions = new ArrayList<ProcessorActionWrapper>();
 
@@ -236,6 +238,25 @@ public class ProcessorManager {
                 faultFilter = Pattern.compile(processor.getFaultFilter()).asPredicate();
             }
 
+            try {
+                ParserContext ctx = new ParserContext();
+                ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
+
+                if (processor.getPredicate() != null) {
+                    compiledPredicate = MVEL.compileExpression(processor.getPredicate(), ctx);
+
+                    if (compiledPredicate == null) {
+                        log.severe("Failed to compile pr ocessorpredicate '" + processor.getPredicate() + "'");
+                    } else if (log.isLoggable(Level.FINE)) {
+                        log.fine("Initialised processor predicate '" + processor.getPredicate()
+                                + "' = " + compiledPredicate);
+                    }
+                }
+            } catch (Throwable t) {
+                log.log(Level.SEVERE, "Failed to compile processor predicate '"
+                        + processor.getPredicate() + "'", t);
+            }
+
             for (int i = 0; i < processor.getActions().size(); i++) {
                 actions.add(new ProcessorActionWrapper(processor.getActions().get(i)));
             }
@@ -251,7 +272,7 @@ public class ProcessorManager {
          * @return Whether the supplied details would be processed by this processor
          */
         public boolean isProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-            boolean ret=false;
+            boolean ret = false;
 
             if (processor.getNodeType() == node.getType()
                     && processor.getDirection() == direction) {
@@ -265,8 +286,8 @@ public class ProcessorManager {
             }
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager/Processor: isProcessed btxn="+btxn+" node="+node
-                        +" direction="+direction+"? "+ret);
+                log.finest("ProcessManager/Processor: isProcessed btxn=" + btxn + " node=" + node
+                        + " direction=" + direction + "? " + ret);
             }
 
             return ret;
@@ -278,7 +299,7 @@ public class ProcessorManager {
          * @return Whether the processor has an 'AddContent' action
          */
         public boolean hasAddContentAction() {
-            for (int i=0; i < actions.size(); i++) {
+            for (int i = 0; i < actions.size(); i++) {
                 if (actions.get(i).action.getActionType() == ProcessorAction.ActionType.AddContent) {
                     return true;
                 }
@@ -300,12 +321,12 @@ public class ProcessorManager {
                 Map<String, ?> headers, Object[] values) {
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager/Processor: process btxn="+btxn+" node="+node
-                        +" direction="+direction+" headers="+headers+" values="+values);
+                log.finest("ProcessManager/Processor: process btxn=" + btxn + " node=" + node
+                        + " direction=" + direction + " headers=" + headers + " values=" + values);
 
                 if (values != null) {
-                    for (int i=0; i < values.length; i++) {
-                        log.finest("        [value "+i+"] = "+values[i]);
+                    for (int i = 0; i < values.length; i++) {
+                        log.finest("        [value " + i + "] = " + values[i]);
                     }
                 }
             }
@@ -322,7 +343,7 @@ public class ProcessorManager {
 
                 // Check if operation has been specified, and node is Component
                 if (processor.getOperation() != null && node.getType() == NodeType.Component
-                        && !processor.getOperation().equals(((Component)node).getOperation())) {
+                        && !processor.getOperation().equals(((Component) node).getOperation())) {
                     return;
                 }
 
@@ -338,12 +359,28 @@ public class ProcessorManager {
                     return;
                 }
 
+                if (compiledPredicate != null) {
+                    Map<String, Object> vars = new HashMap<String, Object>();
+                    vars.put("btxn", btxn);
+                    vars.put("node", node);
+                    vars.put("headers", headers);
+                    vars.put("values", values);
+
+                    if (!((Boolean) MVEL.executeExpression(compiledPredicate, vars))) {
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.finest("ProcessManager/Processor: process - predicate returned false");
+                        }
+                        return;
+                    }
+                }
+
                 for (int i = 0; i < actions.size(); i++) {
                     actions.get(i).process(btxn, node, direction, headers, values);
                 }
             }
         }
 
+        @Override
         public String toString() {
             return processor.toString();
         }
@@ -364,8 +401,8 @@ public class ProcessorManager {
 
         private Object compiledAction = null;
 
-        private boolean usesHeaders=false;
-        private boolean usesContent=false;
+        private boolean usesHeaders = false;
+        private boolean usesContent = false;
 
         /**
          * This constructor is initialised with the processor action.
@@ -390,24 +427,24 @@ public class ProcessorManager {
                     compiledPredicate = MVEL.compileExpression(action.getPredicate(), ctx);
 
                     if (compiledPredicate == null) {
-                        log.severe("Failed to compile predicate '"+action.getPredicate()+"'");
+                        log.severe("Failed to compile action predicate '" + action.getPredicate() + "'");
                     } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor predicate '"+action.getPredicate()
-                                +"' = "+compiledPredicate);
+                        log.fine("Initialised processor action predicate '" + action.getPredicate()
+                                + "' = " + compiledPredicate);
                     }
 
                     // Check if headers referenced
-                    usesHeaders = action.getExpression().indexOf("headers.") != -1;
-                    usesContent = action.getExpression().indexOf("values[") != -1;
+                    usesHeaders = action.getPredicate().indexOf("headers.") != -1;
+                    usesContent = action.getPredicate().indexOf("values[") != -1;
                 }
                 if (action.getExpression() != null) {
                     compiledAction = MVEL.compileExpression(action.getExpression(), ctx);
 
                     if (compiledAction == null) {
-                        log.severe("Failed to compile action '"+action.getExpression()+"'");
+                        log.severe("Failed to compile action '" + action.getExpression() + "'");
                     } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor action '"+action.getExpression()
-                                +"' = "+compiledAction);
+                        log.fine("Initialised processor action '" + action.getExpression()
+                                + "' = " + compiledAction);
                     }
 
                     // Check if headers referenced
@@ -421,8 +458,8 @@ public class ProcessorManager {
                     log.severe("No action expression defined for processor action=" + action);
                 }
             } catch (Throwable t) {
-                log.log(Level.SEVERE, "Failed to compile processor predicate '"
-                            +action.getPredicate()+"' or action '"+action.getExpression()+"'", t);
+                log.log(Level.SEVERE, "Failed to compile processor (action) predicate '"
+                        + action.getPredicate() + "' or action '" + action.getExpression() + "'", t);
             }
         }
 
@@ -439,12 +476,12 @@ public class ProcessorManager {
         public void process(BusinessTransaction btxn, Node node, Direction direction,
                 Map<String, ?> headers, Object[] values) {
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager/Processor/Action["+action+"]: process btxn="+btxn+" node="+node
-                        +" direction="+direction+" headers="+headers+" values="+values);
+                log.finest("ProcessManager/Processor/Action[" + action + "]: process btxn=" + btxn + " node=" + node
+                        + " direction=" + direction + " headers=" + headers + " values=" + values);
 
                 if (values != null) {
-                    for (int i=0; i < values.length; i++) {
-                        log.finest("        [value "+i+"] = "+values[i]);
+                    for (int i = 0; i < values.length; i++) {
+                        log.finest("        [value " + i + "] = " + values[i]);
                     }
                 }
             }
@@ -456,7 +493,7 @@ public class ProcessorManager {
                 // Check if headers supplied if expressions requires them
                 if (usesHeaders && (headers == null || headers.isEmpty())) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("ProcessManager/Processor/Action["+action+"]: uses headers but not supplied");
+                        log.finest("ProcessManager/Processor/Action[" + action + "]: uses headers but not supplied");
                     }
                     return;
                 }
@@ -464,7 +501,8 @@ public class ProcessorManager {
                 // Check if content values supplied if expressions requires them
                 if (usesContent && (values == null || values.length == 0)) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("ProcessManager/Processor/Action["+action+"]: uses content values but not supplied");
+                        log.finest("ProcessManager/Processor/Action[" + action
+                                + "]: uses content values but not supplied");
                     }
                     return;
                 }
@@ -495,15 +533,15 @@ public class ProcessorManager {
                         if (log.isLoggable(Level.FINEST)) {
                             log.finest("Converting result for action type '" + action.getActionType()
                                     + "' and action '" + action.getExpression()
-                                    + "' to a String, was: "+result.getClass());
+                                    + "' to a String, was: " + result.getClass());
                         }
                         value = result.toString();
                     } else {
-                        value = (String)result;
+                        value = (String) result;
                     }
 
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("ProcessManager/Processor/Action: value="+value);
+                        log.finest("ProcessManager/Processor/Action: value=" + value);
                     }
 
                     switch (action.getActionType()) {
@@ -538,7 +576,7 @@ public class ProcessorManager {
                                     new CorrelationIdentifier(action.getScope(), value));
                             break;
                         default:
-                            log.warning("Unhandled action type '"+action.getActionType()+"'");
+                            log.warning("Unhandled action type '" + action.getActionType() + "'");
                             break;
                     }
                 }
