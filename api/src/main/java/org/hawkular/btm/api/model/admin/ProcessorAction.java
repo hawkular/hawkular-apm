@@ -154,6 +154,8 @@ public class ProcessorAction {
 
         SetFault,
 
+        SetFaultDescription,
+
         AddContent,
 
         AddCorrelationId

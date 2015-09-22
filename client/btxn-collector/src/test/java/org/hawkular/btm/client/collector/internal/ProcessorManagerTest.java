@@ -325,6 +325,37 @@ public class ProcessorManagerTest {
     }
 
     @Test
+    public void testNodeTypeInNoURIFilterSetFaultDescription() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Component);
+        p1.setDirection(Direction.In);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetFaultDescription);
+        pa1.setExpression("values[1]");
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Component service = new Component();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        pm.process(btxn, service, Direction.In, null, "first", "second");
+
+        assertEquals("second", service.getFaultDescription());
+    }
+
+    @Test
     public void testNodeTypeInNoURIFilterSetProperty() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
