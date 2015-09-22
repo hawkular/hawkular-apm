@@ -178,7 +178,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
 
         try {
             synchronized (this) {
-                wait(2000);
+                wait(3000);
             }
         } catch (Exception e) {
             fail("Failed to wait for btxns to store");

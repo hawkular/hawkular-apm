@@ -105,7 +105,7 @@
     <version.org.apache.activemq>5.11.1</version.org.apache.activemq>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
-    <version.org.hawkular.accounts>1.0.12.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.accounts>1.0.14.Final</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
