@@ -41,7 +41,11 @@
     <!-- Service implementations -->
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-inmemory</artifactId>
+      <artifactId>hawkular-btm-server-jms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-server-elasticsearch</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
@@ -51,24 +55,7 @@
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-bus-inmemory</artifactId>
-    </dependency>
 
-    <!-- Business Transaction Fragment Processors -->
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-builder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-fault-detector</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-inventory-enricher</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-metrics-deriver</artifactId>

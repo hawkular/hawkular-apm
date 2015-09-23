@@ -18,7 +18,7 @@ package org.hawkular.btm.server.security.jaxrs;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.hawkular.btm.server.api.services.SecurityProvider;
+import org.hawkular.btm.server.api.security.SecurityProvider;
 
 /**
  * @author gbrown

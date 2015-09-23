@@ -45,8 +45,9 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.hawkular.btm.server.api.services.SecurityProvider;
+import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -75,6 +76,9 @@ public class BusinessTransactionHandler {
     @Inject
     BusinessTransactionService btxnService;
 
+    @Inject
+    BusinessTransactionPublisher btxnPublisher;
+
     @POST
     @ApiOperation(value = "Add a list of business transactions")
     @ApiResponses(value = {
@@ -87,7 +91,7 @@ public class BusinessTransactionHandler {
             @ApiParam(value = "List of business transactions", required = true) List<BusinessTransaction> btxns) {
 
         try {
-            btxnService.store(securityProvider.getTenantId(context), btxns);
+            btxnPublisher.publish(securityProvider.getTenantId(context), btxns);
 
             response.resume(Response.status(Response.Status.OK).build());
 

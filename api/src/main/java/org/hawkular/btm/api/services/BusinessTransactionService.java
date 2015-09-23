@@ -29,15 +29,6 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 public interface BusinessTransactionService {
 
     /**
-     * This method stores the list of business transactions (fragments).
-     *
-     * @param tenantId The tenant
-     * @param btxns The list of business transactions
-     * @throws Exception Failed to store business transactions
-     */
-    void store(String tenantId, List<BusinessTransaction> btxns) throws Exception;
-
-    /**
      * This method returns the business transaction associated with the
      * supplied id.
      *

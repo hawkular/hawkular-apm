@@ -36,7 +36,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.services.AdminService;
-import org.hawkular.btm.server.api.services.SecurityProvider;
+import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;

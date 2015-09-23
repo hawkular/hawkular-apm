@@ -26,8 +26,7 @@ import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,17 +39,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author gbrown
  */
-public class ClientCamelServletTest {
+public class ClientCamelServletTest extends ClientTestBase {
 
-    /**  */
-    private static final String TEST_PASSWORD = "password";
-    /**  */
-    private static final String TEST_USERNAME = "jdoe";
+    @Override
+    public int getPort() {
+        return 8180;
+    }
 
     @Test
     public void testInvokeCamelRESTService() {
-
-        long startTime = System.currentTimeMillis();
 
         // Delay to avoid picking up previously reported txns
         try {
@@ -62,7 +59,7 @@ public class ClientCamelServletTest {
         }
 
         try {
-            URL url = new URL(System.getProperty("hawkular.base-uri")
+            URL url = new URL(System.getProperty("test.base-uri")
                     + "/camel-example-servlet-rest-tomcat/rest" + "/user/123");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -102,6 +99,7 @@ public class ClientCamelServletTest {
         }
 
         // Check if business transaction fragments have been reported
+        /*
         BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
@@ -109,6 +107,8 @@ public class ClientCamelServletTest {
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
 
         List<BusinessTransaction> btxns = service.query(null, criteria);
+         */
+        List<BusinessTransaction> btxns = getTestBTMServer().getBusinessTransactions();
 
         for (BusinessTransaction btxn : btxns) {
             ObjectMapper mapper = new ObjectMapper();

@@ -62,21 +62,19 @@
     <module>client/admin-service-rest-client</module>
     <module>client/btxn-collector</module>
     <module>client/btxn-instrumentation</module>
+    <module>client/btxn-publisher-rest-client</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
     <module>client/client-rest</module>
-    <module>processors/btxn-builder</module>
-    <module>processors/fault-detector</module>
-    <module>processors/inventory-enricher</module>
     <module>processors/metrics-deriver</module>
     <module>server/api</module>
-    <module>server/bus-inmemory</module>
+    <module>server/elasticsearch</module>
+    <module>server/jms</module>
     <module>server/rest</module>
     <module>server/security-hwkaccs</module>
     <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>services/admin-service-inmemory</module>
-    <module>services/btxn-service-cass-es</module>
     <module>services/btxn-service-inmemory</module>
     <module>dist</module>
   </modules>
@@ -144,6 +142,11 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxn-publisher-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -164,21 +167,6 @@
       </dependency>
 
       <!-- BTM Processors -->
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-builder</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-fault-detector</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-inventory-enricher</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-metrics-deriver</artifactId>
@@ -204,6 +192,16 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-elasticsearch</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-jms</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -217,11 +215,6 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-cass-es</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

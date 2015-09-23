@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,9 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.btxn.publisher.rest.client.BusinessTransactionPublisherRESTClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,126 +42,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class BusinessTransactionServiceRESTClient implements BusinessTransactionService {
+public class BusinessTransactionServiceRESTClient extends BusinessTransactionPublisherRESTClient
+        implements BusinessTransactionService, BusinessTransactionPublisher {
 
     private static final Logger log = Logger.getLogger(BusinessTransactionServiceRESTClient.class.getName());
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
+            };
 
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
-
-    private String username = System.getProperty("hawkular-btm.username");
-    private String password = System.getProperty("hawkular-btm.password");
-
-    private String authorization = null;
-
-    private String baseUrl;
-
-    {
-        baseUrl = System.getProperty("hawkular-btm.base-uri");
-
-        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) != '/') {
-            baseUrl = baseUrl + '/';
-        }
-    }
-
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the baseUrl
-     */
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    /**
-     * @param baseUrl the baseUrl to set
-     */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionService#store(java.lang.String, java.util.List)
-     */
-    @Override
-    public void store(String tenantId, List<BusinessTransaction> btxns) throws Exception {
-
-        URL url = new URL(baseUrl + "transactions");
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Store btxns [tenant=" + tenantId + "][url=" + url + "]: " + btxns);
-        }
-
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        connection.setRequestMethod("POST");
-
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setUseCaches(false);
-        connection.setAllowUserInteraction(false);
-        connection.setRequestProperty("Content-Type",
-                "application/json");
-
-        addHeaders(connection, tenantId);
-
-        java.io.OutputStream os = connection.getOutputStream();
-
-        os.write(mapper.writeValueAsBytes(btxns));
-
-        os.flush();
-        os.close();
-
-        int statusCode = connection.getResponseCode();
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Status code is: " + statusCode);
-        }
-
-        if (statusCode != 200) {
-            if (log.isLoggable(Level.FINER)) {
-                log.finer("Failed to store business transactions: status=[" + statusCode + "]");
-            }
-            throw new Exception(connection.getResponseMessage());
-        }
-    }
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String, java.lang.String)
@@ -172,7 +63,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
         }
 
         try {
-            URL url = new URL(baseUrl + "transactions/" + id);
+            URL url = new URL(getBaseUrl() + "transactions/" + id);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -277,29 +168,6 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
     }
 
     /**
-     * Add the header values to the supplied connection.
-     *
-     * @param connection The connection
-     * @param tenantId The optional tenant id
-     */
-    protected void addHeaders(HttpURLConnection connection, String tenantId) {
-        if (tenantId != null) {
-            connection.setRequestProperty(HAWKULAR_PERSONA, tenantId);
-        }
-
-        if (authorization == null && username != null) {
-            String authString = username + ":" + password;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            authorization = "Basic " + encoded;
-        }
-
-        if (authorization != null) {
-            connection.setRequestProperty("Authorization", authorization);
-        }
-    }
-
-    /**
      * This method returns a query string representing the criteria
      * specified. If a blank criteria is specified, then an empty
      * string will be returned, otherwise the relevant query
@@ -373,7 +241,7 @@ public class BusinessTransactionServiceRESTClient implements BusinessTransaction
     protected String getQueryURL(BusinessTransactionCriteria criteria) {
         Map<String, String> queryParams = getQueryParameters(criteria);
 
-        StringBuilder builder = new StringBuilder().append(baseUrl).append("transactions");
+        StringBuilder builder = new StringBuilder().append(getBaseUrl()).append("transactions");
 
         if (!queryParams.isEmpty()) {
             builder.append('?');

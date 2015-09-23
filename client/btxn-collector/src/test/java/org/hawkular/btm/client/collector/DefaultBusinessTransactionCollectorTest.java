@@ -36,6 +36,7 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class DefaultBusinessTransactionCollectorTest {
     public void testSetStartTimeAndDuration() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
-        collector.setBusinessTransactionService(btxnService);
+        collector.setBusinessTransactionPublisher(btxnService);
         collector.setAdminService(new AdminService() {
             @Override
             public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
@@ -107,7 +108,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
-        collector.setBusinessTransactionService(btxnService);
+        collector.setBusinessTransactionPublisher(btxnService);
         collector.setAdminService(new AdminService() {
             @Override
             public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
@@ -141,7 +142,7 @@ public class DefaultBusinessTransactionCollectorTest {
     public void testIncludeHeaders() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
-        collector.setBusinessTransactionService(btxnService);
+        collector.setBusinessTransactionPublisher(btxnService);
         collector.setAdminService(new AdminService() {
             @Override
             public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
@@ -190,7 +191,7 @@ public class DefaultBusinessTransactionCollectorTest {
     public void testIncludeHeadersNotProcessedAgain() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
-        collector.setBusinessTransactionService(btxnService);
+        collector.setBusinessTransactionPublisher(btxnService);
         collector.setAdminService(new AdminService() {
             @Override
             public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
@@ -240,7 +241,7 @@ public class DefaultBusinessTransactionCollectorTest {
     public void testIncludeHeadersSuppliedSecondCall() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
-        collector.setBusinessTransactionService(btxnService);
+        collector.setBusinessTransactionPublisher(btxnService);
         collector.setAdminService(new AdminService() {
             @Override
             public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
@@ -285,7 +286,7 @@ public class DefaultBusinessTransactionCollectorTest {
     public void testIncludeBTMID() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
-        collector.setBusinessTransactionService(btxnService);
+        collector.setBusinessTransactionPublisher(btxnService);
         collector.setAdminService(new AdminService() {
             @Override
             public CollectorConfiguration getConfiguration(String tenantId, String host, String server) {
@@ -454,16 +455,16 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.getFragmentManager().clear();
     }
 
-    public static class TestBTxnService implements BusinessTransactionService {
+    public static class TestBTxnService implements BusinessTransactionService, BusinessTransactionPublisher {
 
         private List<BusinessTransaction> businessTransactions = new ArrayList<BusinessTransaction>();
         private String tenantId;
 
         /* (non-Javadoc)
-         * @see org.hawkular.btm.api.services.BusinessTransactionService#store(java.lang.String, java.util.List)
+         * @see org.hawkular.btm.api.services.BusinessTransactionPublisher#publish(java.lang.String, java.util.List)
          */
         @Override
-        public void store(String tenantId, List<BusinessTransaction> btxns) throws Exception {
+        public void publish(String tenantId, List<BusinessTransaction> btxns) throws Exception {
             this.tenantId = tenantId;
             businessTransactions.addAll(btxns);
         }
