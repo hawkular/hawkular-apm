@@ -75,7 +75,6 @@
     <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>services/admin-service-inmemory</module>
-    <module>services/btxn-service-inmemory</module>
     <module>dist</module>
   </modules>
 
@@ -205,21 +204,11 @@
         <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-bus-inmemory</artifactId>
-        <version>${project.version}</version>
-      </dependency>
 
       <!-- BTM Services -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-service-inmemory</artifactId>
         <version>${project.version}</version>
       </dependency>
 
