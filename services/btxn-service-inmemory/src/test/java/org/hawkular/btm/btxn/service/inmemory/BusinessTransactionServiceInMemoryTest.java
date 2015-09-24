@@ -36,19 +36,21 @@ public class BusinessTransactionServiceInMemoryTest {
 
     @Test
     public void testStoreMax() {
-        BusinessTransactionServiceInMemory.setMaxTransactions(3);
+        BusinessTransactionRepository.setMaxTransactions(3);
+
+        BusinessTransactionPublisherInMemory btp = new BusinessTransactionPublisherInMemory();
 
         BusinessTransactionServiceInMemory bts = new BusinessTransactionServiceInMemory();
 
         try {
-            bts.store(null, createTransactions(1));
-            bts.store(null, createTransactions(11));
+            btp.publish(null, createTransactions(1));
+            btp.publish(null, createTransactions(11));
         } catch (Exception e) {
             fail("Failed to store txns: " + e);
         }
 
         // Check only 3 txns left
-        assertEquals(3, BusinessTransactionServiceInMemory.getTxns().size());
+        assertEquals(3, BusinessTransactionRepository.getTxns().size());
 
         assertNotNull(bts.get(null, "2"));
         assertNotNull(bts.get(null, "11"));

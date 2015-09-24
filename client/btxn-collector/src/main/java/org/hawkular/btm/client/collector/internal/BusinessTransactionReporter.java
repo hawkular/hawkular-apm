@@ -29,7 +29,7 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.admin.CollectorConfiguration;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 
@@ -55,7 +55,7 @@ public class BusinessTransactionReporter {
     /**  */
     private static final int DEFAULT_BATCH_SIZE = 1000;
 
-    private BusinessTransactionService businessTransactionService;
+    private BusinessTransactionPublisher businessTransactionPublisher;
 
     private int batchSize = DEFAULT_BATCH_SIZE;
     private int batchTime = DEFAULT_BATCH_TIME;
@@ -67,19 +67,19 @@ public class BusinessTransactionReporter {
     private List<BusinessTransaction> businessTxns = new ArrayList<BusinessTransaction>();
 
     {
-        CompletableFuture<BusinessTransactionService> bts =
-                ServiceResolver.getSingletonService(BusinessTransactionService.class);
+        CompletableFuture<BusinessTransactionPublisher> bts =
+                ServiceResolver.getSingletonService(BusinessTransactionPublisher.class);
 
-        bts.whenCompleteAsync(new BiConsumer<BusinessTransactionService, Throwable>() {
+        bts.whenCompleteAsync(new BiConsumer<BusinessTransactionPublisher, Throwable>() {
             @Override
-            public void accept(BusinessTransactionService arg0, Throwable arg1) {
-                if (businessTransactionService == null) {
-                    setBusinessTransactionService(arg0);
+            public void accept(BusinessTransactionPublisher arg0, Throwable arg1) {
+                if (businessTransactionPublisher == null) {
+                    setBusinessTransactionPublisher(arg0);
 
                     if (arg1 != null) {
-                        log.severe("Failed to locate Business Transaction Service: " + arg1);
+                        log.severe("Failed to locate Business Transaction Publisher: " + arg1);
                     } else {
-                        log.info("Initialised Business Transaction Service: " + arg0 + " in this=" + this);
+                        log.info("Initialised Business Transaction Publisher: " + arg0 + " in this=" + this);
                     }
                 }
             }
@@ -87,19 +87,19 @@ public class BusinessTransactionReporter {
     }
 
     /**
-     * This method sets the business transaction service.
+     * This method sets the business transaction publisher.
      *
-     * @param bts The business transaction service
+     * @param btp The business transaction publisher
      */
-    public void setBusinessTransactionService(BusinessTransactionService bts) {
-        this.businessTransactionService = bts;
+    public void setBusinessTransactionPublisher(BusinessTransactionPublisher btp) {
+        this.businessTransactionPublisher = btp;
     }
 
     /**
-     * @return the businessTransactionService
+     * @return the businessTransactionPublisher
      */
-    public BusinessTransactionService getBusinessTransactionService() {
-        return businessTransactionService;
+    public BusinessTransactionPublisher getBusinessTransactionPublisher() {
+        return businessTransactionPublisher;
     }
 
     /**
@@ -170,7 +170,7 @@ public class BusinessTransactionReporter {
      * @param btxn The business transaction
      */
     public void report(BusinessTransaction btxn) {
-        if (businessTransactionService != null) {
+        if (businessTransactionPublisher != null) {
             try {
                 lock.lock();
                 businessTxns.add(btxn);
@@ -199,10 +199,10 @@ public class BusinessTransactionReporter {
                 @Override
                 public void run() {
                     try {
-                        businessTransactionService.store(tenantId, toSend);
+                        businessTransactionPublisher.publish(tenantId, toSend);
                     } catch (Exception e) {
                         // TODO: Retain for retry
-                        log.log(Level.SEVERE, "Failed to store business transactions", e);
+                        log.log(Level.SEVERE, "Failed to publish business transactions", e);
                     }
                 }
             });

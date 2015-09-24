@@ -16,16 +16,13 @@
  */
 package org.hawkular.btm.btxn.service.inmemory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.server.api.services.AbstractBusinessTransactionService;
+import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.jboss.logging.Logger;
 
 /**
@@ -36,89 +33,33 @@ import org.jboss.logging.Logger;
  * @author gbrown
  */
 @Singleton
-public class BusinessTransactionServiceInMemory extends AbstractBusinessTransactionService {
-
-    /**  */
-    private static final String INMEM_MAXTXNS = "hawkular-btm.btxn-service.inmem-maxtxns";
+public class BusinessTransactionServiceInMemory implements BusinessTransactionService {
 
     private final Logger log = Logger.getLogger(BusinessTransactionServiceInMemory.class);
 
-    private static Map<String, BusinessTransaction> idMap = new HashMap<String, BusinessTransaction>();
-    private static List<BusinessTransaction> txns = new ArrayList<BusinessTransaction>();
-
-    private static int maxTransactions = 1000;
-
-    static {
-        String prop = System.getProperty(INMEM_MAXTXNS);
-
-        if (prop != null) {
-            maxTransactions = Integer.parseInt(prop);
-        }
-    }
-
-    /**
-     * @return the txns
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String,java.lang.String)
      */
-    public static List<BusinessTransaction> getTxns() {
-        return txns;
-    }
-
     @Override
-    protected void doStore(String tenantId, BusinessTransaction btxn) throws Exception {
-        synchronized (txns) {
-            BusinessTransaction old = idMap.put(btxn.getId(), btxn);
-
-            if (old != null) {
-                txns.remove(old);
-            }
-
-            txns.add(btxn);
-
-            while (txns.size() > maxTransactions) {
-                BusinessTransaction toRemove = txns.remove(0);
-                idMap.remove(toRemove.getId());
-            }
-        }
-    }
-
-    @Override
-    protected BusinessTransaction doGet(String tenantId, String id) {
-        BusinessTransaction ret = null;
-
-        synchronized (txns) {
-            ret = idMap.get(id);
-        }
+    public BusinessTransaction get(String tenantId, String id) {
+        BusinessTransaction ret = BusinessTransactionRepository.get(tenantId, id);
 
         log.tracef("Get business transaction with id[%s] is: %s", id, ret);
 
         return ret;
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#query(java.lang.String,
+     *          org.hawkular.btm.api.services.BusinessTransactionQuery)
+     */
     @Override
-    protected List<BusinessTransaction> doQuery(String tenantId, BusinessTransactionCriteria criteria) {
-        List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
-
-        synchronized (txns) {
-            txns.stream().filter(p -> criteria.isValid(p)).forEach(p -> ret.add(p));
-        }
+    public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+        List<BusinessTransaction> ret = BusinessTransactionRepository.query(tenantId, criteria);
 
         log.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
 
         return ret;
-    }
-
-    /**
-     * @return the maxTransactions
-     */
-    public static int getMaxTransactions() {
-        return maxTransactions;
-    }
-
-    /**
-     * @param maxTransactions the maxTransactions to set
-     */
-    public static void setMaxTransactions(int maxTransactions) {
-        BusinessTransactionServiceInMemory.maxTransactions = maxTransactions;
     }
 
 }

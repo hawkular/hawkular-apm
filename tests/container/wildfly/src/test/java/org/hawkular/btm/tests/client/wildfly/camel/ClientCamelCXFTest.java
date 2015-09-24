@@ -27,8 +27,7 @@ import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,34 +40,33 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author gbrown
  */
-public class ClientCamelCXFTest {
+public class ClientCamelCXFTest extends ClientTestBase {
 
-    /**  */
-    private static final String TEST_PASSWORD = "password";
-    /**  */
-    private static final String TEST_USERNAME = "jdoe";
-
-    private static final String REQUEST="<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n"+
-                "<soap:Body>\r\n"+
-                "    <ns1:reportIncident xmlns:ns1=\"http://incident.cxf.example.camel.apache.org/\">\r\n"+
-                "        <arg0>\r\n"+
-                "            <details>blah blah</details>\r\n"+
-                "            <email>davsclaus@apache.org</email>\r\n"+
-                "            <familyName>Smith</familyName>\r\n"+
-                "            <givenName>Bob</givenName>\r\n"+
-                "            <incidentDate>2011-11-25</incidentDate>\r\n"+
-                "            <incidentId>123</incidentId>\r\n"+
-                "            <phone>123-456-7890</phone>\r\n"+
-                "            <summary>blah blah summary</summary>\r\n"+
-                "        </arg0>\r\n"+
-                "    </ns1:reportIncident>\r\n"+
-                "</soap:Body>\r\n"+
+    private static final String REQUEST = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n"
+            +
+            "<soap:Body>\r\n" +
+            "    <ns1:reportIncident xmlns:ns1=\"http://incident.cxf.example.camel.apache.org/\">\r\n" +
+            "        <arg0>\r\n" +
+            "            <details>blah blah</details>\r\n" +
+            "            <email>davsclaus@apache.org</email>\r\n" +
+            "            <familyName>Smith</familyName>\r\n" +
+            "            <givenName>Bob</givenName>\r\n" +
+            "            <incidentDate>2011-11-25</incidentDate>\r\n" +
+            "            <incidentId>123</incidentId>\r\n" +
+            "            <phone>123-456-7890</phone>\r\n" +
+            "            <summary>blah blah summary</summary>\r\n" +
+            "        </arg0>\r\n" +
+            "    </ns1:reportIncident>\r\n" +
+            "</soap:Body>\r\n" +
             "</soap:Envelope>";
+
+    @Override
+    public int getPort() {
+        return 8180;
+    }
 
     @Test
     public void testInvokeCamelCXFService() {
-
-        long startTime = System.currentTimeMillis();
 
         // Delay to avoid picking up previously reported txns
         try {
@@ -80,7 +78,7 @@ public class ClientCamelCXFTest {
         }
 
         try {
-            URL url = new URL(System.getProperty("hawkular.base-uri")
+            URL url = new URL(System.getProperty("test.base-uri")
                     + "/camel-example-cxftomcat/webservices/incident");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -93,7 +91,7 @@ public class ClientCamelCXFTest {
             connection.setRequestProperty("Content-Type",
                     "application/soap+xml");
 
-            java.io.OutputStream os=connection.getOutputStream();
+            java.io.OutputStream os = connection.getOutputStream();
 
             os.write(REQUEST.getBytes());
 
@@ -112,10 +110,10 @@ public class ClientCamelCXFTest {
 
             String resp = new String(b);
 
-            System.out.println(">>> RESP = "+resp);
+            System.out.println(">>> RESP = " + resp);
 
             assertTrue("Response should contain '<code>OK;123</code>'",
-                                resp.contains("<code>OK;123</code>"));
+                    resp.contains("<code>OK;123</code>"));
         } catch (Exception e) {
             fail("Failed to get cxf response: " + e);
         }
@@ -130,13 +128,7 @@ public class ClientCamelCXFTest {
         }
 
         // Check if business transaction fragments have been reported
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
-
-        List<BusinessTransaction> btxns = service.query(null, criteria);
+        List<BusinessTransaction> btxns = getTestBTMServer().getBusinessTransactions();
 
         for (BusinessTransaction btxn : btxns) {
             ObjectMapper mapper = new ObjectMapper();
@@ -154,7 +146,7 @@ public class ClientCamelCXFTest {
         assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());
 
         // Check that there is request and response message content
-        Consumer consumer=(Consumer)btxns.get(0).getNodes().get(0);
+        Consumer consumer = (Consumer) btxns.get(0).getNodes().get(0);
 
         assertNotNull(consumer.getIn());
         assertNotNull(consumer.getOut());

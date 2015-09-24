@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.accounts.api.model.Persona;
-import org.hawkular.btm.server.api.services.SecurityProvider;
+import org.hawkular.btm.server.api.security.SecurityProvider;
 
 /**
  * @author gbrown

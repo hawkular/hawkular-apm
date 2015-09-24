@@ -37,7 +37,7 @@ import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.services.AdminService;
-import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.SessionManager;
@@ -107,17 +107,17 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /**
-     * @return the businessTransactionService
+     * @return the businessTransactionPublisher
      */
-    public BusinessTransactionService getBusinessTransactionService() {
-        return reporter.getBusinessTransactionService();
+    public BusinessTransactionPublisher getBusinessTransactionPublisher() {
+        return reporter.getBusinessTransactionPublisher();
     }
 
     /**
-     * @param businessTransactionService the businessTransactionService to set
+     * @param businessTransactionPublisher the businessTransactionPublisher to set
      */
-    public void setBusinessTransactionService(BusinessTransactionService businessTransactionService) {
-        reporter.setBusinessTransactionService(businessTransactionService);
+    public void setBusinessTransactionPublisher(BusinessTransactionPublisher businessTransactionPublisher) {
+        reporter.setBusinessTransactionPublisher(businessTransactionPublisher);
     }
 
     /**

@@ -34,27 +34,26 @@
 
   <properties>
     <hawkular.host>127.0.0.1</hawkular.host>
-    <hawkular.port>8080</hawkular.port>
+    <hawkular.port>8180</hawkular.port>
+    <test.port>8080</test.port>
     <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}</hawkular.base-uri>
+    <test.base-uri>http://${hawkular.host}:${test.port}</test.base-uri>
     <hawkular-btm.path>/hawkular/btm/</hawkular-btm.path>
     <hawkular-btm.base-uri>${hawkular.base-uri}${hawkular-btm.path}</hawkular-btm.base-uri>
     <!-- IMPORTANT: The port must be the port offset + 8080. -->
     <wildfly.port.offset>1897</wildfly.port.offset>
     <!-- IMPORTANT: The management port must be the port offset + 9990. -->
     <wildfly.management.port>11887</wildfly.management.port>
-    <hawkular.home>${project.build.directory}/hawkular</hawkular.home>
-    <hawkular.btm.dist>${hawkular.home}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</hawkular.btm.dist>
-    <hawkular.configuration>${hawkular.btm.dist}/standalone/configuration</hawkular.configuration>
-    <hawkular.data>${hawkular.btm.dist}/standalone/data</hawkular.data>
-    <hawkular.deployments>${hawkular.btm.dist}/standalone/deployments</hawkular.deployments>
-    <hawkular.lib>${hawkular.btm.dist}/standalone/lib</hawkular.lib>
+    <hawkular.home>${project.build.directory}/wildfly-${version.org.wildfly}</hawkular.home>
+    <hawkular.configuration>${hawkular.home}/standalone/configuration</hawkular.configuration>
+    <hawkular.data>${hawkular.home}/standalone/data</hawkular.data>
+    <hawkular.deployments>${hawkular.home}/standalone/deployments</hawkular.deployments>
+    <hawkular.lib>${hawkular.home}/standalone/lib</hawkular.lib>
+
+    <server.config>standalone.xml</server.config>
 
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
-    <hawkular-btm.logging>${project.basedir}/src/test/configuration/logging.properties</hawkular-btm.logging>
-
-    <jboss.home>${project.build.directory}/hawkular-accounts-distribution-${version.org.hawkular.accounts}</jboss.home>
-    <server.config>standalone.xml</server.config>
+    <hawkular-btm.instrumentation>${project.build.directory}/btmconfig</hawkular-btm.instrumentation>
   </properties>
 
   <dependencies>
@@ -62,7 +61,6 @@
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-api</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -78,13 +76,28 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-tests-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-tests-server-mock</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-client-rest</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-distribution</artifactId>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-dist</artifactId>
+      <version>${version.org.wildfly}</version>
       <type>zip</type>
       <scope>test</scope>
     </dependency>
@@ -111,17 +124,25 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.undertow</groupId>
+      <artifactId>undertow-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
@@ -186,7 +207,7 @@
                   <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
+              <outputDirectory>${project.build.directory}</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -196,10 +217,10 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <includeGroupIds>org.hawkular.accounts</includeGroupIds>
-              <includeArtifactIds>hawkular-accounts-distribution</includeArtifactIds>
+              <includeGroupIds>org.wildfly</includeGroupIds>
+              <includeArtifactIds>wildfly-dist</includeArtifactIds>
               <outputDirectory>
-                ${hawkular.home}
+                ${project.build.directory}
               </outputDirectory>
             </configuration>
           </execution>
@@ -211,14 +232,6 @@
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-server</artifactId>
-                  <type>war</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular.deployments}</outputDirectory>
-                  <destFileName>hawkular-btm-server.war</destFileName>
-                </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.camel</groupId>
                   <artifactId>camel-example-servlet-rest-tomcat</artifactId>
@@ -235,13 +248,6 @@
                   <outputDirectory>${hawkular.deployments}</outputDirectory>
                   <destFileName>camel-example-cxftomcat.war</destFileName>
                 </artifactItem>
-                <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-rest</artifactId>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
-                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -257,37 +263,12 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${hawkular.configuration}</outputDirectory>
+              <outputDirectory>${project.build.directory}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/test/resources/configuration</directory>
+                  <directory>src/test/resources/instrumentation</directory>
                 </resource>
               </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>xml-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>transform-standalone-xml</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>transform</goal>
-            </goals>
-            <configuration>
-              <transformationSets>
-                <transformationSet>
-                  <dir>${hawkular.configuration}</dir>
-                  <stylesheet>src/test/scripts/standalone.xsl</stylesheet>
-                  <includes>
-                    <include>standalone.xml</include>
-                  </includes>
-                  <outputDir>${hawkular.configuration}</outputDir>
-                </transformationSet>
-              </transformationSets>
             </configuration>
           </execution>
         </executions>
@@ -301,6 +282,7 @@
             <hawkular.port>${hawkular.port}</hawkular.port>
             <hawkular.base-uri>${hawkular.base-uri}</hawkular.base-uri>
             <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>
+            <test.base-uri>${test.base-uri}</test.base-uri>
           </systemPropertyVariables>
         </configuration>
         <executions>
@@ -327,7 +309,7 @@
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-maven-plugin</artifactId>
         <configuration>
-          <jboss-home>${hawkular.btm.dist}</jboss-home>
+          <jboss-home>${hawkular.home}</jboss-home>
           <javaOpts>
             <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
           </javaOpts>
@@ -354,10 +336,9 @@
                 <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar,sys:${hawkular-btm.lib}/hawkular-btm-client-rest.jar</javaOpt>
                 <javaOpt>-Dorg.jboss.byteman.compileToBytecode</javaOpt>
                 <javaOpt>-Dhawkular-btm.config=${hawkular-btm.instrumentation}</javaOpt>
-                <javaOpt>-Dhawkular-btm.base-uri=http://localhost:8080/hawkular/btm</javaOpt>
+                <javaOpt>-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}</javaOpt>
                 <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>
                 <javaOpt>-Dhawkular-btm.password=password</javaOpt>
-                <javaOpt>-Djava.util.logging.config.file=${hawkular-btm.logging}</javaOpt>
                 <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
                 <javaOpt>-Dhawkular-btm.log.level=INFO</javaOpt>
               </javaOpts>

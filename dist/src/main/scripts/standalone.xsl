@@ -57,4 +57,23 @@
 
   </xsl:template>
 
+  <!-- Add new topic -->
+  <xsl:template match="node()[name(.)='jms-topic'][last()]">
+
+    <xsl:variable name="newJMSTopic">
+      <jms-topic name="BusinessTransactions">
+        <entry name="java:/BusinessTransactions"/>
+      </jms-topic>
+      <jms-topic name="ResponseTimes">
+        <entry name="java:/ResponseTimes"/>
+      </jms-topic>
+    </xsl:variable>
+
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+    <xsl:copy-of select="$newJMSTopic" />
+
+  </xsl:template>
+
 </xsl:stylesheet>

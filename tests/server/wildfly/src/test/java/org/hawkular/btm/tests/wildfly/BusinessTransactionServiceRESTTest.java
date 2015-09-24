@@ -54,7 +54,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -88,7 +88,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -127,7 +127,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -169,7 +169,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -209,7 +209,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -251,7 +251,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -288,7 +288,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -327,7 +327,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -371,7 +371,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -417,7 +417,7 @@ public class BusinessTransactionServiceRESTTest {
         btxns.add(btxn1);
 
         try {
-            service.store(null, btxns);
+            service.publish(null, btxns);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
