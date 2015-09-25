@@ -169,6 +169,14 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
     public void testJMSRequestResponse() {
         Object resp = null;
         try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait before sending message");
+        }
+
+        try {
             resp = template.sendBody("jms:queue:inboundq", ExchangePattern.InOut, "Test Message");
         } catch (Exception e) {
             fail("Failed to send test message: " + e);
@@ -178,7 +186,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
 
         try {
             synchronized (this) {
-                wait(3000);
+                wait(4000);
             }
         } catch (Exception e) {
             fail("Failed to wait for btxns to store");

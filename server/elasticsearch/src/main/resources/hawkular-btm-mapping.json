@@ -1,0 +1,81 @@
+{
+    "settings": {
+        "index.number_of_shards": 1,
+        "index.number_of_replicas": 1
+    },
+    "mappings": {
+        "businesstransaction": {
+            "date_detection" : false,
+            "numeric_detection": false,
+            "_timestamp": {
+                "enabled": true,
+                "path": "startTime",
+                "format": "yyyy/MM/dd HH:mm:ss"
+            },
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "hostName": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "hostAddress": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "startTime": {
+                    "type": "date",
+                    "format": "yyyy/MM/dd HH:mm:ss"
+                }
+            }
+        },
+        "responsetime": {
+            "date_detection" : false,
+            "numeric_detection": false,
+            "_timestamp": {
+                "enabled": true,
+                "path": "timestamp",
+                "format": "yyyy/MM/dd HH:mm:ss"
+            },
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "uri": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "fault": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "duration": {
+                    "type": "long"
+                },
+                "correlationIds": {
+                    "type": "nested",
+                    "include_in_parent": true,
+                    "include_in_root": true,
+
+                    "properties": {
+                        "scope": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "value": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "timestamp": {
+                    "type": "date",
+                    "format": "yyyy/MM/dd HH:mm:ss"
+                }
+            }
+        }
+    }
+}

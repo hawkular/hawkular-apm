@@ -91,6 +91,7 @@ public class ResponseTimeDeriver implements Processor<BusinessTransaction, Respo
             long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
 
             ResponseTime rt = new ResponseTime();
+            rt.setId(btxn.getId()+"-"+rts.size());
             rt.setCorrelationIds(n.getCorrelationIds());
             rt.setDetails(n.getDetails());
             rt.setDuration(n.getDuration());

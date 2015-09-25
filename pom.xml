@@ -101,7 +101,10 @@
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
     <version.org.apache.activemq>5.11.1</version.org.apache.activemq>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
+    <version.org.apache.httpcomponents>4.3.5</version.org.apache.httpcomponents>
+    <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
+    <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
     <version.org.hawkular.accounts>1.0.14.Final</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
@@ -337,6 +340,17 @@
       </dependency>
 
       <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${version.org.apache.httpcomponents}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.3.2</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
         <version>${version.org.slf4j}</version>
@@ -370,6 +384,23 @@
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
         <version>${version.org.mvel}</version>
+      </dependency>
+
+      <!-- Elasticsearch dependencies -->
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${version.org.elasticsearch}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${version.org.apache.lucene}</version>
       </dependency>
 
       <!-- REST Doc dependencies -->

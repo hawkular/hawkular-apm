@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
@@ -30,6 +32,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,6 +52,9 @@ activationConfig =
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
 public class BusinessTransactionMDBElasticsearch implements MessageListener {
 
+    /**  */
+    private static final String BUSINESS_TRANSACTION_TYPE = "businesstransaction";
+
     private static final Logger log = Logger.getLogger(BusinessTransactionMDBElasticsearch.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -55,6 +62,18 @@ public class BusinessTransactionMDBElasticsearch implements MessageListener {
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
             };
+
+    private ElasticsearchClient client;
+
+    @PostConstruct
+    public void init() {
+        client = new ElasticsearchClient();
+        try {
+            client.init();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to initialise Elasticsearch", e);
+        }
+    }
 
     /* (non-Javadoc)
      * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
@@ -68,15 +87,46 @@ public class BusinessTransactionMDBElasticsearch implements MessageListener {
         try {
             String tenantId = message.getStringProperty("tenant");
 
+            client.initTenant(tenantId);
+
             String data = ((TextMessage) message).getText();
 
             List<BusinessTransaction> btxns = mapper.readValue(data, BUSINESS_TXN_LIST);
 
             BusinessTransactionRepository.store(tenantId, btxns);
 
+            BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+            for (int i = 0; i < btxns.size(); i++) {
+                BusinessTransaction btxn = btxns.get(i);
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        BUSINESS_TRANSACTION_TYPE, btxn.getId()).setSource(mapper.writeValueAsString(btxn)));
+            }
+
+            BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+            if (bulkItemResponses.hasFailures()) {
+
+                // TODO: Candidate for retry???
+                log.severe("Failed to store response times: " + bulkItemResponses.buildFailureMessage());
+
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to store business transactions to elasticsearch: "
+                            + bulkItemResponses.buildFailureMessage());
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Success storing business transactions to elasticsearch");
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @PreDestroy
+    public void close() {
+        client.close();
     }
 
 }
