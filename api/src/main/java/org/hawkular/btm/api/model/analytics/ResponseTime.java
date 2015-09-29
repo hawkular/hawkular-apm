@@ -35,6 +35,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ResponseTime {
 
     @JsonInclude
+    private String id;
+
+    @JsonInclude
     private NodeType type;
 
     @JsonInclude
@@ -57,6 +60,20 @@ public class ResponseTime {
 
     @JsonInclude(Include.NON_EMPTY)
     private List<CorrelationIdentifier> correlationIds = new ArrayList<CorrelationIdentifier>();
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
 
     /**
      * @return the type
@@ -181,6 +198,7 @@ public class ResponseTime {
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -217,6 +235,11 @@ public class ResponseTime {
                 return false;
         } else if (!fault.equals(other.fault))
             return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
         if (properties == null) {
             if (other.properties != null)
                 return false;
@@ -239,9 +262,9 @@ public class ResponseTime {
      */
     @Override
     public String toString() {
-        return "ResponseTime [type=" + type + ", uri=" + uri + ", timestamp=" + timestamp + ", duration=" + duration
-                + ", fault=" + fault + ", properties=" + properties + ", details=" + details + ", correlationIds="
-                + correlationIds + "]";
+        return "ResponseTime [id=" + id + ", type=" + type + ", uri=" + uri + ", timestamp=" + timestamp
+                + ", duration=" + duration + ", fault=" + fault + ", properties=" + properties + ", details="
+                + details + ", correlationIds=" + correlationIds + "]";
     }
 
 }

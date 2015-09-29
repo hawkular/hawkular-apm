@@ -134,11 +134,11 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             }
         }
 
-        if (results != null) {
+        if (results != null && results.size() > 0) {
             resultHandler.handle(results);
         }
 
-        if (retries != null) {
+        if (retries != null && retries.size() > 0) {
             if (getRetryCount() > 0) {
                 retryHandler.handle(retries);
             } else {
