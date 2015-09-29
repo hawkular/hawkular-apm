@@ -38,6 +38,9 @@ public class ResponseTime {
     private String id;
 
     @JsonInclude
+    private String businessTransaction;
+
+    @JsonInclude
     private NodeType type;
 
     @JsonInclude
@@ -73,6 +76,20 @@ public class ResponseTime {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the businessTransaction
+     */
+    public String getBusinessTransaction() {
+        return businessTransaction;
+    }
+
+    /**
+     * @param businessTransaction the businessTransaction to set
+     */
+    public void setBusinessTransaction(String businessTransaction) {
+        this.businessTransaction = businessTransaction;
     }
 
     /**
@@ -194,6 +211,7 @@ public class ResponseTime {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
@@ -218,6 +236,11 @@ public class ResponseTime {
         if (getClass() != obj.getClass())
             return false;
         ResponseTime other = (ResponseTime) obj;
+        if (businessTransaction == null) {
+            if (other.businessTransaction != null)
+                return false;
+        } else if (!businessTransaction.equals(other.businessTransaction))
+            return false;
         if (correlationIds == null) {
             if (other.correlationIds != null)
                 return false;
@@ -262,9 +285,9 @@ public class ResponseTime {
      */
     @Override
     public String toString() {
-        return "ResponseTime [id=" + id + ", type=" + type + ", uri=" + uri + ", timestamp=" + timestamp
-                + ", duration=" + duration + ", fault=" + fault + ", properties=" + properties + ", details="
-                + details + ", correlationIds=" + correlationIds + "]";
+        return "ResponseTime [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
+                + uri + ", timestamp=" + timestamp + ", duration=" + duration + ", fault=" + fault + ", properties="
+                + properties + ", details=" + details + ", correlationIds=" + correlationIds + "]";
     }
 
 }

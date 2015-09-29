@@ -92,6 +92,7 @@ public class ResponseTimeDeriver implements Processor<BusinessTransaction, Respo
 
             ResponseTime rt = new ResponseTime();
             rt.setId(btxn.getId()+"-"+rts.size());
+            rt.setBusinessTransaction(btxn.getName());
             rt.setCorrelationIds(n.getCorrelationIds());
             rt.setDetails(n.getDetails());
             rt.setDuration(n.getDuration());

@@ -27,90 +27,19 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-server</artifactId>
+  <artifactId>hawkular-btm-ui-kibana</artifactId>
   <packaging>war</packaging>
-  <name>Hawkular BTM::Server::WAR</name>
+  <name>Hawkular BTM::UI::Kibana</name>
+
+  <properties>
+    <kibana.distribution.version>kibana-3.1.2</kibana.distribution.version>
+  </properties>
 
   <dependencies>
-
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-rest</artifactId>
-    </dependency>
-
-    <!-- Service implementations -->
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-jms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-elasticsearch</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-elasticsearch-proxy</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-metrics-deriver</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Wildfly provided -->
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-processor</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
   </dependencies>
 
   <build>
@@ -134,10 +63,34 @@
               <filtering>false</filtering>
               <directory>${basedir}/src/main/webapp</directory>
             </resource>
+            <resource>
+              <directory>target/${kibana.distribution.version}</directory>
+            </resource>
           </webResources>
         </configuration>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare</id>
+            <phase>validate</phase>
+            <configuration>
+              <tasks>
+                <echo message="prepare phase" />
+                <unzip src="src/main/kibana/${kibana.distribution.version}.zip" dest="target/" />
+                <copy todir="target/${kibana.distribution.version}">
+                  <fileset dir="src/main/kibana/config"/>
+                </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

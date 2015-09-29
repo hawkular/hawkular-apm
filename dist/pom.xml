@@ -56,6 +56,12 @@
       <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-ui-kibana</artifactId>
+      <type>war</type>
+    </dependency>
+
   </dependencies>
 
   <build>

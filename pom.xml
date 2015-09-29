@@ -69,12 +69,14 @@
     <module>processors/metrics-deriver</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
+    <module>server/elasticsearch-proxy</module>
     <module>server/jms</module>
     <module>server/rest</module>
     <module>server/security-hwkaccs</module>
     <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>services/admin-service-inmemory</module>
+    <module>ui/kibana</module>
     <module>dist</module>
   </modules>
 
@@ -199,6 +201,11 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-elasticsearch-proxy</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-jms</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -233,6 +240,14 @@
         <artifactId>hawkular-btm-dist</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
+      </dependency>
+
+      <!-- BTM UI -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-ui-kibana</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- Other dependencies -->

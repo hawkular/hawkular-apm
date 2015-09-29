@@ -208,6 +208,13 @@ public class ElasticsearchHttpClient {
             // want to include this as part of a more general mechanism.
             if (pathInfo.startsWith("/kibana-int/dashboard/")) {
                 pathInfo = pathInfo.replaceFirst("dashboard", "dashboard-" + request.getUserPrincipal().getName());
+            } else if (pathInfo.contains("/btm/")) {
+                // Amend the index based on the remote user
+                // NOTE: When using Hawkular Accounts persona switcher, may need to actually use
+                // the injected Persona
+                if (request.getRemoteUser() != null) {
+                    pathInfo = pathInfo.replaceFirst("/btm/", "/btm-"+request.getRemoteUser()+"/");
+                }
             }
 
             // Append path
