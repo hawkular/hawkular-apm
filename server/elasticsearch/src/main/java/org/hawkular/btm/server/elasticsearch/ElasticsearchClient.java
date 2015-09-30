@@ -31,6 +31,8 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
@@ -46,6 +48,11 @@ public class ElasticsearchClient {
      * Default Elasticsearch hosts configuration.
      */
     public static final String ELASTICSEARCH_HOSTS = "hawkular-btm.elasticsearch.hosts";
+
+    /**
+     * Default Elasticsearch cluster configuration.
+     */
+    public static final String ELASTICSEARCH_CLUSTER = "hawkular-btm.elasticsearch.cluster";
 
     /**
      * Settings for the index this store is related to.
@@ -68,7 +75,11 @@ public class ElasticsearchClient {
 
     private static final String ELASTICSEARCH_HOSTS_DEFAULT = "embedded";
 
-    private String hosts = ELASTICSEARCH_HOSTS_DEFAULT;
+    private String hosts;
+
+    private static final String ELASTICSEARCH_CLUSTER_DEFAULT = "elasticsearch";
+
+    private String cluster;
 
     private static final Object SYNC = new Object();
 
@@ -80,12 +91,8 @@ public class ElasticsearchClient {
      * Default constructor.
      */
     public ElasticsearchClient() {
-
-        String hostsProp = System.getProperty(ELASTICSEARCH_HOSTS);
-
-        if (hostsProp != null) {
-            hosts = hostsProp;
-        }
+        hosts = System.getProperty(ELASTICSEARCH_HOSTS, ELASTICSEARCH_HOSTS_DEFAULT);
+        cluster = System.getProperty(ELASTICSEARCH_CLUSTER, ELASTICSEARCH_CLUSTER_DEFAULT);
     }
 
     /**
@@ -133,7 +140,8 @@ public class ElasticsearchClient {
             client = node.getClient();
         } else {
             String[] hostsArray = hosts.split(",");
-            TransportClient c = new TransportClient();
+            Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
+            TransportClient c = new TransportClient(settings);
 
             for (String aHostsArray : hostsArray) {
                 String s = aHostsArray.trim();
