@@ -46,7 +46,7 @@
         <use-resource-role-mappings>true</use-resource-role-mappings>
         <enable-cors>true</enable-cors>
         <enable-basic-auth>true</enable-basic-auth>
-        <credential name="secret"><xsl:value-of select="node()[name(.)='credential'][last()]" /></credential>
+        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
       </secure-deployment>
       <secure-deployment name="hawkular-btm-ui-kibana.war">
         <realm>hawkular</realm>
