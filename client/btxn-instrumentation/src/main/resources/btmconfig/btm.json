@@ -5,6 +5,7 @@
       "filter": {
         "exclusions": [
           "^/hawkular/btm",
+          "^/hawkular-btm-ui",
           "^/auth/"
         ]
       }
