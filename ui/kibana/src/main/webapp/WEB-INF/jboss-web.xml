@@ -19,5 +19,5 @@
 -->
 
 <jboss-web>
-  <context-root>hawkular-btm-ui-kibana</context-root>
+  <context-root>hawkular/btm-ui</context-root>
 </jboss-web>
