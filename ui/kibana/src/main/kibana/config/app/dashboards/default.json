@@ -80,7 +80,7 @@
           "mode": "mean",
           "time_field": "timestamp",
           "queries": {
-            "mode": "selected",
+            "mode": "all",
             "ids": [
               0,
               1,
@@ -165,12 +165,8 @@
           "type": "terms",
           "loadingEditor": false,
           "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              1,
-              2
-            ]
+            "mode": "unpinned",
+            "ids": []
           },
           "field": "businessTransaction",
           "exclude": [
@@ -218,12 +214,8 @@
           "counter_pos": "above",
           "spyable": true,
           "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              1,
-              2
-            ]
+            "mode": "unpinned",
+            "ids": []
           },
           "tmode": "terms",
           "tstat": "total",
@@ -249,11 +241,7 @@
           "time_field": "timestamp",
           "queries": {
             "mode": "all",
-            "ids": [
-              0,
-              1,
-              2
-            ]
+            "ids": []
           },
           "value_field": "duration",
           "auto_int": false,
@@ -323,12 +311,8 @@
           "type": "terms",
           "loadingEditor": false,
           "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              1,
-              2
-            ]
+            "mode": "unpinned",
+            "ids": []
           },
           "field": "uri",
           "exclude": [],
@@ -395,12 +379,8 @@
           "paging": true,
           "spyable": true,
           "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              1,
-              2
-            ]
+            "mode": "unpinned",
+            "ids": []
           },
           "field_list": true,
           "status": "Stable",

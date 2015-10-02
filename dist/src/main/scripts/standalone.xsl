@@ -36,6 +36,10 @@
     </xsl:copy>
   </xsl:template>
 
+  <!-- Workaround until https://issues.jboss.org/browse/HAWKULAR-648 fixed -->
+  <xsl:template match="node()[name(.)='auth-server-url-for-backend-requests']">
+  </xsl:template>
+
   <!-- Add new secure-deployment -->
   <xsl:template match="node()[name(.)='secure-deployment'][last()]">
 
