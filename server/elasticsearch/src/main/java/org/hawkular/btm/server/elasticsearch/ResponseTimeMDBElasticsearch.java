@@ -105,7 +105,7 @@ public class ResponseTimeMDBElasticsearch implements MessageListener {
 
             if (bulkItemResponses.hasFailures()) {
 
-                // TODO: Candidate for retry???
+                // TODO: Candidate for retry??? HWKBTM-187
                 log.severe("Failed to store response times: " + bulkItemResponses.buildFailureMessage());
 
                 if (log.isLoggable(Level.FINEST)) {

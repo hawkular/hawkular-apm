@@ -83,6 +83,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
@@ -282,6 +283,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
         btxn1.getProperties().put("hello", "world");
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -321,6 +323,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
         btxn1.getProperties().put("hello", "world");
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -358,6 +361,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Global);
@@ -404,6 +408,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Global);

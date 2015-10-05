@@ -41,7 +41,6 @@ public class BusinessTransactionCriteria {
     private long endTime = 0L;
     private Map<String, String> properties = new HashMap<String, String>();
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
-    private long correlationTime = 0L;
 
     /**
      * @return the startTime
@@ -108,22 +107,6 @@ public class BusinessTransactionCriteria {
     }
 
     /**
-     * @return the correlationTime
-     */
-    public long getCorrelationTime() {
-        return correlationTime;
-    }
-
-    /**
-     * @param correlationTime the correlationTime to set
-     * @return The criteria
-     */
-    public BusinessTransactionCriteria setCorrelationTime(long correlationTime) {
-        this.correlationTime = correlationTime;
-        return this;
-    }
-
-    /**
      * This method determines whether the supplied business transaction
      * meets the criteria.
      *
@@ -182,6 +165,6 @@ public class BusinessTransactionCriteria {
     @Override
     public String toString() {
         return "BusinessTransactionCriteria [startTime=" + startTime + ", endTime=" + endTime + ", properties="
-                + properties + ", correlationIds=" + correlationIds + ", correlationTime=" + correlationTime + "]";
+                + properties + ", correlationIds=" + correlationIds + "]";
     }
 }

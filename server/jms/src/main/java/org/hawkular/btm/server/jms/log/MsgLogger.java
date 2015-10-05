@@ -30,16 +30,16 @@ import org.jboss.logging.annotations.ValidIdRange;
  * @author gbrown
  */
 @MessageLogger(projectCode = "HAWKBTM")
-@ValidIdRange(min = 610000, max = 619999)
+@ValidIdRange(min = 600100, max = 600199)
 public interface MsgLogger extends BasicLogger {
     MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 610000, value = "Failed to initialise [%s] publisher")
+    @Message(id = 600100, value = "Failed to initialise [%s] publisher")
     void errorFailedToInitPublisher(String destination, @Cause Throwable t);
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 610001, value = "Failed to close [%s] publisher")
+    @Message(id = 600101, value = "Failed to close [%s] publisher")
     void errorFailedToClosePublisher(String destination, @Cause Throwable t);
 
 }
