@@ -30,7 +30,7 @@
           "alias": "Components",
           "pin": true,
           "type": "lucene",
-          "enable": true,
+          "enable": false,
           "query": "type: \"Component\""
         }
       },
@@ -57,10 +57,19 @@
           "active": true,
           "alias": "",
           "id": 1
+        },
+        "1": {
+          "type": "querystring",
+          "query": "type: Component",
+          "mandate": "mustNot",
+          "active": true,
+          "alias": "",
+          "id": 1
         }
       },
       "ids": [
-        0
+        0,
+        1
       ]
     }
   },
@@ -83,8 +92,7 @@
             "mode": "all",
             "ids": [
               0,
-              1,
-              2
+              1
             ]
           },
           "value_field": "duration",
@@ -241,7 +249,10 @@
           "time_field": "timestamp",
           "queries": {
             "mode": "all",
-            "ids": []
+            "ids": [
+              0,
+              1
+            ]
           },
           "value_field": "duration",
           "auto_int": false,
