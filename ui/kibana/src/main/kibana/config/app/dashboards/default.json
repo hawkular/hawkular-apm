@@ -49,19 +49,19 @@
       ],
       "list": {
         "0": {
+          "type": "querystring",
+          "query": "type: Component",
+          "mandate": "mustNot",
+          "active": true,
+          "alias": "",
+          "id": 0
+        },
+        "1": {
           "type": "time",
           "field": "timestamp",
           "from": "now-24h",
           "to": "now",
           "mandate": "must",
-          "active": true,
-          "alias": "",
-          "id": 1
-        },
-        "1": {
-          "type": "querystring",
-          "query": "type: Component",
-          "mandate": "mustNot",
           "active": true,
           "alias": "",
           "id": 1
