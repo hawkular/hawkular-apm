@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.server.api.log;
+package org.hawkular.btm.server.elasticsearch.log;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
@@ -30,12 +30,20 @@ import org.jboss.logging.annotations.ValidIdRange;
  * @author gbrown
  */
 @MessageLogger(projectCode = "HAWKBTM")
-@ValidIdRange(min = 600000, max = 600099)
+@ValidIdRange(min = 600200, max = 600299)
 public interface MsgLogger extends BasicLogger {
     MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
 
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 600200, value = "Failed to initialise Elasticsearch client")
+    void errorFailedToInitialiseElasticsearchClient(@Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 600201, value = "Failed to parse business transaction")
+    void errorFailedToParseBusinessTransaction(@Cause Throwable t);
+
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 600000, value = "Maximum retry reached. Last exception to occur ....")
-    void warnMaxRetryReached(@Cause Throwable t);
+    @Message(id = 600202, value = "Business Transaction query timed out")
+    void warnBusinessTransactionQueryTimedOut();
 
 }

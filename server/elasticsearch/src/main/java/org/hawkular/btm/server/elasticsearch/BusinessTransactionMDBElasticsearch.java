@@ -93,8 +93,6 @@ public class BusinessTransactionMDBElasticsearch implements MessageListener {
 
             List<BusinessTransaction> btxns = mapper.readValue(data, BUSINESS_TXN_LIST);
 
-            BusinessTransactionRepository.store(tenantId, btxns);
-
             BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
 
             for (int i = 0; i < btxns.size(); i++) {
@@ -107,8 +105,8 @@ public class BusinessTransactionMDBElasticsearch implements MessageListener {
 
             if (bulkItemResponses.hasFailures()) {
 
-                // TODO: Candidate for retry???
-                log.severe("Failed to store response times: " + bulkItemResponses.buildFailureMessage());
+                // TODO: Candidate for retry??? HWKBTM-187
+                log.severe("Failed to store business transactions: " + bulkItemResponses.buildFailureMessage());
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Failed to store business transactions to elasticsearch: "

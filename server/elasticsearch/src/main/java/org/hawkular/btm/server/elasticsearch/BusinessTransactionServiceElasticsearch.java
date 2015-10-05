@@ -16,14 +16,30 @@
  */
 package org.hawkular.btm.server.elasticsearch;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.jboss.logging.Logger;
+import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides the in-memory implementation of the Business Transaction
@@ -35,16 +51,83 @@ import org.jboss.logging.Logger;
 @Singleton
 public class BusinessTransactionServiceElasticsearch implements BusinessTransactionService {
 
-    private final Logger log = Logger.getLogger(BusinessTransactionServiceElasticsearch.class);
+    private final MsgLogger msgLog = MsgLogger.LOGGER;
+
+    /**  */
+    private static final String BUSINESS_TRANSACTION_TYPE = "businesstransaction";
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    private ElasticsearchClient client;
+
+    /**  */
+    private static int DEFAULT_RESPONSE_SIZE = 100000;
+
+    /**  */
+    private static long DEFAULT_TIMEOUT = 10000L;
+
+    private long timeout = DEFAULT_TIMEOUT;
+
+    private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
+
+    @PostConstruct
+    public void init() {
+        client = new ElasticsearchClient();
+        try {
+            client.init();
+        } catch (Exception e) {
+            msgLog.errorFailedToInitialiseElasticsearchClient(e);
+        }
+    }
+
+    /**
+     * This method stores the supplied business transactions.
+     *
+     * @param tenantId The tenant id
+     * @param btxns The list of transactions
+     */
+    protected void store(String tenantId, List<BusinessTransaction> btxns) {
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        for (int i = 0; i < btxns.size(); i++) {
+            BusinessTransaction btxn = btxns.get(i);
+            try {
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        BUSINESS_TRANSACTION_TYPE, btxn.getId()).setSource(mapper.writeValueAsString(btxn)));
+            } catch (JsonProcessingException e) {
+                msgLog.error("Failed to store business transaction", e);
+            }
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+            msgLog.error("Failed to store business transactions: " + bulkItemResponses.buildFailureMessage());
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String,java.lang.String)
      */
     @Override
     public BusinessTransaction get(String tenantId, String id) {
-        BusinessTransaction ret = BusinessTransactionRepository.get(tenantId, id);
+        BusinessTransaction ret = null;
 
-        log.tracef("Get business transaction with id[%s] is: %s", id, ret);
+        GetResponse response = client.getElasticsearchClient().prepareGet(
+                client.getIndex(tenantId), BUSINESS_TRANSACTION_TYPE, id).setRouting(id)
+                .execute()
+                .actionGet();
+        if (!response.isSourceEmpty()) {
+            try {
+                ret = mapper.readValue(response.getSourceAsString(), BusinessTransaction.class);
+            } catch (Exception e) {
+                msgLog.errorFailedToParseBusinessTransaction(e);
+            }
+        }
+
+        if (msgLog.isTraceEnabled()) {
+            msgLog.tracef("Get business transaction with id[%s] is: %s", id, ret);
+        }
 
         return ret;
     }
@@ -55,9 +138,69 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
      */
     @Override
     public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
-        List<BusinessTransaction> ret = BusinessTransactionRepository.query(tenantId, criteria);
+        List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
 
-        log.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        long startTime = criteria.getStartTime();
+        long endTime = criteria.getEndTime();
+
+        if (endTime == 0) {
+            endTime = System.currentTimeMillis();
+        }
+
+        if (startTime == 0) {
+            // Set to 1 hour before end time
+            startTime = endTime - 3600000;
+        }
+
+        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.rangeQuery("startTime").from(startTime).to(endTime));
+
+        if (!criteria.getCorrelationIds().isEmpty()) {
+            for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
+                b2.must(QueryBuilders.termQuery("value", id.getValue()));
+                /* HWKBTM-186
+                b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
+                        QueryBuilders.boolQuery()
+                                .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
+                                .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
+                */
+            }
+        }
+
+        if (!criteria.getProperties().isEmpty()) {
+            for (String key : criteria.getProperties().keySet()) {
+                b2 = b2.must(QueryBuilders.matchQuery("properties."+key, criteria.getProperties().get(key)));
+            }
+        }
+
+        SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(BUSINESS_TRANSACTION_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setTimeout(TimeValue.timeValueMillis(timeout))
+                .setSize(maxResponseSize)
+                .setQuery(b2).execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnBusinessTransactionQueryTimedOut();
+        }
+
+        for (SearchHit searchHitFields : response.getHits()) {
+            try {
+                ret.add(mapper.readValue(searchHitFields.getSourceAsString(),
+                        BusinessTransaction.class));
+            } catch (Exception e) {
+                msgLog.errorFailedToParseBusinessTransaction(e);
+            }
+        }
+
+        if (msgLog.isTraceEnabled()) {
+            msgLog.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
+        }
 
         return ret;
     }
