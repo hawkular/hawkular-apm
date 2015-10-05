@@ -1,4 +1,7 @@
 {
+  "properties": {
+    "hawkular-btm.collector.onlynamed": "false"
+  },
   "businessTransactions": {
     "btm": {
       "description": "Configuration for the Business Transaction Management system",
@@ -6,6 +9,28 @@
         "exclusions": [
           "^/hawkular/btm",
           "^/auth/"
+        ]
+      }
+    },
+    "webpages": {
+      "description": "Configuration for excluding Web pages and their resources",
+      "filter": {
+        "exclusions": [
+          "\\.html$",
+          "\\.js$",
+          "\\.gif$",
+          "\\.bmp$",
+          "\\.jpg$",
+          "\\.tif$",
+          "\\.png$"
+        ]
+      }
+    },
+    "xsd": {
+      "description": "Configuration for excluding xsds",
+      "filter": {
+        "exclusions": [
+          "\\.xsd$"
         ]
       }
     }
