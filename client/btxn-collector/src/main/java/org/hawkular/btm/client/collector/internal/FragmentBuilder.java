@@ -61,10 +61,10 @@ public class FragmentBuilder {
     private static String hostName;
     private static String hostAddress;
 
-    private int inHashCode=0;
-    private ByteArrayOutputStream inStream=null;
-    private int outHashCode=0;
-    private ByteArrayOutputStream outStream=null;
+    private int inHashCode = 0;
+    private ByteArrayOutputStream inStream = null;
+    private int outHashCode = 0;
+    private ByteArrayOutputStream outStream = null;
 
     static {
         try {
@@ -82,10 +82,10 @@ public class FragmentBuilder {
 
     {
         businessTransaction = new BusinessTransaction()
-                .setId(UUID.randomUUID().toString())
-                .setStartTime(System.currentTimeMillis())
-                .setHostName(hostName)
-                .setHostAddress(hostAddress);
+        .setId(UUID.randomUUID().toString())
+        .setStartTime(System.currentTimeMillis())
+        .setHostName(hostName)
+        .setHostAddress(hostAddress);
     }
 
     /**
@@ -119,22 +119,49 @@ public class FragmentBuilder {
     }
 
     /**
-     * This method returns the node stack.
-     *
-     * @return The node stack
+     * @return the nodeStack
      */
-    public Stack<Node> getNodeStack() {
+    protected Stack<Node> getNodeStack() {
         return nodeStack;
     }
 
     /**
-     * This method returns the popped nodes within the scope of the current
-     * node.
-     *
-     * @return The popped nodes
+     * @return the poppedNodes
      */
-    public Stack<Node> getPoppedNodes() {
+    protected Stack<Node> getPoppedNodes() {
         return poppedNodes;
+    }
+
+    /**
+     * This method returns the latest node of the specified type,
+     * either on the stack, or on the 'popped' nodes.
+     *
+     * @param nodeType The node type
+     * @param onStack Whether from the stack
+     * @return The node, or null if not found
+     */
+    public Node getLatestNode(String nodeType, boolean onStack) {
+        Node node = null;
+
+        synchronized (nodeStack) {
+            Stack<Node> stack = (onStack ? nodeStack : poppedNodes);
+
+            for (int i = 0; node == null && i < stack.size(); i++) {
+                Node n = stack.elementAt(i);
+
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Get latest node: checking node type '" + nodeType
+                            + "' against '" + n.getClass().getSimpleName()
+                            + "' with node=" + n);
+                }
+
+                if (n.getClass().getSimpleName().equals(nodeType)) {
+                    node = n;
+                }
+            }
+        }
+
+        return node;
     }
 
     /**
@@ -376,9 +403,9 @@ public class FragmentBuilder {
             try {
                 inStream.close();
             } catch (IOException e) {
-                log.severe("Failed to close in data stream: "+e);
+                log.severe("Failed to close in data stream: " + e);
             }
-            byte[] b=inStream.toByteArray();
+            byte[] b = inStream.toByteArray();
             inStream = null;
             return b;
         }
@@ -431,9 +458,9 @@ public class FragmentBuilder {
             try {
                 outStream.close();
             } catch (IOException e) {
-                log.severe("Failed to close out data stream: "+e);
+                log.severe("Failed to close out data stream: " + e);
             }
-            byte[] b=outStream.toByteArray();
+            byte[] b = outStream.toByteArray();
             outStream = null;
             return b;
         }
@@ -453,11 +480,15 @@ public class FragmentBuilder {
         info.append(" unlinkedIds=");
         info.append(getUncompletedCorrelationIds());
         info.append(" stack=\r\n");
-        for (Node node : nodeStack) {
-            info.append("         node: ");
-            info.append(node);
-            info.append("\r\n");
+
+        synchronized (nodeStack) {
+            for (Node node : nodeStack) {
+                info.append("         node: ");
+                info.append(node);
+                info.append("\r\n");
+            }
         }
+
         return (info.toString());
     }
 }
