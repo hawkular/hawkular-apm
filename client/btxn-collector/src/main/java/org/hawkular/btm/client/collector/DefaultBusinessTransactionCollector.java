@@ -18,7 +18,6 @@ package org.hawkular.btm.client.collector;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
@@ -630,21 +629,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 if (nodeType == null) {
                     node = builder.getCurrentNode();
                 } else {
-                    Stack<Node> stack = (onStack ? builder.getNodeStack() : builder.getPoppedNodes());
-
-                    for (int i = 0; node == null && i < stack.size(); i++) {
-                        Node n = stack.elementAt(i);
-
-                        if (log.isLoggable(Level.FINEST)) {
-                            log.finest("Set node details: checking node type '" + nodeType
-                                    + "' against '" + n.getClass().getSimpleName()
-                                    + "' with node=" + n);
-                        }
-
-                        if (n.getClass().getSimpleName().equals(nodeType)) {
-                            node = n;
-                        }
-                    }
+                    node = builder.getLatestNode(nodeType, onStack);
                 }
 
                 if (node != null) {
