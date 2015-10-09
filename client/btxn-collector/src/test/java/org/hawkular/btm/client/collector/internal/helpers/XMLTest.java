@@ -18,6 +18,7 @@ package org.hawkular.btm.client.collector.internal.helpers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -25,10 +26,10 @@ import org.w3c.dom.Node;
 /**
  * @author gbrown
  */
-public class XMLHelperTest {
+public class XMLTest {
 
     @Test
-    public void testEvaluateOrderId() {
+    public void testEvaluateOrderIdText() {
         String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                 + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
                 + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
@@ -36,11 +37,42 @@ public class XMLHelperTest {
                 + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
                 + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
 
-        String result = XMLHelper.evaluate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
+        String result = XML.evaluate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
                 + "/*[local-name() = 'submitOrder']/order/orderId/text()", xml);
 
         assertNotNull(result);
         assertEquals("1", result);
+    }
+
+    @Test
+    public void testEvaluateOrderIdNode() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        String result = XML.evaluate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
+                + "/*[local-name() = 'submitOrder']/order/orderId", xml);
+
+        assertNotNull(result);
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><orderId>1</orderId>", result);
+    }
+
+    @Test
+    public void testEvaluateMissingNode() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        String result = XML.evaluate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
+                + "/*[local-name() = 'submitOrder']/invalid", xml);
+
+        assertNull(result);
     }
 
     @Test
@@ -52,7 +84,7 @@ public class XMLHelperTest {
                 + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
                 + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
 
-        Node result = XMLHelper.selectNode("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
+        Node result = XML.selectNode("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
                 + "/*[local-name() = 'submitOrder']/order", xml);
 
         assertNotNull(result);

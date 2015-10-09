@@ -19,11 +19,13 @@ package org.hawkular.btm.client.collector.internal.helpers;
 import org.hawkular.btm.api.logging.Logger;
 
 /**
+ * This class represents helper functions for processing Text.
+ *
  * @author gbrown
  */
-public class TextHelper {
+public class Text {
 
-    private static final Logger log = Logger.getLogger(TextHelper.class.getName());
+    private static final Logger log = Logger.getLogger(Text.class.getName());
 
     /**
      * This method converts the supplied object to a string.
@@ -31,7 +33,7 @@ public class TextHelper {
      * @param value The value
      * @return The string, or null if an error occurred
      */
-    public static String toString(Object value) {
+    public static String serialize(Object value) {
         if (value instanceof String) {
             return (String) value;
         } else if (value instanceof byte[]) {

@@ -37,9 +37,9 @@ import org.w3c.dom.Node;
 /**
  * @author gbrown
  */
-public class XMLHelper {
+public class XML {
 
-    private static final Logger log = Logger.getLogger(XMLHelper.class.getName());
+    private static final Logger log = Logger.getLogger(XML.class.getName());
 
     /**  */
     private static final String DEFAULT_INDENT = "yes";
@@ -53,17 +53,60 @@ public class XMLHelper {
      * @return The string, or null if an error occurred
      */
     public static String serialize(Object node) {
+        String ret = null;
+
         if (node instanceof String) {
-            return (String)node;
+            ret = (String) node;
         } else if (node instanceof byte[]) {
-            return new String((byte[])node);
+            ret = new String((byte[]) node);
         } else if (node instanceof DOMSource) {
-            return serializeDOMSource((DOMSource)node);
+            ret = serializeDOMSource((DOMSource) node);
         } else if (node instanceof Node) {
-            return serializeNode((Node)node);
+            ret = serializeNode((Node) node);
         } else {
-            log.severe("Unable to serialize '"+node+"'");
+            log.severe("Unable to serialize '" + node + "'");
         }
+
+        if (ret != null) {
+            ret = ret.trim();
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method evaluates the xpath expression on the supplied
+     * node. The result can either be a document fragment, a
+     * text node value or null if the expression references a
+     * missing part of the document.
+     *
+     * @param xpath The xpath expression
+     * @param node The node
+     * @return The result, or null if not found (which may be due to an expression error)
+     */
+    public static String evaluate(String xpath, Object node) {
+        Node domNode = getNode(node);
+
+        if (domNode == null) {
+            log.severe("Unable to evaluate non DOM Node object");
+            return null;
+        }
+
+        // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
+        try {
+            XPath xp = XPathFactory.newInstance().newXPath();
+            Node result = (Node) xp.evaluate(xpath, domNode, XPathConstants.NODE);
+
+            if (result != null) {
+                if (result.getNodeType() == Node.TEXT_NODE) {
+                    return result.getNodeValue();
+                }
+                return serialize(result);
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to evaluate xpath '" + xpath + "'", e);
+        }
+
         return null;
     }
 
@@ -73,7 +116,7 @@ public class XMLHelper {
      * @param node The node
      * @return The string, or null if an error occurred
      */
-    public static String serializeNode(Node node) {
+    protected static String serializeNode(Node node) {
         return serializeDOMSource(new DOMSource(node));
     }
 
@@ -83,7 +126,7 @@ public class XMLHelper {
      * @param domSource The DOM source
      * @return The string, or null if an error occurred
      */
-    public static String serializeDOMSource(DOMSource domSource) {
+    protected static String serializeDOMSource(DOMSource domSource) {
         try {
             StringWriter writer = new StringWriter();
             StreamResult result = new StreamResult(writer);
@@ -106,15 +149,15 @@ public class XMLHelper {
      * @param node The node
      * @return The string, or null if an error occurred
      */
-    public static Node deserialize(Object node) {
+    protected static Node deserialize(Object node) {
         if (node instanceof Node) {
-            return (Node)node;
+            return (Node) node;
         } else if (node instanceof byte[]) {
-            return deserializeString(new String((byte[])node));
+            return deserializeString(new String((byte[]) node));
         } else if (node instanceof String) {
-            return deserializeString((String)node);
+            return deserializeString((String) node);
         } else {
-            log.severe("Unable to serialize '"+node+"'");
+            log.severe("Unable to serialize '" + node + "'");
         }
         return null;
     }
@@ -125,10 +168,10 @@ public class XMLHelper {
      * @param doc The XML document
      * @return The DOM node, or null if an error occurred
      */
-    public static Node deserializeString(String doc) {
+    protected static Node deserializeString(String doc) {
         try {
-            StringReader reader=new StringReader(doc);
-            StreamSource source=new StreamSource(reader);
+            StringReader reader = new StringReader(doc);
+            StreamSource source = new StreamSource(reader);
             DOMResult result = new DOMResult();
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
@@ -143,33 +186,6 @@ public class XMLHelper {
     }
 
     /**
-     * This method evaluates the xpath expression on the supplied
-     * node.
-     *
-     * @param xpath The xpath expression
-     * @param node The node
-     * @return The result, or null if error occurred
-     */
-    public static String evaluate(String xpath, Object node) {
-        Node domNode = getNode(node);
-
-        if (domNode == null) {
-            log.severe("Unable to evaluate non DOM Node object");
-            return null;
-        }
-
-        // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
-        try {
-            XPath xp = XPathFactory.newInstance().newXPath();
-            return xp.evaluate(xpath, domNode);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to evaluate xpath '"+xpath+"'", e);
-        }
-
-        return null;
-    }
-
-    /**
      * This method obtains the node, identified by the xpath
      * expression, from the supplied node.
      *
@@ -177,7 +193,7 @@ public class XMLHelper {
      * @param node The root node
      * @return The selected node, or null if not found
      */
-    public static Node selectNode(String xpath, Object node) {
+    protected static Node selectNode(String xpath, Object node) {
         Node domNode = getNode(node);
 
         if (domNode == null) {
@@ -188,9 +204,9 @@ public class XMLHelper {
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
         try {
             XPath xp = XPathFactory.newInstance().newXPath();
-            return (Node)xp.evaluate(xpath, domNode, XPathConstants.NODE);
+            return (Node) xp.evaluate(xpath, domNode, XPathConstants.NODE);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to select node for xpath '"+xpath+"'", e);
+            log.log(Level.SEVERE, "Failed to select node for xpath '" + xpath + "'", e);
         }
 
         return null;
@@ -205,14 +221,14 @@ public class XMLHelper {
      */
     protected static Node getNode(Object node) {
         if (node instanceof Node) {
-            return (Node)node;
+            return (Node) node;
         } else if (node instanceof DOMSource) {
-            return ((DOMSource)node).getNode();
+            return ((DOMSource) node).getNode();
         } else {
-            Node n=deserialize(node);
+            Node n = deserialize(node);
 
             if (n == null) {
-                log.severe("Cannot convert '"+node+"' to DOM node");
+                log.severe("Cannot convert '" + node + "' to DOM node");
             } else {
                 return n;
             }
