@@ -19,8 +19,8 @@ package org.hawkular.btm.client.collector.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 
 /**
  * This class manages the filtering of URIs.

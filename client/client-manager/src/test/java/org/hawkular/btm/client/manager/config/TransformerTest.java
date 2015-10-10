@@ -18,10 +18,10 @@ package org.hawkular.btm.client.manager.config;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.model.admin.FreeFormAction;
-import org.hawkular.btm.api.model.admin.InstrumentBind;
-import org.hawkular.btm.api.model.admin.InstrumentRule;
-import org.hawkular.btm.api.model.admin.Instrumentation;
+import org.hawkular.btm.api.model.config.instrumentation.FreeFormAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentBind;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentRule;
+import org.hawkular.btm.api.model.config.instrumentation.Instrumentation;
 import org.hawkular.btm.client.manager.RuleHelper;
 import org.junit.Test;
 

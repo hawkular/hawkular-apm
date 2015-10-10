@@ -19,7 +19,7 @@ package org.hawkular.btm.client.manager.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.hawkular.btm.api.model.admin.Direction;
+import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 
 /**

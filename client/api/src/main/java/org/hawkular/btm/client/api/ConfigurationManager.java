@@ -16,7 +16,7 @@
  */
 package org.hawkular.btm.client.api;
 
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
 
 /**
  * This interface represents the BTM client side configuration manager.

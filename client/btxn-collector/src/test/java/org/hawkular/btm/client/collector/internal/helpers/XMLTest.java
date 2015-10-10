@@ -17,8 +17,10 @@
 package org.hawkular.btm.client.collector.internal.helpers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -73,6 +75,36 @@ public class XMLTest {
                 + "/*[local-name() = 'submitOrder']/invalid", xml);
 
         assertNull(result);
+    }
+
+    @Test
+    public void testPredicateFoundNode() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        boolean result = XML.predicate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
+                + "/*[local-name() = 'submitOrder']/order", xml);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void testPredicateMissingNode() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        boolean result = XML.predicate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
+                + "/*[local-name() = 'submitOrder']/invalid", xml);
+
+        assertFalse(result);
     }
 
     @Test

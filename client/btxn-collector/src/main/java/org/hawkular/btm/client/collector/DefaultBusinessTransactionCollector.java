@@ -24,8 +24,6 @@ import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
-import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -35,6 +33,8 @@ import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.ServiceResolver;

@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

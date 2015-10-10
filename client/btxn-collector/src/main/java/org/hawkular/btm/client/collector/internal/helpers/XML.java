@@ -75,6 +75,37 @@ public class XML {
     }
 
     /**
+     * This method evaluates the predicate based on the xpath
+     * expression on the supplied node.
+     *
+     * @param xpath The xpath expression
+     * @param node The node
+     * @return The result
+     */
+    public static boolean predicate(String xpath, Object node) {
+        Node domNode = getNode(node);
+
+        if (domNode == null) {
+            log.severe("Unable to evaluate non DOM Node object");
+            return false;
+        }
+
+        // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
+        try {
+            XPath xp = XPathFactory.newInstance().newXPath();
+            Boolean result = (Boolean) xp.evaluate(xpath, domNode, XPathConstants.BOOLEAN);
+
+            if (result != null) {
+                return result;
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to execute predicate xpath '" + xpath + "'", e);
+        }
+
+        return false;
+    }
+
+    /**
      * This method evaluates the xpath expression on the supplied
      * node. The result can either be a document fragment, a
      * text node value or null if the expression references a

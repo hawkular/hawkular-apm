@@ -19,7 +19,7 @@ package org.hawkular.btm.client.collector.internal;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.btm.api.model.admin.Filter;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.junit.Test;
 
 /**

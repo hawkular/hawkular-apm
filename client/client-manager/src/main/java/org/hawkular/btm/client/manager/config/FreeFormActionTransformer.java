@@ -16,8 +16,8 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.FreeFormAction;
-import org.hawkular.btm.api.model.admin.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.FreeFormAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
 
 /**
  * This class transforms the FreeFormAction type.

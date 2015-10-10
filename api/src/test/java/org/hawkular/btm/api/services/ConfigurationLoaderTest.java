@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.nio.file.Paths;
 
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.junit.After;
 import org.junit.Test;
 

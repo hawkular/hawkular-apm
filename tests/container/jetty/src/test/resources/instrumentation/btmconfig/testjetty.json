@@ -14,7 +14,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "Text.serialize(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       },{
         "nodeType": "Consumer",
@@ -23,7 +27,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "Text.serialize(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       },{
         "nodeType": "Producer",
@@ -32,7 +40,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "Text.serialize(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       },{
         "nodeType": "Producer",
@@ -41,7 +53,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "Text.serialize(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       }]
     }

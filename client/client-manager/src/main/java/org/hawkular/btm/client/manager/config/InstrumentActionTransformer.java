@@ -16,7 +16,7 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
 
 /**
  * This interface represents a transformer to convert the instrumentation

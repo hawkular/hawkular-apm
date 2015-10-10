@@ -18,8 +18,8 @@ package org.hawkular.btm.client.manager.config;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.model.admin.Direction;
-import org.hawkular.btm.api.model.admin.InstrumentProducer;
+import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentProducer;
 import org.junit.Test;
 
 /**

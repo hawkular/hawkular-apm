@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.InstrumentBind;
-import org.hawkular.btm.api.model.admin.InstrumentRule;
-import org.hawkular.btm.api.model.admin.Instrumentation;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentBind;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentRule;
+import org.hawkular.btm.api.model.config.instrumentation.Instrumentation;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.manager.RuleHelper;
 

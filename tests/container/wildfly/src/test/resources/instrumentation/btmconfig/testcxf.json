@@ -14,7 +14,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "new String(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       },{
         "nodeType": "Consumer",
@@ -23,7 +27,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "new String(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       }]
     }
