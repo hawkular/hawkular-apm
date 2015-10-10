@@ -22,7 +22,7 @@ import java.util.Base64;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 

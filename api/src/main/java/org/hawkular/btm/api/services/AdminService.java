@@ -16,7 +16,7 @@
  */
 package org.hawkular.btm.api.services;
 
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
 
 /**
  * This interface provides the administration capabilities.

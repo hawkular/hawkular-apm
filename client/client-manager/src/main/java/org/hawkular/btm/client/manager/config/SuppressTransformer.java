@@ -16,8 +16,8 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.Suppress;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.Suppress;
 
 /**
  * This class transforms the Suppress action type.

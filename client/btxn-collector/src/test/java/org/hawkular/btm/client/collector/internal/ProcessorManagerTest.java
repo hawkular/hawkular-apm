@@ -24,12 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
-import org.hawkular.btm.api.model.admin.Direction;
-import org.hawkular.btm.api.model.admin.Processor;
-import org.hawkular.btm.api.model.admin.ProcessorAction;
-import org.hawkular.btm.api.model.admin.ProcessorAction.ActionType;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -38,6 +32,13 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.NodeType;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.FreeForm;
+import org.hawkular.btm.api.model.config.btxn.Processor;
+import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.config.btxn.ProcessorAction.ActionType;
 import org.junit.Test;
 
 /**
@@ -61,7 +62,9 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        FreeForm expr=new FreeForm();
+        expr.setValue("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(expr);
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -91,8 +94,8 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setPredicate("true");
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setPredicate(new FreeForm("true"));
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -122,8 +125,8 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setPredicate("false");
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setPredicate(new FreeForm("false"));
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -153,7 +156,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -183,7 +186,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -214,7 +217,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -246,7 +249,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -279,7 +282,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -310,7 +313,7 @@ public class ProcessorManagerTest {
         p1.getActions().add(pa1);
 
         pa1.setActionType(ActionType.SetFault);
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -341,7 +344,7 @@ public class ProcessorManagerTest {
         p1.getActions().add(pa1);
 
         pa1.setActionType(ActionType.SetFaultDescription);
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -373,7 +376,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("test");
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -406,7 +409,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.AddContent);
         pa1.setName("test");
         pa1.setType("MessageType");
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -448,7 +451,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.AddCorrelationId);
         pa1.setScope(Scope.Global);
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -487,7 +490,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -523,7 +526,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -561,7 +564,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -600,7 +603,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"OperationFound\"");
+        pa1.setExpression(new FreeForm("\"OperationFound\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -633,7 +636,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -668,7 +671,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -704,7 +707,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -735,7 +738,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -766,7 +769,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
-        pa1.setExpression("\"FaultRecorded\"");
+        pa1.setExpression(new FreeForm("\"FaultRecorded\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -801,7 +804,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.AddContent);
         pa1.setName("test");
         pa1.setType("MessageType");
-        pa1.setExpression("values[1]");
+        pa1.setExpression(new FreeForm("values[1]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -834,7 +837,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setExpression("\"hello\"");
+        pa1.setExpression(new FreeForm("\"hello\""));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -866,7 +869,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setExpression("headers.get(\"hello\")");
+        pa1.setExpression(new FreeForm("headers.get(\"hello\"))"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -898,7 +901,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setExpression("headers.get(\"hello\")");
+        pa1.setExpression(new FreeForm("headers.get(\"hello\")"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -932,7 +935,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setExpression("values[0]");
+        pa1.setExpression(new FreeForm("values[0]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -964,7 +967,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
-        pa1.setExpression("values[0]");
+        pa1.setExpression(new FreeForm("values[0]"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -996,7 +999,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 
@@ -1028,7 +1031,7 @@ public class ProcessorManagerTest {
         ProcessorAction pa1 = new ProcessorAction();
         p1.getActions().add(pa1);
 
-        pa1.setExpression("node.getDetails().put(\"test\",values[1])");
+        pa1.setExpression(new FreeForm("node.getDetails().put(\"test\",values[1])"));
 
         ProcessorManager pm = new ProcessorManager(cc);
 

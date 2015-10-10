@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import org.hawkular.btm.api.model.admin.Filter;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 
 /**
  * This class is responsible for applying a filter to a supplied node.

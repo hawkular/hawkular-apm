@@ -16,8 +16,8 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.SetDetail;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.SetDetail;
 
 /**
  * This class transforms the SetDetail action type.

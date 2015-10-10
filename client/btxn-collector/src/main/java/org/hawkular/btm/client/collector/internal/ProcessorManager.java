@@ -25,17 +25,17 @@ import java.util.regex.Pattern;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
-import org.hawkular.btm.api.model.admin.Direction;
-import org.hawkular.btm.api.model.admin.Processor;
-import org.hawkular.btm.api.model.admin.ProcessorAction;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.NodeType;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.Processor;
+import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 
@@ -424,35 +424,39 @@ public class ProcessorManager {
                 ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
 
                 if (action.getPredicate() != null) {
-                    compiledPredicate = MVEL.compileExpression(action.getPredicate(), ctx);
+                    String text=action.getPredicate().predicateText();
+
+                    compiledPredicate = MVEL.compileExpression(text, ctx);
 
                     if (compiledPredicate == null) {
-                        log.severe("Failed to compile action predicate '" + action.getPredicate() + "'");
+                        log.severe("Failed to compile action predicate '" + text + "'");
                     } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor action predicate '" + action.getPredicate()
+                        log.fine("Initialised processor action predicate '" + text
                                 + "' = " + compiledPredicate);
                     }
 
                     // Check if headers referenced
-                    usesHeaders = action.getPredicate().indexOf("headers.") != -1;
-                    usesContent = action.getPredicate().indexOf("values[") != -1;
+                    usesHeaders = text.indexOf("headers.") != -1;
+                    usesContent = text.indexOf("values[") != -1;
                 }
                 if (action.getExpression() != null) {
-                    compiledAction = MVEL.compileExpression(action.getExpression(), ctx);
+                    String text=action.getExpression().evaluateText();
+
+                    compiledAction = MVEL.compileExpression(text, ctx);
 
                     if (compiledAction == null) {
-                        log.severe("Failed to compile action '" + action.getExpression() + "'");
+                        log.severe("Failed to compile action '" + text + "'");
                     } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor action '" + action.getExpression()
+                        log.fine("Initialised processor action '" + text
                                 + "' = " + compiledAction);
                     }
 
                     // Check if headers referenced
                     if (!usesHeaders) {
-                        usesHeaders = action.getExpression().indexOf("headers.") != -1;
+                        usesHeaders = text.indexOf("headers.") != -1;
                     }
                     if (!usesContent) {
-                        usesContent = action.getExpression().indexOf("values[") != -1;
+                        usesContent = text.indexOf("values[") != -1;
                     }
                 } else {
                     log.severe("No action expression defined for processor action=" + action);

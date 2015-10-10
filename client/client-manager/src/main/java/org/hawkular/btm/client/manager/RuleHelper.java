@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.admin.Direction;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.HeadersAccessor;

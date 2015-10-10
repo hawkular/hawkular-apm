@@ -14,11 +14,18 @@
         "actions": [{
           "name": "hello",
           "actionType": "SetDetail",
-          "expression": "\"Hello World\""
+          "expression": {
+            "type": "Literal",
+            "value": "Hello World"
+          }
         },{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "Text.serialize(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       },{
         "nodeType": "Producer",
@@ -27,7 +34,11 @@
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
-          "expression": "Text.serialize(values[0])"
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
         }]
       }]
     }

@@ -21,9 +21,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.hawkular.btm.api.model.admin.BusinessTxnConfig;
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
-import org.hawkular.btm.api.model.admin.Filter;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.junit.Test;
 
 /**

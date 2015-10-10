@@ -16,10 +16,10 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.CollectorAction;
-import org.hawkular.btm.api.model.admin.Direction;
-import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.InstrumentConsumer;
+import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.instrumentation.CollectorAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentConsumer;
 
 /**
  * This class transforms the InstrumentConsumer type.

@@ -16,9 +16,9 @@
  */
 package org.hawkular.btm.client.manager.config;
 
-import org.hawkular.btm.api.model.admin.CollectorAction;
-import org.hawkular.btm.api.model.admin.InstrumentAction;
-import org.hawkular.btm.api.model.admin.InstrumentComponent;
+import org.hawkular.btm.api.model.config.instrumentation.CollectorAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentAction;
+import org.hawkular.btm.api.model.config.instrumentation.InstrumentComponent;
 
 /**
  * This class transforms the InstrumentComponent type.

@@ -18,7 +18,7 @@ package org.hawkular.btm.admin.service.inmemory;
 
 import javax.inject.Singleton;
 
-import org.hawkular.btm.api.model.admin.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 
