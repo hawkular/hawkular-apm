@@ -19,27 +19,27 @@ package org.hawkular.btm.api.model.config.btxn;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents a literal.
+ * This class represents expression that can be applied to XML data.
  *
  * @author gbrown
  */
-public class Literal extends Expression {
+public class XMLExpression extends DataExpression {
 
     @JsonInclude
-    private String value;
+    private String xpath;
 
     /**
-     * @return the value
+     * @return the xpath
      */
-    public String getValue() {
-        return value;
+    public String getXpath() {
+        return xpath;
     }
 
     /**
-     * @param value the value to set
+     * @param xpath the xpath to set
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setXpath(String xpath) {
+        this.xpath = xpath;
     }
 
     /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class Literal extends Expression {
      */
     @Override
     public String predicateText() {
-        throw new IllegalStateException("Literal expression should not be used for predicate");
+        return text("predicate");
     }
 
     /* (non-Javadoc)
@@ -55,10 +55,28 @@ public class Literal extends Expression {
      */
     @Override
     public String evaluateText() {
+        return text("evaluate");
+    }
+
+    /**
+     * This method returns the expression text.
+     *
+     * @param type The type of expression
+     * @return The expression text
+     */
+    protected String text(String type) {
         StringBuffer buf = new StringBuffer();
-        buf.append("\"");
-        buf.append(value);
-        buf.append("\"");
+        buf.append("XML.");
+        buf.append(type);
+        if (xpath == null || xpath.trim().length() == 0) {
+            buf.append("(null,");
+        } else {
+            buf.append("(\"");
+            buf.append(xpath);
+            buf.append("\",");
+        }
+        buf.append(dataSourceText());
+        buf.append(")");
         return buf.toString();
     }
 
@@ -67,7 +85,8 @@ public class Literal extends Expression {
      */
     @Override
     public String toString() {
-        return "Literal [value=" + value + "]";
+        return "XMLExpression [xpath=" + xpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()
+                + "]";
     }
 
 }

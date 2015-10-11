@@ -28,7 +28,7 @@ public class TextTest {
 
     @Test
     public void testPredicate() {
-        Text text = new Text();
+        TextExpression text = new TextExpression();
         try {
             text.predicateText();
             fail("Expecting exception");
@@ -39,7 +39,7 @@ public class TextTest {
 
     @Test
     public void testEvaluateValue() {
-        Text text = new Text();
+        TextExpression text = new TextExpression();
         text.setSource(DataSource.Value);
         text.setKey("0");
 
@@ -48,7 +48,7 @@ public class TextTest {
 
     @Test
     public void testEvaluateHeader() {
-        Text text = new Text();
+        TextExpression text = new TextExpression();
         text.setSource(DataSource.Header);
         text.setKey("mykey");
 

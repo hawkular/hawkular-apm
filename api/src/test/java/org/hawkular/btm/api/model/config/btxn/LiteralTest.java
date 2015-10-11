@@ -28,7 +28,7 @@ public class LiteralTest {
 
     @Test
     public void testPredicate() {
-        Literal literal = new Literal();
+        LiteralExpression literal = new LiteralExpression();
         try {
             literal.predicateText();
             fail("Expecting exception");
@@ -39,7 +39,7 @@ public class LiteralTest {
 
     @Test
     public void testEvaluateValue() {
-        Literal literal = new Literal();
+        LiteralExpression literal = new LiteralExpression();
         literal.setValue("myvalue");
 
         assertEquals("\"myvalue\"", literal.evaluateText());

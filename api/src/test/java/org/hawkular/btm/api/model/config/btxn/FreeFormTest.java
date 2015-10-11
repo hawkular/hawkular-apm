@@ -27,7 +27,7 @@ public class FreeFormTest {
 
     @Test
     public void testPredicateValue() {
-        FreeForm freeForm = new FreeForm();
+        FreeFormExpression freeForm = new FreeFormExpression();
         freeForm.setValue("myvalue");
 
         assertEquals("myvalue", freeForm.predicateText());
@@ -35,7 +35,7 @@ public class FreeFormTest {
 
     @Test
     public void testEvaluateValue() {
-        FreeForm freeForm = new FreeForm();
+        FreeFormExpression freeForm = new FreeFormExpression();
         freeForm.setValue("myvalue");
 
         assertEquals("myvalue", freeForm.evaluateText());

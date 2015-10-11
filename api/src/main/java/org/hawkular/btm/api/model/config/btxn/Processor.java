@@ -50,7 +50,7 @@ public class Processor {
     private String faultFilter;
 
     @JsonInclude(Include.NON_NULL)
-    private String predicate;
+    private Expression predicate;
 
     @JsonInclude
     private List<ProcessorAction> actions = new ArrayList<ProcessorAction>();
@@ -128,14 +128,14 @@ public class Processor {
     /**
      * @return the predicate
      */
-    public String getPredicate() {
+    public Expression getPredicate() {
         return predicate;
     }
 
     /**
      * @param predicate the predicate to set
      */
-    public void setPredicate(String predicate) {
+    public void setPredicate(Expression predicate) {
         this.predicate = predicate;
     }
 
