@@ -866,7 +866,7 @@ public class ProcessorManagerTest {
     }
 
     @Test
-    public void testIsContentProcessedTrue() {
+    public void testIsContentProcessedTrueForAddContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
         BusinessTxnConfig btc = new BusinessTxnConfig();
@@ -884,6 +884,42 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.AddContent);
         pa1.setName("test");
         pa1.setType("MessageType");
+        TextExpression expr = new TextExpression();
+        expr.setSource(DataSource.Value);
+        expr.setKey("1");
+        pa1.setExpression(expr);
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        BusinessTransaction btxn = new BusinessTransaction();
+        Consumer service = new Consumer();
+        btxn.getNodes().add(service);
+        btxn.setName("testapp");
+
+        Message req = new Message();
+        service.setIn(req);
+
+        assertTrue(pm.isContentProcessed(btxn, service, Direction.In));
+    }
+
+    @Test
+    public void testIsContentProcessedTrueForSetProperty() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Consumer);
+        p1.setDirection(Direction.In);
+
+        ProcessorAction pa1 = new ProcessorAction();
+        p1.getActions().add(pa1);
+
+        pa1.setActionType(ActionType.SetProperty);
+        pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Value);
         expr.setKey("1");
