@@ -16,38 +16,19 @@
  */
 package org.hawkular.btm.api.model.config.btxn;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 /**
- * This class represents expression that can be applied to XML data.
+ * This class represents expression that can be applied to Text data.
  *
  * @author gbrown
  */
-public class XML extends DataExpression {
-
-    @JsonInclude
-    private String xpath;
-
-    /**
-     * @return the xpath
-     */
-    public String getXpath() {
-        return xpath;
-    }
-
-    /**
-     * @param xpath the xpath to set
-     */
-    public void setXpath(String xpath) {
-        this.xpath = xpath;
-    }
+public class TextExpression extends DataExpression {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.model.config.btxn.Expression#predicateText()
      */
     @Override
     public String predicateText() {
-        return text("predicate");
+        throw new IllegalStateException("Text expression should not be used for predicate");
     }
 
     /* (non-Javadoc)
@@ -55,22 +36,8 @@ public class XML extends DataExpression {
      */
     @Override
     public String evaluateText() {
-        return text("evaluate");
-    }
-
-    /**
-     * This method returns the expression text.
-     *
-     * @param type The type of expression
-     * @return The expression text
-     */
-    protected String text(String type) {
         StringBuffer buf = new StringBuffer();
-        buf.append("XML.");
-        buf.append(type);
-        buf.append("(\"");
-        buf.append(xpath);
-        buf.append("\",");
+        buf.append("Text.serialize(");
         buf.append(dataSourceText());
         buf.append(")");
         return buf.toString();
@@ -81,7 +48,7 @@ public class XML extends DataExpression {
      */
     @Override
     public String toString() {
-        return "XMLExpression [xpath=" + xpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()
+        return "Text [getSource()=" + getSource() + ", getKey()=" + getKey()
                 + "]";
     }
 

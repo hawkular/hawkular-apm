@@ -90,6 +90,11 @@ public class XML {
             return false;
         }
 
+        if (xpath == null) {
+            log.severe("Predicate has not xpath expression");
+            return false;
+        }
+
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
         try {
             XPath xp = XPathFactory.newInstance().newXPath();
@@ -121,6 +126,11 @@ public class XML {
         if (domNode == null) {
             log.severe("Unable to evaluate non DOM Node object");
             return null;
+        }
+
+        // If no xpath expression, then serialize
+        if (xpath == null) {
+            return serialize(node);
         }
 
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions

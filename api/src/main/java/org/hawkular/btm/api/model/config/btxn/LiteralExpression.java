@@ -19,30 +19,14 @@ package org.hawkular.btm.api.model.config.btxn;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents any complex expression that needs to be
- * evaluated.
+ * This class represents a literal.
  *
  * @author gbrown
  */
-public class FreeForm extends Expression {
+public class LiteralExpression extends Expression {
 
     @JsonInclude
     private String value;
-
-    /**
-     * The default constructor.
-     */
-    public FreeForm() {
-    }
-
-    /**
-     * The constructor initialising the expression.
-     *
-     * @param value The value
-     */
-    public FreeForm(String value) {
-        this.value = value;
-    }
 
     /**
      * @return the value
@@ -59,19 +43,26 @@ public class FreeForm extends Expression {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#text()
+     * @see org.hawkular.btm.api.model.config.btxn.Expression#predicateText()
      */
     @Override
     public String predicateText() {
-        return value;
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return value.toLowerCase();
+        }
+        throw new IllegalStateException("Predicate literal expression can only be 'true' or 'false'");
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#text()
+     * @see org.hawkular.btm.api.model.config.btxn.Expression#expressionText()
      */
     @Override
     public String evaluateText() {
-        return value;
+        StringBuffer buf = new StringBuffer();
+        buf.append("\"");
+        buf.append(value);
+        buf.append("\"");
+        return buf.toString();
     }
 
     /* (non-Javadoc)
@@ -79,7 +70,7 @@ public class FreeForm extends Expression {
      */
     @Override
     public String toString() {
-        return "FreeForm [value=" + value + "]";
+        return "Literal [value=" + value + "]";
     }
 
 }

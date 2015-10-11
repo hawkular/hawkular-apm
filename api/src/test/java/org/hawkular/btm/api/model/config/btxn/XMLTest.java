@@ -27,7 +27,7 @@ public class XMLTest {
 
     @Test
     public void testPredicateValue() {
-        XML xml = new XML();
+        XMLExpression xml = new XMLExpression();
         xml.setSource(DataSource.Value);
         xml.setKey("0");
         xml.setXpath("myxpath");
@@ -36,8 +36,17 @@ public class XMLTest {
     }
 
     @Test
+    public void testPredicateValueNoXpath() {
+        XMLExpression xml = new XMLExpression();
+        xml.setSource(DataSource.Value);
+        xml.setKey("0");
+
+        assertEquals("XML.predicate(null,values[0])", xml.predicateText());
+    }
+
+    @Test
     public void testEvaluateValue() {
-        XML xml = new XML();
+        XMLExpression xml = new XMLExpression();
         xml.setSource(DataSource.Value);
         xml.setKey("0");
         xml.setXpath("myxpath");
@@ -46,8 +55,27 @@ public class XMLTest {
     }
 
     @Test
+    public void testEvaluateValueNoXpath() {
+        XMLExpression xml = new XMLExpression();
+        xml.setSource(DataSource.Value);
+        xml.setKey("0");
+
+        assertEquals("XML.evaluate(null,values[0])", xml.evaluateText());
+    }
+
+    @Test
+    public void testEvaluateValueEmptyXpath() {
+        XMLExpression xml = new XMLExpression();
+        xml.setSource(DataSource.Value);
+        xml.setKey("0");
+        xml.setXpath(" ");
+
+        assertEquals("XML.evaluate(null,values[0])", xml.evaluateText());
+    }
+
+    @Test
     public void testPredicateHeader() {
-        XML xml = new XML();
+        XMLExpression xml = new XMLExpression();
         xml.setSource(DataSource.Header);
         xml.setKey("mykey");
         xml.setXpath("myxpath");
@@ -57,7 +85,7 @@ public class XMLTest {
 
     @Test
     public void testEvaluateHeader() {
-        XML xml = new XML();
+        XMLExpression xml = new XMLExpression();
         xml.setSource(DataSource.Header);
         xml.setKey("mykey");
         xml.setXpath("myxpath");

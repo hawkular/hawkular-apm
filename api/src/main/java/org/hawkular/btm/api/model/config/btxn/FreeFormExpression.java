@@ -16,31 +16,62 @@
  */
 package org.hawkular.btm.api.model.config.btxn;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
- * This class represents expression that can be applied to Text data.
+ * This class represents any complex expression that needs to be
+ * evaluated.
  *
  * @author gbrown
  */
-public class Text extends DataExpression {
+public class FreeFormExpression extends Expression {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#predicateText()
+    @JsonInclude
+    private String value;
+
+    /**
+     * The default constructor.
      */
-    @Override
-    public String predicateText() {
-        throw new IllegalStateException("Text expression should not be used for predicate");
+    public FreeFormExpression() {
+    }
+
+    /**
+     * The constructor initialising the expression.
+     *
+     * @param value The value
+     */
+    public FreeFormExpression(String value) {
+        this.value = value;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#expressionText()
+     * @see org.hawkular.btm.api.model.config.btxn.Expression#text()
+     */
+    @Override
+    public String predicateText() {
+        return value;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.model.config.btxn.Expression#text()
      */
     @Override
     public String evaluateText() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Text.serialize(");
-        buf.append(dataSourceText());
-        buf.append(")");
-        return buf.toString();
+        return value;
     }
 
     /* (non-Javadoc)
@@ -48,8 +79,7 @@ public class Text extends DataExpression {
      */
     @Override
     public String toString() {
-        return "Text [getSource()=" + getSource() + ", getKey()=" + getKey()
-                + "]";
+        return "FreeForm [value=" + value + "]";
     }
 
 }

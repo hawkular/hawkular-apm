@@ -243,12 +243,14 @@ public class ProcessorManager {
                 ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
 
                 if (processor.getPredicate() != null) {
-                    compiledPredicate = MVEL.compileExpression(processor.getPredicate(), ctx);
+                    String text=processor.getPredicate().predicateText();
+
+                    compiledPredicate = MVEL.compileExpression(text, ctx);
 
                     if (compiledPredicate == null) {
-                        log.severe("Failed to compile pr ocessorpredicate '" + processor.getPredicate() + "'");
+                        log.severe("Failed to compile pr ocessorpredicate '" + text + "'");
                     } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor predicate '" + processor.getPredicate()
+                        log.fine("Initialised processor predicate '" + text
                                 + "' = " + compiledPredicate);
                     }
                 }
