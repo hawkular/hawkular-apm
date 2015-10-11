@@ -95,7 +95,15 @@ public class ProcessorManager {
      * @return Whether processing instructions have been defined
      */
     public boolean isProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-        boolean ret = getMatchedProcessor(btxn, node, direction) != null;
+        boolean ret=false;
+
+        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
+            List<ProcessorWrapper> procs = processors.get(btxn.getName());
+
+            for (int i = 0; !ret && i < procs.size(); i++) {
+                ret = procs.get(i).isProcessed(btxn, node, direction);
+            }
+        }
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("ProcessManager: isProcessed btxn=" + btxn + " node=" + node
@@ -115,11 +123,15 @@ public class ProcessorManager {
      * @return Whether content processing instructions have been defined
      */
     public boolean isContentProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-        ProcessorWrapper processor = getMatchedProcessor(btxn, node, direction);
-        boolean ret = false;
+        boolean ret=false;
 
-        if (processor != null) {
-            ret = processor.hasAddContentAction();
+        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
+            List<ProcessorWrapper> procs = processors.get(btxn.getName());
+
+            for (int i = 0; !ret && i < procs.size(); i++) {
+                ret = procs.get(i).isProcessed(btxn, node, direction)
+                        && procs.get(i).usesContent();
+            }
         }
 
         if (log.isLoggable(Level.FINEST)) {
@@ -128,40 +140,6 @@ public class ProcessorManager {
         }
 
         return ret;
-    }
-
-    /**
-     * This method returns the processor associated with the supplied business
-     * transaction. node and interaction direction.
-     *
-     * @param btxn The business transaction
-     * @param node The node
-     * @param direction The direction
-     * @return The processor associated with the details, or null if not found
-     */
-    protected ProcessorWrapper getMatchedProcessor(BusinessTransaction btxn, Node node, Direction direction) {
-        ProcessorWrapper matchedProcessor = null;
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: getMatchedProcessor btxn=" + btxn + " node=" + node
-                    + " direction=" + direction);
-        }
-
-        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
-            List<ProcessorWrapper> procs = processors.get(btxn.getName());
-
-            for (int i = 0; matchedProcessor == null && i < procs.size(); i++) {
-                if (procs.get(i).isProcessed(btxn, node, direction)) {
-                    matchedProcessor = procs.get(i);
-                }
-            }
-        }
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: getMatchedProcessor return=" + matchedProcessor);
-        }
-
-        return matchedProcessor;
     }
 
     /**
@@ -215,6 +193,9 @@ public class ProcessorManager {
 
         private List<ProcessorActionWrapper> actions = new ArrayList<ProcessorActionWrapper>();
 
+        private boolean usesHeaders = false;
+        private boolean usesContent = false;
+
         /**
          * This constructor is initialised with the processor.
          *
@@ -253,6 +234,10 @@ public class ProcessorManager {
                         log.fine("Initialised processor predicate '" + text
                                 + "' = " + compiledPredicate);
                     }
+
+                    // Check if headers referenced
+                    usesHeaders = text.indexOf("headers.") != -1;
+                    usesContent = text.indexOf("values[") != -1;
                 }
             } catch (Throwable t) {
                 log.log(Level.SEVERE, "Failed to compile processor predicate '"
@@ -260,8 +245,33 @@ public class ProcessorManager {
             }
 
             for (int i = 0; i < processor.getActions().size(); i++) {
-                actions.add(new ProcessorActionWrapper(processor.getActions().get(i)));
+                ProcessorActionWrapper paw = new ProcessorActionWrapper(processor.getActions().get(i));
+                if (!usesHeaders) {
+                    usesHeaders = paw.usesHeaders();
+                }
+                if (!usesContent) {
+                    usesContent = paw.usesContent();
+                }
+                actions.add(paw);
             }
+        }
+
+        /**
+         * This method indicates whether the process action uses headers.
+         *
+         * @return Whether headers are used
+         */
+        public boolean usesHeaders() {
+            return usesHeaders;
+        }
+
+        /**
+         * This method indicates whether the process action uses content values.
+         *
+         * @return Whether content is used
+         */
+        public boolean usesContent() {
+            return usesContent;
         }
 
         /**
@@ -293,20 +303,6 @@ public class ProcessorManager {
             }
 
             return ret;
-        }
-
-        /**
-         * This method indicates whether this processor has an 'AddContent' action.
-         *
-         * @return Whether the processor has an 'AddContent' action
-         */
-        public boolean hasAddContentAction() {
-            for (int i = 0; i < actions.size(); i++) {
-                if (actions.get(i).action.getActionType() == ProcessorAction.ActionType.AddContent) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         /**
@@ -467,6 +463,24 @@ public class ProcessorManager {
                 log.log(Level.SEVERE, "Failed to compile processor (action) predicate '"
                         + action.getPredicate() + "' or action '" + action.getExpression() + "'", t);
             }
+        }
+
+        /**
+         * This method indicates whether the process action uses headers.
+         *
+         * @return Whether headers are used
+         */
+        public boolean usesHeaders() {
+            return usesHeaders;
+        }
+
+        /**
+         * This method indicates whether the process action uses content values.
+         *
+         * @return Whether content is used
+         */
+        public boolean usesContent() {
+            return usesContent;
         }
 
         /**
