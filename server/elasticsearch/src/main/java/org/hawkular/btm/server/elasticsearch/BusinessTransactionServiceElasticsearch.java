@@ -42,9 +42,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class provides the in-memory implementation of the Business Transaction
- * Service. This implementation is only intended for testing and non-persistent
- * low transaction count usage.
+ * This class provides the Elasticsearch implementation of the Business Transaction
+ * Service.
  *
  * @author gbrown
  */
@@ -121,7 +120,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
             try {
                 ret = mapper.readValue(response.getSourceAsString(), BusinessTransaction.class);
             } catch (Exception e) {
-                msgLog.errorFailedToParseBusinessTransaction(e);
+                msgLog.errorFailedToParse(e);
             }
         }
 
@@ -186,7 +185,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
                 .setSize(maxResponseSize)
                 .setQuery(b2).execute().actionGet();
         if (response.isTimedOut()) {
-            msgLog.warnBusinessTransactionQueryTimedOut();
+            msgLog.warnQueryTimedOut();
         }
 
         for (SearchHit searchHitFields : response.getHits()) {
@@ -194,7 +193,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
                 ret.add(mapper.readValue(searchHitFields.getSourceAsString(),
                         BusinessTransaction.class));
             } catch (Exception e) {
-                msgLog.errorFailedToParseBusinessTransaction(e);
+                msgLog.errorFailedToParse(e);
             }
         }
 

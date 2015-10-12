@@ -53,12 +53,15 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
     </dependency>
+
+    <!-- No longer required as using elasticsearch
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-config-service-inmemory</artifactId>
+    </dependency>
+    -->
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>

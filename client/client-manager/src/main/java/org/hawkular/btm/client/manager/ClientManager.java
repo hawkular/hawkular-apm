@@ -28,7 +28,7 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.instrumentation.Instrumentation;
-import org.hawkular.btm.api.services.AdminService;
+import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.manager.config.Transformer;
@@ -48,7 +48,7 @@ public class ClientManager {
     private static Transformer ruleTransformer = new Transformer();
 
     private static BusinessTransactionCollector collector;
-    private static AdminService adminService;
+    private static ConfigurationService configService;
 
     /**
      * This method initializes the manager.
@@ -80,26 +80,26 @@ public class ClientManager {
             }
         });
 
-        // Obtain the administration service
-        CompletableFuture<AdminService> asFuture =
-                ServiceResolver.getSingletonService(AdminService.class);
+        // Obtain the configuration service
+        CompletableFuture<ConfigurationService> asFuture =
+                ServiceResolver.getSingletonService(ConfigurationService.class);
 
-        asFuture.whenComplete(new BiConsumer<AdminService, Throwable>() {
+        asFuture.whenComplete(new BiConsumer<ConfigurationService, Throwable>() {
 
             @Override
-            public void accept(AdminService as, Throwable t) {
-                log.info("BTM: Initialising Admin Service: " + as + " exception=" + t);
+            public void accept(ConfigurationService cs, Throwable t) {
+                log.info("BTM: Initialising Configuration Service: " + cs + " exception=" + t);
 
-                adminService = as;
+                configService = cs;
 
-                if (adminService == null) {
-                    System.err.println("Unable to locate Admin Service: " + t);
+                if (configService == null) {
+                    System.err.println("Unable to locate Configuration Service: " + t);
                     if (t != null) {
                         t.printStackTrace();
                     }
                 } else {
                     // Read configuration
-                    CollectorConfiguration config = adminService.getConfiguration(null, null, null);
+                    CollectorConfiguration config = configService.getCollectorConfiguration(null, null, null);
 
                     if (config != null) {
                         try {
