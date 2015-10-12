@@ -39,11 +39,11 @@ public interface MsgLogger extends BasicLogger {
     void errorFailedToInitialiseElasticsearchClient(@Cause Throwable t);
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 600201, value = "Failed to parse business transaction")
-    void errorFailedToParseBusinessTransaction(@Cause Throwable t);
+    @Message(id = 600201, value = "Failed to parse")
+    void errorFailedToParse(@Cause Throwable t);
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 600202, value = "Business Transaction query timed out")
-    void warnBusinessTransactionQueryTimedOut();
+    @Message(id = 600202, value = "Query timed out")
+    void warnQueryTimedOut();
 
 }

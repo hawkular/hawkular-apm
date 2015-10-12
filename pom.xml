@@ -59,13 +59,13 @@
   <modules>
     <module>api</module>
     <module>client/api</module>
-    <module>client/admin-service-rest-client</module>
     <module>client/btxn-collector</module>
     <module>client/btxn-instrumentation</module>
     <module>client/btxn-publisher-rest-client</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
     <module>client/client-rest</module>
+    <module>client/config-service-rest-client</module>
     <module>processors/metrics-deriver</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
@@ -75,7 +75,7 @@
     <module>server/security-hwkaccs</module>
     <module>server/security-jaxrs</module>
     <module>server/war</module>
-    <module>services/admin-service-inmemory</module>
+    <module>services/config-service-inmemory</module>
     <module>ui/kibana</module>
     <module>dist</module>
   </modules>
@@ -131,7 +131,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-admin-service-rest-client</artifactId>
+        <artifactId>hawkular-btm-config-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -218,7 +218,7 @@
       <!-- BTM Services -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-admin-service-inmemory</artifactId>
+        <artifactId>hawkular-btm-config-service-inmemory</artifactId>
         <version>${project.version}</version>
       </dependency>
 

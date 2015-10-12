@@ -55,7 +55,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-admin-service-rest-client</artifactId>
+      <artifactId>hawkular-btm-config-service-rest-client</artifactId>
     </dependency>
 
     <dependency>

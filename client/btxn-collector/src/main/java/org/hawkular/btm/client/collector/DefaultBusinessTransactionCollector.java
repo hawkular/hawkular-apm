@@ -35,8 +35,8 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
-import org.hawkular.btm.api.services.AdminService;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
+import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.SessionManager;
@@ -73,25 +73,25 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     {
         // Obtain the admin service
-        CompletableFuture<AdminService> asFuture =
-                ServiceResolver.getSingletonService(AdminService.class);
+        CompletableFuture<ConfigurationService> asFuture =
+                ServiceResolver.getSingletonService(ConfigurationService.class);
 
-        asFuture.whenComplete(new BiConsumer<AdminService, Throwable>() {
+        asFuture.whenComplete(new BiConsumer<ConfigurationService, Throwable>() {
 
             @Override
-            public void accept(AdminService as, Throwable t) {
-                setAdminService(as);
+            public void accept(ConfigurationService cs, Throwable t) {
+                setConfigurationService(cs);
             }
         });
     }
 
     /**
-     * This method sets the admin service.
+     * This method sets the configuration service.
      *
-     * @param as The admin service
+     * @param cs The configuration service
      */
-    public void setAdminService(AdminService as) {
-        CollectorConfiguration config = as.getConfiguration(null, null, null);
+    public void setConfigurationService(ConfigurationService cs) {
+        CollectorConfiguration config = cs.getCollectorConfiguration(null, null, null);
 
         if (config != null) {
             filterManager = new FilterManager(config);
