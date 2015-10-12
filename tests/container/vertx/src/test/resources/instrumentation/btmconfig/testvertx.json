@@ -12,15 +12,13 @@
       "description": "Configuration for Vertx HTTP tests",
       "filter": {
         "inclusions": [
-          "/hello_get",
-          "/hello_put",
-          "/hello_post"
+          "/hello_http"
         ]
       },
       "processors": [{
         "nodeType": "Consumer",
         "direction": "In",
-        "uriFilter": "/hello_.*",
+        "uriFilter": "/hello_http",
         "actions": [{
           "name": "hello",
           "actionType": "SetDetail",
@@ -40,7 +38,7 @@
       },{
         "nodeType": "Consumer",
         "direction": "Out",
-        "uriFilter": "/hello_.*",
+        "uriFilter": "/hello_http",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",
@@ -53,7 +51,7 @@
       },{
         "nodeType": "Producer",
         "direction": "In",
-        "uriFilter": "/hello_.*",
+        "uriFilter": "/hello_http",
         "actions": [{
           "name": "hello",
           "actionType": "SetDetail",
@@ -73,7 +71,7 @@
       },{
         "nodeType": "Producer",
         "direction": "Out",
-        "uriFilter": "/hello_.*",
+        "uriFilter": "/hello_http",
         "actions": [{
           "name": "all",
           "actionType": "AddContent",

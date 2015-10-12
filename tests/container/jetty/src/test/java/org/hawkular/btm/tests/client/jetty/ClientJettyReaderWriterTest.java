@@ -61,6 +61,10 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
     /**  */
     private static final String HELLO_URL = "http://localhost:8180/hello";
     /**  */
+    private static final String QUERY_STRING = "to=me";
+    /**  */
+    private static final String HELLO_URL_WITH_QS = HELLO_URL + "?" + QUERY_STRING;
+    /**  */
     private static final String HELLO_WORLD_RESPONSE = "<h1>HELLO WORLD</h1>";
 
     private static Server server = null;
@@ -92,47 +96,53 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
 
     @Test
     public void testGet() {
-        testJettyServlet("GET", null, false, true);
+        testJettyServlet("GET", HELLO_URL, null, false, true);
+    }
+
+    @Test
+    public void testGetWithQS() {
+        testJettyServlet("GET", HELLO_URL_WITH_QS, null, false, true);
     }
 
     @Test
     public void testGetNoResponse() {
-        testJettyServlet("GET", null, false, false);
+        testJettyServlet("GET", HELLO_URL, null, false, false);
     }
 
     @Test
     public void testGetWithContent() {
         setProcessContent(true);
-        testJettyServlet("GET", null, false, true);
+        testJettyServlet("GET", HELLO_URL, null, false, true);
     }
 
     @Test
     public void testPut() {
-        testJettyServlet("PUT", GREETINGS_REQUEST, false, true);
+        testJettyServlet("PUT", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
     @Test
     public void testPutWithContent() {
         setProcessContent(true);
-        testJettyServlet("PUT", GREETINGS_REQUEST, false, true);
+        testJettyServlet("PUT", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
     @Test
     public void testPost() {
-        testJettyServlet("POST", GREETINGS_REQUEST, false, true);
+        testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
     @Test
     public void testPostWithContent() {
         setProcessContent(true);
-        testJettyServlet("POST", GREETINGS_REQUEST, false, true);
+        testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
-    protected void testJettyServlet(String method, String reqdata, boolean fault, boolean respexpected) {
+    protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
+                            boolean respexpected) {
         String path=null;
 
         try {
-            URL url = new URL(HELLO_URL);
+            URL url = new URL(urlstr);
             path = url.getPath();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -229,6 +239,10 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
 
         assertEquals(path, testProducer.getUri());
 
+        if (urlstr.endsWith(QUERY_STRING)) {
+            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+        }
+
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
         assertTrue("testProducer does not have test header",
@@ -243,6 +257,10 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
         Consumer testConsumer = consumers.get(0);
 
         assertEquals(path, testConsumer.getUri());
+
+        if (urlstr.endsWith(QUERY_STRING)) {
+            assertEquals(QUERY_STRING, testConsumer.getDetails().get("http_query"));
+        }
 
         // Check headers
         assertFalse("testConsumer has no headers", testConsumer.getIn().getHeaders().isEmpty());

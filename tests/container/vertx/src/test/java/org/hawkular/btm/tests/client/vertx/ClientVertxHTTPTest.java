@@ -42,6 +42,10 @@ import io.vertx.core.http.HttpServer;
 public class ClientVertxHTTPTest extends ClientTestBase {
 
     /**  */
+    private static final String QUERY_STRING = "to=me";
+    /**  */
+    private static final String HELLO_PATH = "/hello_http";
+    /**  */
     private static final String RESPONSE = "<html><body><h1>Hello from vert.x!</h1></body></html>";
     /**  */
     private static final String MY_REQUEST = "My request";
@@ -73,41 +77,53 @@ public class ClientVertxHTTPTest extends ClientTestBase {
 
     @Test
     public void testHTTPGET() {
-        Vertx.vertx().createHttpClient().getNow(8080, "localhost", "/hello_get", resp -> {
+        Vertx.vertx().createHttpClient().getNow(8080, "localhost", HELLO_PATH, resp -> {
             System.out.println("Got response " + resp.statusCode());
             resp.bodyHandler(body -> {
                 System.out.println("Got data " + body.toString("ISO-8859-1"));
             });
         });
 
-        evaluateBTxnFragments(true);
+        evaluateBTxnFragments(true, false);
+    }
+
+    @Test
+    public void testHTTPGETWithQS() {
+        Vertx.vertx().createHttpClient().getNow(8080, "localhost", HELLO_PATH + "?" + QUERY_STRING, resp -> {
+            System.out.println("Got response " + resp.statusCode());
+            resp.bodyHandler(body -> {
+                System.out.println("Got data " + body.toString("ISO-8859-1"));
+            });
+        });
+
+        evaluateBTxnFragments(true, true);
     }
 
     @Test
     public void testHTTPPUT() {
-        Vertx.vertx().createHttpClient().put(8080, "localhost", "/hello_put", resp -> {
+        Vertx.vertx().createHttpClient().put(8080, "localhost", HELLO_PATH, resp -> {
             System.out.println("Got response " + resp.statusCode());
             resp.bodyHandler(body -> {
                 System.out.println("Got data " + body.toString("ISO-8859-1"));
             });
         }).end(MY_REQUEST);
 
-        evaluateBTxnFragments(false);
+        evaluateBTxnFragments(false, false);
     }
 
     @Test
     public void testHTTPPOST() {
-        Vertx.vertx().createHttpClient().post(8080, "localhost", "/hello_post", resp -> {
+        Vertx.vertx().createHttpClient().post(8080, "localhost", HELLO_PATH, resp -> {
             System.out.println("Got response " + resp.statusCode());
             resp.bodyHandler(body -> {
                 System.out.println("Got data " + body.toString("ISO-8859-1"));
             });
         }).end(MY_REQUEST);
 
-        evaluateBTxnFragments(false);
+        evaluateBTxnFragments(false, false);
     }
 
-    protected void evaluateBTxnFragments(boolean get) {
+    protected void evaluateBTxnFragments(boolean get, boolean qs) {
         try {
             synchronized (this) {
                 wait(2000);
@@ -146,6 +162,15 @@ public class ClientVertxHTTPTest extends ClientTestBase {
 
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(producer, consumer);
+
+        // Paths
+        assertEquals(HELLO_PATH, consumer.getUri());
+        assertEquals(HELLO_PATH, producer.getUri());
+
+        if (qs) {
+            assertEquals(QUERY_STRING, consumer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, producer.getDetails().get("http_query"));
+        }
 
         // Details
         assertEquals("Hello World", consumer.getDetails().get("hello"));
