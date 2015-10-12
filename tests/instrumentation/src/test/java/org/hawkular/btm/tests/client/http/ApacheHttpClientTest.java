@@ -66,6 +66,12 @@ public class ApacheHttpClientTest extends ClientTestBase {
     private static final String SAY_HELLO_URL = "http://localhost:8180/sayHello";
 
     /**  */
+    private static final String QUERY_STRING = "to=me";
+
+    /**  */
+    private static final String SAY_HELLO_URL_WITH_QS = SAY_HELLO_URL + "?" + QUERY_STRING;
+
+    /**  */
     private static final String SAY_HELLO = "Say Hello";
 
     /**  */
@@ -106,6 +112,11 @@ public class ApacheHttpClientTest extends ClientTestBase {
     @Test
     public void testHttpClientWithoutResponseHandlerGET() throws IOException {
         testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false, true);
+    }
+
+    @Test
+    public void testHttpClientWithoutResponseHandlerGETWithQS() throws IOException {
+        testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL_WITH_QS), null, false, true);
     }
 
     @Test
@@ -221,6 +232,10 @@ public class ApacheHttpClientTest extends ClientTestBase {
 
         assertEquals(path, testProducer.getUri());
 
+        if (request.getURI().toString().endsWith(QUERY_STRING)) {
+            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+        }
+
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
 
@@ -249,6 +264,11 @@ public class ApacheHttpClientTest extends ClientTestBase {
     @Test
     public void testHttpClientWithResponseHandlerGET() throws IOException {
         testHttpClientWithResponseHandler(new HttpGet(SAY_HELLO_URL), null, false);
+    }
+
+    @Test
+    public void testHttpClientWithResponseHandlerGETWithQS() throws IOException {
+        testHttpClientWithResponseHandler(new HttpGet(SAY_HELLO_URL_WITH_QS), null, false);
     }
 
     @Test
@@ -352,6 +372,10 @@ public class ApacheHttpClientTest extends ClientTestBase {
         String path = URI.create(SAY_HELLO_URL).getPath();
 
         assertEquals(path, testProducer.getUri());
+
+        if (request.getURI().toString().endsWith(QUERY_STRING)) {
+            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+        }
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());

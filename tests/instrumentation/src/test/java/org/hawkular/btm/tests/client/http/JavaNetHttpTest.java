@@ -58,6 +58,12 @@ public class JavaNetHttpTest extends ClientTestBase {
     private static final String SAY_HELLO_URL = "http://localhost:8180/sayHello";
 
     /**  */
+    private static final String QUERY_STRING = "to=me";
+
+    /**  */
+    private static final String SAY_HELLO_URL_WITH_QS = SAY_HELLO_URL + "?" + QUERY_STRING;
+
+    /**  */
     private static final String SAY_HELLO = "Say Hello";
 
     /**  */
@@ -97,12 +103,17 @@ public class JavaNetHttpTest extends ClientTestBase {
 
     @Test
     public void testHttpURLConnectionGET() {
-        testHttpURLConnection("GET", null, false, true, false);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, false);
+    }
+
+    @Test
+    public void testHttpURLConnectionGETWithQS() {
+        testHttpURLConnection("GET", SAY_HELLO_URL_WITH_QS, null, false, true, false);
     }
 
     @Test
     public void testHttpURLConnectionGETNoData1() {
-        testHttpURLConnection("GET", null, false, false, false);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, false, false, false);
     }
 
     @Test
@@ -111,81 +122,81 @@ public class JavaNetHttpTest extends ClientTestBase {
         // Although no content actually passed, set this flag to simulate
         // a user accidently defines a content processing definition
         setProcessContent(true);
-        testHttpURLConnection("GET", null, false, false, false);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, false, false, false);
     }
 
     @Test
     public void testHttpURLConnectionGETAsync() {
-        testHttpURLConnection("GET", null, false, true, true);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, true);
     }
 
     @Test
     public void testHttpURLConnectionGETWithContent() {
         setProcessContent(true);
-        testHttpURLConnection("GET", null, false, true, false);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, false);
     }
 
     @Test
     public void testHttpURLConnectionGETWithContentAsync() {
         setProcessContent(true);
-        testHttpURLConnection("GET", null, false, true, true);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, true);
     }
 
     @Test
     public void testHttpURLConnectionPUT() {
-        testHttpURLConnection("PUT", SAY_HELLO, false, true, false);
+        testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
     public void testHttpURLConnectionPUTAsync() {
-        testHttpURLConnection("PUT", SAY_HELLO, false, true, true);
+        testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
     public void testHttpURLConnectionPUTWithContent() {
         setProcessContent(true);
-        testHttpURLConnection("PUT", SAY_HELLO, false, true, false);
+        testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
     public void testHttpURLConnectionPUTWithContentAsync() {
         setProcessContent(true);
-        testHttpURLConnection("PUT", SAY_HELLO, false, true, true);
+        testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
     public void testHttpURLConnectionPOST() {
-        testHttpURLConnection("POST", SAY_HELLO, false, true, false);
+        testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
     public void testHttpURLConnectionPOSTAsync() {
-        testHttpURLConnection("POST", SAY_HELLO, false, true, true);
+        testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
     public void testHttpURLConnectionPOSTWithContent() {
         setProcessContent(true);
-        testHttpURLConnection("POST", SAY_HELLO, false, true, false);
+        testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
     public void testHttpURLConnectionPOSTWithContentAsync() {
         setProcessContent(true);
-        testHttpURLConnection("POST", SAY_HELLO, false, true, true);
+        testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
     public void testHttpURLConnectionGETWithFault() {
-        testHttpURLConnection("GET", null, true, true, false);
+        testHttpURLConnection("GET", SAY_HELLO_URL, null, true, true, false);
     }
 
-    protected void testHttpURLConnection(String method, String reqdata, boolean fault, boolean respexpected,
-            boolean async) {
+    protected void testHttpURLConnection(String method, String urlstr, String reqdata, boolean fault,
+            boolean respexpected, boolean async) {
         Thread testThread = Thread.currentThread();
 
         try {
-            URL url = new URL(SAY_HELLO_URL);
+            URL url = new URL(urlstr);
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod(method);
@@ -307,6 +318,10 @@ public class JavaNetHttpTest extends ClientTestBase {
         assertEquals(path, testProducer.getUri());
 
         assertEquals("Hello World", testProducer.getDetails().get("hello"));
+
+        if (urlstr.endsWith(QUERY_STRING)) {
+            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+        }
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());

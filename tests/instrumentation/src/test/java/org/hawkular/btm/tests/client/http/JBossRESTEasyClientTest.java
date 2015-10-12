@@ -56,6 +56,12 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
     private static final String SAY_HELLO_URL = "http://localhost:8180/sayHello";
 
     /**  */
+    private static final String QUERY_STRING = "to=me";
+
+    /**  */
+    private static final String SAY_HELLO_URL_WITH_QS = SAY_HELLO_URL + "?" + QUERY_STRING;
+
+    /**  */
     private static final String SAY_HELLO = "Say Hello";
 
     /**  */
@@ -97,7 +103,16 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").get();
 
-        processResponse(response, true, false);
+        processResponse(response, true, false, false);
+    }
+
+    @Test
+    public void testJaxRSClientGETWithQS() {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(SAY_HELLO_URL_WITH_QS);
+        Response response = target.request().header("test-header", "test-value").get();
+
+        processResponse(response, true, false, true);
     }
 
     @Test
@@ -108,7 +123,7 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").get();
 
-        processResponse(response, true, false);
+        processResponse(response, true, false, false);
     }
 
     @Test
@@ -117,7 +132,7 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").post(Entity.<String> text(SAY_HELLO));
 
-        processResponse(response, false, false);
+        processResponse(response, false, false, false);
     }
 
     @Test
@@ -128,7 +143,7 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").post(Entity.<String> text(SAY_HELLO));
 
-        processResponse(response, false, false);
+        processResponse(response, false, false, false);
     }
 
     @Test
@@ -137,7 +152,7 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").put(Entity.<String> text(SAY_HELLO));
 
-        processResponse(response, false, false);
+        processResponse(response, false, false, false);
     }
 
     @Test
@@ -148,7 +163,7 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").put(Entity.<String> text(SAY_HELLO));
 
-        processResponse(response, false, false);
+        processResponse(response, false, false, false);
     }
 
     @Test
@@ -157,10 +172,10 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-fault", "true").get();
 
-        processResponse(response, true, true);
+        processResponse(response, true, true, false);
     }
 
-    protected void processResponse(Response response, boolean get, boolean fault) {
+    protected void processResponse(Response response, boolean get, boolean fault, boolean qs) {
         String value = response.readEntity(String.class);
         response.close();
 
@@ -200,6 +215,10 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
         String path=URI.create(SAY_HELLO_URL).getPath();
 
         assertEquals(path, testProducer.getUri());
+
+        if (qs) {
+            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+        }
 
         // Check headers
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
