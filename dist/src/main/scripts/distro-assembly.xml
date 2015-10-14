@@ -59,6 +59,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.btm:hawkular-btm-server:war</include>
+        <include>org.hawkular.btm:hawkular-btm-ui:war</include>
         <include>org.hawkular.btm:hawkular-btm-ui-kibana:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>

@@ -76,6 +76,7 @@
     <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>services/config-service-inmemory</module>
+    <module>ui/console</module>
     <module>ui/kibana</module>
     <module>dist</module>
   </modules>
@@ -243,6 +244,12 @@
       </dependency>
 
       <!-- BTM UI -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-ui</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-ui-kibana</artifactId>

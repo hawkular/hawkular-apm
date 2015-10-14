@@ -85,29 +85,37 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     public CollectorConfiguration getCollector(String tenantId, String host, String server) {
         CollectorConfiguration config = ConfigurationLoader.getConfiguration();
 
-        String index = client.getIndex(tenantId);
+        try {
+            String index = client.getIndex(tenantId);
 
-        RefreshRequestBuilder refreshRequestBuilder =
-                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
-                .setTypes(BUSINESS_TXN_CONFIG_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setTimeout(TimeValue.timeValueMillis(timeout))
-                .setSize(maxResponseSize)
-                .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
-        if (response.isTimedOut()) {
-            msgLog.warnQueryTimedOut();
-        }
+            SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setTimeout(TimeValue.timeValueMillis(timeout))
+                    .setSize(maxResponseSize)
+                    .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
 
-        for (SearchHit searchHitFields : response.getHits()) {
-            try {
-                config.getBusinessTransactions().put(searchHitFields.getId(),
-                        mapper.readValue(searchHitFields.getSourceAsString(),
-                                BusinessTxnConfig.class));
-            } catch (Exception e) {
-                msgLog.errorFailedToParse(e);
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    config.getBusinessTransactions().put(searchHitFields.getId(),
+                            mapper.readValue(searchHitFields.getSourceAsString(),
+                                    BusinessTxnConfig.class));
+                } catch (Exception e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transaction configurations have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to retrieve business transaction configs");
             }
         }
 
@@ -144,21 +152,30 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
             msgLog.tracef("Get business transaction config with name[%s]", name);
         }
 
-        String index = client.getIndex(tenantId);
+        try {
+            String index = client.getIndex(tenantId);
 
-        RefreshRequestBuilder refreshRequestBuilder =
-                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        GetResponse response = client.getElasticsearchClient().prepareGet(
-                index, BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
-                .execute()
-                .actionGet();
-        if (!response.isSourceEmpty()) {
-            try {
-                ret = mapper.readValue(response.getSourceAsString(), BusinessTxnConfig.class);
-            } catch (Exception e) {
-                msgLog.errorFailedToParse(e);
+            GetResponse response = client.getElasticsearchClient().prepareGet(
+                    index, BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
+                    .execute()
+                    .actionGet();
+            if (!response.isSourceEmpty()) {
+                try {
+                    ret = mapper.readValue(response.getSourceAsString(), BusinessTxnConfig.class);
+                } catch (Exception e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transaction configurations have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to retrieve business transaction config [%s]", name);
             }
         }
 
@@ -177,25 +194,33 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
         List<String> ret = new ArrayList<String>();
         String index = client.getIndex(tenantId);
 
-        RefreshRequestBuilder refreshRequestBuilder =
-                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+        try {
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
-                .setTypes(BUSINESS_TXN_CONFIG_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setTimeout(TimeValue.timeValueMillis(timeout))
-                .setSize(maxResponseSize)
-                .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
-        if (response.isTimedOut()) {
-            msgLog.warnQueryTimedOut();
-        }
+            SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setTimeout(TimeValue.timeValueMillis(timeout))
+                    .setSize(maxResponseSize)
+                    .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
 
-        for (SearchHit searchHitFields : response.getHits()) {
-            try {
-                ret.add(searchHitFields.getId());
-            } catch (Exception e) {
-                msgLog.errorFailedToParse(e);
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    ret.add(searchHitFields.getId());
+                } catch (Exception e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transaction configurations have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to retrieve business transaction names");
             }
         }
 

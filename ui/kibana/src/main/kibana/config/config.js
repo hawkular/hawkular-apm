@@ -39,7 +39,7 @@ function (Settings) {
      *  +elasticsearch: {server: "http://localhost:9200", withCredentials: true}+
      *
      */
-    elasticsearch:  window.location.protocol+"//"+window.location.host+"/hawkular/btm-ui/elasticsearch",
+    elasticsearch:  window.location.protocol+"//"+window.location.host+"/hawkular-ui/btm-analytics/elasticsearch",
 
     /** @scratch /configuration/config.js/5
      *
