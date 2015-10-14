@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.config.service.inmemory;
 
+import java.util.List;
+
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
@@ -33,37 +35,45 @@ import org.hawkular.btm.api.services.ConfigurationService;
 public class ConfigurationServiceInMemory implements ConfigurationService {
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AdminService#getCollectorConfiguration(java.lang.String,
+     * @see org.hawkular.btm.api.services.AdminService#getCollector(java.lang.String,
      *                          java.lang.String, java.lang.String)
      */
     @Override
-    public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+    public CollectorConfiguration getCollector(String tenantId, String host, String server) {
         return ConfigurationLoader.getConfiguration();
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransaction(java.lang.String,
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+    public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransaction(java.lang.String,
      *                          java.lang.String)
      */
     @Override
-    public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+    public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
         return null;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String)
+     */
+    @Override
+    public List<String> getBusinessTransactions(String tenantId) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
      *                          java.lang.String)
      */
     @Override
-    public void removeBusinessTransactionConfig(String tenantId, String name) {
+    public void removeBusinessTransaction(String tenantId, String name) {
     }
 
 }

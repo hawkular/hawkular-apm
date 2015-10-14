@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.api.services;
 
+import java.util.List;
+
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 
@@ -37,7 +39,7 @@ public interface ConfigurationService {
      * @param server The optional server name
      * @return The collector configuration
      */
-    CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server);
+    CollectorConfiguration getCollector(String tenantId, String host, String server);
 
     /**
      * This method adds (if does not exist) or updates (if exists) a business transaction
@@ -48,7 +50,7 @@ public interface ConfigurationService {
      * @param config The configuration
      * @throws Exception Failed to perform update
      */
-    void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config)
+    void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
             throws Exception;
 
     /**
@@ -58,7 +60,15 @@ public interface ConfigurationService {
      * @param name The business transaction name
      * @return The configuration, or null if not found
      */
-    BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name);
+    BusinessTxnConfig getBusinessTransaction(String tenantId, String name);
+
+    /**
+     * This method retrieves the list of business transaction names.
+     *
+     * @param tenantId The optional tenant id
+     * @return The list of names
+     */
+    List<String> getBusinessTransactions(String tenantId);
 
     /**
      * This method removes a business transaction configuration.
@@ -67,6 +77,6 @@ public interface ConfigurationService {
      * @param name The business transaction name
      * @throws Exception Failed to perform remove
      */
-    void removeBusinessTransactionConfig(String tenantId, String name) throws Exception;
+    void removeBusinessTransaction(String tenantId, String name) throws Exception;
 
 }

@@ -61,21 +61,26 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
                 return new CollectorConfiguration();
             }
 
             @Override
-            public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransactionConfig(String tenantId, String name) {
+            public void removeBusinessTransaction(String tenantId, String name) {
+            }
+
+            @Override
+            public List<String> getBusinessTransactions(String tenantId) {
+                return null;
             }
         });
 
@@ -125,21 +130,26 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
                 return new CollectorConfiguration();
             }
 
             @Override
-            public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransactionConfig(String tenantId, String name) {
+            public void removeBusinessTransaction(String tenantId, String name) {
+            }
+
+            @Override
+            public List<String> getBusinessTransactions(String tenantId) {
+                return null;
             }
         });
 
@@ -172,21 +182,26 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
                 return new CollectorConfiguration();
             }
 
             @Override
-            public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransactionConfig(String tenantId, String name) {
+            public void removeBusinessTransaction(String tenantId, String name) {
+            }
+
+            @Override
+            public List<String> getBusinessTransactions(String tenantId) {
+                return null;
             }
         });
 
@@ -234,21 +249,26 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
                 return new CollectorConfiguration();
             }
 
             @Override
-            public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransactionConfig(String tenantId, String name) {
+            public void removeBusinessTransaction(String tenantId, String name) {
+            }
+
+            @Override
+            public List<String> getBusinessTransactions(String tenantId) {
+                return null;
             }
         });
 
@@ -297,21 +317,26 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
                 return new CollectorConfiguration();
             }
 
             @Override
-            public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransactionConfig(String tenantId, String name) {
+            public void removeBusinessTransaction(String tenantId, String name) {
+            }
+
+            @Override
+            public List<String> getBusinessTransactions(String tenantId) {
+                return null;
             }
         });
 
@@ -355,21 +380,26 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
                 return new CollectorConfiguration();
             }
 
             @Override
-            public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransactionConfig(String tenantId, String name) {
+            public void removeBusinessTransaction(String tenantId, String name) {
+            }
+
+            @Override
+            public List<String> getBusinessTransactions(String tenantId) {
+                return null;
             }
         });
 
