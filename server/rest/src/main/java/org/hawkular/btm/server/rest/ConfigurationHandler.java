@@ -19,7 +19,9 @@ package org.hawkular.btm.server.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -82,14 +84,14 @@ public class ConfigurationHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "optional host name") @QueryParam("host") String host,
+                    value = "optional host name") @QueryParam("host") String host,
             @ApiParam(required = false,
-            value = "optional server name") @QueryParam("server") String server) {
+                    value = "optional server name") @QueryParam("server") String server) {
 
         try {
             log.tracef("Get collector configuration for host [%s] server [%s]", host, server);
 
-            CollectorConfiguration config = configService.getCollectorConfiguration(
+            CollectorConfiguration config = configService.getCollector(
                     securityProvider.getTenantId(context), host, server);
 
             log.tracef("Got collector configuration for host [%s] server [%s] config=[%s]", host, server, config);
@@ -108,6 +110,42 @@ public class ConfigurationHandler {
     }
 
     @GET
+    @Path("businesstxn")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Retrieve the business transaction names",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getBusinessTxnConfigurations(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response) {
+
+        try {
+            log.tracef("Get business transaction names");
+
+            List<String> names = configService.getBusinessTransactions(
+                    securityProvider.getTenantId(context));
+
+            // Sort the list
+            Collections.sort(names);
+
+            log.tracef("Got business transaction names=[%s]", names);
+
+            response.resume(Response.status(Response.Status.OK).entity(names).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
     @Path("businesstxn/{name}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -120,12 +158,12 @@ public class ConfigurationHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @PathParam("name") String name) {
+                    value = "business transaction name") @PathParam("name") String name) {
 
         try {
             log.tracef("Get business transaction configuration for name [%s]", name);
 
-            BusinessTxnConfig config = configService.getBusinessTransactionConfig(
+            BusinessTxnConfig config = configService.getBusinessTransaction(
                     securityProvider.getTenantId(context), name);
 
             log.tracef("Got business transaction configuration for name [%s] config=[%s]", name, config);
@@ -154,14 +192,14 @@ public class ConfigurationHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @PathParam("name") String name,
+                    value = "business transaction name") @PathParam("name") String name,
             BusinessTxnConfig config) {
 
         try {
             log.tracef("About to set business transaction configuration for name [%s] config=[%s]", name,
                     config);
 
-            configService.updateBusinessTransactionConfig(
+            configService.updateBusinessTransaction(
                     securityProvider.getTenantId(context), name, config);
 
             response.resume(Response.status(Response.Status.OK).entity(config)
@@ -187,12 +225,12 @@ public class ConfigurationHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @PathParam("name") String name) {
+                    value = "business transaction name") @PathParam("name") String name) {
 
         try {
             log.tracef("About to remove business transaction configuration for name [%s]", name);
 
-            configService.removeBusinessTransactionConfig(
+            configService.removeBusinessTransaction(
                     securityProvider.getTenantId(context), name);
 
             response.resume(Response.status(Response.Status.OK)

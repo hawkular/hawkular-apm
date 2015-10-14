@@ -19,6 +19,7 @@ package org.hawkular.btm.config.service.rest.client;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -27,6 +28,7 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 import org.hawkular.btm.api.services.ConfigurationService;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -40,6 +42,10 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     private static final Logger log = Logger.getLogger(ConfigurationServiceRESTClient.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final TypeReference<java.util.List<String>> BUSINESS_TXN_NAMES_LIST =
+            new TypeReference<java.util.List<String>>() {
+            };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
@@ -107,11 +113,11 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getCollectorConfiguration(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getCollector(java.lang.String,
      *                                  java.lang.String, java.lang.String)
      */
     @Override
-    public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+    public CollectorConfiguration getCollector(String tenantId, String host, String server) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get collector configuration: tenantId=[" + tenantId + "] host=[" + host
                     + "] server=[" + server + "]");
@@ -194,11 +200,11 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransaction(java.lang.String,
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config) {
+    public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Update busioess transaction configuration: tenantId=[" + tenantId + "] name=[" + name
                     + "] config=[" + config + "]");
@@ -248,14 +254,14 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransaction(java.lang.String,
      *                          java.lang.String)
      */
     @Override
-    public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+    public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get business transaction configuration: tenantId=[" + tenantId + "] name=["
-                    + name + "]]");
+                    + name + "]");
         }
 
         StringBuilder builder = new StringBuilder()
@@ -308,24 +314,94 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get business transaction  [" + name + "] configuration: status=["
+                    log.finest("Failed to get business transaction [" + name + "] configuration: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get business transaction  [" + name + "] configuration", e);
+            log.log(Level.SEVERE, "Failed to get business transaction [" + name + "] configuration", e);
         }
 
         return null;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String)
+     */
+    @Override
+    public List<String> getBusinessTransactions(String tenantId) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get business transaction configuration: tenantId=[" + tenantId + "]");
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("config/businesstxn");
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), BUSINESS_TXN_NAMES_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get business transaction configurations: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get business transaction configurations", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
      *                          java.lang.String)
      */
     @Override
-    public void removeBusinessTransactionConfig(String tenantId, String name) {
+    public void removeBusinessTransaction(String tenantId, String name) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Update busioess transaction configuration: tenantId=[" + tenantId + "] name=["
                     + name + "]]");

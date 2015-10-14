@@ -16,6 +16,9 @@
  */
 package org.hawkular.btm.server.elasticsearch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
@@ -75,12 +78,13 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getCollectorConfiguration(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getCollector(java.lang.String,
      *                          java.lang.String, java.lang.String)
      */
     @Override
-    public CollectorConfiguration getCollectorConfiguration(String tenantId, String host, String server) {
+    public CollectorConfiguration getCollector(String tenantId, String host, String server) {
         CollectorConfiguration config = ConfigurationLoader.getConfiguration();
+
         String index = client.getIndex(tenantId);
 
         RefreshRequestBuilder refreshRequestBuilder =
@@ -111,11 +115,11 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransaction(java.lang.String,
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public void updateBusinessTransactionConfig(String tenantId, String name, BusinessTxnConfig config)
+    public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
             throws Exception {
         if (msgLog.isTraceEnabled()) {
             msgLog.tracef("Update business transaction config with name[%s] config=%s", name, config);
@@ -129,11 +133,11 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransaction(java.lang.String,
      *                  java.lang.String)
      */
     @Override
-    public BusinessTxnConfig getBusinessTransactionConfig(String tenantId, String name) {
+    public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
         BusinessTxnConfig ret = null;
 
         if (msgLog.isTraceEnabled()) {
@@ -166,11 +170,44 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransactionConfig(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String)
+     */
+    @Override
+    public List<String> getBusinessTransactions(String tenantId) {
+        List<String> ret = new ArrayList<String>();
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setTimeout(TimeValue.timeValueMillis(timeout))
+                .setSize(maxResponseSize)
+                .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        for (SearchHit searchHitFields : response.getHits()) {
+            try {
+                ret.add(searchHitFields.getId());
+            } catch (Exception e) {
+                msgLog.errorFailedToParse(e);
+            }
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
      *                          java.lang.String)
      */
     @Override
-    public void removeBusinessTransactionConfig(String tenantId, String name) throws Exception {
+    public void removeBusinessTransaction(String tenantId, String name) throws Exception {
         DeleteResponse response = client.getElasticsearchClient().prepareDelete(client.getIndex(tenantId),
                 BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
                 .execute()

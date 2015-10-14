@@ -99,7 +99,7 @@ public class ClientManager {
                     }
                 } else {
                     // Read configuration
-                    CollectorConfiguration config = configService.getCollectorConfiguration(null, null, null);
+                    CollectorConfiguration config = configService.getCollector(null, null, null);
 
                     if (config != null) {
                         try {

@@ -91,7 +91,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * @param cs The configuration service
      */
     public void setConfigurationService(ConfigurationService cs) {
-        CollectorConfiguration config = cs.getCollectorConfiguration(null, null, null);
+        CollectorConfiguration config = cs.getCollector(null, null, null);
 
         if (config != null) {
             filterManager = new FilterManager(config);
