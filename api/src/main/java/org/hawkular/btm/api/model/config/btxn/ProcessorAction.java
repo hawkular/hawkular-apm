@@ -30,6 +30,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ProcessorAction {
 
     @JsonInclude(Include.NON_NULL)
+    private String description;
+
+    @JsonInclude(Include.NON_NULL)
     private String name;
 
     @JsonInclude(Include.NON_NULL)
@@ -46,6 +49,20 @@ public class ProcessorAction {
 
     @JsonInclude
     private Expression expression;
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     /**
      * @return the name
@@ -136,8 +153,9 @@ public class ProcessorAction {
      */
     @Override
     public String toString() {
-        return "ProcessorAction [name=" + name + ", type=" + type + ", scope=" + scope + ", actionType=" + actionType
-                + ", predicate=" + predicate + ", expression=" + expression + "]";
+        return "ProcessorAction [description=" + description + ", name=" + name + ", type=" + type + ", scope="
+                + scope + ", actionType=" + actionType + ", predicate=" + predicate + ", expression=" + expression
+                + "]";
     }
 
     /**
