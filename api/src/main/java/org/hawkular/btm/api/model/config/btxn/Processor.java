@@ -34,6 +34,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 public class Processor {
 
+    @JsonInclude(Include.NON_NULL)
+    private String description;
+
     @JsonInclude
     private NodeType nodeType;
 
@@ -54,6 +57,20 @@ public class Processor {
 
     @JsonInclude
     private List<ProcessorAction> actions = new ArrayList<ProcessorAction>();
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     /**
      * @return the nodeType
@@ -158,9 +175,9 @@ public class Processor {
      */
     @Override
     public String toString() {
-        return "Processor [nodeType=" + nodeType + ", direction=" + direction + ", uriFilter=" + uriFilter
-                + ", operation=" + operation + ", faultFilter=" + faultFilter + ", predicate=" + predicate
-                + ", actions=" + actions + "]";
+        return "Processor [description=" + description + ", nodeType=" + nodeType + ", direction=" + direction
+                + ", uriFilter=" + uriFilter + ", operation=" + operation + ", faultFilter=" + faultFilter
+                + ", predicate=" + predicate + ", actions=" + actions + "]";
     }
 
 }
