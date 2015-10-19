@@ -31,6 +31,7 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
@@ -560,6 +561,50 @@ public class DefaultBusinessTransactionCollectorTest {
         assertTrue(producer.getDetails().containsKey("testname"));
         assertFalse(consumer.getDetails().containsKey("testname"));
         assertFalse(component1.getDetails().containsKey("testname"));
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testMergeDuplicateProducers() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        // Cause a fragment builder to be created
+        FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
+
+        collector.consumerStart(null, "testconsumer", "testcontype", "testconid");
+
+        Consumer consumer = (Consumer) builder.getCurrentNode();
+
+        assertNotNull(consumer);
+
+        collector.producerStart(null, "testproducer", "testprodtype", "testprodid1");
+
+        Producer producerOuter = (Producer) builder.getCurrentNode();
+
+        assertNotNull(producerOuter);
+
+        collector.producerStart(null, "testproducer", "testprodtype", "testprodid2");
+
+        Producer producerInner = (Producer) builder.getCurrentNode();
+
+        assertNotNull(producerInner);
+
+        // Before merge
+        assertTrue(producerOuter.getNodes().contains(producerInner));
+        assertFalse(producerOuter.getCorrelationIds().isEmpty());
+        assertTrue(producerOuter.getCorrelationIds().get(0).getScope() == Scope.Interaction);
+        assertTrue(producerOuter.getCorrelationIds().get(0).getValue().equals("testprodid1"));
+
+        // Pop the producer and one of the components
+        collector.producerEnd(null, "testproducer", "testprodtype");
+        collector.producerEnd(null, "testproducer", "testprodtype");
+
+        // After merge
+        assertFalse(producerOuter.getNodes().contains(producerInner));
+        assertFalse(producerOuter.getCorrelationIds().isEmpty());
+        assertTrue(producerOuter.getCorrelationIds().get(0).getScope() == Scope.Interaction);
+        assertTrue(producerOuter.getCorrelationIds().get(0).getValue().equals("testprodid2"));
 
         collector.getFragmentManager().clear();
     }
