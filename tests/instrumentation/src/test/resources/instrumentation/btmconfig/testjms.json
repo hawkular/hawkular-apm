@@ -1,0 +1,92 @@
+{
+  "businessTransactions": {
+    "testjms": {
+      "description": "Configuration for JMS tests",
+      "filter": {
+        "inclusions": [
+          "queue://inboundq",
+          "jms://queue:inboundq"
+        ]
+      },
+      "processors": [{
+        "nodeType": "Consumer",
+        "direction": "In",
+        "uriFilter": "queue://inboundq",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
+        }]
+      },{
+        "nodeType": "Consumer",
+        "direction": "Out",
+        "uriFilter": "queue://inboundq",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
+        }]
+      },{
+        "nodeType": "Producer",
+        "direction": "In",
+        "uriFilter": "queue://inboundq",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
+        }]
+      },{
+        "nodeType": "Producer",
+        "direction": "Out",
+        "uriFilter": "queue://inboundq",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
+        }]
+      },{
+        "nodeType": "Consumer",
+        "direction": "In",
+        "uriFilter": "topic://outboundt",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
+        }]
+      },{
+        "nodeType": "Producer",
+        "direction": "In",
+        "uriFilter": "topic://outboundt",
+        "actions": [{
+          "name": "all",
+          "actionType": "AddContent",
+          "expression": {
+            "type": "Text",
+            "source": "Value",
+            "key": "0"
+          }
+        }]
+      }]
+    }
+  }
+}
