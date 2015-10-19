@@ -19,6 +19,7 @@ package org.hawkular.btm.tests.client.camel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URLEncoder;
@@ -265,5 +266,25 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         assertFalse("topicProducer has no headers", topicProducer.getIn().getHeaders().isEmpty());
         assertFalse("topicConsumer has no headers", topicConsumer.getIn().getHeaders().isEmpty());
         assertFalse("queueConsumer has no headers", queueConsumer.getIn().getHeaders().isEmpty());
+
+        // Check 'in' content
+        assertTrue(queueProducer.getIn().getContent().containsKey("all"));
+        assertEquals("Test Message", queueProducer.getIn().getContent().get("all").getValue());
+        assertTrue(queueConsumer.getIn().getContent().containsKey("all"));
+        assertEquals("Test Message", queueConsumer.getIn().getContent().get("all").getValue());
+        assertTrue(topicProducer.getIn().getContent().containsKey("all"));
+        assertEquals("Test Message", topicProducer.getIn().getContent().get("all").getValue());
+        assertTrue(topicConsumer.getIn().getContent().containsKey("all"));
+        assertEquals("Test Message", topicConsumer.getIn().getContent().get("all").getValue());
+
+        // Check 'out' content
+        assertNotNull(queueProducer.getOut());
+        assertNotNull(queueProducer.getOut().getContent());
+        assertTrue(queueProducer.getOut().getContent().containsKey("all"));
+        assertEquals("Hello", queueProducer.getOut().getContent().get("all").getValue());
+        assertNotNull(queueConsumer.getOut());
+        assertNotNull(queueConsumer.getOut().getContent());
+        assertTrue(queueConsumer.getOut().getContent().containsKey("all"));
+        assertEquals("Hello", queueConsumer.getOut().getContent().get("all").getValue());
     }
 }

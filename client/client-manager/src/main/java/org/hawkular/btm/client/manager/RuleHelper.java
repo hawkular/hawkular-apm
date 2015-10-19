@@ -318,6 +318,9 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     @Override
     public void initiateCorrelation(String id) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Initiate correlation location=["+getRuleName()+"] id=["+id+"]");
+        }
         collector().session().initiateCorrelation(id);
     }
 
@@ -334,6 +337,9 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     @Override
     public void correlate(String id) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Correlate location=["+getRuleName()+"] id=["+id+"]");
+        }
         collector().session().correlate(id);
     }
 
@@ -342,6 +348,9 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     @Override
     public void completeCorrelation(String id) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Complete correlation location=["+getRuleName()+"] id=["+id+"]");
+        }
         collector().session().completeCorrelation(id);
     }
 
@@ -350,6 +359,9 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     @Override
     public void unlink() {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Unlink location=["+getRuleName()+"]");
+        }
         collector().session().unlink();
     }
 
@@ -358,6 +370,9 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     @Override
     public void suppress() {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Suppress location=["+getRuleName()+"]");
+        }
         collector().session().suppress();
     }
 
@@ -366,6 +381,9 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     @Override
     public void assertComplete() {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Assert complete location=["+getRuleName()+"]");
+        }
         collector().session().assertComplete();
     }
 

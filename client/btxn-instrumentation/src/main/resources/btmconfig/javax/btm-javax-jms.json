@@ -34,6 +34,27 @@
           "valueExpression": "\"javax.jms\""
         }]
       },{
+        "ruleName": "JMS Consumer Start TextMessage",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isInstanceOf($1,javax.jms.TextMessage.class)",
+        "binds": [{
+          "name": "message",
+          "type": "javax.jms.TextMessage",
+          "expression": "$1"
+        }],
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "message.getText().getBytes()"
+          ]
+        }]
+      },{
         "ruleName": "Javax JMS Consumer End",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
@@ -41,12 +62,57 @@
           "javax.jms.Message"
         ],
         "location": "EXIT",
-        "condition": "!isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isActive()",
+        "condition": "($1.getJMSReplyTo() == null || !isInstanceOf($1.getJMSReplyTo(),javax.jms.TemporaryQueue.class)) && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isActive()",
         "actions": [{
           "type": "InstrumentConsumer",
           "direction": "Out",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.getJMSDestination()"
+        },{
+          "type": "AssertComplete"
+        }]
+      },{
+        "ruleName": "Javax JMS Consumer End After TmpQ Reply TextMessage",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($1,javax.jms.TemporaryQueue.class) && isActive() && isInstanceOf($2,javax.jms.TextMessage.class)",
+        "binds": [{
+          "name": "message",
+          "type": "javax.jms.TextMessage",
+          "expression": "$2"
+        }],
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "Out",
+          "valueExpressions": [
+            "message.getText().getBytes()"
+          ]
+        }]
+      },{
+        "ruleName": "Javax JMS Consumer End After TmpQ Reply",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($1,javax.jms.TemporaryQueue.class) && isActive()",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"MOM\""
         },{
           "type": "AssertComplete"
         }]
@@ -93,6 +159,31 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HawkularBTName\",getBusinessTransactionName())"
+        }]
+      },{
+        "ruleName": "JMS Producer Sync Start TextMessage",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getJMSReplyTo() == null && isActive() && isInstanceOf($2,javax.jms.TextMessage.class)",
+        "binds": [{
+          "name": "message",
+          "type": "javax.jms.TextMessage",
+          "expression": "$2"
+        }],
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "message.getText().getBytes()"
+          ]
         }]
       },{
         "ruleName": "Javax JMS Producer Async Start",
@@ -142,6 +233,31 @@
           "action": "$2.setStringProperty(\"HawkularBTName\",getBusinessTransactionName())"
         }]
       },{
+        "ruleName": "JMS Producer Async Start TextMessage",
+        "interfaceName": "^javax.jms.MessageProducer",
+        "methodName": "send",
+        "parameterTypes": [
+          "javax.jms.Destination",
+          "javax.jms.Message",
+          "int",
+          "int",
+          "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getJMSReplyTo() != null && !isInstanceOf($1,javax.jms.TemporaryQueue.class) && isActive() && isInstanceOf($2,javax.jms.TextMessage.class)",
+        "binds": [{
+          "name": "message",
+          "type": "javax.jms.TextMessage",
+          "expression": "$2"
+        }],
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "message.getText().getBytes()"
+          ]
+        }]
+      },{
         "ruleName": "Javax JMS Producer Sync End",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
@@ -161,7 +277,7 @@
           "uriExpression": "$1"
         }]
       },{
-        "ruleName": "Javax JMS Producer Async End",
+        "ruleName": "Javax JMS Producer Async End Correlate",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -172,7 +288,41 @@
         "actions": [{
           "type": "CompleteCorrelation",
           "idExpression": "$1.getJMSDestination()"
-        },{
+        }]
+      },{
+        "ruleName": "Javax JMS Producer Async End TextMessage",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isActive() && isInstanceOf($1,javax.jms.TextMessage.class)",
+        "binds": [{
+          "name": "message",
+          "type": "javax.jms.TextMessage",
+          "expression": "$1"
+        }],
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "Out",
+          "valueExpressions": [
+            "message.getText().getBytes()"
+          ]
+        }]
+      },{
+        "ruleName": "Javax JMS Producer Async End",
+        "notes": [
+          "Instrumenting the 'out' direction for the producer, after separate rules for doing the correlation, to enable the check for the message content to be performed"
+        ],
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isActive()",
+        "actions": [{
           "type": "InstrumentProducer",
           "direction": "Out",
           "endpointTypeExpression": "\"MOM\""
