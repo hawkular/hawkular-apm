@@ -32,6 +32,7 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
@@ -362,7 +363,14 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                Node node = pop(location, builder, Producer.class, uri);
+                Producer node = pop(location, builder, Producer.class, uri);
+
+                // Check if current node on stack is also a Producer
+                Node current = builder.getCurrentNode();
+                if (current != null && current.getType() == NodeType.Producer) {
+                    // Merge details into current node
+                    mergeProducer(node, (Producer)current);
+                }
 
                 // Check for completion
                 checkForCompletion(builder, node);
@@ -374,6 +382,33 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 log.log(warningLogLevel, "producerEnd failed", t);
             }
         }
+    }
+
+    /**
+     * This method merges an inner Producer node information into its
+     * containing Producer node, before removing the inner node.
+     *
+     * @param inner
+     * @param outer
+     */
+    protected void mergeProducer(Producer inner, Producer outer) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Merging Producer = " + inner + " into Producer = " + outer);
+        }
+
+        // NOTE: For now, assumption is that inner Producer is equivalent to the outer
+        // and results from instrumentation rules being triggered multiple times
+        // for the same message.
+
+        // Merge correlation - just replace for now
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Merging Producers: replacing correlation ids (" + outer.getCorrelationIds()
+                    + ") with (" + inner.getCorrelationIds() + ")");
+        }
+        outer.setCorrelationIds(inner.getCorrelationIds());
+
+        // Remove the inner Producer from the child nodes of the outer
+        outer.getNodes().remove(inner);
     }
 
     /* (non-Javadoc)
