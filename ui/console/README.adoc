@@ -1,0 +1,27 @@
+= Hawkular BTM UI
+
+== Developing the UI
+
+The UI is built and distributed as a war using maven. However using this process to test out UI changes is time consuming. Therefore, to perform development on the UI you will need to perform the following commands from *ui/src/main/scripts* folder:
+
+----
+npm install
+bower install
+----
+
+Note: See https://docs.npmjs.com/getting-started/installing-node[installing npm] for instructions on how to install *npm*, and http://bower.io/#install-bower[installing bower] if *bower* is not on your system.
+
+Before being able to start up the UI, you will need to start up the _Hawkular BTM server_, to provide the backend REST services. Once this is done, run the following command (from the *ui/src/main/scripts* folder) to build and start up a test web server:
+
+----
+gulp
+----
+
+and when ready, it will indicate that a browser should be opened at: http://localhost:2772
+
+
+NOTE: When built using maven, the aggregated javascript is built in target/gulp-build/dist but copied into *ui/src/main/scripts/dist* to be available for the bower registry. If the UI is built using _gulp_, then the javascript will also be written to this location - but only instances of this javascript built by maven should be committed and tagged in the repository.
+
+
+
+

@@ -26,3 +26,12 @@ bin/
 
 # KDE
 .directory
+
+# Hawt.io 2 console
+d.ts/
+node_modules/
+libs/
+defs.d.ts
+
+*.log
+

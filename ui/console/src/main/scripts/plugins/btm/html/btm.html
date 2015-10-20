@@ -1,0 +1,87 @@
+<div class="col-md-12" ng-controller="BTM.BTMController">
+  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="businessTransactionNames">
+    <div class="spinner spinner-lg"></div>
+    <p class="hk-spinner-legend-below">Loading...</p>
+  </div>
+
+  <div class="row" ng-show="businessTransactionNames" >
+    <form class="form-horizontal hk-add-url" name="addBTxnForm" role="form" novalidate ng-submit="addBusinessTxn()">
+      <div class="form-group input">
+        <div class="col-lg-6 col-sm-8 col-xs-12 hk-align-center">
+          <div class="input-group input-group-lg">
+            <input type="text" class="form-control" name="newBTxnNameField"
+                   ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
+                   placeholder="Enter a business transaction name" required>
+            <span class="input-group-btn">
+              <button class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" >
+               <div ng-show="addProgress" class="spinner spinner-sm"></div>
+              Add
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="col-md-9  hk-align-center">
+      <ul class="list-group" >
+        <br>
+        <div class="row" >
+          Search: <input ng-model="query">
+          <a href="/hawkular-ui/btm-analytics" class="btn btn-info pull-right" target="_blank">View Analytics</a>
+        </div>
+
+        <div class="hk-url-item" ng-repeat="name in businessTransactionNames | filter:query" >
+          <div class="panel panel-default hk-url-heading">
+            <a href="info/{{name}}">{{name}}</a>
+            <span class="hk-settings pull-right"><a href="config/{{name}}" ><i class="fa fa-cog"></i>Configure</a></span>
+          </div>
+
+          <div class="panel panel-default hk-summary">
+            <div class="row">
+              <div class="col-sm-3 hk-summary-item">
+<!--
+                <a href="/hawkular-ui/url/alerts/{{res.id}}">
+                  <span class="hk-data">{{(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length || 0}} <i class="fa fa-flag" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0"></i></span>
+                  <span class="hk-item">Number (last hour)</span>
+                </a>
+-->
+              </div>
+              <div class="col-sm-3 hk-summary-item">
+<!--
+                <a href="/hawkular-ui/url/availability/{{res.id}}">
+                  <span class="hk-data" ng-show="res.responseTime.length > 0"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
+                  <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+                  <span class="hk-item">Average Completion Time (last hour)</span>
+                </a>
+-->
+              </div>
+              <div class="col-sm-3 hk-summary-item">
+<!--
+                <a href="/hawkular-ui/url/availability/{{res.id}}">
+                  <span class="hk-data" ng-show="res.lastDowntime > 0" am-time-ago="res.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1000" tooltip="{{ res.lastDowntime | date:'d MMM yyyy, HH:mm:ss' }}"></span>
+                  <span class="hk-data" ng-show="res.lastDowntime <= 0">n/a</span>
+                  <span class="hk-item">Alerts</span>
+                </a>
+-->
+              </div>
+              <div class="col-sm-3 hk-summary-item">
+<!--
+                <a href="/hawkular-ui/url/response-time/{{res.id}}">
+                  <span class="hk-data" ng-show="res.responseTime.length > 0 && res.responseTime[0].value >= 0">{{res.responseTime[0].value}} <span>ms</span></span>
+                  <span class="hk-data" ng-show="res.responseTime.length > 0 && res.responseTime[0].value < 0">n/a</span>
+                  <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+                  <span class="hk-item">Not Sure</span>
+                </a>
+-->
+              </div>
+            </div>
+
+            <button class="btn btn-link hk-delete" tooltip="Delete" tooltip-trigger tooltip-placement="top" ng-click="deleteBusinessTxn(name)"><i class="fa fa-trash-o"></i></button>
+          </div>
+
+        </div>
+     </ul>
+    </div>
+  </div>
+</div>
+

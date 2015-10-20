@@ -1,0 +1,30 @@
+{
+  "name": "hawkularbtm",
+  "version": "0.1.0",
+  "keywords": [
+    "hawtio"
+  ],
+  "main": [
+    "dist/hawkularbtm.js",
+    "dist/hawkularbtm.css"
+  ],
+  "ignore": [
+    "dist/hawkularbtm-test.js",
+    "**/.*",
+    "node_modules",
+    "libs",
+    "plugins"
+  ],
+  "dependencies": {
+    "hawtio-core": "~2.0.0",
+    "hawtio-core-navigation": "~2.0.0",
+    "hawtio-utilities": "~2.0.0",
+    "angular-xeditable": "~0.1.9",
+    "angular-bootstrap": "~0.14.2"
+  },
+  "devDependencies": {
+    "bootstrap": "~3.3.1",
+    "patternfly": "~1.1.2",
+    "hawtio-core-dts": "~2.0.0"
+  }
+}
