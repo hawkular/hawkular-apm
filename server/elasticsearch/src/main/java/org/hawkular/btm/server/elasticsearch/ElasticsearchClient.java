@@ -91,6 +91,10 @@ public class ElasticsearchClient {
      * Default constructor.
      */
     public ElasticsearchClient() {
+        if (!System.getProperties().containsKey("hawkular-btm.data.dir")) {
+            System.setProperty("hawkular-btm.data.dir", System.getProperty("jboss.server.data.dir"));
+        }
+
         hosts = System.getProperty(ELASTICSEARCH_HOSTS, ELASTICSEARCH_HOSTS_DEFAULT);
         cluster = System.getProperty(ELASTICSEARCH_CLUSTER, ELASTICSEARCH_CLUSTER_DEFAULT);
     }

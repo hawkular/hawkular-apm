@@ -39,11 +39,22 @@ public class BusinessTransactionCriteria {
 
     private long startTime = 0L;
     private long endTime = 0L;
+    private String name;
     private Map<String, String> properties = new HashMap<String, String>();
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
 
+    /**  */
+    private static int DEFAULT_RESPONSE_SIZE = 100000;
+
+    /**  */
+    private static long DEFAULT_TIMEOUT = 10000L;
+
+    private long timeout = DEFAULT_TIMEOUT;
+
+    private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
+
     /**
-     * @return the startTime
+     * @return the startTime, or 0 meaning 1 hours ago
      */
     public long getStartTime() {
         return startTime;
@@ -59,7 +70,7 @@ public class BusinessTransactionCriteria {
     }
 
     /**
-     * @return the endTime
+     * @return the endTime, or 0 meaning 'current time'
      */
     public long getEndTime() {
         return endTime;
@@ -71,6 +82,27 @@ public class BusinessTransactionCriteria {
      */
     public BusinessTransactionCriteria setEndTime(long endTime) {
         this.endTime = endTime;
+        return this;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * If a null name is used, then it will match any transaction whether it has
+     * a name or not. If the supplied name is an empty string, then it will match
+     * only transactions that don't have a name. If a name is specified, then
+     * only transactions with that business transaction name will be selected.
+     *
+     * @param name the name to set
+     * @return The criteria
+     */
+    public BusinessTransactionCriteria setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -107,6 +139,34 @@ public class BusinessTransactionCriteria {
     }
 
     /**
+     * @return the timeout
+     */
+    public long getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * @param timeout the timeout to set
+     */
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    /**
+     * @return the maxResponseSize
+     */
+    public int getMaxResponseSize() {
+        return maxResponseSize;
+    }
+
+    /**
+     * @param maxResponseSize the maxResponseSize to set
+     */
+    public void setMaxResponseSize(int maxResponseSize) {
+        this.maxResponseSize = maxResponseSize;
+    }
+
+    /**
      * This method determines whether the supplied business transaction
      * meets the criteria.
      *
@@ -128,6 +188,22 @@ public class BusinessTransactionCriteria {
                 log.finest("End time out of range");
             }
             return false;
+        }
+
+        if (name != null) {
+            if (name.trim().length() == 0) {
+                if (btxn.getName() != null) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Name is defined");
+                    }
+                    return false;
+                }
+            } else if (!name.equals(btxn.getName())) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Name mismatch, was '"+btxn.getName()+"' required '"+name+"'");
+                }
+                return false;
+            }
         }
 
         if (!properties.isEmpty()) {
@@ -164,7 +240,8 @@ public class BusinessTransactionCriteria {
      */
     @Override
     public String toString() {
-        return "BusinessTransactionCriteria [startTime=" + startTime + ", endTime=" + endTime + ", properties="
-                + properties + ", correlationIds=" + correlationIds + "]";
+        return "BusinessTransactionCriteria [startTime=" + startTime + ", endTime=" + endTime
+                + ", name=" + name + ", properties=" + properties + ", correlationIds=" + correlationIds + "]";
     }
+
 }

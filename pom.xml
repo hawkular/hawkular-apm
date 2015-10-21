@@ -58,6 +58,7 @@
 
   <modules>
     <module>api</module>
+    <module>client/analytics-service-rest-client</module>
     <module>client/api</module>
     <module>client/btxn-collector</module>
     <module>client/btxn-instrumentation</module>
@@ -67,6 +68,7 @@
     <module>client/client-rest</module>
     <module>client/config-service-rest-client</module>
     <module>processors/metrics-deriver</module>
+    <module>server/analytics</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
     <module>server/elasticsearch-proxy</module>
@@ -125,6 +127,11 @@
       </dependency>
 
       <!-- BTM Client -->
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-analytics-service-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-client-api</artifactId>
@@ -193,6 +200,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-analytics</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

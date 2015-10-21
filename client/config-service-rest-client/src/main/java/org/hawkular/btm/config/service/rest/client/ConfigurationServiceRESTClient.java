@@ -43,7 +43,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final TypeReference<java.util.List<String>> BUSINESS_TXN_NAMES_LIST =
+    private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
             };
 
@@ -377,7 +377,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), BUSINESS_TXN_NAMES_LIST);
+                        return mapper.readValue(resp.toString(), STRING_LIST);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }
