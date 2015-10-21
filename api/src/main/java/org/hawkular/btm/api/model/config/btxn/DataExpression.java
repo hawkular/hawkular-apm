@@ -67,7 +67,7 @@ public abstract class DataExpression extends Expression {
      */
     protected String dataSourceText() {
         StringBuffer buf = new StringBuffer();
-        if (getSource() == DataSource.Value) {
+        if (getSource() == DataSource.Content) {
             buf.append("values[");
             buf.append(getKey());
             buf.append("]");

@@ -65,7 +65,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
         p1.getActions().add(pa1);
@@ -105,7 +105,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -144,7 +144,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -179,7 +179,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -214,7 +214,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -250,7 +250,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -287,7 +287,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -323,7 +323,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -357,7 +357,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetFault);
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -391,7 +391,7 @@ public class ProcessorManagerTest {
 
         pa1.setActionType(ActionType.SetFaultDescription);
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -426,7 +426,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -462,7 +462,7 @@ public class ProcessorManagerTest {
         pa1.setName("test");
         pa1.setType("MessageType");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -507,7 +507,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.AddCorrelationId);
         pa1.setScope(Scope.Global);
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -814,7 +814,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -885,7 +885,7 @@ public class ProcessorManagerTest {
         pa1.setName("test");
         pa1.setType("MessageType");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -921,7 +921,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetProperty);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -1064,7 +1064,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("0");
         pa1.setExpression(expr);
 
@@ -1099,7 +1099,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("0");
         pa1.setExpression(expr);
 
@@ -1138,7 +1138,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
@@ -1177,7 +1177,7 @@ public class ProcessorManagerTest {
         pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Value);
+        expr.setSource(DataSource.Content);
         expr.setKey("1");
         pa1.setExpression(expr);
 
