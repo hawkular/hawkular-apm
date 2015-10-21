@@ -77,61 +77,69 @@
         <uib-accordion-group ng-repeat="processor in businessTransaction.processors" is-open="false" is-disabled="false">
           <uib-accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></uib-accordion-heading>
 
-          <label for="description" style="width: 15%" >Description:</label>
-          <input type="text" name="description" ng-model="processor.description" ng-change="setDirty()" style="width: 80%" >
-          <label for="nodeType" style="width: 15%" > Node type: </label>
-          <select name="nodeType" ng-model="processor.nodeType" ng-change="setDirty()" style="width: 30%">
-            <option value="Consumer">Consumer</option>
-            <option value="Producer">Producer</option>
-            <option value="Component">Component</option>
-          </select>
+          <form>
+            <div class="form-group">
+              <label for="description" style="width: 15%" >Description:</label>
+              <input type="text" name="description" ng-model="processor.description" ng-change="setDirty()" style="width: 80%" >
+            </div>
 
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+            <div class="form-group">
+              <label for="nodeType" style="width: 15%" > Node type: </label>
+              <select name="nodeType" ng-model="processor.nodeType" ng-change="setDirty()" style="width: 30%">
+                <option value="Consumer">Consumer</option>
+                <option value="Producer">Producer</option>
+                <option value="Component">Component</option>
+              </select>
 
-          <label for="direction" style="width: 15%" >Direction: </label>
-          <select name="direction" ng-model="processor.direction" ng-change="setDirty()" style="width: 30%">
-            <option value="In">In</option>
-            <option value="Out">Out</option>
-          </select>
-          <br>
-          <label for="uriFilter" style="width: 15%" >URI filter:</label>
-          <input type="text" name="uriFilter" ng-model="processor.uriFilter" ng-change="setDirty()" style="width: 80%" >
-          <label for="operation" style="width: 15%" >Operation:</label>
-          <input type="text" name="operation" ng-model="processor.operation" ng-change="setDirty()" style="width: 30%" >
+              <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
 
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+              <label for="direction" style="width: 15%" >Direction: </label>
+              <select name="direction" ng-model="processor.direction" ng-change="setDirty()" style="width: 30%">
+                <option value="In">In</option>
+                <option value="Out">Out</option>
+              </select>
 
-          <label for="faultFilter" style="width: 15%" >Fault filter:</label>
-          <input type="text" name="faultFilter" ng-model="processor.faultFilter" ng-change="setDirty()" style="width: 30%" >
+              <label for="uriFilter" style="width: 15%" >URI filter:</label>
+              <input type="text" name="uriFilter" ng-model="processor.uriFilter" ng-change="setDirty()" style="width: 80%" >
+              <label for="operation" style="width: 15%" >Operation:</label>
+              <input type="text" name="operation" ng-model="processor.operation" ng-change="setDirty()" style="width: 30%" >
 
-          <label for="predicateType" style="width: 15%" >Predicate Type: </label>
-          <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor.predicate)" style="width: 30%">
-            <option value="">Undefined</option>
-            <option value="Literal">Literal</option>
-            <option value="XML">XML</option>
-            <option value="Text">Text</option>
-            <option value="FreeForm">Free Form</option>
-          </select>
+              <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
 
-          <br>
+              <label for="faultFilter" style="width: 15%" >Fault filter:</label>
+              <input type="text" name="faultFilter" ng-model="processor.faultFilter" ng-change="setDirty()" style="width: 30%" >
+            </div>
 
-          <label for="predicateSource" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Source: </label>
-          <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'" style="width: 30%">
-            <option value="Value">Value</option>
-            <option value="Header">Header</option>
-          </select>
+            <div class="form-group">
+              <label for="predicateType" style="width: 15%" >Predicate Type: </label>
+              <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor.predicate)" style="width: 30%">
+                <option value="">Undefined</option>
+                <option value="Literal">Literal</option>
+                <option value="XML">XML</option>
+                <option value="Text">Text</option>
+                <option value="FreeForm">Free Form</option>
+              </select>
 
-          <label style="width: 5%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+              <br>
 
-          <label for="predicateKey" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Key: </label>
-          <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">
+              <label for="predicateSource" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Source: </label>
+              <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'" style="width: 30%">
+                <option value="Value">Value</option>
+                <option value="Header">Header</option>
+              </select>
 
-          <label for="predicateXPath" style="width: 15%" ng-show="processor.predicate.type === 'XML'">XPath:</label>
-          <input type="text" name="predicateXPath" ng-model="processor.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'XML'">
+              <label style="width: 5%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
 
-          <label for="predicateValue" style="width: 15%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
-          <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">
+              <label for="predicateKey" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Key: </label>
+              <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">
 
+              <label for="predicateXPath" style="width: 15%" ng-show="processor.predicate.type === 'XML'">XPath:</label>
+              <input type="text" name="predicateXPath" ng-model="processor.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'XML'">
+
+              <label for="predicateValue" style="width: 15%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
+              <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">
+            </div>
+          </form>
 
           <h4>Actions <a class="btn btn-primary" ng-click="addAction(processor)"><span class="glyphicon glyphicon-plus" aria-hidden="true""></span></a></h4>
 
@@ -139,98 +147,102 @@
             <uib-accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
               <uib-accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></uib-accordion-heading>
 
-              <label for="actionTypeSelector" style="width: 15%" >Action Type: </label>
-              <select name="actionTypeSelector" ng-model="action.actionType" ng-change="changedActionType(action)" style="width: 30%">
-                <option value=""></option>
-                <option value="AddContent">Add Content</option>
-                <option value="AddCorrelationId">Add Correlation Identifier</option>
-                <option value="SetDetail">Set Detail</option>
-                <option value="SetFault">Set Fault Code</option>
-                <option value="SetFaultDescription">Set Fault Description</option>
-                <option value="SetProperty">Set Property</option>
-              </select>
+              <form>
+                <div class="form-group">
+                  <label for="actionTypeSelector" style="width: 15%" >Action Type: </label>
+                  <select name="actionTypeSelector" ng-model="action.actionType" ng-change="changedActionType(action)" style="width: 30%">
+                    <option value=""></option>
+                    <option value="AddContent">Add Content</option>
+                    <option value="AddCorrelationId">Add Correlation Identifier</option>
+                    <option value="SetDetail">Set Detail</option>
+                    <option value="SetFault">Set Fault Code</option>
+                    <option value="SetFaultDescription">Set Fault Description</option>
+                    <option value="SetProperty">Set Property</option>
+                  </select>
 
-              <br>
+                  <br>
 
-              <label for="description" style="width: 15%" >Description:</label>
-              <input type="text" name="description" ng-model="action.description" ng-change="setDirty()" style="width: 80%" >
+                  <label for="description" style="width: 15%" >Description:</label>
+                  <input type="text" name="description" ng-model="action.description" ng-change="setDirty()" style="width: 80%" >
+                </div>
 
-              <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
-              <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
+                <div class="form-group">
+                  <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
+                  <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
 
-              <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
+                  <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
 
-              <label for="actionType" style="width: 15%" ng-show="action.actionType === 'AddContent'" >Type:</label>
-              <input type="text" name="actionType" ng-model="action.type" ng-change="setDirty()" ng-show="action.actionType === 'AddContent'" style="width: 30%" >
+                  <label for="actionType" style="width: 15%" ng-show="action.actionType === 'AddContent'" >Type:</label>
+                  <input type="text" name="actionType" ng-model="action.type" ng-change="setDirty()" ng-show="action.actionType === 'AddContent'" style="width: 30%" >
 
-              <label for="correlationScope" ng-show="action.actionType === 'AddCorrelationId'" style="width: 15%" >Correlation Scope: </label>
-              <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" style="width: 30%">
-                <option value="Global">Global</option>
-                <option value="Interaction">Interaction</option>
-                <option value="Local">Local</option>
-              </select>
+                  <label for="correlationScope" ng-show="action.actionType === 'AddCorrelationId'" style="width: 15%" >Correlation Scope: </label>
+                  <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" style="width: 30%">
+                    <option value="Global">Global</option>
+                    <option value="Interaction">Interaction</option>
+                    <option value="Local">Local</option>
+                  </select>
+                </div>
 
-              <br>
-              <br>
+                <div class="form-group">
+                  <label for="actionPredicateType" style="width: 15%" >Predicate Type: </label>
+                  <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action.predicate)" style="width: 30%">
+                    <option value="">Undefined</option>
+                    <option value="Literal">Literal</option>
+                    <option value="XML">XML</option>
+                    <option value="Text">Text</option>
+                    <option value="FreeForm">Free Form</option>
+                  </select>
 
-              <label for="actionPredicateType" style="width: 15%" >Predicate Type: </label>
-              <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action.predicate)" style="width: 30%">
-                <option value="">Undefined</option>
-                <option value="Literal">Literal</option>
-                <option value="XML">XML</option>
-                <option value="Text">Text</option>
-                <option value="FreeForm">Free Form</option>
-              </select>
+                  <br>
 
-              <br>
+                  <label for="actionPredicateSource" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Source: </label>
+                  <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'" style="width: 30%">
+                    <option value="Value">Value</option>
+                    <option value="Header">Header</option>
+                  </select>
 
-              <label for="actionPredicateSource" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Source: </label>
-              <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'" style="width: 30%">
-                <option value="Value">Value</option>
-                <option value="Header">Header</option>
-              </select>
+                  <label style="width: 5%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
 
-              <label style="width: 5%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+                  <label for="actionPredicateKey" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Key: </label>
+                  <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">
 
-              <label for="actionPredicateKey" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Key: </label>
-              <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">
+                  <label for="actionPredicateXPath" style="width: 15%" ng-show="action.predicate.type === 'XML'">Predicate XPath:</label>
+                  <input type="text" name="actionPredicateXPath" ng-model="action.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'XML'">
 
-              <label for="actionPredicateXPath" style="width: 15%" ng-show="action.predicate.type === 'XML'">Predicate XPath:</label>
-              <input type="text" name="actionPredicateXPath" ng-model="action.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'XML'">
+                  <label for="actionPredicate" style="width: 15%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">Predicate Value:</label>
+                  <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">
+                </div>
 
-              <label for="actionPredicate" style="width: 15%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">Predicate Value:</label>
-              <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">
+                <div class="form-group">
+                  <label for="actionValueType" style="width: 15%" >Value Type: </label>
+                  <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
+                    <option value="">Undefined</option>
+                    <option value="Literal">Literal</option>
+                    <option value="XML">XML</option>
+                    <option value="Text">Text</option>
+                    <option value="FreeForm">Free Form</option>
+                  </select>
 
-              <br>
-              <br>
+                  <br>
 
-              <label for="actionValueType" style="width: 15%" >Value Type: </label>
-              <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
-                <option value="">Undefined</option>
-                <option value="Literal">Literal</option>
-                <option value="XML">XML</option>
-                <option value="Text">Text</option>
-                <option value="FreeForm">Free Form</option>
-              </select>
+                  <label for="actionValueSource" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Source: </label>
+                  <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'" style="width: 30%">
+                    <option value="Value">Value</option>
+                    <option value="Header">Header</option>
+                  </select>
 
-              <br>
+                  <label style="width: 5%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'"></label> <!-- TODO: Must be a better way -->
 
-              <label for="actionValueSource" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Source: </label>
-              <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'" style="width: 30%">
-                <option value="Value">Value</option>
-                <option value="Header">Header</option>
-              </select>
+                  <label for="actionValueKey" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Key: </label>
+                  <input type="text" name="actionValueKey" ng-model="action.expression.key" ng-change="setDirty()" style="width: 30%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">
 
-              <label style="width: 5%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+                  <label for="actionValueXPath" style="width: 15%" ng-show="action.expression.type === 'XML'">Value XPath:</label>
+                  <input type="text" name="actionValueXPath" ng-model="action.expression.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'XML'">
 
-              <label for="actionValueKey" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Key: </label>
-              <input type="text" name="actionValueKey" ng-model="action.expression.key" ng-change="setDirty()" style="width: 30%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">
-
-              <label for="actionValueXPath" style="width: 15%" ng-show="action.expression.type === 'XML'">Value XPath:</label>
-              <input type="text" name="actionValueXPath" ng-model="action.expression.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'XML'">
-
-              <label for="actionValue" style="width: 15%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
-              <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">
+                  <label for="actionValue" style="width: 15%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
+                  <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">
+                </div>
+              </form>
 
             </uib-accordion-group>
           </uib-accordion>

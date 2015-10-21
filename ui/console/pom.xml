@@ -95,6 +95,7 @@
             <exclude>**/*.ts</exclude>
             <exclude>**/*.js</exclude>
             <exclude>**/*.css</exclude>
+            <exclude>**/.tern-project</exclude>
           </excludes>
         </configuration>
       </plugin>
