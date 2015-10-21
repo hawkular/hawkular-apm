@@ -40,7 +40,7 @@ public class TextTest {
     @Test
     public void testEvaluateValue() {
         TextExpression text = new TextExpression();
-        text.setSource(DataSource.Value);
+        text.setSource(DataSource.Content);
         text.setKey("0");
 
         assertEquals("Text.serialize(values[0])", text.evaluateText());

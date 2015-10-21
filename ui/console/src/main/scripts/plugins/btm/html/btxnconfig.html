@@ -124,7 +124,7 @@
 
               <label for="predicateSource" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Source: </label>
               <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'" style="width: 30%">
-                <option value="Value">Value</option>
+                <option value="Content">Content</option>
                 <option value="Header">Header</option>
               </select>
 
@@ -197,7 +197,7 @@
 
                   <label for="actionPredicateSource" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Source: </label>
                   <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'" style="width: 30%">
-                    <option value="Value">Value</option>
+                    <option value="Content">Content</option>
                     <option value="Header">Header</option>
                   </select>
 
@@ -227,7 +227,7 @@
 
                   <label for="actionValueSource" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Source: </label>
                   <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'" style="width: 30%">
-                    <option value="Value">Value</option>
+                    <option value="Content">Content</option>
                     <option value="Header">Header</option>
                   </select>
 

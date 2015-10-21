@@ -23,7 +23,7 @@
           "actionType": "AddContent",
           "expression": {
             "type": "Text",
-            "source": "Value",
+            "source": "Content",
             "key": "0"
           }
         }]
@@ -36,7 +36,7 @@
           "actionType": "AddContent",
           "expression": {
             "type": "Text",
-            "source": "Value",
+            "source": "Content",
             "key": "0"
           }
         }]

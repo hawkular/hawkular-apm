@@ -21,8 +21,8 @@ package org.hawkular.btm.api.model.config.btxn;
  */
 public enum DataSource {
 
-    /* The data source is a value */
-    Value,
+    /* The data source is the content */
+    Content,
 
     /* The data source is a header property */
     Header
