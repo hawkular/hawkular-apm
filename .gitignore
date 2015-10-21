@@ -33,5 +33,7 @@ node_modules/
 libs/
 defs.d.ts
 
+.tern-project
+
 *.log
 
