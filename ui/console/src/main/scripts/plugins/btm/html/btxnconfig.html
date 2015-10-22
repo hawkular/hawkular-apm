@@ -151,6 +151,11 @@
 
               <form>
                 <div class="form-group">
+                  <label for="description" style="width: 15%" >Description:</label>
+                  <input type="text" name="description" ng-model="action.description" ng-change="setDirty()" style="width: 80%" >
+                </div>
+
+                <div class="form-group">
                   <label for="actionTypeSelector" style="width: 15%" >Action Type: </label>
                   <select name="actionTypeSelector" ng-model="action.actionType" ng-change="changedActionType(action)" style="width: 30%">
                     <option value=""></option>
@@ -164,11 +169,6 @@
 
                   <br>
 
-                  <label for="description" style="width: 15%" >Description:</label>
-                  <input type="text" name="description" ng-model="action.description" ng-change="setDirty()" style="width: 80%" >
-                </div>
-
-                <div class="form-group">
                   <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
                   <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
 

@@ -85,7 +85,6 @@ module BTM {
 
     $scope.changedActionType = function(action) {
       $scope.setDirty();
-      action.description = undefined;
       action.name = undefined;
       action.type = undefined;
       action.scope = undefined;
@@ -95,7 +94,12 @@ module BTM {
 
     $scope.addProcessor = function() {
       $scope.setDirty();
-      $scope.businessTransaction.processors.add({ nodeType: "Consumer", direction: "In" });
+      $scope.businessTransaction.processors.add({
+        description: "Processor " + ($scope.businessTransaction.processors.length + 1),
+        nodeType: "Consumer",
+        direction: "In",
+        actions: []
+      });
     };
 
     $scope.deleteProcessor = function(processor) {
@@ -107,7 +111,9 @@ module BTM {
 
     $scope.addAction = function(processor) {
       $scope.setDirty();
-      processor.actions.add({});
+      processor.actions.add({
+        description: "Action " + (processor.actions.length + 1)
+      });
     };
 
     $scope.deleteAction = function(processor,action) {
