@@ -71,6 +71,11 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-analytics-service-rest-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-client-manager</artifactId>
       <scope>test</scope>
     </dependency>

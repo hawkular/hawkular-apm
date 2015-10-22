@@ -20,16 +20,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -58,16 +62,6 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private ElasticsearchClient client;
-
-    /**  */
-    private static int DEFAULT_RESPONSE_SIZE = 100000;
-
-    /**  */
-    private static long DEFAULT_TIMEOUT = 10000L;
-
-    private long timeout = DEFAULT_TIMEOUT;
-
-    private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
 
     @PostConstruct
     public void init() {
@@ -160,6 +154,15 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
         BoolQueryBuilder b2 = QueryBuilders.boolQuery()
                 .must(QueryBuilders.rangeQuery("startTime").from(startTime).to(endTime));
 
+        FilterBuilder filter = null;
+        if (criteria.getName() != null) {
+            if (criteria.getName().trim().length() == 0) {
+                filter = FilterBuilders.missingFilter("name");
+            } else {
+                b2 = b2.must(QueryBuilders.termQuery("name", criteria.getName()));
+            }
+        }
+
         if (!criteria.getCorrelationIds().isEmpty()) {
             for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
                 b2.must(QueryBuilders.termQuery("value", id.getValue()));
@@ -168,22 +171,28 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
                         QueryBuilders.boolQuery()
                                 .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
                                 .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
-                */
+                 */
             }
         }
 
         if (!criteria.getProperties().isEmpty()) {
             for (String key : criteria.getProperties().keySet()) {
-                b2 = b2.must(QueryBuilders.matchQuery("properties."+key, criteria.getProperties().get(key)));
+                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
             }
         }
 
-        SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(BUSINESS_TRANSACTION_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setTimeout(TimeValue.timeValueMillis(timeout))
-                .setSize(maxResponseSize)
-                .setQuery(b2).execute().actionGet();
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(b2);
+
+        if (filter != null) {
+            request.setPostFilter(filter);
+        }
+
+        SearchResponse response = request.execute().actionGet();
         if (response.isTimedOut()) {
             msgLog.warnQueryTimedOut();
         }
@@ -202,6 +211,28 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
         }
 
         return ret;
+    }
+
+    /**
+     * This method clears the Elasticsearch database, and is currently only intended for
+     * testing purposes.
+     *
+     * @param tenantId The optional tenant id
+     */
+    protected void clear(String tenantId) {
+        String index = client.getIndex(tenantId);
+
+        client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+    }
+
+    /**
+     * This method closes the Elasticsearch client.
+     */
+    @PreDestroy
+    public void close() {
+        if (client != null) {
+            client.close();
+        }
     }
 
 }
