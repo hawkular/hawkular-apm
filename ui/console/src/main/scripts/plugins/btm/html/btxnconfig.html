@@ -25,11 +25,12 @@
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="inclusion in businessTransaction.filter.inclusions" >{{inclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeInclusionFilter(inclusion)"></span></li>
         <li class="list-group-item" >
-          <form class="form-horizontal hk-add-url" name="addInclusionForm" role="form" novalidate ng-submit="addInclusionFilter()">
+          <form class="form-horizontal hk-add-url" name="addInclusionForm" role="form" autocomplete="off" ng-submit="addInclusionFilter()">
             <div class="input-group input-group-lg">
               <input type="text" class="form-control" name="newInclusionFilterField"
                    ng-model="newInclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter an inclusion filter (regular expression)" required>
+                   placeholder="Enter an inclusion filter (regular expression)"
+                   uib-typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" required>
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit" ng-disabled="!newInclusionFilter" >
                   <div ng-show="addProgress" class="spinner spinner-sm"></div>
@@ -48,11 +49,12 @@
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="exclusion in businessTransaction.filter.exclusions" >{{exclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeExclusionFilter(exclusion)"></span></li>
         <li class="list-group-item" >
-          <form class="form-horizontal hk-add-url" name="addExclusionForm" role="form" novalidate ng-submit="addExclusionFilter()">
+          <form class="form-horizontal hk-add-url" name="addExclusionForm" role="form" autocomplete="off" novalidate ng-submit="addExclusionFilter()">
             <div class="input-group input-group-lg">
               <input type="text" class="form-control" name="newExclusionFilterField"
                    ng-model="newExclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter an exclusion filter (regular expression)" required>
+                   placeholder="Enter an exclusion filter (regular expression)"
+                   uib-typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" required>
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit" ng-disabled="!newExclusionFilter" >
                   <div ng-show="addProgress" class="spinner spinner-sm"></div>

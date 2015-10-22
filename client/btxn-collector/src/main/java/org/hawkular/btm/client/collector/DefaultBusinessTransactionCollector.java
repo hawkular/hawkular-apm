@@ -81,6 +81,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
             @Override
             public void accept(ConfigurationService cs, Throwable t) {
+                if (t != null) {
+                    log.log(Level.SEVERE, "Failed to obtain configuration service", t);
+                }
                 setConfigurationService(cs);
             }
         });
@@ -94,14 +97,19 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void setConfigurationService(ConfigurationService cs) {
         CollectorConfiguration config = cs.getCollector(null, null, null);
 
+        if (log.isLoggable(Level.FINEST)) {
+            log.finer("Set configuration service = "+cs);
+        }
+
         if (config != null) {
             filterManager = new FilterManager(config);
             reporter.init(config);
             try {
                 processorManager = new ProcessorManager(config);
             } catch (Throwable t) {
-                // TODO: log
-                t.printStackTrace();
+                if (t != null) {
+                    log.log(Level.SEVERE, "Failed to initialise Process Manager", t);
+                }
             }
         }
     }

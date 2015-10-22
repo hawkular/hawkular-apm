@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -78,17 +79,19 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "optional 'start' time") @QueryParam("start") long start,
+            value = "optional 'start' time, default 1 hour before current time")
+                    @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-            value = "optional 'start' time") @QueryParam("end") long end) {
+            value = "optional 'end' time, default current time")
+                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
 
         try {
-            log.tracef("Get unbound URIs: start [%s] end [%s]", start, end);
+            log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
 
             List<String> uris = analyticsService.getUnboundURIs(
-                    securityProvider.getTenantId(context), start, end);
+                    securityProvider.getTenantId(context), startTime, endTime);
 
-            log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", start, end, uris);
+            log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);
 
             response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
                     .build());
