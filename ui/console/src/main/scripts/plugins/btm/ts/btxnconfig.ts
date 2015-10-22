@@ -29,6 +29,10 @@ module BTM {
       $scope.original = angular.copy($scope.businessTransaction);
     });
 
+    $http.get('/hawkular/btm/analytics/unbounduris').success(function(data) {
+      $scope.unboundURIs = data;
+    });
+
     $scope.addInclusionFilter = function() {
       console.log('Add inclusion filter: '+$scope.newInclusionFilter);
       if ($scope.businessTransaction.filter === null) {

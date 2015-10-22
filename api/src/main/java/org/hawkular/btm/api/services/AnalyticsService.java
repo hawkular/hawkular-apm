@@ -30,10 +30,10 @@ public interface AnalyticsService {
      * associated with a business transaction).
      *
      * @param tenantId The optional tenant id
-     * @param start The start time
-     * @param end The end time (if 0, then current time)
+     * @param startTime The start time
+     * @param endTime The end time (if 0, then current time)
      * @return The list of unbound URIs
      */
-    List<String> getUnboundURIs(String tenantId, long start, long end);
+    List<String> getUnboundURIs(String tenantId, long startTime, long endTime);
 
 }
