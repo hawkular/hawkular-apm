@@ -36,7 +36,10 @@ module BTM {
     $scope.addInclusionFilter = function() {
       console.log('Add inclusion filter: '+$scope.newInclusionFilter);
       if ($scope.businessTransaction.filter === null) {
-        $scope.businessTransaction.filter = angular.fromJson("{ \"inclusions\": [], \"exclusions\": []}");
+        $scope.businessTransaction.filter = {
+          inclusions: [],
+          exclusions: []
+        };
       }
       $scope.businessTransaction.filter.inclusions.add($scope.newInclusionFilter);
       $scope.setDirty();
@@ -51,7 +54,10 @@ module BTM {
     $scope.addExclusionFilter = function() {
       console.log('Add exclusion filter: '+$scope.newExclusionFilter);
       if ($scope.businessTransaction.filter === null) {
-        $scope.businessTransaction.filter = angular.fromJson("{ \"inclusions\": [], \"exclusions\": []}");
+        $scope.businessTransaction.filter = {
+          inclusions: [],
+          exclusions: []
+        };
       }
       $scope.businessTransaction.filter.exclusions.add($scope.newExclusionFilter);
       $scope.setDirty();

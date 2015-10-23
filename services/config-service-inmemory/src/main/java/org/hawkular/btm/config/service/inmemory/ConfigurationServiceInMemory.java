@@ -17,6 +17,7 @@
 package org.hawkular.btm.config.service.inmemory;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -61,10 +62,19 @@ public class ConfigurationServiceInMemory implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionNames(java.lang.String)
      */
     @Override
-    public List<String> getBusinessTransactions(String tenantId) {
+    public List<String> getBusinessTransactionNames(String tenantId) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String, long)
+     */
+    @Override
+    public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+        // TODO Auto-generated method stub
         return null;
     }
 

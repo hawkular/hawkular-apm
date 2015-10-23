@@ -20,9 +20,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
@@ -224,8 +226,21 @@ public class ConfigurationServiceRESTTest {
         BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
 
+        long midtime = 0;
+
         try {
             service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+
+            synchronized (this) {
+                wait(1000);
+            }
+
+            midtime = System.currentTimeMillis();
+
+            synchronized (this) {
+                wait(1000);
+            }
+
             service.updateBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
         } catch (Exception e1) {
             fail("Failed to add btxnconfigs: " + e1);
@@ -241,14 +256,31 @@ public class ConfigurationServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Get the collector configuration
-        List<String> btcs = service.getBusinessTransactions(null);
+        // Get the btxn names
+        List<String> btns = service.getBusinessTransactionNames(null);
+
+        assertNotNull(btns);
+        assertEquals(2, btns.size());
+
+        assertEquals(BTXNCONFIG1, btns.get(0));
+        assertEquals(BTXNCONFIG2, btns.get(1));
+
+        // Get all the btxn configs
+        Map<String, BusinessTxnConfig> btcs = service.getBusinessTransactions(null, 0);
 
         assertNotNull(btcs);
         assertEquals(2, btcs.size());
 
-        assertEquals(BTXNCONFIG1, btcs.get(0));
-        assertEquals(BTXNCONFIG2, btcs.get(1));
+        assertTrue(btcs.containsKey(BTXNCONFIG1));
+        assertTrue(btcs.containsKey(BTXNCONFIG2));
+
+        // Get the btxn configs updated after the specified time
+        Map<String, BusinessTxnConfig> btcs2 = service.getBusinessTransactions(null, midtime);
+
+        assertNotNull(btcs2);
+        assertEquals(1, btcs2.size());
+
+        assertTrue(btcs2.containsKey(BTXNCONFIG2));
 
         // Remove the config
         try {

@@ -1193,4 +1193,34 @@ public class ProcessorManagerTest {
         assertFalse(service.getDetails().containsKey("test"));
     }
 
+    @Test
+    public void testInit() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        assertTrue(pm.getProcessors().containsKey("testapp"));
+        assertEquals(1, pm.getProcessors().get("testapp").size());
+        assertEquals(p1, pm.getProcessors().get("testapp").get(0).getProcessor());
+
+        // Update the configuration
+        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+
+        Processor p2 = new Processor();
+        btc2.getProcessors().add(p2);
+
+        pm.init("testapp", btc2);
+
+        // Check that the changed processor has been initialised
+        assertTrue(pm.getProcessors().containsKey("testapp"));
+        assertEquals(1, pm.getProcessors().get("testapp").size());
+        assertEquals(p2, pm.getProcessors().get("testapp").get(0).getProcessor());
+    }
+
 }

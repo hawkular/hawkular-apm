@@ -60,30 +60,7 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionPublisher(btxnService);
-        collector.setConfigurationService(new ConfigurationService() {
-            @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-                return new CollectorConfiguration();
-            }
-
-            @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-            }
-
-            @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-                return null;
-            }
-
-            @Override
-            public void removeBusinessTransaction(String tenantId, String name) {
-            }
-
-            @Override
-            public List<String> getBusinessTransactions(String tenantId) {
-                return null;
-            }
-        });
+        collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, URI, TYPE, null);
 
@@ -129,30 +106,7 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionPublisher(btxnService);
-        collector.setConfigurationService(new ConfigurationService() {
-            @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-                return new CollectorConfiguration();
-            }
-
-            @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-            }
-
-            @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-                return null;
-            }
-
-            @Override
-            public void removeBusinessTransaction(String tenantId, String name) {
-            }
-
-            @Override
-            public List<String> getBusinessTransactions(String tenantId) {
-                return null;
-            }
-        });
+        collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, URI, TYPE, null);
 
@@ -181,30 +135,7 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionPublisher(btxnService);
-        collector.setConfigurationService(new ConfigurationService() {
-            @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-                return new CollectorConfiguration();
-            }
-
-            @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-            }
-
-            @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-                return null;
-            }
-
-            @Override
-            public void removeBusinessTransaction(String tenantId, String name) {
-            }
-
-            @Override
-            public List<String> getBusinessTransactions(String tenantId) {
-                return null;
-            }
-        });
+        collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
@@ -248,30 +179,7 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionPublisher(btxnService);
-        collector.setConfigurationService(new ConfigurationService() {
-            @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-                return new CollectorConfiguration();
-            }
-
-            @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-            }
-
-            @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-                return null;
-            }
-
-            @Override
-            public void removeBusinessTransaction(String tenantId, String name) {
-            }
-
-            @Override
-            public List<String> getBusinessTransactions(String tenantId) {
-                return null;
-            }
-        });
+        collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
@@ -316,30 +224,7 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionPublisher(btxnService);
-        collector.setConfigurationService(new ConfigurationService() {
-            @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-                return new CollectorConfiguration();
-            }
-
-            @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-            }
-
-            @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-                return null;
-            }
-
-            @Override
-            public void removeBusinessTransaction(String tenantId, String name) {
-            }
-
-            @Override
-            public List<String> getBusinessTransactions(String tenantId) {
-                return null;
-            }
-        });
+        collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
@@ -379,30 +264,7 @@ public class DefaultBusinessTransactionCollectorTest {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
         TestBTxnService btxnService = new TestBTxnService();
         collector.setBusinessTransactionPublisher(btxnService);
-        collector.setConfigurationService(new ConfigurationService() {
-            @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-                return new CollectorConfiguration();
-            }
-
-            @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-            }
-
-            @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-                return null;
-            }
-
-            @Override
-            public void removeBusinessTransaction(String tenantId, String name) {
-            }
-
-            @Override
-            public List<String> getBusinessTransactions(String tenantId) {
-                return null;
-            }
-        });
+        collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, null, null, "myid");
 
@@ -668,5 +530,37 @@ public class DefaultBusinessTransactionCollectorTest {
             this.tenantId = tenantId;
         }
 
+    }
+
+    public class TestConfigurationService implements ConfigurationService {
+
+        @Override
+        public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+            return new CollectorConfiguration();
+        }
+
+        @Override
+        public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+        }
+
+        @Override
+        public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+            return null;
+        }
+
+        @Override
+        public void removeBusinessTransaction(String tenantId, String name) {
+        }
+
+        @Override
+        public List<String> getBusinessTransactionNames(String tenantId) {
+            return null;
+        }
+
+        @Override
+        public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 }

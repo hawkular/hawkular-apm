@@ -62,4 +62,12 @@ public class Filter {
         this.exclusions = exclusions;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Filter [inclusions=" + inclusions + ", exclusions=" + exclusions + "]";
+    }
+
 }
