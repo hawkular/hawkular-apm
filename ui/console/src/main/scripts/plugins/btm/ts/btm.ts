@@ -20,7 +20,7 @@ module BTM {
 
     $scope.newBTxnName = '';
 
-    $http.get('/hawkular/btm/config/businesstxn').success(function(data) {
+    $http.get('/hawkular/btm/config/businesstxnnames').success(function(data) {
       $scope.businessTransactionNames = data;
     });
 

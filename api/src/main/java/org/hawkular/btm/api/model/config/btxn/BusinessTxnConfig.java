@@ -38,6 +38,9 @@ public class BusinessTxnConfig {
     @JsonInclude
     private List<Processor> processors = new ArrayList<Processor>();
 
+    @JsonInclude(Include.NON_NULL)
+    private long lastUpdated;
+
     /**
      * @return the description
      */
@@ -78,6 +81,29 @@ public class BusinessTxnConfig {
      */
     public void setProcessors(List<Processor> processors) {
         this.processors = processors;
+    }
+
+    /**
+     * @return the lastUpdated
+     */
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    /**
+     * @param lastUpdated the lastUpdated to set
+     */
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "BusinessTxnConfig [description=" + description + ", filter=" + filter + ", processors=" + processors
+                + ", lastUpdated=" + lastUpdated + "]";
     }
 
 }

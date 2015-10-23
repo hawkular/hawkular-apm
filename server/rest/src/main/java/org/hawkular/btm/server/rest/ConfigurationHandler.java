@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -110,7 +111,7 @@ public class ConfigurationHandler {
     }
 
     @GET
-    @Path("businesstxn")
+    @Path("businesstxnnames")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Retrieve the business transaction names",
@@ -118,14 +119,14 @@ public class ConfigurationHandler {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getBusinessTxnConfigurations(
+    public void getBusinessTxnConfigurationNames(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response) {
 
         try {
             log.tracef("Get business transaction names");
 
-            List<String> names = configService.getBusinessTransactions(
+            List<String> names = configService.getBusinessTransactionNames(
                     securityProvider.getTenantId(context));
 
             // Sort the list
@@ -134,6 +135,41 @@ public class ConfigurationHandler {
             log.tracef("Got business transaction names=[%s]", names);
 
             response.resume(Response.status(Response.Status.OK).entity(names).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
+    @Path("businesstxn")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Retrieve the business transaction configurations, changed since an optional specified time",
+            response = Map.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getBusinessTxnConfigurations(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+                value = "updated since") @QueryParam("updated") @DefaultValue("0") long updated) {
+
+        try {
+            log.tracef("Get business transactions, updated = [%s]", updated);
+
+            Map<String,BusinessTxnConfig> btxns = configService.getBusinessTransactions(
+                    securityProvider.getTenantId(context), updated);
+
+            log.tracef("Got business transactions=[%s]", btxns);
+
+            response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Exception e) {

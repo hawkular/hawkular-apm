@@ -28,6 +28,7 @@ export JAVA_OPTS="-Dorg.jboss.byteman.transform.all \
     -javaagent:$BTM_CLIENT_JAR_PATH=manager:org.hawkular.btm.client.manager.ClientManager,boot:$BTM_CLIENT_JAR_PATH \
     -Dorg.jboss.byteman.compileToBytecode \
     -Dhawkular-btm.base-uri=http://localhost:8180/hawkular/btm \
+    -Dhawkular-btm.config.refresh=10 \
     -Dhawkular-btm.username=jdoe \
     -Dhawkular-btm.password=password"
 

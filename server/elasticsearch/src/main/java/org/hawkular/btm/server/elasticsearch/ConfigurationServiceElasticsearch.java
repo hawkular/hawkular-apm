@@ -17,9 +17,12 @@
 package org.hawkular.btm.server.elasticsearch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
@@ -133,6 +136,9 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
             msgLog.tracef("Update business transaction config with name[%s] config=%s", name, config);
         }
 
+        // Set last updated time
+        config.setLastUpdated(System.currentTimeMillis());
+
         IndexRequestBuilder builder = client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
                 BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
                 .setSource(mapper.writeValueAsString(config));
@@ -187,10 +193,10 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionNames(java.lang.String)
      */
     @Override
-    public List<String> getBusinessTransactions(String tenantId) {
+    public List<String> getBusinessTransactionNames(String tenantId) {
         List<String> ret = new ArrayList<String>();
         String index = client.getIndex(tenantId);
 
@@ -228,6 +234,51 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String, long)
+     */
+    @Override
+    public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+        Map<String,BusinessTxnConfig> ret = new HashMap<String,BusinessTxnConfig>();
+        String index = client.getIndex(tenantId);
+
+        try {
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+            SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setTimeout(TimeValue.timeValueMillis(timeout))
+                    .setSize(maxResponseSize)
+                    .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    BusinessTxnConfig btxn = mapper.readValue(searchHitFields.getSourceAsString(),
+                            BusinessTxnConfig.class);
+                    if (updated == 0 || btxn.getLastUpdated() > updated) {
+                        ret.put(searchHitFields.getId(), btxn);
+                    }
+                } catch (Exception e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transaction configurations have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to retrieve business transaction names");
+            }
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
      *                          java.lang.String)
      */
@@ -239,6 +290,28 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                 .actionGet();
         if (msgLog.isTraceEnabled()) {
             msgLog.tracef("Remove business transaction config with name[%s]: %s", name, response.isFound());
+        }
+    }
+
+    /**
+     * This method clears the Elasticsearch database, and is currently only intended for
+     * testing purposes.
+     *
+     * @param tenantId The optional tenant id
+     */
+    protected void clear(String tenantId) {
+        String index = client.getIndex(tenantId);
+
+        client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+    }
+
+    /**
+     * This method closes the Elasticsearch client.
+     */
+    @PreDestroy
+    public void close() {
+        if (client != null) {
+            client.close();
         }
     }
 

@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -45,6 +46,10 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
+            };
+
+    private static final TypeReference<java.util.Map<String,BusinessTxnConfig>> BUSINESS_TXN_MAP =
+            new TypeReference<java.util.Map<String,BusinessTxnConfig>>() {
             };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
@@ -327,17 +332,17 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionNames(java.lang.String)
      */
     @Override
-    public List<String> getBusinessTransactions(String tenantId) {
+    public List<String> getBusinessTransactionNames(String tenantId) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction configuration: tenantId=[" + tenantId + "]");
+            log.finest("Get business transaction names: tenantId=[" + tenantId + "]");
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("config/businesstxn");
+                .append("config/businesstxnnames");
 
         try {
             URL url = new URL(builder.toString());
@@ -378,6 +383,78 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (resp.toString().trim().length() > 0) {
                     try {
                         return mapper.readValue(resp.toString(), STRING_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get business transaction names: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get business transaction names", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String, long)
+     */
+    @Override
+    public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get business transaction configurations: tenantId=[" + tenantId
+                    + "] updated=[" + updated + "]");
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("config/businesstxn?updated=")
+                .append(updated);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), BUSINESS_TXN_MAP);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }

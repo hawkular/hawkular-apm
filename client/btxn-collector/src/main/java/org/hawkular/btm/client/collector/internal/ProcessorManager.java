@@ -67,20 +67,36 @@ public class ProcessorManager {
     protected void init(CollectorConfiguration config) {
         for (String btxn : config.getBusinessTransactions().keySet()) {
             BusinessTxnConfig btc = config.getBusinessTransactions().get(btxn);
+            init(btxn, btc);
+        }
+    }
 
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("ProcessManager: initialise btxn '" + btxn + "' config=" + btc
-                        + " processors=" + btc.getProcessors().size());
+    /**
+     * This method initialises the processors associated with the supplied
+     * business transaction configuration.
+     *
+     * @param btxn The business transaction name
+     * @param btc The configuration
+     */
+    public void init(String btxn, BusinessTxnConfig btc) {
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("ProcessManager: initialise btxn '" + btxn + "' config=" + btc
+                    + " processors=" + btc.getProcessors().size());
+        }
+
+        if (btc.getProcessors() != null && !btc.getProcessors().isEmpty()) {
+            List<ProcessorWrapper> procs = new ArrayList<ProcessorWrapper>();
+
+            for (int i = 0; i < btc.getProcessors().size(); i++) {
+                procs.add(new ProcessorWrapper(btc.getProcessors().get(i)));
             }
 
-            if (btc.getProcessors() != null && !btc.getProcessors().isEmpty()) {
-                List<ProcessorWrapper> procs = new ArrayList<ProcessorWrapper>();
-
-                for (int i = 0; i < btc.getProcessors().size(); i++) {
-                    procs.add(new ProcessorWrapper(btc.getProcessors().get(i)));
-                }
-
+            synchronized (processors) {
                 processors.put(btxn, procs);
+            }
+        } else {
+            synchronized (processors) {
+                processors.remove(btxn);
             }
         }
     }
@@ -95,13 +111,19 @@ public class ProcessorManager {
      * @return Whether processing instructions have been defined
      */
     public boolean isProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-        boolean ret=false;
+        boolean ret = false;
 
-        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
-            List<ProcessorWrapper> procs = processors.get(btxn.getName());
+        if (btxn.getName() != null) {
+            List<ProcessorWrapper> procs = null;
 
-            for (int i = 0; !ret && i < procs.size(); i++) {
-                ret = procs.get(i).isProcessed(btxn, node, direction);
+            synchronized (processors) {
+                procs = processors.get(btxn.getName());
+            }
+
+            if (procs != null) {
+                for (int i = 0; !ret && i < procs.size(); i++) {
+                    ret = procs.get(i).isProcessed(btxn, node, direction);
+                }
             }
         }
 
@@ -123,14 +145,20 @@ public class ProcessorManager {
      * @return Whether content processing instructions have been defined
      */
     public boolean isContentProcessed(BusinessTransaction btxn, Node node, Direction direction) {
-        boolean ret=false;
+        boolean ret = false;
 
-        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
-            List<ProcessorWrapper> procs = processors.get(btxn.getName());
+        if (btxn.getName() != null) {
+            List<ProcessorWrapper> procs = null;
 
-            for (int i = 0; !ret && i < procs.size(); i++) {
-                ret = procs.get(i).isProcessed(btxn, node, direction)
-                        && procs.get(i).usesContent();
+            synchronized (processors) {
+                procs = processors.get(btxn.getName());
+            }
+
+            if (procs != null) {
+                for (int i = 0; !ret && i < procs.size(); i++) {
+                    ret = procs.get(i).isProcessed(btxn, node, direction)
+                            && procs.get(i).usesContent();
+                }
             }
         }
 
@@ -161,17 +189,37 @@ public class ProcessorManager {
                     + " : available processors=" + processors);
         }
 
-        if (btxn.getName() != null && processors.containsKey(btxn.getName())) {
-            List<ProcessorWrapper> procs = processors.get(btxn.getName());
+        if (btxn.getName() != null) {
+            List<ProcessorWrapper> procs = null;
+
+            synchronized (processors) {
+                procs = processors.get(btxn.getName());
+            }
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("ProcessManager: btxn name=" + btxn.getName() + " processors=" + procs);
             }
 
-            for (int i = 0; i < procs.size(); i++) {
-                procs.get(i).process(btxn, node, direction, headers, values);
+            if (procs != null) {
+                for (int i = 0; i < procs.size(); i++) {
+                    procs.get(i).process(btxn, node, direction, headers, values);
+                }
             }
         }
+    }
+
+    /**
+     * @return the processors
+     */
+    protected Map<String, List<ProcessorWrapper>> getProcessors() {
+        return processors;
+    }
+
+    /**
+     * @param processors the processors to set
+     */
+    protected void setProcessors(Map<String, List<ProcessorWrapper>> processors) {
+        this.processors = processors;
     }
 
     /**
@@ -224,7 +272,7 @@ public class ProcessorManager {
                 ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
 
                 if (processor.getPredicate() != null) {
-                    String text=processor.getPredicate().predicateText();
+                    String text = processor.getPredicate().predicateText();
 
                     compiledPredicate = MVEL.compileExpression(text, ctx);
 
@@ -254,6 +302,15 @@ public class ProcessorManager {
                 }
                 actions.add(paw);
             }
+        }
+
+        /**
+         * This method returns the processor.
+         *
+         * @return The processor
+         */
+        protected Processor getProcessor() {
+            return processor;
         }
 
         /**
@@ -422,7 +479,7 @@ public class ProcessorManager {
                 ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
 
                 if (action.getPredicate() != null) {
-                    String text=action.getPredicate().predicateText();
+                    String text = action.getPredicate().predicateText();
 
                     compiledPredicate = MVEL.compileExpression(text, ctx);
 
@@ -438,7 +495,7 @@ public class ProcessorManager {
                     usesContent = text.indexOf("values[") != -1;
                 }
                 if (action.getExpression() != null) {
-                    String text=action.getExpression().evaluateText();
+                    String text = action.getExpression().evaluateText();
 
                     compiledAction = MVEL.compileExpression(text, ctx);
 

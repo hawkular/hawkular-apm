@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
@@ -67,7 +68,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        String name=fm.getBusinessTransactionName("include and exclude");
+        String name = fm.getBusinessTransactionName("include and exclude");
         assertNotNull(name);
         assertNotEquals(0, name.length());
     }
@@ -122,7 +123,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        String name=fm.getBusinessTransactionName("notrecognised");
+        String name = fm.getBusinessTransactionName("notrecognised");
         assertNotNull(name);
         assertEquals(0, name.length());
     }
@@ -144,4 +145,28 @@ public class FilterManagerTest {
         assertNull(fm.getBusinessTransactionName("notrecognised"));
     }
 
+    public void testInit() {
+        CollectorConfiguration config = new CollectorConfiguration();
+        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        btc1.setDescription("Hello");
+        config.getBusinessTransactions().put("btc", btc1);
+
+        FilterManager fm = new FilterManager(config);
+
+        assertTrue(fm.getFilterMap().containsKey("btc"));
+        assertEquals(1, fm.getGlobalExclusionFilters().size());
+        assertEquals(0, fm.getBtxnFilters().size());
+
+        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        btc2.setDescription("Changed");
+        config.getBusinessTransactions().put("btc", btc2);
+
+        Filter f2 = new Filter();
+        btc2.setFilter(f2);
+        f2.getInclusions().add("include");
+
+        assertTrue(fm.getFilterMap().containsKey("btc"));
+        assertEquals(0, fm.getGlobalExclusionFilters().size());
+        assertEquals(1, fm.getBtxnFilters().size());
+    }
 }

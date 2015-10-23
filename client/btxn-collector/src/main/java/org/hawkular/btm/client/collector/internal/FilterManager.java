@@ -17,8 +17,12 @@
 package org.hawkular.btm.client.collector.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 
@@ -29,6 +33,9 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
  */
 public class FilterManager {
 
+    private static final Logger log = Logger.getLogger(FilterManager.class.getName());
+
+    private Map<String, FilterProcessor> filterMap = new HashMap<String, FilterProcessor>();
     private List<FilterProcessor> globalExclusionFilters = new ArrayList<FilterProcessor>();
     private List<FilterProcessor> btxnFilters = new ArrayList<FilterProcessor>();
 
@@ -51,17 +58,45 @@ public class FilterManager {
     protected void init(CollectorConfiguration config) {
         for (String btxn : config.getBusinessTransactions().keySet()) {
             BusinessTxnConfig btc = config.getBusinessTransactions().get(btxn);
-            FilterProcessor fp = new FilterProcessor(btxn, btc.getFilter());
-
-            if (fp.isIncludeAll()) {
-                globalExclusionFilters.add(fp);
-            } else {
-                btxnFilters.add(fp);
-            }
+            init(btxn, btc);
         }
 
         onlyNamedTransactions = new Boolean(config.getProperty(
                 "hawkular-btm.collector.onlynamed", Boolean.FALSE.toString()));
+    }
+
+    /**
+     * This method initialises the filter manager with the supplied
+     * business transaction configuration.
+     *
+     * @param btxn The business transaction name
+     * @param btc The configuration
+     */
+    public void init(String btxn, BusinessTxnConfig btc) {
+        FilterProcessor fp = null;
+
+        if (btc.getFilter() != null) {
+            fp = new FilterProcessor(btxn, btc.getFilter());
+        }
+
+        synchronized (filterMap) {
+            // Check if old filter processor needs to be removed
+            FilterProcessor oldfp = filterMap.get(btxn);
+            if (oldfp != null) {
+                globalExclusionFilters.remove(oldfp);
+                btxnFilters.remove(oldfp);
+            }
+
+            if (fp != null) {
+                // Add new filter processor
+                filterMap.put(btxn, fp);
+                if (fp.isIncludeAll()) {
+                    globalExclusionFilters.add(fp);
+                } else {
+                    btxnFilters.add(fp);
+                }
+            }
+        }
     }
 
     /**
@@ -76,24 +111,82 @@ public class FilterManager {
     public String getBusinessTransactionName(String uri) {
         String ret = (onlyNamedTransactions ? null : "");
 
-        // First check if a global exclusion filter applies
-        for (int i = 0; i < globalExclusionFilters.size(); i++) {
-            if (globalExclusionFilters.get(i).isExcluded(uri)) {
-                return null;
-            }
-        }
-
-        // Check if business transaction specific applies
-        for (int i = 0; i < btxnFilters.size(); i++) {
-            if (btxnFilters.get(i).isIncluded(uri)) {
-                if (btxnFilters.get(i).isExcluded(uri)) {
+        synchronized (filterMap) {
+            // First check if a global exclusion filter applies
+            for (int i = 0; i < globalExclusionFilters.size(); i++) {
+                if (globalExclusionFilters.get(i).isExcluded(uri)) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Excluding uri=" + uri);
+                    }
                     return null;
                 }
-                ret = btxnFilters.get(i).getBusinessTransaction();
-                break;
+            }
+
+            // Check if business transaction specific applies
+            for (int i = 0; i < btxnFilters.size(); i++) {
+                if (btxnFilters.get(i).isIncluded(uri)) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("URI has passed inclusion filter: uri=" + uri);
+                    }
+                    if (btxnFilters.get(i).isExcluded(uri)) {
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.finest("URI has failed exclusion filter: uri=" + uri);
+                        }
+                        return null;
+                    }
+                    ret = btxnFilters.get(i).getBusinessTransaction();
+
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("URI belongs to business transaction '" + ret + ": uri=" + uri);
+                    }
+                    break;
+                }
             }
         }
 
         return ret;
     }
+
+    /**
+     * @return the filterMap
+     */
+    protected Map<String, FilterProcessor> getFilterMap() {
+        return filterMap;
+    }
+
+    /**
+     * @param filterMap the filterMap to set
+     */
+    protected void setFilterMap(Map<String, FilterProcessor> filterMap) {
+        this.filterMap = filterMap;
+    }
+
+    /**
+     * @return the globalExclusionFilters
+     */
+    protected List<FilterProcessor> getGlobalExclusionFilters() {
+        return globalExclusionFilters;
+    }
+
+    /**
+     * @param globalExclusionFilters the globalExclusionFilters to set
+     */
+    protected void setGlobalExclusionFilters(List<FilterProcessor> globalExclusionFilters) {
+        this.globalExclusionFilters = globalExclusionFilters;
+    }
+
+    /**
+     * @return the btxnFilters
+     */
+    protected List<FilterProcessor> getBtxnFilters() {
+        return btxnFilters;
+    }
+
+    /**
+     * @param btxnFilters the btxnFilters to set
+     */
+    protected void setBtxnFilters(List<FilterProcessor> btxnFilters) {
+        this.btxnFilters = btxnFilters;
+    }
+
 }

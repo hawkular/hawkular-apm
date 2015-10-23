@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
@@ -36,6 +38,7 @@ import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.ServiceResolver;
@@ -65,6 +68,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     private Map<String, FragmentBuilder> correlations = new ConcurrentHashMap<String, FragmentBuilder>();
 
     private static final Level warningLogLevel = Level.WARNING;
+
+    private long configLastUpdated = 0;
 
     private static boolean testMode;
 
@@ -97,11 +102,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     public void setConfigurationService(ConfigurationService cs) {
         CollectorConfiguration config = cs.getCollector(null, null, null);
 
-        if (log.isLoggable(Level.FINEST)) {
-            log.finer("Set configuration service = "+cs);
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Set configuration service = " + cs);
         }
 
         if (config != null) {
+            configLastUpdated = System.currentTimeMillis();
+
             filterManager = new FilterManager(config);
             reporter.init(config);
             try {
@@ -110,6 +117,42 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 if (t != null) {
                     log.log(Level.SEVERE, "Failed to initialise Process Manager", t);
                 }
+            }
+
+            // Check if should check for updates
+            Integer refresh = Integer.getInteger("hawkular-btm.config.refresh");
+
+            if (log.isLoggable(Level.FINER)) {
+                log.finer("Configuration refresh cycle (in seconds) = " + refresh);
+            }
+
+            if (refresh != null) {
+                Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Map<String, BusinessTxnConfig> changed = cs.getBusinessTransactions(null,
+                                    configLastUpdated);
+
+                            for (String btxn : changed.keySet()) {
+                                BusinessTxnConfig btc = changed.get(btxn);
+
+                                if (log.isLoggable(Level.FINER)) {
+                                    log.finer("Changed config for btxn '" + btxn + "' = " + btc);
+                                }
+
+                                filterManager.init(btxn, btc);
+                                processorManager.init(btxn, btc);
+
+                                if (btc.getLastUpdated() > configLastUpdated) {
+                                    configLastUpdated = btc.getLastUpdated();
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.log(Level.SEVERE, "Failed to update business transaction configuration", e);
+                        }
+                    }
+                }, refresh.intValue(), refresh.intValue(), TimeUnit.SECONDS);
             }
         }
     }
@@ -377,7 +420,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 Node current = builder.getCurrentNode();
                 if (current != null && current.getType() == NodeType.Producer) {
                     // Merge details into current node
-                    mergeProducer(node, (Producer)current);
+                    mergeProducer(node, (Producer) current);
                 }
 
                 // Check for completion
