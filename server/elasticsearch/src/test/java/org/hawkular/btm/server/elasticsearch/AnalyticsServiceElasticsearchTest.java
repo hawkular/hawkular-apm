@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.server.analytics;
+package org.hawkular.btm.server.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,22 +27,45 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * @author gbrown
  */
-public class AnalyticsProviderTest {
+public class AnalyticsServiceElasticsearchTest {
+
+    private BusinessTransactionServiceElasticsearch bts;
+
+    private AnalyticsServiceElasticsearch analytics;
+
+    @BeforeClass
+    public static void initClass() {
+        System.setProperty("hawkular-btm.data.dir", "target");
+    }
+
+    @Before
+    public void beforeTest() {
+        analytics = new AnalyticsServiceElasticsearch();
+        bts = new BusinessTransactionServiceElasticsearch();
+        bts.init();
+        analytics.setElasticsearchClient(bts.getElasticsearchClient());
+    }
+
+    @After
+    public void afterTest() {
+        bts.clear(null);
+        bts.close();
+    }
 
     @Test
     public void testAllDistinctUnboundURIs() {
-        AnalyticsProvider ap = new AnalyticsProvider();
-
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
         btxns.add(btxn1);
 
         Consumer c1 = new Consumer();
@@ -61,6 +85,7 @@ public class AnalyticsProviderTest {
         c1.getNodes().add(p1);
 
         BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
         btxns.add(btxn2);
 
         Consumer c2 = new Consumer();
@@ -68,9 +93,17 @@ public class AnalyticsProviderTest {
 
         btxn2.getNodes().add(c2);
 
-        ap.setBusinessTransactionService(new TestBusinessTransactionService(btxns));
+        bts.store(null, btxns);
 
-        List<String> uris = ap.getUnboundURIs(null, 0, 0);
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        List<String> uris = analytics.getUnboundURIs(null, 100, 0);
 
         assertNotNull(uris);
         assertEquals(5, uris.size());
@@ -78,11 +111,10 @@ public class AnalyticsProviderTest {
 
     @Test
     public void testAllDuplicationUnboundURIs() {
-        AnalyticsProvider ap = new AnalyticsProvider();
-
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
         btxns.add(btxn1);
 
         Consumer c1 = new Consumer();
@@ -102,6 +134,7 @@ public class AnalyticsProviderTest {
         c1.getNodes().add(p1);
 
         BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
         btxns.add(btxn2);
 
         Consumer c2 = new Consumer();
@@ -109,9 +142,17 @@ public class AnalyticsProviderTest {
 
         btxn2.getNodes().add(c2);
 
-        ap.setBusinessTransactionService(new TestBusinessTransactionService(btxns));
+        bts.store(null, btxns);
 
-        List<String> uris = ap.getUnboundURIs(null, 0, 0);
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        List<String> uris = analytics.getUnboundURIs(null, 100, 0);
 
         assertNotNull(uris);
         assertEquals(3, uris.size());
@@ -119,12 +160,10 @@ public class AnalyticsProviderTest {
 
     @Test
     public void testSomeBoundURIs() {
-        AnalyticsProvider ap = new AnalyticsProvider();
-
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(100);
+        btxn1.setStartTime(1000);
         btxns.add(btxn1);
 
         Consumer c1 = new Consumer();
@@ -144,6 +183,7 @@ public class AnalyticsProviderTest {
         c1.getNodes().add(p1);
 
         BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
         btxn2.setName("A Name");
         btxns.add(btxn2);
 
@@ -155,38 +195,73 @@ public class AnalyticsProviderTest {
         t3.setUri("uri4");
         c2.getNodes().add(t3);
 
-        ap.setBusinessTransactionService(new TestBusinessTransactionService(btxns));
+        bts.store(null, btxns);
 
-        List<String> uris = ap.getUnboundURIs(null, 0, 0);
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        List<String> uris = analytics.getUnboundURIs(null, 100, 0);
 
         assertNotNull(uris);
         assertEquals(2, uris.size());
     }
 
-    public class TestBusinessTransactionService implements BusinessTransactionService {
+    @Test
+    public void testGetTransactionCount() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
-        private List<BusinessTransaction> businessTransactions;
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
+        btxns.add(btxn1);
 
-        public TestBusinessTransactionService(List<BusinessTransaction> btxns) {
-            businessTransactions = btxns;
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
+        btxns.add(btxn2);
+
+        bts.store(null, btxns);
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String, java.lang.String)
-         */
-        @Override
-        public BusinessTransaction get(String tenantId, String id) {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.hawkular.btm.api.services.BusinessTransactionService#query(java.lang.String,
-         *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
-         */
-        @Override
-        public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
-            return businessTransactions;
-        }
-
+        assertEquals(2, analytics.getTransactionCount(null, null, 100, 0));
     }
+
+    @Test
+    public void testGetTransactionFaultCount() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
+        Consumer c1=new Consumer();
+        c1.setFault("Failed");
+        btxn1.getNodes().add(c1);
+        btxns.add(btxn1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
+        btxns.add(btxn2);
+
+        bts.store(null, btxns);
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        assertEquals(1, analytics.getTransactionFaultCount(null, null, 100, 0));
+    }
+
 }

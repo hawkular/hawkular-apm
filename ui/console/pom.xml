@@ -189,12 +189,16 @@
           <excludeDefaultDirectories>true</excludeDefaultDirectories>
           <filesets>
             <fileset>
+              <directory>target</directory>
+              <!-- Attempt to avoid additional build work, but sometimes causes build to fail, so needs
+                   clearing out.
               <directory>target/gulp-build/</directory>
               <excludes>
                 <exclude>node/**</exclude>
                 <exclude>node_modules/**</exclude>
                 <exclude>libs/**</exclude>
               </excludes>
+              -->
               <followSymlinks>false</followSymlinks>
             </fileset>
             <fileset>

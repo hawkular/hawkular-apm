@@ -52,7 +52,7 @@ public class AnalyticsServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         btxn1.getNodes().add(c1);
@@ -88,5 +88,106 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(uris);
         assertEquals(1, uris.size());
         assertEquals("testuri", uris.get(0));
+    }
+
+    @Test
+    public void testGetTransactionCount() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        Long count = analytics.getTransactionCount(null, "testapp", 0, 0);
+
+        assertNotNull(count);
+        assertEquals(1, count.longValue());
+    }
+
+    @Test
+    public void testGetTransactionFaultCount() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setFault("Failed");
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        Long count = analytics.getTransactionFaultCount(null, "testapp", 0, 0);
+
+        assertNotNull(count);
+        assertEquals(1, count.longValue());
     }
 }

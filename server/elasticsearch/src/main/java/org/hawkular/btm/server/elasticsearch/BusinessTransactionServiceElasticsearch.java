@@ -54,7 +54,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Singleton
 public class BusinessTransactionServiceElasticsearch implements BusinessTransactionService {
 
-    private final MsgLogger msgLog = MsgLogger.LOGGER;
+    private static final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
     private static final String BUSINESS_TRANSACTION_TYPE = "businesstransaction";
@@ -71,6 +71,14 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
         } catch (Exception e) {
             msgLog.errorFailedToInitialiseElasticsearchClient(e);
         }
+    }
+
+    protected ElasticsearchClient getElasticsearchClient() {
+        return client;
+    }
+
+    protected void setElasticsearchClient(ElasticsearchClient client) {
+        this.client = client;
     }
 
     /**
@@ -131,6 +139,19 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
      */
     @Override
     public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+        return internalQuery(client, tenantId, criteria);
+    }
+
+    /**
+     * This method performs the query.
+     *
+     * @param client The elasticsearch client
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @return The list of business transactions
+     */
+    protected static List<BusinessTransaction> internalQuery(ElasticsearchClient client, String tenantId,
+            BusinessTransactionCriteria criteria) {
         List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
 
         String index = client.getIndex(tenantId);
