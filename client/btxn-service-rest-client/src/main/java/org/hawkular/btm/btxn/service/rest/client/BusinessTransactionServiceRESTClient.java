@@ -20,14 +20,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
@@ -168,70 +166,6 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
     }
 
     /**
-     * This method returns a query string representing the criteria
-     * specified. If a blank criteria is specified, then an empty
-     * string will be returned, otherwise the relevant query
-     * parameters/values will be defined following an initial '?'
-     * character.
-     *
-     * @param criteria The business transaction criteria
-     * @return The query parameters
-     */
-    protected static Map<String, String> getQueryParameters(BusinessTransactionCriteria criteria) {
-        Map<String, String> ret = new HashMap<String, String>();
-
-        if (criteria.getStartTime() > 0) {
-            ret.put("startTime", "" + criteria.getStartTime());
-        }
-
-        if (criteria.getEndTime() > 0) {
-            ret.put("endTime", "" + criteria.getEndTime());
-        }
-
-        if (!criteria.getProperties().isEmpty()) {
-            boolean first = true;
-            StringBuilder buf = new StringBuilder();
-
-            for (String key : criteria.getProperties().keySet()) {
-                if (first) {
-                    first = false;
-                } else {
-                    buf.append(',');
-                }
-                buf.append(key);
-                buf.append('|');
-                buf.append(criteria.getProperties().get(key));
-            }
-
-            ret.put("properties", buf.toString());
-        }
-
-        if (!criteria.getCorrelationIds().isEmpty()) {
-            boolean first = true;
-            StringBuilder buf = new StringBuilder();
-
-            for (CorrelationIdentifier cid : criteria.getCorrelationIds()) {
-                if (first) {
-                    first = false;
-                } else {
-                    buf.append(',');
-                }
-                buf.append(cid.getScope().name());
-                buf.append('|');
-                buf.append(cid.getValue());
-            }
-
-            ret.put("correlations", buf.toString());
-        }
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Criteria [" + criteria + "] query parameters [" + ret + "]");
-        }
-
-        return ret;
-    }
-
-    /**
      * This method returns a query URL associated with the supplied
      * criteria.
      *
@@ -239,7 +173,7 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
      * @return The query URL
      */
     protected String getQueryURL(BusinessTransactionCriteria criteria) {
-        Map<String, String> queryParams = getQueryParameters(criteria);
+        Map<String, String> queryParams = criteria.parameters();
 
         StringBuilder builder = new StringBuilder().append(getBaseUrl()).append("transactions");
 

@@ -235,6 +235,71 @@ public class BusinessTransactionCriteria {
         return true;
     }
 
+    /**
+     * This method returns the criteria as a map of name/value pairs.
+     * The properties and correlation ids are returned as a single
+     * entry with | separators.
+     *
+     * @return The criteria parameters
+     */
+    public Map<String, String> parameters() {
+        Map<String, String> ret = new HashMap<String, String>();
+
+        if (getName() != null) {
+            ret.put("name", getName());
+        }
+
+        if (getStartTime() > 0) {
+            ret.put("startTime", "" + getStartTime());
+        }
+
+        if (getEndTime() > 0) {
+            ret.put("endTime", "" + getEndTime());
+        }
+
+        if (!getProperties().isEmpty()) {
+            boolean first = true;
+            StringBuilder buf = new StringBuilder();
+
+            for (String key : getProperties().keySet()) {
+                if (first) {
+                    first = false;
+                } else {
+                    buf.append(',');
+                }
+                buf.append(key);
+                buf.append('|');
+                buf.append(getProperties().get(key));
+            }
+
+            ret.put("properties", buf.toString());
+        }
+
+        if (!getCorrelationIds().isEmpty()) {
+            boolean first = true;
+            StringBuilder buf = new StringBuilder();
+
+            for (CorrelationIdentifier cid : getCorrelationIds()) {
+                if (first) {
+                    first = false;
+                } else {
+                    buf.append(',');
+                }
+                buf.append(cid.getScope().name());
+                buf.append('|');
+                buf.append(cid.getValue());
+            }
+
+            ret.put("correlations", buf.toString());
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Criteria parameters [" + ret + "]");
+        }
+
+        return ret;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

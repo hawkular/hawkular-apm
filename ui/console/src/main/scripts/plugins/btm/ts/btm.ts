@@ -21,7 +21,36 @@ module BTM {
     $scope.newBTxnName = '';
 
     $http.get('/hawkular/btm/config/businesstxnnames').success(function(data) {
-      $scope.businessTransactionNames = data;
+      $scope.businessTransactions = [];
+      for (var i = 0; i < data.length; i++) {
+        var btxn = {
+          name: data[i],
+          count: undefined,
+          faultcount: undefined,
+          percentile95: undefined,
+          alerts: undefined
+        };
+        $scope.businessTransactions.add(btxn);
+
+        $http.get('/hawkular/btm/analytics/businesstxn/'+btxn.name+'/count').success(function(data) {
+          btxn.count = data;
+        });
+
+        $http.get('/hawkular/btm/analytics/stats?name='+btxn.name).success(function(data) {
+          $scope.stats = data;
+          if (data.percentiles[95] > 0) {
+            btxn.percentile95 = Math.round( data.percentiles[95] / 1000000 ) / 1000;
+          }
+        });
+
+        $http.get('/hawkular/btm/analytics/businesstxn/'+btxn.name+'/faultcount').success(function(data) {
+          btxn.faultcount = data;
+        });
+
+        $http.get('/hawkular/btm/analytics/businesstxn/'+btxn.name+'/alertcount').success(function(data) {
+          btxn.alerts = data;
+        });
+      }
     });
 
     $scope.addBusinessTxn = function() {

@@ -68,7 +68,6 @@
     <module>client/client-rest</module>
     <module>client/config-service-rest-client</module>
     <module>processors/metrics-deriver</module>
-    <module>server/analytics</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
     <module>server/elasticsearch-proxy</module>
@@ -200,11 +199,6 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-rest</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-analytics</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

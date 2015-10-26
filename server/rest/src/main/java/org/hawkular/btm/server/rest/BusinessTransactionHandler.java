@@ -152,6 +152,8 @@ public class BusinessTransactionHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
+            value = "business transaction name") @QueryParam("name") String name,
+            @ApiParam(required = false,
                     value = "retrieve business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
                     @ApiParam(required = false,
@@ -168,6 +170,7 @@ public class BusinessTransactionHandler {
 
         try {
             BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+            criteria.setName(name);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 

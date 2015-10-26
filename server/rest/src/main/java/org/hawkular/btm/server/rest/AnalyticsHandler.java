@@ -28,6 +28,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
@@ -36,7 +37,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.services.AnalyticsService;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
@@ -79,11 +82,11 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "optional 'start' time, default 1 hour before current time")
-                    @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    value = "optional 'start' time, default 1 hour before current time")
+                        @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-            value = "optional 'end' time, default current time")
-                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
+                    value = "optional 'end' time, default current time") @DefaultValue("0")
+                        @QueryParam("endTime") long endTime) {
 
         try {
             log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
@@ -94,6 +97,180 @@ public class AnalyticsHandler {
             log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);
 
             response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("businesstxn/{name}/count")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction count",
+            response = Long.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getTransactionCount(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "business transaction name") @PathParam("name") String name,
+            @ApiParam(required = false,
+                    value = "optional 'start' time, default 1 hour before current time")
+                    @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "optional 'end' time, default current time") @DefaultValue("0")
+                    @QueryParam("endTime") long endTime) {
+
+        try {
+            log.tracef("Get transaction count: name [%s] start [%s] end [%s]", name, startTime, endTime);
+
+            long count = analyticsService.getTransactionCount(
+                    securityProvider.getTenantId(context), name, startTime, endTime);
+
+            log.tracef("Got transaction count: name [%s] start [%s] end [%s] = [%s]", name,
+                    startTime, endTime, count);
+
+            response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("businesstxn/{name}/faultcount")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the number of business transaction instances that returned a fault",
+            response = Long.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getTransactionFaultCount(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "business transaction name") @PathParam("name") String name,
+            @ApiParam(required = false,
+                    value = "optional 'start' time, default 1 hour before current time")
+                    @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "optional 'end' time, default current time")
+                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
+
+        try {
+            log.tracef("Get transaction fault count: name [%s] start [%s] end [%s]", name, startTime, endTime);
+
+            long count = analyticsService.getTransactionFaultCount(
+                    securityProvider.getTenantId(context), name, startTime, endTime);
+
+            log.tracef("Got transaction fault count: name [%s] start [%s] end [%s] = [%s]", name,
+                    startTime, endTime, count);
+
+            response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("businesstxn/{name}/alertcount")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction alert count",
+            response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getAlertCount(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "business transaction name") @PathParam("name") String name) {
+
+        try {
+            log.tracef("Get alert count: name [%s]", name);
+
+            int count = analyticsService.getAlertCount(
+                    securityProvider.getTenantId(context), name);
+
+            log.tracef("Got alert count: name [%s] = [%s]", name, count);
+
+            response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("stats")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction stats associated with criteria",
+            response = BusinessTransactionStats.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getBusinessTransactionStats(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "business transaction name") @QueryParam("name") String name,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+
+        try {
+            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+            criteria.setName(name);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction stats for criteria [%s]", criteria);
+
+            BusinessTransactionStats stats = analyticsService.getStats(securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Got business transaction stats for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Exception e) {

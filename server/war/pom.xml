@@ -41,10 +41,6 @@
     <!-- Service implementations -->
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-analytics</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-jms</artifactId>
     </dependency>
     <dependency>

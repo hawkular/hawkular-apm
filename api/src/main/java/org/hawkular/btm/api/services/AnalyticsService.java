@@ -18,6 +18,8 @@ package org.hawkular.btm.api.services;
 
 import java.util.List;
 
+import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
+
 /**
  * This interface represents the available analytics capabilities.
  *
@@ -35,5 +37,50 @@ public interface AnalyticsService {
      * @return The list of unbound URIs
      */
     List<String> getUnboundURIs(String tenantId, long startTime, long endTime);
+
+    /**
+     * This method returns the number of transactions, of the specified named
+     * business transaction, that were executed during the time range.
+     *
+     * @param tenantId The tenant id
+     * @param name The business transaction name
+     * @param startTime The start time
+     * @param endTime The end time (or 0 for current time)
+     * @return The transaction count
+     */
+    long getTransactionCount(String tenantId, String name, long startTime, long endTime);
+
+    /**
+     * This method returns the number of transactions, of the specified named
+     * business transaction, that were executed during the time range and returned
+     * a fault.
+     *
+     * @param tenantId The tenant id
+     * @param name The business transaction name
+     * @param startTime The start time
+     * @param endTime The end time (or 0 for current time)
+     * @return The transaction fault count
+     */
+    long getTransactionFaultCount(String tenantId, String name, long startTime, long endTime);
+
+    /**
+     * This method returns the statistics, of the specified criteria, that were
+     * executed during the time range.
+     *
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @return The transaction stats
+     */
+    BusinessTransactionStats getStats(String tenantId, BusinessTransactionCriteria criteria);
+
+    /**
+     * This method returns the number of alerts associated with the specified
+     * business transaction.
+     *
+     * @param tenantId The tenant id
+     * @param name The business transaction name
+     * @return The number of alerts
+     */
+    int getAlertCount(String tenantId, String name);
 
 }
