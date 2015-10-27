@@ -26,6 +26,7 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 
@@ -528,10 +529,18 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#store(java.lang.String, java.util.List)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeResponseTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void store(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeResponseTimes(String tenantId, List<ResponseTime> responseTimes) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         throw new UnsupportedOperationException();
     }
 

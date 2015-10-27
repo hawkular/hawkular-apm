@@ -42,7 +42,6 @@ import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -79,32 +78,6 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
 
     protected void setElasticsearchClient(ElasticsearchClient client) {
         this.client = client;
-    }
-
-    /**
-     * This method stores the supplied business transactions.
-     *
-     * @param tenantId The tenant id
-     * @param btxns The list of transactions
-     */
-    protected void store(String tenantId, List<BusinessTransaction> btxns) {
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
-
-        for (int i = 0; i < btxns.size(); i++) {
-            BusinessTransaction btxn = btxns.get(i);
-            try {
-                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                        BUSINESS_TRANSACTION_TYPE, btxn.getId()).setSource(mapper.writeValueAsString(btxn)));
-            } catch (JsonProcessingException e) {
-                msgLog.error("Failed to store business transaction", e);
-            }
-        }
-
-        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-
-        if (bulkItemResponses.hasFailures()) {
-            msgLog.error("Failed to store business transactions: " + bulkItemResponses.buildFailureMessage());
-        }
     }
 
     /* (non-Javadoc)
@@ -232,6 +205,41 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
         }
 
         return ret;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#storeBusinessTransactions(java.lang.String,
+     *                              java.util.List)
+     */
+    @Override
+    public void storeBusinessTransactions(String tenantId, List<BusinessTransaction> businessTransactions)
+            throws Exception {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        for (int i = 0; i < businessTransactions.size(); i++) {
+            BusinessTransaction btxn = businessTransactions.get(i);
+            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                    BUSINESS_TRANSACTION_TYPE, btxn.getId()).setSource(mapper.writeValueAsString(btxn)));
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            // TODO: Candidate for retry??? HWKBTM-187
+            msgLog.error("Failed to store completion times: " + bulkItemResponses.buildFailureMessage());
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store business transactions to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing business transactions to elasticsearch");
+            }
+        }
     }
 
     /**

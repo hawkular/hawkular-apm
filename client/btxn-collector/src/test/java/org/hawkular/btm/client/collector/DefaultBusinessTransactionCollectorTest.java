@@ -530,6 +530,15 @@ public class DefaultBusinessTransactionCollectorTest {
             this.tenantId = tenantId;
         }
 
+        /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.BusinessTransactionService#storeBusinessTransactions(java.lang.String,
+         *                              java.util.List)
+         */
+        @Override
+        public void storeBusinessTransactions(String tenantId, List<BusinessTransaction> businessTransactions)
+                throws Exception {
+        }
+
     }
 
     public class TestConfigurationService implements ConfigurationService {
