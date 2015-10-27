@@ -65,7 +65,11 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-metrics-deriver</artifactId>
+      <artifactId>hawkular-btm-completiontime-deriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-responsetime-deriver</artifactId>
     </dependency>
 
     <dependency>

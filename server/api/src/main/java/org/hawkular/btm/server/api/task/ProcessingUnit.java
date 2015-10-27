@@ -108,7 +108,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             try {
                 if (processor.isMultiple()) {
                     List<R> result = processor.processMultiple(items.get(i));
-                    if (resultHandler != null) {
+                    if (resultHandler != null && result != null && result.size() > 0) {
                         if (results == null) {
                             results = new ArrayList<R>();
                         }
@@ -116,7 +116,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
                     }
                 } else {
                     R result = processor.processSingle(items.get(i));
-                    if (resultHandler != null) {
+                    if (resultHandler != null && result != null) {
                         if (results == null) {
                             results = new ArrayList<R>();
                         }

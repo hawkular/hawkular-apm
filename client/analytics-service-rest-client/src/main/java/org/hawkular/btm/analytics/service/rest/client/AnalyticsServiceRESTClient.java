@@ -25,6 +25,7 @@ import java.util.Map;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
+import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 
@@ -45,7 +46,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
-            };
+    };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
@@ -118,15 +119,15 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     @Override
     public List<String> getUnboundURIs(String tenantId, long startTime, long endTime) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get unbound URIs: tenantId=[" + tenantId + "] start=" + startTime + " end=" + endTime);
+            log.finest("Get unbound URIs: tenantId=[" + tenantId + "] startTime=" + startTime + " endTime=" + endTime);
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("analytics/unbounduris?start=")
-                .append(startTime)
-                .append("&end=")
-                .append(endTime);
+        .append(baseUrl)
+        .append("analytics/businesstxn/unbounduris?startTime=")
+        .append(startTime)
+        .append("&endTime=")
+        .append(endTime);
 
         try {
             URL url = new URL(builder.toString());
@@ -186,24 +187,21 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionCount(java.lang.String,
-     *                              java.lang.String, long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionCount(java.lang.String,
+     *                          org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public long getTransactionCount(String tenantId, String name, long startTime, long endTime) {
+    public long getCompletionCount(String tenantId, BusinessTransactionCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get transaction count: tenantId=[" + tenantId + "] name="
-                    + name + " start=" + startTime + " end=" + endTime);
+            log.finest("Get completion count: tenantId=[" + tenantId + "] criteria="
+                    + criteria);
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("analytics/businesstxn/")
-                .append(name)
-                .append("/count?start=")
-                .append(startTime)
-                .append("&end=")
-                .append(endTime);
+        .append(baseUrl)
+        .append("analytics/businesstxn/count");
+
+        buildQueryString(builder, criteria);
 
         try {
             URL url = new URL(builder.toString());
@@ -250,37 +248,33 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get transaction count: status=["
+                    log.finest("Failed to get completion count: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get transaction count", e);
+            log.log(Level.SEVERE, "Failed to get completion count", e);
         }
 
         return 0;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionFaultCount(java.lang.String,
-     *                              java.lang.String, long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultCount(java.lang.String,
+     *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public long getTransactionFaultCount(String tenantId, String name, long startTime, long endTime) {
+    public long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get transaction fault count: tenantId=[" + tenantId + "] name="
-                    + name + " start=" + startTime + " end=" + endTime);
+            log.finest("Get completion fault count: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("analytics/businesstxn/")
-                .append(name)
-                .append("/faultcount?start=")
-                .append(startTime)
-                .append("&end=")
-                .append(endTime);
+        .append(baseUrl)
+        .append("analytics/businesstxn/faultcount");
+
+        buildQueryString(builder, criteria);
 
         try {
             URL url = new URL(builder.toString());
@@ -327,13 +321,13 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get transaction fault count: status=["
+                    log.finest("Failed to get completion fault count: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get transaction fault count", e);
+            log.log(Level.SEVERE, "Failed to get completion fault count", e);
         }
 
         return 0;
@@ -344,15 +338,15 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public BusinessTransactionStats getStats(String tenantId, BusinessTransactionCriteria criteria) {
+    public BusinessTransactionStats getCompletionStats(String tenantId, BusinessTransactionCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get transaction stats: tenantId=[" + tenantId + "] criteria="
                     + criteria);
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("analytics/stats");
+        .append(baseUrl)
+        .append("analytics/businesstxn/stats");
 
         buildQueryString(builder, criteria);
 
@@ -413,7 +407,6 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         return null;
     }
 
-
     /**
      * This method builds the URL query string based on the supplied criteria.
      *
@@ -450,10 +443,9 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("analytics/businesstxn/")
-                .append(name)
-                .append("/alertcount");
+        .append(baseUrl)
+        .append("analytics/alerts/count/")
+        .append(name);
 
         try {
             URL url = new URL(builder.toString());
@@ -533,6 +525,14 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         if (authorization != null) {
             connection.setRequestProperty("Authorization", authorization);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#store(java.lang.String, java.util.List)
+     */
+    @Override
+    public void store(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+        throw new UnsupportedOperationException();
     }
 
 }

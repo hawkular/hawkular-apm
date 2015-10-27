@@ -19,6 +19,7 @@ package org.hawkular.btm.api.services;
 import java.util.List;
 
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
+import org.hawkular.btm.api.model.analytics.CompletionTime;
 
 /**
  * This interface represents the available analytics capabilities.
@@ -39,39 +40,37 @@ public interface AnalyticsService {
     List<String> getUnboundURIs(String tenantId, long startTime, long endTime);
 
     /**
-     * This method returns the number of transactions, of the specified named
-     * business transaction, that were executed during the time range.
+     * This method returns the number of completed transactions, of the specified named
+     * business transaction, that were executed during the time range. The business
+     * transaction name must be specified as part of the criteria.
      *
      * @param tenantId The tenant id
-     * @param name The business transaction name
-     * @param startTime The start time
-     * @param endTime The end time (or 0 for current time)
+     * @param criteria The criteria
      * @return The transaction count
      */
-    long getTransactionCount(String tenantId, String name, long startTime, long endTime);
+    long getCompletionCount(String tenantId, BusinessTransactionCriteria criteria);
 
     /**
-     * This method returns the number of transactions, of the specified named
+     * This method returns the number of completed transactions, of the specified named
      * business transaction, that were executed during the time range and returned
-     * a fault.
+     * a fault. The business transaction name must be specified as part of the criteria.
      *
      * @param tenantId The tenant id
-     * @param name The business transaction name
-     * @param startTime The start time
-     * @param endTime The end time (or 0 for current time)
+     * @param criteria The criteria
      * @return The transaction fault count
      */
-    long getTransactionFaultCount(String tenantId, String name, long startTime, long endTime);
+    long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria);
 
     /**
-     * This method returns the statistics, of the specified criteria, that were
-     * executed during the time range.
+     * This method returns the statistics, for the specified criteria, that were
+     * executed during the time range. The business transaction name must be specified
+     * as part of the criteria.
      *
      * @param tenantId The tenant id
      * @param criteria The criteria
      * @return The transaction stats
      */
-    BusinessTransactionStats getStats(String tenantId, BusinessTransactionCriteria criteria);
+    BusinessTransactionStats getCompletionStats(String tenantId, BusinessTransactionCriteria criteria);
 
     /**
      * This method returns the number of alerts associated with the specified
@@ -82,5 +81,14 @@ public interface AnalyticsService {
      * @return The number of alerts
      */
     int getAlertCount(String tenantId, String name);
+
+    /**
+     * This method stores the supplied list of completion times.
+     *
+     * @param tenantId The tenant id
+     * @param completionTimes The completion times
+     * @throws Exception Failed to store
+     */
+    void store(String tenantId, List<CompletionTime> completionTimes) throws Exception;
 
 }

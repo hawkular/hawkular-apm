@@ -23,10 +23,12 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -212,56 +214,60 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetTransactionCount() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+    public void testGetCompletionCount() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        cts.add(ct1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
-
-        bts.store(null, btxns);
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        cts.add(ct2);
 
         try {
+            analytics.store(null, cts);
+
             synchronized (this) {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to wait");
+            fail("Failed to store: "+e);
         }
 
-        assertEquals(2, analytics.getTransactionCount(null, null, 100, 0));
+        assertEquals(2, analytics.getCompletionCount(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(100).setEndTime(0)));
     }
 
     @Test
-    public void testGetTransactionFaultCount() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+    public void testGetCompletionFaultCount() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        Consumer c1=new Consumer();
-        c1.setFault("Failed");
-        btxn1.getNodes().add(c1);
-        btxns.add(btxn1);
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        ct1.setFault("Failed");
+        cts.add(ct1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
-
-        bts.store(null, btxns);
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        cts.add(ct2);
 
         try {
+            analytics.store(null, cts);
+
             synchronized (this) {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to wait");
+            fail("Failed to store");
         }
 
-        assertEquals(1, analytics.getTransactionFaultCount(null, null, 100, 0));
+        assertEquals(1, analytics.getCompletionFaultCount(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(100).setEndTime(0)));
     }
 
 }

@@ -83,6 +83,9 @@
       <jms-topic name="ResponseTimes">
         <entry name="java:/ResponseTimes"/>
       </jms-topic>
+      <jms-topic name="CompletionTimes">
+        <entry name="java:/CompletionTimes"/>
+      </jms-topic>
     </xsl:variable>
 
     <xsl:copy>

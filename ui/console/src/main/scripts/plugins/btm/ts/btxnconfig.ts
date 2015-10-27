@@ -29,7 +29,7 @@ module BTM {
       $scope.original = angular.copy($scope.businessTransaction);
     });
 
-    $http.get('/hawkular/btm/analytics/unbounduris').success(function(data) {
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
       $scope.unboundURIs = data;
     });
 
