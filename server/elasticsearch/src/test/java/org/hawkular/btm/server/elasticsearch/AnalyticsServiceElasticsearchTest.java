@@ -95,9 +95,9 @@ public class AnalyticsServiceElasticsearchTest {
 
         btxn2.getNodes().add(c2);
 
-        bts.store(null, btxns);
-
         try {
+            bts.storeBusinessTransactions(null, btxns);
+
             synchronized (this) {
                 wait(1000);
             }
@@ -144,14 +144,14 @@ public class AnalyticsServiceElasticsearchTest {
 
         btxn2.getNodes().add(c2);
 
-        bts.store(null, btxns);
-
         try {
+            bts.storeBusinessTransactions(null, btxns);
+
             synchronized (this) {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to wait");
+            fail("Failed to store");
         }
 
         List<String> uris = analytics.getUnboundURIs(null, 100, 0);
@@ -197,14 +197,14 @@ public class AnalyticsServiceElasticsearchTest {
         t3.setUri("uri4");
         c2.getNodes().add(t3);
 
-        bts.store(null, btxns);
-
         try {
+            bts.storeBusinessTransactions(null, btxns);
+
             synchronized (this) {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to wait");
+            fail("Failed to store");
         }
 
         List<String> uris = analytics.getUnboundURIs(null, 100, 0);
@@ -228,7 +228,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.store(null, cts);
+            analytics.storeCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -257,7 +257,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.store(null, cts);
+            analytics.storeCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);

@@ -48,4 +48,13 @@ public interface BusinessTransactionService {
      */
     List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria);
 
+    /**
+     * This method stores the supplied list of business transaction fragments.
+     *
+     * @param tenantId The tenant id
+     * @param businessTransactions The business transactions
+     * @throws Exception Failed to store
+     */
+    void storeBusinessTransactions(String tenantId, List<BusinessTransaction> businessTransactions) throws Exception;
+
 }

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.server.elasticsearch;
+package org.hawkular.btm.server.jms;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -31,7 +31,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,22 +40,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "CompletionTimes_Elasticsearch", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "ResponseTimes_Store", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "CompletionTimes")
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "ResponseTimes")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class CompletionTimeMDBElasticsearch implements MessageListener {
+public class ResponseTimeStoreMDB implements MessageListener {
 
-    private static final Logger log = Logger.getLogger(CompletionTimeMDBElasticsearch.class.getName());
+    private static final Logger log = Logger.getLogger(ResponseTimeStoreMDB.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final TypeReference<java.util.List<CompletionTime>> COMPLETION_TIME_LIST =
-            new TypeReference<java.util.List<CompletionTime>>() {
+    private static final TypeReference<java.util.List<ResponseTime>> RESPONSE_TIME_LIST =
+            new TypeReference<java.util.List<ResponseTime>>() {
     };
 
     @Inject
@@ -67,7 +67,7 @@ public class CompletionTimeMDBElasticsearch implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Elasticsearch: Completion time received=" + message);
+            log.finest("Repsonse time received=" + message);
         }
 
         try {
@@ -75,9 +75,9 @@ public class CompletionTimeMDBElasticsearch implements MessageListener {
 
             String data = ((TextMessage) message).getText();
 
-            List<CompletionTime> cts = mapper.readValue(data, COMPLETION_TIME_LIST);
+            List<ResponseTime> rts = mapper.readValue(data, RESPONSE_TIME_LIST);
 
-            analyticsService.store(tenantId, cts);
+            analyticsService.storeResponseTimes(tenantId, rts);
 
         } catch (Exception e) {
             // TODO: Trigger retry???

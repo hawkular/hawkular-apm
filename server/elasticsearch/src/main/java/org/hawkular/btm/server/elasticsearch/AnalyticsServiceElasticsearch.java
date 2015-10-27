@@ -45,6 +45,7 @@ import org.elasticsearch.search.aggregations.metrics.percentiles.Percentiles;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
@@ -64,6 +65,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
+
+    /**  */
+    private static final String RESPONSE_TIME_TYPE = "responsetime";
 
     /**  */
     private static final String COMPLETION_TIME_TYPE = "completiontime";
@@ -345,10 +349,43 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#store(java.lang.String, java.util.List)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeResponseTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void store(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeResponseTimes(String tenantId, List<ResponseTime> responseTimes) throws Exception {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        for (int i = 0; i < responseTimes.size(); i++) {
+            ResponseTime rt = responseTimes.get(i);
+            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                    RESPONSE_TIME_TYPE, rt.getId()).setSource(mapper.writeValueAsString(rt)));
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            // TODO: Candidate for retry??? HWKBTM-187
+            msgLog.error("Failed to store response times: " + bulkItemResponses.buildFailureMessage());
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store response times to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing response times to elasticsearch");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         client.initTenant(tenantId);
 
         BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();

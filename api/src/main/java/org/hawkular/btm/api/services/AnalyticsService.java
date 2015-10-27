@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.ResponseTime;
 
 /**
  * This interface represents the available analytics capabilities.
@@ -89,6 +90,15 @@ public interface AnalyticsService {
      * @param completionTimes The completion times
      * @throws Exception Failed to store
      */
-    void store(String tenantId, List<CompletionTime> completionTimes) throws Exception;
+    void storeResponseTimes(String tenantId, List<ResponseTime> responseTimes) throws Exception;
+
+    /**
+     * This method stores the supplied list of completion times.
+     *
+     * @param tenantId The tenant id
+     * @param completionTimes The completion times
+     * @throws Exception Failed to store
+     */
+    void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
 
 }

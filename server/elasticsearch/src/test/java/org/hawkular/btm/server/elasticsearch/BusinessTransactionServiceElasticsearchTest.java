@@ -76,14 +76,14 @@ public class BusinessTransactionServiceElasticsearchTest {
         btxn3.setStartTime(3000);
         btxns.add(btxn3);
 
-        bts.store(null, btxns);
-
         try {
+            bts.storeBusinessTransactions(null, btxns);
+
             synchronized (this) {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to wait");
+            fail("Failed to store");
         }
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
@@ -119,14 +119,14 @@ public class BusinessTransactionServiceElasticsearchTest {
         btxn3.setStartTime(3000);
         btxns.add(btxn3);
 
-        bts.store(null, btxns);
-
         try {
+            bts.storeBusinessTransactions(null, btxns);
+
             synchronized (this) {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to wait");
+            fail("Failed to store");
         }
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
