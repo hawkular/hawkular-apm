@@ -32,22 +32,22 @@ module BTM {
         };
         $scope.businessTransactions.add(btxn);
 
-        $http.get('/hawkular/btm/analytics/businesstxn/'+btxn.name+'/count').success(function(data) {
+        $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.name).success(function(data) {
           btxn.count = data;
         });
 
-        $http.get('/hawkular/btm/analytics/stats?name='+btxn.name).success(function(data) {
+        $http.get('/hawkular/btm/analytics/businesstxn/stats?name='+btxn.name).success(function(data) {
           $scope.stats = data;
           if (data.percentiles[95] > 0) {
             btxn.percentile95 = Math.round( data.percentiles[95] / 1000000 ) / 1000;
           }
         });
 
-        $http.get('/hawkular/btm/analytics/businesstxn/'+btxn.name+'/faultcount').success(function(data) {
+        $http.get('/hawkular/btm/analytics/businesstxn/faultcount?name='+btxn.name).success(function(data) {
           btxn.faultcount = data;
         });
 
-        $http.get('/hawkular/btm/analytics/businesstxn/'+btxn.name+'/alertcount').success(function(data) {
+        $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.name).success(function(data) {
           btxn.alerts = data;
         });
       }

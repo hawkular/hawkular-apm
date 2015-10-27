@@ -91,7 +91,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetTransactionCount() {
+    public void testGetCompletionCount() {
         AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
         analytics.setUsername(TEST_USERNAME);
         analytics.setPassword(TEST_PASSWORD);
@@ -134,14 +134,15 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Get transaction count
-        Long count = analytics.getTransactionCount(null, "testapp", 0, 0);
+        Long count = analytics.getCompletionCount(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0));
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
     }
 
     @Test
-    public void testGetTransactionFaultCount() {
+    public void testGetCompletionFaultCount() {
         AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
         analytics.setUsername(TEST_USERNAME);
         analytics.setPassword(TEST_PASSWORD);
@@ -185,7 +186,8 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Get transaction count
-        Long count = analytics.getTransactionFaultCount(null, "testapp", 0, 0);
+        Long count = analytics.getCompletionFaultCount(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0));
 
         assertNotNull(count);
         assertEquals(1, count.longValue());

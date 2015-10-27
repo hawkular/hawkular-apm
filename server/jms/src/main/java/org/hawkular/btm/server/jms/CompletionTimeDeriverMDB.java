@@ -31,11 +31,11 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
-import org.hawkular.btm.processor.responsetime.ResponseTimeDeriver;
-import org.hawkular.btm.server.api.services.ResponseTimePublisher;
+import org.hawkular.btm.processor.completiontime.CompletionTimeDeriver;
+import org.hawkular.btm.server.api.services.CompletionTimePublisher;
 import org.hawkular.btm.server.api.task.Handler;
 import org.hawkular.btm.server.api.task.ProcessingUnit;
 
@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_ResponseTimeDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "BusinessTransaction_CompletionTimeDeriver", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
@@ -53,9 +53,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class ResponseTimeDeriverMDB implements MessageListener {
+public class CompletionTimeDeriverMDB implements MessageListener {
 
-    private static final Logger log = Logger.getLogger(ResponseTimeDeriverMDB.class.getName());
+    private static final Logger log = Logger.getLogger(CompletionTimeDeriverMDB.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -63,13 +63,13 @@ public class ResponseTimeDeriverMDB implements MessageListener {
             new TypeReference<java.util.List<BusinessTransaction>>() {
     };
 
-    private static ResponseTimeDeriver processor = new ResponseTimeDeriver();
+    private static CompletionTimeDeriver processor = new CompletionTimeDeriver();
 
     @Inject
     private BusinessTransactionPublisher businessTransactionPublisher;
 
     @Inject
-    private ResponseTimePublisher responseTimePublisher;
+    private CompletionTimePublisher completionTimePublisher;
 
     /* (non-Javadoc)
      * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
@@ -77,7 +77,7 @@ public class ResponseTimeDeriverMDB implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ResponseTimeDeriver received=" + message);
+            log.finest("CompletionTimeDeriver received=" + message);
         }
 
         try {
@@ -95,16 +95,16 @@ public class ResponseTimeDeriverMDB implements MessageListener {
 
             List<BusinessTransaction> btxns = mapper.readValue(data, BUSINESS_TXN_LIST);
 
-            ProcessingUnit<BusinessTransaction, ResponseTime> pu =
-                    new ProcessingUnit<BusinessTransaction, ResponseTime>();
+            ProcessingUnit<BusinessTransaction, CompletionTime> pu =
+                    new ProcessingUnit<BusinessTransaction, CompletionTime>();
 
             pu.setProcessor(processor);
             pu.setRetryCount(retryCount);
 
-            pu.setResultHandler(new Handler<ResponseTime>() {
+            pu.setResultHandler(new Handler<CompletionTime>() {
                 @Override
-                public void handle(List<ResponseTime> items) throws Exception {
-                    responseTimePublisher.publish(tenantId, items);
+                public void handle(List<CompletionTime> items) throws Exception {
+                    completionTimePublisher.publish(tenantId, items);
                 }
             });
 

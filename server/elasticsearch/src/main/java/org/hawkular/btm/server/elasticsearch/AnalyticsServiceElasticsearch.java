@@ -27,24 +27,32 @@ import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.metrics.MetricsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.avg.Avg;
+import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentile;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentiles;
+import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
+import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides the Elasticsearch implementation of the Analytics
@@ -58,7 +66,9 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
-    private static final String RESPONSE_TIME_TYPE = "responsetime";
+    private static final String COMPLETION_TIME_TYPE = "completiontime";
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     private ElasticsearchClient client;
 
@@ -142,62 +152,10 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionCount(java.lang.String,
-     *                          java.lang.String, long, long)
-     */
-    @Override
-    public long getTransactionCount(String tenantId, String name, long startTime, long endTime) {
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setName(name)
-                .setStartTime(startTime)
-                .setEndTime(endTime);
-
-        // TODO: Need to distinguish initial/top level fragments
-
-        return BusinessTransactionServiceElasticsearch.internalQuery(client,
-                tenantId, criteria).size();
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionFaultCount(java.lang.String,
-     *                          java.lang.String, long, long)
-     */
-    @Override
-    public long getTransactionFaultCount(String tenantId, String name, long startTime, long endTime) {
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setName(name)
-                .setStartTime(startTime)
-                .setEndTime(endTime);
-
-        // TODO: Need to distinguish initial/top level fragments
-
-        List<BusinessTransaction> btxns = BusinessTransactionServiceElasticsearch.internalQuery(client,
-                tenantId, criteria);
-
-        long ret = 0;
-
-        for (int i = 0; i < btxns.size(); i++) {
-            BusinessTransaction btxn = btxns.get(i);
-            if (btxn.getNodes().size() > 0) {
-                // Check for fault in any top level node
-                for (int j = 0; j < btxn.getNodes().size(); j++) {
-                    Node node = btxn.getNodes().get(j);
-                    if (node.getFault() != null && node.getFault().trim().length() > 0) {
-                        ret++;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getStats(java.lang.String,
      *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public BusinessTransactionStats getStats(String tenantId, BusinessTransactionCriteria criteria) {
+    public long getCompletionCount(String tenantId, BusinessTransactionCriteria criteria) {
         if (criteria.getName() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -231,16 +189,129 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
             }
         }
 
-        MetricsAggregationBuilder percentileAgg = AggregationBuilders
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(COMPLETION_TIME_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(b2);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+            return 0;
+        } else {
+            return response.getHits().getTotalHits();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionFaultCount(java.lang.String,
+     *              org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     */
+    @Override
+    public long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria) {
+        if (criteria.getName() == null) {
+            throw new IllegalArgumentException("Business transaction name not specified");
+        }
+
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        long startTime = criteria.getStartTime();
+        long endTime = criteria.getEndTime();
+
+        if (endTime == 0) {
+            endTime = System.currentTimeMillis();
+        }
+
+        if (startTime == 0) {
+            // Set to 1 hour before end time
+            startTime = endTime - 3600000;
+        }
+
+        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
+
+        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
+
+        if (!criteria.getProperties().isEmpty()) {
+            for (String key : criteria.getProperties().keySet()) {
+                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            }
+        }
+
+        FilterBuilder filter = FilterBuilders.existsFilter("fault");
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(COMPLETION_TIME_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(b2)
+                .setPostFilter(filter);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+            return 0;
+        } else {
+            return response.getHits().getTotalHits();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getStats(java.lang.String,
+     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     */
+    @Override
+    public BusinessTransactionStats getCompletionStats(String tenantId, BusinessTransactionCriteria criteria) {
+        if (criteria.getName() == null) {
+            throw new IllegalArgumentException("Business transaction name not specified");
+        }
+
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        long startTime = criteria.getStartTime();
+        long endTime = criteria.getEndTime();
+
+        if (endTime == 0) {
+            endTime = System.currentTimeMillis();
+        }
+
+        if (startTime == 0) {
+            // Set to 1 hour before end time
+            startTime = endTime - 3600000;
+        }
+
+        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
+
+        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
+
+        if (!criteria.getProperties().isEmpty()) {
+            for (String key : criteria.getProperties().keySet()) {
+                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            }
+        }
+
+        PercentilesBuilder percentileAgg = AggregationBuilders
                 .percentiles("percentiles")
                 .field("duration");
 
-        MetricsAggregationBuilder averageAgg = AggregationBuilders
+        AvgBuilder averageAgg = AggregationBuilders
                 .avg("average")
                 .field("duration");
 
         SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                .setTypes(RESPONSE_TIME_TYPE)
+                .setTypes(COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(averageAgg)
                 .addAggregation(percentileAgg)
@@ -271,6 +342,39 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     @Override
     public int getAlertCount(String tenantId, String name) {
         return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#store(java.lang.String, java.util.List)
+     */
+    @Override
+    public void store(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        for (int i = 0; i < completionTimes.size(); i++) {
+            CompletionTime ct = completionTimes.get(i);
+            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                    COMPLETION_TIME_TYPE, ct.getId()).setSource(mapper.writeValueAsString(ct)));
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            // TODO: Candidate for retry??? HWKBTM-187
+            msgLog.error("Failed to store completion times: " + bulkItemResponses.buildFailureMessage());
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store completion times to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing completion times to elasticsearch");
+            }
+        }
     }
 
     /**

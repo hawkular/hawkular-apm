@@ -27,10 +27,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-metrics-deriver</artifactId>
+  <artifactId>hawkular-btm-completiontime-deriver</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Processors::Metrics Deriver</name>
+  <name>Hawkular BTM::Processors::CompletionTime Deriver</name>
 
   <dependencies>
 
