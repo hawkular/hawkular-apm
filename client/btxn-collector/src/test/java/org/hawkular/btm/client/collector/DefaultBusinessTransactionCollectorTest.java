@@ -36,6 +36,7 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
@@ -337,6 +338,114 @@ public class DefaultBusinessTransactionCollectorTest {
     }
 
     @Test
+    public void testActivateUnknownURI() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        assertFalse(collector.isActive());
+
+        // Cause a fragment builder to be created
+        collector.activate("/test");
+
+        assertFalse(collector.isActive());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testNamedOnInitialNode() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        TestConfigurationService cs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        cs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(cs);
+
+        assertFalse(collector.isActive());
+
+        // Cause a fragment builder to be created
+        collector.activate("/test");
+        collector.producerStart(null, "/test", "HTTP", null);
+
+        assertTrue(collector.isActive());
+        assertEquals("testapp", collector.getName());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testNamedOnSubsequentNodeInitialFragment() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        TestConfigurationService cs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        cs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(cs);
+
+        assertFalse(collector.isActive());
+
+        // Create top level node
+        collector.activate("not relevant");
+        collector.componentStart(null, "not relevant", "Database", "query");
+
+        // Cause a fragment builder to be created
+        collector.activate("/test");
+        collector.producerStart(null, "/test", "HTTP", null);
+
+        assertTrue(collector.isActive());
+        assertEquals("testapp", collector.getName());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testNamedOnSubsequentNodeLaterFragment() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        TestConfigurationService cs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        cs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(cs);
+
+        assertFalse(collector.isActive());
+
+        // Create top level node
+        collector.activate("not relevant");
+        collector.consumerStart(null, "not relevant", "HTTP", null);
+        collector.getFragmentManager().getFragmentBuilder()
+        .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
+
+        // Cause a fragment builder to be created
+        collector.activate("/test");
+        collector.producerStart(null, "/test", "HTTP", null);
+
+        assertTrue(collector.isActive());
+        assertEquals("", collector.getName());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
     public void testSetDetailsCurrentNode() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
 
@@ -543,9 +652,15 @@ public class DefaultBusinessTransactionCollectorTest {
 
     public class TestConfigurationService implements ConfigurationService {
 
+        private CollectorConfiguration config = new CollectorConfiguration();
+
+        protected void setCollectorConfiguration(CollectorConfiguration cc) {
+            config = cc;
+        }
+
         @Override
         public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-            return new CollectorConfiguration();
+            return config;
         }
 
         @Override
