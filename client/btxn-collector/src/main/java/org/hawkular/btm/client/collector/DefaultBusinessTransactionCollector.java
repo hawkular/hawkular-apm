@@ -1186,20 +1186,38 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean activate(String uri, String id) {
-        // If already active, then just return
-        if (isActive()) {
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("activate: Already active");
-            }
-            return true;
-        }
-
         // If id is set, then fragment must be tracked
         if (id != null) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("activate: ID not null, so fragment will be traced");
             }
             return true;
+        }
+
+        // Check if already active
+        boolean active = isActive();
+        FragmentBuilder builder = null;
+
+        if (active) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("activate: Already active");
+            }
+
+            // Check whether business transaction name should be applied
+            builder = fragmentManager.getFragmentBuilder();
+
+            // If business txn name already defined, or top level node has correlation ids,
+            // then just return already active
+            BusinessTransaction btxn = builder.getBusinessTransaction();
+
+            if (btxn.getName() != null
+                    || (btxn.getNodes().size() > 0
+                    && !btxn.getNodes().get(0).getCorrelationIds().isEmpty())) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("activate: Already active, with btxn name or top level node having correlation ids");
+                }
+                return true;
+            }
         }
 
         if (uri != null) {
@@ -1211,7 +1229,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 String btxnName = filterManager.getBusinessTransactionName(uri);
 
                 if (btxnName != null && !btxnName.trim().isEmpty()) {
-                    FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+                    if (builder == null) {
+                        builder = fragmentManager.getFragmentBuilder();
+                    }
 
                     if (builder != null) {
                         builder.getBusinessTransaction().setName(btxnName);
@@ -1225,11 +1245,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             }
         }
 
-        // No URI, so for now we will assume should NOT be traced
+        // No URI, so for now we will assume should NOT be traced (if not already active)
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("activate: No URI, so returning false");
+            log.finest("activate: No URI, so returning existing active state=" + active);
         }
-        return false;
+        return active;
     }
 
     /* (non-Javadoc)
