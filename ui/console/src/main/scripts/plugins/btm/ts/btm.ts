@@ -61,11 +61,11 @@ module BTM {
       });
     };
 
-    $scope.deleteBusinessTxn = function(btxnName) {
-      if (confirm('Are you sure you want to delete business transaction \"'+btxnName+'\"?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/'+btxnName).success(function(data) {
-          console.log('Deleted: '+btxnName);
-          $scope.businessTransactionNames.remove(btxnName);
+    $scope.deleteBusinessTxn = function(btxn) {
+      if (confirm('Are you sure you want to delete business transaction \"'+btxn.name+'\"?')) {
+        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.name).success(function(data) {
+          console.log('Deleted: '+btxn.name);
+          $scope.businessTransactions.remove(btxn);
         });
       }
     };
