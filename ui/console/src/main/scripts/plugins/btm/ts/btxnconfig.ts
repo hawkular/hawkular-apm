@@ -76,6 +76,9 @@ module BTM {
       if (expression.type === "XML") {
         return expression.source + "[" + expression.key + "]" + " xpath=" + expression.xpath;
       }
+      if (expression.type === "JSON") {
+        return expression.source + "[" + expression.key + "]" + " jsonpath=" + expression.jsonpath;
+      }
       if (expression.type === "Text") {
         return expression.source + "[" + expression.key + "]";
       }
@@ -87,6 +90,7 @@ module BTM {
       expression.key = undefined;
       expression.source = undefined;
       expression.xpath = undefined;
+      expression.jsonpath = undefined;
     };
 
     $scope.changedActionType = function(action) {

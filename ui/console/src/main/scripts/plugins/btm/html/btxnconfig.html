@@ -118,25 +118,29 @@
                 <option value="">Undefined</option>
                 <option value="Literal">Literal</option>
                 <option value="XML">XML</option>
+                <option value="JSON">JSON</option>
                 <option value="Text">Text</option>
                 <option value="FreeForm">Free Form</option>
               </select>
 
               <br>
 
-              <label for="predicateSource" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Source: </label>
-              <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'" style="width: 30%">
+              <label for="predicateSource" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">Source: </label>
+              <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'" style="width: 30%">
                 <option value="Content">Content</option>
                 <option value="Header">Header</option>
               </select>
 
-              <label style="width: 5%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+              <label style="width: 5%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
 
-              <label for="predicateKey" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">Key: </label>
-              <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'Text'">
+              <label for="predicateKey" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">Key: </label>
+              <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">
 
-              <label for="predicateXPath" style="width: 15%" ng-show="processor.predicate.type === 'XML'">XPath:</label>
+              <label for="predicateXPath" style="width: 15%" ng-show="processor.predicate.type === 'XML'">XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
               <input type="text" name="predicateXPath" ng-model="processor.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'XML'">
+
+              <label for="predicateJSONPath" style="width: 15%" ng-show="processor.predicate.type === 'JSON'">JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+              <input type="text" name="predicateJSONPath" ng-model="processor.predicate.jsonpath" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'JSON'">
 
               <label for="predicateValue" style="width: 15%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
               <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">
@@ -191,25 +195,29 @@
                     <option value="">Undefined</option>
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
+                    <option value="JSON">JSON</option>
                     <option value="Text">Text</option>
                     <option value="FreeForm">Free Form</option>
                   </select>
 
                   <br>
 
-                  <label for="actionPredicateSource" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Source: </label>
-                  <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'" style="width: 30%">
+                  <label for="actionPredicateSource" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">Predicate Source: </label>
+                  <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' ||action.predicate.type === 'JSON' || action.predicate.type === 'Text'" style="width: 30%">
                     <option value="Content">Content</option>
                     <option value="Header">Header</option>
                   </select>
 
-                  <label style="width: 5%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+                  <label style="width: 5%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
 
-                  <label for="actionPredicateKey" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">Predicate Key: </label>
-                  <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'Text'">
+                  <label for="actionPredicateKey" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">Predicate Key: </label>
+                  <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">
 
-                  <label for="actionPredicateXPath" style="width: 15%" ng-show="action.predicate.type === 'XML'">Predicate XPath:</label>
+                  <label for="actionPredicateXPath" style="width: 15%" ng-show="action.predicate.type === 'XML'">Predicate XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
                   <input type="text" name="actionPredicateXPath" ng-model="action.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'XML'">
+
+                  <label for="actionPredicateJSONPath" style="width: 15%" ng-show="action.predicate.type === 'JSON'">Predicate JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                  <input type="text" name="actionPredicateJSONPath" ng-model="action.predicate.jsonpath" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'JSON'">
 
                   <label for="actionPredicate" style="width: 15%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">Predicate Value:</label>
                   <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">
@@ -221,25 +229,29 @@
                     <option value="">Undefined</option>
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
+                    <option value="JSON">JSON</option>
                     <option value="Text">Text</option>
                     <option value="FreeForm">Free Form</option>
                   </select>
 
                   <br>
 
-                  <label for="actionValueSource" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Source: </label>
-                  <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'" style="width: 30%">
+                  <label for="actionValueSource" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">Value Source: </label>
+                  <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'" style="width: 30%">
                     <option value="Content">Content</option>
                     <option value="Header">Header</option>
                   </select>
 
-                  <label style="width: 5%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+                  <label style="width: 5%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'"></label> <!-- TODO: Must be a better way -->
 
-                  <label for="actionValueKey" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">Value Key: </label>
-                  <input type="text" name="actionValueKey" ng-model="action.expression.key" ng-change="setDirty()" style="width: 30%" ng-show="action.expression.type === 'XML' || action.expression.type === 'Text'">
+                  <label for="actionValueKey" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">Value Key: </label>
+                  <input type="text" name="actionValueKey" ng-model="action.expression.key" ng-change="setDirty()" style="width: 30%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">
 
-                  <label for="actionValueXPath" style="width: 15%" ng-show="action.expression.type === 'XML'">Value XPath:</label>
+                  <label for="actionValueXPath" style="width: 15%" ng-show="action.expression.type === 'XML'">Value XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
                   <input type="text" name="actionValueXPath" ng-model="action.expression.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'XML'">
+
+                  <label for="actionValueJSONPath" style="width: 15%" ng-show="action.expression.type === 'JSON'">Value JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                  <input type="text" name="actionValueJSONPath" ng-model="action.expression.jsonpath" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'JSON'">
 
                   <label for="actionValue" style="width: 15%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
                   <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">

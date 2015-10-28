@@ -31,8 +31,10 @@ import io.swagger.annotations.ApiModel;
 @JsonSubTypes({ @Type(value = FreeFormExpression.class, name = "FreeForm"),
     @Type(value = LiteralExpression.class, name = "Literal"),
     @Type(value = TextExpression.class, name = "Text"),
-    @Type(value = XMLExpression.class, name = "XML") })
-@ApiModel(subTypes = { FreeFormExpression.class, LiteralExpression.class, TextExpression.class, XMLExpression.class },
+    @Type(value = XMLExpression.class, name = "XML"),
+    @Type(value = JSONExpression.class, name = "JSON") })
+@ApiModel(subTypes = { FreeFormExpression.class, LiteralExpression.class, TextExpression.class,
+        XMLExpression.class, JSONExpression.class },
         discriminator = "type")
 public abstract class Expression {
 
