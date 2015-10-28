@@ -115,6 +115,7 @@
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
+    <version.org.tuckey>4.0.3</version.org.tuckey>
   </properties>
 
   <dependencyManagement>
@@ -355,6 +356,12 @@
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
         <version>${version.com.jayway.jsonpath}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.tuckey</groupId>
+        <artifactId>urlrewritefilter</artifactId>
+        <version>${version.org.tuckey}</version>
       </dependency>
 
       <dependency>
