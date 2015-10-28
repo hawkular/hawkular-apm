@@ -47,6 +47,22 @@ public class XMLTest {
     }
 
     @Test
+    public void testEvaluateOrderIdTextWildcard() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        String result = XML.evaluate("*:Envelope/*:Body"
+                + "/*:submitOrder/order/orderId/text()", xml);
+
+        assertNotNull(result);
+        assertEquals("1", result);
+    }
+
+    @Test
     public void testEvaluateOrderIdNode() {
         String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                 + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
@@ -57,6 +73,22 @@ public class XMLTest {
 
         String result = XML.evaluate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
                 + "/*[local-name() = 'submitOrder']/order/orderId", xml);
+
+        assertNotNull(result);
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><orderId>1</orderId>", result);
+    }
+
+    @Test
+    public void testEvaluateOrderIdNodeWildcard() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        String result = XML.evaluate("*:Envelope/*:Body"
+                + "/*:submitOrder/order/orderId", xml);
 
         assertNotNull(result);
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><orderId>1</orderId>", result);
@@ -78,6 +110,20 @@ public class XMLTest {
     }
 
     @Test
+    public void testEvaluateMissingNodeWildcard() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        String result = XML.evaluate("*:Envelope/*:Body/*:submitOrder/invalid", xml);
+
+        assertNull(result);
+    }
+
+    @Test
     public void testPredicateFoundNode() {
         String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                 + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
@@ -88,6 +134,20 @@ public class XMLTest {
 
         boolean result = XML.predicate("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
                 + "/*[local-name() = 'submitOrder']/order", xml);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void testPredicateFoundNodeWildcard() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        boolean result = XML.predicate("*:Envelope/*:Body/*:submitOrder/order", xml);
 
         assertTrue(result);
     }
@@ -108,6 +168,20 @@ public class XMLTest {
     }
 
     @Test
+    public void testPredicateMissingNodeWildcard() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        boolean result = XML.predicate("*:Envelope/*:Body/*:submitOrder/invalid", xml);
+
+        assertFalse(result);
+    }
+
+    @Test
     public void testSelectNodeOrder() {
         String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                 + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
@@ -118,6 +192,21 @@ public class XMLTest {
 
         Node result = XML.selectNode("*[local-name() = 'Envelope']/*[local-name() = 'Body']"
                 + "/*[local-name() = 'submitOrder']/order", xml);
+
+        assertNotNull(result);
+        assertEquals("order", result.getLocalName());
+    }
+
+    @Test
+    public void testSelectNodeOrderWildcard() {
+        String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                + "xmlns:urn=\"urn:switchyard-quickstart-demo:orders:1.0\">\n   <soapenv:Header/>\n"
+                + "<soapenv:Body>\n      <urn:submitOrder>\n         <order>\n            "
+                + "<orderId>1</orderId>\n            <itemId>BUTTER</itemId>\n            "
+                + "<quantity>100</quantity>\n            <customer>Fred</customer>\n         "
+                + "</order>\n      </urn:submitOrder>\n   </soapenv:Body>\n</soapenv:Envelope>";
+
+        Node result = XML.selectNode("*:Envelope/*:Body/*:submitOrder/order", xml);
 
         assertNotNull(result);
         assertEquals("order", result.getLocalName());

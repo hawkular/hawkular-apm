@@ -97,6 +97,7 @@ public class XML {
 
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
         try {
+            xpath = getExpression(xpath);
             XPath xp = XPathFactory.newInstance().newXPath();
             Boolean result = (Boolean) xp.evaluate(xpath, domNode, XPathConstants.BOOLEAN);
 
@@ -135,6 +136,7 @@ public class XML {
 
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
         try {
+            xpath = getExpression(xpath);
             XPath xp = XPathFactory.newInstance().newXPath();
             Node result = (Node) xp.evaluate(xpath, domNode, XPathConstants.NODE);
 
@@ -149,6 +151,30 @@ public class XML {
         }
 
         return null;
+    }
+
+    /**
+     * This method transforms the XPath expression to replace XPath 2.0
+     * namespace wildcards with use of the local-name() function.
+     *
+     * @param expr
+     * @return
+     */
+    protected static String getExpression(String expr) {
+        StringBuffer buf=new StringBuffer(expr);
+        int startIndex=-1;
+        do {
+            startIndex=buf.indexOf("*:");
+            if (startIndex != -1) {
+                int endIndex = buf.indexOf("/", startIndex+2);
+                if (endIndex == -1) {
+                    endIndex = buf.length();
+                }
+                buf.replace(startIndex, endIndex, "*[local-name()='"+buf.substring(startIndex+2, endIndex)+"']");
+            }
+        } while (startIndex != -1);
+
+        return buf.toString();
     }
 
     /**
@@ -244,6 +270,7 @@ public class XML {
 
         // TODO: HWKBTM-104 Investigate caching compiled xpath expressions
         try {
+            xpath = getExpression(xpath);
             XPath xp = XPathFactory.newInstance().newXPath();
             return (Node) xp.evaluate(xpath, domNode, XPathConstants.NODE);
         } catch (Exception e) {
