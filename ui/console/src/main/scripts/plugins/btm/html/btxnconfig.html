@@ -70,6 +70,18 @@
     <!-- TODO: Styles -->
 
     <div class="col-md-12" >
+      <form>
+        <div class="form-group">
+          <label for="level" style="width: 10%" >Reporting Level:</label>
+          <select name="nodeType" ng-model="businessTransaction.level" ng-change="setDirty()" style="width: 10%">
+            <option value="All">All</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-md-12" >
       <h2>Processors <a class="btn btn-primary" ng-click="addProcessor()"><span class="glyphicon glyphicon-plus" aria-hidden="true""></span></a></h2>
     </div>
 
