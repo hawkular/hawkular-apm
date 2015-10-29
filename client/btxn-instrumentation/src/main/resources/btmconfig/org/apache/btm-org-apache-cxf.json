@@ -20,6 +20,9 @@
           "type": "SetName",
           "nameExpression": "$2.getHeader(\"Hawkular-btname\")"
         },{
+          "type": "SetLevel",
+          "levelExpression": "$2.getHeader(\"Hawkular-btlevel\")"
+        },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",

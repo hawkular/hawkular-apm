@@ -180,6 +180,9 @@
           "type": "SetName",
           "nameExpression": "$2.getProperty(\"HawkularBTName\")"
         },{
+          "type": "SetLevel",
+          "levelExpression": "$2.getProperty(\"HawkularBTLevel\")"
+        },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
@@ -241,6 +244,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setProperty(\"HawkularBTName\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"HawkularBTLevel\",getLevel())"
         }]
       },{
         "ruleName": "Apache Camel Outbound Producer End",

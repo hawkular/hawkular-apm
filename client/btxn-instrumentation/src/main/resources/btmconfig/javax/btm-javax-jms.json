@@ -18,6 +18,9 @@
           "type": "SetName",
           "nameExpression": "$1.getStringProperty(\"HawkularBTName\")"
         },{
+          "type": "SetLevel",
+          "levelExpression": "$1.getStringProperty(\"HawkularBTLevel\")"
+        },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"MOM\"",
@@ -159,6 +162,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HawkularBTName\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setStringProperty(\"HawkularBTLevel\",getLevel())"
         }]
       },{
         "ruleName": "JMS Producer Sync Start TextMessage",
@@ -231,6 +237,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HawkularBTName\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setStringProperty(\"HawkularBTLevel\",getLevel())"
         }]
       },{
         "ruleName": "JMS Producer Async Start TextMessage",

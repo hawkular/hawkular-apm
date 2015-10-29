@@ -41,6 +41,8 @@ public class FilterManager {
 
     private boolean onlyNamedTransactions = false;
 
+    private static final FilterProcessor unnamedBTxn = new FilterProcessor();
+
     /**
      * This constructor initialises the filter manager with the configuration.
      *
@@ -76,7 +78,7 @@ public class FilterManager {
         FilterProcessor fp = null;
 
         if (btc.getFilter() != null) {
-            fp = new FilterProcessor(btxn, btc.getFilter());
+            fp = new FilterProcessor(btxn, btc);
         }
 
         synchronized (filterMap) {
@@ -105,11 +107,11 @@ public class FilterManager {
      * criteria.
      *
      * @param uri The URI
-     * @return The business transaction name, empty if URI globally valid,
+     * @return The filter processor, with empty btxn name if URI globally valid,
      *                  or null if URI should be excluded
      */
-    public String getBusinessTransactionName(String uri) {
-        String ret = (onlyNamedTransactions ? null : "");
+    public FilterProcessor getFilterProcessor(String uri) {
+        FilterProcessor ret = (onlyNamedTransactions ? null : unnamedBTxn);
 
         synchronized (filterMap) {
             // First check if a global exclusion filter applies
@@ -134,7 +136,7 @@ public class FilterManager {
                         }
                         return null;
                     }
-                    ret = btxnFilters.get(i).getBusinessTransaction();
+                    ret = btxnFilters.get(i);
 
                     if (log.isLoggable(Level.FINEST)) {
                         log.finest("URI belongs to business transaction '" + ret + ": uri=" + uri);

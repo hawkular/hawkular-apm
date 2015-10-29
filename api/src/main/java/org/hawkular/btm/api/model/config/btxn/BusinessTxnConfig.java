@@ -19,6 +19,8 @@ package org.hawkular.btm.api.model.config.btxn;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.btm.api.model.config.ReportingLevel;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -28,6 +30,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author gbrown
  */
 public class BusinessTxnConfig {
+
+    @JsonInclude
+    private ReportingLevel level = ReportingLevel.All;
 
     @JsonInclude(Include.NON_NULL)
     private String description;
@@ -40,6 +45,20 @@ public class BusinessTxnConfig {
 
     @JsonInclude(Include.NON_NULL)
     private long lastUpdated;
+
+    /**
+     * @return the level
+     */
+    public ReportingLevel getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(ReportingLevel level) {
+        this.level = level;
+    }
 
     /**
      * @return the description
@@ -102,8 +121,8 @@ public class BusinessTxnConfig {
      */
     @Override
     public String toString() {
-        return "BusinessTxnConfig [description=" + description + ", filter=" + filter + ", processors=" + processors
-                + ", lastUpdated=" + lastUpdated + "]";
+        return "BusinessTxnConfig [level=" + level + ", description=" + description + ", filter=" + filter
+                + ", processors=" + processors + ", lastUpdated=" + lastUpdated + "]";
     }
 
 }

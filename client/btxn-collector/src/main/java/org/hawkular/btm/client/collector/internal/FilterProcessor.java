@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import org.hawkular.btm.api.model.config.btxn.Filter;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 
 /**
  * This class is responsible for applying a filter to a supplied node.
@@ -32,21 +32,27 @@ public class FilterProcessor {
 
     private String businessTransaction;
 
-    private Filter filter;
+    private BusinessTxnConfig config;
 
     private List<Predicate<String>> inclusions = new ArrayList<Predicate<String>>();
     private List<Predicate<String>> exclusions = new ArrayList<Predicate<String>>();
 
     /**
+     * The default constructor.
+     */
+    protected FilterProcessor() {
+    }
+
+    /**
      * This constructor initialises the processor with the business
-     * transaction name and filter configuration.
+     * transaction name and configuration.
      *
      * @param btxn The business transaction name
-     * @param filter The filter configuration
+     * @param config The configuration
      */
-    public FilterProcessor(String btxn, Filter filter) {
-        this.setBusinessTransaction(btxn);
-        this.setFilter(filter);
+    public FilterProcessor(String btxn, BusinessTxnConfig config) {
+        this.businessTransaction = btxn;
+        this.config = config;
         init();
     }
 
@@ -54,11 +60,11 @@ public class FilterProcessor {
      * This method initialises the filter.
      */
     protected void init() {
-        for (int i = 0; i < filter.getInclusions().size(); i++) {
-            inclusions.add(Pattern.compile(filter.getInclusions().get(i)).asPredicate());
+        for (int i = 0; i < config.getFilter().getInclusions().size(); i++) {
+            inclusions.add(Pattern.compile(config.getFilter().getInclusions().get(i)).asPredicate());
         }
-        for (int i = 0; i < filter.getExclusions().size(); i++) {
-            exclusions.add(Pattern.compile(filter.getExclusions().get(i)).asPredicate());
+        for (int i = 0; i < config.getFilter().getExclusions().size(); i++) {
+            exclusions.add(Pattern.compile(config.getFilter().getExclusions().get(i)).asPredicate());
         }
     }
 
@@ -77,17 +83,17 @@ public class FilterProcessor {
     }
 
     /**
-     * @return the filter
+     * @return the config
      */
-    public Filter getFilter() {
-        return filter;
+    public BusinessTxnConfig getConfig() {
+        return config;
     }
 
     /**
-     * @param filter the filter to set
+     * @param config the config to set
      */
-    public void setFilter(Filter filter) {
-        this.filter = filter;
+    public void setConfig(BusinessTxnConfig config) {
+        this.config = config;
     }
 
     /**

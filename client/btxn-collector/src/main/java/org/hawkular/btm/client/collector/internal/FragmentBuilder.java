@@ -32,6 +32,7 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.config.ReportingLevel;
 
 /**
  * This class represents the builder for a business transaction fragment. NOTE: This
@@ -61,6 +62,8 @@ public class FragmentBuilder {
     private static String hostName;
     private static String hostAddress;
 
+    private ReportingLevel level = ReportingLevel.All;
+
     private int inHashCode = 0;
     private ByteArrayOutputStream inStream = null;
     private int outHashCode = 0;
@@ -82,10 +85,10 @@ public class FragmentBuilder {
 
     {
         businessTransaction = new BusinessTransaction()
-        .setId(UUID.randomUUID().toString())
-        .setStartTime(System.currentTimeMillis())
-        .setHostName(hostName)
-        .setHostAddress(hostAddress);
+                .setId(UUID.randomUUID().toString())
+                .setStartTime(System.currentTimeMillis())
+                .setHostName(hostName)
+                .setHostAddress(hostAddress);
     }
 
     /**
@@ -104,6 +107,20 @@ public class FragmentBuilder {
      */
     public BusinessTransaction getBusinessTransaction() {
         return businessTransaction;
+    }
+
+    /**
+     * @return the level
+     */
+    public ReportingLevel getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(ReportingLevel level) {
+        this.level = level;
     }
 
     /**

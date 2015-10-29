@@ -57,6 +57,21 @@ public interface BusinessTransactionCollector {
     String getName();
 
     /**
+     * This method sets the reporting level.
+     *
+     * @param location The instrumentation location
+     * @param level The reporting level
+     */
+    void setLevel(String location, String level);
+
+    /**
+     * This method returns the reporting level.
+     *
+     * @return The reporting level
+     */
+    String getLevel();
+
+    /**
      * This method indicates the start of a message being consumed.
      *
      * @param location The instrumentation location

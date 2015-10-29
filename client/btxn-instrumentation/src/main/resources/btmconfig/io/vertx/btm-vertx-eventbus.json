@@ -15,6 +15,9 @@
           "type": "SetName",
           "nameExpression": "$1.headers().get(\"HawkularBTName\")"
         },{
+          "type": "SetLevel",
+          "levelExpression": "$1.headers().get(\"HawkularBTLevel\")"
+        },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"MOM\"",
@@ -58,6 +61,9 @@
         "actions": [{
           "type": "SetName",
           "nameExpression": "$1.headers().get(\"HawkularBTName\")"
+        },{
+          "type": "SetLevel",
+          "levelExpression": "$1.headers().get(\"HawkularBTLevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
@@ -134,6 +140,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$3.addHeader(\"HawkularBTName\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$3.addHeader(\"HawkularBTLevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync End",
@@ -193,6 +202,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$3.addHeader(\"HawkularBTName\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$3.addHeader(\"HawkularBTLevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx EventBus PubSub Producer Sync End",
@@ -248,6 +260,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.headers().set(\"HawkularBTName\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.headers().set(\"HawkularBTLevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx EventBus Producer Async End",
