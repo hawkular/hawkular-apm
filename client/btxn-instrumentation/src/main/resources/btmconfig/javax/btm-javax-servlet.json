@@ -25,6 +25,9 @@
           "type": "SetName",
           "nameExpression": "req.getHeader(\"Hawkular-btname\")"
         },{
+          "type": "SetLevel",
+          "levelExpression": "req.getHeader(\"Hawkular-btlevel\")"
+        },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",

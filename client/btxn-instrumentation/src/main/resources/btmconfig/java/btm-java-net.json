@@ -52,6 +52,9 @@
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btlevel\",getLevel())"
+        },{
           "type": "InitiateCorrelation",
           "idExpression": "\"java.net-async-\"+hashCode($0)"
         },{
@@ -106,6 +109,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Buffer",
@@ -188,6 +194,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"Hawkular-btname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End Complete Async Link",

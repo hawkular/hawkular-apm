@@ -38,6 +38,7 @@ import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.ReportingLevel;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.ConfigurationService;
@@ -46,6 +47,7 @@ import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.SessionManager;
 import org.hawkular.btm.client.collector.internal.BusinessTransactionReporter;
 import org.hawkular.btm.client.collector.internal.FilterManager;
+import org.hawkular.btm.client.collector.internal.FilterProcessor;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.hawkular.btm.client.collector.internal.FragmentManager;
 import org.hawkular.btm.client.collector.internal.ProcessorManager;
@@ -252,9 +254,74 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerStart(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#setLevel(java.lang.String, java.lang.String)
      */
+    @Override
+    public void setLevel(String location, String level) {
+        if (level == null || level.trim().isEmpty()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Ignoring attempt to set level to null");
+            }
+            return;
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set reporting level: location=[" + location + "] level=" + level);
+        }
+
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                if (builder != null) {
+                    builder.setLevel(ReportingLevel.valueOf(level));
+                } else if (log.isLoggable(warningLogLevel)) {
+                    log.log(warningLogLevel, "setLevel: No fragment builder for this thread", null);
+                }
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setLevel failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#getLevel()
+     */
+    @Override
+    public String getLevel() {
+        String ret = null;
+
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                ret = builder.getLevel().name();
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getLevel: No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getLevel failed", t);
+            }
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get level=" + ret);
+        }
+
+        if (ret == null) {
+            ret = "";
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
+      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerStart(java.lang.String,
+      *                      java.lang.String, java.lang.String, java.lang.String)
+      */
     @Override
     public void consumerStart(String location, String uri, String type, String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1149,12 +1216,19 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (node != null) {
                 BusinessTransaction btxn = builder.getBusinessTransaction();
 
-                if (btxn != null && !btxn.getNodes().isEmpty()) {
+                if (builder.getLevel().ordinal() <= ReportingLevel.None.ordinal()) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Record business transaction: " + btxn);
+                        log.finest("Not recording business transaction (level="
+                                + builder.getLevel() + "): " + btxn);
                     }
+                } else {
+                    if (btxn != null && !btxn.getNodes().isEmpty()) {
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.finest("Record business transaction: " + btxn);
+                        }
 
-                    reporter.report(btxn);
+                        reporter.report(btxn);
+                    }
                 }
             }
 
@@ -1212,7 +1286,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
             if (btxn.getName() != null
                     || (btxn.getNodes().size() > 0
-                    && !btxn.getNodes().get(0).getCorrelationIds().isEmpty())) {
+                            && !btxn.getNodes().get(0).getCorrelationIds().isEmpty())) {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("activate: Already active, with btxn name or top level node having correlation ids");
                 }
@@ -1226,22 +1300,29 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     log.finest("Unable to determine if fragment should be traced due to missing filter manager");
                 }
             } else {
-                String btxnName = filterManager.getBusinessTransactionName(uri);
+                FilterProcessor filterProcessor = filterManager.getFilterProcessor(uri);
 
-                if (btxnName != null && !btxnName.trim().isEmpty()) {
+                if (filterProcessor != null && filterProcessor.getBusinessTransaction() != null) {
                     if (builder == null) {
                         builder = fragmentManager.getFragmentBuilder();
                     }
 
                     if (builder != null) {
-                        builder.getBusinessTransaction().setName(btxnName);
+                        builder.getBusinessTransaction().setName(filterProcessor.getBusinessTransaction());
+                        builder.setLevel(filterProcessor.getConfig().getLevel());
                     }
                 }
 
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("activate: URI[" + uri + "] business transaction name=" + btxnName);
+                    if (filterProcessor != null) {
+                        log.finest("activate: URI[" + uri + "] business transaction name="
+                                + filterProcessor.getBusinessTransaction() + " config="
+                                + filterProcessor.getConfig());
+                    } else {
+                        log.finest("activate: URI[" + uri + "] no business transaction found");
+                    }
                 }
-                return btxnName != null;
+                return filterProcessor != null;
             }
         }
 

@@ -17,7 +17,6 @@
 package org.hawkular.btm.client.collector.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -52,7 +51,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertNull(fm.getBusinessTransactionName("include"));
+        assertNull(fm.getFilterProcessor("include"));
     }
 
     @Test
@@ -68,9 +67,9 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        String name = fm.getBusinessTransactionName("include and exclude");
-        assertNotNull(name);
-        assertNotEquals(0, name.length());
+        FilterProcessor fp = fm.getFilterProcessor("include and exclude");
+        assertNotNull(fp);
+        assertEquals("btc2", fp.getBusinessTransaction());
     }
 
     @Test
@@ -87,7 +86,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertNull(fm.getBusinessTransactionName("include and exclude"));
+        assertNull(fm.getFilterProcessor("include and exclude"));
     }
 
     @Test
@@ -104,9 +103,9 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertNull(fm.getBusinessTransactionName("http://localhost:8080/hawkular/btm/transactions"));
+        assertNull(fm.getFilterProcessor("http://localhost:8080/hawkular/btm/transactions"));
 
-        assertNull(fm.getBusinessTransactionName(
+        assertNull(fm.getFilterProcessor(
                 "http://localhost:8080/auth/realms/artificer/protocol/openid-connect/token"));
     }
 
@@ -123,9 +122,9 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        String name = fm.getBusinessTransactionName("notrecognised");
-        assertNotNull(name);
-        assertEquals(0, name.length());
+        FilterProcessor fp = fm.getFilterProcessor("notrecognised");
+        assertNotNull(fp);
+        assertNull(fp.getBusinessTransaction());
     }
 
     @Test
@@ -142,7 +141,7 @@ public class FilterManagerTest {
 
         FilterManager fm = new FilterManager(config);
 
-        assertNull(fm.getBusinessTransactionName("notrecognised"));
+        assertNull(fm.getFilterProcessor("notrecognised"));
     }
 
     public void testInit() {

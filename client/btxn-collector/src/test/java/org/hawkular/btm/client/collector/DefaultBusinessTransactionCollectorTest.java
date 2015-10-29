@@ -35,6 +35,7 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.ReportingLevel;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -299,6 +300,126 @@ public class DefaultBusinessTransactionCollectorTest {
     }
 
     @Test
+    public void testReportingLevelNoneByFilter() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
+
+        TestConfigurationService tcs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        tcs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setLevel(ReportingLevel.None);
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(tcs);
+
+        collector.activate("/test");
+
+        collector.consumerStart(null, "/test", null, null);
+
+        collector.consumerEnd(null, null, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals(0, btxns.size());
+    }
+
+    @Test
+    public void testReportingLevelNoneBySetter() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
+
+        TestConfigurationService tcs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        tcs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(tcs);
+
+        collector.activate("/test");
+
+        collector.setLevel(null, "None");
+
+        collector.consumerStart(null, "/test", null, null);
+
+        collector.consumerEnd(null, null, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals(0, btxns.size());
+    }
+
+    @Test
+    public void testReportingLevelAll() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
+
+        TestConfigurationService tcs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        tcs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(tcs);
+
+        collector.activate("/test");
+
+        collector.consumerStart(null, "/test", null, null);
+
+        collector.consumerEnd(null, null, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals(1, btxns.size());
+    }
+
+    @Test
     public void testCorrelation() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
 
@@ -433,7 +554,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.activate("not relevant");
         collector.consumerStart(null, "not relevant", "HTTP", null);
         collector.getFragmentManager().getFragmentBuilder()
-        .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
+                .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
 
         // Cause a fragment builder to be created
         collector.activate("/test");

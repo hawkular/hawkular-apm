@@ -57,6 +57,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setHeader(\"Hawkular-btname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setHeader(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Request",

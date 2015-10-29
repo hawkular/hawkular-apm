@@ -19,6 +19,7 @@ package org.hawkular.btm.client.collector.internal;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.junit.Test;
 
@@ -29,10 +30,12 @@ public class FilterProcessorTest {
 
     @Test
     public void testGlobalExclusionFilter() {
+        BusinessTxnConfig btc=new BusinessTxnConfig();
         Filter f1 = new Filter();
+        btc.setFilter(f1);
         f1.getExclusions().add("exclude");
 
-        FilterProcessor fp = new FilterProcessor("btc1", f1);
+        FilterProcessor fp = new FilterProcessor("btc1", btc);
 
         assertTrue(fp.isIncludeAll());
 
@@ -41,10 +44,12 @@ public class FilterProcessorTest {
 
     @Test
     public void testIncludeFilter() {
+        BusinessTxnConfig btc=new BusinessTxnConfig();
         Filter f1 = new Filter();
+        btc.setFilter(f1);
         f1.getInclusions().add("include");
 
-        FilterProcessor fp = new FilterProcessor("btc1", f1);
+        FilterProcessor fp = new FilterProcessor("btc1", btc);
 
         assertFalse(fp.isIncludeAll());
 
@@ -55,11 +60,13 @@ public class FilterProcessorTest {
 
     @Test
     public void testIncludeAndExcludeFilter() {
+        BusinessTxnConfig btc=new BusinessTxnConfig();
         Filter f1 = new Filter();
+        btc.setFilter(f1);
         f1.getInclusions().add("include");
         f1.getExclusions().add("exclude");
 
-        FilterProcessor fp = new FilterProcessor("btc1", f1);
+        FilterProcessor fp = new FilterProcessor("btc1", btc);
 
         assertFalse(fp.isIncludeAll());
 
@@ -70,10 +77,12 @@ public class FilterProcessorTest {
 
     @Test
     public void testExcludeBTMFilter() {
+        BusinessTxnConfig btc=new BusinessTxnConfig();
         Filter f1 = new Filter();
+        btc.setFilter(f1);
         f1.getExclusions().add("https?://.*/hawkular/btm");
 
-        FilterProcessor fp = new FilterProcessor("btc1", f1);
+        FilterProcessor fp = new FilterProcessor("btc1", btc);
 
         assertTrue(fp.isIncludeAll());
 

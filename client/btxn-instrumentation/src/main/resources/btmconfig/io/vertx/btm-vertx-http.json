@@ -15,6 +15,9 @@
           "type": "SetName",
           "nameExpression": "$0.getHeader(\"HawkularBTName\")"
         },{
+          "type": "SetLevel",
+          "levelExpression": "$0.getHeader(\"HawkularBTLevel\")"
+        },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
@@ -144,6 +147,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Start 2",
@@ -202,6 +208,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Establish Out Link",

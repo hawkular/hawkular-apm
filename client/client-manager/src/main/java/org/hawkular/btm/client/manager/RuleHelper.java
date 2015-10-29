@@ -397,6 +397,15 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
+     * This method returns the reporting level.
+     *
+     * @return The reporting level
+     */
+    public String getLevel() {
+        return collector().getLevel();
+    }
+
+    /**
      * This method initialises a data buffer associated with the supplied object.
      *
      * @param obj The object associated with the buffer

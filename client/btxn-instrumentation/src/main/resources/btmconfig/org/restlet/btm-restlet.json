@@ -23,6 +23,10 @@
           "name": "btname",
           "type": "java.lang.String",
           "expression": "headers.getFirstValue(\"Hawkular-btname\")"
+        },{
+          "name": "btlevel",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Hawkular-btlevel\")"
         }],
         "condition": "activate($1.getResourceRef().getPath(),id)",
         "actions": [{
@@ -31,6 +35,9 @@
         },{
           "type": "SetName",
           "nameExpression": "btname"
+        },{
+          "type": "SetLevel",
+          "levelExpression": "btlevel"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
