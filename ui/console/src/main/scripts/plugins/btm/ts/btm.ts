@@ -20,11 +20,11 @@ module BTM {
 
     $scope.newBTxnName = '';
 
-    $http.get('/hawkular/btm/config/businesstxnnames').success(function(data) {
+    $http.get('/hawkular/btm/config/businesstxnsummary').success(function(data) {
       $scope.businessTransactions = [];
       for (var i = 0; i < data.length; i++) {
         var btxn = {
-          name: data[i],
+          summary: data[i],
           count: undefined,
           faultcount: undefined,
           percentile95: undefined,
@@ -32,22 +32,22 @@ module BTM {
         };
         $scope.businessTransactions.add(btxn);
 
-        $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.name).success(function(data) {
+        $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.summary.name).success(function(data) {
           btxn.count = data;
         });
 
-        $http.get('/hawkular/btm/analytics/businesstxn/stats?name='+btxn.name).success(function(data) {
+        $http.get('/hawkular/btm/analytics/businesstxn/stats?name='+btxn.summary.name).success(function(data) {
           $scope.stats = data;
           if (data.percentiles[95] > 0) {
             btxn.percentile95 = Math.round( data.percentiles[95] / 1000000 ) / 1000;
           }
         });
 
-        $http.get('/hawkular/btm/analytics/businesstxn/faultcount?name='+btxn.name).success(function(data) {
+        $http.get('/hawkular/btm/analytics/businesstxn/faultcount?name='+btxn.summary.name).success(function(data) {
           btxn.faultcount = data;
         });
 
-        $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.name).success(function(data) {
+        $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.summary.name).success(function(data) {
           btxn.alerts = data;
         });
       }
@@ -62,9 +62,9 @@ module BTM {
     };
 
     $scope.deleteBusinessTxn = function(btxn) {
-      if (confirm('Are you sure you want to delete business transaction \"'+btxn.name+'\"?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.name).success(function(data) {
-          console.log('Deleted: '+btxn.name);
+      if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {
+        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.summary.name).success(function(data) {
+          console.log('Deleted: '+btxn.summary.name);
           $scope.businessTransactions.remove(btxn);
         });
       }

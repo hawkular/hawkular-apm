@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 import org.hawkular.btm.api.services.ConfigurationService;
 
@@ -62,10 +63,11 @@ public class ConfigurationServiceInMemory implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionNames(java.lang.String)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionSummaries(java.lang.String)
      */
     @Override
-    public List<String> getBusinessTransactionNames(String tenantId) {
+    public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+        // TODO Auto-generated method stub
         return null;
     }
 

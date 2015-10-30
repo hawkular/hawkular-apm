@@ -32,9 +32,9 @@
 
         <div class="hk-url-item" ng-repeat="btxn in businessTransactions | filter:query" >
           <div class="panel panel-default hk-url-heading">
-            <a href="info/{{btxn.name}}">{{btxn.name}}</a>
+            <a href="info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
             <span class="hk-settings pull-right">
-              <a href="config/{{btxn.name}}" ><i class="fa fa-cog"></i></a>
+              <a href="config/{{btxn.summary.name}}" ><i class="fa fa-cog"></i></a>
               <a href="#" ng-click="deleteBusinessTxn(btxn)"><i class="fa fa-trash-o"></i></a>
             </span>
           </div>
@@ -42,28 +42,28 @@
           <div class="panel panel-default hk-summary">
             <div class="row">
               <div class="col-sm-3 hk-summary-item">
-                <a href="info/{{btxn.name}}">
+                <a href="info/{{btxn.summary.name}}">
                   <span class="hk-data" ng-show="btxn.count !== undefined">{{btxn.count}}</i></span>
                   <span class="hk-data spinner" ng-hide="btxn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                   <span class="hk-item">Transactions (per hour)</span>
                 </a>
               </div>
               <div class="col-sm-3 hk-summary-item">
-                <a href="info/{{btxn.name}}">
+                <a href="info/{{btxn.summary.name}}">
                   <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}} sec</i></span>
                   <span class="hk-data spinner" ng-hide="btxn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                   <span class="hk-item">Completion (95%)</span>
                 </a>
               </div>
               <div class="col-sm-3 hk-summary-item">
-                <a href="info/{{btxn.name}}">
+                <a href="info/{{btxn.summary.name}}">
                   <span class="hk-data" ng-show="btxn.faultcount !== undefined">{{btxn.faultcount}}</i></span>
                   <span class="hk-data spinner" ng-hide="btxn.faultcount !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                   <span class="hk-item">Faults</span>
                 </a>
               </div>
               <div class="col-sm-3 hk-summary-item">
-                <a href="info/{{btxn.name}}">
+                <a href="info/{{btxn.summary.name}}">
                   <span class="hk-data" ng-show="btxn.alerts !== undefined">{{btxn.alerts}} <i class="fa fa-flag" ng-show="btxn.alerts > 0"></i></span>
                   <span class="hk-data spinner" ng-hide="btxn.alerts !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                   <span class="hk-item">Alerts</span>

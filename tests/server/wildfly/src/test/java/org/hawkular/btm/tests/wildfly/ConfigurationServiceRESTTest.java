@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.config.service.rest.client.ConfigurationServiceRESTClient;
 import org.junit.Test;
 
@@ -257,13 +258,13 @@ public class ConfigurationServiceRESTTest {
         }
 
         // Get the btxn names
-        List<String> btns = service.getBusinessTransactionNames(null);
+        List<BusinessTxnSummary> btns = service.getBusinessTransactionSummaries(null);
 
         assertNotNull(btns);
         assertEquals(2, btns.size());
 
-        assertEquals(BTXNCONFIG1, btns.get(0));
-        assertEquals(BTXNCONFIG2, btns.get(1));
+        assertEquals(BTXNCONFIG1, btns.get(0).getName());
+        assertEquals(BTXNCONFIG2, btns.get(1).getName());
 
         // Get all the btxn configs
         Map<String, BusinessTxnConfig> btcs = service.getBusinessTransactions(null, 0);

@@ -37,6 +37,7 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.ReportingLevel;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
@@ -798,7 +799,7 @@ public class DefaultBusinessTransactionCollectorTest {
         }
 
         @Override
-        public List<String> getBusinessTransactionNames(String tenantId) {
+        public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
             return null;
         }
 
