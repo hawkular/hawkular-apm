@@ -35,6 +35,18 @@ module BTM {
         templateUrl: 'plugins/btm/html/btm.html',
         controller: 'BTM.BTMController'
       }).
+      when('/active', {
+        templateUrl: 'plugins/btm/html/btm.html',
+        controller: 'BTM.BTMController'
+      }).
+      when('/disabled', {
+        templateUrl: 'plugins/btm/html/btxndisabled.html',
+        controller: 'BTM.BTMDisabledController'
+      }).
+      when('/ignored', {
+        templateUrl: 'plugins/btm/html/btxnignored.html',
+        controller: 'BTM.BTMIgnoredController'
+      }).
       when('/config/:businesstransaction', {
         templateUrl: 'plugins/btm/html/btxnconfig.html',
         controller: 'BTM.BTxnConfigController'
