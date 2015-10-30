@@ -13,19 +13,19 @@
           "javax.jms.Message"
         ],
         "location": "ENTRY",
-        "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),$1.getStringProperty(\"HawkularBTID\"))",
+        "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),$1.getStringProperty(\"Hawkular-btid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "$1.getStringProperty(\"HawkularBTName\")"
+          "nameExpression": "$1.getStringProperty(\"Hawkular-btname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$1.getStringProperty(\"HawkularBTLevel\")"
+          "levelExpression": "$1.getStringProperty(\"Hawkular-btlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.getJMSDestination()",
-          "idExpression": "$1.getStringProperty(\"HawkularBTID\")"
+          "idExpression": "$1.getStringProperty(\"Hawkular-btid\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
@@ -158,13 +158,13 @@
           "valueExpression": "isInstanceOf($1,javax.jms.Topic.class)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTID\",id)"
+          "action": "$2.setStringProperty(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTName\",getBusinessTransactionName())"
+          "action": "$2.setStringProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTLevel\",getLevel())"
+          "action": "$2.setStringProperty(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "JMS Producer Sync Start TextMessage",
@@ -233,13 +233,13 @@
           "idExpression": "$2.getJMSReplyTo()"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTID\",id)"
+          "action": "$2.setStringProperty(\"Hawkular-btid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTName\",getBusinessTransactionName())"
+          "action": "$2.setStringProperty(\"Hawkular-btname\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HawkularBTLevel\",getLevel())"
+          "action": "$2.setStringProperty(\"Hawkular-btlevel\",getLevel())"
         }]
       },{
         "ruleName": "JMS Producer Async Start TextMessage",

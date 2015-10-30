@@ -10,13 +10,13 @@
           "*"
         ],
         "location": "EXIT",
-        "condition": "activate($0.path(),$0.getHeader(\"HawkularBTID\"))",
+        "condition": "activate($0.path(),$0.getHeader(\"Hawkular-btid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "$0.getHeader(\"HawkularBTName\")"
+          "nameExpression": "$0.getHeader(\"Hawkular-btname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$0.getHeader(\"HawkularBTLevel\")"
+          "levelExpression": "$0.getHeader(\"Hawkular-btlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
