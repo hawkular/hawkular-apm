@@ -36,6 +36,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
@@ -193,11 +194,11 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionNames(java.lang.String)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionSummaries(java.lang.String)
      */
     @Override
-    public List<String> getBusinessTransactionNames(String tenantId) {
-        List<String> ret = new ArrayList<String>();
+    public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+        List<BusinessTxnSummary> ret = new ArrayList<BusinessTxnSummary>();
         String index = client.getIndex(tenantId);
 
         try {
@@ -217,7 +218,13 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    ret.add(searchHitFields.getId());
+                    BusinessTxnConfig config=mapper.readValue(searchHitFields.getSourceAsString(),
+                            BusinessTxnConfig.class);
+                    BusinessTxnSummary summary=new BusinessTxnSummary();
+                    summary.setName(searchHitFields.getId());
+                    summary.setDescription(config.getDescription());
+                    summary.setLevel(config.getLevel());
+                    ret.add(summary);
                 } catch (Exception e) {
                     msgLog.errorFailedToParse(e);
                 }
@@ -226,7 +233,7 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
             // Ignore, as means that no business transaction configurations have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("No index found, so unable to retrieve business transaction names");
+                msgLog.tracef("No index found, so unable to retrieve business transaction summaries");
             }
         }
 

@@ -20,6 +20,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
@@ -111,30 +113,38 @@ public class ConfigurationHandler {
     }
 
     @GET
-    @Path("businesstxnnames")
+    @Path("businesstxnsummary")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Retrieve the business transaction names",
+            value = "Retrieve the business transaction summaries",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getBusinessTxnConfigurationNames(
+    public void getBusinessTxnConfigurationSummaries(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response) {
 
         try {
-            log.tracef("Get business transaction names");
+            log.tracef("Get business transaction summaries");
 
-            List<String> names = configService.getBusinessTransactionNames(
+            List<BusinessTxnSummary> summaries = configService.getBusinessTransactionSummaries(
                     securityProvider.getTenantId(context));
 
             // Sort the list
-            Collections.sort(names);
+            Collections.sort(summaries, new Comparator<BusinessTxnSummary>() {
+                @Override
+                public int compare(BusinessTxnSummary arg0, BusinessTxnSummary arg1) {
+                    if (arg0.getName() == null || arg1.getName() == null) {
+                        return 0;
+                    }
+                    return arg0.getName().compareTo(arg1.getName());
+                }
+            });
 
-            log.tracef("Got business transaction names=[%s]", names);
+            log.tracef("Got business transaction summaries=[%s]", summaries);
 
-            response.resume(Response.status(Response.Status.OK).entity(names).type(APPLICATION_JSON_TYPE)
+            response.resume(Response.status(Response.Status.OK).entity(summaries).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Exception e) {

@@ -26,6 +26,7 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 import org.hawkular.btm.api.services.ConfigurationService;
 
@@ -44,8 +45,8 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final TypeReference<java.util.List<String>> STRING_LIST =
-            new TypeReference<java.util.List<String>>() {
+    private static final TypeReference<java.util.List<BusinessTxnSummary>> BTXN_SUMMARY_LIST =
+            new TypeReference<java.util.List<BusinessTxnSummary>>() {
             };
 
     private static final TypeReference<java.util.Map<String,BusinessTxnConfig>> BUSINESS_TXN_MAP =
@@ -332,17 +333,17 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionNames(java.lang.String)
+     * @see org.hawkular.btm.api.services.ConfigurationService#getBusinessTransactionSummaries(java.lang.String)
      */
     @Override
-    public List<String> getBusinessTransactionNames(String tenantId) {
+    public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction names: tenantId=[" + tenantId + "]");
+            log.finest("Get business transaction summaries: tenantId=[" + tenantId + "]");
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("config/businesstxnnames");
+                .append("config/businesstxnsummary");
 
         try {
             URL url = new URL(builder.toString());
@@ -382,20 +383,20 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), STRING_LIST);
+                        return mapper.readValue(resp.toString(), BTXN_SUMMARY_LIST);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get business transaction names: status=["
+                    log.finest("Failed to get business transaction summaries: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get business transaction names", e);
+            log.log(Level.SEVERE, "Failed to get business transaction summaries", e);
         }
 
         return null;

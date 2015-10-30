@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 
 /**
  * This interface provides the configuration information.
@@ -74,12 +75,12 @@ public interface ConfigurationService {
     Map<String,BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated);
 
     /**
-     * This method retrieves the list of business transaction names.
+     * This method retrieves the list of business transaction summaries.
      *
      * @param tenantId The optional tenant id
-     * @return The list of names
+     * @return The list of business transaction summaries
      */
-    List<String> getBusinessTransactionNames(String tenantId);
+    List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId);
 
     /**
      * This method removes a business transaction configuration.
