@@ -17,7 +17,9 @@
 package org.hawkular.btm.api.model.btxn;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -120,6 +122,27 @@ public class BusinessTransactionTest {
         assertNotNull(btxn2);
 
         assertEquals(btxn, btxn2);
+    }
+
+    @Test
+    public void testInitialFragmentTrue() {
+        BusinessTransaction btxn = new BusinessTransaction();
+
+        Consumer c1 = new Consumer();
+        btxn.getNodes().add(c1);
+
+        assertTrue(btxn.initialFragment());
+    }
+
+    @Test
+    public void testInitialFragmentFalse() {
+        BusinessTransaction btxn = new BusinessTransaction();
+
+        Consumer c1 = new Consumer();
+        c1.addInteractionId("myid");
+        btxn.getNodes().add(c1);
+
+        assertFalse(btxn.initialFragment());
     }
 
     protected BusinessTransaction example1() {

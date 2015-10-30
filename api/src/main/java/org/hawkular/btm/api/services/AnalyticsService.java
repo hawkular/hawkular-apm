@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
@@ -30,15 +31,16 @@ import org.hawkular.btm.api.model.analytics.ResponseTime;
 public interface AnalyticsService {
 
     /**
-     * This method returns the list of unbound URIs (i.e. ones not
-     * associated with a business transaction).
+     * This method returns the unbound URIs (i.e. ones not
+     * associated with a business transaction), organised as
+     * a map of grouped URIs, associated with the initial URI.
      *
      * @param tenantId The optional tenant id
      * @param startTime The start time
      * @param endTime The end time (if 0, then current time)
-     * @return The list of unbound URIs
+     * @return The unbound URIs
      */
-    List<String> getUnboundURIs(String tenantId, long startTime, long endTime);
+    Map<String,List<String>> getUnboundURIs(String tenantId, long startTime, long endTime);
 
     /**
      * This method returns the number of completed transactions, of the specified named

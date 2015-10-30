@@ -19,6 +19,7 @@ module BTM {
   export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', ($scope, $http, $location) => {
 
     $scope.newBTxnName = '';
+    $scope.candidateCount = 0;
 
     $http.get('/hawkular/btm/config/businesstxnsummary').success(function(data) {
       $scope.businessTransactions = [];
@@ -53,13 +54,9 @@ module BTM {
       }
     });
 
-    $scope.addBusinessTxn = function() {
-      var defn = { };
-      console.log('Add: '+$scope.newBTxnName);
-      $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).success(function(data) {
-        $location.path('config/'+$scope.newBTxnName);
-      });
-    };
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
+      $scope.candidateCount = Object.keys(data).length;
+    });
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {

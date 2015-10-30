@@ -36,6 +36,38 @@
     <to>/</to>
   </rule>
   <rule match-type="wildcard">
+    <from>/active/**</from>
+    <to>/</to>
+  </rule>
+  <rule>
+    <from>/active</from>
+    <to>/</to>
+  </rule>
+  <rule match-type="wildcard">
+    <from>/candidates/**</from>
+    <to>/</to>
+  </rule>
+  <rule>
+    <from>/candidates</from>
+    <to>/</to>
+  </rule>
+  <rule match-type="wildcard">
+    <from>/disabled/**</from>
+    <to>/</to>
+  </rule>
+  <rule>
+    <from>/disabled</from>
+    <to>/</to>
+  </rule>
+  <rule match-type="wildcard">
+    <from>/ignored/**</from>
+    <to>/</to>
+  </rule>
+  <rule>
+    <from>/ignored</from>
+    <to>/</to>
+  </rule>
+  <rule match-type="wildcard">
     <from>/info/**</from>
     <to>/</to>
   </rule>

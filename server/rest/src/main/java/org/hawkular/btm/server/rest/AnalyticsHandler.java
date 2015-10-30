@@ -20,7 +20,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -74,7 +73,7 @@ public class AnalyticsHandler {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Identify the unbound URIs",
-            response = List.class)
+            response = Map.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
@@ -91,7 +90,7 @@ public class AnalyticsHandler {
         try {
             log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
 
-            List<String> uris = analyticsService.getUnboundURIs(
+            java.util.Map<String,java.util.List<String>> uris = analyticsService.getUnboundURIs(
                     securityProvider.getTenantId(context), startTime, endTime);
 
             log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);

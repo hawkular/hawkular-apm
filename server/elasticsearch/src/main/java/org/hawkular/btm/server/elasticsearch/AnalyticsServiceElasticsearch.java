@@ -18,12 +18,14 @@ package org.hawkular.btm.server.elasticsearch;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
@@ -49,8 +51,10 @@ import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,6 +80,9 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     private ElasticsearchClient client;
 
+    @Inject
+    private ConfigurationService configService;
+
     @PostConstruct
     public void init() {
         client = new ElasticsearchClient();
@@ -94,11 +101,31 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         this.client = client;
     }
 
+    /**
+     * This method gets the configuration service.
+     *
+     * @return The configuration service
+     */
+    public ConfigurationService getConfigurationService() {
+        return this.configService;
+    }
+
+    /**
+     * This method sets the configuration service.
+     *
+     * @param cs The configuration service
+     */
+    public void setConfigurationService(ConfigurationService cs) {
+        this.configService = cs;
+    }
+
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long)
      */
     @Override
-    public List<String> getUnboundURIs(String tenantId, long startTime, long endTime) {
+    public Map<String, List<String>> getUnboundURIs(String tenantId, long startTime, long endTime) {
+        Map<String, List<String>> ret = new HashMap<String, List<String>>();
+
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
                 .setStartTime(startTime)
                 .setEndTime(endTime);
@@ -106,50 +133,70 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
 
-        // Process the fragments to identify which URIs are no used in any business transaction
-        Set<String> unboundURIs = new HashSet<String>();
-        Set<String> boundURIs = new HashSet<String>();
+        Collections.sort(fragments, new Comparator<BusinessTransaction>() {
+            @Override
+            public int compare(BusinessTransaction o1, BusinessTransaction o2) {
+                return (int) (o1.getStartTime() - o2.getStartTime());
+            }
+        });
 
+        // Process the fragments to identify which URIs are no used in any business transaction
         for (int i = 0; i < fragments.size(); i++) {
             BusinessTransaction btxn = fragments.get(i);
-            analyseURIs(btxn.getName() != null, btxn.getNodes(), unboundURIs, boundURIs);
+
+            if (btxn.initialFragment() && !btxn.getNodes().isEmpty()) {
+                String uri = btxn.getNodes().get(0).getUri();
+
+                if (btxn.getName() != null) {
+                    // Remove if previously added to unbound URI information
+                    ret.remove(uri);
+
+                } else {
+                    List<String> unboundURIs = ret.get(uri);
+                    if (unboundURIs == null) {
+                        unboundURIs = new ArrayList<String>();
+                        ret.put(uri, unboundURIs);
+                    }
+                    analyseURIs(btxn.getNodes(), unboundURIs);
+                }
+            }
         }
 
-        // Remove any URIs that may subsequently have become bound
-        unboundURIs.removeAll(boundURIs);
-
-        // Convert the set to a sorted list
-        List<String> ret = new ArrayList<String>(unboundURIs);
-
-        Collections.sort(ret);
+        // Check whether any of the top level URIs are already associated with
+        // a business txn config
+        if (configService != null) {
+            Map<String, BusinessTxnConfig> configs = configService.getBusinessTransactions(tenantId, 0);
+            for (BusinessTxnConfig config : configs.values()) {
+                if (config.getFilter() != null && config.getFilter().getInclusions() != null) {
+                    for (String uri : config.getFilter().getInclusions()) {
+                        if (msgLog.isTraceEnabled()) {
+                            msgLog.trace("Remove unbound URIs associated with btxn config=" + config);
+                        }
+                        ret.remove(uri);
+                    }
+                }
+            }
+        }
 
         return ret;
     }
 
     /**
-     * This method collects the information regarding bound and unbound URIs.
+     * This method collects the information regarding unbound URIs.
      *
-     * @param bound Whether the business transaction fragment being processed is bound
      * @param nodes The nodes
      * @param unboundURIs The list of unbound URIs
-     * @param boundURIs The list of bound URIs
      */
-    protected void analyseURIs(boolean bound, List<Node> nodes, Set<String> unboundURIs,
-            Set<String> boundURIs) {
+    protected void analyseURIs(List<Node> nodes, List<String> unboundURIs) {
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
 
-            if (node.getUri() != null) {
-                if (bound) {
-                    boundURIs.add(node.getUri());
-                } else {
-                    unboundURIs.add(node.getUri());
-                }
+            if (node.getUri() != null && !unboundURIs.contains(node.getUri())) {
+                unboundURIs.add(node.getUri());
             }
 
             if (node instanceof ContainerNode) {
-                analyseURIs(bound, ((ContainerNode) node).getNodes(),
-                        unboundURIs, boundURIs);
+                analyseURIs(((ContainerNode) node).getNodes(), unboundURIs);
             }
         }
     }
@@ -331,7 +378,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
         Percentiles agg = response.getAggregations().get("percentiles");
         for (Percentile entry : agg) {
-            stats.addPercentile((int)entry.getPercent(), entry.getValue());
+            stats.addPercentile((int) entry.getPercent(), entry.getValue());
         }
 
         Avg avg = response.getAggregations().get("average");

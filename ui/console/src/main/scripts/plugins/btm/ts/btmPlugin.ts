@@ -39,6 +39,10 @@ module BTM {
         templateUrl: 'plugins/btm/html/btm.html',
         controller: 'BTM.BTMController'
       }).
+      when('/candidates', {
+        templateUrl: 'plugins/btm/html/btxncandidates.html',
+        controller: 'BTM.BTMCandidatesController'
+      }).
       when('/disabled', {
         templateUrl: 'plugins/btm/html/btxndisabled.html',
         controller: 'BTM.BTMDisabledController'

@@ -179,6 +179,17 @@ public class BusinessTransaction {
     }
 
     /**
+     * This method determines whether this business transaction is the initial
+     * fragment of an instance.
+     *
+     * @return Whether this is the initial fragment
+     */
+    public boolean initialFragment() {
+        // Initial fragment, if the first node has no correlation ids
+        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds().isEmpty();
+    }
+
+    /**
      * This method returns the end time of the business
      * transaction.
      *

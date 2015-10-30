@@ -1,0 +1,82 @@
+<div class="col-md-12" ng-controller="BTM.BTMCandidatesController">
+
+  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="unbounduris">
+    <div class="spinner spinner-lg"></div>
+    <p class="hk-spinner-legend-below">Loading...</p>
+  </div>
+
+  <div class="row" ng-show="unbounduris" >
+    <hawkular-subtab class="hk-align-center">
+      <div class="hk-nav-tabs-container">
+        <ul class="nav nav-tabs nav-tabs-pf">
+          <li><a href="active" >Active</a></li>
+          <li class="active"><a href="candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
+          <li><a href="disabled">Disabled</a></li>
+          <li><a href="ignored">Ignored</a></li>
+        </ul>
+      </div>
+    </hawkular-subtab>
+
+    <section id="active" class="hk-tab-content">
+
+      <br>
+
+      <form class="form-horizontal hk-add-url" name="addBTxnForm" role="form" novalidate >
+        <div class="form-group input">
+          <div class="col-lg-6 col-sm-8 col-xs-12 hk-align-center">
+            <div class="input-group input-group-lg">
+              <input type="text" class="form-control" name="newBTxnNameField"
+                   ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
+                   placeholder="Enter a business transaction name" required>
+              <span class="input-group-btn">
+                <input class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" ng-click="addBusinessTxn()" value="Manage" />
+                <input class="btn btn-danger" type="button" ng-disabled="!newBTxnName" ng-click="ignoreBusinessTxn()" value="Ignore" />
+                <!--
+                <button class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" >
+                  <div ng-show="addProgress" class="spinner spinner-sm"></div>
+                  Manage
+                </button>
+                <button class="btn btn-danger" type="submit" ng-disabled="!newBTxnName" >
+                  <div ng-show="addProgress" class="spinner spinner-sm"></div>
+                  Ignore
+                </button>
+                -->
+              </span>
+            </div>
+
+            <div class="input-group input-group-lg">
+            <div ng-show="selecteduris.length > 0" >
+              <br>
+              <h2>With inclusion filters:</h2>
+              <div ng-repeat="uri in selecteduris" >
+                <h3>{{uri}}</h3>
+              </div>
+            </div>
+          </div>
+            </div>
+
+          </div>
+        </div>
+      </form>
+
+      <div class="col-md-9 hk-align-center">
+        <ul class="list-group" >
+          <br>
+          <div class="row" >
+            Search: <input ng-model="query">
+          </div>
+
+          <div class="hk-url-item" ng-repeat="(key, value) in unbounduris | filter:query" >
+            <div class="panel panel-default hk-url-heading">
+              <h2>{{key}}</h2>
+              <div ng-repeat="uri in value" >
+                <button type="button" ng-click="selectionChanged(uri)">{{uri}}</button>
+              </div>
+            </div>
+          </div>
+       </ul>
+      </div>
+    </section>
+  </div>
+</div>
+

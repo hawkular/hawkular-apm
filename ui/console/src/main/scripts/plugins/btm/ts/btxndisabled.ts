@@ -19,6 +19,7 @@ module BTM {
   export var BTMDisabledController = _module.controller("BTM.BTMDisabledController", ["$scope", "$http", '$location', ($scope, $http, $location) => {
 
     $scope.newBTxnName = '';
+    $scope.candidateCount = 0;
 
     $http.get('/hawkular/btm/config/businesstxnsummary').success(function(data) {
       $scope.businessTransactions = [];
@@ -28,6 +29,10 @@ module BTM {
         };
         $scope.businessTransactions.add(btxn);
       }
+    });
+
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
+      $scope.candidateCount = Object.keys(data).length;
     });
 
     $scope.deleteBusinessTxn = function(btxn) {

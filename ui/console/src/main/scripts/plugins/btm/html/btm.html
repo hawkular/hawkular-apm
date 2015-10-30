@@ -9,6 +9,7 @@
       <div class="hk-nav-tabs-container">
         <ul class="nav nav-tabs nav-tabs-pf">
           <li class="active"><a href="active" >Active</a></li>
+          <li><a href="candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
           <li><a href="disabled">Disabled</a></li>
           <li><a href="ignored">Ignored</a></li>
         </ul>
@@ -16,26 +17,6 @@
     </hawkular-subtab>
 
     <section id="active" class="hk-tab-content">
-
-      <br>
-
-      <form class="form-horizontal hk-add-url" name="addBTxnForm" role="form" novalidate ng-submit="addBusinessTxn()">
-        <div class="form-group input">
-          <div class="col-lg-6 col-sm-8 col-xs-12 hk-align-center">
-            <div class="input-group input-group-lg">
-              <input type="text" class="form-control" name="newBTxnNameField"
-                   ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter a business transaction name" required>
-              <span class="input-group-btn">
-                <button class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" >
-                 <div ng-show="addProgress" class="spinner spinner-sm"></div>
-                Add
-                </button>
-              </span>
-            </div>
-          </div>
-        </div>
-      </form>
 
       <div class="col-md-9 hk-align-center">
         <ul class="list-group" >
