@@ -30,7 +30,15 @@ module BTM {
     });
 
     $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
-      $scope.unboundURIs = data;
+      $scope.unboundURIs = [ ];
+      for (var key in data) {
+        if (key !== undefined) {
+          var array=data[key];
+          for (var i = 0; i < array.length; i++) {
+            $scope.unboundURIs.add(array[i]);
+          }
+        }
+      }
     });
 
     $scope.addInclusionFilter = function() {

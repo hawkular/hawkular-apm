@@ -18,10 +18,12 @@ package org.hawkular.btm.tests.wildfly;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -83,11 +85,11 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Retrieve stored business transaction
-        List<String> uris = analytics.getUnboundURIs(null, 0, 0);
+        Map<String,List<String>> uris = analytics.getUnboundURIs(null, 0, 0);
 
         assertNotNull(uris);
         assertEquals(1, uris.size());
-        assertEquals("testuri", uris.get(0));
+        assertTrue(uris.containsKey("testuri"));
     }
 
     @Test

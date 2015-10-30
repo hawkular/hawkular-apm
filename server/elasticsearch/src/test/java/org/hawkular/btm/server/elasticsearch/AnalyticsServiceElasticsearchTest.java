@@ -18,17 +18,25 @@ package org.hawkular.btm.server.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.ConfigurationService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -105,10 +113,16 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        List<String> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.Map<String, java.util.List<String>> uris = analytics.getUnboundURIs(null, 100, 0);
 
         assertNotNull(uris);
-        assertEquals(5, uris.size());
+        assertEquals(2, uris.size());
+
+        assertTrue(uris.containsKey("uri1"));
+        assertTrue(uris.containsKey("uri5"));
+
+        assertEquals(4, uris.get("uri1").size());
+        assertEquals(1, uris.get("uri5").size());
     }
 
     @Test
@@ -154,14 +168,20 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        List<String> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.Map<String, java.util.List<String>> uris = analytics.getUnboundURIs(null, 100, 0);
 
         assertNotNull(uris);
-        assertEquals(3, uris.size());
+        assertEquals(2, uris.size());
+
+        assertTrue(uris.containsKey("uri1"));
+        assertTrue(uris.containsKey("uri2"));
+
+        assertEquals(3, uris.get("uri1").size());
+        assertEquals(1, uris.get("uri2").size());
     }
 
     @Test
-    public void testSomeBoundURIs() {
+    public void testUnboundThenBoundURIs() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -190,7 +210,7 @@ public class AnalyticsServiceElasticsearchTest {
         btxns.add(btxn2);
 
         Consumer c2 = new Consumer();
-        c2.setUri("uri2");
+        c2.setUri("uri1");
         btxn2.getNodes().add(c2);
 
         Component t3 = new Component();
@@ -207,10 +227,131 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        List<String> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.Map<String, java.util.List<String>> uris = analytics.getUnboundURIs(null, 100, 0);
 
         assertNotNull(uris);
-        assertEquals(2, uris.size());
+        assertEquals(0, uris.size());
+    }
+
+    @Test
+    public void testBoundThenUnboundURIs() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
+        btxn1.setName("A Name");
+        btxns.add(btxn1);
+
+        Consumer c1 = new Consumer();
+        c1.setUri("uri1");
+        btxn1.getNodes().add(c1);
+
+        Component t1 = new Component();
+        t1.setUri("uri2");
+        c1.getNodes().add(t1);
+
+        Component t2 = new Component();
+        t2.setUri("uri3");
+        c1.getNodes().add(t2);
+
+        Producer p1 = new Producer();
+        p1.setUri("uri3");
+        c1.getNodes().add(p1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
+        btxns.add(btxn2);
+
+        Consumer c2 = new Consumer();
+        c2.setUri("uri1");
+        btxn2.getNodes().add(c2);
+
+        Component t3 = new Component();
+        t3.setUri("uri4");
+        c2.getNodes().add(t3);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store");
+        }
+
+        java.util.Map<String, java.util.List<String>> uris = analytics.getUnboundURIs(null, 100, 0);
+
+        assertNotNull(uris);
+        assertEquals(1, uris.size());
+
+        assertTrue(uris.containsKey("uri1"));
+
+        assertEquals(2, uris.get("uri1").size());
+    }
+
+    @Test
+    public void testUnboundURIsExcludeBTxnConfig() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
+        btxns.add(btxn1);
+
+        Consumer c1 = new Consumer();
+        c1.setUri("uri1");
+        btxn1.getNodes().add(c1);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store");
+        }
+
+        analytics.setConfigurationService(new ConfigurationService() {
+            @Override
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+                return null;
+            }
+
+            @Override
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+                    throws Exception {
+            }
+
+            @Override
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+                return null;
+            }
+
+            @Override
+            public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+                Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
+                BusinessTxnConfig btc = new BusinessTxnConfig();
+                btc.setFilter(new Filter());
+                btc.getFilter().getInclusions().add("uri1");
+                ret.put("btc1", btc);
+                return ret;
+            }
+
+            @Override
+            public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+                return null;
+            }
+
+            @Override
+            public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+            }
+        });
+
+        java.util.Map<String, java.util.List<String>> uris = analytics.getUnboundURIs(null, 100, 0);
+
+        assertNotNull(uris);
+        assertEquals(0, uris.size());
     }
 
     @Test
@@ -234,7 +375,7 @@ public class AnalyticsServiceElasticsearchTest {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to store: "+e);
+            fail("Failed to store: " + e);
         }
 
         assertEquals(2, analytics.getCompletionCount(null,

@@ -45,8 +45,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final TypeReference<java.util.List<String>> STRING_LIST =
-            new TypeReference<java.util.List<String>>() {
+    private static final TypeReference<java.util.Map<String,java.util.List<String>>> STRING_MAP_LIST =
+            new TypeReference<java.util.Map<String,java.util.List<String>>>() {
     };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
@@ -118,7 +118,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long)
      */
     @Override
-    public List<String> getUnboundURIs(String tenantId, long startTime, long endTime) {
+    public Map<String,List<String>> getUnboundURIs(String tenantId, long startTime, long endTime) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get unbound URIs: tenantId=[" + tenantId + "] startTime=" + startTime + " endTime=" + endTime);
         }
@@ -168,7 +168,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), STRING_LIST);
+                        return mapper.readValue(resp.toString(), STRING_MAP_LIST);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }
