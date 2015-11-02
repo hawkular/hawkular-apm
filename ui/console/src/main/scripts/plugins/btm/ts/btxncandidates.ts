@@ -16,18 +16,26 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export var BTMCandidatesController = _module.controller("BTM.BTMCandidatesController", ["$scope", "$http", '$location', '$uibModal', ($scope, $http, $location, $uibModal) => {
+  export var BTMCandidatesController = _module.controller("BTM.BTMCandidatesController", ["$scope", "$http", '$location', '$uibModal', '$interval', ($scope, $http, $location, $uibModal, $interval) => {
 
     $scope.newBTxnName = '';
     $scope.selecteduris = [ ];
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
-      $scope.unbounduris = resp.data;
-      $scope.candidateCount = Object.keys(resp.data).length;
-    },function(resp) {
-      console.log("Failed to get unbound URIs: "+resp);
-    });
+    $scope.reload = function() {
+      $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+        $scope.unbounduris = resp.data;
+        $scope.candidateCount = Object.keys(resp.data).length;
+      },function(resp) {
+        console.log("Failed to get unbound URIs: "+resp);
+      });
+    };
+
+    $scope.reload();
+
+    $interval(function() {
+      $scope.reload();
+    },10000);
 
     $scope.addBusinessTxn = function() {
       var defn = {

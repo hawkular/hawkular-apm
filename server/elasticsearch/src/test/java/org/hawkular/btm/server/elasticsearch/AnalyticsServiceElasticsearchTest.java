@@ -355,6 +355,70 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testUnboundURIsExcludeBTxnConfigRegex() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
+        btxns.add(btxn1);
+
+        Consumer c1 = new Consumer();
+        c1.setUri("{myns}ns");
+        btxn1.getNodes().add(c1);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store");
+        }
+
+        analytics.setConfigurationService(new ConfigurationService() {
+            @Override
+            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+                return null;
+            }
+
+            @Override
+            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+                    throws Exception {
+            }
+
+            @Override
+            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+                return null;
+            }
+
+            @Override
+            public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+                Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
+                BusinessTxnConfig btc = new BusinessTxnConfig();
+                btc.setFilter(new Filter());
+                btc.getFilter().getInclusions().add("^\\{myns\\}ns$");
+                ret.put("btc1", btc);
+                return ret;
+            }
+
+            @Override
+            public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+                return null;
+            }
+
+            @Override
+            public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+            }
+        });
+
+        java.util.Map<String, java.util.List<String>> uris = analytics.getUnboundURIs(null, 100, 0);
+
+        assertNotNull(uris);
+        assertEquals(0, uris.size());
+    }
+
+    @Test
     public void testGetCompletionCount() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 

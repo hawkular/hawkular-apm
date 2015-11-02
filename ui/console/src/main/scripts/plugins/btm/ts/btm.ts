@@ -16,28 +16,42 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', ($scope, $http, $location) => {
+  export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', ($scope, $http, $location, $interval) => {
 
     $scope.newBTxnName = '';
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
-      $scope.businessTransactions = [];
-      for (var i = 0; i < resp.data.length; i++) {
-        var btxn = {
-          summary: resp.data[i],
-          count: undefined,
-          faultcount: undefined,
-          percentile95: undefined,
-          alerts: undefined
-        };
-        $scope.businessTransactions.add(btxn);
+    $scope.reload = function() {
+      $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
+        $scope.businessTransactions = [];
+        for (var i = 0; i < resp.data.length; i++) {
+          var btxn = {
+            summary: resp.data[i],
+            count: undefined,
+            faultcount: undefined,
+            percentile95: undefined,
+            alerts: undefined
+          };
+          $scope.businessTransactions.add(btxn);
 
-        $scope.getBusinessTxnDetails(btxn);
-      }
-    },function(resp) {
-      console.log("Failed to get business txn summaries: "+resp);
-    });
+          $scope.getBusinessTxnDetails(btxn);
+        }
+      },function(resp) {
+        console.log("Failed to get business txn summaries: "+resp);
+      });
+
+      $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+        $scope.candidateCount = Object.keys(resp.data).length;
+      },function(resp) {
+        console.log("Failed to get candidate count: "+resp);
+      });
+    };
+
+    $scope.reload();
+
+    $interval(function() {
+      $scope.reload();
+    },10000);
 
     $scope.getBusinessTxnDetails = function(btxn) {
       $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.summary.name).then(function(resp) {
@@ -68,12 +82,6 @@ module BTM {
         console.log("Failed to get alerts count: "+resp);
       });
     };
-
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
-      $scope.candidateCount = Object.keys(resp.data).length;
-    },function(resp) {
-      console.log("Failed to get candidate count: "+resp);
-    });
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {
