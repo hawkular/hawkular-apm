@@ -21,25 +21,31 @@ module BTM {
     $scope.newBTxnName = '';
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/btm/config/businesstxnsummary').success(function(data) {
+    $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
       $scope.businessTransactions = [];
-      for (var i = 0; i < data.length; i++) {
+      for (var i = 0; i < resp.data.length; i++) {
         var btxn = {
-          summary: data[i]
+          summary: resp.data[i]
         };
         $scope.businessTransactions.add(btxn);
       }
+    },function(resp) {
+      console.log("Failed to get business txn summaries: "+resp);
     });
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
-      $scope.candidateCount = Object.keys(data).length;
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+      $scope.candidateCount = Object.keys(resp.data).length;
+    },function(resp) {
+      console.log("Failed to get candidate count: "+resp);
     });
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.summary.name).success(function(data) {
+        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.summary.name).then(function(resp) {
           console.log('Deleted: '+btxn.summary.name);
           $scope.businessTransactions.remove(btxn);
+        },function(resp) {
+          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+resp);
         });
       }
     };

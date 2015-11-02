@@ -21,11 +21,11 @@ module BTM {
     $scope.newBTxnName = '';
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/btm/config/businesstxnsummary').success(function(data) {
+    $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
       $scope.businessTransactions = [];
-      for (var i = 0; i < data.length; i++) {
+      for (var i = 0; i < resp.data.length; i++) {
         var btxn = {
-          summary: data[i],
+          summary: resp.data[i],
           count: undefined,
           faultcount: undefined,
           percentile95: undefined,
@@ -33,36 +33,55 @@ module BTM {
         };
         $scope.businessTransactions.add(btxn);
 
-        $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.summary.name).success(function(data) {
-          btxn.count = data;
-        });
-
-        $http.get('/hawkular/btm/analytics/businesstxn/stats?name='+btxn.summary.name).success(function(data) {
-          $scope.stats = data;
-          if (data.percentiles[95] > 0) {
-            btxn.percentile95 = Math.round( data.percentiles[95] / 1000000 ) / 1000;
-          }
-        });
-
-        $http.get('/hawkular/btm/analytics/businesstxn/faultcount?name='+btxn.summary.name).success(function(data) {
-          btxn.faultcount = data;
-        });
-
-        $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.summary.name).success(function(data) {
-          btxn.alerts = data;
-        });
+        $scope.getBusinessTxnDetails(btxn);
       }
+    },function(resp) {
+      console.log("Failed to get business txn summaries: "+resp);
     });
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
-      $scope.candidateCount = Object.keys(data).length;
+    $scope.getBusinessTxnDetails = function(btxn) {
+      $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.summary.name).then(function(resp) {
+        btxn.count = resp.data;
+      },function(resp) {
+        console.log("Failed to get count: "+resp);
+      });
+
+      $http.get('/hawkular/btm/analytics/businesstxn/stats?name='+btxn.summary.name).then(function(resp) {
+        if (resp.data.percentiles[95] > 0) {
+          btxn.percentile95 = Math.round( resp.data.percentiles[95] / 1000000 ) / 1000;
+        } else {
+          btxn.percentile95 = 0;
+        }
+      },function(resp) {
+        console.log("Failed to get stats: "+resp);
+      });
+
+      $http.get('/hawkular/btm/analytics/businesstxn/faultcount?name='+btxn.summary.name).then(function(resp) {
+        btxn.faultcount = resp.data;
+      },function(resp) {
+        console.log("Failed to get fault count: "+resp);
+      });
+
+      $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.summary.name).then(function(resp) {
+        btxn.alerts = resp.data;
+      },function(resp) {
+        console.log("Failed to get alerts count: "+resp);
+      });
+    };
+
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+      $scope.candidateCount = Object.keys(resp.data).length;
+    },function(resp) {
+      console.log("Failed to get candidate count: "+resp);
     });
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.summary.name).success(function(data) {
+        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.summary.name).then(function(resp) {
           console.log('Deleted: '+btxn.summary.name);
           $scope.businessTransactions.remove(btxn);
+        },function(resp) {
+          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+resp);
         });
       }
     };
