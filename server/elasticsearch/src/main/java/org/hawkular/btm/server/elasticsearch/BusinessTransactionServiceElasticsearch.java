@@ -129,79 +129,87 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
 
         String index = client.getIndex(tenantId);
 
-        RefreshRequestBuilder refreshRequestBuilder =
-                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+        try {
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        long startTime = criteria.getStartTime();
-        long endTime = criteria.getEndTime();
+            long startTime = criteria.getStartTime();
+            long endTime = criteria.getEndTime();
 
-        if (endTime == 0) {
-            endTime = System.currentTimeMillis();
-        }
-
-        if (startTime == 0) {
-            // Set to 1 hour before end time
-            startTime = endTime - 3600000;
-        }
-
-        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery("startTime").from(startTime).to(endTime));
-
-        FilterBuilder filter = null;
-        if (criteria.getName() != null) {
-            if (criteria.getName().trim().length() == 0) {
-                filter = FilterBuilders.missingFilter("name");
-            } else {
-                b2 = b2.must(QueryBuilders.termQuery("name", criteria.getName()));
+            if (endTime == 0) {
+                endTime = System.currentTimeMillis();
             }
-        }
 
-        if (!criteria.getCorrelationIds().isEmpty()) {
-            for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
-                b2.must(QueryBuilders.termQuery("value", id.getValue()));
-                /* HWKBTM-186
-                b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
-                        QueryBuilders.boolQuery()
-                                .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
-                                .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
-                 */
+            if (startTime == 0) {
+                // Set to 1 hour before end time
+                startTime = endTime - 3600000;
             }
-        }
 
-        if (!criteria.getProperties().isEmpty()) {
-            for (String key : criteria.getProperties().keySet()) {
-                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            BoolQueryBuilder b2 = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.rangeQuery("startTime").from(startTime).to(endTime));
+
+            FilterBuilder filter = null;
+            if (criteria.getName() != null) {
+                if (criteria.getName().trim().length() == 0) {
+                    filter = FilterBuilders.missingFilter("name");
+                } else {
+                    b2 = b2.must(QueryBuilders.termQuery("name", criteria.getName()));
+                }
             }
-        }
 
-        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                .setTypes(BUSINESS_TRANSACTION_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                .setSize(criteria.getMaxResponseSize())
-                .setQuery(b2);
-
-        if (filter != null) {
-            request.setPostFilter(filter);
-        }
-
-        SearchResponse response = request.execute().actionGet();
-        if (response.isTimedOut()) {
-            msgLog.warnQueryTimedOut();
-        }
-
-        for (SearchHit searchHitFields : response.getHits()) {
-            try {
-                ret.add(mapper.readValue(searchHitFields.getSourceAsString(),
-                        BusinessTransaction.class));
-            } catch (Exception e) {
-                msgLog.errorFailedToParse(e);
+            if (!criteria.getCorrelationIds().isEmpty()) {
+                for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
+                    b2.must(QueryBuilders.termQuery("value", id.getValue()));
+                    /* HWKBTM-186
+                    b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
+                            QueryBuilders.boolQuery()
+                                    .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
+                                    .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
+                     */
+                }
             }
-        }
 
-        if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
+            if (!criteria.getProperties().isEmpty()) {
+                for (String key : criteria.getProperties().keySet()) {
+                    b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+                }
+            }
+
+            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(BUSINESS_TRANSACTION_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                    .setSize(criteria.getMaxResponseSize())
+                    .setQuery(b2);
+
+            if (filter != null) {
+                request.setPostFilter(filter);
+            }
+
+            SearchResponse response = request.execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    ret.add(mapper.readValue(searchHitFields.getSourceAsString(),
+                            BusinessTransaction.class));
+                } catch (Exception e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
+            }
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transactions have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to retrieve business transactions");
+            }
         }
 
         return ret;
