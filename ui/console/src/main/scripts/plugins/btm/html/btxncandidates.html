@@ -27,32 +27,32 @@
             <div class="input-group input-group-lg">
               <input type="text" class="form-control" name="newBTxnNameField"
                    ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter a business transaction name" required>
+                   placeholder="Business transaction name">
               <span class="input-group-btn">
                 <input class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" ng-click="addBusinessTxn()" value="Manage" />
                 <input class="btn btn-danger" type="button" ng-disabled="!newBTxnName" ng-click="ignoreBusinessTxn()" value="Ignore" />
-                <!--
-                <button class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" >
-                  <div ng-show="addProgress" class="spinner spinner-sm"></div>
-                  Manage
-                </button>
-                <button class="btn btn-danger" type="submit" ng-disabled="!newBTxnName" >
-                  <div ng-show="addProgress" class="spinner spinner-sm"></div>
-                  Ignore
-                </button>
-                -->
+              </span>
+
+              <span class="input-group-btn">
+              </span>
+
+              <select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
+                <option value="">Select existing ....</i></option>
+                <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
+              </select>
+              <span class="input-group-btn">
+                <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selecteduris.length == 0" ng-click="updateBusinessTxn()" value="Update" />
               </span>
             </div>
 
             <div class="input-group input-group-lg">
-            <div ng-show="selecteduris.length > 0" >
-              <br>
-              <h2>With inclusion filters:</h2>
-              <div ng-repeat="uri in selecteduris" >
-                <h3>{{uri}}</h3>
+              <div ng-show="selecteduris.length > 0" >
+                <br>
+                <h2>With inclusion filters:</h2>
+                <div ng-repeat="uri in selecteduris" >
+                  <h3>{{uri}}</h3>
+                </div>
               </div>
-            </div>
-          </div>
             </div>
 
           </div>
