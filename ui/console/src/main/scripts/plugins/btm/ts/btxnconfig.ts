@@ -24,21 +24,25 @@ module BTM {
     $scope.newInclusionFilter = '';
     $scope.newExclusionFilter = '';
 
-    $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).success(function(data) {
-      $scope.businessTransaction = data;
+    $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).then(function(resp) {
+      $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
+    },function(resp) {
+      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
     });
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
       $scope.unboundURIs = [ ];
-      for (var key in data) {
+      for (var key in resp.data) {
         if (key !== undefined) {
-          var array=data[key];
+          var array=resp.data[key];
           for (var i = 0; i < array.length; i++) {
             $scope.unboundURIs.add(array[i]);
           }
         }
       }
+    },function(resp) {
+      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
     });
 
     $scope.addInclusionFilter = function() {
@@ -151,15 +155,19 @@ module BTM {
     };
 
     $scope.save = function() {
-      $http.put('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName,$scope.businessTransaction).success(function(data) {
+      $http.put('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName,$scope.businessTransaction).then(function(resp) {
         $scope.original = angular.copy($scope.businessTransaction);
         $scope.dirty = false;
+      },function(resp) {
+        console.log("Failed to save business txn '"+$scope.businessTransactionName+"': "+resp);
       });
     };
 
-    $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).success(function(data) {
-      $scope.businessTransaction = data;
+    $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).then(function(resp) {
+      $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
+    },function(resp) {
+      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
     });
 
   }]);

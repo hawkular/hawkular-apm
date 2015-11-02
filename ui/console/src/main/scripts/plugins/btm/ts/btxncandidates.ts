@@ -22,9 +22,11 @@ module BTM {
     $scope.selecteduris = [ ];
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').success(function(data) {
-      $scope.unbounduris = data;
-      $scope.candidateCount = Object.keys(data).length;
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+      $scope.unbounduris = resp.data;
+      $scope.candidateCount = Object.keys(resp.data).length;
+    },function(resp) {
+      console.log("Failed to get unbound URIs: "+resp);
     });
 
     $scope.addBusinessTxn = function() {
@@ -33,8 +35,10 @@ module BTM {
           inclusions: $scope.selecteduris
         }
       };
-      $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).success(function(data) {
+      $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).then(function(resp) {
         $location.path('config/'+$scope.newBTxnName);
+      },function(resp) {
+        console.log("Failed to add business txn '"+$scope.newBTxnName+"': "+resp);
       });
     };
 
@@ -45,8 +49,10 @@ module BTM {
           inclusions: $scope.selecteduris
         }
       };
-      $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).success(function(data) {
+      $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).then(function(resp) {
         $location.path('config/'+$scope.newBTxnName);
+      },function(resp) {
+        console.log("Failed to ignore business txn '"+$scope.newBTxnName+"': "+resp);
       });
     };
 
