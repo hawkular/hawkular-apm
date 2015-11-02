@@ -17,12 +17,14 @@
       "filter": {
         "exclusions": [
           "\\.html$",
+          "\\.htm$",
           "\\.js$",
           "\\.gif$",
           "\\.bmp$",
           "\\.jpg$",
           "\\.tif$",
-          "\\.png$"
+          "\\.png$",
+          "\\.ico$"
         ]
       }
     },

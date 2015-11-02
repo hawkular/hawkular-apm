@@ -37,7 +37,8 @@ module BTM {
         if (key !== undefined) {
           var array=resp.data[key];
           for (var i = 0; i < array.length; i++) {
-            $scope.unboundURIs.add(array[i]);
+            var regex = $scope.escapeRegExp(array[i]);
+            $scope.unboundURIs.add(regex);
           }
         }
       }
@@ -169,6 +170,10 @@ module BTM {
     },function(resp) {
       console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
     });
+
+    $scope.escapeRegExp = function(str) {
+      return "^" + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "$";
+    };
 
   }]);
 
