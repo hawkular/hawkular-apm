@@ -57,11 +57,16 @@ module BTM {
     };
 
     $scope.selectionChanged = function(uri) {
-      if ($scope.selecteduris.contains(uri)) {
-        $scope.selecteduris.remove(uri);
+      var regex = $scope.escapeRegExp(uri);
+      if ($scope.selecteduris.contains(regex)) {
+        $scope.selecteduris.remove(regex);
       } else {
-        $scope.selecteduris.add(uri);
+        $scope.selecteduris.add(regex);
       }
+    };
+
+    $scope.escapeRegExp = function(str) {
+      return "^" + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "$";
     };
 
   }]);
