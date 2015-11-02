@@ -97,6 +97,24 @@ public class FilterManager {
                 } else {
                     btxnFilters.add(fp);
                 }
+            } else {
+                filterMap.remove(btxn);
+            }
+        }
+    }
+
+    /**
+     * This method removes the business transaction.
+     *
+     * @param btxn The name of the business transaction
+     */
+    public void remove(String btxn) {
+        synchronized (filterMap) {
+            // Check if old filter processor needs to be removed
+            FilterProcessor oldfp = filterMap.get(btxn);
+            if (oldfp != null) {
+                globalExclusionFilters.remove(oldfp);
+                btxnFilters.remove(oldfp);
             }
         }
     }

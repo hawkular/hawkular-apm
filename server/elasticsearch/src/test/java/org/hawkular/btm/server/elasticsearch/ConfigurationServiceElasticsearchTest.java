@@ -18,12 +18,15 @@ package org.hawkular.btm.server.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -109,6 +112,71 @@ public class ConfigurationServiceElasticsearchTest {
         assertNotNull(res2);
         assertEquals(1, res2.size());
         assertTrue(res2.containsKey("btc2"));
+
+        // Check summaries
+        List<BusinessTxnSummary> summaries = bts.getBusinessTransactionSummaries(null);
+        assertNotNull(summaries);
+        assertEquals(2, summaries.size());
+    }
+
+
+    @Test
+    public void testGetBusinessTransactionsAfterRemove() {
+        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        btc1.setDescription("btc1");
+
+        try {
+            bts.updateBusinessTransaction(null, "btc1", btc1);
+        } catch (Exception e) {
+            fail("Failed to update btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        long midtime = System.currentTimeMillis();
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        try {
+            bts.removeBusinessTransaction(null, "btc2");
+        } catch (Exception e) {
+            fail("Failed to remove btc2: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        Map<String, BusinessTxnConfig> res1 = bts.getBusinessTransactions(null, 0);
+
+        assertNotNull(res1);
+        assertEquals(1, res1.size());
+        assertTrue(res1.containsKey("btc1"));
+
+        Map<String, BusinessTxnConfig> res2 = bts.getBusinessTransactions(null, midtime);
+
+        assertNotNull(res2);
+        assertEquals(1, res2.size());
+        assertTrue(res2.containsKey("btc2"));
+
+        BusinessTxnConfig btc2 = bts.getBusinessTransaction(null, "btc2");
+        assertNull(btc2);
     }
 
 }
