@@ -46,6 +46,9 @@ public class BusinessTxnConfig {
     @JsonInclude(Include.NON_NULL)
     private long lastUpdated;
 
+    @JsonInclude
+    private boolean deleted = false;
+
     /**
      * @return the level
      */
@@ -116,13 +119,27 @@ public class BusinessTxnConfig {
         this.lastUpdated = lastUpdated;
     }
 
+    /**
+     * @return the deleted
+     */
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    /**
+     * @param deleted the deleted to set
+     */
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return "BusinessTxnConfig [level=" + level + ", description=" + description + ", filter=" + filter
-                + ", processors=" + processors + ", lastUpdated=" + lastUpdated + "]";
+                + ", processors=" + processors + ", lastUpdated=" + lastUpdated + ", deleted=" + deleted + "]";
     }
 
 }

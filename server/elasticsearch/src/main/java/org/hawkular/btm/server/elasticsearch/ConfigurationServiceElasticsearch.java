@@ -26,7 +26,6 @@ import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -108,9 +107,11 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    config.getBusinessTransactions().put(searchHitFields.getId(),
-                            mapper.readValue(searchHitFields.getSourceAsString(),
-                                    BusinessTxnConfig.class));
+                    BusinessTxnConfig btc = mapper.readValue(searchHitFields.getSourceAsString(),
+                            BusinessTxnConfig.class);
+                    if (!btc.isDeleted()) {
+                        config.getBusinessTransactions().put(searchHitFields.getId(), btc);
+                    }
                 } catch (Exception e) {
                     msgLog.errorFailedToParse(e);
                 }
@@ -173,6 +174,11 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
             if (!response.isSourceEmpty()) {
                 try {
                     ret = mapper.readValue(response.getSourceAsString(), BusinessTxnConfig.class);
+
+                    // Check if config was deleted
+                    if (ret.isDeleted()) {
+                        ret = null;
+                    }
                 } catch (Exception e) {
                     msgLog.errorFailedToParse(e);
                 }
@@ -220,11 +226,13 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                 try {
                     BusinessTxnConfig config=mapper.readValue(searchHitFields.getSourceAsString(),
                             BusinessTxnConfig.class);
-                    BusinessTxnSummary summary=new BusinessTxnSummary();
-                    summary.setName(searchHitFields.getId());
-                    summary.setDescription(config.getDescription());
-                    summary.setLevel(config.getLevel());
-                    ret.add(summary);
+                    if (!config.isDeleted()) {
+                        BusinessTxnSummary summary=new BusinessTxnSummary();
+                        summary.setName(searchHitFields.getId());
+                        summary.setDescription(config.getDescription());
+                        summary.setLevel(config.getLevel());
+                        ret.add(summary);
+                    }
                 } catch (Exception e) {
                     msgLog.errorFailedToParse(e);
                 }
@@ -267,7 +275,7 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                 try {
                     BusinessTxnConfig btxn = mapper.readValue(searchHitFields.getSourceAsString(),
                             BusinessTxnConfig.class);
-                    if (updated == 0 || btxn.getLastUpdated() > updated) {
+                    if ((updated == 0 && !btxn.isDeleted()) || (updated > 0 && btxn.getLastUpdated() > updated)) {
                         ret.put(searchHitFields.getId(), btxn);
                     }
                 } catch (Exception e) {
@@ -291,12 +299,18 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
      */
     @Override
     public void removeBusinessTransaction(String tenantId, String name) throws Exception {
-        DeleteResponse response = client.getElasticsearchClient().prepareDelete(client.getIndex(tenantId),
+        BusinessTxnConfig config = new BusinessTxnConfig();
+        config.setDeleted(true);
+        config.setLastUpdated(System.currentTimeMillis());
+
+        IndexRequestBuilder builder = client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
                 BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
-                .execute()
-                .actionGet();
+                .setSource(mapper.writeValueAsString(config));
+
+        builder.execute().actionGet();
+
         if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Remove business transaction config with name[%s]: %s", name, response.isFound());
+            msgLog.tracef("Remove business transaction config with name[%s]", name);
         }
     }
 

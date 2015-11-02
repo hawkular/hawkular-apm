@@ -139,12 +139,21 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                             for (String btxn : changed.keySet()) {
                                 BusinessTxnConfig btc = changed.get(btxn);
 
-                                if (log.isLoggable(Level.FINER)) {
-                                    log.finer("Changed config for btxn '" + btxn + "' = " + btc);
-                                }
+                                if (btc.isDeleted()) {
+                                    if (log.isLoggable(Level.FINER)) {
+                                        log.finer("Removing config for btxn '" + btxn + "' = " + btc);
+                                    }
 
-                                filterManager.init(btxn, btc);
-                                processorManager.init(btxn, btc);
+                                    filterManager.remove(btxn);
+                                    processorManager.remove(btxn);
+                                } else {
+                                    if (log.isLoggable(Level.FINER)) {
+                                        log.finer("Changed config for btxn '" + btxn + "' = " + btc);
+                                    }
+
+                                    filterManager.init(btxn, btc);
+                                    processorManager.init(btxn, btc);
+                                }
 
                                 if (btc.getLastUpdated() > configLastUpdated) {
                                     configLastUpdated = btc.getLastUpdated();
@@ -319,9 +328,9 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerStart(java.lang.String,
-      *                      java.lang.String, java.lang.String, java.lang.String)
-      */
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerStart(java.lang.String,
+     *                      java.lang.String, java.lang.String, java.lang.String)
+     */
     @Override
     public void consumerStart(String location, String uri, String type, String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1286,7 +1295,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
             if (btxn.getName() != null
                     || (btxn.getNodes().size() > 0
-                            && !btxn.getNodes().get(0).getCorrelationIds().isEmpty())) {
+                    && !btxn.getNodes().get(0).getCorrelationIds().isEmpty())) {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("activate: Already active, with btxn name or top level node having correlation ids");
                 }

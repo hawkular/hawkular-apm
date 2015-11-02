@@ -102,6 +102,17 @@ public class ProcessorManager {
     }
 
     /**
+     * This method removes the business transaction configuration.
+     *
+     * @param btxn The business transaction name
+     */
+    public void remove(String btxn) {
+        synchronized (processors) {
+            processors.remove(btxn);
+        }
+    }
+
+    /**
      * This method determines whether the business transaction, for the supplied node
      * and in/out direction, will process available information.
      *
