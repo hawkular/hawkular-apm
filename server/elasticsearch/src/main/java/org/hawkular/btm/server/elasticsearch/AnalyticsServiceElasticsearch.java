@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -127,8 +128,8 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         Map<String, List<String>> ret = new HashMap<String, List<String>>();
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setStartTime(startTime)
-                .setEndTime(endTime);
+        .setStartTime(startTime)
+        .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -168,11 +169,21 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
             Map<String, BusinessTxnConfig> configs = configService.getBusinessTransactions(tenantId, 0);
             for (BusinessTxnConfig config : configs.values()) {
                 if (config.getFilter() != null && config.getFilter().getInclusions() != null) {
+                    if (msgLog.isTraceEnabled()) {
+                        msgLog.trace("Remove unbound URIs associated with btxn config=" + config);
+                    }
                     for (String uri : config.getFilter().getInclusions()) {
-                        if (msgLog.isTraceEnabled()) {
-                            msgLog.trace("Remove unbound URIs associated with btxn config=" + config);
-                        }
                         ret.remove(uri);
+
+                        if (uri.startsWith("^") && uri.endsWith("$")) {
+                            String nonregex = uri.substring(1, uri.length() - 1);
+                            StringTokenizer st = new StringTokenizer(nonregex, "\\");
+                            StringBuilder buf = new StringBuilder();
+                            while (st.hasMoreTokens()) {
+                                buf.append(st.nextToken());
+                            }
+                            ret.remove(buf.toString());
+                        }
                     }
                 }
             }
