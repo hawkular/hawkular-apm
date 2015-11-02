@@ -19,8 +19,15 @@ module BTM {
   export var BTMCandidatesController = _module.controller("BTM.BTMCandidatesController", ["$scope", "$http", '$location', '$uibModal', '$interval', ($scope, $http, $location, $uibModal, $interval) => {
 
     $scope.newBTxnName = '';
+    $scope.existingBTxnName = '';
     $scope.selecteduris = [ ];
     $scope.candidateCount = 0;
+
+    $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
+      $scope.businessTransactions = resp.data;
+    },function(resp) {
+      console.log("Failed to get business txn summaries: "+resp);
+    });
 
     $scope.reload = function() {
       $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
@@ -64,6 +71,25 @@ module BTM {
       });
     };
 
+    $scope.updateBusinessTxn = function() {
+      $http.get('/hawkular/btm/config/businesstxn/'+$scope.existingBTxnName).then(function(resp) {
+        var btxn = resp.data;
+        for (var i = 0; i < $scope.selecteduris.length; i++) {
+          if (btxn.filter.inclusions.indexOf($scope.selecteduris[i]) === -1) {
+            btxn.filter.inclusions.add($scope.selecteduris[i]);
+          }
+        }
+        $http.put('/hawkular/btm/config/businesstxn/'+$scope.existingBTxnName,btxn).then(function(resp) {
+          console.log("Saved updated business txn '"+$scope.existingBTxnName+"': "+resp);
+          $location.path('config/'+$scope.existingBTxnName);
+        },function(resp) {
+          console.log("Failed to save business txn '"+$scope.existingBTxnName+"': "+resp);
+        });
+      },function(resp) {
+        console.log("Failed to get business txn '"+$scope.existingBTxnName+"': "+resp);
+      });
+    };
+
     $scope.selectionChanged = function(uri) {
       var regex = $scope.escapeRegExp(uri);
       if ($scope.selecteduris.contains(regex)) {
@@ -71,6 +97,13 @@ module BTM {
       } else {
         $scope.selecteduris.add(regex);
       }
+    };
+    
+    $scope.getLevel = function(level) {
+      if (level === 'All') {
+        return "Active";
+      }
+      return level;
     };
 
     $scope.escapeRegExp = function(str) {
