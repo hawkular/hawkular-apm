@@ -129,6 +129,7 @@ public class BusinessTransactionTest {
         BusinessTransaction btxn = new BusinessTransaction();
 
         Consumer c1 = new Consumer();
+        c1.addGlobalId("gid");
         btxn.getNodes().add(c1);
 
         assertTrue(btxn.initialFragment());
@@ -139,6 +140,7 @@ public class BusinessTransactionTest {
         BusinessTransaction btxn = new BusinessTransaction();
 
         Consumer c1 = new Consumer();
+        c1.addGlobalId("gid");
         c1.addInteractionId("myid");
         btxn.getNodes().add(c1);
 
