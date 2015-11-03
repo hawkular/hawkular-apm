@@ -158,7 +158,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                         unboundURIs = new ArrayList<String>();
                         ret.put(uri, unboundURIs);
                     }
-                    analyseURIs(btxn.getNodes(), unboundURIs);
+                    obtainURIs(btxn.getNodes(), unboundURIs);
                 }
             }
         }
@@ -193,23 +193,46 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     }
 
     /**
-     * This method collects the information regarding unbound URIs.
+     * This method collects the information regarding URIs.
      *
      * @param nodes The nodes
-     * @param unboundURIs The list of unbound URIs
+     * @param uris The list of URIs
      */
-    protected void analyseURIs(List<Node> nodes, List<String> unboundURIs) {
+    protected void obtainURIs(List<Node> nodes, List<String> uris) {
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
 
-            if (node.getUri() != null && !unboundURIs.contains(node.getUri())) {
-                unboundURIs.add(node.getUri());
+            if (node.getUri() != null && !uris.contains(node.getUri())) {
+                uris.add(node.getUri());
             }
 
             if (node instanceof ContainerNode) {
-                analyseURIs(((ContainerNode) node).getNodes(), unboundURIs);
+                obtainURIs(((ContainerNode) node).getNodes(), uris);
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
+     */
+    @Override
+    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
+        List<String> ret = new ArrayList<String>();
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
+        .setName(businessTransaction)
+        .setStartTime(startTime)
+        .setEndTime(endTime);
+
+        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
+                tenantId, criteria);
+
+        for (int i=0; i < fragments.size(); i++) {
+            BusinessTransaction btxn = fragments.get(i);
+            obtainURIs(btxn.getNodes(), ret);
+        }
+
+        return ret;
     }
 
     /* (non-Javadoc)

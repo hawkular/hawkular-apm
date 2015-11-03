@@ -115,7 +115,11 @@
               </select>
 
               <label for="uriFilter" style="width: 15%" >URI filter:</label>
-              <input type="text" name="uriFilter" ng-model="processor.uriFilter" ng-change="setDirty()" style="width: 80%" >
+              <input type="text" name="uriFilter"
+                   ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
+                   placeholder="Enter URI filter (regular expression)"
+                   uib-typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12" style="width: 80%" >
+
               <label for="operation" style="width: 15%" >Operation:</label>
               <input type="text" name="operation" ng-model="processor.operation" ng-change="setDirty()" style="width: 30%" >
 

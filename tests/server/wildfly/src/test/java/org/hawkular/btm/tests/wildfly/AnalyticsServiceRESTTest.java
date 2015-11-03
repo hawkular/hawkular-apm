@@ -93,6 +93,57 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
+    public void testGetBoundURIs() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Retrieve stored business transaction URIs
+        List<String> uris = analytics.getBoundURIs(null, "btxn1", 0, 0);
+
+        assertNotNull(uris);
+        assertEquals(1, uris.size());
+        assertTrue(uris.contains("testuri"));
+    }
+
+    @Test
     public void testGetCompletionCount() {
         AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
         analytics.setUsername(TEST_USERNAME);
