@@ -111,7 +111,7 @@
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
-    <version.org.hawkular.accounts>1.0.16.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.accounts>1.1.0.Final-SRC-revision-554664f3c92c9b2e9eba2f36ec6fcf4131ae7437</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
