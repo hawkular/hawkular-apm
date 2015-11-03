@@ -43,6 +43,18 @@ public interface AnalyticsService {
     Map<String,List<String>> getUnboundURIs(String tenantId, long startTime, long endTime);
 
     /**
+     * This method returns the bound URIs associated with a business
+     * transaction.
+     *
+     * @param tenantId The optional tenant id
+     * @param businessTransaction The business transaction name
+     * @param startTime The start time
+     * @param endTime The end time (if 0, then current time)
+     * @return The bound URIs
+     */
+    List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime);
+
+    /**
      * This method returns the number of completed transactions, of the specified named
      * business transaction, that were executed during the time range. The business
      * transaction name must be specified as part of the criteria.

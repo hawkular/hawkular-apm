@@ -45,8 +45,12 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final TypeReference<java.util.Map<String,java.util.List<String>>> STRING_MAP_LIST =
+    private static final TypeReference<java.util.Map<String,java.util.List<String>>> MAP_STRING_LIST =
             new TypeReference<java.util.Map<String,java.util.List<String>>>() {
+    };
+
+    private static final TypeReference<java.util.List<String>> STRING_LIST =
+            new TypeReference<java.util.List<String>>() {
     };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
@@ -168,7 +172,83 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), STRING_MAP_LIST);
+                        return mapper.readValue(resp.toString(), MAP_STRING_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get unbound URIs: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get unbound URIs", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
+     */
+    @Override
+    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get bound URIs: tenantId=[" + tenantId + "] businessTransaction="
+                    + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
+        }
+
+        StringBuilder builder = new StringBuilder()
+        .append(baseUrl)
+        .append("analytics/businesstxn/bounduris/")
+        .append(businessTransaction)
+        .append("?startTime=")
+        .append(startTime)
+        .append("&endTime=")
+        .append(endTime);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), STRING_LIST);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }

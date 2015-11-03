@@ -419,6 +419,66 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testBoundURIs() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(1000);
+        btxns.add(btxn1);
+
+        Consumer c1 = new Consumer();
+        c1.setUri("uri1");
+        btxn1.getNodes().add(c1);
+
+        Component t1 = new Component();
+        t1.setUri("uri2");
+        c1.getNodes().add(t1);
+
+        Component t2 = new Component();
+        t2.setUri("uri3");
+        c1.getNodes().add(t2);
+
+        Producer p1 = new Producer();
+        p1.setUri("uri2");
+        c1.getNodes().add(p1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setName("btxn2");
+        btxn2.setStartTime(2000);
+        btxns.add(btxn2);
+
+        Consumer c2 = new Consumer();
+        c2.setUri("uri4");
+
+        btxn2.getNodes().add(c2);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        java.util.List<String> uris1 = analytics.getBoundURIs(null, "btxn1", 100, 0);
+
+        assertNotNull(uris1);
+        assertEquals(3, uris1.size());
+        assertTrue(uris1.contains("uri1"));
+        assertTrue(uris1.contains("uri2"));
+        assertTrue(uris1.contains("uri3"));
+
+        java.util.List<String> uris2 = analytics.getBoundURIs(null, "btxn2", 100, 0);
+
+        assertNotNull(uris2);
+        assertEquals(1, uris2.size());
+        assertTrue(uris2.contains("uri4"));
+    }
+
+    @Test
     public void testGetCompletionCount() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 

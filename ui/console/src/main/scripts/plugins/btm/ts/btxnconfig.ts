@@ -16,7 +16,7 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export var BTxnConfigController = _module.controller("BTM.BTxnConfigController", ["$scope", "$routeParams", "$http", '$location', ($scope, $routeParams, $http, $location) => {
+  export var BTxnConfigController = _module.controller("BTM.BTxnConfigController", ["$scope", "$routeParams", "$http", '$location', '$interval', ($scope, $routeParams, $http, $location, $interval) => {
 
     $scope.businessTransactionName = $routeParams.businesstransaction;
     $scope.dirty = false;
@@ -43,8 +43,26 @@ module BTM {
         }
       }
     },function(resp) {
-      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
+      console.log("Failed to get unbound URIs: "+resp);
     });
+
+    $scope.reload = function() {
+      $http.get('/hawkular/btm/analytics/businesstxn/bounduris/'+$scope.businessTransactionName).then(function(resp) {
+        $scope.boundURIs = [ ];
+        for (var i = 0; i < resp.data.length; i++) {
+          var regex = $scope.escapeRegExp(resp.data[i]);
+          $scope.boundURIs.add(regex);
+        }
+      },function(resp) {
+        console.log("Failed to get bound URIs for business txn '"+$scope.businessTransactionName+"': "+resp);
+      });
+    };
+
+    $scope.reload();
+
+    $interval(function() {
+      $scope.reload();
+    },10000);
 
     $scope.addInclusionFilter = function() {
       console.log('Add inclusion filter: '+$scope.newInclusionFilter);

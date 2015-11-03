@@ -20,6 +20,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -94,6 +95,48 @@ public class AnalyticsHandler {
                     securityProvider.getTenantId(context), startTime, endTime);
 
             log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);
+
+            response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("businesstxn/bounduris/{name}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Identify the bound URIs for a business transaction",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getBoundURIs(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "business transaction name") @PathParam("name") String name,
+            @ApiParam(required = false,
+                    value = "optional 'start' time, default 1 hour before current time")
+                        @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "optional 'end' time, default current time") @DefaultValue("0")
+                        @QueryParam("endTime") long endTime) {
+
+        try {
+            log.tracef("Get bound URIs: name [%s] start [%s] end [%s]", name, startTime, endTime);
+
+            java.util.List<String> uris = analyticsService.getBoundURIs(
+                    securityProvider.getTenantId(context), name, startTime, endTime);
+
+            log.tracef("Got bound URIs: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime, uris);
 
             response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
                     .build());
