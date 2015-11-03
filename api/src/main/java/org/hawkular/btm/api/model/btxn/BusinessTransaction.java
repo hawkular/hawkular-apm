@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -185,8 +187,8 @@ public class BusinessTransaction {
      * @return Whether this is the initial fragment
      */
     public boolean initialFragment() {
-        // Initial fragment, if the first node has no correlation ids
-        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds().isEmpty();
+        // Initial fragment, if the first node has no 'interaction' based correlation ids
+        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds(Scope.Interaction).isEmpty();
     }
 
     /**

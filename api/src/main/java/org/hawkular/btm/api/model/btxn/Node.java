@@ -17,6 +17,7 @@
 package org.hawkular.btm.api.model.btxn;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -241,6 +242,29 @@ public abstract class Node {
      */
     public void addLocalId(String id) {
         this.correlationIds.add(new CorrelationIdentifier(Scope.Local, id));
+    }
+
+    /**
+     * This methd returns the subset of correlation ids that have the
+     * specified scope.
+     *
+     * @param scope The scope
+     * @return The subset of correlation ids that are associated with the scope
+     */
+    public List<CorrelationIdentifier> getCorrelationIds(Scope scope) {
+        List<CorrelationIdentifier> ret = null;
+
+        for (int i=0; i < correlationIds.size(); i++) {
+            CorrelationIdentifier cid = correlationIds.get(i);
+            if (cid.getScope() == scope) {
+                if (ret == null) {
+                    ret = new ArrayList<CorrelationIdentifier>();
+                }
+                ret.add(cid);
+            }
+        }
+
+        return ret == null ? Collections.emptyList() : ret;
     }
 
     /**
