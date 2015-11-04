@@ -230,6 +230,22 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
+     * This method removes the end part of a string beginning
+     * at a specified marker.
+     *
+     * @param original The original string
+     * @param marker The marker identifying the point to remove from
+     * @return The modified string
+     */
+    public String removeAfter(String original, String marker) {
+        int index = original.indexOf(marker);
+        if (index != -1) {
+            return original.substring(0, index);
+        }
+        return original;
+    }
+
+    /**
      * This method creates a new parameter array builder.
      *
      * @return The parameter array builder
