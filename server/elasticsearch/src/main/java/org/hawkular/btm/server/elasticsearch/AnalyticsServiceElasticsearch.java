@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -128,8 +129,8 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         Map<String, List<String>> ret = new HashMap<String, List<String>>();
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-        .setStartTime(startTime)
-        .setEndTime(endTime);
+                .setStartTime(startTime)
+                .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -172,17 +173,14 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                     if (msgLog.isTraceEnabled()) {
                         msgLog.trace("Remove unbound URIs associated with btxn config=" + config);
                     }
-                    for (String uri : config.getFilter().getInclusions()) {
-                        ret.remove(uri);
+                    for (String filter : config.getFilter().getInclusions()) {
 
-                        if (uri.startsWith("^") && uri.endsWith("$")) {
-                            String nonregex = uri.substring(1, uri.length() - 1);
-                            StringTokenizer st = new StringTokenizer(nonregex, "\\");
-                            StringBuilder buf = new StringBuilder();
-                            while (st.hasMoreTokens()) {
-                                buf.append(st.nextToken());
+                        Iterator<String> iter = ret.keySet().iterator();
+                        while (iter.hasNext()) {
+                            String key = iter.next();
+                            if (Pattern.matches(filter, key)) {
+                                iter.remove();
                             }
-                            ret.remove(buf.toString());
                         }
                     }
                 }
@@ -220,14 +218,14 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         List<String> ret = new ArrayList<String>();
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-        .setName(businessTransaction)
-        .setStartTime(startTime)
-        .setEndTime(endTime);
+                .setName(businessTransaction)
+                .setStartTime(startTime)
+                .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
 
-        for (int i=0; i < fragments.size(); i++) {
+        for (int i = 0; i < fragments.size(); i++) {
             BusinessTransaction btxn = fragments.get(i);
             obtainURIs(btxn.getNodes(), ret);
         }
