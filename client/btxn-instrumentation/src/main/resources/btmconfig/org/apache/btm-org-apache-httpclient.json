@@ -92,7 +92,7 @@
           "java.util.Locale"
         ],
         "location": "ENTRY",
-        "condition": "isActive() && $1.getStatusCode() != 200",
+        "condition": "isActive() && $1.getStatusCode() >= 400",
         "actions": [{
           "type": "SetFault",
           "nameExpression": "$1.getStatusCode()",
@@ -108,7 +108,7 @@
           "java.util.Locale"
         ],
         "location": "ENTRY",
-        "condition": "isActive() && ($1.getStatusCode() != 200 || !isOutContentProcessed())",
+        "condition": "isActive() && ($1.getStatusCode() >= 400 || !isOutContentProcessed())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Out",

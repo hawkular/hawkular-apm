@@ -217,7 +217,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && $! != 200",
+        "condition": "isActive() && $! >= 400",
         "actions": [{
           "type": "SetFault",
           "nameExpression": "$!",
@@ -235,7 +235,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && $! == 200 && (!isOutContentProcessed() || !$0.getDoOutput())",
+        "condition": "isActive() && $! < 400 && (!isOutContentProcessed() || !$0.getDoOutput())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "Out",
@@ -249,7 +249,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isCorrelated(\"java.net-async-\"+$0.hashCode()) && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
+        "condition": "isCorrelated(\"java.net-async-\"+$0.hashCode()) && $0.responseCode < 400 && !callerMatches(\"HttpURLConnection.*\",true)",
         "actions": [{
           "type": "CompleteCorrelation",
           "idExpression": "\"java.net-async-\"+$0.hashCode()"
@@ -261,7 +261,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && $0.responseCode == 200 && !callerMatches(\"HttpURLConnection.*\",true)",
+        "condition": "isActive() && $0.responseCode < 400 && !callerMatches(\"HttpURLConnection.*\",true)",
         "actions": [{
           "type": "FreeFormAction",
           "action": "initOutBuffer(null)"
