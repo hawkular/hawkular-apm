@@ -1,0 +1,42 @@
+{
+  "instrumentation": {
+    "org.jboss.as.ee": {
+      "description": "JBoss AS EE instrumentation",
+      "rules": [{
+        "ruleName": "EE Component Start",
+        "className": "org.jboss.as.ee.component.ProxyInvocationHandler",
+        "methodName": "invoke",
+        "parameterTypes": [
+           "Object",
+           "Method",
+           "Object[]"
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "In",
+          "componentTypeExpression": "\"EJB\"",
+          "operationExpression": "$2.getName()",
+          "uriExpression": "removeAfter(simpleClassName($1),\"$$$\")"
+        }]
+      },{
+        "ruleName": "EE Component End",
+        "className": "org.jboss.as.ee.component.ProxyInvocationHandler",
+        "methodName": "invoke",
+        "parameterTypes": [
+           "Object",
+           "Method",
+           "Object[]"
+        ],
+        "location": "EXIT",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Out",
+          "componentTypeExpression": "\"EJB\"",
+          "operationExpression": "$2.getName()",
+          "uriExpression": "removeAfter(simpleClassName($1),\"$$$\")"
+        }]
+      }]
+    }
+  }
+}

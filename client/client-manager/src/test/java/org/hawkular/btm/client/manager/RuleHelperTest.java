@@ -63,6 +63,28 @@ public class RuleHelperTest {
         assertNull(to2);
     }
 
+    @Test
+    public void testRemoveSuffix() {
+        String original = "HelloEndpoint";
+        String suffix = "Endpoint";
+        String expected = "Hello";
+
+        RuleHelper helper = new RuleHelper(null);
+
+        assertEquals(expected, helper.removeSuffix(original, suffix));
+    }
+
+    @Test
+    public void testRemoveAfter() {
+        String original = "Hello$$$World";
+        String marker = "$$$";
+        String expected = "Hello";
+
+        RuleHelper helper = new RuleHelper(null);
+
+        assertEquals(expected, helper.removeAfter(original, marker));
+    }
+
     public class TestObject1 {
     }
 
