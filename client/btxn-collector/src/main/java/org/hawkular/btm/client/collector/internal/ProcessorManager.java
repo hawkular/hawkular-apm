@@ -27,8 +27,6 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
@@ -36,6 +34,8 @@ import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.client.collector.internal.actions.ProcessorActionHandler;
+import org.hawkular.btm.client.collector.internal.actions.ProcessorActionHandlerFactory;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 
@@ -306,10 +306,10 @@ public class ProcessorManager {
             for (int i = 0; i < processor.getActions().size(); i++) {
                 ProcessorActionWrapper paw = new ProcessorActionWrapper(processor.getActions().get(i));
                 if (!usesHeaders) {
-                    usesHeaders = paw.usesHeaders();
+                    usesHeaders = paw.isUsesHeaders();
                 }
                 if (!usesContent) {
-                    usesContent = paw.usesContent();
+                    usesContent = paw.isUsesContent();
                 }
                 actions.add(paw);
             }
@@ -461,14 +461,7 @@ public class ProcessorManager {
      */
     public class ProcessorActionWrapper {
 
-        private ProcessorAction action;
-
-        private Object compiledPredicate = null;
-
-        private Object compiledAction = null;
-
-        private boolean usesHeaders = false;
-        private boolean usesContent = false;
+        private ProcessorActionHandler handler;
 
         /**
          * This constructor is initialised with the processor action.
@@ -476,79 +469,24 @@ public class ProcessorManager {
          * @param action The processor action
          */
         public ProcessorActionWrapper(ProcessorAction action) {
-            this.action = action;
-
-            init();
-        }
-
-        /**
-         * This method initialises the processor action.
-         */
-        protected void init() {
-            try {
-                ParserContext ctx = new ParserContext();
-                ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
-
-                if (action.getPredicate() != null) {
-                    String text = action.getPredicate().predicateText();
-
-                    compiledPredicate = MVEL.compileExpression(text, ctx);
-
-                    if (compiledPredicate == null) {
-                        log.severe("Failed to compile action predicate '" + text + "'");
-                    } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor action predicate '" + text
-                                + "' = " + compiledPredicate);
-                    }
-
-                    // Check if headers referenced
-                    usesHeaders = text.indexOf("headers.") != -1;
-                    usesContent = text.indexOf("values[") != -1;
-                }
-                if (action.getExpression() != null) {
-                    String text = action.getExpression().evaluateText();
-
-                    compiledAction = MVEL.compileExpression(text, ctx);
-
-                    if (compiledAction == null) {
-                        log.severe("Failed to compile action '" + text + "'");
-                    } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor action '" + text
-                                + "' = " + compiledAction);
-                    }
-
-                    // Check if headers referenced
-                    if (!usesHeaders) {
-                        usesHeaders = text.indexOf("headers.") != -1;
-                    }
-                    if (!usesContent) {
-                        usesContent = text.indexOf("values[") != -1;
-                    }
-                } else {
-                    log.severe("No action expression defined for processor action=" + action);
-                }
-            } catch (Throwable t) {
-                log.log(Level.SEVERE, "Failed to compile processor (action) predicate '"
-                        + action.getPredicate() + "' or action '" + action.getExpression() + "'", t);
+            handler = ProcessorActionHandlerFactory.getHandler(action);
+            if (handler != null) {
+                handler.init();
             }
         }
 
         /**
-         * This method indicates whether the process action uses headers.
-         *
-         * @return Whether headers are used
+         * @return the usesHeaders
          */
-        public boolean usesHeaders() {
-            return usesHeaders;
+        public boolean isUsesHeaders() {
+            return handler.isUsesHeaders();
         }
 
         /**
-         * This method indicates whether the process action uses content values.
-         *
-         * @return Whether content is used
+         * @return the usesContent
          */
-        public boolean usesContent() {
-            return usesContent;
+        public boolean isUsesContent() {
+            return handler.isUsesContent();
         }
 
         /**
@@ -564,7 +502,8 @@ public class ProcessorManager {
         public void process(BusinessTransaction btxn, Node node, Direction direction,
                 Map<String, ?> headers, Object[] values) {
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager/Processor/Action[" + action + "]: process btxn=" + btxn + " node=" + node
+                log.finest("ProcessManager/Processor/Action[" + handler.getAction()
+                        + "]: process btxn=" + btxn + " node=" + node
                         + " direction=" + direction + " headers=" + headers + " values=" + values);
 
                 if (values != null) {
@@ -577,98 +516,27 @@ public class ProcessorManager {
             // If expressions don't use headers or content values, then just process each
             // time process action is called, otherwise determine if the headers or content
             // have been provided
-            if (usesHeaders || usesContent) {
+            if (handler.isUsesHeaders() || handler.isUsesContent()) {
                 // Check if headers supplied if expressions requires them
-                if (usesHeaders && (headers == null || headers.isEmpty())) {
+                if (handler.isUsesHeaders() && (headers == null || headers.isEmpty())) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("ProcessManager/Processor/Action[" + action + "]: uses headers but not supplied");
+                        log.finest("ProcessManager/Processor/Action[" + handler.getAction()
+                                + "]: uses headers but not supplied");
                     }
                     return;
                 }
 
                 // Check if content values supplied if expressions requires them
-                if (usesContent && (values == null || values.length == 0)) {
+                if (handler.isUsesContent() && (values == null || values.length == 0)) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("ProcessManager/Processor/Action[" + action
+                        log.finest("ProcessManager/Processor/Action[" + handler.getAction()
                                 + "]: uses content values but not supplied");
                     }
                     return;
                 }
             }
 
-            Map<String, Object> vars = new HashMap<String, Object>();
-            vars.put("btxn", btxn);
-            vars.put("node", node);
-            vars.put("headers", headers);
-            vars.put("values", values);
-
-            if (compiledPredicate != null
-                    && !((Boolean) MVEL.executeExpression(compiledPredicate, vars))) {
-                return;
-            }
-
-            Object result = MVEL.executeExpression(compiledAction, vars);
-
-            if (action.getActionType() != null) {
-
-                if (result == null) {
-                    log.warning("Result for action type '" + action.getActionType()
-                            + "' and action '" + action.getExpression() + "' was null");
-                } else {
-                    String value = null;
-
-                    if (result.getClass() != String.class) {
-                        if (log.isLoggable(Level.FINEST)) {
-                            log.finest("Converting result for action type '" + action.getActionType()
-                                    + "' and action '" + action.getExpression()
-                                    + "' to a String, was: " + result.getClass());
-                        }
-                        value = result.toString();
-                    } else {
-                        value = (String) result;
-                    }
-
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("ProcessManager/Processor/Action: value=" + value);
-                    }
-
-                    switch (action.getActionType()) {
-                        case SetDetail:
-                            node.getDetails().put(action.getName(), value);
-                            break;
-                        case SetFault:
-                            node.setFault(value);
-                            break;
-                        case SetFaultDescription:
-                            node.setFaultDescription(value);
-                            break;
-                        case AddContent:
-                            if (node.interactionNode()) {
-                                if (direction == Direction.In) {
-                                    ((InteractionNode) node).getIn().addContent(action.getName(),
-                                            action.getType(), value);
-                                } else {
-                                    ((InteractionNode) node).getOut().addContent(action.getName(),
-                                            action.getType(), value);
-                                }
-                            } else {
-                                log.warning("Attempt to add content to a non-interaction based node type '"
-                                        + node.getType() + "'");
-                            }
-                            break;
-                        case SetProperty:
-                            btxn.getProperties().put(action.getName(), value);
-                            break;
-                        case AddCorrelationId:
-                            node.getCorrelationIds().add(
-                                    new CorrelationIdentifier(action.getScope(), value));
-                            break;
-                        default:
-                            log.warning("Unhandled action type '" + action.getActionType() + "'");
-                            break;
-                    }
-                }
-            }
+            handler.process(btxn, node, direction, headers, values);
         }
     }
 }

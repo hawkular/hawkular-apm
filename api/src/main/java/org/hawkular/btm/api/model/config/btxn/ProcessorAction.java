@@ -16,10 +16,13 @@
  */
 package org.hawkular.btm.api.model.config.btxn;
 
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import io.swagger.annotations.ApiModel;
 
 /**
  * This class represents a processing action to be performed on information associated
@@ -27,28 +30,25 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  *
  * @author gbrown
  */
-public class ProcessorAction {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "actionType")
+@JsonSubTypes({ @Type(value = SetPropertyAction.class, name = "SetProperty"),
+        @Type(value = SetDetailAction.class, name = "SetDetail"),
+        @Type(value = SetFaultAction.class, name = "SetFault"),
+        @Type(value = SetFaultDescriptionAction.class, name = "SetFaultDescription"),
+        @Type(value = AddContentAction.class, name = "AddContent"),
+        @Type(value = AddCorrelationIdAction.class, name = "AddCorrelationId"),
+        @Type(value = RewriteURIAction.class, name = "RewriteURI") })
+@ApiModel(subTypes = { SetPropertyAction.class, SetDetailAction.class, SetFaultAction.class,
+        SetFaultDescriptionAction.class, AddContentAction.class, AddCorrelationIdAction.class,
+        RewriteURIAction.class },
+        discriminator = "actionType")
+public abstract class ProcessorAction {
 
     @JsonInclude(Include.NON_NULL)
     private String description;
 
     @JsonInclude(Include.NON_NULL)
-    private String name;
-
-    @JsonInclude(Include.NON_NULL)
-    private String type;
-
-    @JsonInclude(Include.NON_NULL)
-    private CorrelationIdentifier.Scope scope;
-
-    @JsonInclude
-    private ActionType actionType;
-
-    @JsonInclude(Include.NON_NULL)
     private Expression predicate;
-
-    @JsonInclude
-    private Expression expression;
 
     /**
      * @return the description
@@ -65,62 +65,6 @@ public class ProcessorAction {
     }
 
     /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    /**
-     * @return the scope
-     */
-    public CorrelationIdentifier.Scope getScope() {
-        return scope;
-    }
-
-    /**
-     * @param scope the scope to set
-     */
-    public void setScope(CorrelationIdentifier.Scope scope) {
-        this.scope = scope;
-    }
-
-    /**
-     * @return the actionType
-     */
-    public ActionType getActionType() {
-        return actionType;
-    }
-
-    /**
-     * @param actionType the actionType to set
-     */
-    public void setActionType(ActionType actionType) {
-        this.actionType = actionType;
-    }
-
-    /**
      * @return the predicate
      */
     public Expression getPredicate() {
@@ -134,48 +78,4 @@ public class ProcessorAction {
         this.predicate = predicate;
     }
 
-    /**
-     * @return the expression
-     */
-    public Expression getExpression() {
-        return expression;
-    }
-
-    /**
-     * @param expression the expression to set
-     */
-    public void setExpression(Expression expression) {
-        this.expression = expression;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "ProcessorAction [description=" + description + ", name=" + name + ", type=" + type + ", scope="
-                + scope + ", actionType=" + actionType + ", predicate=" + predicate + ", expression=" + expression
-                + "]";
-    }
-
-    /**
-     * This enumerated type identifies the types of action that
-     * can be performed.
-     *
-     * @author gbrown
-     */
-    public enum ActionType {
-
-        SetProperty,
-
-        SetDetail,
-
-        SetFault,
-
-        SetFaultDescription,
-
-        AddContent,
-
-        AddCorrelationId
-    }
 }
