@@ -34,12 +34,16 @@ import org.hawkular.btm.api.model.btxn.Message;
 import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.btxn.AddContentAction;
+import org.hawkular.btm.api.model.config.btxn.AddCorrelationIdAction;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.DataSource;
 import org.hawkular.btm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.btm.api.model.config.btxn.Processor;
-import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.hawkular.btm.api.model.config.btxn.ProcessorAction.ActionType;
+import org.hawkular.btm.api.model.config.btxn.SetDetailAction;
+import org.hawkular.btm.api.model.config.btxn.SetFaultAction;
+import org.hawkular.btm.api.model.config.btxn.SetFaultDescriptionAction;
+import org.hawkular.btm.api.model.config.btxn.SetPropertyAction;
 import org.hawkular.btm.api.model.config.btxn.TextExpression;
 import org.junit.Test;
 
@@ -61,8 +65,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
-        pa1.setActionType(ActionType.SetDetail);
+        SetDetailAction pa1 = new SetDetailAction();
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -95,14 +98,13 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("true");
         pa1.setPredicate(literal);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -134,14 +136,13 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("false");
         pa1.setPredicate(literal);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -173,10 +174,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -208,10 +208,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -244,10 +243,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -281,10 +279,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -317,10 +314,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -352,10 +348,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetFaultAction pa1 = new SetFaultAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetFault);
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
         expr.setKey("1");
@@ -386,10 +381,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetFaultDescriptionAction pa1 = new SetFaultDescriptionAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetFaultDescription);
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
         expr.setKey("1");
@@ -420,10 +414,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -455,10 +448,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        AddContentAction pa1 = new AddContentAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.AddContent);
         pa1.setName("test");
         pa1.setType("MessageType");
         TextExpression expr = new TextExpression();
@@ -501,10 +493,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        AddCorrelationIdAction pa1 = new AddCorrelationIdAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.AddCorrelationId);
         pa1.setScope(Scope.Global);
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -543,10 +534,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setFaultFilter("MyFault");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
 
         LiteralExpression literal = new LiteralExpression();
@@ -582,10 +572,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setFaultFilter("MyFault");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("FaultRecorded");
@@ -622,10 +611,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setFaultFilter("MyFault");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("FaultRecorded");
@@ -663,10 +651,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("OperationFound");
@@ -698,10 +685,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("FaultRecorded");
@@ -735,10 +721,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("FaultRecorded");
@@ -773,10 +758,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setOperation("MyOp");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("FaultRecorded");
@@ -808,10 +792,9 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -842,10 +825,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("result");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("FaultRecorded");
@@ -878,10 +860,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        AddContentAction pa1 = new AddContentAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.AddContent);
         pa1.setName("test");
         pa1.setType("MessageType");
         TextExpression expr = new TextExpression();
@@ -915,10 +896,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Consumer);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetProperty);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -951,10 +931,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         LiteralExpression literal = new LiteralExpression();
         literal.setValue("hello");
@@ -985,10 +964,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
 
         TextExpression expr = new TextExpression();
@@ -1021,10 +999,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Header);
@@ -1058,10 +1035,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -1093,10 +1069,9 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -1128,14 +1103,13 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        LiteralExpression literal=new LiteralExpression();
+        LiteralExpression literal = new LiteralExpression();
         literal.setValue("true");
         p1.setPredicate(literal);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -1167,14 +1141,13 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        LiteralExpression literal=new LiteralExpression();
+        LiteralExpression literal = new LiteralExpression();
         literal.setValue("false");
         p1.setPredicate(literal);
 
-        ProcessorAction pa1 = new ProcessorAction();
+        SetDetailAction pa1 = new SetDetailAction();
         p1.getActions().add(pa1);
 
-        pa1.setActionType(ActionType.SetDetail);
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);

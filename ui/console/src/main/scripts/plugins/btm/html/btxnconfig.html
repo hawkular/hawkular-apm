@@ -177,36 +177,6 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="actionTypeSelector" style="width: 15%" >Action Type: </label>
-                  <select name="actionTypeSelector" ng-model="action.actionType" ng-change="changedActionType(action)" style="width: 30%">
-                    <option value=""></option>
-                    <option value="AddContent">Add Content</option>
-                    <option value="AddCorrelationId">Add Correlation Identifier</option>
-                    <option value="SetDetail">Set Detail</option>
-                    <option value="SetFault">Set Fault Code</option>
-                    <option value="SetFaultDescription">Set Fault Description</option>
-                    <option value="SetProperty">Set Property</option>
-                  </select>
-
-                  <br>
-
-                  <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
-                  <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
-
-                  <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
-
-                  <label for="actionType" style="width: 15%" ng-show="action.actionType === 'AddContent'" >Type:</label>
-                  <input type="text" name="actionType" ng-model="action.type" ng-change="setDirty()" ng-show="action.actionType === 'AddContent'" style="width: 30%" >
-
-                  <label for="correlationScope" ng-show="action.actionType === 'AddCorrelationId'" style="width: 15%" >Correlation Scope: </label>
-                  <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" style="width: 30%">
-                    <option value="Global">Global</option>
-                    <option value="Interaction">Interaction</option>
-                    <option value="Local">Local</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
                   <label for="actionPredicateType" style="width: 15%" >Predicate Type: </label>
                   <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action.predicate)" style="width: 30%">
                     <option value="">Undefined</option>
@@ -241,6 +211,45 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="actionTypeSelector" style="width: 15%" >Action Type: </label>
+                  <select name="actionTypeSelector" ng-model="action.actionType" ng-change="changedActionType(action)" style="width: 30%">
+                    <option value=""></option>
+                    <option value="AddContent">Add Content</option>
+                    <option value="AddCorrelationId">Add Correlation Identifier</option>
+                    <option value="RewriteURI">Rewrite URI</option>
+                    <option value="SetDetail">Set Detail</option>
+                    <option value="SetFault">Set Fault Code</option>
+                    <option value="SetFaultDescription">Set Fault Description</option>
+                    <option value="SetProperty">Set Property</option>
+                  </select>
+
+                  <br>
+
+                  <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
+                  <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
+
+                  <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
+
+                  <label for="actionType" style="width: 15%" ng-show="action.actionType === 'AddContent'" >Type:</label>
+                  <input type="text" name="actionType" ng-model="action.type" ng-change="setDirty()" ng-show="action.actionType === 'AddContent'" style="width: 30%" >
+
+                  <label for="correlationScope" ng-show="action.actionType === 'AddCorrelationId'" style="width: 15%" >Correlation Scope: </label>
+                  <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" style="width: 30%">
+                    <option value="Global">Global</option>
+                    <option value="Interaction">Interaction</option>
+                    <option value="Local">Local</option>
+                  </select>
+
+                  <label for="actionTemplate" ng-show="action.actionType === 'RewriteURI'" style="width: 15%" >Template URI:</label>
+                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'RewriteURI'" style="width: 30%" >
+
+                </div>
+
+                <div class="form-group" ng-if="action.actionType !== 'RewriteURI' && action.actionType !== undefined" >
+
+                  <label for="actionTemplate" style="width: 15%" ng-show="action.actionType === 'RewriteURI'" >Template URI:</label>
+                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'RewriteURI'" style="width: 30%" >
+
                   <label for="actionValueType" style="width: 15%" >Value Type: </label>
                   <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
                     <option value="">Undefined</option>

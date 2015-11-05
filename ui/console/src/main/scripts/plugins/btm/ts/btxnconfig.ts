@@ -129,6 +129,7 @@ module BTM {
       action.name = undefined;
       action.type = undefined;
       action.scope = undefined;
+      action.template = undefined;
       action.predicate = undefined;
       action.expression = undefined;
     };

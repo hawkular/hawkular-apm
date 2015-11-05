@@ -300,7 +300,7 @@ public class FragmentBuilder {
      */
     protected boolean nodeMatches(Node node, Class<? extends Node> cls, String uri) {
         if (node.getClass() == cls) {
-            return uri == null || uri.equals(node.getUri());
+            return uri == null || NodeUtil.isOriginalURI(node, uri);
         }
 
         return false;
