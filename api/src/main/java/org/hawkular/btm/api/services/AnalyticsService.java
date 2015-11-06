@@ -17,11 +17,11 @@
 package org.hawkular.btm.api.services;
 
 import java.util.List;
-import java.util.Map;
 
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.analytics.URIInfo;
 
 /**
  * This interface represents the available analytics capabilities.
@@ -32,15 +32,14 @@ public interface AnalyticsService {
 
     /**
      * This method returns the unbound URIs (i.e. ones not
-     * associated with a business transaction), organised as
-     * a map of grouped URIs, associated with the initial URI.
+     * associated with a business transaction).
      *
      * @param tenantId The optional tenant id
      * @param startTime The start time
      * @param endTime The end time (if 0, then current time)
      * @return The unbound URIs
      */
-    Map<String,List<String>> getUnboundURIs(String tenantId, long startTime, long endTime);
+    List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime);
 
     /**
      * This method returns the bound URIs associated with a business

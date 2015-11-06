@@ -50,9 +50,12 @@ import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuil
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -125,41 +128,36 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
      * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long)
      */
     @Override
-    public Map<String, List<String>> getUnboundURIs(String tenantId, long startTime, long endTime) {
-        Map<String, List<String>> ret = new HashMap<String, List<String>>();
+    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime) {
+        List<URIInfo> ret = new ArrayList<URIInfo>();
+        Map<String, URIInfo> map = new HashMap<String, URIInfo>();
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setStartTime(startTime)
-                .setEndTime(endTime);
+        .setStartTime(startTime)
+        .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
-
-        Collections.sort(fragments, new Comparator<BusinessTransaction>() {
-            @Override
-            public int compare(BusinessTransaction o1, BusinessTransaction o2) {
-                return (int) (o1.getStartTime() - o2.getStartTime());
-            }
-        });
 
         // Process the fragments to identify which URIs are no used in any business transaction
         for (int i = 0; i < fragments.size(); i++) {
             BusinessTransaction btxn = fragments.get(i);
 
-            if (btxn.initialFragment() && !btxn.getNodes().isEmpty()) {
-                String uri = btxn.getNodes().get(0).getUri();
+            if (btxn.initialFragment() && !btxn.getNodes().isEmpty() && btxn.getName() == null) {
 
-                if (btxn.getName() != null) {
-                    // Remove if previously added to unbound URI information
-                    ret.remove(uri);
+                // Check if top level node is Consumer
+                if (btxn.getNodes().get(0) instanceof Consumer) {
+                    String uri = btxn.getNodes().get(0).getUri();
 
-                } else {
-                    List<String> unboundURIs = ret.get(uri);
-                    if (unboundURIs == null) {
-                        unboundURIs = new ArrayList<String>();
-                        ret.put(uri, unboundURIs);
+                    if (!map.containsKey(uri)) {
+                        URIInfo info = new URIInfo();
+                        info.setUri(uri);
+                        info.setEndpointType(((Consumer) btxn.getNodes().get(0)).getEndpointType());
+                        ret.add(info);
+                        map.put(uri, info);
                     }
-                    obtainURIs(btxn.getNodes(), unboundURIs);
+                } else {
+                    obtainProducerURIs(btxn.getNodes(), ret, map);
                 }
             }
         }
@@ -175,16 +173,76 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                     }
                     for (String filter : config.getFilter().getInclusions()) {
 
-                        Iterator<String> iter = ret.keySet().iterator();
+                        Iterator<URIInfo> iter = ret.iterator();
                         while (iter.hasNext()) {
-                            String key = iter.next();
-                            if (Pattern.matches(filter, key)) {
+                            URIInfo info = iter.next();
+                            if (Pattern.matches(filter, info.getUri())) {
                                 iter.remove();
                             }
                         }
                     }
                 }
             }
+        }
+
+        Collections.sort(ret, new Comparator<URIInfo>() {
+            @Override
+            public int compare(URIInfo arg0, URIInfo arg1) {
+                return arg0.getUri().compareTo(arg1.getUri());
+            }
+        });
+
+        return ret;
+    }
+
+    /**
+     * This method collects the information regarding URIs for
+     * contained producers.
+     *
+     * @param nodes The nodes
+     * @param uris The list of URI info
+     * @param map The map of URis to info
+     */
+    protected void obtainProducerURIs(List<Node> nodes, List<URIInfo> uris, Map<String, URIInfo> map) {
+        for (int i = 0; i < nodes.size(); i++) {
+            Node node = nodes.get(i);
+
+            if (node instanceof Producer) {
+                String uri = node.getUri();
+
+                if (!map.containsKey(uri)) {
+                    URIInfo info = new URIInfo();
+                    info.setUri(uri);
+                    info.setEndpointType(((Producer) node).getEndpointType());
+                    uris.add(info);
+                    map.put(uri, info);
+                }
+            }
+
+            if (node instanceof ContainerNode) {
+                obtainProducerURIs(((ContainerNode) node).getNodes(), uris, map);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
+     */
+    @Override
+    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
+        List<String> ret = new ArrayList<String>();
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
+        .setName(businessTransaction)
+        .setStartTime(startTime)
+        .setEndTime(endTime);
+
+        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
+                tenantId, criteria);
+
+        for (int i = 0; i < fragments.size(); i++) {
+            BusinessTransaction btxn = fragments.get(i);
+            obtainURIs(btxn.getNodes(), ret);
         }
 
         return ret;
@@ -208,29 +266,6 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 obtainURIs(((ContainerNode) node).getNodes(), uris);
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
-     */
-    @Override
-    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
-        List<String> ret = new ArrayList<String>();
-
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setName(businessTransaction)
-                .setStartTime(startTime)
-                .setEndTime(endTime);
-
-        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
-                tenantId, criteria);
-
-        for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
-            obtainURIs(btxn.getNodes(), ret);
-        }
-
-        return ret;
     }
 
     /* (non-Javadoc)
