@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  * @author gbrown
  */
-public class RewriteURIAction extends ProcessorAction {
+public class EvaluateURIAction extends ProcessorAction {
 
     @JsonInclude
     private String template;
