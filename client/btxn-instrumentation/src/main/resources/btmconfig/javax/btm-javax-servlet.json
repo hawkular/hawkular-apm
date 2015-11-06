@@ -68,6 +68,25 @@
           "valueExpression": "req.getRemoteHost()"
         }]
       },{
+        "ruleName": "Javax Servlet Consumer End Sync Fault",
+        "interfaceName": "^javax.servlet.Servlet",
+        "methodName": "service",
+        "parameterTypes": [
+          "javax.servlet.ServletRequest",
+          "javax.servlet.ServletResponse"
+        ],
+        "location": "EXIT",
+        "binds": [{
+          "name": "resp",
+          "type": "javax.servlet.http.HttpServletResponse",
+          "expression": "$2"
+        }],
+        "condition": "isActive() && !$1.isAsyncStarted() && resp.getStatus() >= 400",
+        "actions": [{
+          "type": "SetFault",
+          "nameExpression": "resp.getStatus()"
+        }]
+      },{
         "ruleName": "Javax Servlet Consumer End Sync",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
@@ -283,6 +302,23 @@
           "idExpression": "\"javax.servlet-async-\"+hashCode($!.getRequest())"
         },{
           "type": "Unlink"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer Complete Async Context Fault",
+        "interfaceName": "^javax.servlet.AsyncContext",
+        "methodName": "complete",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "resp",
+          "type": "javax.servlet.http.HttpServletResponse",
+          "expression": "$0.getResponse()"
+        }],
+        "condition": "isActive() && resp.getStatus() >= 400",
+        "actions": [{
+          "type": "SetFault",
+          "nameExpression": "resp.getStatus()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer Complete Async Context",
