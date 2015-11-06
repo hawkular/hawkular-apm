@@ -99,6 +99,11 @@ module BTM {
       }
     };
     
+    $scope.isSelected = function(uri) {
+      var regex = $scope.escapeRegExp(uri);
+      return $scope.selecteduris.contains(regex);
+    };
+    
     $scope.getLevel = function(level) {
       if (level === 'All') {
         return "Active";

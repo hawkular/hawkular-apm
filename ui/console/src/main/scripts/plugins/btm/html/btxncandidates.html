@@ -44,17 +44,6 @@
                 <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selecteduris.length == 0" ng-click="updateBusinessTxn()" value="Update" />
               </span>
             </div>
-
-            <div class="input-group input-group-lg">
-              <div ng-show="selecteduris.length > 0" >
-                <br>
-                <h2>With inclusion filters:</h2>
-                <div ng-repeat="uri in selecteduris" >
-                  <h3>{{uri}}</h3>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       </form>
@@ -65,13 +54,18 @@
           <div class="row" >
             Search: <input ng-model="query">
           </div>
+          <br>
 
-          <div class="hk-url-item" ng-repeat="(key, value) in unbounduris | filter:query" >
-            <div class="panel panel-default hk-url-heading">
-              <h2>{{key}}</h2>
-              <div ng-repeat="uri in value" >
-                <button type="button" ng-click="selectionChanged(uri)">{{uri}}</button>
-              </div>
+          <div class="panel panel-default hk-url-heading">
+            <div ng-repeat="uriinfo in unbounduris | filter:query" >
+              <label>
+                <input type="checkbox" name="selectedURIs[]"
+                  value="{{uriinfo.uri}}"
+                  ng-checked="isSelected(uriinfo.uri)"
+                  ng-click="selectionChanged(uriinfo.uri)"
+                  ng-disabled="!newBTxnName && !existingBTxnName">
+                  {{uriinfo.uri}} [ {{uriinfo.endpointType}}]
+              </label>
             </div>
           </div>
        </ul>

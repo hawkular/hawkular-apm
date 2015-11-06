@@ -23,9 +23,9 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient;
+import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -85,11 +85,11 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Retrieve stored business transaction
-        Map<String,List<String>> uris = analytics.getUnboundURIs(null, 0, 0);
+        List<URIInfo> uris = analytics.getUnboundURIs(null, 0, 0);
 
         assertNotNull(uris);
         assertEquals(1, uris.size());
-        assertTrue(uris.containsKey("testuri"));
+        assertEquals("testuri", uris.get(0).getUri());
     }
 
     @Test

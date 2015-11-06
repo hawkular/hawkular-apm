@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
+import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
@@ -74,7 +75,7 @@ public class AnalyticsHandler {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Identify the unbound URIs",
-            response = Map.class)
+            response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
@@ -91,7 +92,7 @@ public class AnalyticsHandler {
         try {
             log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
 
-            java.util.Map<String,java.util.List<String>> uris = analyticsService.getUnboundURIs(
+            java.util.List<URIInfo> uris = analyticsService.getUnboundURIs(
                     securityProvider.getTenantId(context), startTime, endTime);
 
             log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);

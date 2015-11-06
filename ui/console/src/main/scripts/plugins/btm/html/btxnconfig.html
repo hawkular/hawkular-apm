@@ -216,7 +216,7 @@
                     <option value=""></option>
                     <option value="AddContent">Add Content</option>
                     <option value="AddCorrelationId">Add Correlation Identifier</option>
-                    <option value="RewriteURI">Rewrite URI</option>
+                    <option value="EvaluateURI">Evaluate URI</option>
                     <option value="SetDetail">Set Detail</option>
                     <option value="SetFault">Set Fault Code</option>
                     <option value="SetFaultDescription">Set Fault Description</option>
@@ -240,15 +240,15 @@
                     <option value="Local">Local</option>
                   </select>
 
-                  <label for="actionTemplate" ng-show="action.actionType === 'RewriteURI'" style="width: 15%" >Template URI:</label>
-                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'RewriteURI'" style="width: 30%" >
+                  <label for="actionTemplate" ng-show="action.actionType === 'EvaluateURI'" style="width: 15%" >Template URI:</label>
+                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'EvaluateURI'" style="width: 30%" >
 
                 </div>
 
-                <div class="form-group" ng-if="action.actionType !== 'RewriteURI' && action.actionType !== undefined" >
+                <div class="form-group" ng-if="action.actionType !== 'EvaluateURI' && action.actionType !== undefined" >
 
-                  <label for="actionTemplate" style="width: 15%" ng-show="action.actionType === 'RewriteURI'" >Template URI:</label>
-                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'RewriteURI'" style="width: 30%" >
+                  <label for="actionTemplate" style="width: 15%" ng-show="action.actionType === 'EvaluateURI'" >Template URI:</label>
+                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'EvaluateURI'" style="width: 30%" >
 
                   <label for="actionValueType" style="width: 15%" >Value Type: </label>
                   <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
