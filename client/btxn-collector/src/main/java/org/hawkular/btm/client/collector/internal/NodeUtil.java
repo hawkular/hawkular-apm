@@ -29,6 +29,16 @@ public class NodeUtil {
     private static final String BTM_ORIGINAL_URI = "btm_original_uri";
 
     /**
+     * This method tests whether the URI has been rewritten.
+     *
+     * @param node The node
+     * @return Whether the node's URI has been rewritten
+     */
+    public static boolean isURIRewritten(Node node) {
+        return node.getDetails().containsKey(BTM_ORIGINAL_URI);
+    }
+
+    /**
      * This method rewrites the URI associated with the supplied
      * node and stores the original in the node's details.
      *

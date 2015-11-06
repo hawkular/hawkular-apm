@@ -37,10 +37,10 @@ import io.swagger.annotations.ApiModel;
         @Type(value = SetFaultDescriptionAction.class, name = "SetFaultDescription"),
         @Type(value = AddContentAction.class, name = "AddContent"),
         @Type(value = AddCorrelationIdAction.class, name = "AddCorrelationId"),
-        @Type(value = RewriteURIAction.class, name = "RewriteURI") })
+        @Type(value = EvaluateURIAction.class, name = "EvaluateURI") })
 @ApiModel(subTypes = { SetPropertyAction.class, SetDetailAction.class, SetFaultAction.class,
         SetFaultDescriptionAction.class, AddContentAction.class, AddCorrelationIdAction.class,
-        RewriteURIAction.class },
+        EvaluateURIAction.class },
         discriminator = "actionType")
 public abstract class ProcessorAction {
 

@@ -24,8 +24,8 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.btxn.AddContentAction;
 import org.hawkular.btm.api.model.config.btxn.AddCorrelationIdAction;
+import org.hawkular.btm.api.model.config.btxn.EvaluateURIAction;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.hawkular.btm.api.model.config.btxn.RewriteURIAction;
 import org.hawkular.btm.api.model.config.btxn.SetDetailAction;
 import org.hawkular.btm.api.model.config.btxn.SetFaultAction;
 import org.hawkular.btm.api.model.config.btxn.SetFaultDescriptionAction;
@@ -47,7 +47,7 @@ public class ProcessorActionHandlerFactory {
 
         handlers.put(AddContentAction.class, AddContentActionHandler.class);
         handlers.put(AddCorrelationIdAction.class, AddCorrelationIdActionHandler.class);
-        handlers.put(RewriteURIAction.class, RewriteURIActionHandler.class);
+        handlers.put(EvaluateURIAction.class, EvaluateURIActionHandler.class);
         handlers.put(SetDetailAction.class, SetDetailActionHandler.class);
         handlers.put(SetFaultAction.class, SetFaultActionHandler.class);
         handlers.put(SetFaultDescriptionAction.class, SetFaultDescriptionActionHandler.class);
