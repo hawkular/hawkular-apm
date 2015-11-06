@@ -147,12 +147,16 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
                 // Check if top level node is Consumer
                 if (btxn.getNodes().get(0) instanceof Consumer) {
-                    String uri = btxn.getNodes().get(0).getUri();
+                    Consumer consumer=(Consumer)btxn.getNodes().get(0);
+                    String uri = consumer.getUri();
 
-                    if (!map.containsKey(uri)) {
+                    // Check whether URI already known, and that it did not result
+                    // in a fault (e.g. want to ignore spurious URIs that are not
+                    // associated with a valid transaction)
+                    if (!map.containsKey(uri) && consumer.getFault() == null) {
                         URIInfo info = new URIInfo();
                         info.setUri(uri);
-                        info.setEndpointType(((Consumer) btxn.getNodes().get(0)).getEndpointType());
+                        info.setEndpointType(consumer.getEndpointType());
                         ret.add(info);
                         map.put(uri, info);
                     }
