@@ -54,23 +54,23 @@ module BTM {
     },10000);
 
     $scope.getBusinessTxnDetails = function(btxn) {
-      $http.get('/hawkular/btm/analytics/businesstxn/count?name='+btxn.summary.name).then(function(resp) {
+      $http.get('/hawkular/btm/analytics/businesstxn/completion/count?name='+btxn.summary.name).then(function(resp) {
         btxn.count = resp.data;
       },function(resp) {
         console.log("Failed to get count: "+resp);
       });
 
-      $http.get('/hawkular/btm/analytics/businesstxn/stats?name='+btxn.summary.name).then(function(resp) {
+      $http.get('/hawkular/btm/analytics/businesstxn/completion/percentiles?name='+btxn.summary.name).then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
           btxn.percentile95 = Math.round( resp.data.percentiles[95] / 1000000 ) / 1000;
         } else {
           btxn.percentile95 = 0;
         }
       },function(resp) {
-        console.log("Failed to get stats: "+resp);
+        console.log("Failed to get completion percentiles: "+resp);
       });
 
-      $http.get('/hawkular/btm/analytics/businesstxn/faultcount?name='+btxn.summary.name).then(function(resp) {
+      $http.get('/hawkular/btm/analytics/businesstxn/completion/faultcount?name='+btxn.summary.name).then(function(resp) {
         btxn.faultcount = resp.data;
       },function(resp) {
         console.log("Failed to get fault count: "+resp);

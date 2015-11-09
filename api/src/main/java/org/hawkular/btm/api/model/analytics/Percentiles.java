@@ -22,31 +22,14 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents statistics associated with a business transaction.
+ * This class represents a set of percentiles.
  *
  * @author gbrown
  */
-public class BusinessTransactionStats {
-
-    @JsonInclude
-    private double average = 0;
+public class Percentiles {
 
     @JsonInclude
     private Map<Integer,Double> percentiles = new HashMap<Integer,Double>();
-
-    /**
-     * @return the average
-     */
-    public double getAverage() {
-        return average;
-    }
-
-    /**
-     * @param average the average to set
-     */
-    public void setAverage(double average) {
-        this.average = average;
-    }
 
     /**
      * @return the percentiles

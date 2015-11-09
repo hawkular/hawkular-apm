@@ -42,13 +42,10 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.metrics.avg.Avg;
-import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentile;
-import org.elasticsearch.search.aggregations.metrics.percentiles.Percentiles;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
-import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -133,8 +130,8 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         Map<String, URIInfo> map = new HashMap<String, URIInfo>();
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-        .setStartTime(startTime)
-        .setEndTime(endTime);
+                .setStartTime(startTime)
+                .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -147,7 +144,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
                 // Check if top level node is Consumer
                 if (btxn.getNodes().get(0) instanceof Consumer) {
-                    Consumer consumer=(Consumer)btxn.getNodes().get(0);
+                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
                     String uri = consumer.getUri();
 
                     // Check whether URI already known, and that it did not result
@@ -237,9 +234,9 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         List<String> ret = new ArrayList<String>();
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-        .setName(businessTransaction)
-        .setStartTime(startTime)
-        .setEndTime(endTime);
+                .setName(businessTransaction)
+                .setStartTime(startTime)
+                .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -390,7 +387,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
      *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public BusinessTransactionStats getCompletionStats(String tenantId, BusinessTransactionCriteria criteria) {
+    public Percentiles getCompletionPercentiles(String tenantId, BusinessTransactionCriteria criteria) {
         if (criteria.getName() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -428,14 +425,9 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 .percentiles("percentiles")
                 .field("duration");
 
-        AvgBuilder averageAgg = AggregationBuilders
-                .avg("average")
-                .field("duration");
-
         SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .addAggregation(averageAgg)
                 .addAggregation(percentileAgg)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                 .setQuery(b2);
@@ -445,17 +437,16 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
             msgLog.warnQueryTimedOut();
         }
 
-        BusinessTransactionStats stats = new BusinessTransactionStats();
+        Percentiles percentiles = new Percentiles();
 
-        Percentiles agg = response.getAggregations().get("percentiles");
+        org.elasticsearch.search.aggregations.metrics.percentiles.Percentiles agg =
+                response.getAggregations().get("percentiles");
+
         for (Percentile entry : agg) {
-            stats.addPercentile((int) entry.getPercent(), entry.getValue());
+            percentiles.addPercentile((int) entry.getPercent(), entry.getValue());
         }
 
-        Avg avg = response.getAggregations().get("average");
-        stats.setAverage(avg.getValue());
-
-        return stats;
+        return percentiles;
     }
 
     /* (non-Javadoc)
