@@ -128,7 +128,7 @@
         "parameterTypes": [
         ],
         "location": "EXIT",
-        "condition": "isActive() && isInContentProcessed()",
+        "condition": "isActive() && isInContentProcessed() && !isInBufferActive($!)",
         "actions": [{
           "type": "FreeFormAction",
           "action": "initInBuffer($!)"
@@ -234,7 +234,7 @@
         "methodName": "getOutputStream",
         "parameterTypes": [
         ],
-        "condition": "isActive() && isOutContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed() && !isOutBufferActive($!)",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
@@ -283,7 +283,7 @@
         "methodName": "getWriter",
         "parameterTypes": [
         ],
-        "condition": "isActive() && isOutContentProcessed()",
+        "condition": "isActive() && isOutContentProcessed() && !isOutBufferActive($!)",
         "location": "EXIT",
         "actions": [{
           "type": "FreeFormAction",
