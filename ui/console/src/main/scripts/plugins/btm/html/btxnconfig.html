@@ -118,7 +118,8 @@
               <input type="text" name="uriFilter"
                    ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
                    placeholder="Enter URI filter (regular expression)"
-                   uib-typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12" style="width: 80%" >
+                   uib-typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12"
+                   ng-change="setDirty()" style="width: 80%" >
 
               <label for="operation" style="width: 15%" >Operation:</label>
               <input type="text" name="operation" ng-model="processor.operation" ng-change="setDirty()" style="width: 30%" >
@@ -132,7 +133,7 @@
             <div class="form-group">
               <label for="predicateType" style="width: 15%" >Predicate Type: </label>
               <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor.predicate)" style="width: 30%">
-                <option value="">Undefined</option>
+                <option value=""></option>
                 <option value="Literal">Literal</option>
                 <option value="XML">XML</option>
                 <option value="JSON">JSON</option>
@@ -179,7 +180,7 @@
                 <div class="form-group">
                   <label for="actionPredicateType" style="width: 15%" >Predicate Type: </label>
                   <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action.predicate)" style="width: 30%">
-                    <option value="">Undefined</option>
+                    <option value=""></option>
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
                     <option value="JSON">JSON</option>
@@ -252,7 +253,7 @@
 
                   <label for="actionValueType" style="width: 15%" >Value Type: </label>
                   <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
-                    <option value="">Undefined</option>
+                    <option value=""></option>
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
                     <option value="JSON">JSON</option>
