@@ -64,7 +64,8 @@
                   ng-checked="isSelected(uriinfo.uri)"
                   ng-click="selectionChanged(uriinfo.uri)"
                   ng-disabled="!newBTxnName && !existingBTxnName">
-                  {{uriinfo.uri}} [ {{uriinfo.endpointType}}]
+                  <span ng-hide="!newBTxnName && !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
+                  <span ng-show="!newBTxnName && !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>
               </label>
             </div>
           </div>

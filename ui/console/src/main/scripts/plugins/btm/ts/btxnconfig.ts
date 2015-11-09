@@ -122,6 +122,11 @@ module BTM {
       expression.source = undefined;
       expression.xpath = undefined;
       expression.jsonpath = undefined;
+
+      if (expression.type === 'XML' || expression.type === 'JSON' || expression.type === 'Text') {
+        expression.key = '0';
+        expression.source = 'Content';
+      }
     };
 
     $scope.changedActionType = function(action) {
