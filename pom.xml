@@ -105,6 +105,8 @@
     <version.io.vertx>3.0.0</version.io.vertx>
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
+    <version.net.minidev>2.1.1</version.net.minidev>
+    <version.net.minidev.asm>1.0.2</version.net.minidev.asm>
     <version.org.apache.activemq>5.11.1</version.org.apache.activemq>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
     <version.org.apache.httpcomponents>4.3.5</version.org.apache.httpcomponents>
@@ -357,6 +359,22 @@
         <artifactId>json-path</artifactId>
         <version>${version.com.jayway.jsonpath}</version>
       </dependency>
+      <dependency>
+        <groupId>net.minidev</groupId>
+        <artifactId>json-smart</artifactId>
+        <version>${version.net.minidev}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.minidev</groupId>
+        <artifactId>asm</artifactId>
+        <version>${version.net.minidev.asm}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.tuckey</groupId>
@@ -518,6 +536,7 @@
     <profile>
       <id>tests</id>
       <modules>
+        <module>tests/client</module>
         <module>tests/common</module>
         <module>tests/instrumentation</module>
         <module>tests/container/standalone</module>
