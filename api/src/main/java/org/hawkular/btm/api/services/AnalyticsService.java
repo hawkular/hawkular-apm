@@ -18,8 +18,8 @@ package org.hawkular.btm.api.services;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 
@@ -76,15 +76,15 @@ public interface AnalyticsService {
     long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria);
 
     /**
-     * This method returns the statistics, for the specified criteria, that were
+     * This method returns the percentiles, for the specified criteria, that were
      * executed during the time range. The business transaction name must be specified
      * as part of the criteria.
      *
      * @param tenantId The tenant id
      * @param criteria The criteria
-     * @return The transaction stats
+     * @return The transaction percentiles
      */
-    BusinessTransactionStats getCompletionStats(String tenantId, BusinessTransactionCriteria criteria);
+    Percentiles getCompletionPercentiles(String tenantId, BusinessTransactionCriteria criteria);
 
     /**
      * This method returns the number of alerts associated with the specified

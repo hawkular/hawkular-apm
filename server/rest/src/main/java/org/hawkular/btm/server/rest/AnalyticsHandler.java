@@ -37,7 +37,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
+import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -153,10 +153,10 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/count")
+    @Path("businesstxn/completion/count")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction count",
+            value = "Get the business transaction completion count",
             response = Long.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -206,7 +206,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/faultcount")
+    @Path("businesstxn/completion/faultcount")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the number of business transaction instances that returned a fault",
@@ -259,15 +259,15 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/stats")
+    @Path("businesstxn/completion/percentiles")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction stats associated with criteria",
-            response = BusinessTransactionStats.class)
+            value = "Get the business transaction completion percentiles associated with criteria",
+            response = Percentiles.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionStats(
+    public void getCompletionPercentiles(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
@@ -291,12 +291,12 @@ public class AnalyticsHandler {
 
             BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
 
-            log.tracef("Get business transaction stats for criteria [%s]", criteria);
+            log.tracef("Get business transaction completion percentiles for criteria [%s]", criteria);
 
-            BusinessTransactionStats stats = analyticsService.getCompletionStats(securityProvider.getTenantId(context),
+            Percentiles stats = analyticsService.getCompletionPercentiles(securityProvider.getTenantId(context),
                                         criteria);
 
-            log.tracef("Got business transaction stats for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got business transaction completion percentiles for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());

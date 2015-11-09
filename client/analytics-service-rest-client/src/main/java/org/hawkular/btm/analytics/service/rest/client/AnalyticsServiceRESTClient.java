@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.analytics.BusinessTransactionStats;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
@@ -48,11 +48,11 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final TypeReference<java.util.List<URIInfo>> URIINFO_LIST =
             new TypeReference<java.util.List<URIInfo>>() {
-    };
+            };
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
-    };
+            };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
@@ -129,11 +129,11 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("analytics/businesstxn/unbounduris?startTime=")
-        .append(startTime)
-        .append("&endTime=")
-        .append(endTime);
+                .append(baseUrl)
+                .append("analytics/businesstxn/unbounduris?startTime=")
+                .append(startTime)
+                .append("&endTime=")
+                .append(endTime);
 
         try {
             URL url = new URL(builder.toString());
@@ -203,13 +203,13 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("analytics/businesstxn/bounduris/")
-        .append(businessTransaction)
-        .append("?startTime=")
-        .append(startTime)
-        .append("&endTime=")
-        .append(endTime);
+                .append(baseUrl)
+                .append("analytics/businesstxn/bounduris/")
+                .append(businessTransaction)
+                .append("?startTime=")
+                .append(startTime)
+                .append("&endTime=")
+                .append(endTime);
 
         try {
             URL url = new URL(builder.toString());
@@ -280,8 +280,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("analytics/businesstxn/count");
+                .append(baseUrl)
+                .append("analytics/businesstxn/completion/count");
 
         buildQueryString(builder, criteria);
 
@@ -353,8 +353,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("analytics/businesstxn/faultcount");
+                .append(baseUrl)
+                .append("analytics/businesstxn/completion/faultcount");
 
         buildQueryString(builder, criteria);
 
@@ -416,19 +416,19 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionStats(java.lang.String,
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPercentiles(java.lang.String,
      *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public BusinessTransactionStats getCompletionStats(String tenantId, BusinessTransactionCriteria criteria) {
+    public Percentiles getCompletionPercentiles(String tenantId, BusinessTransactionCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get transaction stats: tenantId=[" + tenantId + "] criteria="
+            log.finest("Get completion percentiles: tenantId=[" + tenantId + "] criteria="
                     + criteria);
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("analytics/businesstxn/stats");
+                .append(baseUrl)
+                .append("analytics/businesstxn/completion/percentiles");
 
         buildQueryString(builder, criteria);
 
@@ -470,20 +470,20 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), BusinessTransactionStats.class);
+                        return mapper.readValue(resp.toString(), Percentiles.class);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get transaction stats: status=["
+                    log.finest("Failed to get completion percentiles: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get transaction stats", e);
+            log.log(Level.SEVERE, "Failed to get completion percentiles", e);
         }
 
         return null;
@@ -525,9 +525,9 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("analytics/alerts/count/")
-        .append(name);
+                .append(baseUrl)
+                .append("analytics/alerts/count/")
+                .append(name);
 
         try {
             URL url = new URL(builder.toString());
