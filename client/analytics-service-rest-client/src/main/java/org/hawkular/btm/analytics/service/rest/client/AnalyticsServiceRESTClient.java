@@ -27,6 +27,7 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -52,6 +53,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
+            };
+
+    private static final TypeReference<java.util.List<Statistics>> STATISTICS_LIST =
+            new TypeReference<java.util.List<Statistics>>() {
             };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
@@ -484,6 +489,84 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get completion percentiles", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionStatistics(java.lang.String,
+     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria, long)
+     */
+    @Override
+    public List<Statistics> getCompletionStatistics(String tenantId, BusinessTransactionCriteria criteria,
+                                        long interval) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get completion statistics: tenantId=[" + tenantId + "] criteria="
+                    + criteria + " interval=" + interval);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/businesstxn/completion/statistics");
+
+        buildQueryString(builder, criteria);
+
+        builder.append("&interval=");
+        builder.append(interval);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), STATISTICS_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get completion statistics: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get completion statistics", e);
         }
 
         return null;
