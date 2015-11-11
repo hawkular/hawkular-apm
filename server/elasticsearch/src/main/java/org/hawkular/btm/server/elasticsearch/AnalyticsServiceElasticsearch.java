@@ -42,11 +42,17 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram.Bucket;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentile;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
+import org.elasticsearch.search.aggregations.metrics.stats.Stats;
+import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -447,6 +453,88 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         }
 
         return percentiles;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionStatistics(java.lang.String,
+     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria, long)
+     */
+    @Override
+    public List<Statistics> getCompletionStatistics(String tenantId, BusinessTransactionCriteria criteria,
+                                    long interval) {
+        if (criteria.getName() == null) {
+            throw new IllegalArgumentException("Business transaction name not specified");
+        }
+
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        long startTime = criteria.getStartTime();
+        long endTime = criteria.getEndTime();
+
+        if (endTime == 0) {
+            endTime = System.currentTimeMillis();
+        }
+
+        if (startTime == 0) {
+            // Set to 1 hour before end time
+            startTime = endTime - 3600000;
+        }
+
+        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
+
+        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
+
+        if (!criteria.getProperties().isEmpty()) {
+            for (String key : criteria.getProperties().keySet()) {
+                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            }
+        }
+
+        StatsBuilder statsBuilder = AggregationBuilders
+                .stats("stats")
+                .field("duration");
+
+        DateHistogramBuilder histogramBuilder = AggregationBuilders
+                .dateHistogram("histogram")
+                .interval(interval)
+                .field("timestamp")
+                .subAggregation(statsBuilder);
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(COMPLETION_TIME_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addAggregation(histogramBuilder)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setQuery(b2);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        List<Statistics> stats = new ArrayList<Statistics>();
+
+        DateHistogram histogram = response.getAggregations().get("histogram");
+
+        for (Bucket bucket : histogram.getBuckets()) {
+            Stats stat = bucket.getAggregations().get("stats");
+
+            Statistics s = new Statistics();
+            s.setTimestamp(bucket.getKeyAsDate().getMillis());
+            s.setAverage(stat.getAvg());
+            s.setMin(stat.getMin());
+            s.setMax(stat.getMax());
+            s.setCount(stat.getCount());
+
+            stats.add(s);
+        }
+
+        return stats;
     }
 
     /* (non-Javadoc)

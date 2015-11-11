@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
@@ -297,6 +298,62 @@ public class AnalyticsHandler {
                                         criteria);
 
             log.tracef("Got business transaction completion percentiles for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("businesstxn/completion/statistics")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction completion statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCompletionStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "business transaction name") @QueryParam("name") String name,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                            @ApiParam(required = false,
+                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+                        @QueryParam("interval") long interval) {
+
+        try {
+            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+            criteria.setName(name);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction completion statistics for criteria [%s]", criteria);
+
+            List<Statistics> stats = analyticsService.getCompletionStatistics(securityProvider.getTenantId(context),
+                                        criteria, interval);
+
+            log.tracef("Got business transaction completion statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
