@@ -39,6 +39,7 @@ import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
@@ -171,8 +172,12 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
             }
 
             if (!criteria.getProperties().isEmpty()) {
-                for (String key : criteria.getProperties().keySet()) {
-                    b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+                for (PropertyCriteria pc : criteria.getProperties()) {
+                    if (pc.isExcluded()) {
+                        b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                    } else {
+                        b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                    }
                 }
             }
 

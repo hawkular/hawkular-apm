@@ -62,6 +62,7 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
@@ -309,8 +310,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
 
         if (!criteria.getProperties().isEmpty()) {
-            for (String key : criteria.getProperties().keySet()) {
-                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            for (PropertyCriteria pc : criteria.getProperties()) {
+                if (pc.isExcluded()) {
+                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                } else {
+                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                }
             }
         }
 
@@ -364,8 +369,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
 
         if (!criteria.getProperties().isEmpty()) {
-            for (String key : criteria.getProperties().keySet()) {
-                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            for (PropertyCriteria pc : criteria.getProperties()) {
+                if (pc.isExcluded()) {
+                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                } else {
+                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                }
             }
         }
 
@@ -422,8 +431,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
 
         if (!criteria.getProperties().isEmpty()) {
-            for (String key : criteria.getProperties().keySet()) {
-                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            for (PropertyCriteria pc : criteria.getProperties()) {
+                if (pc.isExcluded()) {
+                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                } else {
+                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                }
             }
         }
 
@@ -490,8 +503,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
 
         if (!criteria.getProperties().isEmpty()) {
-            for (String key : criteria.getProperties().keySet()) {
-                b2 = b2.must(QueryBuilders.matchQuery("properties." + key, criteria.getProperties().get(key)));
+            for (PropertyCriteria pc : criteria.getProperties()) {
+                if (pc.isExcluded()) {
+                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                } else {
+                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                }
             }
         }
 

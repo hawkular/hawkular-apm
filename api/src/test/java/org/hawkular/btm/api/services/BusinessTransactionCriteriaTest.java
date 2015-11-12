@@ -95,7 +95,7 @@ public class BusinessTransactionCriteriaTest {
     @Test
     public void testIsValidPropertiesTrue() {
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("prop1", "value1");
+        criteria.addProperty("prop1", "value1", false);
 
         BusinessTransaction btxn = new BusinessTransaction();
         btxn.getProperties().put("prop1", "value1");
@@ -106,12 +106,28 @@ public class BusinessTransactionCriteriaTest {
     @Test
     public void testIsValidPropertiesFalse() {
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("prop1", "value1");
+        criteria.addProperty("prop1", "value1", false);
 
         BusinessTransaction btxn = new BusinessTransaction();
         btxn.getProperties().put("prop2", "value2");
 
         assertFalse("BTxn property should NOT be found", criteria.isValid(btxn));
+    }
+
+    @Test
+    public void testIsValidPropertiesExcluded() {
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.addProperty("prop1", "value2", true);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.getProperties().put("prop1", "value1");
+
+        assertTrue("BTxn1 property should be excluded", criteria.isValid(btxn1));
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.getProperties().put("prop2", "value2");
+
+        assertTrue("BTxn2 property should be excluded", criteria.isValid(btxn2));
     }
 
     @Test
@@ -193,7 +209,7 @@ public class BusinessTransactionCriteriaTest {
     @Test
     public void testGetQueryParametersSingleProperties() {
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("prop1", "value1");
+        criteria.addProperty("prop1", "value1", false);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -205,10 +221,24 @@ public class BusinessTransactionCriteriaTest {
     }
 
     @Test
+    public void testGetQueryParametersSinglePropertiesExcluded() {
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.addProperty("prop1", "value1", true);
+
+        Map<String, String> queryParameters = criteria.parameters();
+
+        assertNotNull(queryParameters);
+
+        assertTrue(queryParameters.containsKey("properties"));
+
+        assertEquals("-prop1|value1", queryParameters.get("properties"));
+    }
+
+    @Test
     public void testGetQueryParametersMultipleProperties() {
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("prop1", "value1");
-        criteria.getProperties().put("prop2", "value2");
+        criteria.addProperty("prop1", "value1", false);
+        criteria.addProperty("prop2", "value2", false);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -218,6 +248,54 @@ public class BusinessTransactionCriteriaTest {
 
         assertTrue(queryParameters.get("properties").equals("prop1|value1,prop2|value2")
                 || queryParameters.get("properties").equals("prop2|value2,prop1|value1"));
+    }
+
+    @Test
+    public void testGetQueryParametersMultiplePropertiesExcluded() {
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.addProperty("prop1", "value1", true);
+        criteria.addProperty("prop2", "value2", true);
+
+        Map<String, String> queryParameters = criteria.parameters();
+
+        assertNotNull(queryParameters);
+
+        assertTrue(queryParameters.containsKey("properties"));
+
+        assertTrue(queryParameters.get("properties").equals("-prop1|value1,-prop2|value2")
+                || queryParameters.get("properties").equals("-prop2|value2,-prop1|value1"));
+    }
+
+    @Test
+    public void testGetQueryParametersMultipleSameNameProperties() {
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.addProperty("prop1", "value1", false);
+        criteria.addProperty("prop1", "value2", false);
+
+        Map<String, String> queryParameters = criteria.parameters();
+
+        assertNotNull(queryParameters);
+
+        assertTrue(queryParameters.containsKey("properties"));
+
+        assertTrue(queryParameters.get("properties").equals("prop1|value1,prop1|value2")
+                || queryParameters.get("properties").equals("prop1|value2,prop1|value1"));
+    }
+
+    @Test
+    public void testGetQueryParametersMultipleSameNamePropertiesExcluded() {
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.addProperty("prop1", "value1", true);
+        criteria.addProperty("prop1", "value2", true);
+
+        Map<String, String> queryParameters = criteria.parameters();
+
+        assertNotNull(queryParameters);
+
+        assertTrue(queryParameters.containsKey("properties"));
+
+        assertTrue(queryParameters.get("properties").equals("-prop1|value1,-prop1|value2")
+                || queryParameters.get("properties").equals("-prop1|value2,-prop1|value1"));
     }
 
     @Test
