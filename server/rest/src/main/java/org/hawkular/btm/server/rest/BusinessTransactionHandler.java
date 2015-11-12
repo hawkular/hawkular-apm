@@ -197,6 +197,41 @@ public class BusinessTransactionHandler {
 
     }
 
+    @POST
+    @Path("query")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Query business transaction fragments associated with criteria",
+            response = BusinessTransaction.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void queryBusinessTransactionsWithCriteria(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "query criteria") BusinessTransactionCriteria criteria) {
+
+        try {
+            log.tracef("Query Business transactions for criteria [%s]", criteria);
+
+            List<BusinessTransaction> btxns = btxnService.query(securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Queried Business transactions for criteria [%s] = %s", criteria, btxns);
+
+            response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
     /**
      * This method processes a comma separated list of properties, defined as a name|value pair.
      *
