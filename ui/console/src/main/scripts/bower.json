@@ -21,7 +21,7 @@
     "hawtio-utilities": "~2.0.0",
     "angular-xeditable": "~0.1.9",
     "angular-bootstrap": "~0.14.2",
-    "angular-chart.js": "~0.8.5"
+    "c3": "~0.4.10"
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",

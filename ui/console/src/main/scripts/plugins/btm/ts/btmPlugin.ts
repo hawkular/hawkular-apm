@@ -17,7 +17,7 @@
 /// <reference path="btmGlobals.ts"/>
 module BTM {
 
-  export var _module = angular.module(BTM.pluginName, ["xeditable","ui.bootstrap",'chart.js']);
+  export var _module = angular.module(BTM.pluginName, ["xeditable","ui.bootstrap"]);
 
   var tab = undefined;
 

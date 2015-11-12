@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -348,7 +349,8 @@ public class AnalyticsHandler {
 
             BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
 
-            log.tracef("Get business transaction completion statistics for criteria [%s]", criteria);
+            log.tracef("Get business transaction completion statistics for criteria [%s] interval [%s]",
+                    criteria, interval);
 
             List<Statistics> stats = analyticsService.getCompletionStatistics(securityProvider.getTenantId(context),
                                         criteria, interval);
@@ -366,6 +368,45 @@ public class AnalyticsHandler {
                     .entity(errors).type(APPLICATION_JSON_TYPE).build());
         }
 
+    }
+
+    @POST
+    @Path("businesstxn/completion/statistics")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction completion statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCompletionStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+            value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+                @QueryParam("interval") long interval,
+            @ApiParam(required = true,
+            value = "business transaction criteria") BusinessTransactionCriteria criteria) {
+
+        try {
+            log.tracef("Get business transaction completion statistics for criteria [%s] interval [%s]",
+                                    criteria, interval);
+
+            List<Statistics> stats = analyticsService.getCompletionStatistics(securityProvider.getTenantId(context),
+                                        criteria, interval);
+
+            log.tracef("Got business transaction completion statistics for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
     }
 
     @GET
