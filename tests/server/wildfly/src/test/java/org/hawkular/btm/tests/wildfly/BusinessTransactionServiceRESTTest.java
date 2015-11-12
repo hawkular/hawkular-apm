@@ -20,7 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -31,6 +36,9 @@ import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @author gbrown
  */
@@ -40,6 +48,12 @@ public class BusinessTransactionServiceRESTTest {
     private static final String TEST_PASSWORD = "password";
     /**  */
     private static final String TEST_USERNAME = "jdoe";
+
+    private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
+            new TypeReference<java.util.List<BusinessTransaction>>() {
+    };
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void testStoreAndRetrieveById() {
@@ -83,7 +97,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
         btxns.add(btxn1);
@@ -283,7 +297,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         btxn1.getProperties().put("hello", "world");
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -323,7 +337,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         btxn1.getProperties().put("hello", "world");
 
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
@@ -361,7 +375,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Global);
@@ -408,7 +422,7 @@ public class BusinessTransactionServiceRESTTest {
 
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis()-4000); // Within last hour
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Global);
@@ -445,4 +459,91 @@ public class BusinessTransactionServiceRESTTest {
         assertEquals(0, result.size());
     }
 
+    @Test
+    public void testQueryPost() {
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        btxn1.getProperties().put("hello", "world");
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.getProperties().put("hello", "world");
+
+        List<BusinessTransaction> result = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "transactions/query");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(criteria));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                result = mapper.readValue(builder.toString(), BUSINESS_TXN_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send 'query' business transaction request: " + e);
+        }
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+    }
 }
