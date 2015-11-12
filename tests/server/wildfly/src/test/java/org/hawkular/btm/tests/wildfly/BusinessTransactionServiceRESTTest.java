@@ -320,13 +320,51 @@ public class BusinessTransactionServiceRESTTest {
 
         // Query stored business transaction
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("hello", "world");
+        criteria.addProperty("hello", "world", false);
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
+    }
+
+    @Test
+    public void testStoreAndQueryPropertiesNotFound() {
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        btxn1.getProperties().put("hello", "world");
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.addProperty("hello", "fred", false);
+
+        List<BusinessTransaction> result = service.query(null, criteria);
+
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -360,7 +398,7 @@ public class BusinessTransactionServiceRESTTest {
 
         // Query stored business transaction
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("hello", "fred");
+        criteria.addProperty("hello", "world", true);
 
         List<BusinessTransaction> result = service.query(null, criteria);
 
@@ -490,7 +528,7 @@ public class BusinessTransactionServiceRESTTest {
 
         // Query stored business transaction
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.getProperties().put("hello", "world");
+        criteria.addProperty("hello", "world", false);
 
         List<BusinessTransaction> result = null;
 

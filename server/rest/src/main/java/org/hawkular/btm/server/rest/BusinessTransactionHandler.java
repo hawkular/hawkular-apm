@@ -45,6 +45,7 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.api.security.SecurityProvider;
@@ -238,7 +239,7 @@ public class BusinessTransactionHandler {
      * @param properties The properties map
      * @param encoded The string containing the encoded properties
      */
-    protected static void decodeProperties(Map<String, String> properties, String encoded) {
+    protected static void decodeProperties(Set<PropertyCriteria> properties, String encoded) {
         if (encoded != null && encoded.trim().length() > 0) {
             StringTokenizer st = new StringTokenizer(encoded, ",");
             while (st.hasMoreTokens()) {
@@ -247,10 +248,16 @@ public class BusinessTransactionHandler {
                 if (parts.length == 2) {
                     String name = parts[0].trim();
                     String value = parts[1].trim();
+                    boolean excluded = false;
 
-                    log.tracef("Extracted property name [%s] value [%s]", name, value);
+                    if (name.length() > 0 && name.charAt(0) == '-') {
+                        name = name.substring(1);
+                        excluded = true;
+                    }
 
-                    properties.put(name, value);
+                    log.tracef("Extracted property name [%s] value [%s] excluded [%s]", name, value, excluded);
+
+                    properties.add(new PropertyCriteria(name, value, excluded));
                 }
             }
         }

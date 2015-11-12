@@ -17,15 +17,16 @@
 package org.hawkular.btm.server.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.junit.Test;
 
 /**
@@ -36,38 +37,79 @@ public class BusinessTransactionHandlerTest {
     @Test
     public void testDecodePropertiesSingle() {
         String encoded = "hello|world";
-        Map<String, String> properties = new HashMap<String, String>();
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
         BusinessTransactionHandler.decodeProperties(properties, encoded);
 
         assertTrue("Properties should have 1 entry", properties.size() == 1);
 
-        assertEquals("world", properties.get("hello"));
+        PropertyCriteria pc = properties.iterator().next();
+
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertFalse(pc.isExcluded());
+    }
+
+    @Test
+    public void testDecodePropertiesSingleExclusion() {
+        String encoded = "-hello|world";
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+
+        BusinessTransactionHandler.decodeProperties(properties, encoded);
+
+        assertTrue("Properties should have 1 entry", properties.size() == 1);
+
+        PropertyCriteria pc = properties.iterator().next();
+
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertTrue(pc.isExcluded());
     }
 
     @Test
     public void testDecodePropertiesSingleWithSpaces() {
         String encoded = "hello | world ";
-        Map<String, String> properties = new HashMap<String, String>();
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
         BusinessTransactionHandler.decodeProperties(properties, encoded);
 
-        assertTrue("Properties should have 1 entry", properties.size() == 1);
+        PropertyCriteria pc = properties.iterator().next();
 
-        assertEquals("world", properties.get("hello"));
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertFalse(pc.isExcluded());
     }
 
     @Test
     public void testDecodePropertiesMultiple() {
         String encoded = "hello|world,fred|bloggs";
-        Map<String, String> properties = new HashMap<String, String>();
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
         BusinessTransactionHandler.decodeProperties(properties, encoded);
 
         assertTrue("Properties should have 2 entries", properties.size() == 2);
 
-        assertEquals("world", properties.get("hello"));
-        assertEquals("bloggs", properties.get("fred"));
+        Iterator<PropertyCriteria> iter = properties.iterator();
+        PropertyCriteria pc1 = iter.next();
+        PropertyCriteria pc2 = iter.next();
+
+        if (pc1.getName().equals("hello")) {
+            assertEquals("hello", pc1.getName());
+            assertEquals("world", pc1.getValue());
+            assertFalse(pc1.isExcluded());
+
+            assertEquals("fred", pc2.getName());
+            assertEquals("bloggs", pc2.getValue());
+            assertFalse(pc2.isExcluded());
+        } else {
+            assertEquals("hello", pc2.getName());
+            assertEquals("world", pc2.getValue());
+            assertFalse(pc2.isExcluded());
+
+            assertEquals("fred", pc1.getName());
+            assertEquals("bloggs", pc1.getValue());
+            assertFalse(pc1.isExcluded());
+        }
     }
 
     @Test

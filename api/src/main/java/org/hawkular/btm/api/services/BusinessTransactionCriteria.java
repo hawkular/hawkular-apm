@@ -40,7 +40,7 @@ public class BusinessTransactionCriteria {
     private long startTime = 0L;
     private long endTime = 0L;
     private String name;
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
 
     /**  */
@@ -109,7 +109,7 @@ public class BusinessTransactionCriteria {
     /**
      * @return the properties
      */
-    public Map<String, String> getProperties() {
+    public Set<PropertyCriteria> getProperties() {
         return properties;
     }
 
@@ -117,9 +117,20 @@ public class BusinessTransactionCriteria {
      * @param properties the properties to set
      * @return The criteria
      */
-    public BusinessTransactionCriteria setProperties(Map<String, String> properties) {
+    public BusinessTransactionCriteria setProperties(Set<PropertyCriteria> properties) {
         this.properties = properties;
         return this;
+    }
+
+    /**
+     * This method adds a new property criteria.
+     *
+     * @param name The property name
+     * @param value The property value
+     * @param excluded Whether the specific property name/value should be excluded
+     */
+    public void addProperty(String name, String value, boolean excluded) {
+        properties.add(new PropertyCriteria(name, value, excluded));
     }
 
     /**
@@ -200,20 +211,24 @@ public class BusinessTransactionCriteria {
                 }
             } else if (!name.equals(btxn.getName())) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Name mismatch, was '"+btxn.getName()+"' required '"+name+"'");
+                    log.finest("Name mismatch, was '" + btxn.getName() + "' required '" + name + "'");
                 }
                 return false;
             }
         }
 
         if (!properties.isEmpty()) {
-            for (String key : properties.keySet()) {
-                String value = properties.get(key);
-                String result = btxn.getProperties().get(key);
-                if (result == null || !value.equals(result)) {
+            for (PropertyCriteria property : properties) {
+                String value = btxn.getProperties().get(property.getName());
+                if (value == null) {
+                    if (!property.isExcluded()) {
+                        log.finest("Property '" + property.getName() + "' not found");
+                        return false;
+                    }
+                } else if (property.getValue().equals(value) == property.isExcluded()) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Property '" + key + "' had value '" + result
-                                + "', expected '" + value + "'");
+                        log.finest("Property match failed: criteria=" + property
+                                + " txn property value=" + value);
                     }
                     return false;
                 }
@@ -261,15 +276,13 @@ public class BusinessTransactionCriteria {
             boolean first = true;
             StringBuilder buf = new StringBuilder();
 
-            for (String key : getProperties().keySet()) {
+            for (PropertyCriteria pc : getProperties()) {
                 if (first) {
                     first = false;
                 } else {
                     buf.append(',');
                 }
-                buf.append(key);
-                buf.append('|');
-                buf.append(getProperties().get(key));
+                buf.append(pc.encoded());
             }
 
             ret.put("properties", buf.toString());
@@ -309,4 +322,92 @@ public class BusinessTransactionCriteria {
                 + ", name=" + name + ", properties=" + properties + ", correlationIds=" + correlationIds + "]";
     }
 
+    /**
+     * This class represents the property criteria.
+     */
+    public static class PropertyCriteria {
+
+        private String name;
+        private String value;
+
+        private boolean excluded = false;
+
+        /**
+         * This is the default constructor.
+         */
+        public PropertyCriteria() {
+        }
+
+        /**
+         * This constructor initialises the fields.
+         *
+         * @param name The name
+         * @param value The value
+         * @param excluded Whether excluded
+         */
+        public PropertyCriteria(String name, String value, boolean excluded) {
+            this.name = name;
+            this.value = value;
+            this.excluded = excluded;
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * @param name the name to set
+         */
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        /**
+         * @return the value
+         */
+        public String getValue() {
+            return value;
+        }
+
+        /**
+         * @param value the value to set
+         */
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        /**
+         * @return the excluded
+         */
+        public boolean isExcluded() {
+            return excluded;
+        }
+
+        /**
+         * @param excluded the excluded to set
+         */
+        public void setExcluded(boolean excluded) {
+            this.excluded = excluded;
+        }
+
+        /**
+         * This method returns an encoded form for the
+         * property criteria.
+         *
+         * @return The encoded form
+         */
+        public String encoded() {
+            StringBuilder buf = new StringBuilder();
+            if (isExcluded()) {
+                buf.append('-');
+            }
+            buf.append(getName());
+            buf.append('|');
+            buf.append(getValue());
+            return buf.toString();
+        }
+    }
 }
