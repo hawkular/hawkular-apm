@@ -33,13 +33,11 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
@@ -135,37 +133,11 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            long startTime = criteria.getStartTime();
-            long endTime = criteria.getEndTime();
-
-            if (endTime == 0) {
-                endTime = System.currentTimeMillis();
-            } else if (endTime < 0) {
-                endTime = System.currentTimeMillis() - endTime;
-            }
-
-            if (startTime == 0) {
-                // Set to 1 hour before end time
-                startTime = endTime - 3600000;
-            } else if (startTime < 0) {
-                startTime = endTime + startTime;
-            }
-
-            BoolQueryBuilder b2 = QueryBuilders.boolQuery()
-                    .must(QueryBuilders.rangeQuery("startTime").from(startTime).to(endTime));
-
-            FilterBuilder filter = null;
-            if (criteria.getName() != null) {
-                if (criteria.getName().trim().length() == 0) {
-                    filter = FilterBuilders.missingFilter("name");
-                } else {
-                    b2 = b2.must(QueryBuilders.termQuery("name", criteria.getName()));
-                }
-            }
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "name");
 
             if (!criteria.getCorrelationIds().isEmpty()) {
                 for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
-                    b2.must(QueryBuilders.termQuery("value", id.getValue()));
+                    query.must(QueryBuilders.termQuery("value", id.getValue()));
                     /* HWKBTM-186
                     b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
                             QueryBuilders.boolQuery()
@@ -175,23 +147,14 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
                 }
             }
 
-            if (!criteria.getProperties().isEmpty()) {
-                for (PropertyCriteria pc : criteria.getProperties()) {
-                    if (pc.isExcluded()) {
-                        b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                    } else {
-                        b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                    }
-                }
-            }
-
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                     .setTypes(BUSINESS_TRANSACTION_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
-                    .setQuery(b2);
+                    .setQuery(query);
 
+            FilterBuilder filter = ElasticsearchUtil.buildFilter(criteria);
             if (filter != null) {
                 request.setPostFilter(filter);
             }
