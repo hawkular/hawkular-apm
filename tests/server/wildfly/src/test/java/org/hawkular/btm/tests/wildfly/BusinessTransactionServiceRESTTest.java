@@ -498,7 +498,7 @@ public class BusinessTransactionServiceRESTTest {
     }
 
     @Test
-    public void testQueryPost() {
+    public void testQueryPOST() {
         BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);

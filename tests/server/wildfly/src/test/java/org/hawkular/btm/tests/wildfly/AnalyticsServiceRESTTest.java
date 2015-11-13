@@ -21,16 +21,25 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient;
+import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author gbrown
@@ -41,6 +50,15 @@ public class AnalyticsServiceRESTTest {
     private static final String TEST_PASSWORD = "password";
     /**  */
     private static final String TEST_USERNAME = "jdoe";
+
+    private static final TypeReference<java.util.List<Statistics>> STATISTICS_LIST =
+            new TypeReference<java.util.List<Statistics>>() {
+            };
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    // NOTE: Tests are using the fact that the business transaction service is
+    // overwriting the same business transaction id (i.e. 1).
 
     @Test
     public void testGetUnboundURIs() {
@@ -244,5 +262,155 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
+    }
+
+    @Test
+    public void testGetCompletionStatistics() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        List<Statistics> stats = analytics.getCompletionStatistics(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0), 1000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+    }
+
+    @Test
+    public void testGetCompletionStatisticsPOST() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        List<Statistics> stats = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "analytics/businesstxn/completion/statistics?interval=1000");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(new BusinessTransactionCriteria().setName("testapp")));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                stats = mapper.readValue(builder.toString(), STATISTICS_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send statistics request: " + e);
+        }
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
     }
 }
