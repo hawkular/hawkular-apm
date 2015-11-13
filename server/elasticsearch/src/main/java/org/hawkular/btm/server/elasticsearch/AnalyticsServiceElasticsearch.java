@@ -40,7 +40,6 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram.Bucket;
@@ -62,7 +61,6 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
@@ -292,43 +290,14 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 client.getElasticsearchClient().admin().indices().prepareRefresh(index);
         client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        long startTime = criteria.getStartTime();
-        long endTime = criteria.getEndTime();
-
-        if (endTime == 0) {
-            endTime = System.currentTimeMillis();
-        } else if (endTime < 0) {
-            endTime = System.currentTimeMillis() - endTime;
-        }
-
-        if (startTime == 0) {
-            // Set to 1 hour before end time
-            startTime = endTime - 3600000;
-        } else if (startTime < 0) {
-            startTime = endTime + startTime;
-        }
-
-        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
-
-        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
-
-        if (!criteria.getProperties().isEmpty()) {
-            for (PropertyCriteria pc : criteria.getProperties()) {
-                if (pc.isExcluded()) {
-                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                } else {
-                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                }
-            }
-        }
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
         SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                 .setSize(criteria.getMaxResponseSize())
-                .setQuery(b2);
+                .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
         if (response.isTimedOut()) {
@@ -355,36 +324,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 client.getElasticsearchClient().admin().indices().prepareRefresh(index);
         client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        long startTime = criteria.getStartTime();
-        long endTime = criteria.getEndTime();
-
-        if (endTime == 0) {
-            endTime = System.currentTimeMillis();
-        } else if (endTime < 0) {
-            endTime = System.currentTimeMillis() - endTime;
-        }
-
-        if (startTime == 0) {
-            // Set to 1 hour before end time
-            startTime = endTime - 3600000;
-        } else if (startTime < 0) {
-            startTime = endTime + startTime;
-        }
-
-        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
-
-        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
-
-        if (!criteria.getProperties().isEmpty()) {
-            for (PropertyCriteria pc : criteria.getProperties()) {
-                if (pc.isExcluded()) {
-                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                } else {
-                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                }
-            }
-        }
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
         FilterBuilder filter = FilterBuilders.existsFilter("fault");
 
@@ -393,7 +333,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                 .setSize(criteria.getMaxResponseSize())
-                .setQuery(b2)
+                .setQuery(query)
                 .setPostFilter(filter);
 
         SearchResponse response = request.execute().actionGet();
@@ -421,36 +361,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 client.getElasticsearchClient().admin().indices().prepareRefresh(index);
         client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        long startTime = criteria.getStartTime();
-        long endTime = criteria.getEndTime();
-
-        if (endTime == 0) {
-            endTime = System.currentTimeMillis();
-        } else if (endTime < 0) {
-            endTime = System.currentTimeMillis() - endTime;
-        }
-
-        if (startTime == 0) {
-            // Set to 1 hour before end time
-            startTime = endTime - 3600000;
-        } else if (startTime < 0) {
-            startTime = endTime + startTime;
-        }
-
-        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
-
-        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
-
-        if (!criteria.getProperties().isEmpty()) {
-            for (PropertyCriteria pc : criteria.getProperties()) {
-                if (pc.isExcluded()) {
-                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                } else {
-                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                }
-            }
-        }
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
         PercentilesBuilder percentileAgg = AggregationBuilders
                 .percentiles("percentiles")
@@ -461,7 +372,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(percentileAgg)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                .setQuery(b2);
+                .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
         if (response.isTimedOut()) {
@@ -486,7 +397,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
      */
     @Override
     public List<Statistics> getCompletionStatistics(String tenantId, BusinessTransactionCriteria criteria,
-                                    long interval) {
+            long interval) {
         if (criteria.getName() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -497,36 +408,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 client.getElasticsearchClient().admin().indices().prepareRefresh(index);
         client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-        long startTime = criteria.getStartTime();
-        long endTime = criteria.getEndTime();
-
-        if (endTime == 0) {
-            endTime = System.currentTimeMillis();
-        } else if (endTime < 0) {
-            endTime = System.currentTimeMillis() - endTime;
-        }
-
-        if (startTime == 0) {
-            // Set to 1 hour before end time
-            startTime = endTime - 3600000;
-        } else if (startTime < 0) {
-            startTime = endTime + startTime;
-        }
-
-        BoolQueryBuilder b2 = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery("timestamp").from(startTime).to(endTime));
-
-        b2 = b2.must(QueryBuilders.termQuery("businessTransaction", criteria.getName()));
-
-        if (!criteria.getProperties().isEmpty()) {
-            for (PropertyCriteria pc : criteria.getProperties()) {
-                if (pc.isExcluded()) {
-                    b2 = b2.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                } else {
-                    b2 = b2.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
-                }
-            }
-        }
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
         StatsBuilder statsBuilder = AggregationBuilders
                 .stats("stats")
@@ -543,7 +425,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(histogramBuilder)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                .setQuery(b2);
+                .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
         if (response.isTimedOut()) {
