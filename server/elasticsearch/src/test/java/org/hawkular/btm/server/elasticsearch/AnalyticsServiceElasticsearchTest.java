@@ -26,7 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -53,6 +55,8 @@ public class AnalyticsServiceElasticsearchTest {
 
     private AnalyticsServiceElasticsearch analytics;
 
+    private ElasticsearchClient client;
+
     @BeforeClass
     public static void initClass() {
         System.setProperty("hawkular-btm.data.dir", "target");
@@ -60,16 +64,22 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Before
     public void beforeTest() {
+        client = new ElasticsearchClient();
+        try {
+            client.init();
+        } catch (Exception e) {
+            fail("Failed to initialise Elasticsearch client: "+e);
+        }
         analytics = new AnalyticsServiceElasticsearch();
         bts = new BusinessTransactionServiceElasticsearch();
-        bts.init();
-        analytics.setElasticsearchClient(bts.getElasticsearchClient());
+        analytics.setElasticsearchClient(client);
+        bts.setElasticsearchClient(client);
     }
 
     @After
     public void afterTest() {
         bts.clear(null);
-        bts.close();
+        client.close();
     }
 
     @Test
@@ -411,6 +421,43 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testPropertyInfo() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(1000);
+        btxn1.getProperties().put("prop1", "value1");
+        btxn1.getProperties().put("prop2", "value2");
+        btxns.add(btxn1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setName("btxn1");
+        btxn2.setStartTime(2000);
+        btxn2.getProperties().put("prop3", "value3");
+        btxn2.getProperties().put("prop2", "value2");
+        btxns.add(btxn2);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, "btxn1", 100, 0);
+
+        assertNotNull(pis);
+        assertEquals(3, pis.size());
+        assertTrue(pis.get(0).getName().equals("prop1"));
+        assertTrue(pis.get(1).getName().equals("prop2"));
+        assertTrue(pis.get(2).getName().equals("prop3"));
+    }
+
+    @Test
     public void testGetCompletionCount() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
@@ -519,6 +566,221 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(stats.get(1).getMin() == 500);
         assertTrue(stats.get(1).getAverage() == 500);
         assertTrue(stats.get(1).getMax() == 500);
+
+        assertEquals(0, stats.get(0).getFaultCount());
+        assertEquals(0, stats.get(1).getFaultCount());
+    }
+
+    @Test
+    public void testGetCompletionStatisticsWithFaults() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setFault("fault1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(500);
+        ct2.setFault("fault2");
+        cts.add(ct2);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        List<Statistics> stats = analytics.getCompletionStatistics(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(1000).setEndTime(10000),
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+        assertEquals(2000, stats.get(1).getTimestamp());
+
+        assertEquals(2, stats.get(0).getCount());
+        assertEquals(1, stats.get(1).getCount());
+
+        assertTrue(stats.get(0).getMin() == 100);
+        assertTrue(stats.get(0).getAverage() == 200);
+        assertTrue(stats.get(0).getMax() == 300);
+
+        assertTrue(stats.get(1).getMin() == 500);
+        assertTrue(stats.get(1).getAverage() == 500);
+        assertTrue(stats.get(1).getMax() == 500);
+
+        assertEquals(1, stats.get(0).getFaultCount());
+        assertEquals(1, stats.get(1).getFaultCount());
+    }
+
+    @Test
+    public void testGetCompletionPropertyDetails() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.getProperties().put("prop1", "value1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.getProperties().put("prop1", "value2");
+        ct1_2.getProperties().put("prop2", "value3");
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(500);
+        ct2.getProperties().put("prop1", "value2");
+        ct2.getProperties().put("prop2", "value4");
+        cts.add(ct2);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(1000).setEndTime(10000),
+                "prop1");
+
+        assertNotNull(cards1);
+        assertEquals(2, cards1.size());
+
+        assertEquals("value1", cards1.get(0).getValue());
+        assertEquals(1, cards1.get(0).getCount());
+        assertEquals("value2", cards1.get(1).getValue());
+        assertEquals(2, cards1.get(1).getCount());
+
+        List<Cardinality> cards2 = analytics.getCompletionPropertyDetails(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(1000).setEndTime(10000),
+                "prop2");
+
+        assertNotNull(cards2);
+        assertEquals(2, cards2.size());
+
+        assertEquals("value3", cards2.get(0).getValue());
+        assertEquals(1, cards2.get(0).getCount());
+        assertEquals("value4", cards2.get(1).getValue());
+        assertEquals(1, cards2.get(1).getCount());
+    }
+
+    @Test
+    public void testGetCompletionFaultDetails() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setFault("fault1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.setFault("fault2");
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(500);
+        ct2.setFault("fault2");
+        cts.add(ct2);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(1000).setEndTime(10000));
+
+        assertNotNull(cards1);
+        assertEquals(2, cards1.size());
+
+        assertEquals("fault2", cards1.get(0).getValue());
+        assertEquals(2, cards1.get(0).getCount());
+        assertEquals("fault1", cards1.get(1).getValue());
+        assertEquals(1, cards1.get(1).getCount());
+    }
+
+
+    @Test
+    public void testGetCompletionFaultDetailsNotAllFaults() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setFault("fault1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(500);
+        cts.add(ct2);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(1000).setEndTime(10000));
+
+        assertNotNull(cards1);
+        assertEquals(1, cards1.size());
+
+        assertEquals("fault1", cards1.get(0).getValue());
+        assertEquals(1, cards1.get(0).getCount());
     }
 
 }

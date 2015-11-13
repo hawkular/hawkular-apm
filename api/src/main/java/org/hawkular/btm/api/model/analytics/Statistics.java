@@ -32,6 +32,9 @@ public class Statistics {
     private long count = 0;
 
     @JsonInclude
+    private long faultCount = 0;
+
+    @JsonInclude
     private double min = 0;
 
     @JsonInclude
@@ -66,6 +69,20 @@ public class Statistics {
      */
     public void setCount(long count) {
         this.count = count;
+    }
+
+    /**
+     * @return the faultCount
+     */
+    public long getFaultCount() {
+        return faultCount;
+    }
+
+    /**
+     * @param faultCount the faultCount to set
+     */
+    public void setFaultCount(long faultCount) {
+        this.faultCount = faultCount;
     }
 
     /**
@@ -115,8 +132,8 @@ public class Statistics {
      */
     @Override
     public String toString() {
-        return "Statistics [timestamp=" + timestamp + ", count=" + count + ", min=" + min + ", average=" + average
-                + ", max=" + max + "]";
+        return "Statistics [timestamp=" + timestamp + ", count=" + count + ", faultCount=" + faultCount + ", min="
+                + min + ", average=" + average + ", max=" + max + "]";
     }
 
 }

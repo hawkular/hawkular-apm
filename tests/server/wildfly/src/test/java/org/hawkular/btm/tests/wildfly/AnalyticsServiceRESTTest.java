@@ -30,6 +30,8 @@ import java.util.Base64;
 import java.util.List;
 
 import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient;
+import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -53,6 +55,10 @@ public class AnalyticsServiceRESTTest {
 
     private static final TypeReference<java.util.List<Statistics>> STATISTICS_LIST =
             new TypeReference<java.util.List<Statistics>>() {
+            };
+
+    private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
+            new TypeReference<java.util.List<Cardinality>>() {
             };
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -159,6 +165,54 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(uris);
         assertEquals(1, uris.size());
         assertTrue(uris.contains("testuri"));
+    }
+
+    @Test
+    public void testGetPropertyInfo() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        btxn1.getProperties().put("prop1", "value1");
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        List<PropertyInfo> pis = analytics.getPropertyInfo(null, "btxn1", 0, 0);
+
+        assertNotNull(pis);
+        assertEquals(1, pis.size());
+        assertTrue(pis.get(0).getName().equals("prop1"));
     }
 
     @Test
@@ -412,5 +466,309 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
+    }
+
+    @Test
+    public void testGetCompletionPropertyDetails() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        btxn1.getProperties().put("prop1", "value1");
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        List<Cardinality> cards = analytics.getCompletionPropertyDetails(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0), "prop1");
+
+        assertNotNull(cards);
+        assertEquals(1, cards.size());
+    }
+
+    @Test
+    public void testGetCompletionPropertyDetailsPOST() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        btxn1.getProperties().put("prop1", "value1");
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        List<Cardinality> cards = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "analytics/businesstxn/completion/property/prop1");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(new BusinessTransactionCriteria().setName("testapp")));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                cards = mapper.readValue(builder.toString(), CARDINALITY_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send property details request: " + e);
+        }
+
+        assertNotNull(cards);
+        assertEquals(1, cards.size());
+    }
+
+    @Test
+    public void testGetCompletionFaultDetails() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        c1.setFault("fault1");
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        List<Cardinality> cards = analytics.getCompletionFaultDetails(null,
+                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0));
+
+        assertNotNull(cards);
+        assertEquals(1, cards.size());
+    }
+
+    @Test
+    public void testGetCompletionFaultDetailsPOST() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        c1.setFault("fault1");
+        btxn1.getNodes().add(c1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        List<Cardinality> cards = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "analytics/businesstxn/completion/faults");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(new BusinessTransactionCriteria().setName("testapp")));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                cards = mapper.readValue(builder.toString(), CARDINALITY_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send fault details request: " + e);
+        }
+
+        assertNotNull(cards);
+        assertEquals(1, cards.size());
     }
 }

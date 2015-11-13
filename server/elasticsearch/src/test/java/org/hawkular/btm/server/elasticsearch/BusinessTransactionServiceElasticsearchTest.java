@@ -39,6 +39,8 @@ public class BusinessTransactionServiceElasticsearchTest {
 
     private BusinessTransactionServiceElasticsearch bts;
 
+    private ElasticsearchClient client;
+
     @BeforeClass
     public static void initClass() {
         System.setProperty("hawkular-btm.data.dir", "target");
@@ -46,14 +48,20 @@ public class BusinessTransactionServiceElasticsearchTest {
 
     @Before
     public void beforeTest() {
+        client = new ElasticsearchClient();
+        try {
+            client.init();
+        } catch (Exception e) {
+            fail("Failed to initialise Elasticsearch client: "+e);
+        }
         bts = new BusinessTransactionServiceElasticsearch();
-        bts.init();
+        bts.setElasticsearchClient(client);
     }
 
     @After
     public void afterTest() {
         bts.clear(null);
-        bts.close();
+        client.close();
     }
 
     @Test

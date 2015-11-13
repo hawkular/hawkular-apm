@@ -24,8 +24,10 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
@@ -57,6 +59,14 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final TypeReference<java.util.List<Statistics>> STATISTICS_LIST =
             new TypeReference<java.util.List<Statistics>>() {
+            };
+
+    private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
+            new TypeReference<java.util.List<Cardinality>>() {
+            };
+
+    private static final TypeReference<java.util.List<PropertyInfo>> PROPERTY_INFO_LIST =
+            new TypeReference<java.util.List<PropertyInfo>>() {
             };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
@@ -268,6 +278,84 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get unbound URIs", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String, java.lang.String,
+     *                                              long, long)
+     */
+    @Override
+    public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
+                            long startTime, long endTime) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get property info: tenantId=[" + tenantId + "] businessTransaction="
+                    + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/businesstxn/properties/")
+                .append(businessTransaction)
+                .append("?startTime=")
+                .append(startTime)
+                .append("&endTime=")
+                .append(endTime);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), PROPERTY_INFO_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get property info: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get property info", e);
         }
 
         return null;
@@ -567,6 +655,156 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get completion statistics", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
+     *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     */
+    @Override
+    public List<Cardinality> getCompletionFaultDetails(String tenantId, BusinessTransactionCriteria criteria) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get completion fault details: tenantId=[" + tenantId + "] criteria="
+                    + criteria);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/businesstxn/completion/faults");
+
+        buildQueryString(builder, criteria);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), CARDINALITY_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get completion fault details: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get completion fault details", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
+     *              org.hawkular.btm.api.services.BusinessTransactionCriteria, java.lang.String)
+     */
+    @Override
+    public List<Cardinality> getCompletionPropertyDetails(String tenantId, BusinessTransactionCriteria criteria,
+            String property) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get completion property details: tenantId=[" + tenantId + "] criteria="
+                    + criteria + " property=" + property);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/businesstxn/completion/property/")
+                .append(property);
+
+        buildQueryString(builder, criteria);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), CARDINALITY_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get completion property details: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get completion property details", e);
         }
 
         return null;

@@ -23,6 +23,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -39,6 +43,7 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 /**
  * This class represents the ElasticSearch client.
  */
+@Singleton
 public class ElasticsearchClient {
 
     /**  */
@@ -122,6 +127,7 @@ public class ElasticsearchClient {
      *
      * @throws Exception Failed to initialize the client
      */
+    @PostConstruct
     public void init() throws Exception {
 
         if (hosts == null) {
@@ -314,6 +320,7 @@ public class ElasticsearchClient {
      * This method closes the Elasticsearch client.
      *
      */
+    @PreDestroy
     public void close() {
         if (node != null) {
             node.close();

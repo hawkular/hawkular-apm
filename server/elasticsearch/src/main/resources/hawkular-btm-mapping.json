@@ -5,6 +5,16 @@
     },
     "mappings": {
         "businesstransaction": {
+            "dynamic_templates": [{
+                "notanalyzed": {
+                      "match": "*",
+                      "match_mapping_type": "string",
+                      "mapping": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                      }
+                }
+            }],
             "date_detection" : false,
             "numeric_detection": false,
             "_timestamp": {
@@ -56,6 +66,16 @@
             }
         },
         "responsetime": {
+            "dynamic_templates": [{
+                "notanalyzed": {
+                      "match": "*",
+                      "match_mapping_type": "string",
+                      "mapping": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                      }
+                }
+            }],
             "date_detection" : false,
             "numeric_detection": false,
             "_timestamp": {
@@ -106,6 +126,16 @@
             }
         },
         "completiontime": {
+            "dynamic_templates": [{
+                "notanalyzed": {
+                      "match": "*",
+                      "match_mapping_type": "string",
+                      "mapping": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                      }
+                }
+            }],
             "date_detection" : false,
             "numeric_detection": false,
             "_timestamp": {

@@ -22,6 +22,8 @@ module BTM {
 
     $scope.businessTransactionName = $routeParams.businesstransaction;
 
+    $scope.properties = [];
+    
     $scope.criteria = {
       name: $scope.businessTransactionName,
       startTime: -3600000,
@@ -29,7 +31,8 @@ module BTM {
     };
 
     $scope.config = {
-      interval: 60000
+      interval: 60000,
+      selectedProperty: undefined
     };
 
     $scope.reload = function() {
@@ -39,13 +42,67 @@ module BTM {
         $scope.ctlinechart.load({
           json: $scope.statistics,
           keys: {
-            value: ['min','average','max','count'],
+            value: ['max','average','min','count','faultCount'],
             x: 'timestamp'
           }
         });
 
       },function(resp) {
         console.log("Failed to get statistics: "+resp);
+      });
+
+      $http.post('/hawkular/btm/analytics/businesstxn/completion/faults', $scope.criteria).then(function(resp) {
+        $scope.faults = resp.data;
+        
+        var faultdata = [];
+        
+        for (var i=0; i < $scope.faults.length; i++) {
+          var fault = $scope.faults[i];
+          var record=[ ];
+          record.push(fault.value);
+          record.push(fault.count);
+          faultdata.push(record);
+        }
+        
+        $scope.ctfaultschart.load({
+          columns: faultdata
+        });
+
+      },function(resp) {
+        console.log("Failed to get statistics: "+resp);
+      });
+
+      $http.get('/hawkular/btm/analytics/businesstxn/properties/'+$scope.businessTransactionName).then(function(resp) {
+        $scope.properties = resp.data;
+      },function(resp) {
+        console.log("Failed to get property info: "+resp);
+      });
+    
+      if ($scope.config.selectedProperty !== undefined) {
+        $scope.reloadProperty();
+      }
+    };
+
+    $scope.reloadProperty = function() {
+      $http.post('/hawkular/btm/analytics/businesstxn/completion/property/'+$scope.config.selectedProperty, $scope.criteria).then(function(resp) {
+        $scope.propertyDetails = resp.data;
+        
+        var propertydata = [];
+        
+        for (var i=0; i < $scope.propertyDetails.length; i++) {
+          var prop = $scope.propertyDetails[i];
+          var record=[ ];
+          record.push(prop.value);
+          record.push(prop.count);
+          propertydata.push(record);
+        }
+        
+        $scope.propertychart.load({
+          columns: propertydata
+        });
+
+      },function(resp) {
+        console.log("Failed to get property details for '"+$scope.config.selectedProperty+"': "+resp);
       });
     };
 
@@ -62,22 +119,24 @@ module BTM {
           json: [
           ],
           axes: {
-            min: 'y',
-            average: 'y',
             max: 'y',
-            count: 'y2'
+            average: 'y',
+            min: 'y',
+            count: 'y2',
+            faultCount: 'y2'
           },
           type: 'line',
           types: {
-            count: 'bar'
+            count: 'bar',
+            faultCount: 'bar'
           },
           keys: {
-            value: ['min','average','max','count'],
+            value: ['max','average','min','count','faultCount'],
             x: 'timestamp'
           }
         },
         color: {
-          pattern: ['#e5e600', '#33cc33', '#ff0000', '#99ccff']
+          pattern: ['#ff0000', '#33cc33', '#e5e600', '#99ccff', '#ffb3b3']
         },
         axis: {
           x: {
@@ -89,9 +148,25 @@ module BTM {
               format: '%Y-%m-%d %H:%M:%S'
             }
           },
+          y: {
+            label: 'Seconds',
+            tick: {
+              format: function (y) { return y / 1000000000; }
+            }
+          },
           y2: {
             show: true
           }
+        }
+      });
+
+      $scope.ctfaultschart = c3.generate({
+        bindto: '#completiontimefaultschart',
+        data: {
+          json: [
+          ],
+          type: 'pie',
+          onclick: function (d, i) { console.log("Fault clicked = ", d, i); }
         }
       });
 
@@ -99,6 +174,22 @@ module BTM {
     
     $scope.initGraph();
 
-  }]);
+    $scope.propertyClicked = function() {
+      $scope.initPropertyGraph($scope.config.selectedProperty);
+    };
 
+    $scope.initPropertyGraph = function(name) {
+      $scope.propertychart = c3.generate({
+        bindto: '#completiontimepropertychart',
+        data: {
+          columns: [
+          ],
+          type: 'pie'
+        }
+      });
+
+      $scope.reloadProperty();
+    };
+
+  }]);
 }
