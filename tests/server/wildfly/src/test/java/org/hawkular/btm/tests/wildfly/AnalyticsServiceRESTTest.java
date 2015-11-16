@@ -37,6 +37,7 @@ import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
 
@@ -258,9 +259,11 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+
         // Get transaction count
-        Long count = analytics.getCompletionCount(null,
-                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0));
+        Long count = analytics.getCompletionCount(null, criteria);
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
@@ -310,9 +313,11 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+
         // Get transaction count
-        Long count = analytics.getCompletionFaultCount(null,
-                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0));
+        Long count = analytics.getCompletionFaultCount(null, criteria);
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
@@ -362,9 +367,11 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+
         // Get transaction count
-        List<Statistics> stats = analytics.getCompletionStatistics(null,
-                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0), 1000);
+        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria, 1000);
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
@@ -439,7 +446,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new BusinessTransactionCriteria().setName("testapp")));
+            os.write(mapper.writeValueAsBytes(new CompletionTimeCriteria().setBusinessTransaction("testapp")));
 
             os.flush();
             os.close();
@@ -514,8 +521,10 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
-        List<Cardinality> cards = analytics.getCompletionPropertyDetails(null,
-                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0), "prop1");
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+
+        List<Cardinality> cards = analytics.getCompletionPropertyDetails(null, criteria, "prop1");
 
         assertNotNull(cards);
         assertEquals(1, cards.size());
@@ -591,7 +600,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new BusinessTransactionCriteria().setName("testapp")));
+            os.write(mapper.writeValueAsBytes(new CompletionTimeCriteria().setBusinessTransaction("testapp")));
 
             os.flush();
             os.close();
@@ -666,8 +675,10 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
-        List<Cardinality> cards = analytics.getCompletionFaultDetails(null,
-                new BusinessTransactionCriteria().setName("testapp").setStartTime(0).setEndTime(0));
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+
+        List<Cardinality> cards = analytics.getCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards);
         assertEquals(1, cards.size());
@@ -743,7 +754,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new BusinessTransactionCriteria().setName("testapp")));
+            os.write(mapper.writeValueAsBytes(new CompletionTimeCriteria().setBusinessTransaction("testapp")));
 
             os.flush();
             os.close();

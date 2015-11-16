@@ -22,8 +22,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -42,10 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.api.security.SecurityProvider;
@@ -153,7 +148,7 @@ public class BusinessTransactionHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "retrieve business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -171,13 +166,13 @@ public class BusinessTransactionHandler {
 
         try {
             BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
-            decodeCorrelationIdentifiers(criteria.getCorrelationIds(), correlations);
+            RESTServiceUtil.decodeCorrelationIdentifiers(criteria.getCorrelationIds(), correlations);
 
             log.tracef("Query Business transactions for criteria [%s]", criteria);
 
@@ -233,61 +228,4 @@ public class BusinessTransactionHandler {
 
     }
 
-    /**
-     * This method processes a comma separated list of properties, defined as a name|value pair.
-     *
-     * @param properties The properties map
-     * @param encoded The string containing the encoded properties
-     */
-    protected static void decodeProperties(Set<PropertyCriteria> properties, String encoded) {
-        if (encoded != null && encoded.trim().length() > 0) {
-            StringTokenizer st = new StringTokenizer(encoded, ",");
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                String[] parts = token.split("[|]");
-                if (parts.length == 2) {
-                    String name = parts[0].trim();
-                    String value = parts[1].trim();
-                    boolean excluded = false;
-
-                    if (name.length() > 0 && name.charAt(0) == '-') {
-                        name = name.substring(1);
-                        excluded = true;
-                    }
-
-                    log.tracef("Extracted property name [%s] value [%s] excluded [%s]", name, value, excluded);
-
-                    properties.add(new PropertyCriteria(name, value, excluded));
-                }
-            }
-        }
-    }
-
-    /**
-     * This method processes a comma separated list of correlation identifiers, defined as a scope|value pair.
-     *
-     * @param correlations The correlation identifier set
-     * @param encoded The string containing the encoded correlation identifiers
-     */
-    protected static void decodeCorrelationIdentifiers(Set<CorrelationIdentifier> correlations, String encoded) {
-        if (encoded != null && encoded.trim().length() > 0) {
-            StringTokenizer st = new StringTokenizer(encoded, ",");
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                String[] parts = token.split("[|]");
-                if (parts.length == 2) {
-                    String scope = parts[0].trim();
-                    String value = parts[1].trim();
-
-                    log.tracef("Extracted correlation identifier scope [%s] value [%s]", scope, value);
-
-                    CorrelationIdentifier cid = new CorrelationIdentifier();
-                    cid.setScope(Scope.valueOf(scope));
-                    cid.setValue(value);
-
-                    correlations.add(cid);
-                }
-            }
-        }
-    }
 }

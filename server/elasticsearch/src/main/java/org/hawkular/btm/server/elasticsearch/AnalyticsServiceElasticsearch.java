@@ -64,6 +64,7 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
@@ -127,8 +128,8 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         List<URIInfo> ret = new ArrayList<URIInfo>();
         Map<String, URIInfo> map = new HashMap<String, URIInfo>();
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setStartTime(startTime)
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(startTime)
                 .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
@@ -231,8 +232,8 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
         List<String> ret = new ArrayList<String>();
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setName(businessTransaction)
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setBusinessTransaction(businessTransaction)
                 .setStartTime(startTime)
                 .setEndTime(endTime);
 
@@ -277,10 +278,10 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
         List<String> propertyNames = new ArrayList<String>();
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
-                .setStartTime(startTime)
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(startTime)
                 .setEndTime(endTime)
-                .setName(businessTransaction);
+                .setBusinessTransaction(businessTransaction);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -310,12 +311,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionCount(java.lang.String,
-     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionCount(java.lang.String,
+     *                  org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, BusinessTransactionCriteria criteria) {
-        if (criteria.getName() == null) {
+    public long getCompletionCount(String tenantId, CompletionTimeCriteria criteria) {
+        if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
 
@@ -344,12 +345,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionFaultCount(java.lang.String,
-     *              org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultCount(java.lang.String,
+     *              org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria) {
-        if (criteria.getName() == null) {
+    public long getCompletionFaultCount(String tenantId, CompletionTimeCriteria criteria) {
+        if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
 
@@ -382,11 +383,11 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getStats(java.lang.String,
-     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                  org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, BusinessTransactionCriteria criteria) {
-        if (criteria.getName() == null) {
+    public Percentiles getCompletionPercentiles(String tenantId, CompletionTimeCriteria criteria) {
+        if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
 
@@ -428,12 +429,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionStatistics(java.lang.String,
-     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria, long)
+     *                  org.hawkular.btm.api.services.CompletionTimeCriteria, long)
      */
     @Override
-    public List<Statistics> getCompletionStatistics(String tenantId, BusinessTransactionCriteria criteria,
+    public List<Statistics> getCompletionStatistics(String tenantId, CompletionTimeCriteria criteria,
             long interval) {
-        if (criteria.getName() == null) {
+        if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
 
@@ -496,11 +497,11 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
-     *              org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *              org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, BusinessTransactionCriteria criteria) {
-        if (criteria.getName() == null) {
+    public List<Cardinality> getCompletionFaultDetails(String tenantId, CompletionTimeCriteria criteria) {
+        if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
 
@@ -551,12 +552,12 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
-     *              org.hawkular.btm.api.services.BusinessTransactionCriteria, java.lang.String)
+     *              org.hawkular.btm.api.services.CompletionTimeCriteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, BusinessTransactionCriteria criteria,
+    public List<Cardinality> getCompletionPropertyDetails(String tenantId, CompletionTimeCriteria criteria,
             String property) {
-        if (criteria.getName() == null) {
+        if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
 

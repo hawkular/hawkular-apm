@@ -32,7 +32,7 @@ import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.CompletionTimeCriteria;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -289,7 +289,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      */
     @Override
     public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
-                            long startTime, long endTime) {
+            long startTime, long endTime) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get property info: tenantId=[" + tenantId + "] businessTransaction="
                     + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
@@ -363,10 +363,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionCount(java.lang.String,
-     *                          org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                          org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, BusinessTransactionCriteria criteria) {
+    public long getCompletionCount(String tenantId, CompletionTimeCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion count: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -437,10 +437,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultCount(java.lang.String,
-     *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria) {
+    public long getCompletionFaultCount(String tenantId, CompletionTimeCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion fault count: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
@@ -510,10 +510,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPercentiles(java.lang.String,
-     *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, BusinessTransactionCriteria criteria) {
+    public Percentiles getCompletionPercentiles(String tenantId, CompletionTimeCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion percentiles: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -584,11 +584,11 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionStatistics(java.lang.String,
-     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria, long)
+     *                  org.hawkular.btm.api.services.CompletionTimeCriteria, long)
      */
     @Override
-    public List<Statistics> getCompletionStatistics(String tenantId, BusinessTransactionCriteria criteria,
-                                        long interval) {
+    public List<Statistics> getCompletionStatistics(String tenantId, CompletionTimeCriteria criteria,
+            long interval) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria + " interval=" + interval);
@@ -662,10 +662,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
-     *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, BusinessTransactionCriteria criteria) {
+    public List<Cardinality> getCompletionFaultDetails(String tenantId, CompletionTimeCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion fault details: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -736,10 +736,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
-     *              org.hawkular.btm.api.services.BusinessTransactionCriteria, java.lang.String)
+     *              org.hawkular.btm.api.services.CompletionTimeCriteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, BusinessTransactionCriteria criteria,
+    public List<Cardinality> getCompletionPropertyDetails(String tenantId, CompletionTimeCriteria criteria,
             String property) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion property details: tenantId=[" + tenantId + "] criteria="
@@ -816,7 +816,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @param builder The url
      * @param criteria The criteria
      */
-    protected void buildQueryString(StringBuilder builder, BusinessTransactionCriteria criteria) {
+    protected void buildQueryString(StringBuilder builder, CompletionTimeCriteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
         if (!queryParams.isEmpty()) {

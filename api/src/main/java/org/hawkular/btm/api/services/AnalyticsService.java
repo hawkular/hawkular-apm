@@ -78,7 +78,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The transaction count
      */
-    long getCompletionCount(String tenantId, BusinessTransactionCriteria criteria);
+    long getCompletionCount(String tenantId, CompletionTimeCriteria criteria);
 
     /**
      * This method returns the number of completed transactions, of the specified named
@@ -89,7 +89,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The transaction fault count
      */
-    long getCompletionFaultCount(String tenantId, BusinessTransactionCriteria criteria);
+    long getCompletionFaultCount(String tenantId, CompletionTimeCriteria criteria);
 
     /**
      * This method returns the completion time percentiles, for the specified criteria, that were
@@ -100,7 +100,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The completion time percentiles
      */
-    Percentiles getCompletionPercentiles(String tenantId, BusinessTransactionCriteria criteria);
+    Percentiles getCompletionPercentiles(String tenantId, CompletionTimeCriteria criteria);
 
     /**
      * This method returns the completion time statistics, for the specified criteria, that were
@@ -112,7 +112,7 @@ public interface AnalyticsService {
      * @param interval The aggregation interval (in milliseconds)
      * @return The completion time statistics
      */
-    List<Statistics> getCompletionStatistics(String tenantId, BusinessTransactionCriteria criteria,
+    List<Statistics> getCompletionStatistics(String tenantId, CompletionTimeCriteria criteria,
                                     long interval);
 
     /**
@@ -124,7 +124,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The completion time fault details
      */
-    List<Cardinality> getCompletionFaultDetails(String tenantId, BusinessTransactionCriteria criteria);
+    List<Cardinality> getCompletionFaultDetails(String tenantId, CompletionTimeCriteria criteria);
 
     /**
      * This method returns the completion time property details, for the specified criteria, that were
@@ -136,7 +136,7 @@ public interface AnalyticsService {
      * @param property The property name
      * @return The completion time property details
      */
-    List<Cardinality> getCompletionPropertyDetails(String tenantId, BusinessTransactionCriteria criteria,
+    List<Cardinality> getCompletionPropertyDetails(String tenantId, CompletionTimeCriteria criteria,
                                     String property);
 
     /**

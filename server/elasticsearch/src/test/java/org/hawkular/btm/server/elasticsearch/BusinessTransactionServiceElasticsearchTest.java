@@ -97,7 +97,7 @@ public class BusinessTransactionServiceElasticsearchTest {
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setStartTime(100);
-        criteria.setName("btxn1");
+        criteria.setBusinessTransaction("btxn1");
 
         List<BusinessTransaction> result1 = bts.query(null, criteria);
 
@@ -140,7 +140,7 @@ public class BusinessTransactionServiceElasticsearchTest {
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setStartTime(100);
-        criteria.setName("");
+        criteria.setBusinessTransaction("");
 
         List<BusinessTransaction> result1 = bts.query(null, criteria);
 
