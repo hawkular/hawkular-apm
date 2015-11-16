@@ -2,6 +2,48 @@
   <div class="col-md-12" ng-controller="BTM.BTxnConfigController">
     <h1><span style="color:grey">{{businessTransactionName}}</span></h1>
 
+    <div class="form-group" >
+      <span ng-repeat="fault in criteria.faults">
+        <span ng-show="!fault.excluded">
+          <a class="btn btn-success" ng-click="toggleExclusion(fault)">
+            <i>fault</i>: {{fault.value}}
+            <a class="btn btn-default" ng-click="removeFault(fault)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+          </a>
+        </span>
+        <span ng-show="fault.excluded">
+          <a class="btn btn-danger" ng-click="toggleExclusion(fault)">
+            <i>fault</i>: {{fault.value}}
+            <a class="btn btn-default" ng-click="removeFault(fault)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+          </a>
+        </span>
+        <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
+      </span>
+
+      <span ng-repeat="property in criteria.properties">
+        <span ng-show="!property.excluded">
+          <a class="btn btn-success" ng-click="toggleExclusion(property)">
+            <i>{{property.name}}</i>: {{property.value}}
+            <a class="btn btn-default" ng-click="removeProperty(property)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+          </a>
+        </span>
+        <span ng-show="property.excluded">
+          <a class="btn btn-danger" ng-click="toggleExclusion(property)">
+            <i>{{property.name}}</i>: {{property.value}}
+            <a class="btn btn-default" ng-click="removeProperty(property)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+          </a>
+        </span>
+        <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
+      </span>
+    </div>
+
     <span>
       <form>
         <div class="form-group">

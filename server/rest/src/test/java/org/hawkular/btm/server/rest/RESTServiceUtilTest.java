@@ -26,20 +26,20 @@ import java.util.Set;
 
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
+import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
 import org.junit.Test;
 
 /**
  * @author gbrown
  */
-public class BusinessTransactionHandlerTest {
+public class RESTServiceUtilTest {
 
     @Test
     public void testDecodePropertiesSingle() {
         String encoded = "hello|world";
         Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
-        BusinessTransactionHandler.decodeProperties(properties, encoded);
+        RESTServiceUtil.decodeProperties(properties, encoded);
 
         assertTrue("Properties should have 1 entry", properties.size() == 1);
 
@@ -55,7 +55,7 @@ public class BusinessTransactionHandlerTest {
         String encoded = "-hello|world";
         Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
-        BusinessTransactionHandler.decodeProperties(properties, encoded);
+        RESTServiceUtil.decodeProperties(properties, encoded);
 
         assertTrue("Properties should have 1 entry", properties.size() == 1);
 
@@ -71,7 +71,7 @@ public class BusinessTransactionHandlerTest {
         String encoded = "hello | world ";
         Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
-        BusinessTransactionHandler.decodeProperties(properties, encoded);
+        RESTServiceUtil.decodeProperties(properties, encoded);
 
         PropertyCriteria pc = properties.iterator().next();
 
@@ -85,7 +85,7 @@ public class BusinessTransactionHandlerTest {
         String encoded = "hello|world,fred|bloggs";
         Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
-        BusinessTransactionHandler.decodeProperties(properties, encoded);
+        RESTServiceUtil.decodeProperties(properties, encoded);
 
         assertTrue("Properties should have 2 entries", properties.size() == 2);
 
@@ -117,7 +117,7 @@ public class BusinessTransactionHandlerTest {
         String encoded = "Global|world";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
-        BusinessTransactionHandler.decodeCorrelationIdentifiers(correlations, encoded);
+        RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
 
         assertTrue("Correlation identifiers should have 1 entry", correlations.size() == 1);
 
@@ -133,7 +133,7 @@ public class BusinessTransactionHandlerTest {
         String encoded = " Local | world ";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
-        BusinessTransactionHandler.decodeCorrelationIdentifiers(correlations, encoded);
+        RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
 
         assertTrue("Correlation identifiers should have 1 entry", correlations.size() == 1);
 
@@ -149,7 +149,7 @@ public class BusinessTransactionHandlerTest {
         String encoded = "Global|world,Interaction|hello";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
-        BusinessTransactionHandler.decodeCorrelationIdentifiers(correlations, encoded);
+        RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
 
         assertTrue("Correlation identifiers should have 2 entry", correlations.size() == 2);
 

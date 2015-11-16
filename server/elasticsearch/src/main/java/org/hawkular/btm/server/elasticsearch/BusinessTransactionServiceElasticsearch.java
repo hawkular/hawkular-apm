@@ -31,10 +31,8 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
@@ -122,18 +120,6 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "name");
-
-            if (!criteria.getCorrelationIds().isEmpty()) {
-                for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
-                    query.must(QueryBuilders.termQuery("value", id.getValue()));
-                    /* HWKBTM-186
-                    b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
-                            QueryBuilders.boolQuery()
-                                    .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
-                                    .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
-                     */
-                }
-            }
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                     .setTypes(BUSINESS_TRANSACTION_TYPE)

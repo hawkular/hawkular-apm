@@ -25,7 +25,9 @@ module BTM {
     $scope.properties = [];
     
     $scope.criteria = {
-      name: $scope.businessTransactionName,
+      businessTransaction: $scope.businessTransactionName,
+      properties: [],
+      faults: [],
       startTime: -3600000,
       endTime: 0
     };
@@ -64,6 +66,8 @@ module BTM {
           faultdata.push(record);
         }
         
+        $scope.ctfaultschart.unload();
+
         $scope.ctfaultschart.load({
           columns: faultdata
         });
@@ -97,6 +101,8 @@ module BTM {
           propertydata.push(record);
         }
         
+        $scope.propertychart.unload();
+
         $scope.propertychart.load({
           columns: propertydata
         });
@@ -166,7 +172,13 @@ module BTM {
           json: [
           ],
           type: 'pie',
-          onclick: function (d, i) { console.log("Fault clicked = ", d, i); }
+          onclick: function (d, i) {
+            var fault = {
+              value: d.id
+            };
+            $scope.criteria.faults.add(fault);
+            $scope.reload();
+          }
         }
       });
 
@@ -184,12 +196,34 @@ module BTM {
         data: {
           columns: [
           ],
-          type: 'pie'
+          type: 'pie',
+          onclick: function (d, i) {
+            var property = {
+              name: name,
+              value: d.id
+            };
+            $scope.criteria.properties.add(property);
+            $scope.reload();
+          }
         }
       });
 
       $scope.reloadProperty();
     };
 
+    $scope.removeProperty = function(property) {
+      $scope.criteria.properties.remove(property);
+      $scope.reload();
+    };
+
+    $scope.removeFault = function(fault) {
+      $scope.criteria.faults.remove(fault);
+      $scope.reload();
+    };
+
+    $scope.toggleExclusion = function(element) {
+      element.excluded = !element.excluded;
+      $scope.reload();
+    };
   }]);
 }

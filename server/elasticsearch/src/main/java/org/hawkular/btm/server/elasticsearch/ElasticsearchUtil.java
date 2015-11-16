@@ -20,8 +20,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.services.BaseCriteria;
+import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria.PropertyCriteria;
+import org.hawkular.btm.api.services.CompletionTimeCriteria;
+import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
 
 /**
  * This class provides utility functions for working with Elasticsearch.
@@ -34,10 +38,66 @@ public class ElasticsearchUtil {
      * This method builds the Elasticsearch query based on the supplied
      * business transaction criteria.
      *
+     * @param timeProperty The name of the time property
+     * @param businessTxnProperty The name of the business transaction property
      * @param criteria the criteria
      * @return The query
      */
     public static BoolQueryBuilder buildQuery(BusinessTransactionCriteria criteria, String timeProperty,
+            String businessTxnProperty) {
+        BoolQueryBuilder query = buildBaseQuery(criteria, timeProperty, businessTxnProperty);
+
+        if (!criteria.getCorrelationIds().isEmpty()) {
+            for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
+                query.must(QueryBuilders.termQuery("value", id.getValue()));
+                /* HWKBTM-186
+                b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
+                        QueryBuilders.boolQuery()
+                                .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
+                                .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
+                 */
+            }
+        }
+
+        return query;
+    }
+
+    /**
+     * This method builds the Elasticsearch query based on the supplied
+     * completion time criteria.
+     *
+     * @param timeProperty The name of the time property
+     * @param businessTxnProperty The name of the business transaction property
+     * @param criteria the criteria
+     * @return The query
+     */
+    public static BoolQueryBuilder buildQuery(CompletionTimeCriteria criteria, String timeProperty,
+            String businessTxnProperty) {
+        BoolQueryBuilder query = buildBaseQuery(criteria, timeProperty, businessTxnProperty);
+
+        if (!criteria.getFaults().isEmpty()) {
+            for (FaultCriteria fc : criteria.getFaults()) {
+                if (fc.isExcluded()) {
+                    query = query.mustNot(QueryBuilders.matchQuery("fault", fc.getValue()));
+                } else {
+                    query = query.must(QueryBuilders.matchQuery("fault", fc.getValue()));
+                }
+            }
+        }
+
+        return query;
+    }
+
+    /**
+     * This method builds the Elasticsearch query based on the supplied
+     * business transaction criteria.
+     *
+     * @param timeProperty The name of the time property
+     * @param businessTxnProperty The name of the business transaction property
+     * @param criteria the criteria
+     * @return The query
+     */
+    private static BoolQueryBuilder buildBaseQuery(BaseCriteria criteria, String timeProperty,
             String businessTxnProperty) {
         long startTime = criteria.getStartTime();
         long endTime = criteria.getEndTime();
@@ -58,10 +118,9 @@ public class ElasticsearchUtil {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
                 .must(QueryBuilders.rangeQuery(timeProperty).from(startTime).to(endTime));
 
-        if (criteria.getName() != null) {
-            if (criteria.getName().trim().length() > 0) {
-                query = query.must(QueryBuilders.termQuery(businessTxnProperty, criteria.getName()));
-            }
+        if (criteria.getBusinessTransaction() != null
+                && criteria.getBusinessTransaction().trim().length() > 0) {
+            query = query.must(QueryBuilders.termQuery(businessTxnProperty, criteria.getBusinessTransaction()));
         }
 
         if (!criteria.getProperties().isEmpty()) {
@@ -85,7 +144,7 @@ public class ElasticsearchUtil {
      * @return The filter, or null if not relevant
      */
     public static FilterBuilder buildFilter(BusinessTransactionCriteria criteria) {
-        if (criteria.getName() != null && criteria.getName().trim().length() == 0) {
+        if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().length() == 0) {
             return FilterBuilders.missingFilter("name");
         }
         return null;

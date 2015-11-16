@@ -44,7 +44,7 @@ import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
@@ -211,7 +211,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -221,15 +221,19 @@ public class AnalyticsHandler {
                             @ApiParam(required = false,
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                            @ApiParam(required = false,
+                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
             log.tracef("Get business transaction count for criteria [%s]", criteria);
 
@@ -264,7 +268,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -274,15 +278,19 @@ public class AnalyticsHandler {
                             @ApiParam(required = false,
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                            @ApiParam(required = false,
+                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
             log.tracef("Get business transaction fault count for criteria [%s]", criteria);
 
@@ -317,7 +325,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -327,15 +335,19 @@ public class AnalyticsHandler {
                             @ApiParam(required = false,
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                            @ApiParam(required = false,
+                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
             log.tracef("Get business transaction completion percentiles for criteria [%s]", criteria);
 
@@ -370,7 +382,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -383,15 +395,19 @@ public class AnalyticsHandler {
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
                             @ApiParam(required = false,
                     value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
-                        @QueryParam("interval") long interval) {
+                        @QueryParam("interval") long interval,
+                        @ApiParam(required = false,
+                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
             log.tracef("Get business transaction completion statistics for criteria [%s] interval [%s]",
                     criteria, interval);
@@ -430,7 +446,7 @@ public class AnalyticsHandler {
             value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
                 @QueryParam("interval") long interval,
             @ApiParam(required = true,
-            value = "business transaction criteria") BusinessTransactionCriteria criteria) {
+            value = "query criteria") CompletionTimeCriteria criteria) {
 
         try {
             log.tracef("Get business transaction completion statistics for criteria [%s] interval [%s]",
@@ -466,7 +482,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -476,15 +492,19 @@ public class AnalyticsHandler {
                             @ApiParam(required = false,
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                            @ApiParam(required = false,
+                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
             log.tracef("Get business transaction completion fault details for criteria (GET) [%s]",
                     criteria);
@@ -521,7 +541,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-                value = "business transaction criteria") BusinessTransactionCriteria criteria) {
+                value = "query criteria") CompletionTimeCriteria criteria) {
 
         try {
             log.tracef("Get business transaction completion fault details for criteria (POST) [%s]",
@@ -558,7 +578,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
                     value = "business transactions after this time,"
                             + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
@@ -570,15 +590,19 @@ public class AnalyticsHandler {
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
                             @ApiParam(required = false,
+                    value = "faults") @QueryParam("faults") String faults,
+                            @ApiParam(required = false,
                     value = "property") @PathParam("property") String property) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-            criteria.setName(name);
+            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
 
-            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
             log.tracef("Get business transaction completion property details for criteria (GET) [%s] property [%s]",
                     criteria, property);
@@ -617,7 +641,7 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                 value = "property") @PathParam("property") String property,
             @ApiParam(required = true,
-                value = "business transaction criteria") BusinessTransactionCriteria criteria) {
+                value = "query criteria") CompletionTimeCriteria criteria) {
 
         try {
             log.tracef("Get business transaction completion property details for criteria (POST) [%s] property [%s]",

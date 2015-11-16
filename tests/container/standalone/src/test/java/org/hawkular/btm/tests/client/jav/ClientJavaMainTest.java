@@ -106,7 +106,8 @@ public class ClientJavaMainTest {
         service.setPassword(TEST_PASSWORD);
 
         // Retrieve stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(startTime);
         List<BusinessTransaction> result = service.query(null, criteria);
 
         assertNotNull(result);
