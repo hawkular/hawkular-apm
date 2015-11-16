@@ -37,7 +37,9 @@ import org.junit.Test;
  */
 public class ConfigurationServiceElasticsearchTest {
 
-    private ConfigurationServiceElasticsearch bts;
+    private ConfigurationServiceElasticsearch cfgs;
+
+    private ElasticsearchClient client;
 
     @BeforeClass
     public static void initClass() {
@@ -46,14 +48,20 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Before
     public void beforeTest() {
-        bts = new ConfigurationServiceElasticsearch();
-        bts.init();
+        client = new ElasticsearchClient();
+        try {
+            client.init();
+        } catch (Exception e) {
+            fail("Failed to initialise Elasticsearch client: "+e);
+        }
+        cfgs = new ConfigurationServiceElasticsearch();
+        cfgs.setElasticsearchClient(client);
     }
 
     @After
     public void afterTest() {
-        bts.clear(null);
-        bts.close();
+        cfgs.clear(null);
+        client.close();
     }
 
     @Test
@@ -62,7 +70,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc1.setDescription("btc1");
 
         try {
-            bts.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.updateBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -89,7 +97,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc2.setDescription("btc2");
 
         try {
-            bts.updateBusinessTransaction(null, "btc2", btc2);
+            cfgs.updateBusinessTransaction(null, "btc2", btc2);
         } catch (Exception e) {
             fail("Failed to update btc2: " + e);
         }
@@ -102,19 +110,19 @@ public class ConfigurationServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        Map<String, BusinessTxnConfig> res1 = bts.getBusinessTransactions(null, 0);
+        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(2, res1.size());
 
-        Map<String, BusinessTxnConfig> res2 = bts.getBusinessTransactions(null, midtime);
+        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midtime);
 
         assertNotNull(res2);
         assertEquals(1, res2.size());
         assertTrue(res2.containsKey("btc2"));
 
         // Check summaries
-        List<BusinessTxnSummary> summaries = bts.getBusinessTransactionSummaries(null);
+        List<BusinessTxnSummary> summaries = cfgs.getBusinessTransactionSummaries(null);
         assertNotNull(summaries);
         assertEquals(2, summaries.size());
     }
@@ -126,7 +134,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc1.setDescription("btc1");
 
         try {
-            bts.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.updateBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -150,7 +158,7 @@ public class ConfigurationServiceElasticsearchTest {
         }
 
         try {
-            bts.removeBusinessTransaction(null, "btc2");
+            cfgs.removeBusinessTransaction(null, "btc2");
         } catch (Exception e) {
             fail("Failed to remove btc2: " + e);
         }
@@ -163,19 +171,19 @@ public class ConfigurationServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        Map<String, BusinessTxnConfig> res1 = bts.getBusinessTransactions(null, 0);
+        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(1, res1.size());
         assertTrue(res1.containsKey("btc1"));
 
-        Map<String, BusinessTxnConfig> res2 = bts.getBusinessTransactions(null, midtime);
+        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midtime);
 
         assertNotNull(res2);
         assertEquals(1, res2.size());
         assertTrue(res2.containsKey("btc2"));
 
-        BusinessTxnConfig btc2 = bts.getBusinessTransaction(null, "btc2");
+        BusinessTxnConfig btc2 = cfgs.getBusinessTransaction(null, "btc2");
         assertNull(btc2);
     }
 

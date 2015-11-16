@@ -19,9 +19,7 @@ package org.hawkular.btm.server.elasticsearch;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -49,7 +47,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-@Singleton
 public class BusinessTransactionServiceElasticsearch implements BusinessTransactionService {
 
     private static final MsgLogger msgLog = MsgLogger.LOGGER;
@@ -59,17 +56,8 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    @Inject
     private ElasticsearchClient client;
-
-    @PostConstruct
-    public void init() {
-        client = new ElasticsearchClient();
-        try {
-            client.init();
-        } catch (Exception e) {
-            msgLog.errorFailedToInitialiseElasticsearchClient(e);
-        }
-    }
 
     protected ElasticsearchClient getElasticsearchClient() {
         return client;
@@ -232,16 +220,6 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
         String index = client.getIndex(tenantId);
 
         client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
-    }
-
-    /**
-     * This method closes the Elasticsearch client.
-     */
-    @PreDestroy
-    public void close() {
-        if (client != null) {
-            client.close();
-        }
     }
 
 }

@@ -21,9 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
@@ -48,7 +46,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-@Singleton
 public class ConfigurationServiceElasticsearch implements ConfigurationService {
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
@@ -58,6 +55,7 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    @Inject
     private ElasticsearchClient client;
 
     /**  */
@@ -70,14 +68,12 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
 
     private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
 
-    @PostConstruct
-    public void init() {
-        client = new ElasticsearchClient();
-        try {
-            client.init();
-        } catch (Exception e) {
-            msgLog.errorFailedToInitialiseElasticsearchClient(e);
-        }
+    protected ElasticsearchClient getElasticsearchClient() {
+        return client;
+    }
+
+    protected void setElasticsearchClient(ElasticsearchClient client) {
+        this.client = client;
     }
 
     /* (non-Javadoc)
@@ -224,10 +220,10 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    BusinessTxnConfig config=mapper.readValue(searchHitFields.getSourceAsString(),
+                    BusinessTxnConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
                             BusinessTxnConfig.class);
                     if (!config.isDeleted()) {
-                        BusinessTxnSummary summary=new BusinessTxnSummary();
+                        BusinessTxnSummary summary = new BusinessTxnSummary();
                         summary.setName(searchHitFields.getId());
                         summary.setDescription(config.getDescription());
                         summary.setLevel(config.getLevel());
@@ -253,7 +249,7 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
      */
     @Override
     public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-        Map<String,BusinessTxnConfig> ret = new HashMap<String,BusinessTxnConfig>();
+        Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
         String index = client.getIndex(tenantId);
 
         try {
@@ -324,16 +320,6 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
         String index = client.getIndex(tenantId);
 
         client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
-    }
-
-    /**
-     * This method closes the Elasticsearch client.
-     */
-    @PreDestroy
-    public void close() {
-        if (client != null) {
-            client.close();
-        }
     }
 
 }

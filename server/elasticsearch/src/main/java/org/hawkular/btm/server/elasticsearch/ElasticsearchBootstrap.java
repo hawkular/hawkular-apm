@@ -26,6 +26,7 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 /**
  * @author gbrown
@@ -38,14 +39,12 @@ public class ElasticsearchBootstrap {
 
     private static final Logger log = Logger.getLogger(ElasticsearchBootstrap.class.getName());
 
+    @Inject
     private ElasticsearchClient client;
 
     @PostConstruct
     public void init() {
-        client = new ElasticsearchClient();
         try {
-            client.init();
-
             // Initialise default tenant
             client.initTenant(null);
         } catch (Exception e) {

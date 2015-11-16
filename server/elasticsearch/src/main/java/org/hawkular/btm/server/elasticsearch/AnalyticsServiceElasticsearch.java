@@ -25,10 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -44,12 +41,18 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram.Bucket;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.missing.Missing;
+import org.elasticsearch.search.aggregations.bucket.missing.MissingBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentile;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
+import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
@@ -72,7 +75,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-@Singleton
 public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
@@ -85,20 +87,11 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    @Inject
     private ElasticsearchClient client;
 
     @Inject
     private ConfigurationService configService;
-
-    @PostConstruct
-    public void init() {
-        client = new ElasticsearchClient();
-        try {
-            client.init();
-        } catch (Exception e) {
-            msgLog.errorFailedToInitialiseElasticsearchClient(e);
-        }
-    }
 
     protected ElasticsearchClient getElasticsearchClient() {
         return client;
@@ -275,6 +268,48 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String,
+     *                      java.lang.String, long, long)
+     */
+    @Override
+    public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
+            long startTime, long endTime) {
+        List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
+        List<String> propertyNames = new ArrayList<String>();
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria()
+                .setStartTime(startTime)
+                .setEndTime(endTime)
+                .setName(businessTransaction);
+
+        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
+                tenantId, criteria);
+
+        // Process the fragments to identify which URIs are no used in any business transaction
+        for (int i = 0; i < fragments.size(); i++) {
+            BusinessTransaction btxn = fragments.get(i);
+
+            for (String property : btxn.getProperties().keySet()) {
+                if (!propertyNames.contains(property)) {
+                    propertyNames.add(property);
+                    PropertyInfo pi = new PropertyInfo();
+                    pi.setName(property);
+                    ret.add(pi);
+                }
+            }
+        }
+
+        Collections.sort(ret, new Comparator<PropertyInfo>() {
+            @Override
+            public int compare(PropertyInfo arg0, PropertyInfo arg1) {
+                return arg0.getName().compareTo(arg1.getName());
+            }
+        });
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getTransactionCount(java.lang.String,
      *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
@@ -414,11 +449,16 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                 .stats("stats")
                 .field("duration");
 
+        MissingBuilder faultCountBuilder = AggregationBuilders
+                .missing("faults")
+                .field("fault");
+
         DateHistogramBuilder histogramBuilder = AggregationBuilders
                 .dateHistogram("histogram")
                 .interval(interval)
                 .field("timestamp")
-                .subAggregation(statsBuilder);
+                .subAggregation(statsBuilder)
+                .subAggregation(faultCountBuilder);
 
         SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(COMPLETION_TIME_TYPE)
@@ -438,6 +478,7 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
 
         for (Bucket bucket : histogram.getBuckets()) {
             Stats stat = bucket.getAggregations().get("stats");
+            Missing missing = bucket.getAggregations().get("faults");
 
             Statistics s = new Statistics();
             s.setTimestamp(bucket.getKeyAsDate().getMillis());
@@ -445,11 +486,123 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
             s.setMin(stat.getMin());
             s.setMax(stat.getMax());
             s.setCount(stat.getCount());
+            s.setFaultCount(stat.getCount() - missing.getDocCount());
 
             stats.add(s);
         }
 
         return stats;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
+     *              org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     */
+    @Override
+    public List<Cardinality> getCompletionFaultDetails(String tenantId, BusinessTransactionCriteria criteria) {
+        if (criteria.getName() == null) {
+            throw new IllegalArgumentException("Business transaction name not specified");
+        }
+
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+        TermsBuilder cardinalityBuilder = AggregationBuilders
+                .terms("cardinality")
+                .field("fault");
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(COMPLETION_TIME_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addAggregation(cardinalityBuilder)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setQuery(query);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        List<Cardinality> ret = new ArrayList<Cardinality>();
+
+        Terms terms = response.getAggregations().get("cardinality");
+
+        for (Terms.Bucket bucket : terms.getBuckets()) {
+            Cardinality card = new Cardinality();
+            card.setValue(bucket.getKey());
+            card.setCount(bucket.getDocCount());
+            ret.add(card);
+        }
+
+        Collections.sort(ret, new Comparator<Cardinality>() {
+            @Override
+            public int compare(Cardinality arg0, Cardinality arg1) {
+                return (int) (arg1.getCount() - arg0.getCount());
+            }
+        });
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
+     *              org.hawkular.btm.api.services.BusinessTransactionCriteria, java.lang.String)
+     */
+    @Override
+    public List<Cardinality> getCompletionPropertyDetails(String tenantId, BusinessTransactionCriteria criteria,
+            String property) {
+        if (criteria.getName() == null) {
+            throw new IllegalArgumentException("Business transaction name not specified");
+        }
+
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+        TermsBuilder cardinalityBuilder = AggregationBuilders
+                .terms("cardinality")
+                .field("properties." + property);
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(COMPLETION_TIME_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addAggregation(cardinalityBuilder)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setQuery(query);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        List<Cardinality> ret = new ArrayList<Cardinality>();
+
+        Terms terms = response.getAggregations().get("cardinality");
+
+        for (Terms.Bucket bucket : terms.getBuckets()) {
+            Cardinality card = new Cardinality();
+            card.setValue(bucket.getKey());
+            card.setCount(bucket.getDocCount());
+            ret.add(card);
+        }
+
+        Collections.sort(ret, new Comparator<Cardinality>() {
+            @Override
+            public int compare(Cardinality arg0, Cardinality arg1) {
+                return arg0.getValue().compareTo(arg1.getValue());
+            }
+        });
+
+        return ret;
     }
 
     /* (non-Javadoc)
@@ -536,16 +689,6 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
         String index = client.getIndex(tenantId);
 
         client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
-    }
-
-    /**
-     * This method closes the Elasticsearch client.
-     */
-    @PreDestroy
-    public void close() {
-        if (client != null) {
-            client.close();
-        }
     }
 
 }

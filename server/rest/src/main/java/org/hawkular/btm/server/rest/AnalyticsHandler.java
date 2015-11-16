@@ -38,7 +38,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
@@ -142,6 +144,48 @@ public class AnalyticsHandler {
             log.tracef("Got bound URIs: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime, uris);
 
             response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("businesstxn/properties/{name}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the properties used by a business transaction",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getPropertyInfo(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "business transaction name") @PathParam("name") String name,
+            @ApiParam(required = false,
+                    value = "optional 'start' time, default 1 hour before current time")
+                        @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "optional 'end' time, default current time") @DefaultValue("0")
+                        @QueryParam("endTime") long endTime) {
+
+        try {
+            log.tracef("Get property info: name [%s] start [%s] end [%s]", name, startTime, endTime);
+
+            java.util.List<PropertyInfo> pis = analyticsService.getPropertyInfo(
+                    securityProvider.getTenantId(context), name, startTime, endTime);
+
+            log.tracef("Got property info: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime, pis);
+
+            response.resume(Response.status(Response.Status.OK).entity(pis).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Exception e) {
@@ -398,6 +442,194 @@ public class AnalyticsHandler {
             log.tracef("Got business transaction completion statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
+    @Path("businesstxn/completion/faults")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction completion fault details associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCompletionFaultDetails(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "business transaction name") @QueryParam("name") String name,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+
+        try {
+            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+            criteria.setName(name);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction completion fault details for criteria (GET) [%s]",
+                    criteria);
+
+            List<Cardinality> cards = analyticsService.getCompletionFaultDetails(
+                    securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Got business transaction completion fault details for criteria (GET) [%s] = %s",
+                                            criteria, cards);
+
+            response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("businesstxn/completion/faults")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction completion fault details associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCompletionFaultDetails(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                value = "business transaction criteria") BusinessTransactionCriteria criteria) {
+
+        try {
+            log.tracef("Get business transaction completion fault details for criteria (POST) [%s]",
+                    criteria);
+
+            List<Cardinality> cards = analyticsService.getCompletionFaultDetails(
+                    securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Got business transaction completion fault details for criteria (POST) [%s] = %s",
+                                criteria, cards);
+
+            response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
+    @Path("businesstxn/completion/property/{property}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction completion property details associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCompletionPropertyDetails(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "business transaction name") @QueryParam("name") String name,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                            @ApiParam(required = false,
+                    value = "property") @PathParam("property") String property) {
+
+        try {
+            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+            criteria.setName(name);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            BusinessTransactionHandler.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction completion property details for criteria (GET) [%s] property [%s]",
+                    criteria, property);
+
+            List<Cardinality> cards = analyticsService.getCompletionPropertyDetails(
+                    securityProvider.getTenantId(context), criteria, property);
+
+            log.tracef("Got business transaction completion property details for criteria (GET) [%s] = %s",
+                                            criteria, cards);
+
+            response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Exception e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("businesstxn/completion/property/{property}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction completion property details associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCompletionPropertyDetails(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+                value = "property") @PathParam("property") String property,
+            @ApiParam(required = true,
+                value = "business transaction criteria") BusinessTransactionCriteria criteria) {
+
+        try {
+            log.tracef("Get business transaction completion property details for criteria (POST) [%s] property [%s]",
+                    criteria, property);
+
+            List<Cardinality> cards = analyticsService.getCompletionPropertyDetails(
+                    securityProvider.getTenantId(context), criteria, property);
+
+            log.tracef("Got business transaction completion property details for criteria (POST) [%s] = %s",
+                                        criteria, cards);
+
+            response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Exception e) {
