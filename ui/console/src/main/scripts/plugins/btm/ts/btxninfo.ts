@@ -29,26 +29,22 @@ module BTM {
       properties: [],
       faults: [],
       startTime: -3600000,
-      endTime: 0
+      endTime: "0",
+      lowerBound: 0
     };
 
     $scope.config = {
       interval: 60000,
-      selectedProperty: undefined
+      selectedProperty: undefined,
+      lowerBoundDisplay: 0,
+      prevLowerBoundDisplay: 0
     };
 
     $scope.reload = function() {
       $http.post('/hawkular/btm/analytics/businesstxn/completion/statistics?interval='+$scope.config.interval, $scope.criteria).then(function(resp) {
         $scope.statistics = resp.data;
-        
-        $scope.ctlinechart.load({
-          json: $scope.statistics,
-          keys: {
-            value: ['max','average','min','count','faultCount'],
-            x: 'timestamp'
-          }
-        });
-
+        $scope.updatedBounds();
+        $scope.redrawLineChart();
       },function(resp) {
         console.log("Failed to get statistics: "+resp);
       });
@@ -87,6 +83,16 @@ module BTM {
       }
     };
 
+    $scope.redrawLineChart = function() {
+      $scope.ctlinechart.load({
+        json: $scope.statistics,
+        keys: {
+          value: ['max','average','min','count','faultCount'],
+          x: 'timestamp'
+        }
+      });
+    };
+
     $scope.reloadProperty = function() {
       $http.post('/hawkular/btm/analytics/businesstxn/completion/property/'+$scope.config.selectedProperty, $scope.criteria).then(function(resp) {
         $scope.propertyDetails = resp.data;
@@ -115,7 +121,11 @@ module BTM {
     $scope.reload();
 
     $interval(function() {
-      $scope.reload();
+      if ($scope.criteria.endTime === "0" || $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
+        $scope.reload();
+        
+        $scope.config.prevLowerBoundDisplay = $scope.config.lowerBoundDisplay;
+      }
     },10000);
 
     $scope.initGraph = function() {
@@ -156,6 +166,7 @@ module BTM {
           },
           y: {
             label: 'Seconds',
+            padding: {bottom: 0},
             tick: {
               format: function (y) { return y / 1000000000; }
             }
@@ -225,5 +236,30 @@ module BTM {
       element.excluded = !element.excluded;
       $scope.reload();
     };
+
+    $scope.updatedBounds = function() {
+      if ($scope.config.lowerBoundDisplay === 0) {
+        $scope.criteria.lowerBound = 0;
+      } else {
+        var maxDuration = 0;
+        for (var i=0; i < $scope.statistics.length; i++) {
+          if ($scope.statistics[i].max > maxDuration) {
+            maxDuration = $scope.statistics[i].max;
+          }
+        }
+        if (maxDuration > 0) {
+          $scope.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
+        }
+      }
+    };
+
+    $scope.selectAction = function() {
+      $scope.reload();
+    };
+
+    $scope.currentDateTime = function() {
+      return new Date();
+    };
+
   }]);
 }

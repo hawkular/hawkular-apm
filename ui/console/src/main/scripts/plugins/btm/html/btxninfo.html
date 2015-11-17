@@ -48,16 +48,21 @@
       <form>
         <div class="form-group">
           <label for="intervalField" style="width: 10%" class="" >Aggregation Interval:</label>
-          <select name="intervalField" ng-model="config.interval" style="width: 10%">
-            <option value="1000">Seconds</option>
-            <option value="60000">Minutes</option>
-            <option value="3600000">Hours</option>
+          <select name="intervalField" ng-model="config.interval" ng-change="selectAction()" style="width: 10%">
+            <option value="1000">1 Second</option>
+            <option value="10000">10 Second</option>
+            <option value="30000">30 Second</option>
+            <option value="60000">1 Minute</option>
+            <option value="600000">10 Minutes</option>
+            <option value="3600000">1 Hour</option>
+            <option value="86400000">1 Day</option>
+            <option value="604800000">7 Day</option>
           </select>
 
           <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
 
-          <label for="timeSpanField" style="width: 5%" >Time span:</label>
-          <select name="timeSpanField" ng-model="criteria.startTime" style="width: 10%">
+          <label for="timeSpanField" style="width: 5%" >Time Span:</label>
+          <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()" style="width: 10%">
             <option value="-60000">1 Minute</option>
             <option value="-600000">10 Minutes</option>
             <option value="-1800000">30 Minutes</option>
@@ -76,9 +81,17 @@
           <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
 
           <label for="endTimeField" style="width: 3%" >Until:</label>
-          <select name="endTimeField" ng-model="criteria.endTime" style="width: 10%">
+          <select name="endTimeField" ng-model="criteria.endTime" ng-change="selectAction()" style="width: 10%">
             <option value="0">Now</option>
+            <option value="{{currentDateTime().getTime()}}">{{currentDateTime() | date:'dd MMM yyyy HH:mm:ss'}}</option>
           </select>
+
+          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+
+          <label for="lowerBoundField" style="width: 8%" >Lower Bound(%):</label>
+          <input type="number" ng-model="config.lowerBoundDisplay"
+                name="lowerBoundField" ng-change="updatedBounds()"
+                min="0" max="100">
         </div>
       </form>
     </span>

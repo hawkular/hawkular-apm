@@ -31,7 +31,37 @@ public class CompletionTimeCriteria extends BaseCriteria {
 
     private final Logger log = Logger.getLogger(CompletionTimeCriteria.class.getName());
 
+    private long upperBound;
+    private long lowerBound;
     private Set<FaultCriteria> faults = new HashSet<FaultCriteria>();
+
+    /**
+     * @return the upperBound
+     */
+    public long getUpperBound() {
+        return upperBound;
+    }
+
+    /**
+     * @param upperBound the upperBound to set
+     */
+    public void setUpperBound(long upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    /**
+     * @return the lowerBound
+     */
+    public long getLowerBound() {
+        return lowerBound;
+    }
+
+    /**
+     * @param lowerBound the lowerBound to set
+     */
+    public void setLowerBound(long lowerBound) {
+        this.lowerBound = lowerBound;
+    }
 
     /**
      * @return the faults
@@ -86,8 +116,8 @@ public class CompletionTimeCriteria extends BaseCriteria {
      */
     @Override
     public String toString() {
-        return "CompletionTimeCriteria [faults=" + faults + ", toString()=" + super.toString()
-                + "]";
+        return "CompletionTimeCriteria [upperBound=" + upperBound + ", lowerBound=" + lowerBound + ", faults="
+                + faults + ", toString()=" + super.toString() + "]";
     }
 
     /**

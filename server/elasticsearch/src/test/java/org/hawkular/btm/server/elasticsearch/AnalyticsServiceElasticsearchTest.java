@@ -611,6 +611,126 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCompletionStatisticsWithLowerBound() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(500);
+        cts.add(ct2);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setLowerBound(200);
+        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+
+        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria,
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+        assertEquals(2000, stats.get(1).getTimestamp());
+
+        assertEquals(1, stats.get(0).getCount());
+        assertEquals(1, stats.get(1).getCount());
+
+        assertTrue(stats.get(0).getMin() == 300);
+        assertTrue(stats.get(0).getAverage() == 300);
+        assertTrue(stats.get(0).getMax() == 300);
+
+        assertTrue(stats.get(1).getMin() == 500);
+        assertTrue(stats.get(1).getAverage() == 500);
+        assertTrue(stats.get(1).getMax() == 500);
+
+        assertEquals(0, stats.get(0).getFaultCount());
+        assertEquals(0, stats.get(1).getFaultCount());
+    }
+
+    @Test
+    public void testGetCompletionStatisticsWithUpperBound() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(500);
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(300);
+        cts.add(ct2);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.setUpperBound(400);
+        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+
+        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria,
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+        assertEquals(2000, stats.get(1).getTimestamp());
+
+        assertEquals(1, stats.get(0).getCount());
+        assertEquals(1, stats.get(1).getCount());
+
+        assertTrue(stats.get(0).getMin() == 100);
+        assertTrue(stats.get(0).getAverage() == 100);
+        assertTrue(stats.get(0).getMax() == 100);
+
+        assertTrue(stats.get(1).getMin() == 300);
+        assertTrue(stats.get(1).getAverage() == 300);
+        assertTrue(stats.get(1).getMax() == 300);
+
+        assertEquals(0, stats.get(0).getFaultCount());
+        assertEquals(0, stats.get(1).getFaultCount());
+    }
+
+    @Test
     public void testGetCompletionStatisticsWithFaults() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
