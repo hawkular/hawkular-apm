@@ -20,6 +20,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.services.BaseCriteria;
 import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
@@ -83,6 +84,17 @@ public class ElasticsearchUtil {
                     query = query.must(QueryBuilders.matchQuery("fault", fc.getValue()));
                 }
             }
+        }
+
+        if (criteria.getLowerBound() > 0 || criteria.getUpperBound() > 0) {
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("duration");
+            if (criteria.getLowerBound() > 0) {
+                rangeQuery.gte(criteria.getLowerBound());
+            }
+            if (criteria.getUpperBound() > 0) {
+                rangeQuery.lte(criteria.getUpperBound());
+            }
+            query = query.must(rangeQuery);
         }
 
         return query;
@@ -149,4 +161,5 @@ public class ElasticsearchUtil {
         }
         return null;
     }
+
 }

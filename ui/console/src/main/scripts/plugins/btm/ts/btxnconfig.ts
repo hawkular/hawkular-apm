@@ -38,7 +38,9 @@ module BTM {
           var array=resp.data[key];
           for (var i = 0; i < array.length; i++) {
             var regex = $scope.escapeRegExp(array[i]);
-            $scope.unboundURIs.add(regex);
+            if (regex !== undefined) {
+              $scope.unboundURIs.add(regex);
+            }
           }
         }
       }
@@ -196,6 +198,9 @@ module BTM {
     });
 
     $scope.escapeRegExp = function(str) {
+      if (str === undefined) {
+        return;
+      }
       return "^" + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "$";
     };
 
