@@ -33,15 +33,10 @@ module BTM {
 
     $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
       $scope.unboundURIs = [ ];
-      for (var key in resp.data) {
-        if (key !== undefined) {
-          var array=resp.data[key];
-          for (var i = 0; i < array.length; i++) {
-            var regex = $scope.escapeRegExp(array[i]);
-            if (regex !== undefined) {
-              $scope.unboundURIs.add(regex);
-            }
-          }
+      for (var i=0; i < resp.data.length; i++) {
+        var regex = $scope.escapeRegExp(resp.data[i].uri);
+        if (regex !== undefined) {
+          $scope.unboundURIs.add(regex);
         }
       }
     },function(resp) {
