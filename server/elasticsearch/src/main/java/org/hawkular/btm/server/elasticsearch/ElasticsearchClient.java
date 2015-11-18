@@ -181,7 +181,9 @@ public class ElasticsearchClient {
         if (!knownTenants.contains(tenantId)) {
             synchronized (knownTenants) {
                 if (!knownTenants.contains(tenantId)) {
-                    log.info("Initialise mappings for tenantId = " + tenantId);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Initialise mappings for tenantId = " + tenantId);
+                    }
 
                     InputStream s = Thread.currentThread().getContextClassLoader()
                             .getResourceAsStream(HAWKULAR_BTM_MAPPING_JSON);

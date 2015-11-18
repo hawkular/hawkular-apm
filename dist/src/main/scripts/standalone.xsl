@@ -80,11 +80,14 @@
       <jms-topic name="BusinessTransactions">
         <entry name="java:/BusinessTransactions"/>
       </jms-topic>
-      <jms-topic name="ResponseTimes">
-        <entry name="java:/ResponseTimes"/>
-      </jms-topic>
       <jms-topic name="CompletionTimes">
         <entry name="java:/CompletionTimes"/>
+      </jms-topic>
+      <jms-topic name="Notifications">
+        <entry name="java:/Notifications"/>
+      </jms-topic>
+      <jms-topic name="ResponseTimes">
+        <entry name="java:/ResponseTimes"/>
       </jms-topic>
     </xsl:variable>
 

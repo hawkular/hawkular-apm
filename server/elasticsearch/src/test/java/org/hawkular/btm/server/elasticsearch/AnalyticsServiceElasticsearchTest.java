@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
-import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
@@ -39,6 +38,7 @@ import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.Filter;
+import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;

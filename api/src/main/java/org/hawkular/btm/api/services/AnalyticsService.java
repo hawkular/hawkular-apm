@@ -19,12 +19,12 @@ package org.hawkular.btm.api.services;
 import java.util.List;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
-import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
+import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.api.model.events.ResponseTime;
 
 /**
  * This interface represents the available analytics capabilities.

@@ -16,15 +16,20 @@
  */
 package org.hawkular.btm.client.collector.internal.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Issue;
+import org.hawkular.btm.api.model.btxn.Issue.Severity;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.ExpressionBasedAction;
+import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
@@ -49,10 +54,12 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
 
     /**
      * This method initialises the process action handler.
+     *
+     * @param processor The processor
      */
     @Override
-    public void init() {
-        super.init();
+    public void init(Processor processor) {
+        super.init(processor);
         if (((ExpressionBasedAction) getAction()).getExpression() != null) {
             try {
                 ParserContext ctx = new ParserContext();
@@ -77,8 +84,21 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
                     setUsesContent(text.indexOf("values[") != -1);
                 }
             } catch (Throwable t) {
-                log.log(Level.SEVERE, "Failed to compile expression for action '"
-                        + getAction() + "'", t);
+                if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE, "Failed to compile expression for action '"
+                            + getAction() + "'", t);
+                }
+
+                ProcessorIssue pi = new ProcessorIssue();
+                pi.setProcessor(processor.getDescription());
+                pi.setAction(getAction().getDescription());
+                pi.setSeverity(Severity.Error);
+                pi.setDescription(t.getMessage());
+
+                if (getNotifications() == null) {
+                    setNotifications(new ArrayList<Issue>());
+                }
+                getNotifications().add(pi);
             }
         } else {
             log.severe("No action expression defined for processor action=" + getAction());

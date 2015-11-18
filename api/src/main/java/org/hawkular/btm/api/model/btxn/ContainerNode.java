@@ -52,6 +52,14 @@ public abstract class ContainerNode extends Node {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean containerNode() {
+        return true;
+    }
+
+    /**
      * @return the nodes
      */
     public List<Node> getNodes() {

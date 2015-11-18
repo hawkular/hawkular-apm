@@ -18,23 +18,22 @@ package org.hawkular.btm.server.api.services;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.events.ResponseTime;
+import org.hawkular.btm.api.model.events.Notification;
 
 /**
- * This interface provides the capability for publishing response time
- * information.
+ * This interface provides the capability for publishing notifications.
  *
  * @author gbrown
  */
-public interface ResponseTimePublisher {
+public interface NotificationPublisher {
 
     /**
-     * This method publishes the list of response times.
+     * This method publishes the list of notifications.
      *
      * @param tenantId The tenant
-     * @param rts The list of response times
-     * @throws Exception Failed to publish response times
+     * @param nots The list of notifications
+     * @throws Exception Failed to publish notifications
      */
-    void publish(String tenantId, List<ResponseTime> rts) throws Exception;
+    void publish(String tenantId, List<Notification> nots) throws Exception;
 
 }

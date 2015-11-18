@@ -18,20 +18,20 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.events.CompletionTime;
-import org.hawkular.btm.server.api.services.CompletionTimePublisher;
+import org.hawkular.btm.api.model.events.Notification;
+import org.hawkular.btm.server.api.services.NotificationPublisher;
 
 /**
- * This class represents the completion time JMS publisher.
+ * This class represents the notification JMS publisher.
  *
  * @author gbrown
  */
-public class CompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
-        implements CompletionTimePublisher {
+public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
+implements NotificationPublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;
-    private static final String DESTINATION = "java:/CompletionTimes";
+    private static final String DESTINATION = "java:/Notifications";
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.server.jms.AbstractPublisherJMS#getDestinationURI()
@@ -42,11 +42,11 @@ public class CompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionT
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.services.CompletionTimePublisher#publish(java.lang.String, java.util.List)
+     * @see org.hawkular.btm.server.api.services.NotificationPublisher#publish(java.lang.String, java.util.List)
      */
     @Override
-    public void publish(String tenantId, List<CompletionTime> cts) throws Exception {
-        doPublish(tenantId, cts, MAX_RETRIES);
+    public void publish(String tenantId, List<Notification> nots) throws Exception {
+        doPublish(tenantId, nots, MAX_RETRIES);
     }
 
 }

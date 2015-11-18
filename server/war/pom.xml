@@ -69,6 +69,10 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-notification-deriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-responsetime-deriver</artifactId>
     </dependency>
 

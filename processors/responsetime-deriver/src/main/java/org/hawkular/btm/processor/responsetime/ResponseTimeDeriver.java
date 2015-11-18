@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.events.ResponseTime;
 import org.hawkular.btm.server.api.task.Processor;
 
 /**
