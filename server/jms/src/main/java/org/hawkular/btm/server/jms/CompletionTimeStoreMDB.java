@@ -31,7 +31,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 
 import com.fasterxml.jackson.core.type.TypeReference;

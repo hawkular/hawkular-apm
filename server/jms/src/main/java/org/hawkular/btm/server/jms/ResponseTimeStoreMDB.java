@@ -31,7 +31,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.events.ResponseTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -67,7 +67,7 @@ public class ResponseTimeStoreMDB implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Repsonse time received=" + message);
+            log.finest("Response time received=" + message);
         }
 
         try {

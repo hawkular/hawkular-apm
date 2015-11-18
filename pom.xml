@@ -67,8 +67,9 @@
     <module>client/client-manager</module>
     <module>client/client-rest</module>
     <module>client/config-service-rest-client</module>
-    <module>processors/responsetime-deriver</module>
     <module>processors/completiontime-deriver</module>
+    <module>processors/notification-deriver</module>
+    <module>processors/responsetime-deriver</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
     <module>server/elasticsearch-proxy</module>
@@ -186,6 +187,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-completiontime-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-notification-deriver</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

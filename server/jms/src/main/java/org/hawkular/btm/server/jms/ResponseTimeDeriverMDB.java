@@ -31,8 +31,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.hawkular.btm.api.model.analytics.ResponseTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.events.ResponseTime;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.processor.responsetime.ResponseTimeDeriver;
 import org.hawkular.btm.server.api.services.ResponseTimePublisher;

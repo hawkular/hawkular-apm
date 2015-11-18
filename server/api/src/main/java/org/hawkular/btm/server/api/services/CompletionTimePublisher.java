@@ -18,7 +18,7 @@ package org.hawkular.btm.server.api.services;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.analytics.CompletionTime;
+import org.hawkular.btm.api.model.events.CompletionTime;
 
 /**
  * This interface provides the capability for publishing completion time

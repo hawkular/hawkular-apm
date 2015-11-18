@@ -16,14 +16,20 @@
  */
 package org.hawkular.btm.client.collector.internal.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Issue;
+import org.hawkular.btm.api.model.btxn.Issue.Severity;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
@@ -41,6 +47,8 @@ public abstract class ProcessorActionHandler {
 
     private boolean usesHeaders = false;
     private boolean usesContent = false;
+
+    private List<Issue> issues;
 
     public ProcessorActionHandler(ProcessorAction action) {
         this.setAction(action);
@@ -89,9 +97,25 @@ public abstract class ProcessorActionHandler {
     }
 
     /**
-     * This method initialises the process action handler.
+     * @return the notifications
      */
-    public void init() {
+    public List<Issue> getNotifications() {
+        return issues;
+    }
+
+    /**
+     * @param notifications the notifications to set
+     */
+    public void setNotifications(List<Issue> notifications) {
+        this.issues = notifications;
+    }
+
+    /**
+     * This method initialises the process action handler.
+     *
+     * @param processor The processor
+     */
+    public void init(Processor processor) {
         if (action.getPredicate() != null) {
             try {
                 ParserContext ctx = new ParserContext();
@@ -112,8 +136,21 @@ public abstract class ProcessorActionHandler {
                 setUsesHeaders(text.indexOf("headers.") != -1);
                 setUsesContent(text.indexOf("values[") != -1);
             } catch (Throwable t) {
-                log.log(Level.SEVERE, "Failed to compile predicate for action '"
-                        + action + "'", t);
+                if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE, "Failed to compile predicate for action '"
+                            + action + "'", t);
+                }
+
+                ProcessorIssue pi = new ProcessorIssue();
+                pi.setProcessor(processor.getDescription());
+                pi.setAction(action.getDescription());
+                pi.setSeverity(Severity.Error);
+                pi.setDescription(t.getMessage());
+
+                if (issues == null) {
+                    issues = new ArrayList<Issue>();
+                }
+                issues.add(pi);
             }
         }
     }
@@ -139,6 +176,11 @@ public abstract class ProcessorActionHandler {
             vars.put("values", values);
 
             return (Boolean) MVEL.executeExpression(compiledPredicate, vars);
+        }
+
+        // Associate any initialisation issues with the node
+        if (issues != null) {
+            node.getIssues().addAll(issues);
         }
 
         return true;

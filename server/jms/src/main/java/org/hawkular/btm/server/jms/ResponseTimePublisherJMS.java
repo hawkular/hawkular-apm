@@ -18,7 +18,7 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.analytics.ResponseTime;
+import org.hawkular.btm.api.model.events.ResponseTime;
 import org.hawkular.btm.server.api.services.ResponseTimePublisher;
 
 /**

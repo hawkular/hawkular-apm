@@ -69,6 +69,9 @@ public abstract class Node {
     @JsonInclude(Include.NON_EMPTY)
     private List<CorrelationIdentifier> correlationIds = new ArrayList<CorrelationIdentifier>();
 
+    @JsonInclude(Include.NON_EMPTY)
+    private List<Issue> issues = new ArrayList<Issue>();
+
     public Node(NodeType type) {
         this.type = type;
     }
@@ -76,6 +79,15 @@ public abstract class Node {
     public Node(NodeType type, String uri) {
         this(type);
         this.uri = uri;
+    }
+
+    /**
+     * This method indicates whether this is a container based node.
+     *
+     * @return Whether the node is a container
+     */
+    public boolean containerNode() {
+        return false;
     }
 
     /**
@@ -265,6 +277,20 @@ public abstract class Node {
         }
 
         return ret == null ? Collections.emptyList() : ret;
+    }
+
+    /**
+     * @return the issues
+     */
+    public List<Issue> getIssues() {
+        return issues;
+    }
+
+    /**
+     * @param issues the issues to set
+     */
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
     }
 
     /**

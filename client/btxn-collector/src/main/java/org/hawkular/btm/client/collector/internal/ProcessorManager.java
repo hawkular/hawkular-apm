@@ -27,8 +27,11 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
+import org.hawkular.btm.api.model.btxn.Issue;
+import org.hawkular.btm.api.model.btxn.Issue.Severity;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.NodeType;
+import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
@@ -255,6 +258,8 @@ public class ProcessorManager {
         private boolean usesHeaders = false;
         private boolean usesContent = false;
 
+        private List<Issue> issues;
+
         /**
          * This constructor is initialised with the processor.
          *
@@ -299,12 +304,25 @@ public class ProcessorManager {
                     usesContent = text.indexOf("values[") != -1;
                 }
             } catch (Throwable t) {
-                log.log(Level.SEVERE, "Failed to compile processor predicate '"
-                        + processor.getPredicate() + "'", t);
+                if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE, "Failed to compile processor predicate '"
+                            + processor.getPredicate() + "'", t);
+                }
+
+                ProcessorIssue pi = new ProcessorIssue();
+                pi.setProcessor(processor.getDescription());
+                pi.setSeverity(Severity.Error);
+                pi.setDescription(t.getMessage());
+
+                if (issues == null) {
+                    issues = new ArrayList<Issue>();
+                }
+                issues.add(pi);
             }
 
             for (int i = 0; i < processor.getActions().size(); i++) {
-                ProcessorActionWrapper paw = new ProcessorActionWrapper(processor.getActions().get(i));
+                ProcessorActionWrapper paw = new ProcessorActionWrapper(processor,
+                        processor.getActions().get(i));
                 if (!usesHeaders) {
                     usesHeaders = paw.isUsesHeaders();
                 }
@@ -425,6 +443,12 @@ public class ProcessorManager {
                     return;
                 }
 
+                // Associate any issues created during initialisation with
+                // the node
+                if (issues != null) {
+                    node.getIssues().addAll(issues);
+                }
+
                 if (compiledPredicate != null) {
                     Map<String, Object> vars = new HashMap<String, Object>();
                     vars.put("btxn", btxn);
@@ -432,10 +456,20 @@ public class ProcessorManager {
                     vars.put("headers", headers);
                     vars.put("values", values);
 
-                    if (!((Boolean) MVEL.executeExpression(compiledPredicate, vars))) {
-                        if (log.isLoggable(Level.FINEST)) {
-                            log.finest("ProcessManager/Processor: process - predicate returned false");
+                    try {
+                        if (!((Boolean) MVEL.executeExpression(compiledPredicate, vars))) {
+                            if (log.isLoggable(Level.FINEST)) {
+                                log.finest("ProcessManager/Processor: process - predicate returned false");
+                            }
+                            return;
                         }
+                    } catch (Throwable t) {
+                        ProcessorIssue pi = new ProcessorIssue();
+                        pi.setProcessor(processor.getDescription());
+                        pi.setSeverity(Severity.Error);
+                        pi.setDescription(t.getMessage());
+                        node.getIssues().add(pi);
+
                         return;
                     }
                 }
@@ -462,16 +496,21 @@ public class ProcessorManager {
     public class ProcessorActionWrapper {
 
         private ProcessorActionHandler handler;
+        private String processorDescription;
+        private String actionDescription;
 
         /**
          * This constructor is initialised with the processor action.
          *
+         * @param processor The processor
          * @param action The processor action
          */
-        public ProcessorActionWrapper(ProcessorAction action) {
+        public ProcessorActionWrapper(Processor processor, ProcessorAction action) {
+            this.processorDescription = processor.getDescription();
+            this.actionDescription = action.getDescription();
             handler = ProcessorActionHandlerFactory.getHandler(action);
             if (handler != null) {
-                handler.init();
+                handler.init(processor);
             }
         }
 
@@ -536,7 +575,16 @@ public class ProcessorManager {
                 }
             }
 
-            handler.process(btxn, node, direction, headers, values);
+            try {
+                handler.process(btxn, node, direction, headers, values);
+            } catch (Throwable t) {
+                ProcessorIssue pi = new ProcessorIssue();
+                pi.setProcessor(processorDescription);
+                pi.setAction(actionDescription);
+                pi.setSeverity(Severity.Error);
+                pi.setDescription(t.getMessage());
+                node.getIssues().add(pi);
+            }
         }
     }
 }

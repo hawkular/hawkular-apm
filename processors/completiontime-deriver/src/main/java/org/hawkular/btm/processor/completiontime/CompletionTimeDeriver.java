@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.analytics.CompletionTime;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.server.api.task.Processor;
 
 /**

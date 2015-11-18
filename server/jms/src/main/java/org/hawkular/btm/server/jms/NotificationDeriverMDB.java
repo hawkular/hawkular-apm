@@ -32,10 +32,10 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.api.model.events.Notification;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
-import org.hawkular.btm.processor.completiontime.CompletionTimeDeriver;
-import org.hawkular.btm.server.api.services.CompletionTimePublisher;
+import org.hawkular.btm.processor.notification.NotificationDeriver;
+import org.hawkular.btm.server.api.services.NotificationPublisher;
 import org.hawkular.btm.server.api.task.Handler;
 import org.hawkular.btm.server.api.task.ProcessingUnit;
 
@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_CompletionTimeDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "BusinessTransaction_NotificationDeriver", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
@@ -53,9 +53,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class CompletionTimeDeriverMDB implements MessageListener {
+public class NotificationDeriverMDB implements MessageListener {
 
-    private static final Logger log = Logger.getLogger(CompletionTimeDeriverMDB.class.getName());
+    private static final Logger log = Logger.getLogger(NotificationDeriverMDB.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -63,13 +63,13 @@ public class CompletionTimeDeriverMDB implements MessageListener {
             new TypeReference<java.util.List<BusinessTransaction>>() {
     };
 
-    private static CompletionTimeDeriver processor = new CompletionTimeDeriver();
+    private static NotificationDeriver processor = new NotificationDeriver();
 
     @Inject
     private BusinessTransactionPublisher businessTransactionPublisher;
 
     @Inject
-    private CompletionTimePublisher completionTimePublisher;
+    private NotificationPublisher notificationPublisher;
 
     /* (non-Javadoc)
      * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
@@ -77,7 +77,7 @@ public class CompletionTimeDeriverMDB implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("CompletionTimeDeriver received=" + message);
+            log.finest("NotificationDeriver received=" + message);
         }
 
         try {
@@ -95,16 +95,16 @@ public class CompletionTimeDeriverMDB implements MessageListener {
 
             List<BusinessTransaction> btxns = mapper.readValue(data, BUSINESS_TXN_LIST);
 
-            ProcessingUnit<BusinessTransaction, CompletionTime> pu =
-                    new ProcessingUnit<BusinessTransaction, CompletionTime>();
+            ProcessingUnit<BusinessTransaction, Notification> pu =
+                    new ProcessingUnit<BusinessTransaction, Notification>();
 
             pu.setProcessor(processor);
             pu.setRetryCount(retryCount);
 
-            pu.setResultHandler(new Handler<CompletionTime>() {
+            pu.setResultHandler(new Handler<Notification>() {
                 @Override
-                public void handle(List<CompletionTime> items) throws Exception {
-                    completionTimePublisher.publish(tenantId, items);
+                public void handle(List<Notification> items) throws Exception {
+                    notificationPublisher.publish(tenantId, items);
                 }
             });
 
