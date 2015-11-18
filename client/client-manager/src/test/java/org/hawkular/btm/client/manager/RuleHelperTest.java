@@ -47,7 +47,7 @@ public class RuleHelperTest {
     public void testCast() {
         RuleHelper helper = new RuleHelper(null);
 
-        String str=helper.<String>cast("hello", String.class);
+        String str = helper.<String> cast("hello", String.class);
 
         assertEquals("hello", str);
     }
@@ -56,9 +56,9 @@ public class RuleHelperTest {
     public void testCastIncorrect() {
         RuleHelper helper = new RuleHelper(null);
 
-        TestObject1 to1=new TestObject1();
+        TestObject1 to1 = new TestObject1();
 
-        TestObject2 to2=helper.<TestObject2>cast(to1, TestObject2.class);
+        TestObject2 to2 = helper.<TestObject2> cast(to1, TestObject2.class);
 
         assertNull(to2);
     }
@@ -83,6 +83,54 @@ public class RuleHelperTest {
         RuleHelper helper = new RuleHelper(null);
 
         assertEquals(expected, helper.removeAfter(original, marker));
+    }
+
+    @Test
+    public void testFormatSQL() {
+        RuleHelper helper = new RuleHelper(null);
+
+        String pretext = "prep79: ";
+        String sql = "select performanc0_.show_id as show_id3_0_1_, performanc0_.id as id1_5_1_, performanc0_.id "
+                + "as id1_5_0_, performanc0_.date as date2_5_0_, performanc0_.show_id as show_id3_5_0_ from "
+                + "Performance performanc0_ where performanc0_.show_id=? order by performanc0_.date {1: 1}";
+
+        String result = helper.formatSQL(pretext + sql);
+
+        assertEquals(sql, result);
+    }
+
+    @Test
+    public void testFormatSQL2() {
+        RuleHelper helper = new RuleHelper(null);
+
+        String pretext = "prep102: ";
+        String sql = "select mediaitem0_.id as id1_4_0_, mediaitem0_.mediaType as mediaTyp2_4_0_, mediaitem0_.url "
+                + "as url3_4_0_ from MediaItem mediaitem0_ where mediaitem0_.id=? {1: 22}";
+
+        String result = helper.formatSQL(pretext + sql);
+
+        assertEquals(sql, result);
+    }
+
+    @Test
+    public void testFormatSQLWithBinary() {
+        RuleHelper helper = new RuleHelper(null);
+
+        String pretext = "update SectionAllocation set allocated=?, occupiedCount=?, performance_id=?, "
+                + "section_id=?, version=? where id=? and version=? {1: ";
+        String binary = "X'aced0005757200035b5b4afe76f8764a55dfbd020000787000000014757200025b4a782004b512b1759"
+                + "3020000787000000064ffffffffffffffffffffffffffffffff00000000000000000000000000000000000000"
+                + "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                + "00000000000000000000000000000000000000000000000000000000007571007e000200000064000000000000"
+                + "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'";
+        String posttext = ", 2: 4, 3: 1, 4: 1, 5: 2, 6: 1, 7:   }";
+
+        String pre = pretext + binary + posttext;
+        String expected = pretext + RuleHelper.BINARY_SQL_MARKER + posttext;
+
+        String result = helper.formatSQL(pre);
+
+        assertEquals(expected, result);
     }
 
     public class TestObject1 {

@@ -19,7 +19,7 @@
         },{
           "type": "SetDetail",
           "name": "statement",
-          "valueExpression": "$0"
+          "valueExpression": "formatSQL($0)"
         },{
           "type": "SetDetail",
           "name": "action",
@@ -62,7 +62,7 @@
         },{
           "type": "SetDetail",
           "name": "statement",
-          "valueExpression": "$0"
+          "valueExpression": "formatSQL($0)"
         },{
           "type": "SetDetail",
           "name": "action",
@@ -105,7 +105,7 @@
         },{
           "type": "SetDetail",
           "name": "statement",
-          "valueExpression": "$0"
+          "valueExpression": "formatSQL($0)"
         },{
           "type": "SetDetail",
           "name": "action",
@@ -148,7 +148,7 @@
         },{
           "type": "SetDetail",
           "name": "statement",
-          "valueExpression": "$0"
+          "valueExpression": "formatSQL($0)"
         },{
           "type": "SetDetail",
           "name": "action",
