@@ -43,6 +43,9 @@ import org.jboss.byteman.rule.helper.Helper;
  */
 public class RuleHelper extends Helper implements SessionManager {
 
+    /**  */
+    public static final String BINARY_SQL_MARKER = "<binary>";
+
     private static final Logger log = Logger.getLogger(RuleHelper.class.getName());
 
     private static Map<String, HeadersAccessor> headersAccessors = new HashMap<String, HeadersAccessor>();
@@ -172,13 +175,36 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
+     * This method attempts to return a SQL statement.
+     *
+     * @param obj The object
+     * @return The SQL statement
+     */
+    public String formatSQL(Object obj) {
+        String sql = null;
+
+        if (obj != null) {
+            sql = toString(obj);
+
+            if (sql != null) {
+                if (sql.startsWith("prep")) {
+                    sql = sql.replaceFirst("prep[0-9]*: ", "");
+                }
+                sql = sql.replaceAll("X'.*'", BINARY_SQL_MARKER);
+            }
+        }
+
+        return sql;
+    }
+
+    /**
      * This method attempts to locate a descriptor for the fault.
      *
      * @param fault The fault
      * @return The descriptor, or null if not found
      */
     protected FaultDescriptor getFaultDescriptor(Object fault) {
-        for (int i=0; i < faultDescriptors.size(); i++) {
+        for (int i = 0; i < faultDescriptors.size(); i++) {
             if (faultDescriptors.get(i).isValid(fault)) {
                 return faultDescriptors.get(i);
             }
@@ -193,7 +219,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return The name
      */
     public String faultName(Object fault) {
-        FaultDescriptor fd=getFaultDescriptor(fault);
+        FaultDescriptor fd = getFaultDescriptor(fault);
         if (fd != null) {
             return fd.getName(fault);
         }
@@ -207,7 +233,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return The description
      */
     public String faultDescription(Object fault) {
-        FaultDescriptor fd=getFaultDescriptor(fault);
+        FaultDescriptor fd = getFaultDescriptor(fault);
         if (fd != null) {
             return fd.getDescription(fault);
         }
@@ -335,7 +361,7 @@ public class RuleHelper extends Helper implements SessionManager {
     @Override
     public void initiateCorrelation(String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Initiate correlation location=["+getRuleName()+"] id=["+id+"]");
+            log.finest("Initiate correlation location=[" + getRuleName() + "] id=[" + id + "]");
         }
         collector().session().initiateCorrelation(id);
     }
@@ -354,7 +380,7 @@ public class RuleHelper extends Helper implements SessionManager {
     @Override
     public void correlate(String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Correlate location=["+getRuleName()+"] id=["+id+"]");
+            log.finest("Correlate location=[" + getRuleName() + "] id=[" + id + "]");
         }
         collector().session().correlate(id);
     }
@@ -365,7 +391,7 @@ public class RuleHelper extends Helper implements SessionManager {
     @Override
     public void completeCorrelation(String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Complete correlation location=["+getRuleName()+"] id=["+id+"]");
+            log.finest("Complete correlation location=[" + getRuleName() + "] id=[" + id + "]");
         }
         collector().session().completeCorrelation(id);
     }
@@ -376,7 +402,7 @@ public class RuleHelper extends Helper implements SessionManager {
     @Override
     public void unlink() {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Unlink location=["+getRuleName()+"]");
+            log.finest("Unlink location=[" + getRuleName() + "]");
         }
         collector().session().unlink();
     }
@@ -387,7 +413,7 @@ public class RuleHelper extends Helper implements SessionManager {
     @Override
     public void suppress() {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Suppress location=["+getRuleName()+"]");
+            log.finest("Suppress location=[" + getRuleName() + "]");
         }
         collector().session().suppress();
     }
@@ -398,7 +424,7 @@ public class RuleHelper extends Helper implements SessionManager {
     @Override
     public void assertComplete() {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Assert complete location=["+getRuleName()+"]");
+            log.finest("Assert complete location=[" + getRuleName() + "]");
         }
         collector().session().assertComplete();
     }
