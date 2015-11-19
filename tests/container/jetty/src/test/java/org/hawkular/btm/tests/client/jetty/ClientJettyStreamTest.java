@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -62,6 +63,8 @@ public class ClientJettyStreamTest extends ClientTestBase {
     /**  */
     private static final String HELLO_URL = "http://localhost:8180/hello";
     /**  */
+    private static final String BAD_URL = "http://localhost:9876/hello";
+    /**  */
     private static final String QUERY_STRING = "to=me";
     /**  */
     private static final String HELLO_URL_WITH_QS = HELLO_URL + "?" + QUERY_STRING;
@@ -95,6 +98,7 @@ public class ClientJettyStreamTest extends ClientTestBase {
         }
     }
 
+    /*
     @Test
     public void testGet() {
         testJettyServlet("GET", HELLO_URL, null, false, true);
@@ -137,10 +141,72 @@ public class ClientJettyStreamTest extends ClientTestBase {
         setProcessContent(true);
         testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
+     */
+
+    @Test
+    public void testGetWithBadURL() {
+        String path = null;
+
+        try {
+            URL url = new URL(BAD_URL);
+            path = url.getPath();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            connection.connect();
+
+            fail("ConnectException was not thrown");
+        } catch (ConnectException ce) {
+
+        } catch (Exception e) {
+            fail("Failed to perform get: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait for btxns to store");
+        }
+
+        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
+
+        List<Producer> producers = new ArrayList<Producer>();
+        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+
+        assertEquals("Expecting 1 producers", 1, producers.size());
+
+        Producer testProducer = producers.get(0);
+
+        assertEquals(path, testProducer.getUri());
+        assertEquals("ConnectException", producers.get(0).getFault());
+        assertEquals("Connection refused", producers.get(0).getFaultDescription());
+    }
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
             boolean respexpected) {
-        String path=null;
+        String path = null;
 
         try {
             URL url = new URL(urlstr);

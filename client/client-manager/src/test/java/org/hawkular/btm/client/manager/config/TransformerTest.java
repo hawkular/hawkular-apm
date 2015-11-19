@@ -291,6 +291,39 @@ public class TransformerTest {
     }
 
     @Test
+    public void testTransformConditionLocationExceptionExit() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("EXCEPTION EXIT");
+        ir.setCondition(TEST_CONDITION_1);
+        ir.getParameterTypes().add(TEST_PARAM1);
+        ir.getParameterTypes().add(TEST_PARAM2);
+        ir.getActions().add(im);
+        im.setAction("Action1");
+
+        Instrumentation in = new Instrumentation();
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform("test", in, null);
+
+        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT EXCEPTION EXIT\r\nIF "
+                + TEST_CONDITION_1 + "\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
     public void testTransformMultipleActions() {
         InstrumentRule ir = new InstrumentRule();
         FreeFormAction im1 = new FreeFormAction();

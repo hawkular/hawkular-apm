@@ -61,6 +61,27 @@
           "type": "Unlink"
         }]
       },{
+        "ruleName": "Java HttpUrlConnection Producer End ConnectException",
+        "className": "^java.net.HttpURLConnection",
+        "methodName": "connect",
+        "parameterTypes": [
+        ],
+        "location": "EXCEPTION EXIT",
+        "condition": "isCorrelated(\"java.net-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"java.net-async-\"+hashCode($0)"
+        },{
+          "type": "SetFault",
+          "nameExpression": "simpleClassName($^)",
+          "descriptionExpression": "$^.getMessage()"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$0.getURL().getPath()"
+        }]
+      },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Start",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getOutputStream",
