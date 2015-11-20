@@ -18,7 +18,7 @@ env:
   - secure: LQS+PsFgOMoMtUOPpQF1UotdO3I17Y5nSSqXn56MKA2OvPBWX4ANBe/tKcnkHKDs4+FV3i5d08xxjBIsu/pfQsNedXjhx/B2CZG301oumWyCKukgJ3FIf2IXoN69TDWHU4SSStfck7enbM2G9TV7IHyHL+4x5LIo2xJ+7xL9GxU=
   - secure: W+HwWNFJHw0eXemHopbghj4cFz4WlBxb4aqsErE6DF0MjUfO27BVYy12lSZ/fMU4JpCOVwaceoNu9n2QnaenQkkEFDN4+N+fTpU2EK676NPcYxDYWFm6R6FRQtC75fWh4qT80PwtFLdaqEHtS5yOMx8aQHtFvHwbuGtLBdwwqmQ=
 after_success:
-- PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
+- PROJECT_VERSION=`mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
     mvn -s .travis.maven.settings.xml deploy -DskipTests ;
