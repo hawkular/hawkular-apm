@@ -24,11 +24,19 @@ module BTM {
     $scope.newInclusionFilter = '';
     $scope.newExclusionFilter = '';
 
+    $scope.messages = [];
+
     $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
+
+      $http.post('/hawkular/btm/config/businesstxn/validate',$scope.businessTransaction).then(function(resp) {
+        $scope.messages = resp.data;
+      },function(resp) {
+        console.log("Failed to validate business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
+      });
     },function(resp) {
-      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
+      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
     });
 
     $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
@@ -51,7 +59,7 @@ module BTM {
           $scope.boundURIs.add(regex);
         }
       },function(resp) {
-        console.log("Failed to get bound URIs for business txn '"+$scope.businessTransactionName+"': "+resp);
+        console.log("Failed to get bound URIs for business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
       });
     };
 
@@ -153,9 +161,10 @@ module BTM {
       }
     };
 
-    $scope.addAction = function(processor) {
+    $scope.addAction = function(processor, type) {
       $scope.setDirty();
       processor.actions.add({
+        actionType: type,
         description: "Action " + (processor.actions.length + 1)
       });
     };
@@ -178,10 +187,11 @@ module BTM {
 
     $scope.save = function() {
       $http.put('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName,$scope.businessTransaction).then(function(resp) {
+        $scope.messages = resp.data;
         $scope.original = angular.copy($scope.businessTransaction);
         $scope.dirty = false;
       },function(resp) {
-        console.log("Failed to save business txn '"+$scope.businessTransactionName+"': "+resp);
+        console.log("Failed to save business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
       });
     };
 
@@ -197,6 +207,48 @@ module BTM {
         return;
       }
       return "^" + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "$";
+    };
+
+    $scope.closeMessage = function(index) {
+      $scope.messages.splice(index, 1);
+    };
+
+    $scope.getMessageType = function(entry) {
+      var type = 'danger';
+      if (entry.severity === 'Warning') {
+        type = 'warning';
+      } else if (entry.severity === 'Info') {
+        type = 'success';
+      }
+      return type;
+    };
+    
+    $scope.getMessageText = function(entry) {
+      var message = "";
+      if (entry.processor !== undefined) {
+        message = "[" + entry.processor;
+        
+        if (entry.action !== undefined) {
+          message = message + "/" + entry.action;
+        }
+        
+        message = message + "] ";
+      }
+      
+      message = message + entry.message;
+
+      return message;
+    };
+
+    $scope.isError = function(processor,action,field) {
+      for (var i = 0; i < $scope.messages.length; i++) {
+        if ($scope.messages[i].processor === processor.description
+            && $scope.messages[i].action === action.description
+            && $scope.messages[i].field === field) {
+          return true;
+        }
+      }
+      return false;
     };
 
   }]);

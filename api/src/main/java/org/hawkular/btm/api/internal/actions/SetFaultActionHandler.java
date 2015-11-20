@@ -14,30 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
 import java.util.Map;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
-import org.hawkular.btm.api.model.config.btxn.AddCorrelationIdAction;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
 
 /**
- * This handler is associated with the AddCorrelationId action.
+ * This handler is associated with the SetFault action.
  *
  * @author gbrown
  */
-public class AddCorrelationIdActionHandler extends ExpressionBasedActionHandler {
+public class SetFaultActionHandler extends ExpressionBasedActionHandler {
 
     /**
      * This constructor initialises the action.
      *
      * @param action The action
      */
-    public AddCorrelationIdActionHandler(ProcessorAction action) {
+    public SetFaultActionHandler(ProcessorAction action) {
         super(action);
     }
 
@@ -52,8 +50,7 @@ public class AddCorrelationIdActionHandler extends ExpressionBasedActionHandler 
         if (super.process(btxn, node, direction, headers, values)) {
             String value = getValue(btxn, node, direction, headers, values);
             if (value != null) {
-                node.getCorrelationIds().add(
-                        new CorrelationIdentifier(((AddCorrelationIdAction) getAction()).getScope(), value));
+                node.setFault(value);
                 return true;
             }
         }

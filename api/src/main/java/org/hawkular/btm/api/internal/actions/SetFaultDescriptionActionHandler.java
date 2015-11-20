@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
 import java.util.Map;
 
@@ -22,21 +22,20 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.hawkular.btm.api.model.config.btxn.SetPropertyAction;
 
 /**
- * This handler is associated with the SetProperty action.
+ * This handler is associated with the SetFaultDescription action.
  *
  * @author gbrown
  */
-public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
+public class SetFaultDescriptionActionHandler extends ExpressionBasedActionHandler {
 
     /**
      * This constructor initialises the action.
      *
      * @param action The action
      */
-    public SetPropertyActionHandler(ProcessorAction action) {
+    public SetFaultDescriptionActionHandler(ProcessorAction action) {
         super(action);
     }
 
@@ -51,7 +50,7 @@ public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
         if (super.process(btxn, node, direction, headers, values)) {
             String value = getValue(btxn, node, direction, headers, values);
             if (value != null) {
-                btxn.getProperties().put(((SetPropertyAction) getAction()).getName(), value);
+                node.setFaultDescription(value);
                 return true;
             }
         }

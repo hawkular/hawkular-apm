@@ -24,8 +24,9 @@ import javax.inject.Singleton;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
+import org.hawkular.btm.api.services.AbstractConfigurationService;
 import org.hawkular.btm.api.services.ConfigurationLoader;
-import org.hawkular.btm.api.services.ConfigurationService;
 
 /**
  * This class provides the in-memory implementation of the Admin
@@ -34,7 +35,7 @@ import org.hawkular.btm.api.services.ConfigurationService;
  * @author gbrown
  */
 @Singleton
-public class ConfigurationServiceInMemory implements ConfigurationService {
+public class ConfigurationServiceInMemory extends AbstractConfigurationService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AdminService#getCollector(java.lang.String,
@@ -50,7 +51,8 @@ public class ConfigurationServiceInMemory implements ConfigurationService {
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+    public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+        return null;
     }
 
     /* (non-Javadoc)

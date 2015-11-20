@@ -33,6 +33,7 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.ReportingLevel;
+import org.hawkular.btm.api.utils.NodeUtil;
 
 /**
  * This class represents the builder for a business transaction fragment. NOTE: This

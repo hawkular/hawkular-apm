@@ -23,12 +23,14 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import org.hawkular.btm.api.internal.actions.ProcessorActionHandler;
+import org.hawkular.btm.api.internal.actions.ProcessorActionHandlerFactory;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Issue.Severity;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.btxn.ProcessorIssue;
@@ -37,8 +39,6 @@ import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.hawkular.btm.client.collector.internal.actions.ProcessorActionHandler;
-import org.hawkular.btm.client.collector.internal.actions.ProcessorActionHandlerFactory;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 

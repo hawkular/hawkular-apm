@@ -14,34 +14,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-import org.hawkular.btm.api.logging.Logger;
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.InteractionNode;
+import org.hawkular.btm.api.model.btxn.Issue;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
-import org.hawkular.btm.api.model.config.btxn.AddContentAction;
+import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.config.btxn.SetPropertyAction;
 
 /**
- * This handler is associated with the AddContent action.
+ * This handler is associated with the SetProperty action.
  *
  * @author gbrown
  */
-public class AddContentActionHandler extends ExpressionBasedActionHandler {
+public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
 
-    private static final Logger log = Logger.getLogger(AddContentActionHandler.class.getName());
+    /**  */
+    public static final String NAME_MUST_BE_SPECIFIED = "Name must be specified";
 
     /**
      * This constructor initialises the action.
      *
      * @param action The action
      */
-    public AddContentActionHandler(ProcessorAction action) {
+    public SetPropertyActionHandler(ProcessorAction action) {
         super(action);
+    }
+
+    /**
+     * This method initialises the process action handler.
+     *
+     * @param processor The processor
+     */
+    @Override
+    public void init(Processor processor) {
+        super.init(processor);
+
+        SetPropertyAction action = (SetPropertyAction) getAction();
+
+        if (action.getName() == null || action.getName().trim().length() == 0) {
+            ProcessorIssue pi = new ProcessorIssue();
+            pi.setProcessor(processor.getDescription());
+            pi.setAction(getAction().getDescription());
+            pi.setField("name");
+            pi.setSeverity(Severity.Error);
+            pi.setDescription(NAME_MUST_BE_SPECIFIED);
+
+            if (getIssues() == null) {
+                setIssues(new ArrayList<Issue>());
+            }
+            getIssues().add(0, pi);
+        }
     }
 
     /* (non-Javadoc)
@@ -54,21 +84,9 @@ public class AddContentActionHandler extends ExpressionBasedActionHandler {
             Object[] values) {
         if (super.process(btxn, node, direction, headers, values)) {
             String value = getValue(btxn, node, direction, headers, values);
-            if (value != null) {
-                if (node.interactionNode()) {
-                    if (direction == Direction.In) {
-                        ((InteractionNode) node).getIn().addContent(((AddContentAction) getAction()).getName(),
-                                ((AddContentAction) getAction()).getType(), value);
-                    } else {
-                        ((InteractionNode) node).getOut().addContent(
-                                ((AddContentAction) getAction()).getName(),
-                                ((AddContentAction) getAction()).getType(), value);
-                    }
-                    return true;
-                } else {
-                    log.warning("Attempt to add content to a non-interaction based node type '"
-                            + node.getType() + "'");
-                }
+            if (value != null && ((SetPropertyAction) getAction()).getName() != null) {
+                btxn.getProperties().put(((SetPropertyAction) getAction()).getName(), value);
+                return true;
             }
         }
         return false;

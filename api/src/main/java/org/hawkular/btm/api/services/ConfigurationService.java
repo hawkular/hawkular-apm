@@ -22,6 +22,7 @@ import java.util.Map;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 
 /**
  * This interface provides the configuration information.
@@ -34,7 +35,8 @@ public interface ConfigurationService {
      * This method returns the collector configuration, used by the
      * collector within an execution environment to instrument and filter
      * information to be reported to the server, based on the optional
-     * host and server names.
+     * host and server names. Only valid business configurations will be
+     * included in the collector configuration.
      *
      * @param tenantId The optional tenant id
      * @param host The optional host name
@@ -45,18 +47,30 @@ public interface ConfigurationService {
 
     /**
      * This method adds (if does not exist) or updates (if exists) a business transaction
-     * configuration.
+     * configuration. If validation errors occur, then the configuration will be held in a
+     * staging area until fixed.
      *
      * @param tenantId The optional tenant id
      * @param name The business transaction name
      * @param config The configuration
      * @throws Exception Failed to perform update
+     * @return The list of messages resulting from validation of the saved config
      */
-    void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+    List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
             throws Exception;
 
     /**
-     * This method retrieves a business transaction configuration.
+     * This method validates the supplied business transaction configuration.
+     *
+     * @param config The configuration
+     * @return The list of messages resulting from validation of the supplied config
+     */
+    List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config);
+
+    /**
+     * This method retrieves a business transaction configuration. This will retrieve the
+     * most recent version of the configuration, regardless of whether it is valid or
+     * invalid.
      *
      * @param tenantId The optional tenant id
      * @param name The business transaction name
@@ -65,17 +79,18 @@ public interface ConfigurationService {
     BusinessTxnConfig getBusinessTransaction(String tenantId, String name);
 
     /**
-     * This method retrieves the list of business transaction configurations updated
+     * This method retrieves the list of valid business transaction configurations updated
      * after the specified time.
      *
      * @param tenantId The optional tenant id
      * @param updated The updated time, or 0 to return all
-     * @return The business transaction configurations
+     * @return The valid business transaction configurations
      */
     Map<String,BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated);
 
     /**
-     * This method retrieves the list of business transaction summaries.
+     * This method retrieves the list of business transaction summaries (regardless of whether
+     * the current business transaction config is valid).
      *
      * @param tenantId The optional tenant id
      * @return The list of business transaction summaries

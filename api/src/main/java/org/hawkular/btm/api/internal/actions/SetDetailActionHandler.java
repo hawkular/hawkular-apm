@@ -14,29 +14,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
+import java.util.ArrayList;
 import java.util.Map;
 
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Issue;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.config.btxn.SetDetailAction;
 
 /**
- * This handler is associated with the SetFault action.
+ * This handler is associated with the SetDetail action.
  *
  * @author gbrown
  */
-public class SetFaultActionHandler extends ExpressionBasedActionHandler {
+public class SetDetailActionHandler extends ExpressionBasedActionHandler {
+
+    /**  */
+    private static final String NAME_MUST_BE_SPECIFIED = "Name must be specified";
 
     /**
      * This constructor initialises the action.
      *
      * @param action The action
      */
-    public SetFaultActionHandler(ProcessorAction action) {
+    public SetDetailActionHandler(ProcessorAction action) {
         super(action);
+    }
+
+    /**
+     * This method initialises the process action handler.
+     *
+     * @param processor The processor
+     */
+    @Override
+    public void init(Processor processor) {
+        super.init(processor);
+
+        SetDetailAction action = (SetDetailAction) getAction();
+
+        if (action.getName() == null || action.getName().trim().length() == 0) {
+            ProcessorIssue pi = new ProcessorIssue();
+            pi.setProcessor(processor.getDescription());
+            pi.setAction(getAction().getDescription());
+            pi.setField("name");
+            pi.setSeverity(Severity.Error);
+            pi.setDescription(NAME_MUST_BE_SPECIFIED);
+
+            if (getIssues() == null) {
+                setIssues(new ArrayList<Issue>());
+            }
+            getIssues().add(0, pi);
+        }
     }
 
     /* (non-Javadoc)
@@ -49,8 +84,8 @@ public class SetFaultActionHandler extends ExpressionBasedActionHandler {
             Object[] values) {
         if (super.process(btxn, node, direction, headers, values)) {
             String value = getValue(btxn, node, direction, headers, values);
-            if (value != null) {
-                node.setFault(value);
+            if (value != null && ((SetDetailAction) getAction()).getName() != null) {
+                node.getDetails().put(((SetDetailAction) getAction()).getName(), value);
                 return true;
             }
         }

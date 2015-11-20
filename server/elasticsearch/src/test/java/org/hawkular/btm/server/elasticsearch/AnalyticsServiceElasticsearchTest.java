@@ -37,6 +37,7 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
@@ -262,8 +263,9 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
                     throws Exception {
+                return null;
             }
 
             @Override
@@ -288,6 +290,11 @@ public class AnalyticsServiceElasticsearchTest {
 
             @Override
             public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+            }
+
+            @Override
+            public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+                return null;
             }
         });
 
@@ -326,8 +333,9 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
                     throws Exception {
+                return null;
             }
 
             @Override
@@ -352,6 +360,11 @@ public class AnalyticsServiceElasticsearchTest {
 
             @Override
             public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+            }
+
+            @Override
+            public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+                return null;
             }
         });
 
