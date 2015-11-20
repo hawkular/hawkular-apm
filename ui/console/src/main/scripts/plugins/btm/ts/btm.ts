@@ -37,13 +37,13 @@ module BTM {
           $scope.getBusinessTxnDetails(btxn);
         }
       },function(resp) {
-        console.log("Failed to get business txn summaries: "+resp);
+        console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
-        console.log("Failed to get candidate count: "+resp);
+        console.log("Failed to get candidate count: "+JSON.stringify(resp));
       });
     };
 
@@ -57,7 +57,7 @@ module BTM {
       $http.get('/hawkular/btm/analytics/businesstxn/completion/count?businessTransaction='+btxn.summary.name).then(function(resp) {
         btxn.count = resp.data;
       },function(resp) {
-        console.log("Failed to get count: "+resp);
+        console.log("Failed to get count: "+JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/businesstxn/completion/percentiles?businessTransaction='+btxn.summary.name).then(function(resp) {
@@ -67,19 +67,19 @@ module BTM {
           btxn.percentile95 = 0;
         }
       },function(resp) {
-        console.log("Failed to get completion percentiles: "+resp);
+        console.log("Failed to get completion percentiles: "+JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/businesstxn/completion/faultcount?businessTransaction='+btxn.summary.name).then(function(resp) {
         btxn.faultcount = resp.data;
       },function(resp) {
-        console.log("Failed to get fault count: "+resp);
+        console.log("Failed to get fault count: "+JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.summary.name).then(function(resp) {
         btxn.alerts = resp.data;
       },function(resp) {
-        console.log("Failed to get alerts count: "+resp);
+        console.log("Failed to get alerts count: "+JSON.stringify(resp));
       });
     };
 
@@ -89,7 +89,7 @@ module BTM {
           console.log('Deleted: '+btxn.summary.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {
-          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+resp);
+          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+JSON.stringify(resp));
         });
       }
     };

@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.api.model.analytics;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * This class represents a value name and cardinality.
  *
@@ -23,8 +25,10 @@ package org.hawkular.btm.api.model.analytics;
  */
 public class Cardinality {
 
+    @JsonInclude
     private String value;
 
+    @JsonInclude
     private long count;
 
     /**

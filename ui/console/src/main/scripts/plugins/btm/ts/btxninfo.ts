@@ -46,7 +46,7 @@ module BTM {
         $scope.updatedBounds();
         $scope.redrawLineChart();
       },function(resp) {
-        console.log("Failed to get statistics: "+resp);
+        console.log("Failed to get statistics: "+JSON.stringify(resp));
       });
 
       $http.post('/hawkular/btm/analytics/businesstxn/completion/faults', $scope.criteria).then(function(resp) {
@@ -69,13 +69,13 @@ module BTM {
         });
 
       },function(resp) {
-        console.log("Failed to get statistics: "+resp);
+        console.log("Failed to get statistics: "+JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/businesstxn/properties/'+$scope.businessTransactionName).then(function(resp) {
         $scope.properties = resp.data;
       },function(resp) {
-        console.log("Failed to get property info: "+resp);
+        console.log("Failed to get property info: "+JSON.stringify(resp));
       });
     
       if ($scope.config.selectedProperty !== undefined) {
@@ -114,7 +114,7 @@ module BTM {
         });
 
       },function(resp) {
-        console.log("Failed to get property details for '"+$scope.config.selectedProperty+"': "+resp);
+        console.log("Failed to get property details for '"+$scope.config.selectedProperty+"': "+JSON.stringify(resp));
       });
     };
 

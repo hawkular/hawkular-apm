@@ -42,13 +42,12 @@ module BTM {
     $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
       $scope.unboundURIs = [ ];
       for (var i=0; i < resp.data.length; i++) {
-        var regex = $scope.escapeRegExp(resp.data[i].uri);
-        if (regex !== undefined) {
-          $scope.unboundURIs.add(regex);
+        if (resp.data[i].regex !== undefined) {
+          $scope.unboundURIs.add(resp.data[i].regex);
         }
       }
     },function(resp) {
-      console.log("Failed to get unbound URIs: "+resp);
+      console.log("Failed to get unbound URIs: "+JSON.stringify(resp));
     });
 
     $scope.reload = function() {
@@ -199,7 +198,7 @@ module BTM {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
     },function(resp) {
-      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+resp);
+      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
     });
 
     $scope.escapeRegExp = function(str) {

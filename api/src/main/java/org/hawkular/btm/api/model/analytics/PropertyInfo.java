@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.api.model.analytics;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * This class represents information related to a property associated with
  * business transaction fragments.
@@ -24,6 +26,7 @@ package org.hawkular.btm.api.model.analytics;
  */
 public class PropertyInfo {
 
+    @JsonInclude
     private String name;
 
     /**

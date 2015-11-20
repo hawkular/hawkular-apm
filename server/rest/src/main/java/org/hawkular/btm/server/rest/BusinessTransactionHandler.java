@@ -126,7 +126,7 @@ public class BusinessTransactionHandler {
                 response.resume(Response.status(Response.Status.OK).entity(btxn).type(APPLICATION_JSON_TYPE)
                         .build());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -183,7 +183,7 @@ public class BusinessTransactionHandler {
             response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -218,7 +218,7 @@ public class BusinessTransactionHandler {
             response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());

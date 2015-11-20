@@ -135,12 +135,13 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long, boolean)
      */
     @Override
-    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime) {
+    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get unbound URIs: tenantId=[" + tenantId + "] startTime=" + startTime + " endTime=" + endTime);
+            log.finest("Get unbound URIs: tenantId=[" + tenantId + "] startTime=" + startTime
+                    + " endTime=" + endTime + " compress=" + compress);
         }
 
         StringBuilder builder = new StringBuilder()
@@ -148,7 +149,9 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 .append("analytics/businesstxn/unbounduris?startTime=")
                 .append(startTime)
                 .append("&endTime=")
-                .append(endTime);
+                .append(endTime)
+                .append("&compress=")
+                .append(compress);
 
         try {
             URL url = new URL(builder.toString());

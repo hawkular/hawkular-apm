@@ -110,7 +110,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Retrieve stored business transaction
-        List<URIInfo> uris = analytics.getUnboundURIs(null, 0, 0);
+        List<URIInfo> uris = analytics.getUnboundURIs(null, 0, 0, true);
 
         assertNotNull(uris);
         assertEquals(1, uris.size());

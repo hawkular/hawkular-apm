@@ -62,7 +62,7 @@ import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.ResponseTime;
-import org.hawkular.btm.api.services.AnalyticsService;
+import org.hawkular.btm.api.services.AbstractAnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
@@ -76,7 +76,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class AnalyticsServiceElasticsearch implements AnalyticsService {
+public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
@@ -121,10 +121,11 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String,
+     *                                  long, long, boolean)
      */
     @Override
-    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime) {
+    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
         List<URIInfo> ret = new ArrayList<URIInfo>();
         Map<String, URIInfo> map = new HashMap<String, URIInfo>();
 
@@ -173,16 +174,23 @@ public class AnalyticsServiceElasticsearch implements AnalyticsService {
                     }
                     for (String filter : config.getFilter().getInclusions()) {
 
-                        Iterator<URIInfo> iter = ret.iterator();
-                        while (iter.hasNext()) {
-                            URIInfo info = iter.next();
-                            if (Pattern.matches(filter, info.getUri())) {
-                                iter.remove();
+                        if (filter != null && filter.trim().length() > 0) {
+                            Iterator<URIInfo> iter = ret.iterator();
+                            while (iter.hasNext()) {
+                                URIInfo info = iter.next();
+                                if (Pattern.matches(filter, info.getUri())) {
+                                    iter.remove();
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+
+        // Check if the URIs should be compressed to identify common patterns
+        if (compress) {
+            ret = compressURIInfo(ret);
         }
 
         Collections.sort(ret, new Comparator<URIInfo>() {
