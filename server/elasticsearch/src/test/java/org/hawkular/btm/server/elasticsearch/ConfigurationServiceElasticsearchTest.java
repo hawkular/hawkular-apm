@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,6 +37,12 @@ import org.junit.Test;
  * @author gbrown
  */
 public class ConfigurationServiceElasticsearchTest {
+
+    /**  */
+    private static final String VALID_DESCRIPTION = "Valid description";
+
+    /**  */
+    private static final String INVALID_DESCRIPTION = "Invalid description";
 
     private ConfigurationServiceElasticsearch cfgs;
 
@@ -52,7 +59,7 @@ public class ConfigurationServiceElasticsearchTest {
         try {
             client.init();
         } catch (Exception e) {
-            fail("Failed to initialise Elasticsearch client: "+e);
+            fail("Failed to initialise Elasticsearch client: " + e);
         }
         cfgs = new ConfigurationServiceElasticsearch();
         cfgs.setElasticsearchClient(client);
@@ -65,9 +72,11 @@ public class ConfigurationServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetBusinessTransactions() {
+    public void testGetBusinessTransactionsUpdated() {
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription("btc1");
+        btc1.setFilter(new Filter());
+        btc1.getFilter().getInclusions().add("myfilter");
 
         try {
             cfgs.updateBusinessTransaction(null, "btc1", btc1);
@@ -95,6 +104,8 @@ public class ConfigurationServiceElasticsearchTest {
 
         BusinessTxnConfig btc2 = new BusinessTxnConfig();
         btc2.setDescription("btc2");
+        btc2.setFilter(new Filter());
+        btc2.getFilter().getInclusions().add("myfilter");
 
         try {
             cfgs.updateBusinessTransaction(null, "btc2", btc2);
@@ -127,11 +138,107 @@ public class ConfigurationServiceElasticsearchTest {
         assertEquals(2, summaries.size());
     }
 
+    @Test
+    public void testGetBusinessTransactionsInvalid() {
+        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        btc1.setDescription("btc1");
+
+        try {
+            // Updating invalid config
+            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+        } catch (Exception e) {
+            fail("Failed to update btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Check invalid config can still be retrieved
+        BusinessTxnConfig config = cfgs.getBusinessTransaction(null, "btc1");
+
+        assertNotNull(config);
+
+        // Make sure not returned in list of updated configs
+        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
+
+        assertNotNull(res1);
+        assertEquals(0, res1.size());
+
+        // Check summaries - should include invalid config entries
+        List<BusinessTxnSummary> summaries = cfgs.getBusinessTransactionSummaries(null);
+        assertNotNull(summaries);
+        assertEquals(1, summaries.size());
+    }
+
+    @Test
+    public void testGetBusinessTransactionsValidThenInvalid() {
+        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        btc1.setDescription(VALID_DESCRIPTION);
+        btc1.setFilter(new Filter());
+        btc1.getFilter().getInclusions().add("myfilter");
+
+        try {
+            // Updating valid config
+            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+        } catch (Exception e) {
+            fail("Failed to update btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        btc1.setDescription(INVALID_DESCRIPTION);
+        btc1.setFilter(null);
+
+        try {
+            // Updating with invalid config
+            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+        } catch (Exception e) {
+            fail("Failed to update btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Check invalid config can still be retrieved
+        BusinessTxnConfig invalid = cfgs.getBusinessTransaction(null, "btc1");
+        assertNotNull(invalid);
+
+        assertEquals(INVALID_DESCRIPTION, invalid.getDescription());
+
+        // Get valid business txns
+        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
+
+        assertNotNull(res1);
+        assertEquals(1, res1.size());
+
+        BusinessTxnConfig valid = res1.get("btc1");
+        assertNotNull(valid);
+
+        assertEquals(VALID_DESCRIPTION, valid.getDescription());
+    }
 
     @Test
     public void testGetBusinessTransactionsAfterRemove() {
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription("btc1");
+        btc1.setFilter(new Filter());
+        btc1.getFilter().getInclusions().add("myfilter");
 
         try {
             cfgs.updateBusinessTransaction(null, "btc1", btc1);
@@ -185,6 +292,43 @@ public class ConfigurationServiceElasticsearchTest {
 
         BusinessTxnConfig btc2 = cfgs.getBusinessTransaction(null, "btc2");
         assertNull(btc2);
+    }
+
+    @Test
+    public void testGetBusinessTransactionsAfterRemoveInvalid() {
+        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        btc1.setDescription("btc1");
+
+        try {
+            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+        } catch (Exception e) {
+            fail("Failed to update btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        try {
+            cfgs.removeBusinessTransaction(null, "btc1");
+        } catch (Exception e) {
+            fail("Failed to remove btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        BusinessTxnConfig btc1again = cfgs.getBusinessTransaction(null, "btc1");
+        assertNull(btc1again);
     }
 
 }

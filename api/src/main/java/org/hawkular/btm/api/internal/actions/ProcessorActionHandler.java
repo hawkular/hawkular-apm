@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Issue.Severity;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
@@ -97,17 +97,17 @@ public abstract class ProcessorActionHandler {
     }
 
     /**
-     * @return the notifications
+     * @return the issues
      */
-    public List<Issue> getNotifications() {
+    public List<Issue> getIssues() {
         return issues;
     }
 
     /**
-     * @param notifications the notifications to set
+     * @param issues the issues to set
      */
-    public void setNotifications(List<Issue> notifications) {
-        this.issues = notifications;
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
     }
 
     /**

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +22,9 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Issue.Severity;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
@@ -38,6 +38,9 @@ import org.mvel2.ParserContext;
  * @author gbrown
  */
 public abstract class ExpressionBasedActionHandler extends ProcessorActionHandler {
+
+    /**  */
+    public static final String EXPRESSION_HAS_NOT_BEEN_DEFINED = "Expression has not been defined";
 
     private static final Logger log = Logger.getLogger(ExpressionBasedActionHandler.class.getName());
 
@@ -92,16 +95,32 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
                 ProcessorIssue pi = new ProcessorIssue();
                 pi.setProcessor(processor.getDescription());
                 pi.setAction(getAction().getDescription());
+                pi.setField("expression");
                 pi.setSeverity(Severity.Error);
                 pi.setDescription(t.getMessage());
 
-                if (getNotifications() == null) {
-                    setNotifications(new ArrayList<Issue>());
+                if (getIssues() == null) {
+                    setIssues(new ArrayList<Issue>());
                 }
-                getNotifications().add(pi);
+                getIssues().add(pi);
             }
         } else {
-            log.severe("No action expression defined for processor action=" + getAction());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("No action expression defined for processor action= "
+                        + getAction());
+            }
+
+            ProcessorIssue pi = new ProcessorIssue();
+            pi.setProcessor(processor.getDescription());
+            pi.setAction(getAction().getDescription());
+            pi.setField("expression");
+            pi.setSeverity(Severity.Error);
+            pi.setDescription(EXPRESSION_HAS_NOT_BEEN_DEFINED);
+
+            if (getIssues() == null) {
+                setIssues(new ArrayList<Issue>());
+            }
+            getIssues().add(pi);
         }
     }
 

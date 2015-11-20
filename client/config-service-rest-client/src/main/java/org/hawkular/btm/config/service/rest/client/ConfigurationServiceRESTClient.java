@@ -19,6 +19,7 @@ package org.hawkular.btm.config.service.rest.client;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 import org.hawkular.btm.api.services.ConfigurationService;
 
@@ -47,11 +49,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     private static final TypeReference<java.util.List<BusinessTxnSummary>> BTXN_SUMMARY_LIST =
             new TypeReference<java.util.List<BusinessTxnSummary>>() {
-            };
+    };
 
-    private static final TypeReference<java.util.Map<String,BusinessTxnConfig>> BUSINESS_TXN_MAP =
-            new TypeReference<java.util.Map<String,BusinessTxnConfig>>() {
-            };
+    private static final TypeReference<java.util.Map<String, BusinessTxnConfig>> BUSINESS_TXN_MAP =
+            new TypeReference<java.util.Map<String, BusinessTxnConfig>>() {
+    };
+
+    private static final TypeReference<java.util.List<ConfigMessage>> CONFIG_MESSAGE_LIST =
+            new TypeReference<java.util.List<ConfigMessage>>() {
+    };
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
@@ -210,16 +216,16 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+    public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Update busioess transaction configuration: tenantId=[" + tenantId + "] name=[" + name
                     + "] config=[" + config + "]");
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("config/businesstxn/")
-        .append(name);
+                .append(baseUrl)
+                .append("config/businesstxn/")
+                .append(name);
 
         try {
             URL url = new URL(builder.toString());
@@ -243,20 +249,130 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             os.flush();
             os.close();
 
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
             if (connection.getResponseCode() == 200) {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Update business transaction [" + name + "] configuration: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
             } else {
                 log.severe("Failed to update business transaction [" + name + "] configuration: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
+                        + connection.getResponseCode() + "]:"
+                        + connection.getResponseMessage());
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update business transaction  [" + name + "] configuration", e);
         }
+
+        return Collections.emptyList();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#validateBusinessTransaction(
+     *                  org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
+     */
+    @Override
+    public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Validate busioess transaction configuration: config=[" + config + "]");
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("config/businesstxn/validate");
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, null);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(config));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Validate business transaction configuration: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                log.severe("Failed to validate business transaction configuration: status=["
+                        + connection.getResponseCode() + "]:"
+                        + connection.getResponseMessage());
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to validate business transaction configuration", e);
+        }
+
+        return Collections.emptyList();
     }
 
     /* (non-Javadoc)
@@ -271,9 +387,9 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("config/businesstxn/")
-                .append(name);
+            .append(baseUrl)
+            .append("config/businesstxn/")
+            .append(name);
 
         try {
             URL url = new URL(builder.toString());
@@ -342,8 +458,8 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("config/businesstxnsummary");
+            .append(baseUrl)
+            .append("config/businesstxnsummary");
 
         try {
             URL url = new URL(builder.toString());
@@ -413,9 +529,9 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
-                .append("config/businesstxn?updated=")
-                .append(updated);
+            .append(baseUrl)
+            .append("config/businesstxn?updated=")
+            .append(updated);
 
         try {
             URL url = new URL(builder.toString());
@@ -486,9 +602,9 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         StringBuilder builder = new StringBuilder()
-        .append(baseUrl)
-        .append("config/businesstxn/")
-        .append(name);
+                .append(baseUrl)
+                .append("config/businesstxn/")
+                .append(name);
 
         try {
             URL url = new URL(builder.toString());

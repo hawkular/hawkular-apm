@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -31,11 +32,13 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
+import org.hawkular.btm.api.services.AbstractConfigurationService;
 import org.hawkular.btm.api.services.ConfigurationLoader;
-import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,12 +49,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class ConfigurationServiceElasticsearch implements ConfigurationService {
+public class ConfigurationServiceElasticsearch extends AbstractConfigurationService {
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
     private static final String BUSINESS_TXN_CONFIG_TYPE = "businesstxnconfig";
+
+    /**  */
+    private static final String BUSINESS_TXN_CONFIG_INVALID_TYPE = "businesstxnconfiginvalid";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -91,6 +97,7 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
+            // Only retrieve valid configurations
             SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
                     .setTypes(BUSINESS_TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -128,20 +135,38 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public void updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+    public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
             throws Exception {
         if (msgLog.isTraceEnabled()) {
             msgLog.tracef("Update business transaction config with name[%s] config=%s", name, config);
         }
 
+        List<ConfigMessage> messages = validateBusinessTransaction(config);
+
         // Set last updated time
         config.setLastUpdated(System.currentTimeMillis());
 
+        String index = (messages.isEmpty() ? BUSINESS_TXN_CONFIG_TYPE : BUSINESS_TXN_CONFIG_INVALID_TYPE);
+
         IndexRequestBuilder builder = client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
+                index, name).setRouting(name)
                 .setSource(mapper.writeValueAsString(config));
 
         builder.execute().actionGet();
+
+        if (messages.isEmpty()) {
+            ConfigMessage cm = new ConfigMessage();
+            cm.setSeverity(Severity.Info);
+            cm.setMessage("Configuration successfully published");
+            messages.add(cm);
+        } else {
+            ConfigMessage cm = new ConfigMessage();
+            cm.setSeverity(Severity.Warning);
+            cm.setMessage("Configuration has not been published due to previous errors and/or warnings");
+            messages.add(cm);
+        }
+
+        return messages;
     }
 
     /* (non-Javadoc)
@@ -163,10 +188,20 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
+            // First check if an invalid config exists
             GetResponse response = client.getElasticsearchClient().prepareGet(
-                    index, BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
+                    index, BUSINESS_TXN_CONFIG_INVALID_TYPE, name).setRouting(name)
                     .execute()
                     .actionGet();
+
+            if (response.isSourceEmpty()) {
+                // Retrieve the valid configuration
+                response = client.getElasticsearchClient().prepareGet(
+                        index, BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
+                        .execute()
+                        .actionGet();
+            }
+
             if (!response.isSourceEmpty()) {
                 try {
                     ret = mapper.readValue(response.getSourceAsString(), BusinessTxnConfig.class);
@@ -218,11 +253,42 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                 msgLog.warnQueryTimedOut();
             }
 
+            List<String> names = new ArrayList<String>();
+
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
                     BusinessTxnConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
                             BusinessTxnConfig.class);
                     if (!config.isDeleted()) {
+                        BusinessTxnSummary summary = new BusinessTxnSummary();
+                        summary.setName(searchHitFields.getId());
+                        summary.setDescription(config.getDescription());
+                        summary.setLevel(config.getLevel());
+                        ret.add(summary);
+                        names.add(summary.getName());
+                    }
+                } catch (Exception e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+
+            // Check whether any invalid business transactions exist that have not yet
+            // been stored in the valid list
+            response = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(BUSINESS_TXN_CONFIG_INVALID_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setTimeout(TimeValue.timeValueMillis(timeout))
+                    .setSize(maxResponseSize)
+                    .setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    BusinessTxnConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
+                            BusinessTxnConfig.class);
+                    if (!names.contains(searchHitFields.getId())) {
                         BusinessTxnSummary summary = new BusinessTxnSummary();
                         summary.setName(searchHitFields.getId());
                         summary.setDescription(config.getDescription());
@@ -257,6 +323,7 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
+            // Should only obtain valid business transactions
             SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
                     .setTypes(BUSINESS_TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -299,11 +366,18 @@ public class ConfigurationServiceElasticsearch implements ConfigurationService {
         config.setDeleted(true);
         config.setLastUpdated(System.currentTimeMillis());
 
+        // Remove valid version of the business transaction config
         IndexRequestBuilder builder = client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
                 BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
                 .setSource(mapper.writeValueAsString(config));
 
         builder.execute().actionGet();
+
+        // Remove invalid version of the business transaction config, which may or may not exist
+        DeleteRequestBuilder deletion = client.getElasticsearchClient().prepareDelete(client.getIndex(tenantId),
+                BUSINESS_TXN_CONFIG_INVALID_TYPE, name);
+
+        deletion.execute().actionGet();
 
         if (msgLog.isTraceEnabled()) {
             msgLog.tracef("Remove business transaction config with name[%s]", name);

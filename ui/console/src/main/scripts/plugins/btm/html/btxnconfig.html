@@ -8,6 +8,8 @@
     <br>
     <br>
 
+    <uib-alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong></uib-alert>
+
     <a href="#" editable-textarea="businessTransaction.description" e-rows="14" e-cols="120" rows="7" onaftersave="setDirty()" >
         <pre><i>{{ businessTransaction.description || 'No description' }}</i></pre>
     </a>
@@ -165,7 +167,21 @@
             </div>
           </form>
 
-          <h4>Actions <a class="btn btn-primary" ng-click="addAction(processor)"><span class="glyphicon glyphicon-plus" aria-hidden="true""></span></a></h4>
+          <h4>Actions <span uib-dropdown>
+            <a href id="simple-dropdown" uib-dropdown-toggle class="btn btn-primary">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true""></span>
+            </a>
+            <ul class="uib-dropdown-menu" aria-labelledby="simple-dropdown">
+              <li><a href ng-click="addAction(processor, 'AddContent')">Add Content</a></li>
+              <li><a href ng-click="addAction(processor, 'AddCorrelationId')">Add Correlation Identifier</a></li>
+              <li><a href ng-click="addAction(processor, 'EvaluateURI')">Evaluate URI</a></li>
+              <li><a href ng-click="addAction(processor, 'SetDetail')">Set Detail</a></li>
+              <li><a href ng-click="addAction(processor, 'SetFault')">Set Fault Code</a></li>
+              <li><a href ng-click="addAction(processor, 'SetFaultDescription')">Set Fault Description</a></li>
+              <li><a href ng-click="addAction(processor, 'SetProperty')">Set Property</a></li>
+            </ul>
+            </span>
+          </h4>
 
           <uib-accordion>
             <uib-accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
@@ -212,22 +228,13 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="actionTypeSelector" style="width: 15%" >Action Type: </label>
-                  <select name="actionTypeSelector" ng-model="action.actionType" ng-change="changedActionType(action)" style="width: 30%">
-                    <option value=""></option>
-                    <option value="AddContent">Add Content</option>
-                    <option value="AddCorrelationId">Add Correlation Identifier</option>
-                    <option value="EvaluateURI">Evaluate URI</option>
-                    <option value="SetDetail">Set Detail</option>
-                    <option value="SetFault">Set Fault Code</option>
-                    <option value="SetFaultDescription">Set Fault Description</option>
-                    <option value="SetProperty">Set Property</option>
-                  </select>
 
-                  <br>
+                  <!-- HWKBTM-273 Using 'ng-class' attribute to try to highlight the error field, but at the point
+                       where the form is displayed the errors aren't available, and their retrieval does not
+                       cause a change in state that refreshes the field. -->
 
                   <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
-                  <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
+                  <input type="text" ng-class="{error:isError(processor,action,'name')}" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
 
                   <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
 
@@ -287,6 +294,20 @@
 
             </uib-accordion-group>
           </uib-accordion>
+
+          <!-- Provide padding as otherwise the action dropdown, when no actions, gets hidden
+               (Must be a better way, but this works for now) -->
+          <div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+          </div>
 
         </uib-accordion-group>
       </uib-accordion>

@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.api.model.btxn;
 
+import org.hawkular.btm.api.model.Severity;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -82,30 +84,5 @@ public abstract class Issue {
     @Override
     public String toString() {
         return "Issue [description=" + description + ", severity=" + severity + "]";
-    }
-
-    /**
-     * This enumerated value represents the severity associated with the issue.
-     *
-     * @author gbrown
-     *
-     */
-    public enum Severity {
-
-        /**
-         * The notification represents an error.
-         */
-        Error,
-
-        /**
-         * This notification represents a warning.
-         */
-        Warning,
-
-        /**
-         * The notification represents information.
-         */
-        Info
-
     }
 }

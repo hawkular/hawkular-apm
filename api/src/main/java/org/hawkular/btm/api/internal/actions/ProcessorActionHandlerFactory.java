@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;

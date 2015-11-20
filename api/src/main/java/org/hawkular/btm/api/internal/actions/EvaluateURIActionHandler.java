@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.client.collector.internal.actions;
+package org.hawkular.btm.api.internal.actions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -26,12 +26,16 @@ import java.util.StringTokenizer;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Issue;
 import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.EvaluateURIAction;
+import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.hawkular.btm.client.collector.internal.NodeUtil;
+import org.hawkular.btm.api.utils.NodeUtil;
 
 /**
  * This handler is associated with the EvaluateURI action.
@@ -41,6 +45,9 @@ import org.hawkular.btm.client.collector.internal.NodeUtil;
 public class EvaluateURIActionHandler extends ProcessorActionHandler {
 
     private static final Logger log = Logger.getLogger(EvaluateURIActionHandler.class.getName());
+
+    /**  */
+    public static final String TEMPLATE_MUST_BE_SPECIFIED = "Template must be specified";
 
     private String pathTemplate;
     private List<String> queryParameters = new ArrayList<String>();
@@ -74,6 +81,32 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                     log.severe("Expecting query parameter template, e.g. {name}, but got '" + token + "'");
                 }
             }
+        }
+    }
+
+    /**
+     * This method initialises the process action handler.
+     *
+     * @param processor The processor
+     */
+    @Override
+    public void init(Processor processor) {
+        super.init(processor);
+
+        EvaluateURIAction action = (EvaluateURIAction) getAction();
+
+        if (action.getTemplate() == null || action.getTemplate().trim().length() == 0) {
+            ProcessorIssue pi = new ProcessorIssue();
+            pi.setProcessor(processor.getDescription());
+            pi.setAction(getAction().getDescription());
+            pi.setField("template");
+            pi.setSeverity(Severity.Error);
+            pi.setDescription(TEMPLATE_MUST_BE_SPECIFIED);
+
+            if (getIssues() == null) {
+                setIssues(new ArrayList<Issue>());
+            }
+            getIssues().add(0, pi);
         }
     }
 

@@ -29,6 +29,7 @@ import java.util.Map;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.config.service.rest.client.ConfigurationServiceRESTClient;
 import org.junit.Test;
 
@@ -79,6 +80,8 @@ public class ConfigurationServiceRESTTest {
 
         BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
+        btxnconfig1.setFilter(new Filter());
+        btxnconfig1.getFilter().getInclusions().add("myfilter");
 
         try {
             service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
@@ -161,9 +164,13 @@ public class ConfigurationServiceRESTTest {
 
         BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
+        btxnconfig1.setFilter(new Filter());
+        btxnconfig1.getFilter().getInclusions().add("myfilter");
 
         BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
+        btxnconfig2.setFilter(new Filter());
+        btxnconfig2.getFilter().getInclusions().add("myfilter");
 
         try {
             service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
@@ -223,9 +230,13 @@ public class ConfigurationServiceRESTTest {
 
         BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
+        btxnconfig1.setFilter(new Filter());
+        btxnconfig1.getFilter().getInclusions().add("myfilter");
 
         BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
+        btxnconfig2.setFilter(new Filter());
+        btxnconfig2.getFilter().getInclusions().add("myfilter");
 
         long midtime = 0;
 

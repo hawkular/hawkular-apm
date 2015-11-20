@@ -14,31 +14,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.btm.api.model.btxn;
+package org.hawkular.btm.api.model.config.btxn;
+
+import org.hawkular.btm.api.model.Severity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents an issue associated with the processor.
+ * This class represents a message returned following validation of a business
+ * transaction config.
  *
  * @author gbrown
- *
  */
-public class ProcessorIssue extends Issue {
+public class ConfigMessage {
 
     @JsonInclude
+    private Severity severity = Severity.Error;
+
+    @JsonInclude
+    private String message;
+
+    @JsonInclude(Include.NON_NULL)
     private String processor;
 
-    @JsonInclude
+    @JsonInclude(Include.NON_NULL)
     private String action;
 
-    @JsonInclude
+    @JsonInclude(Include.NON_NULL)
     private String field;
 
     /**
-     * The default constructor.
+     * @return the severity
      */
-    public ProcessorIssue() {
+    public Severity getSeverity() {
+        return severity;
+    }
+
+    /**
+     * @param severity the severity to set
+     */
+    public void setSeverity(Severity severity) {
+        this.severity = severity;
+    }
+
+    /**
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     /**
@@ -88,7 +119,8 @@ public class ProcessorIssue extends Issue {
      */
     @Override
     public String toString() {
-        return "ProcessorIssue [processor=" + processor + ", action=" + action + ", field=" + field + "]";
+        return "ConfigMessage [severity=" + severity + ", message=" + message + ", processor=" + processor
+                + ", action=" + action + ", field=" + field + "]";
     }
 
 }
