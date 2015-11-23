@@ -19,7 +19,7 @@ package org.hawkular.btm.tests.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.hawkular.btm.client.collector.internal.helpers.JSON;
+import org.hawkular.btm.api.internal.actions.helpers.JSON;
 import org.junit.Test;
 
 /**

@@ -66,7 +66,7 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
         if (((ExpressionBasedAction) getAction()).getExpression() != null) {
             try {
                 ParserContext ctx = new ParserContext();
-                ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
+                ctx.addPackageImport("org.hawkular.btm.api.internal.actions.helpers");
 
                 String text = ((ExpressionBasedAction) getAction()).getExpression().evaluateText();
 
