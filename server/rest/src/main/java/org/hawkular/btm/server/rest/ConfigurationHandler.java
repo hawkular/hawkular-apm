@@ -104,7 +104,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK).entity(config).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -149,7 +149,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK).entity(summaries).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -184,7 +184,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -219,7 +219,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK).entity(config).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -256,7 +256,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK).entity(messages)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -289,7 +289,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK).entity(messages)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -320,7 +320,7 @@ public class ConfigurationHandler {
             response.resume(Response.status(Response.Status.OK)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());

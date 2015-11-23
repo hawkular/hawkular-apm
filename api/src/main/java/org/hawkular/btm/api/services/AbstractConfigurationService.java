@@ -64,16 +64,18 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
                 if (handler != null) {
                     handler.init(processor);
 
-                    for (Issue issue : handler.getIssues()) {
-                        ConfigMessage cm = new ConfigMessage();
-                        cm.setMessage(issue.getDescription());
-                        if (issue instanceof ProcessorIssue) {
-                            cm.setProcessor(((ProcessorIssue)issue).getProcessor());
-                            cm.setAction(((ProcessorIssue)issue).getAction());
-                            cm.setField(((ProcessorIssue)issue).getField());
+                    if (handler.getIssues() != null) {
+                        for (Issue issue : handler.getIssues()) {
+                            ConfigMessage cm = new ConfigMessage();
+                            cm.setMessage(issue.getDescription());
+                            if (issue instanceof ProcessorIssue) {
+                                cm.setProcessor(((ProcessorIssue)issue).getProcessor());
+                                cm.setAction(((ProcessorIssue)issue).getAction());
+                                cm.setField(((ProcessorIssue)issue).getField());
+                            }
+                            cm.setSeverity(issue.getSeverity());
+                            messages.add(cm);
                         }
-                        cm.setSeverity(issue.getSeverity());
-                        messages.add(cm);
                     }
                 }
             }

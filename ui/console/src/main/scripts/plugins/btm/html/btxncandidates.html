@@ -61,8 +61,8 @@
               <label>
                 <input type="checkbox" name="selectedURIs[]"
                   value="{{uriinfo.uri}}"
-                  ng-checked="isSelected(uriinfo.uri)"
-                  ng-click="selectionChanged(uriinfo.uri)"
+                  ng-checked="isSelected(uriinfo)"
+                  ng-click="selectionChanged(uriinfo)"
                   ng-disabled="!newBTxnName && !existingBTxnName">
                   <span ng-hide="!newBTxnName && !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
                   <span ng-show="!newBTxnName && !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>

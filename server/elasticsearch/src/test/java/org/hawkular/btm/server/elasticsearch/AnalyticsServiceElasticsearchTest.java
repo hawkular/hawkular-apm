@@ -127,7 +127,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(2, uris.size());
@@ -174,7 +174,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(2, uris.size());
@@ -226,7 +226,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(1, uris.size());
@@ -298,7 +298,7 @@ public class AnalyticsServiceElasticsearchTest {
             }
         });
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(0, uris.size());
@@ -368,7 +368,7 @@ public class AnalyticsServiceElasticsearchTest {
             }
         });
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0);
+        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(0, uris.size());

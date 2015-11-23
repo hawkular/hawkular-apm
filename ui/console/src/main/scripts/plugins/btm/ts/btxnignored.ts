@@ -31,13 +31,13 @@ module BTM {
           $scope.businessTransactions.add(btxn);
         }
       },function(resp) {
-        console.log("Failed to get business txn summaries: "+resp);
+        console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
-        console.log("Failed to get candidate count: "+resp);
+        console.log("Failed to get candidate count: "+JSON.stringify(resp));
       });
     };
 
@@ -49,7 +49,7 @@ module BTM {
           console.log('Deleted: '+btxn.summary.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {
-          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+resp);
+          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+JSON.stringify(resp));
         });
       }
     };

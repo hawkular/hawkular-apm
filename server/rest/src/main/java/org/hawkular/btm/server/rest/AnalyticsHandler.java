@@ -91,20 +91,23 @@ public class AnalyticsHandler {
                         @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
                     value = "optional 'end' time, default current time") @DefaultValue("0")
-                        @QueryParam("endTime") long endTime) {
+                        @QueryParam("endTime") long endTime,
+            @ApiParam(required = false,
+                    value = "compress list to show common patterns") @DefaultValue("false")
+                        @QueryParam("compress") boolean compress) {
 
         try {
             log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
 
             java.util.List<URIInfo> uris = analyticsService.getUnboundURIs(
-                    securityProvider.getTenantId(context), startTime, endTime);
+                    securityProvider.getTenantId(context), startTime, endTime, compress);
 
             log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);
 
             response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -146,7 +149,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -188,7 +191,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(pis).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -245,7 +248,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -302,7 +305,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -359,7 +362,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -420,7 +423,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -460,7 +463,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -518,7 +521,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -556,7 +559,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -616,7 +619,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -656,7 +659,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
@@ -691,7 +694,7 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
                     .build());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debugf(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());

@@ -40,9 +40,10 @@ public interface AnalyticsService {
      * @param tenantId The optional tenant id
      * @param startTime The start time
      * @param endTime The end time (if 0, then current time)
+     * @param compress Whether to compress the list and show common patterns
      * @return The unbound URIs
      */
-    List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime);
+    List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress);
 
     /**
      * This method returns the bound URIs associated with a business

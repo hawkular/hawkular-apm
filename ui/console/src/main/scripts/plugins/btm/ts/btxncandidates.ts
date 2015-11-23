@@ -26,15 +26,26 @@ module BTM {
     $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
       $scope.businessTransactions = resp.data;
     },function(resp) {
-      console.log("Failed to get business txn summaries: "+resp);
+      console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+      $http.get('/hawkular/btm/analytics/businesstxn/unbounduris?compress=true').then(function(resp) {
         $scope.unbounduris = resp.data;
         $scope.candidateCount = Object.keys(resp.data).length;
+        
+        var selected = $scope.selecteduris;
+        $scope.selecteduris = [];
+        
+        for (var i=0; i < $scope.unbounduris.length; i++) {
+          for (var j=0; j < selected.length; j++) {
+            if ($scope.unbounduris[i].uri === selected[j].uri) {
+              $scope.selecteduris.add($scope.unbounduris[i]);
+            }
+          }
+        }
       },function(resp) {
-        console.log("Failed to get unbound URIs: "+resp);
+        console.log("Failed to get unbound URIs: "+JSON.stringify(resp));
       });
     };
 
@@ -47,13 +58,30 @@ module BTM {
     $scope.addBusinessTxn = function() {
       var defn = {
         filter: {
-          inclusions: $scope.selecteduris
-        }
+          inclusions: []
+        },
+        processors: []
       };
+      for (var i = 0; i < $scope.selecteduris.length; i++) {
+        defn.filter.inclusions.add($scope.selecteduris[i].regex);
+        if ($scope.selecteduris[i].template !== undefined) {
+          defn.processors.add({
+            description: "Process inbound request",
+            nodeType: "Consumer",
+            direction: "In",
+            uriFilter: $scope.selecteduris[i].regex,
+            actions: [{
+              actionType: "EvaluateURI",
+              description: "Extract parameters from path",
+              template: $scope.selecteduris[i].template
+            }]
+          });
+        }
+      }
       $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).then(function(resp) {
         $location.path('config/'+$scope.newBTxnName);
       },function(resp) {
-        console.log("Failed to add business txn '"+$scope.newBTxnName+"': "+resp);
+        console.log("Failed to add business txn '"+$scope.newBTxnName+"': "+JSON.stringify(resp));
       });
     };
 
@@ -61,13 +89,31 @@ module BTM {
       var defn = {
         level: 'Ignore',
         filter: {
-          inclusions: $scope.selecteduris
-        }
+          inclusions: []
+        },
+        processors: []
       };
+      for (var i = 0; i < $scope.selecteduris.length; i++) {
+        defn.filter.inclusions.add($scope.selecteduris[i].regex);
+        // Even though ignored, add URI evaluation in case later on we want to manage the btxn
+        if ($scope.selecteduris[i].template !== undefined) {
+          defn.processors.add({
+            description: "Process inbound request",
+            nodeType: "Consumer",
+            direction: "In",
+            uriFilter: $scope.selecteduris[i].regex,
+            actions: [{
+              actionType: "EvaluateURI",
+              description: "Extract parameters from path",
+              template: $scope.selecteduris[i].template
+            }]
+          });
+        }
+      }
       $http.put('/hawkular/btm/config/businesstxn/'+$scope.newBTxnName, defn).then(function(resp) {
         $location.path('config/'+$scope.newBTxnName);
       },function(resp) {
-        console.log("Failed to ignore business txn '"+$scope.newBTxnName+"': "+resp);
+        console.log("Failed to ignore business txn '"+$scope.newBTxnName+"': "+JSON.stringify(resp));
       });
     };
 
@@ -75,33 +121,31 @@ module BTM {
       $http.get('/hawkular/btm/config/businesstxn/'+$scope.existingBTxnName).then(function(resp) {
         var btxn = resp.data;
         for (var i = 0; i < $scope.selecteduris.length; i++) {
-          if (btxn.filter.inclusions.indexOf($scope.selecteduris[i]) === -1) {
-            btxn.filter.inclusions.add($scope.selecteduris[i]);
+          if (btxn.filter.inclusions.indexOf($scope.selecteduris[i].regex) === -1) {
+            btxn.filter.inclusions.add($scope.selecteduris[i].regex);
           }
         }
         $http.put('/hawkular/btm/config/businesstxn/'+$scope.existingBTxnName,btxn).then(function(resp) {
-          console.log("Saved updated business txn '"+$scope.existingBTxnName+"': "+resp);
+          console.log("Saved updated business txn '"+$scope.existingBTxnName+"': "+JSON.stringify(resp));
           $location.path('config/'+$scope.existingBTxnName);
         },function(resp) {
-          console.log("Failed to save business txn '"+$scope.existingBTxnName+"': "+resp);
+          console.log("Failed to save business txn '"+$scope.existingBTxnName+"': "+JSON.stringify(resp));
         });
       },function(resp) {
-        console.log("Failed to get business txn '"+$scope.existingBTxnName+"': "+resp);
+        console.log("Failed to get business txn '"+$scope.existingBTxnName+"': "+JSON.stringify(resp));
       });
     };
 
-    $scope.selectionChanged = function(uri) {
-      var regex = $scope.escapeRegExp(uri);
-      if ($scope.selecteduris.contains(regex)) {
-        $scope.selecteduris.remove(regex);
+    $scope.selectionChanged = function(uriinfo) {
+      if ($scope.selecteduris.contains(uriinfo)) {
+        $scope.selecteduris.remove(uriinfo);
       } else {
-        $scope.selecteduris.add(regex);
+        $scope.selecteduris.add(uriinfo);
       }
     };
     
-    $scope.isSelected = function(uri) {
-      var regex = $scope.escapeRegExp(uri);
-      return $scope.selecteduris.contains(regex);
+    $scope.isSelected = function(uriinfo) {
+      return $scope.selecteduris.contains(uriinfo);
     };
     
     $scope.getLevel = function(level) {
@@ -109,10 +153,6 @@ module BTM {
         return "Active";
       }
       return level;
-    };
-
-    $scope.escapeRegExp = function(str) {
-      return "^" + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "$";
     };
 
   }]);
