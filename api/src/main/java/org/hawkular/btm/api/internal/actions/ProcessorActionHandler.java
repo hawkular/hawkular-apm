@@ -17,7 +17,6 @@
 package org.hawkular.btm.api.internal.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +30,6 @@ import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.mvel2.MVEL;
-import org.mvel2.ParserContext;
 
 /**
  * @author gbrown
@@ -43,7 +40,7 @@ public abstract class ProcessorActionHandler {
 
     private ProcessorAction action;
 
-    private Object compiledPredicate = null;
+    private ExpressionHandler predicate;
 
     private boolean usesHeaders = false;
     private boolean usesContent = false;
@@ -118,26 +115,20 @@ public abstract class ProcessorActionHandler {
     public void init(Processor processor) {
         if (action.getPredicate() != null) {
             try {
-                ParserContext ctx = new ParserContext();
-                ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
+                predicate = ExpressionHandlerFactory.getHandler(action.getPredicate());
 
-                String text = action.getPredicate().predicateText();
+                predicate.init(processor, getAction(), true);
 
-                compiledPredicate = MVEL.compileExpression(text, ctx);
-
-                if (compiledPredicate == null) {
-                    log.severe("Failed to compile action predicate '" + text + "'");
-                } else if (log.isLoggable(Level.FINE)) {
-                    log.fine("Initialised processor action predicate '" + text
-                            + "' = " + compiledPredicate);
+                if (!isUsesHeaders()) {
+                    setUsesHeaders(predicate.isUsesHeaders());
+                }
+                if (!isUsesContent()) {
+                    setUsesContent(predicate.isUsesContent());
                 }
 
-                // Check if headers referenced
-                setUsesHeaders(text.indexOf("headers.") != -1);
-                setUsesContent(text.indexOf("values[") != -1);
             } catch (Throwable t) {
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Failed to compile predicate for action '"
+                    log.log(Level.FINE, "Failed to initialise predicate for action '"
                             + action + "'", t);
                 }
 
@@ -168,19 +159,14 @@ public abstract class ProcessorActionHandler {
      */
     public boolean process(BusinessTransaction btxn, Node node, Direction direction,
             Map<String, ?> headers, Object[] values) {
-        if (compiledPredicate != null) {
-            Map<String, Object> vars = new HashMap<String, Object>();
-            vars.put("btxn", btxn);
-            vars.put("node", node);
-            vars.put("headers", headers);
-            vars.put("values", values);
-
-            return (Boolean) MVEL.executeExpression(compiledPredicate, vars);
-        }
 
         // Associate any initialisation issues with the node
         if (issues != null) {
             node.getIssues().addAll(issues);
+        }
+
+        if (predicate != null) {
+            return predicate.test(btxn, node, direction, headers, values);
         }
 
         return true;

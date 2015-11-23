@@ -43,29 +43,6 @@ public class LiteralExpression extends Expression {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#predicateText()
-     */
-    @Override
-    public String predicateText() {
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-            return value.toLowerCase();
-        }
-        throw new IllegalStateException("Predicate literal expression can only be 'true' or 'false'");
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#expressionText()
-     */
-    @Override
-    public String evaluateText() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("\"");
-        buf.append(value);
-        buf.append("\"");
-        return buf.toString();
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

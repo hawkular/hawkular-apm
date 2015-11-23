@@ -24,26 +24,6 @@ package org.hawkular.btm.api.model.config.btxn;
 public class TextExpression extends DataExpression {
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#predicateText()
-     */
-    @Override
-    public String predicateText() {
-        throw new IllegalStateException("Text expression should not be used for predicate");
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#expressionText()
-     */
-    @Override
-    public String evaluateText() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Text.serialize(");
-        buf.append(dataSourceText());
-        buf.append(")");
-        return buf.toString();
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

@@ -38,18 +38,4 @@ import io.swagger.annotations.ApiModel;
         discriminator = "type")
 public abstract class Expression {
 
-    /**
-     * This method returns the textual representation of the predicate.
-     *
-     * @return The text representation of the predicate
-     */
-    public abstract String predicateText();
-
-    /**
-     * This method returns the textual representation of the expression.
-     *
-     * @return The text representation of the expression
-     */
-    public abstract String evaluateText();
-
 }

@@ -43,44 +43,6 @@ public class JSONExpression extends DataExpression {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#predicateText()
-     */
-    @Override
-    public String predicateText() {
-        return text("predicate");
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#expressionText()
-     */
-    @Override
-    public String evaluateText() {
-        return text("evaluate");
-    }
-
-    /**
-     * This method returns the expression text.
-     *
-     * @param type The type of expression
-     * @return The expression text
-     */
-    protected String text(String type) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("JSON.");
-        buf.append(type);
-        if (jsonpath == null || jsonpath.trim().length() == 0) {
-            buf.append("(null,");
-        } else {
-            buf.append("(\"");
-            buf.append(jsonpath);
-            buf.append("\",");
-        }
-        buf.append(dataSourceText());
-        buf.append(")");
-        return buf.toString();
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

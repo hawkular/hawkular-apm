@@ -75,6 +75,11 @@ public class JSON {
      * @return The result, or false if the data was invalid
      */
     public static boolean predicate(String jsonpath, Object data) {
+        // No jsonpath means return false
+        if (jsonpath == null || jsonpath.trim().length() == 0) {
+            return false;
+        }
+
         String json = serialize(data);
         if (json != null) {
             Object result = JsonPath.parse(json).read(jsonpath);
@@ -101,6 +106,12 @@ public class JSON {
      */
     public static String evaluate(String jsonpath, Object data) {
         String json = serialize(data);
+
+        // No jsonpath means return serialized form
+        if (jsonpath == null || jsonpath.trim().length() == 0) {
+            return json;
+        }
+
         if (json != null) {
             Object result = JsonPath.parse(json).read(jsonpath);
             if (result != null) {
