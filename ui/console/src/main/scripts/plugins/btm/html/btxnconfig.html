@@ -233,8 +233,8 @@
                        where the form is displayed the errors aren't available, and their retrieval does not
                        cause a change in state that refreshes the field. -->
 
-                  <label for="actionName" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
-                  <input type="text" ng-class="{error:isError(processor,action,'name')}" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
+                  <label for="actionName" ng-class="{error:isError(processor,action,'name')}" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
+                  <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" >
 
                   <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
 
@@ -248,17 +248,14 @@
                     <option value="Local">Local</option>
                   </select>
 
-                  <label for="actionTemplate" ng-show="action.actionType === 'EvaluateURI'" style="width: 15%" >Template URI:</label>
+                  <label for="actionTemplate" ng-class="{error:isError(processor,action,'template')}" ng-show="action.actionType === 'EvaluateURI'" style="width: 15%" >Template URI:</label>
                   <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'EvaluateURI'" style="width: 30%" >
 
                 </div>
 
                 <div class="form-group" ng-if="action.actionType !== 'EvaluateURI' && action.actionType !== undefined" >
 
-                  <label for="actionTemplate" style="width: 15%" ng-show="action.actionType === 'EvaluateURI'" >Template URI:</label>
-                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'EvaluateURI'" style="width: 30%" >
-
-                  <label for="actionValueType" style="width: 15%" >Value Type: </label>
+                  <label for="actionValueType" ng-class="{error:isError(processor,action,'expression')}" style="width: 15%" >Value Type: </label>
                   <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
                     <option value=""></option>
                     <option value="Literal">Literal</option>
