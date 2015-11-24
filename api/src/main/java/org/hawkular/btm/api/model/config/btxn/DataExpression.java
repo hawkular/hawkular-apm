@@ -59,24 +59,4 @@ public abstract class DataExpression extends Expression {
         this.key = key;
     }
 
-    /**
-     * This method returns the text related to accessing
-     * the data source.
-     *
-     * @return The data source text
-     */
-    protected String dataSourceText() {
-        StringBuffer buf = new StringBuffer();
-        if (getSource() == DataSource.Content) {
-            buf.append("values[");
-            buf.append(getKey());
-            buf.append("]");
-        } else if (getSource() == DataSource.Header) {
-            buf.append("headers.get(\"");
-            buf.append(getKey());
-            buf.append("\")");
-        }
-        return buf.toString();
-    }
-
 }

@@ -59,22 +59,6 @@ public class FreeFormExpression extends Expression {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#text()
-     */
-    @Override
-    public String predicateText() {
-        return value;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.model.config.btxn.Expression#text()
-     */
-    @Override
-    public String evaluateText() {
-        return value;
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

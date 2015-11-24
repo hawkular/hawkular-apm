@@ -130,7 +130,7 @@ public class XML {
         }
 
         // If no xpath expression, then serialize
-        if (xpath == null) {
+        if (xpath == null || xpath.trim().length() == 0) {
             return serialize(node);
         }
 
@@ -142,6 +142,8 @@ public class XML {
 
             if (result != null) {
                 if (result.getNodeType() == Node.TEXT_NODE) {
+                    return result.getNodeValue();
+                } else if (result.getNodeType() == Node.ATTRIBUTE_NODE) {
                     return result.getNodeValue();
                 }
                 return serialize(result);

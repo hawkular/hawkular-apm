@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import org.hawkular.btm.api.internal.actions.ExpressionHandler;
+import org.hawkular.btm.api.internal.actions.ExpressionHandlerFactory;
 import org.hawkular.btm.api.internal.actions.ProcessorActionHandler;
 import org.hawkular.btm.api.internal.actions.ProcessorActionHandlerFactory;
 import org.hawkular.btm.api.logging.Logger;
@@ -39,8 +41,6 @@ import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.mvel2.MVEL;
-import org.mvel2.ParserContext;
 
 /**
  * This class manages the processors.
@@ -251,7 +251,7 @@ public class ProcessorManager {
 
         private Predicate<String> faultFilter = null;
 
-        private Object compiledPredicate = null;
+        private ExpressionHandler predicateHandler = null;
 
         private List<ProcessorActionWrapper> actions = new ArrayList<ProcessorActionWrapper>();
 
@@ -284,28 +284,18 @@ public class ProcessorManager {
             }
 
             try {
-                ParserContext ctx = new ParserContext();
-                ctx.addPackageImport("org.hawkular.btm.client.collector.internal.helpers");
-
                 if (processor.getPredicate() != null) {
-                    String text = processor.getPredicate().predicateText();
+                    predicateHandler = ExpressionHandlerFactory.getHandler(processor.getPredicate());
 
-                    compiledPredicate = MVEL.compileExpression(text, ctx);
-
-                    if (compiledPredicate == null) {
-                        log.severe("Failed to compile pr ocessorpredicate '" + text + "'");
-                    } else if (log.isLoggable(Level.FINE)) {
-                        log.fine("Initialised processor predicate '" + text
-                                + "' = " + compiledPredicate);
-                    }
+                    predicateHandler.init(getProcessor(), null, true);
 
                     // Check if headers referenced
-                    usesHeaders = text.indexOf("headers.") != -1;
-                    usesContent = text.indexOf("values[") != -1;
+                    usesHeaders = predicateHandler.isUsesHeaders();
+                    usesContent = predicateHandler.isUsesContent();
                 }
             } catch (Throwable t) {
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Failed to compile processor predicate '"
+                    log.log(Level.FINE, "Failed to initialise processor predicate '"
                             + processor.getPredicate() + "'", t);
                 }
 
@@ -449,15 +439,9 @@ public class ProcessorManager {
                     node.getIssues().addAll(issues);
                 }
 
-                if (compiledPredicate != null) {
-                    Map<String, Object> vars = new HashMap<String, Object>();
-                    vars.put("btxn", btxn);
-                    vars.put("node", node);
-                    vars.put("headers", headers);
-                    vars.put("values", values);
-
+                if (predicateHandler != null) {
                     try {
-                        if (!((Boolean) MVEL.executeExpression(compiledPredicate, vars))) {
+                        if (!predicateHandler.test(btxn, node, direction, headers, values)) {
                             if (log.isLoggable(Level.FINEST)) {
                                 log.finest("ProcessManager/Processor: process - predicate returned false");
                             }

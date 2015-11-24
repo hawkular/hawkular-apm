@@ -17,7 +17,6 @@
 package org.hawkular.btm.api.internal.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
@@ -31,8 +30,6 @@ import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.ExpressionBasedAction;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
-import org.mvel2.MVEL;
-import org.mvel2.ParserContext;
 
 /**
  * @author gbrown
@@ -44,7 +41,7 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
 
     private static final Logger log = Logger.getLogger(ExpressionBasedActionHandler.class.getName());
 
-    private Object compiledAction = null;
+    private ExpressionHandler expression = null;
 
     /**
      * This constructor initialises the action.
@@ -65,26 +62,16 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
         super.init(processor);
         if (((ExpressionBasedAction) getAction()).getExpression() != null) {
             try {
-                ParserContext ctx = new ParserContext();
-                ctx.addPackageImport("org.hawkular.btm.api.internal.actions.helpers");
+                expression = ExpressionHandlerFactory.getHandler(
+                        ((ExpressionBasedAction) getAction()).getExpression());
 
-                String text = ((ExpressionBasedAction) getAction()).getExpression().evaluateText();
+                expression.init(processor, getAction(), false);
 
-                compiledAction = MVEL.compileExpression(text, ctx);
-
-                if (compiledAction == null) {
-                    log.severe("Failed to compile action '" + text + "'");
-                } else if (log.isLoggable(Level.FINE)) {
-                    log.fine("Initialised processor action '" + text
-                            + "' = " + compiledAction);
-                }
-
-                // Check if headers referenced
                 if (!isUsesHeaders()) {
-                    setUsesHeaders(text.indexOf("headers.") != -1);
+                    setUsesHeaders(expression.isUsesHeaders());
                 }
                 if (!isUsesContent()) {
-                    setUsesContent(text.indexOf("values[") != -1);
+                    setUsesContent(expression.isUsesContent());
                 }
             } catch (Throwable t) {
                 if (log.isLoggable(Level.FINE)) {
@@ -137,36 +124,8 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
      */
     protected String getValue(BusinessTransaction btxn, Node node, Direction direction,
             Map<String, ?> headers, Object[] values) {
-        if (compiledAction != null) {
-            Map<String, Object> vars = new HashMap<String, Object>();
-            vars.put("btxn", btxn);
-            vars.put("node", node);
-            vars.put("headers", headers);
-            vars.put("values", values);
-
-            Object result = MVEL.executeExpression(compiledAction, vars);
-
-            if (result == null) {
-                log.warning("Result for action '" + getAction() + "' was null");
-            } else {
-                String value = null;
-
-                if (result.getClass() != String.class) {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Converting result for action '" + getAction()
-                                + "' to a String, was: " + result.getClass());
-                    }
-                    value = result.toString();
-                } else {
-                    value = (String) result;
-                }
-
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("ProcessManager/Processor/Action: value=" + value);
-                }
-
-                return value;
-            }
+        if (expression != null) {
+            return expression.evaluate(btxn, node, direction, headers, values);
         }
 
         return null;
