@@ -16,11 +16,15 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
+  declare var c3: any;
+
   export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', ($scope, $http, $location, $interval) => {
 
     $scope.newBTxnName = '';
     $scope.candidateCount = 0;
-
+    
+    $scope.chart = "TxnCount";
+    
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
         $scope.businessTransactions = [];
@@ -56,6 +60,9 @@ module BTM {
     $scope.getBusinessTxnDetails = function(btxn) {
       $http.get('/hawkular/btm/analytics/businesstxn/completion/count?businessTransaction='+btxn.summary.name).then(function(resp) {
         btxn.count = resp.data;
+        
+        $scope.reloadTxnCountGraph();
+
       },function(resp) {
         console.log("Failed to get count: "+JSON.stringify(resp));
       });
@@ -72,6 +79,9 @@ module BTM {
 
       $http.get('/hawkular/btm/analytics/businesstxn/completion/faultcount?businessTransaction='+btxn.summary.name).then(function(resp) {
         btxn.faultcount = resp.data;
+        
+        $scope.reloadFaultCountGraph();
+
       },function(resp) {
         console.log("Failed to get fault count: "+JSON.stringify(resp));
       });
@@ -93,6 +103,74 @@ module BTM {
         });
       }
     };
+
+    $scope.initGraph = function() {
+      $scope.btxncountpiechart = c3.generate({
+        bindto: '#btxntxncountpiechart',
+        data: {
+          json: [
+          ],
+          type: 'pie',
+          onclick: function (d, i) {
+            $location.path('info/'+d.id);
+          }
+        }
+      });
+
+      $scope.btxnfaultcountpiechart = c3.generate({
+        bindto: '#btxnfaultcountpiechart',
+        data: {
+          json: [
+          ],
+          type: 'pie',
+          onclick: function (d, i) {
+            $location.path('info/'+d.id);
+          }
+        }
+      });
+    };
+    
+    $scope.reloadTxnCountGraph = function() {
+      var btxndata = [];
+
+      for (var i = 0; i < $scope.businessTransactions.length; i++) {
+        var btxn = $scope.businessTransactions[i];
+        if (btxn.count !== undefined && btxn.count > 0) {
+          var record=[ ];
+          record.push(btxn.summary.name);
+          record.push(btxn.count);
+          btxndata.push(record);
+        }
+      }
+
+      $scope.btxncountpiechart.unload();
+
+      $scope.btxncountpiechart.load({
+        columns: btxndata
+      });
+    };
+
+    $scope.reloadFaultCountGraph = function() {
+      var btxnfaultdata = [];
+
+      for (var i = 0; i < $scope.businessTransactions.length; i++) {
+        var btxn = $scope.businessTransactions[i];
+        if (btxn.faultcount !== undefined && btxn.faultcount > 0) {
+          var record=[ ];
+          record.push(btxn.summary.name);
+          record.push(btxn.faultcount);
+          btxnfaultdata.push(record);
+        }
+      }
+
+      $scope.btxnfaultcountpiechart.unload();
+
+      $scope.btxnfaultcountpiechart.load({
+        columns: btxnfaultdata
+      });
+    };
+    
+    $scope.initGraph();
 
   }]);
 
