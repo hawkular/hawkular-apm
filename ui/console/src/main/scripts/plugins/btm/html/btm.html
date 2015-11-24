@@ -18,15 +18,29 @@
 
     <section id="active" class="hk-tab-content">
 
-      <div class="col-md-9 hk-align-center">
+      <div class="col-md-12">
         <ul class="list-group" >
           <br>
           <div class="row" >
             Search: <input ng-model="query">
-            <a href="/hawkular-ui/btm-analytics" class="btn btn-info pull-right" target="_blank">View Analytics</a>
+
+            <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+            <label for="chartType" style="width: 3%" >Chart:</label>
+            <select name="chartType" ng-model="chart" style="width: 10%">
+              <option value="TxnCount">Transaction Count</option>
+              <option value="FaultCount">Fault Count</option>
+              <option value="None">None</option>
+            </select>
+
+            <a href="/hawkular-ui/btm-analytics" class="btn pull-right" target="_blank"><i class="fa fa-line-chart"/></a>
           </div>
 
-          <div class="hk-url-item" ng-repeat="btxn in businessTransactions | filter:query" >
+          <div class="hk-url-item col-md-6" ng-hide="chart === 'None'" >
+            <div id="btxntxncountpiechart" ng-show="chart === 'TxnCount'"></div>
+            <div id="btxnfaultcountpiechart" ng-show="chart === 'FaultCount'"></div>
+          </div>
+
+          <div class="hk-url-item col-md-6" ng-repeat="btxn in businessTransactions | filter:query" >
             <div class="panel panel-default hk-url-heading" ng-show="btxn.summary.level === 'All'">
               <a href="info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
               <span class="hk-settings pull-right">
@@ -46,9 +60,9 @@
                 </div>
                 <div class="col-sm-3 hk-summary-item">
                   <a href="info/{{btxn.summary.name}}">
-                    <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}} sec</i></span>
+                    <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}}</i></span>
                     <span class="hk-data spinner" ng-hide="btxn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                    <span class="hk-item">Completion (95%)</span>
+                    <span class="hk-item">Completion (secs 95%)</span>
                   </a>
                 </div>
                 <div class="col-sm-3 hk-summary-item">
