@@ -162,10 +162,17 @@ module BTM {
 
     $scope.addAction = function(processor, type) {
       $scope.setDirty();
-      processor.actions.add({
+      
+      var newAction = {
         actionType: type,
         description: "Action " + (processor.actions.length + 1)
-      });
+      };
+
+      if (type === 'AddCorrelationId') {
+        newAction['scope'] = 'Global';
+      }
+
+      processor.actions.add(newAction);
     };
 
     $scope.deleteAction = function(processor,action) {

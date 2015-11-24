@@ -18,10 +18,8 @@
 /* Bootstrap overrides */
 /* PatternFly-specific variables based on Bootstrap overides */
 /* Error message handling */
-input.error {
-  background-color: pink;
-  border: 1px dashed red;
-  color: white;
+label.error {
+  color: red;
 }
 /*------------------------------------*\
     STRUCTURAL STYLES
