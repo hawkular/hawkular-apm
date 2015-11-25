@@ -58,6 +58,7 @@
 
   <modules>
     <module>api</module>
+    <module>client/agent-rest</module>
     <module>client/analytics-service-rest-client</module>
     <module>client/api</module>
     <module>client/btxn-collector</module>
@@ -65,7 +66,6 @@
     <module>client/btxn-publisher-rest-client</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
-    <module>client/client-rest</module>
     <module>client/config-service-rest-client</module>
     <module>processors/completiontime-deriver</module>
     <module>processors/notification-deriver</module>
@@ -174,7 +174,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-client-rest</artifactId>
+        <artifactId>hawkular-btm-agent-rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

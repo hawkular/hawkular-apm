@@ -47,7 +47,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-rest</artifactId>
+      <artifactId>hawkular-btm-agent-rest</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -115,10 +115,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-rest</artifactId>
+                  <artifactId>hawkular-btm-agent-rest</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
+                  <destFileName>hawkular-btm-agent-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -148,9 +148,7 @@
           <threadCount>1</threadCount>
           <threadCountClasses>1</threadCountClasses>
           <argLine>
-              -Dorg.jboss.byteman.transform.all
-              -javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar
-              -Dorg.jboss.byteman.compileToBytecode
+              -javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar
               -Dhawkular-btm.config=${hawkular-btm.instrumentation}
               -Dhawkular-btm.base-uri=http://localhost:8180/hawkular/btm
               -Dhawkular-btm.username=jdoe

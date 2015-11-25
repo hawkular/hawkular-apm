@@ -40,7 +40,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-rest</artifactId>
+      <artifactId>hawkular-btm-agent-rest</artifactId>
       <scope>compile</scope>
     </dependency>
 
@@ -75,10 +75,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-rest</artifactId>
+                  <artifactId>hawkular-btm-agent-rest</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
+                  <destFileName>hawkular-btm-agent-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -93,7 +93,7 @@
           <threadCountClasses>1</threadCountClasses>
           <classpathDependencyScopeExclude>compile</classpathDependencyScopeExclude>
           <additionalClasspathElements>
-            <additionalClasspathElement>${hawkular-btm.lib}/hawkular-btm-client-rest.jar</additionalClasspathElement>
+            <additionalClasspathElement>${hawkular-btm.lib}/hawkular-btm-agent-rest.jar</additionalClasspathElement>
           </additionalClasspathElements>
         </configuration>
         <executions>

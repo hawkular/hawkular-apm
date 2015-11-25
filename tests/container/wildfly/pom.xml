@@ -85,7 +85,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-rest</artifactId>
+      <artifactId>hawkular-btm-agent-rest</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -186,10 +186,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-client-rest</artifactId>
+                  <artifactId>hawkular-btm-agent-rest</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-client-rest.jar</destFileName>
+                  <destFileName>hawkular-btm-agent-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -332,9 +332,7 @@
                 <javaOpt>-Xdebug</javaOpt>
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
-                <javaOpt>-Dorg.jboss.byteman.transform.all</javaOpt>
-                <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-client-rest.jar=manager:org.hawkular.btm.client.manager.ClientManager,boot:${hawkular-btm.lib}/hawkular-btm-client-rest.jar,sys:${hawkular-btm.lib}/hawkular-btm-client-rest.jar</javaOpt>
-                <javaOpt>-Dorg.jboss.byteman.compileToBytecode</javaOpt>
+                <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar</javaOpt>
                 <javaOpt>-Dhawkular-btm.config=${hawkular-btm.instrumentation}</javaOpt>
                 <javaOpt>-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}</javaOpt>
                 <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>

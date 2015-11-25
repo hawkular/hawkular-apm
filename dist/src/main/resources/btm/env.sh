@@ -22,11 +22,9 @@
 
 # Environment script for setting up the JAVA_OPTS property for client instrumentation
 
-export BTM_CLIENT_JAR_PATH=$BTM_HOME/client/lib/hawkular-btm-client-rest.jar
+export BTM_AGENT_JAR_PATH=$BTM_HOME/hawkular-btm-agent-rest.jar
 
-export JAVA_OPTS="-Dorg.jboss.byteman.transform.all \
-    -javaagent:$BTM_CLIENT_JAR_PATH=manager:org.hawkular.btm.client.manager.ClientManager,boot:$BTM_CLIENT_JAR_PATH \
-    -Dorg.jboss.byteman.compileToBytecode \
+export JAVA_OPTS="-javaagent:$BTM_AGENT_JAR_PATH \
     -Dhawkular-btm.base-uri=http://localhost:8180/hawkular/btm \
     -Dhawkular-btm.config.refresh=10 \
     -Dhawkular-btm.username=jdoe \
