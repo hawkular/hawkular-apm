@@ -132,7 +132,7 @@ public class ConfigurationLoader {
 
             });
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to load configuration", e);
         }
 
         return config;

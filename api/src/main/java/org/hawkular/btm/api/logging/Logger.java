@@ -149,7 +149,7 @@ public class Logger {
 
             if (mesgLevel == Level.SEVERE) {
                 if (logger != null) {
-                    logger.severe(builder.toString());
+                    logger.log(java.util.logging.Level.SEVERE, builder.toString(), t);
                 } else {
                     System.err.println(builder.toString());
                 }
