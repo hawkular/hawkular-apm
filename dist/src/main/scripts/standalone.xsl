@@ -77,18 +77,10 @@
   <xsl:template match="node()[name(.)='jms-topic'][last()]">
 
     <xsl:variable name="newJMSTopic">
-      <jms-topic name="BusinessTransactions">
-        <entry name="java:/BusinessTransactions"/>
-      </jms-topic>
-      <jms-topic name="CompletionTimes">
-        <entry name="java:/CompletionTimes"/>
-      </jms-topic>
-      <jms-topic name="Notifications">
-        <entry name="java:/Notifications"/>
-      </jms-topic>
-      <jms-topic name="ResponseTimes">
-        <entry name="java:/ResponseTimes"/>
-      </jms-topic>
+      <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions" />
+      <jms-topic name="CompletionTimes" entries="java:/CompletionTimes" />
+      <jms-topic name="Notifications" entries="java:/Notifications" />
+      <jms-topic name="ResponseTimes" entries="java:/ResponseTimes" />
     </xsl:variable>
 
     <xsl:copy>
