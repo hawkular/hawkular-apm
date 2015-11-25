@@ -77,10 +77,10 @@
       <fileMode>0644</fileMode>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/btm/client/lib</outputDirectory>
+      <outputDirectory>/btm</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.btm:hawkular-btm-client-rest:jar</include>
+        <include>org.hawkular.btm:hawkular-btm-agent-rest:jar</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>

@@ -27,9 +27,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-client-rest</artifactId>
+  <artifactId>hawkular-btm-agent-rest</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular BTM::Client::REST</name>
+  <name>Hawkular BTM::Client::Agent REST</name>
 
   <dependencies>
 
@@ -110,31 +110,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.jboss.byteman</groupId>
-                  <artifactId>byteman</artifactId>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/byteman</outputDirectory>
-                  <includes>**/MANIFEST.MF</includes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
@@ -142,7 +117,7 @@
           </descriptors>
           <appendAssemblyId>false</appendAssemblyId>
           <archive>
-            <manifestFile>${project.build.directory}/byteman/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
         <executions>
