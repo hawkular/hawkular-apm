@@ -23,7 +23,7 @@ module BTM {
     $scope.newBTxnName = '';
     $scope.candidateCount = 0;
     
-    $scope.chart = "TxnCount";
+    $scope.chart = "None";
     
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {

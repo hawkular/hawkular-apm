@@ -39,7 +39,7 @@ module BTM {
       console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
     });
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris?compress=true').then(function(resp) {
       $scope.unboundURIs = [ ];
       for (var i=0; i < resp.data.length; i++) {
         if (resp.data[i].regex !== undefined) {
