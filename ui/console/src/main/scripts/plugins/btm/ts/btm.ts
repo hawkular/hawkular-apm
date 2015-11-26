@@ -25,6 +25,9 @@ module BTM {
     
     $scope.chart = "None";
     
+    $scope.txnCountValues = [];
+    $scope.faultCountValues = [];
+
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
         $scope.businessTransactions = [];
@@ -131,6 +134,8 @@ module BTM {
     };
     
     $scope.reloadTxnCountGraph = function() {
+      var removeTxnCountValues = angular.copy($scope.txnCountValues);
+
       var btxndata = [];
 
       for (var i = 0; i < $scope.businessTransactions.length; i++) {
@@ -140,17 +145,28 @@ module BTM {
           record.push(btxn.summary.name);
           record.push(btxn.count);
           btxndata.push(record);
+
+          if ($scope.txnCountValues.contains(btxn.summary.name)) {
+            removeTxnCountValues.remove(btxn.summary.name);
+          } else {
+            $scope.txnCountValues.add(btxn.summary.name);
+          }
         }
       }
-
-      $scope.btxncountpiechart.unload();
 
       $scope.btxncountpiechart.load({
         columns: btxndata
       });
+
+      for (var j=0; j < removeTxnCountValues.length; j++) {
+        $scope.btxncountpiechart.unload(removeTxnCountValues[j]);
+        $scope.txnCountValues.remove(removeTxnCountValues[j]);
+      }
     };
 
     $scope.reloadFaultCountGraph = function() {
+      var removeFaultCountValues = angular.copy($scope.faultCountValues);
+
       var btxnfaultdata = [];
 
       for (var i = 0; i < $scope.businessTransactions.length; i++) {
@@ -160,14 +176,23 @@ module BTM {
           record.push(btxn.summary.name);
           record.push(btxn.faultcount);
           btxnfaultdata.push(record);
+
+          if ($scope.faultCountValues.contains(btxn.summary.name)) {
+            removeFaultCountValues.remove(btxn.summary.name);
+          } else {
+            $scope.faultCountValues.add(btxn.summary.name);
+          }
         }
       }
-
-      $scope.btxnfaultcountpiechart.unload();
 
       $scope.btxnfaultcountpiechart.load({
         columns: btxnfaultdata
       });
+
+      for (var j=0; j < removeFaultCountValues.length; j++) {
+        $scope.btxnfaultcountpiechart.unload(removeFaultCountValues[j]);
+        $scope.faultCountValues.remove(removeFaultCountValues[j]);
+      }
     };
     
     $scope.initGraph();

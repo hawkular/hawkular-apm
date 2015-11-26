@@ -24,6 +24,9 @@ module BTM {
 
     $scope.properties = [];
     
+    $scope.propertyValues = [];
+    $scope.faultValues = [];
+
     $scope.criteria = {
       businessTransaction: $scope.businessTransactionName,
       properties: [],
@@ -52,6 +55,8 @@ module BTM {
       $http.post('/hawkular/btm/analytics/businesstxn/completion/faults', $scope.criteria).then(function(resp) {
         $scope.faults = resp.data;
         
+        var removeFaultValues = angular.copy($scope.faultValues);
+
         var faultdata = [];
         
         for (var i=0; i < $scope.faults.length; i++) {
@@ -60,13 +65,22 @@ module BTM {
           record.push(fault.value);
           record.push(fault.count);
           faultdata.push(record);
+
+          if ($scope.faultValues.contains(fault.value)) {
+            removeFaultValues.remove(fault.value);
+          } else {
+            $scope.faultValues.add(fault.value);
+          }
         }
         
-        $scope.ctfaultschart.unload();
-
         $scope.ctfaultschart.load({
           columns: faultdata
         });
+
+        for (var j=0; j < removeFaultValues.length; j++) {
+          $scope.ctfaultschart.unload(removeFaultValues[j]);
+          $scope.faultValues.remove(removeFaultValues[j]);
+        }
 
       },function(resp) {
         console.log("Failed to get statistics: "+JSON.stringify(resp));
@@ -97,6 +111,8 @@ module BTM {
       $http.post('/hawkular/btm/analytics/businesstxn/completion/property/'+$scope.config.selectedProperty, $scope.criteria).then(function(resp) {
         $scope.propertyDetails = resp.data;
         
+        var removePropertyValues = angular.copy($scope.propertyValues);
+
         var propertydata = [];
         
         for (var i=0; i < $scope.propertyDetails.length; i++) {
@@ -105,13 +121,22 @@ module BTM {
           record.push(prop.value);
           record.push(prop.count);
           propertydata.push(record);
+
+          if ($scope.propertyValues.contains(prop.value)) {
+            removePropertyValues.remove(prop.value);
+          } else {
+            $scope.propertyValues.add(prop.value);
+          }
         }
-        
-        $scope.propertychart.unload();
 
         $scope.propertychart.load({
           columns: propertydata
         });
+
+        for (var j=0; j < removePropertyValues.length; j++) {
+          $scope.propertychart.unload(removePropertyValues[j]);
+          $scope.propertyValues.remove(removePropertyValues[j]);
+        }
 
       },function(resp) {
         console.log("Failed to get property details for '"+$scope.config.selectedProperty+"': "+JSON.stringify(resp));
