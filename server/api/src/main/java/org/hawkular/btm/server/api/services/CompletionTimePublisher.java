@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.server.api.services;
 
-import java.util.List;
-
 import org.hawkular.btm.api.model.events.CompletionTime;
 
 /**
@@ -26,15 +24,6 @@ import org.hawkular.btm.api.model.events.CompletionTime;
  *
  * @author gbrown
  */
-public interface CompletionTimePublisher {
-
-    /**
-     * This method publishes the list of completion times.
-     *
-     * @param tenantId The tenant
-     * @param cts The list of completion times
-     * @throws Exception Failed to publish completion times
-     */
-    void publish(String tenantId, List<CompletionTime> cts) throws Exception;
+public interface CompletionTimePublisher extends Publisher<CompletionTime> {
 
 }

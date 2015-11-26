@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.server.api.services;
 
-import java.util.List;
-
 import org.hawkular.btm.api.model.events.ResponseTime;
 
 /**
@@ -26,15 +24,6 @@ import org.hawkular.btm.api.model.events.ResponseTime;
  *
  * @author gbrown
  */
-public interface ResponseTimePublisher {
-
-    /**
-     * This method publishes the list of response times.
-     *
-     * @param tenantId The tenant
-     * @param rts The list of response times
-     * @throws Exception Failed to publish response times
-     */
-    void publish(String tenantId, List<ResponseTime> rts) throws Exception;
+public interface ResponseTimePublisher extends Publisher<ResponseTime> {
 
 }

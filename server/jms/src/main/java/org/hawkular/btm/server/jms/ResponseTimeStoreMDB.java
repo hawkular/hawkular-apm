@@ -17,9 +17,8 @@
 package org.hawkular.btm.server.jms;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
@@ -27,15 +26,12 @@ import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 import org.hawkular.btm.api.model.events.ResponseTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author gbrown
@@ -48,41 +44,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class ResponseTimeStoreMDB implements MessageListener {
+public class ResponseTimeStoreMDB extends RetryCapableMDB<ResponseTime> {
 
-    private static final Logger log = Logger.getLogger(ResponseTimeStoreMDB.class.getName());
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final TypeReference<java.util.List<ResponseTime>> RESPONSE_TIME_LIST =
-            new TypeReference<java.util.List<ResponseTime>>() {
-    };
+    @Inject
+    private ResponseTimePublisherJMS responseTimePublisher;
 
     @Inject
     private AnalyticsService analyticsService;
 
+    @PostConstruct
+    public void init() {
+        setRetryPublisher(responseTimePublisher);
+        setTypeReference(new TypeReference<java.util.List<ResponseTime>>() {
+        });
+    }
+
     /* (non-Javadoc)
-     * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
+     * @see org.hawkular.btm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
      */
     @Override
-    public void onMessage(Message message) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Response time received=" + message);
-        }
-
-        try {
-            String tenantId = message.getStringProperty("tenant");
-
-            String data = ((TextMessage) message).getText();
-
-            List<ResponseTime> rts = mapper.readValue(data, RESPONSE_TIME_LIST);
-
-            analyticsService.storeResponseTimes(tenantId, rts);
-
-        } catch (Exception e) {
-            // TODO: Trigger retry???
-            e.printStackTrace();
-        }
+    protected void process(String tenantId, List<ResponseTime> items, int retryCount) throws Exception {
+        analyticsService.storeResponseTimes(tenantId, items);
     }
 
 }

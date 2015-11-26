@@ -17,9 +17,8 @@
 package org.hawkular.btm.server.jms;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
@@ -27,15 +26,12 @@ import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.services.AnalyticsService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author gbrown
@@ -48,41 +44,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class CompletionTimeStoreMDB implements MessageListener {
+public class CompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime> {
 
-    private static final Logger log = Logger.getLogger(CompletionTimeStoreMDB.class.getName());
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final TypeReference<java.util.List<CompletionTime>> COMPLETION_TIME_LIST =
-            new TypeReference<java.util.List<CompletionTime>>() {
-    };
+    @Inject
+    private CompletionTimePublisherJMS completionTimePublisher;
 
     @Inject
     private AnalyticsService analyticsService;
 
+    @PostConstruct
+    public void init() {
+        setRetryPublisher(completionTimePublisher);
+        setTypeReference(new TypeReference<java.util.List<CompletionTime>>() {
+        });
+    }
+
     /* (non-Javadoc)
-     * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
+     * @see org.hawkular.btm.server.jms.RetryCapableMDB#process(java.lang.String, java.util.List, int)
      */
     @Override
-    public void onMessage(Message message) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Completion time received=" + message);
-        }
-
-        try {
-            String tenantId = message.getStringProperty("tenant");
-
-            String data = ((TextMessage) message).getText();
-
-            List<CompletionTime> cts = mapper.readValue(data, COMPLETION_TIME_LIST);
-
-            analyticsService.storeCompletionTimes(tenantId, cts);
-
-        } catch (Exception e) {
-            // TODO: Trigger retry???
-            e.printStackTrace();
-        }
+    protected void process(String tenantId, List<CompletionTime> items, int retryCount) throws Exception {
+        analyticsService.storeCompletionTimes(tenantId, items);
     }
 
 }

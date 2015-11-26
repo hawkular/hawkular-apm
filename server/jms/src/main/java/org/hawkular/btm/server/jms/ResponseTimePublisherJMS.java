@@ -27,7 +27,7 @@ import org.hawkular.btm.server.api.services.ResponseTimePublisher;
  * @author gbrown
  */
 public class ResponseTimePublisherJMS extends AbstractPublisherJMS<ResponseTime>
-        implements ResponseTimePublisher {
+implements ResponseTimePublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;

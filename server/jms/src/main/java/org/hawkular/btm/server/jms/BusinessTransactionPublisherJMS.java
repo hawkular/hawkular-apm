@@ -27,7 +27,7 @@ import org.hawkular.btm.api.services.BusinessTransactionPublisher;
  * @author gbrown
  */
 public class BusinessTransactionPublisherJMS extends AbstractPublisherJMS<BusinessTransaction>
-                        implements BusinessTransactionPublisher {
+        implements BusinessTransactionPublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;
