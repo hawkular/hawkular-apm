@@ -27,7 +27,7 @@ import org.hawkular.btm.server.api.services.CompletionTimePublisher;
  * @author gbrown
  */
 public class CompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
-        implements CompletionTimePublisher {
+implements CompletionTimePublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;

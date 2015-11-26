@@ -16,10 +16,7 @@
  */
 package org.hawkular.btm.server.jms;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
@@ -27,20 +24,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.ResponseTime;
-import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.processor.responsetime.ResponseTimeDeriver;
 import org.hawkular.btm.server.api.services.ResponseTimePublisher;
-import org.hawkular.btm.server.api.task.Handler;
-import org.hawkular.btm.server.api.task.ProcessingUnit;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author gbrown
@@ -53,74 +44,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class ResponseTimeDeriverMDB implements MessageListener {
-
-    private static final Logger log = Logger.getLogger(ResponseTimeDeriverMDB.class.getName());
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
-            new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
-
-    private static ResponseTimeDeriver processor = new ResponseTimeDeriver();
+public class ResponseTimeDeriverMDB extends ProcessorMDB<BusinessTransaction, ResponseTime> {
 
     @Inject
-    private BusinessTransactionPublisher businessTransactionPublisher;
+    private BusinessTransactionPublisherJMS businessTransactionPublisher;
 
     @Inject
     private ResponseTimePublisher responseTimePublisher;
 
-    /* (non-Javadoc)
-     * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
-     */
-    @Override
-    public void onMessage(Message message) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("ResponseTimeDeriver received=" + message);
-        }
-
-        try {
-            String tenantId = message.getStringProperty("tenant");
-
-            final int retryCount;
-
-            if (message.propertyExists("retryCount")) {
-                retryCount = message.getIntProperty("retryCount");
-            } else {
-                retryCount = 3; // TODO: Should this be configurable?
-            }
-
-            String data = ((TextMessage) message).getText();
-
-            List<BusinessTransaction> btxns = mapper.readValue(data, BUSINESS_TXN_LIST);
-
-            ProcessingUnit<BusinessTransaction, ResponseTime> pu =
-                    new ProcessingUnit<BusinessTransaction, ResponseTime>();
-
-            pu.setProcessor(processor);
-            pu.setRetryCount(retryCount);
-
-            pu.setResultHandler(new Handler<ResponseTime>() {
-                @Override
-                public void handle(List<ResponseTime> items) throws Exception {
-                    responseTimePublisher.publish(tenantId, items);
-                }
-            });
-
-            pu.setRetryHandler(new Handler<BusinessTransaction>() {
-                @Override
-                public void handle(List<BusinessTransaction> items) throws Exception {
-                    businessTransactionPublisher.publish(tenantId, items);
-                }
-            });
-
-            pu.handle(btxns);
-
-        } catch (Exception e) {
-            // TODO: Handle nak of JMS message?
-            e.printStackTrace();
-        }
+    @PostConstruct
+    public void init() {
+        setProcessor(new ResponseTimeDeriver());
+        setRetryPublisher(businessTransactionPublisher);
+        setPublisher(responseTimePublisher);
+        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        });
     }
 
 }

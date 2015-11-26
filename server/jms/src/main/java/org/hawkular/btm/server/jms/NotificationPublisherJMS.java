@@ -27,7 +27,7 @@ import org.hawkular.btm.server.api.services.NotificationPublisher;
  * @author gbrown
  */
 public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
-implements NotificationPublisher {
+        implements NotificationPublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;

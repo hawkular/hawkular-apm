@@ -16,13 +16,22 @@
  */
 package org.hawkular.btm.server.api.services;
 
-import org.hawkular.btm.api.model.events.Notification;
+import java.util.List;
 
 /**
- * This interface provides the capability for publishing notifications.
+ * This interface provides the capability for publishing a list of items.
  *
  * @author gbrown
  */
-public interface NotificationPublisher extends Publisher<Notification> {
+public interface Publisher<T> {
+
+    /**
+     * This method publishes the list of items.
+     *
+     * @param tenantId The tenant
+     * @param items The list of items
+     * @throws Exception Failed to publish
+     */
+    void publish(String tenantId, List<T> items) throws Exception;
 
 }

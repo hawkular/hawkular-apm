@@ -83,6 +83,18 @@ public abstract class AbstractPublisherJMS<T> {
     }
 
     /**
+     * This method publishes a list of items.
+     *
+     * @param tenantId The optional tenant id
+     * @param items The list of items
+     * @param retryCount The retry count remaining
+     * @throws Exception Failed to publish
+     */
+    public void publish(String tenantId, List<T> items, int retryCount) throws Exception {
+        doPublish(tenantId, items, retryCount);
+    }
+
+    /**
      * This method publishes the supplied data.
      *
      * @param tenantId The tenant id
