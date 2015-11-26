@@ -22,6 +22,8 @@
 
 # Environment script for setting up the JAVA_OPTS property for client instrumentation
 
+export BTM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 export BTM_AGENT_JAR_PATH=$BTM_HOME/hawkular-btm-agent-rest.jar
 
 export JAVA_OPTS="-javaagent:$BTM_AGENT_JAR_PATH \
