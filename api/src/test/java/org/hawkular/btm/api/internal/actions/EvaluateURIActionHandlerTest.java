@@ -18,12 +18,15 @@ package org.hawkular.btm.api.internal.actions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.EvaluateURIAction;
+import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.utils.NodeUtil;
 import org.junit.Test;
 
@@ -42,6 +45,8 @@ public class EvaluateURIActionHandlerTest {
         consumer.setUri("/not/same");
 
         assertFalse(handler.process(null, consumer, Direction.In, null, null));
+
+        assertNull(handler.getIssues());
     }
 
     @Test
@@ -54,6 +59,8 @@ public class EvaluateURIActionHandlerTest {
         consumer.setUri("/same/fred/elementsbutdiffvalues");
 
         assertFalse(handler.process(null, consumer, Direction.In, null, null));
+
+        assertNull(handler.getIssues());
     }
 
     @Test
@@ -74,6 +81,8 @@ public class EvaluateURIActionHandlerTest {
         assertTrue(btxn.getProperties().containsKey("num"));
         assertEquals("fred", btxn.getProperties().get("name"));
         assertEquals("5", btxn.getProperties().get("num"));
+
+        assertNull(handler.getIssues());
     }
 
     @Test
@@ -98,6 +107,8 @@ public class EvaluateURIActionHandlerTest {
         assertEquals("5", btxn.getProperties().get("num"));
 
         assertFalse(btxn.getProperties().containsKey("another"));
+
+        assertNull(handler.getIssues());
     }
 
     @Test
@@ -125,5 +136,18 @@ public class EvaluateURIActionHandlerTest {
         assertEquals("5", btxn.getProperties().get("num"));
 
         assertFalse(btxn.getProperties().containsKey("another"));
+
+        assertNull(handler.getIssues());
+    }
+
+    @Test
+    public void testNoTemplate() {
+        EvaluateURIAction action = new EvaluateURIAction();
+
+        EvaluateURIActionHandler handler = new EvaluateURIActionHandler(action);
+
+        handler.init(new Processor());
+
+        assertNotNull(handler.getIssues());
     }
 }

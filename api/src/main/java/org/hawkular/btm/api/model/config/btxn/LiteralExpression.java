@@ -37,9 +37,11 @@ public class LiteralExpression extends Expression {
 
     /**
      * @param value the value to set
+     * @return The literal expression
      */
-    public void setValue(String value) {
+    public LiteralExpression setValue(String value) {
         this.value = value;
+        return this;
     }
 
     /* (non-Javadoc)
