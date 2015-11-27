@@ -16,6 +16,7 @@
  */
 package org.hawkular.btm.server.security.hwkaccs;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.core.SecurityContext;
 
@@ -28,14 +29,14 @@ import org.hawkular.btm.server.api.security.SecurityProvider;
 public class HawkularAccountsSecurityProvider implements SecurityProvider {
 
     @Inject
-    Persona currentPersona;
+    Instance<Persona> currentPersona;
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.server.api.services.SecurityProvider#getTenantId(javax.ws.rs.core.SecurityContext)
      */
     @Override
     public String getTenantId(SecurityContext context) {
-        return currentPersona.getId();
+        return currentPersona.get().getIdAsUUID().toString();
     }
 
 }
