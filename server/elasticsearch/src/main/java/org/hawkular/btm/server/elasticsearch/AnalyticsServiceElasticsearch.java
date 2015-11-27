@@ -44,6 +44,7 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuild
 import org.elasticsearch.search.aggregations.bucket.missing.Missing;
 import org.elasticsearch.search.aggregations.bucket.missing.MissingBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentile;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
@@ -416,6 +417,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(percentileAgg)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
                 .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
@@ -474,6 +476,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(histogramBuilder)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
                 .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
@@ -523,13 +526,16 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field("fault");
+                .field("fault")
+                .order(Order.aggregation("_count", false))
+                .size(criteria.getMaxResponseSize());
 
         SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(cardinalityBuilder)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
                 .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
@@ -579,13 +585,16 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field("properties." + property);
+                .field("properties." + property)
+                .order(Order.aggregation("_count", false))
+                .size(criteria.getMaxResponseSize());
 
         SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(cardinalityBuilder)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
                 .setQuery(query);
 
         SearchResponse response = request.execute().actionGet();
