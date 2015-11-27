@@ -40,7 +40,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions")
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+                @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+                @ActivationConfigProperty(propertyName = "clientId", propertyValue = "NotificationDeriver"),
+                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NotificationDeriver")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
