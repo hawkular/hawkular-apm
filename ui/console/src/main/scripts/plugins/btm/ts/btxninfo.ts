@@ -40,7 +40,9 @@ module BTM {
       interval: 60000,
       selectedProperty: undefined,
       lowerBoundDisplay: 0,
-      prevLowerBoundDisplay: 0
+      prevLowerBoundDisplay: 0,
+      maxPropertyValues: 20,
+      maxFaultValues: 20
     };
 
     $scope.reload = function() {
@@ -52,7 +54,10 @@ module BTM {
         console.log("Failed to get statistics: "+JSON.stringify(resp));
       });
 
-      $http.post('/hawkular/btm/analytics/businesstxn/completion/faults', $scope.criteria).then(function(resp) {
+      var faultCriteria = angular.copy($scope.criteria);
+      faultCriteria.maxResponseSize = $scope.config.maxFaultValues;
+
+      $http.post('/hawkular/btm/analytics/businesstxn/completion/faults', faultCriteria).then(function(resp) {
         $scope.faults = resp.data;
         
         var removeFaultValues = angular.copy($scope.faultValues);
@@ -108,7 +113,10 @@ module BTM {
     };
 
     $scope.reloadProperty = function() {
-      $http.post('/hawkular/btm/analytics/businesstxn/completion/property/'+$scope.config.selectedProperty, $scope.criteria).then(function(resp) {
+      var propertyCriteria = angular.copy($scope.criteria);
+      propertyCriteria.maxResponseSize = $scope.config.maxPropertyValues;
+
+      $http.post('/hawkular/btm/analytics/businesstxn/completion/property/'+$scope.config.selectedProperty, propertyCriteria).then(function(resp) {
         $scope.propertyDetails = resp.data;
         
         var removePropertyValues = angular.copy($scope.propertyValues);
