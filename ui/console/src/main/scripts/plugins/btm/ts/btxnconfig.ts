@@ -26,7 +26,7 @@ module BTM {
 
     $scope.messages = [];
 
-    $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
 
@@ -39,7 +39,7 @@ module BTM {
       console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
     });
 
-    $http.get('/hawkular/btm/analytics/businesstxn/unbounduris?compress=true').then(function(resp) {
+    $http.get('/hawkular/btm/analytics/unbounduris?compress=true').then(function(resp) {
       $scope.unboundURIs = [ ];
       for (var i=0; i < resp.data.length; i++) {
         if (resp.data[i].regex !== undefined) {
@@ -51,7 +51,7 @@ module BTM {
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/businesstxn/bounduris/'+$scope.businessTransactionName).then(function(resp) {
+      $http.get('/hawkular/btm/analytics/bounduris/'+$scope.businessTransactionName).then(function(resp) {
         $scope.boundURIs = [ ];
         for (var i = 0; i < resp.data.length; i++) {
           var regex = $scope.escapeRegExp(resp.data[i]);
@@ -192,7 +192,7 @@ module BTM {
     };
 
     $scope.save = function() {
-      $http.put('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName,$scope.businessTransaction).then(function(resp) {
+      $http.put('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName,$scope.businessTransaction).then(function(resp) {
         $scope.messages = resp.data;
         $scope.original = angular.copy($scope.businessTransaction);
         $scope.dirty = false;
@@ -201,7 +201,7 @@ module BTM {
       });
     };
 
-    $http.get('/hawkular/btm/config/businesstxn/'+$scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
     },function(resp) {

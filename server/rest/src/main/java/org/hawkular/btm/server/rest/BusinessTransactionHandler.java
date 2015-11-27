@@ -58,10 +58,10 @@ import io.swagger.annotations.ApiResponses;
  * @author gbrown
  *
  */
-@Path("transactions")
+@Path("fragments")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
-@Api(value = "transactions", description = "Report/Query Business Transactions")
+@Api(value = "fragments", description = "Report/Query business transaction fragments")
 public class BusinessTransactionHandler {
 
     private static final Logger log = Logger.getLogger(BusinessTransactionHandler.class);
@@ -76,10 +76,11 @@ public class BusinessTransactionHandler {
     BusinessTransactionPublisher btxnPublisher;
 
     @POST
-    @ApiOperation(value = "Add a list of business transactions")
+    @ApiOperation(value = "Add a list of business transaction fragments")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Adding business transactions succeeded."),
-            @ApiResponse(code = 500, message = "Unexpected error happened while storing the business transactions") })
+            @ApiResponse(code = 500, message =
+                        "Unexpected error happened while storing the business transaction fragments") })
     public void addBusinessTransactions(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
@@ -107,9 +108,9 @@ public class BusinessTransactionHandler {
             value = "Retrieve business transaction fragment for specified id",
             response = BusinessTransaction.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success, business transaction found and returned"),
+            @ApiResponse(code = 200, message = "Success, business transaction fragment found and returned"),
             @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 404, message = "Unknown business transaction id") })
+            @ApiResponse(code = 404, message = "Unknown business transaction fragment id") })
     public void getBusinessTransaction(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
@@ -119,10 +120,10 @@ public class BusinessTransactionHandler {
             BusinessTransaction btxn = btxnService.get(securityProvider.getTenantId(context), id);
 
             if (btxn == null) {
-                log.tracef("Business transaction '" + id + "' not found");
+                log.tracef("Business transaction fragment '" + id + "' not found");
                 response.resume(Response.status(Response.Status.NOT_FOUND).type(APPLICATION_JSON_TYPE).build());
             } else {
-                log.tracef("Business transaction '" + id + "' found");
+                log.tracef("Business transaction fragment '" + id + "' found");
                 response.resume(Response.status(Response.Status.OK).entity(btxn).type(APPLICATION_JSON_TYPE)
                         .build());
             }
@@ -174,11 +175,11 @@ public class BusinessTransactionHandler {
 
             RESTServiceUtil.decodeCorrelationIdentifiers(criteria.getCorrelationIds(), correlations);
 
-            log.tracef("Query Business transactions for criteria [%s]", criteria);
+            log.tracef("Query Business transaction fragments for criteria [%s]", criteria);
 
             List<BusinessTransaction> btxns = btxnService.query(securityProvider.getTenantId(context), criteria);
 
-            log.tracef("Queried Business transactions for criteria [%s] = %s", criteria, btxns);
+            log.tracef("Queried Business transaction fragments for criteria [%s] = %s", criteria, btxns);
 
             response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -209,11 +210,11 @@ public class BusinessTransactionHandler {
             value = "query criteria") BusinessTransactionCriteria criteria) {
 
         try {
-            log.tracef("Query Business transactions for criteria [%s]", criteria);
+            log.tracef("Query Business transaction fragments for criteria [%s]", criteria);
 
             List<BusinessTransaction> btxns = btxnService.query(securityProvider.getTenantId(context), criteria);
 
-            log.tracef("Queried Business transactions for criteria [%s] = %s", criteria, btxns);
+            log.tracef("Queried Business transaction fragments for criteria [%s] = %s", criteria, btxns);
 
             response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());

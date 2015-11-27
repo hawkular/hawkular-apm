@@ -111,7 +111,7 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
     @Override
     public void publish(String tenantId, List<BusinessTransaction> btxns) throws Exception {
 
-        URL url = new URL(baseUrl + "transactions");
+        URL url = new URL(baseUrl + "fragments");
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Publish btxns [tenant=" + tenantId + "][url=" + url + "]: " + btxns);
@@ -145,7 +145,7 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
 
         if (statusCode != 200) {
             if (log.isLoggable(Level.FINER)) {
-                log.finer("Failed to publish business transactions: status=[" + statusCode + "]");
+                log.finer("Failed to publish business transaction fragments: status=[" + statusCode + "]");
             }
             throw new Exception(connection.getResponseMessage());
         }

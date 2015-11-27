@@ -224,7 +224,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("config/businesstxn/")
+                .append("config/businesstxn/full/")
                 .append(name);
 
         try {
@@ -388,7 +388,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
             .append(baseUrl)
-            .append("config/businesstxn/")
+            .append("config/businesstxn/full/")
             .append(name);
 
         try {
@@ -459,7 +459,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
             .append(baseUrl)
-            .append("config/businesstxnsummary");
+            .append("config/businesstxn/summary");
 
         try {
             URL url = new URL(builder.toString());
@@ -530,7 +530,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
             .append(baseUrl)
-            .append("config/businesstxn?updated=")
+            .append("config/businesstxn/full?updated=")
             .append(updated);
 
         try {
@@ -603,7 +603,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("config/businesstxn/")
+                .append("config/businesstxn/full/")
                 .append(name);
 
         try {

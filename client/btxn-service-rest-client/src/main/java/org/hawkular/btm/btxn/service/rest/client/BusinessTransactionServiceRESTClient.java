@@ -61,7 +61,7 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
         }
 
         try {
-            URL url = new URL(getBaseUrl() + "transactions/" + id);
+            URL url = new URL(getBaseUrl() + "fragments/" + id);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -112,7 +112,7 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
     @Override
     public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transactions: tenantId=[" + tenantId + "] query=[" + criteria + "]");
+            log.finest("Get business transaction fragments: tenantId=[" + tenantId + "] query=[" + criteria + "]");
         }
 
         try {
@@ -154,7 +154,8 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to query business transaction: status=[" + connection.getResponseCode() + "]:"
+                    log.finest("Failed to query business transaction fragment: status=["
+                            + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
@@ -175,7 +176,7 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
     protected String getQueryURL(BusinessTransactionCriteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
-        StringBuilder builder = new StringBuilder().append(getBaseUrl()).append("transactions");
+        StringBuilder builder = new StringBuilder().append(getBaseUrl()).append("fragments");
 
         if (!queryParams.isEmpty()) {
             builder.append('?');

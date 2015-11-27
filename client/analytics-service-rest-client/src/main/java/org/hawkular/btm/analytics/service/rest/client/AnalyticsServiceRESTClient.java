@@ -146,7 +146,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/unbounduris?startTime=")
+                .append("analytics/unbounduris?startTime=")
                 .append(startTime)
                 .append("&endTime=")
                 .append(endTime)
@@ -222,7 +222,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/bounduris/")
+                .append("analytics/bounduris/")
                 .append(businessTransaction)
                 .append("?startTime=")
                 .append(startTime)
@@ -300,7 +300,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/properties/")
+                .append("analytics/properties/")
                 .append(businessTransaction)
                 .append("?startTime=")
                 .append(startTime)
@@ -377,7 +377,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/completion/count");
+                .append("analytics/completion/count");
 
         buildQueryString(builder, criteria);
 
@@ -450,7 +450,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/completion/faultcount");
+                .append("analytics/completion/faultcount");
 
         buildQueryString(builder, criteria);
 
@@ -524,7 +524,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/completion/percentiles");
+                .append("analytics/completion/percentiles");
 
         buildQueryString(builder, criteria);
 
@@ -599,7 +599,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/completion/statistics");
+                .append("analytics/completion/statistics");
 
         buildQueryString(builder, criteria);
 
@@ -676,7 +676,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/completion/faults");
+                .append("analytics/completion/faults");
 
         buildQueryString(builder, criteria);
 
@@ -751,7 +751,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/businesstxn/completion/property/")
+                .append("analytics/completion/property/")
                 .append(property);
 
         buildQueryString(builder, criteria);

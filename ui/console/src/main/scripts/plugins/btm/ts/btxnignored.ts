@@ -22,7 +22,7 @@ module BTM {
     $scope.candidateCount = 0;
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/config/businesstxnsummary').then(function(resp) {
+      $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
         $scope.businessTransactions = [];
         for (var i = 0; i < resp.data.length; i++) {
           var btxn = {
@@ -34,7 +34,7 @@ module BTM {
         console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/businesstxn/unbounduris').then(function(resp) {
+      $http.get('/hawkular/btm/analytics/unbounduris').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
         console.log("Failed to get candidate count: "+JSON.stringify(resp));
@@ -45,7 +45,7 @@ module BTM {
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/'+btxn.summary.name).then(function(resp) {
+        $http.delete('/hawkular/btm/config/businesstxn/full/'+btxn.summary.name).then(function(resp) {
           console.log('Deleted: '+btxn.summary.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {

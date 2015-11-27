@@ -115,7 +115,7 @@ public class ConfigurationHandler {
     }
 
     @GET
-    @Path("businesstxnsummary")
+    @Path("businesstxn/summary")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Retrieve the business transaction summaries",
@@ -159,7 +159,7 @@ public class ConfigurationHandler {
     }
 
     @GET
-    @Path("businesstxn")
+    @Path("businesstxn/full")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Retrieve the business transaction configurations, changed since an optional specified time",
@@ -194,7 +194,7 @@ public class ConfigurationHandler {
     }
 
     @GET
-    @Path("businesstxn/{name}")
+    @Path("businesstxn/full/{name}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Retrieve the business transaction configuration for the specified name",
@@ -229,7 +229,7 @@ public class ConfigurationHandler {
     }
 
     @PUT
-    @Path("businesstxn/{name}")
+    @Path("businesstxn/full/{name}")
     @Consumes(APPLICATION_JSON)
     @ApiOperation(
             value = "Add or update the business transaction configuration for the specified name",
@@ -254,6 +254,37 @@ public class ConfigurationHandler {
             log.tracef("Updated business transaction configuration for name [%s] messages=[%s]", name, messages);
 
             response.resume(Response.status(Response.Status.OK).entity(messages)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).build());
+        }
+    }
+
+    @DELETE
+    @Path("businesstxn/full/{name}")
+    @ApiOperation(
+            value = "Remove the business transaction configuration with the specified name")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void removeBusinessTxnConfiguration(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "business transaction name") @PathParam("name") String name) {
+
+        try {
+            log.tracef("About to remove business transaction configuration for name [%s]", name);
+
+            configService.removeBusinessTransaction(
+                    securityProvider.getTenantId(context), name);
+
+            response.resume(Response.status(Response.Status.OK)
                     .build());
 
         } catch (Throwable e) {
@@ -298,34 +329,4 @@ public class ConfigurationHandler {
         }
     }
 
-    @DELETE
-    @Path("businesstxn/{name}")
-    @ApiOperation(
-            value = "Remove the business transaction configuration with the specified name")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 500, message = "Internal server error") })
-    public void removeBusinessTxnConfiguration(
-            @Context SecurityContext context,
-            @Suspended final AsyncResponse response,
-            @ApiParam(required = true,
-            value = "business transaction name") @PathParam("name") String name) {
-
-        try {
-            log.tracef("About to remove business transaction configuration for name [%s]", name);
-
-            configService.removeBusinessTransaction(
-                    securityProvider.getTenantId(context), name);
-
-            response.resume(Response.status(Response.Status.OK)
-                    .build());
-
-        } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).build());
-        }
-    }
 }
