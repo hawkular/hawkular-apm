@@ -52,6 +52,6 @@ public class BusinessTransactionServiceRESTClientTest {
 
         String url=client.getQueryURL(criteria);
 
-        assertEquals("base/transactions?startTime=100", url);
+        assertEquals("base/fragments?startTime=100", url);
     }
 }

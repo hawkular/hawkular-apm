@@ -425,7 +425,7 @@ public class AnalyticsServiceRESTTest {
         List<Statistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/businesstxn/completion/statistics?interval=1000");
+            URL url = new URL(service.getBaseUrl() + "analytics/completion/statistics?interval=1000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -579,7 +579,7 @@ public class AnalyticsServiceRESTTest {
         List<Cardinality> cards = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/businesstxn/completion/property/prop1");
+            URL url = new URL(service.getBaseUrl() + "analytics/completion/property/prop1");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -733,7 +733,7 @@ public class AnalyticsServiceRESTTest {
         List<Cardinality> cards = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/businesstxn/completion/faults");
+            URL url = new URL(service.getBaseUrl() + "analytics/completion/faults");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");

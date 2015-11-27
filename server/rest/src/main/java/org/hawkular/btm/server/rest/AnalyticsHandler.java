@@ -75,7 +75,7 @@ public class AnalyticsHandler {
     AnalyticsService analyticsService;
 
     @GET
-    @Path("businesstxn/unbounduris")
+    @Path("unbounduris")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Identify the unbound URIs",
@@ -118,7 +118,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/bounduris/{name}")
+    @Path("bounduris/{name}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Identify the bound URIs for a business transaction",
@@ -160,7 +160,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/properties/{name}")
+    @Path("properties/{name}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the properties used by a business transaction",
@@ -202,7 +202,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/completion/count")
+    @Path("completion/count")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion count",
@@ -259,7 +259,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/completion/faultcount")
+    @Path("completion/faultcount")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the number of business transaction instances that returned a fault",
@@ -316,7 +316,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/completion/percentiles")
+    @Path("completion/percentiles")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion percentiles associated with criteria",
@@ -373,7 +373,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/completion/statistics")
+    @Path("completion/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion statistics associated with criteria",
@@ -434,7 +434,7 @@ public class AnalyticsHandler {
     }
 
     @POST
-    @Path("businesstxn/completion/statistics")
+    @Path("completion/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion statistics associated with criteria",
@@ -473,7 +473,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/completion/faults")
+    @Path("completion/faults")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion fault details associated with criteria",
@@ -532,7 +532,7 @@ public class AnalyticsHandler {
     }
 
     @POST
-    @Path("businesstxn/completion/faults")
+    @Path("completion/faults")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion fault details associated with criteria",
@@ -569,7 +569,7 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("businesstxn/completion/property/{property}")
+    @Path("completion/property/{property}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion property details associated with criteria",
@@ -630,7 +630,7 @@ public class AnalyticsHandler {
     }
 
     @POST
-    @Path("businesstxn/completion/property/{property}")
+    @Path("completion/property/{property}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get the business transaction completion property details associated with criteria",

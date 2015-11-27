@@ -175,7 +175,7 @@ public class TestBTMServer {
                         exchange.getResponseSender().send("ok");
                         shutdown();
                     }
-                }).addPrefixPath("hawkular/btm/transactions", new HttpHandler() {
+                }).addPrefixPath("hawkular/btm/fragments", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
                         if (exchange.isInIoThread()) {
@@ -217,7 +217,7 @@ public class TestBTMServer {
                             }
                         }
                     }
-                }).addPrefixPath("hawkular/btm/admin/config", new HttpHandler() {
+                }).addPrefixPath("hawkular/btm/config/collector", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
                         if (exchange.isInIoThread()) {
