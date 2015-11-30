@@ -96,7 +96,7 @@
   </issueManagement>
 
   <properties>
-    <plugin.version.org.apache.maven.plugins>1.2</plugin.version.org.apache.maven.plugins>
+    <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
 
     <version.com.fasterxml.jackson.core>2.4.1</version.com.fasterxml.jackson.core>
     <version.com.jayway.jsonpath>2.0.0</version.com.jayway.jsonpath>
@@ -381,6 +381,11 @@
         <artifactId>slf4j-api</artifactId>
         <version>${version.org.slf4j}</version>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-nop</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.tuckey</groupId>
@@ -534,6 +539,11 @@
             <exclude>**/*.sh</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${plugin.version.org.apache.maven.plugins.shade}</version>
       </plugin>
     </plugins>
   </build>
