@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>hawkular-btm-agent-rest</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>Hawkular BTM::Client::Agent REST</name>
 
   <dependencies>
@@ -98,6 +98,10 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -127,6 +131,48 @@
             <goals>
               <goal>single</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <relocations>
+                <!-- HWKBTM-284
+                <relocation>
+                  <pattern>com.fasterxml</pattern>
+                  <shadedPattern>org.hawkular.btm.shaded.com.fasterxml</shadedPattern>
+                </relocation>
+                -->
+                <relocation>
+                  <pattern>com.jayway</pattern>
+                  <shadedPattern>org.hawkular.btm.shaded.com.jayway</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>net.minidev</pattern>
+                  <shadedPattern>org.hawkular.btm.shaded.net.minidev</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.mvel2</pattern>
+                  <shadedPattern>org.hawkular.btm.shaded.org.mvel2</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.objectweb</pattern>
+                  <shadedPattern>org.hawkular.btm.shaded.org.objectweb</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.slf4j</pattern>
+                  <shadedPattern>org.hawkular.btm.shaded.org.slf4j</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
           </execution>
         </executions>
       </plugin>
