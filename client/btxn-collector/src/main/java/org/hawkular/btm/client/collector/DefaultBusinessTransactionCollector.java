@@ -263,6 +263,69 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#setPrincipal(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void setPrincipal(String location, String principal) {
+        if (principal == null || principal.trim().isEmpty()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Ignoring attempt to set principal to null");
+            }
+            return;
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set principal location=[" + location + "] principal=" + principal);
+        }
+
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                builder.getBusinessTransaction().setPrincipal(principal);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setPrincipal: No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setPrincipal failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.BusinessTransactionCollector#getPrincipal()
+     */
+    @Override
+    public String getPrincipal() {
+        String ret = null;
+
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                ret = builder.getBusinessTransaction().getPrincipal();
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getPrincipal: No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getPrincipal failed", t);
+            }
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get principal=" + ret);
+        }
+
+        if (ret == null) {
+            ret = "";
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#setLevel(java.lang.String, java.lang.String)
      */
     @Override

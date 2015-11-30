@@ -56,16 +56,15 @@
           "valueExpression": "req.getServerPort()"
         },{
           "type": "SetDetail",
-          "name": "principal",
-          "valueExpression": "req.getRemoteUser()"
-        },{
-          "type": "SetDetail",
           "name": "remoteAddr",
           "valueExpression": "req.getRemoteAddr()"
         },{
           "type": "SetDetail",
           "name": "remoteHost",
           "valueExpression": "req.getRemoteHost()"
+        },{
+          "type": "SetPrincipal",
+          "nameExpression": "req.getRemoteUser()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer End Sync Fault",

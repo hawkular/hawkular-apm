@@ -51,6 +51,9 @@ public class BusinessTransaction {
     private String name;
 
     @JsonInclude(Include.NON_EMPTY)
+    private String principal;
+
+    @JsonInclude(Include.NON_EMPTY)
     private String hostName;
 
     @JsonInclude(Include.NON_EMPTY)
@@ -110,6 +113,22 @@ public class BusinessTransaction {
      */
     public BusinessTransaction setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    /**
+     * @return the principal
+     */
+    public String getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     * @return The business transaction
+     */
+    public BusinessTransaction setPrincipal(String principal) {
+        this.principal = principal;
         return this;
     }
 
@@ -248,7 +267,9 @@ public class BusinessTransaction {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
+        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        result = prime * result + (int) (startTime ^ (startTime >>> 32));
         return result;
     }
 
@@ -289,10 +310,17 @@ public class BusinessTransaction {
                 return false;
         } else if (!nodes.equals(other.nodes))
             return false;
+        if (principal == null) {
+            if (other.principal != null)
+                return false;
+        } else if (!principal.equals(other.principal))
+            return false;
         if (properties == null) {
             if (other.properties != null)
                 return false;
         } else if (!properties.equals(other.properties))
+            return false;
+        if (startTime != other.startTime)
             return false;
         return true;
     }
@@ -302,8 +330,9 @@ public class BusinessTransaction {
      */
     @Override
     public String toString() {
-        return "BusinessTransaction [id=" + id + ", name=" + name + ", hostName=" + hostName + ", hostAddress="
-                + hostAddress + ", nodes=" + nodes + ", properties=" + properties + "]";
+        return "BusinessTransaction [id=" + id + ", startTime=" + startTime + ", name=" + name + ", principal="
+                + principal + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", nodes=" + nodes
+                + ", properties=" + properties + "]";
     }
 
 }

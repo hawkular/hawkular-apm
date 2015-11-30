@@ -8,6 +8,7 @@ org.hawkular.btm.client.manager.config.SetDetailTransformer
 org.hawkular.btm.client.manager.config.SetFaultTransformer
 org.hawkular.btm.client.manager.config.SetLevelTransformer
 org.hawkular.btm.client.manager.config.SetNameTransformer
+org.hawkular.btm.client.manager.config.SetPrincipalTransformer
 org.hawkular.btm.client.manager.config.SetPropertyTransformer
 org.hawkular.btm.client.manager.config.InitiateCorrelationTransformer
 org.hawkular.btm.client.manager.config.CorrelateTransformer
