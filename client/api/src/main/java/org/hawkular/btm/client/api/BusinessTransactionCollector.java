@@ -57,6 +57,21 @@ public interface BusinessTransactionCollector {
     String getName();
 
     /**
+     * This method sets the principal associated with the business transaction.
+     *
+     * @param location The instrumentation location
+     * @param principal The principal
+     */
+    void setPrincipal(String location, String principal);
+
+    /**
+     * This method returns the principal associated with the business transaction.
+     *
+     * @return The principal, or empty string if not defined
+     */
+    String getPrincipal();
+
+    /**
      * This method sets the reporting level.
      *
      * @param location The instrumentation location

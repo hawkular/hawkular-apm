@@ -475,6 +475,82 @@ public class DefaultBusinessTransactionCollectorTest {
     }
 
     @Test
+    public void testSetNameNoFragmentManager() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        collector.setName(null, "test");
+
+        assertEquals("test", collector.getName());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSetNameWithFragmentManager() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        TestConfigurationService cs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        cs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(cs);
+
+        // Cause a fragment builder to be created
+        collector.activate("/test");
+        collector.producerStart(null, "/test", "HTTP", null);
+
+        collector.setName(null, "test");
+
+        assertEquals("test", collector.getName());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSetPrincipalNoFragmentManager() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        collector.setPrincipal(null, "test");
+
+        assertEquals("", collector.getPrincipal());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSetPrincipalWithFragmentManager() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        TestConfigurationService cs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        cs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(cs);
+
+        // Cause a fragment builder to be created
+        collector.activate("/test");
+        collector.producerStart(null, "/test", "HTTP", null);
+
+        collector.setPrincipal(null, "test");
+
+        assertEquals("test", collector.getPrincipal());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
     public void testNamedOnInitialNode() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
 
@@ -556,7 +632,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.activate("not relevant");
         collector.consumerStart(null, "not relevant", "HTTP", null);
         collector.getFragmentManager().getFragmentBuilder()
-                .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
+        .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
 
         // Cause a fragment builder to be created
         collector.activate("/test");

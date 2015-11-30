@@ -18,6 +18,7 @@ package org.hawkular.btm.tests.client.jetty;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -30,6 +31,8 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -37,8 +40,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.security.Constraint;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Producer;
@@ -56,6 +65,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class ClientJettyStreamTest extends ClientTestBase {
 
+    /**  */
+    private static final String TEST_USER = "jdoe";
     /**  */
     private static final String GREETINGS_REQUEST = "Greetings";
     /**  */
@@ -77,10 +88,30 @@ public class ClientJettyStreamTest extends ClientTestBase {
     public static void initClass() {
         server = new Server(8180);
 
+        LoginService loginService = new HashLoginService("MyRealm",
+                "src/test/resources/realm.properties");
+        server.addBean(loginService);
+
+        ConstraintSecurityHandler security = new ConstraintSecurityHandler();
+        server.setHandler(security);
+
+        Constraint constraint = new Constraint();
+        constraint.setName("auth");
+        constraint.setAuthenticate(true);
+        constraint.setRoles(new String[] { "user", "admin" });
+
+        ConstraintMapping mapping = new ConstraintMapping();
+        mapping.setPathSpec("/*");
+        mapping.setConstraint(constraint);
+
+        security.setConstraintMappings(Collections.singletonList(mapping));
+        security.setAuthenticator(new BasicAuthenticator());
+        security.setLoginService(loginService);
+
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
         context.addServlet(EmbeddedServlet.class, "/hello");
-        server.setHandler(context);
+        security.setHandler(context);
 
         try {
             server.start();
@@ -98,7 +129,6 @@ public class ClientJettyStreamTest extends ClientTestBase {
         }
     }
 
-    /*
     @Test
     public void testGet() {
         testJettyServlet("GET", HELLO_URL, null, false, true);
@@ -141,7 +171,6 @@ public class ClientJettyStreamTest extends ClientTestBase {
         setProcessContent(true);
         testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
-     */
 
     @Test
     public void testGetWithBadURL() {
@@ -229,6 +258,11 @@ public class ClientJettyStreamTest extends ClientTestBase {
             if (!respexpected) {
                 connection.setRequestProperty("test-no-data", "true");
             }
+
+            String authString = TEST_USER + ":" + "password";
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            connection.setRequestProperty("Authorization", "Basic " + encoded);
 
             java.io.InputStream is = null;
 
@@ -354,6 +388,17 @@ public class ClientJettyStreamTest extends ClientTestBase {
                 assertFalse(testProducer.getIn().getContent().containsKey("all"));
             }
         }
+
+        BusinessTransaction consumerBTxn = null;
+
+        if (getTestBTMServer().getBusinessTransactions().get(0).getNodes().get(0) instanceof Consumer) {
+            consumerBTxn = getTestBTMServer().getBusinessTransactions().get(0);
+        } else if (getTestBTMServer().getBusinessTransactions().get(0).getNodes().get(1) instanceof Consumer) {
+            consumerBTxn = getTestBTMServer().getBusinessTransactions().get(1);
+        }
+
+        assertNotNull(consumerBTxn);
+        assertEquals(TEST_USER, consumerBTxn.getPrincipal());
     }
 
     public static class EmbeddedServlet extends HttpServlet {
