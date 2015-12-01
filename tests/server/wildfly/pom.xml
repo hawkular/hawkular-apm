@@ -238,7 +238,7 @@
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
               </javaOpts>
-              <startup-timeout>120</startup-timeout>
+              <startup-timeout>180</startup-timeout>
             </configuration>
           </execution>
           <execution>
