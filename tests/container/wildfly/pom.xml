@@ -340,7 +340,7 @@
                 <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
                 <javaOpt>-Dhawkular-btm.log.level=INFO</javaOpt>
               </javaOpts>
-              <startup-timeout>120</startup-timeout>
+              <startup-timeout>180</startup-timeout>
             </configuration>
           </execution>
           <execution>
