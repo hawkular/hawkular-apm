@@ -1,0 +1,142 @@
+<div class="row">
+  <div class="col-md-12" ng-controller="APM.APMController">
+
+    <div class="form-group" >
+      <span ng-repeat="property in criteria.properties">
+        <span ng-show="!property.excluded">
+          <a class="btn btn-success" ng-click="toggleExclusion(property)">
+            <i>{{property.name}}</i>: {{property.value}}
+            <a class="btn btn-default" ng-click="removeProperty(property)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+          </a>
+        </span>
+        <span ng-show="property.excluded">
+          <a class="btn btn-danger" ng-click="toggleExclusion(property)">
+            <i>{{property.name}}</i>: {{property.value}}
+            <a class="btn btn-default" ng-click="removeProperty(property)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+          </a>
+        </span>
+        <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
+      </span>
+    </div>
+
+    <span>
+      <form>
+        <div class="form-group">
+          <label for="intervalField" style="width: 10%" class="" >Aggregation Interval:</label>
+          <select name="intervalField" ng-model="config.interval" ng-change="selectAction()" style="width: 10%">
+            <option value="1000">1 Second</option>
+            <option value="10000">10 Second</option>
+            <option value="30000">30 Second</option>
+            <option value="60000">1 Minute</option>
+            <option value="600000">10 Minutes</option>
+            <option value="3600000">1 Hour</option>
+            <option value="86400000">1 Day</option>
+            <option value="604800000">7 Day</option>
+          </select>
+
+          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+
+          <label for="timeSpanField" style="width: 5%" >Time Span:</label>
+          <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()" style="width: 10%">
+            <option value="-60000">1 Minute</option>
+            <option value="-600000">10 Minutes</option>
+            <option value="-1800000">30 Minutes</option>
+            <option value="-3600000">1 Hour</option>
+            <option value="-14400000">4 Hours</option>
+            <option value="-28800000">8 Hours</option>
+            <option value="-43200000">12 Hours</option>
+            <option value="-86400000">Day</option>
+            <option value="-604800000">Week</option>
+            <option value="-2419200000">Month</option>
+            <option value="-15768000000">6 Months</option>
+            <option value="-31536000000">Year</option>
+            <option value="1">All</option>
+          </select>
+
+          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+          <label for="endTimeField" style="width: 3%" >Until:</label>
+          <select name="endTimeField" ng-model="criteria.endTime" ng-change="selectAction()" style="width: 10%">
+            <option value="0">Now</option>
+            <option value="{{currentDateTime().getTime()}}">{{currentDateTime() | date:'dd MMM yyyy HH:mm:ss'}}</option>
+          </select>
+        </div>
+      </form>
+    </span>
+
+    <div id="nodesareachart"></div>
+
+    <div class="col-md-2" >
+      <h2>Filters</h2>
+
+      <div class="form-group">
+        <input type="text" ng-model="search" class="form-control" placeholder="Search">
+
+        <br>
+
+        <label for="businessTransactionField" >Business Transaction:</label>
+        <br>
+        <select name="businessTransactionField" ng-model="criteria.businessTransaction" ng-change="selectAction()">
+            <option value="">All</option>
+            <option ng-repeat="btxn in businessTransactions" value="{{btxn}}">{{btxn}}</option>
+        </select>
+
+      </div>
+
+    </div>
+
+    <div class="col-md-10" >
+
+      <form class="form-inline">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="col-md-2" ></th>
+              <th ng-click="sort('actual')">Actual (secs)
+                <span class="glyphicon sort-icon" ng-show="sortKey=='actual'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+              </th>
+              <th ng-click="sort('elapsed')">Elapsed (secs)
+                <span class="glyphicon sort-icon" ng-show="sortKey=='elapsed'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+              </th>
+              <th ng-click="sort('count')">Count
+                <span class="glyphicon sort-icon" ng-show="sortKey=='count'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+              </th>
+              <th ng-click="sort('componentType')">Component
+                <span class="glyphicon sort-icon" ng-show="sortKey=='componentType'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+              </th>
+              <th ng-click="sort('uri')">URI
+                <span class="glyphicon sort-icon" ng-show="sortKey=='uri'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+              </th>
+              <th ng-click="sort('operation')">Operation
+                <span class="glyphicon sort-icon" ng-show="sortKey=='operation'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr dir-paginate="summary in summaries|orderBy:sortKey:reverse|filter:search|itemsPerPage:config.maxRows" ng-class="{'danger': getElapsedPercentage(summary) > 80,'warning': getElapsedPercentage(summary) > 60}" >
+              <td scope="row">
+                <uib-progress>
+                  <uib-bar type="danger" value="getActualPercentage(summary)">
+                  </uib-bar>
+                  <uib-bar type="warning" value="getElapsedMinusActualPercentage(summary)">
+                  </uib-bar>
+                </uib-progress>
+              </td>
+              <td scope="row">{{(summary.actual / 1000000000) | number: 3}}</td>
+              <td scope="row">{{(summary.elapsed / 1000000000) | number: 3}}</td>
+              <td>{{summary.count}}</td>
+              <td>{{summary.componentType}}</td>
+              <td>{{summary.uri}}</td>
+              <td>{{summary.operation}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <dir-pagination-controls max-size="config.maxRows" direction-links="true" boundary-links="true" />
+      </form>
+    </div>
+  </div>
+</div>

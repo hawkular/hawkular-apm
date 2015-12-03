@@ -75,5 +75,13 @@
     <from>/info</from>
     <to>/</to>
   </rule>
+  <rule match-type="wildcard">
+    <from>/nodes/**</from>
+    <to>/</to>
+  </rule>
+  <rule>
+    <from>/nodes</from>
+    <to>/</to>
+  </rule>
 </urlrewrite>
 

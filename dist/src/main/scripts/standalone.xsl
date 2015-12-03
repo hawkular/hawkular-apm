@@ -79,8 +79,8 @@
     <xsl:variable name="newJMSTopic">
       <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions" />
       <jms-topic name="CompletionTimes" entries="java:/CompletionTimes" />
+      <jms-topic name="NodeDetails" entries="java:/NodeDetails" />
       <jms-topic name="Notifications" entries="java:/Notifications" />
-      <jms-topic name="ResponseTimes" entries="java:/ResponseTimes" />
     </xsl:variable>
 
     <xsl:copy>

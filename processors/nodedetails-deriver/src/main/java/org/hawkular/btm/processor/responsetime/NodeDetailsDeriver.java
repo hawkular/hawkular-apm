@@ -23,19 +23,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
+import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.events.ResponseTime;
+import org.hawkular.btm.api.model.btxn.NodeType;
+import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.server.api.task.Processor;
 
 /**
- * This class represents the response time deriver.
+ * This class represents the node details deriver.
  *
  * @author gbrown
  */
-public class ResponseTimeDeriver implements Processor<BusinessTransaction, ResponseTime> {
+public class NodeDetailsDeriver implements Processor<BusinessTransaction, NodeDetails> {
 
-    private static final Logger log = Logger.getLogger(ResponseTimeDeriver.class.getName());
+    private static final Logger log = Logger.getLogger(NodeDetailsDeriver.class.getName());
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.server.api.task.Processor#isMultiple()
@@ -49,7 +52,7 @@ public class ResponseTimeDeriver implements Processor<BusinessTransaction, Respo
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public ResponseTime processSingle(BusinessTransaction item) throws Exception {
+    public NodeDetails processSingle(BusinessTransaction item) throws Exception {
         return null;
     }
 
@@ -57,59 +60,74 @@ public class ResponseTimeDeriver implements Processor<BusinessTransaction, Respo
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<ResponseTime> processMultiple(BusinessTransaction item) throws Exception {
-        List<ResponseTime> ret = new ArrayList<ResponseTime>();
+    public List<NodeDetails> processMultiple(BusinessTransaction item) throws Exception {
+        List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
         long baseTime = 0;
         if (!item.getNodes().isEmpty()) {
             baseTime = item.getNodes().get(0).getBaseTime();
         }
 
-        deriveResponseTimes(item, baseTime, item.getNodes(), ret);
+        deriveNodeDetails(item, baseTime, item.getNodes(), ret);
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ResponseTimeDeriver [" + ret.size() + "] ret=" + ret);
+            log.finest("NodeDetailsDeriver [" + ret.size() + "] ret=" + ret);
         }
 
         return ret;
     }
 
     /**
-     * This method recursively derives the response time metrics for the supplied
+     * This method recursively derives the node details metrics for the supplied
      * nodes.
      *
      * @param btxn The business transaction
      * @param baseTime The base time, in nanoseconds, for the business transaction
      * @param nodes The nodes
-     * @param rts The list of response times
+     * @param rts The list of node details
      */
-    protected void deriveResponseTimes(BusinessTransaction btxn, long baseTime,
-            List<Node> nodes, List<ResponseTime> rts) {
+    protected void deriveNodeDetails(BusinessTransaction btxn, long baseTime,
+            List<Node> nodes, List<NodeDetails> rts) {
         for (int i = 0; i < nodes.size(); i++) {
             Node n = nodes.get(i);
             long diffns = n.getBaseTime() - baseTime;
             long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
 
-            ResponseTime rt = new ResponseTime();
-            rt.setId(btxn.getId()+"-"+rts.size());
-            rt.setBusinessTransaction(btxn.getName());
-            rt.setCorrelationIds(n.getCorrelationIds());
-            rt.setDetails(n.getDetails());
-            rt.setDuration(n.getDuration());
+            NodeDetails nd = new NodeDetails();
+            nd.setId(btxn.getId() + "-" + rts.size());
+            nd.setBusinessTransaction(btxn.getName());
+            nd.setCorrelationIds(n.getCorrelationIds());
+            nd.setDetails(n.getDetails());
+            nd.setElapsed(n.getDuration());
 
-            if (n.getFault() != null && n.getFault().trim().length() > 0) {
-                rt.setFault(n.getFault());
+            long childElapsed = 0;
+            if (n.containerNode()) {
+                for (int j = 0; j < ((ContainerNode) n).getNodes().size(); j++) {
+                    childElapsed += ((ContainerNode) n).getNodes().get(j).getDuration();
+                }
+            }
+            nd.setActual(n.getDuration()-childElapsed);
+
+            if (n.getType() == NodeType.Component) {
+                nd.setComponentType(((Component) n).getComponentType());
+                nd.setOperation(((Component) n).getOperation());
+            } else {
+                nd.setComponentType(n.getType().name());
             }
 
-            rt.setProperties(btxn.getProperties());
-            rt.setTimestamp(btxn.getStartTime() + diffms);
-            rt.setType(n.getType());
-            rt.setUri(n.getUri());
+            if (n.getFault() != null && n.getFault().trim().length() > 0) {
+                nd.setFault(n.getFault());
+            }
 
-            rts.add(rt);
+            nd.setProperties(btxn.getProperties());
+            nd.setTimestamp(btxn.getStartTime() + diffms);
+            nd.setType(n.getType());
+            nd.setUri(n.getUri());
+
+            rts.add(nd);
 
             if (n.interactionNode()) {
-                deriveResponseTimes(btxn, baseTime, ((InteractionNode) n).getNodes(), rts);
+                deriveNodeDetails(btxn, baseTime, ((InteractionNode) n).getNodes(), rts);
             }
         }
     }

@@ -88,7 +88,7 @@ public class CompletionTimeCriteria extends BaseCriteria {
     public Map<String, String> parameters() {
         Map<String, String> ret = super.parameters();
 
-        if (!getProperties().isEmpty()) {
+        if (!getFaults().isEmpty()) {
             boolean first = true;
             StringBuilder buf = new StringBuilder();
 

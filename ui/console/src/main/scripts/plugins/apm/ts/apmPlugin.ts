@@ -14,46 +14,26 @@
 /// limitations under the License.
 
 /// <reference path="../../includes.ts"/>
-/// <reference path="btmGlobals.ts"/>
-module BTM {
+/// <reference path="apmGlobals.ts"/>
+module APM {
 
-  export var _module = angular.module(BTM.pluginName, ["xeditable","ui.bootstrap"]);
+  export var _module = angular.module(APM.pluginName, ["xeditable","ui.bootstrap","angularUtils.directives.dirPagination"]);
 
   var tab = undefined;
 
   _module.config(["$locationProvider", "$routeProvider", "HawtioNavBuilderProvider",
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
     tab = builder.create()
-      .id(BTM.pluginName)
-      .title(() => "Business Transactions")
-      .href(() => "/active")
+      .id(APM.pluginName)
+      .title(() => "Application Performance")
+      .href(() => "/")
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
     $routeProvider.
-      when('/active', {
-        templateUrl: 'plugins/btm/html/btm.html',
-        controller: 'BTM.BTMController'
-      }).
-      when('/candidates', {
-        templateUrl: 'plugins/btm/html/btxncandidates.html',
-        controller: 'BTM.BTMCandidatesController'
-      }).
-      when('/disabled', {
-        templateUrl: 'plugins/btm/html/btxndisabled.html',
-        controller: 'BTM.BTMDisabledController'
-      }).
-      when('/ignored', {
-        templateUrl: 'plugins/btm/html/btxnignored.html',
-        controller: 'BTM.BTMIgnoredController'
-      }).
-      when('/config/:businesstransaction', {
-        templateUrl: 'plugins/btm/html/btxnconfig.html',
-        controller: 'BTM.BTxnConfigController'
-      }).
-      when('/info/:businesstransaction', {
-        templateUrl: 'plugins/btm/html/btxninfo.html',
-        controller: 'BTM.BTxnInfoController'
+      when('/', {
+        templateUrl: 'plugins/apm/html/apm.html',
+        controller: 'APM.APMController'
       });
   }]);
 
@@ -73,5 +53,5 @@ module BTM {
     log.debug("loaded");
   }]);
 
-  hawtioPluginLoader.addModule(BTM.pluginName);
+  hawtioPluginLoader.addModule(APM.pluginName);
 }

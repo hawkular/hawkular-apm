@@ -19,11 +19,11 @@ package org.hawkular.btm.api.model.analytics;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents a set of statistical values.
+ * This class represents a set of completion statistical values.
  *
  * @author gbrown
  */
-public class Statistics {
+public class CompletionTimeseriesStatistics {
 
     @JsonInclude
     private long timestamp = 0;
@@ -132,8 +132,8 @@ public class Statistics {
      */
     @Override
     public String toString() {
-        return "Statistics [timestamp=" + timestamp + ", count=" + count + ", faultCount=" + faultCount + ", min="
-                + min + ", average=" + average + ", max=" + max + "]";
+        return "CompletionTimeseriesStatistics [timestamp=" + timestamp + ", count=" + count + ", faultCount="
+                + faultCount + ", min=" + min + ", average=" + average + ", max=" + max + "]";
     }
 
 }

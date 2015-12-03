@@ -39,12 +39,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
+import org.hawkular.btm.api.services.NodeCriteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
@@ -87,14 +90,14 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time")
-                        @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
+                    @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
                     value = "optional 'end' time, default current time") @DefaultValue("0")
-                        @QueryParam("endTime") long endTime,
+                    @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                     value = "compress list to show common patterns") @DefaultValue("false")
-                        @QueryParam("compress") boolean compress) {
+                    @QueryParam("compress") boolean compress) {
 
         try {
             log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
@@ -133,10 +136,10 @@ public class AnalyticsHandler {
                     value = "business transaction name") @PathParam("name") String name,
             @ApiParam(required = false,
                     value = "optional 'start' time, default 1 hour before current time")
-                        @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
                     value = "optional 'end' time, default current time") @DefaultValue("0")
-                        @QueryParam("endTime") long endTime) {
+                    @QueryParam("endTime") long endTime) {
 
         try {
             log.tracef("Get bound URIs: name [%s] start [%s] end [%s]", name, startTime, endTime);
@@ -174,11 +177,11 @@ public class AnalyticsHandler {
             @ApiParam(required = true,
                     value = "business transaction name") @PathParam("name") String name,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time")
-                        @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
+                    @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
                     value = "optional 'end' time, default current time") @DefaultValue("0")
-                        @QueryParam("endTime") long endTime) {
+                    @QueryParam("endTime") long endTime) {
 
         try {
             log.tracef("Get property info: name [%s] start [%s] end [%s]", name, startTime, endTime);
@@ -225,7 +228,7 @@ public class AnalyticsHandler {
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
@@ -282,7 +285,7 @@ public class AnalyticsHandler {
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
@@ -339,7 +342,7 @@ public class AnalyticsHandler {
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
@@ -355,7 +358,7 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction completion percentiles for criteria [%s]", criteria);
 
             Percentiles stats = analyticsService.getCompletionPercentiles(securityProvider.getTenantId(context),
-                                        criteria);
+                    criteria);
 
             log.tracef("Got business transaction completion percentiles for criteria [%s] = %s", criteria, stats);
 
@@ -376,12 +379,12 @@ public class AnalyticsHandler {
     @Path("completion/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion statistics associated with criteria",
+            value = "Get the business transaction completion timeseries statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionStatistics(
+    public void getCompletionTimeseriesStatistics(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
@@ -396,10 +399,10 @@ public class AnalyticsHandler {
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
                         @QueryParam("interval") long interval,
-                        @ApiParam(required = false,
+            @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
@@ -412,13 +415,15 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction completion statistics for criteria [%s] interval [%s]",
+            log.tracef("Get business transaction completion timeseries statistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
-            List<Statistics> stats = analyticsService.getCompletionStatistics(securityProvider.getTenantId(context),
-                                        criteria, interval);
+            List<CompletionTimeseriesStatistics> stats = analyticsService.getCompletionTimeseriesStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria, interval);
 
-            log.tracef("Got business transaction completion statistics for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
+                                    criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -437,28 +442,30 @@ public class AnalyticsHandler {
     @Path("completion/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion statistics associated with criteria",
+            value = "Get the business transaction completion timeseries statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionStatistics(
+    public void getCompletionTimeseriesStatistics(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
             value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
-                @QueryParam("interval") long interval,
+            @QueryParam("interval") long interval,
             @ApiParam(required = true,
             value = "query criteria") CompletionTimeCriteria criteria) {
 
         try {
-            log.tracef("Get business transaction completion statistics for criteria [%s] interval [%s]",
-                                    criteria, interval);
+            log.tracef("Get business transaction completion timeseries statistics for criteria [%s] interval [%s]",
+                    criteria, interval);
 
-            List<Statistics> stats = analyticsService.getCompletionStatistics(securityProvider.getTenantId(context),
-                                        criteria, interval);
+            List<CompletionTimeseriesStatistics> stats = analyticsService.getCompletionTimeseriesStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria, interval);
 
-            log.tracef("Got business transaction completion statistics for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
+                                    criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -496,7 +503,7 @@ public class AnalyticsHandler {
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
@@ -516,7 +523,7 @@ public class AnalyticsHandler {
                     securityProvider.getTenantId(context), criteria);
 
             log.tracef("Got business transaction completion fault details for criteria (GET) [%s] = %s",
-                                            criteria, cards);
+                    criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -544,7 +551,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-                value = "query criteria") CompletionTimeCriteria criteria) {
+            value = "query criteria") CompletionTimeCriteria criteria) {
 
         try {
             log.tracef("Get business transaction completion fault details for criteria (POST) [%s]",
@@ -554,7 +561,7 @@ public class AnalyticsHandler {
                     securityProvider.getTenantId(context), criteria);
 
             log.tracef("Got business transaction completion fault details for criteria (POST) [%s] = %s",
-                                criteria, cards);
+                    criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -592,9 +599,9 @@ public class AnalyticsHandler {
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults,
-                            @ApiParam(required = false,
+                                    @ApiParam(required = false,
                     value = "property") @PathParam("property") String property) {
 
         try {
@@ -614,7 +621,7 @@ public class AnalyticsHandler {
                     securityProvider.getTenantId(context), criteria, property);
 
             log.tracef("Got business transaction completion property details for criteria (GET) [%s] = %s",
-                                            criteria, cards);
+                    criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -642,9 +649,9 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-                value = "property") @PathParam("property") String property,
+            value = "property") @PathParam("property") String property,
             @ApiParam(required = true,
-                value = "query criteria") CompletionTimeCriteria criteria) {
+            value = "query criteria") CompletionTimeCriteria criteria) {
 
         try {
             log.tracef("Get business transaction completion property details for criteria (POST) [%s] property [%s]",
@@ -654,7 +661,7 @@ public class AnalyticsHandler {
                     securityProvider.getTenantId(context), criteria, property);
 
             log.tracef("Got business transaction completion property details for criteria (POST) [%s] = %s",
-                                        criteria, cards);
+                    criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -702,6 +709,196 @@ public class AnalyticsHandler {
                     .entity(errors).type(APPLICATION_JSON_TYPE).build());
         }
 
+    }
+
+    @GET
+    @Path("node/statistics")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction node timeseries statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getNodeTimeseriesStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+                                    @ApiParam(required = false,
+                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+                        @QueryParam("interval") long interval) {
+
+        try {
+            NodeCriteria criteria = new NodeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction node timeseriesstatistics for criteria [%s] interval [%s]",
+                    criteria, interval);
+
+            List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria, interval);
+
+            log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("node/statistics")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction node timeseries statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getNodeTimeseriesStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+            value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+            @QueryParam("interval") long interval,
+            @ApiParam(required = true,
+            value = "query criteria") NodeCriteria criteria) {
+
+        try {
+            log.tracef("Get business transaction node timeseries statistics for criteria [%s] interval [%s]",
+                    criteria, interval);
+
+            List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria, interval);
+
+            log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
+    @Path("node/summary")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction node summary statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getNodeSummaryStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+
+        try {
+            NodeCriteria criteria = new NodeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction node summary statistics for criteria [%s]",
+                    criteria);
+
+            List<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria);
+
+            log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("node/summary")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction node summary statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getNodeSummaryStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "query criteria") NodeCriteria criteria) {
+
+        try {
+            log.tracef("Get business transaction node summary statistics for criteria [%s] interval [%s]",
+                    criteria);
+
+            List<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria);
+
+            log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
     }
 
 }

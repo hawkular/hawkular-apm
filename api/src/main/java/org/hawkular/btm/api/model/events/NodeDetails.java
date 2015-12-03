@@ -28,11 +28,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents a response time.
+ * This class represents node details derived from a business transaction
+ * fragment.
  *
  * @author gbrown
  */
-public class ResponseTime {
+public class NodeDetails {
 
     @JsonInclude
     private String id;
@@ -50,7 +51,16 @@ public class ResponseTime {
     private long timestamp = 0;
 
     @JsonInclude
-    private long duration = 0;
+    private long elapsed = 0;
+
+    @JsonInclude
+    private long actual = 0;
+
+    @JsonInclude(Include.NON_NULL)
+    private String componentType;
+
+    @JsonInclude(Include.NON_NULL)
+    private String operation;
 
     @JsonInclude(Include.NON_NULL)
     private String fault;
@@ -135,17 +145,59 @@ public class ResponseTime {
     }
 
     /**
-     * @return the duration
+     * @return the elapsed
      */
-    public long getDuration() {
-        return duration;
+    public long getElapsed() {
+        return elapsed;
     }
 
     /**
-     * @param duration the duration to set
+     * @param elapsed the elapsed to set
      */
-    public void setDuration(long duration) {
-        this.duration = duration;
+    public void setElapsed(long elapsed) {
+        this.elapsed = elapsed;
+    }
+
+    /**
+     * @return the actual
+     */
+    public long getActual() {
+        return actual;
+    }
+
+    /**
+     * @param actual the actual to set
+     */
+    public void setActual(long actual) {
+        this.actual = actual;
+    }
+
+    /**
+     * @return the componentType
+     */
+    public String getComponentType() {
+        return componentType;
+    }
+
+    /**
+     * @param componentType the componentType to set
+     */
+    public void setComponentType(String componentType) {
+        this.componentType = componentType;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation the operation to set
+     */
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     /**
@@ -211,12 +263,15 @@ public class ResponseTime {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + (int) (actual ^ (actual >>> 32));
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
+        result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
-        result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -235,11 +290,18 @@ public class ResponseTime {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ResponseTime other = (ResponseTime) obj;
+        NodeDetails other = (NodeDetails) obj;
+        if (actual != other.actual)
+            return false;
         if (businessTransaction == null) {
             if (other.businessTransaction != null)
                 return false;
         } else if (!businessTransaction.equals(other.businessTransaction))
+            return false;
+        if (componentType == null) {
+            if (other.componentType != null)
+                return false;
+        } else if (!componentType.equals(other.componentType))
             return false;
         if (correlationIds == null) {
             if (other.correlationIds != null)
@@ -251,7 +313,7 @@ public class ResponseTime {
                 return false;
         } else if (!details.equals(other.details))
             return false;
-        if (duration != other.duration)
+        if (elapsed != other.elapsed)
             return false;
         if (fault == null) {
             if (other.fault != null)
@@ -262,6 +324,11 @@ public class ResponseTime {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
+            return false;
+        if (operation == null) {
+            if (other.operation != null)
+                return false;
+        } else if (!operation.equals(other.operation))
             return false;
         if (properties == null) {
             if (other.properties != null)
@@ -285,9 +352,10 @@ public class ResponseTime {
      */
     @Override
     public String toString() {
-        return "ResponseTime [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
-                + uri + ", timestamp=" + timestamp + ", duration=" + duration + ", fault=" + fault + ", properties="
-                + properties + ", details=" + details + ", correlationIds=" + correlationIds + "]";
+        return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
+                + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual
+                + ", componentType=" + componentType + ", operation=" + operation + ", fault=" + fault
+                + ", properties=" + properties + ", details=" + details + ", correlationIds=" + correlationIds + "]";
     }
 
 }

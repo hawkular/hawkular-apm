@@ -31,13 +31,17 @@ import java.util.List;
 
 import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient;
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
+import org.hawkular.btm.api.services.NodeCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Test;
 
@@ -54,13 +58,21 @@ public class AnalyticsServiceRESTTest {
     /**  */
     private static final String TEST_USERNAME = "jdoe";
 
-    private static final TypeReference<java.util.List<Statistics>> STATISTICS_LIST =
-            new TypeReference<java.util.List<Statistics>>() {
-            };
+    private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
+            new TypeReference<java.util.List<CompletionTimeseriesStatistics>>() {
+    };
+
+    private static final TypeReference<java.util.List<NodeTimeseriesStatistics>> NODE_TIMESERIES_STATISTICS_LIST =
+            new TypeReference<java.util.List<NodeTimeseriesStatistics>>() {
+    };
+
+    private static final TypeReference<java.util.List<NodeSummaryStatistics>> NODE_SUMMARY_STATISTICS_LIST =
+            new TypeReference<java.util.List<NodeSummaryStatistics>>() {
+    };
 
     private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
             new TypeReference<java.util.List<Cardinality>>() {
-            };
+    };
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -324,7 +336,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionStatistics() {
+    public void testGetCompletionTimeseriesStatistics() {
         AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
         analytics.setUsername(TEST_USERNAME);
         analytics.setPassword(TEST_PASSWORD);
@@ -371,14 +383,14 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
-        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria, 1000);
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria, 1000);
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
     }
 
     @Test
-    public void testGetCompletionStatisticsPOST() {
+    public void testGetCompletionTimeseriesStatisticsPOST() {
         AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
         analytics.setUsername(TEST_USERNAME);
         analytics.setPassword(TEST_PASSWORD);
@@ -422,7 +434,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Get transaction count
-        List<Statistics> stats = null;
+        List<CompletionTimeseriesStatistics> stats = null;
 
         try {
             URL url = new URL(service.getBaseUrl() + "analytics/completion/statistics?interval=1000");
@@ -465,7 +477,7 @@ public class AnalyticsServiceRESTTest {
             is.close();
 
             if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), STATISTICS_LIST);
+                stats = mapper.readValue(builder.toString(), COMPLETION_STATISTICS_LIST);
             }
         } catch (Exception e) {
             fail("Failed to send statistics request: " + e);
@@ -782,4 +794,340 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(cards);
         assertEquals(1, cards.size());
     }
+
+    @Test
+    public void testGetNodeTimeseriesStatistics() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        Component comp1=new Component();
+        comp1.setComponentType("Database");
+        comp1.setUri("jdbc:h2:hello");
+        comp1.setOperation("query");
+        comp1.setDuration(600000);
+        c1.getNodes().add(comp1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        NodeCriteria criteria = new NodeCriteria();
+        criteria.setStartTime(0).setEndTime(0);
+
+        // Get transaction count
+        List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria, 1000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+    }
+
+    @Test
+    public void testGetNodeTimeseriesStatisticsPOST() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        Component comp1=new Component();
+        comp1.setComponentType("Database");
+        comp1.setUri("jdbc:h2:hello");
+        comp1.setOperation("query");
+        comp1.setDuration(600000);
+        c1.getNodes().add(comp1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        List<CompletionTimeseriesStatistics> stats = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "analytics/node/statistics?interval=1000");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(new NodeCriteria()));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                stats = mapper.readValue(builder.toString(), NODE_TIMESERIES_STATISTICS_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send node timeseries statistics request: " + e);
+        }
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+    }
+
+    @Test
+    public void testGetNodeSummaryStatistics() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        Component comp1=new Component();
+        comp1.setComponentType("Database");
+        comp1.setUri("jdbc:h2:hello");
+        comp1.setOperation("query");
+        comp1.setDuration(600000);
+        c1.getNodes().add(comp1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        NodeCriteria criteria = new NodeCriteria();
+        criteria.setStartTime(0).setEndTime(0);
+
+        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+    }
+
+    @Test
+    public void testGetNodeSummaryStatisticsPOST() {
+        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+        analytics.setUsername(TEST_USERNAME);
+        analytics.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setDuration(1000000);
+        btxn1.getNodes().add(c1);
+
+        Component comp1=new Component();
+        comp1.setComponentType("Database");
+        comp1.setUri("jdbc:h2:hello");
+        comp1.setOperation("query");
+        comp1.setDuration(600000);
+        c1.getNodes().add(comp1);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        List<CompletionTimeseriesStatistics> stats = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "analytics/node/summary");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(new NodeCriteria()));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                stats = mapper.readValue(builder.toString(), NODE_SUMMARY_STATISTICS_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send node summary statistics request: " + e);
+        }
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+    }
+
 }

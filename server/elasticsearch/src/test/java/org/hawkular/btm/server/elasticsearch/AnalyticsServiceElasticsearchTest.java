@@ -18,6 +18,7 @@ package org.hawkular.btm.server.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -27,12 +28,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
@@ -40,9 +44,11 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
+import org.hawkular.btm.api.services.NodeCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -565,7 +571,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionStatistics() {
+    public void testGetCompletionTimeseriesStatistics() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
         CompletionTime ct1_1 = new CompletionTime();
@@ -599,7 +605,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTimeCriteria criteria = new CompletionTimeCriteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -624,7 +630,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionStatisticsWithLowerBound() {
+    public void testGetCompletionTimeseriesStatisticsWithLowerBound() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
         CompletionTime ct1_1 = new CompletionTime();
@@ -659,7 +665,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setLowerBound(200);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -684,7 +690,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionStatisticsWithUpperBound() {
+    public void testGetCompletionTimeseriesStatisticsWithUpperBound() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
         CompletionTime ct1_1 = new CompletionTime();
@@ -719,7 +725,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setUpperBound(400);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -744,7 +750,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionStatisticsWithFaults() {
+    public void testGetCompletionTimeseriesStatisticsWithFaults() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
         CompletionTime ct1_1 = new CompletionTime();
@@ -780,7 +786,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTimeCriteria criteria = new CompletionTimeCriteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Statistics> stats = analytics.getCompletionStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -1047,6 +1053,154 @@ public class AnalyticsServiceElasticsearchTest {
 
         assertEquals("fault1", cards1.get(0).getValue());
         assertEquals(1, cards1.get(0).getCount());
+    }
+
+    @Test
+    public void testGetNodeTimeseriesStatistics() {
+        List<NodeDetails> nds = new ArrayList<NodeDetails>();
+
+        NodeDetails ct1_1 = new NodeDetails();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setActual(100);
+        ct1_1.setComponentType("Database");
+        nds.add(ct1_1);
+
+        NodeDetails ct1_2 = new NodeDetails();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setActual(300);
+        ct1_2.setComponentType("Database");
+        nds.add(ct1_2);
+
+        NodeDetails ct1_3 = new NodeDetails();
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1700);
+        ct1_3.setActual(150);
+        ct1_3.setComponentType("EJB");
+        nds.add(ct1_3);
+
+        NodeDetails ct2 = new NodeDetails();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setActual(500);
+        ct2.setComponentType("Database");
+        nds.add(ct2);
+
+        try {
+            analytics.storeNodeDetails(null, nds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        NodeCriteria criteria = new NodeCriteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+
+        List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+        assertEquals(2000, stats.get(1).getTimestamp());
+
+        assertEquals(2, stats.get(0).getNodeDurations().size());
+        assertEquals(1, stats.get(1).getNodeDurations().size());
+
+        assertTrue(stats.get(0).getNodeDurations().containsKey("database"));
+        assertTrue(stats.get(0).getNodeDurations().containsKey("ejb"));
+        assertTrue(stats.get(1).getNodeDurations().containsKey("database"));
+
+        assertTrue(stats.get(0).getNodeDurations().get("database").doubleValue() == 200);
+        assertTrue(stats.get(0).getNodeDurations().get("ejb").doubleValue() == 150);
+        assertTrue(stats.get(1).getNodeDurations().get("database").doubleValue() == 500);
+    }
+
+    @Test
+    public void testGetNodeSummaryStatistics() {
+        List<NodeDetails> nds = new ArrayList<NodeDetails>();
+
+        NodeDetails ct1_0 = new NodeDetails();
+        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setTimestamp(1500);
+        ct1_0.setActual(100);
+        ct1_0.setElapsed(200);
+        ct1_0.setType(NodeType.Consumer);
+        ct1_0.setUri("hello");
+        nds.add(ct1_0);
+
+        NodeDetails ct1_1 = new NodeDetails();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setActual(100);
+        ct1_1.setElapsed(200);
+        ct1_1.setType(NodeType.Component);
+        ct1_1.setComponentType("Database");
+        ct1_1.setUri("jdbc");
+        nds.add(ct1_1);
+
+        NodeDetails ct1_2 = new NodeDetails();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setActual(300);
+        ct1_2.setElapsed(600);
+        ct1_2.setType(NodeType.Component);
+        ct1_2.setComponentType("Database");
+        ct1_2.setUri("jdbc");
+        nds.add(ct1_2);
+
+        NodeDetails ct1_3 = new NodeDetails();
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1700);
+        ct1_3.setActual(150);
+        ct1_3.setElapsed(300);
+        ct1_3.setType(NodeType.Component);
+        ct1_3.setComponentType("EJB");
+        ct1_3.setUri("BookingService");
+        ct1_3.setOperation("createBooking");
+        nds.add(ct1_3);
+
+        try {
+            analytics.storeNodeDetails(null, nds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        NodeCriteria criteria = new NodeCriteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+
+        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(3, stats.size());
+
+        assertTrue(stats.get(0).getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(stats.get(0).getUri().equalsIgnoreCase("jdbc"));
+        assertNull(stats.get(0).getOperation());
+        assertEquals(2, stats.get(0).getCount());
+        assertTrue(stats.get(0).getActual() == 200.0);
+        assertTrue(stats.get(0).getElapsed() == 400.0);
+        assertTrue(stats.get(1).getComponentType().equalsIgnoreCase("EJB"));
+        assertTrue(stats.get(1).getUri().equalsIgnoreCase("BookingService"));
+        assertTrue(stats.get(1).getOperation().equalsIgnoreCase("createBooking"));
+        assertEquals(1, stats.get(1).getCount());
+        assertTrue(stats.get(1).getActual() == 150.0);
+        assertTrue(stats.get(1).getElapsed() == 300.0);
+        assertTrue(stats.get(2).getComponentType().equalsIgnoreCase("Consumer"));
+        assertTrue(stats.get(2).getUri().equalsIgnoreCase("hello"));
+        assertNull(stats.get(2).getOperation());
+        assertEquals(1, stats.get(2).getCount());
+        assertTrue(stats.get(2).getActual() == 100.0);
+        assertTrue(stats.get(2).getElapsed() == 200.0);
     }
 
 }

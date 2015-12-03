@@ -27,6 +27,7 @@ import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
+import org.hawkular.btm.api.services.NodeCriteria;
 
 /**
  * This class provides utility functions for working with Elasticsearch.
@@ -96,6 +97,22 @@ public class ElasticsearchUtil {
             }
             query = query.must(rangeQuery);
         }
+
+        return query;
+    }
+
+    /**
+     * This method builds the Elasticsearch query based on the supplied
+     * node criteria.
+     *
+     * @param timeProperty The name of the time property
+     * @param businessTxnProperty The name of the business transaction property
+     * @param criteria the criteria
+     * @return The query
+     */
+    public static BoolQueryBuilder buildQuery(NodeCriteria criteria, String timeProperty,
+            String businessTxnProperty) {
+        BoolQueryBuilder query = buildBaseQuery(criteria, timeProperty, businessTxnProperty);
 
         return query;
     }

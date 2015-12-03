@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.server.jms;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -26,42 +28,46 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.events.ResponseTime;
-import org.hawkular.btm.processor.responsetime.ResponseTimeDeriver;
-import org.hawkular.btm.server.api.services.ResponseTimePublisher;
+import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.services.AnalyticsService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_ResponseTimeDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "NodeDetails_Store", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "NodeDetails"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientId", propertyValue = "ResponseTimeDeriver"),
-                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "ResponseTimeDeriver")
+                @ActivationConfigProperty(propertyName = "clientId", propertyValue = "NodeDetailsStore"),
+                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NodeDetailsStore")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class ResponseTimeDeriverMDB extends ProcessorMDB<BusinessTransaction, ResponseTime> {
+public class NodeDetailsStoreMDB extends RetryCapableMDB<NodeDetails> {
 
     @Inject
-    private BusinessTransactionPublisherJMS businessTransactionPublisher;
+    private NodeDetailsPublisherJMS nodeDetailsPublisher;
 
     @Inject
-    private ResponseTimePublisher responseTimePublisher;
+    private AnalyticsService analyticsService;
 
     @PostConstruct
     public void init() {
-        setProcessor(new ResponseTimeDeriver());
-        setRetryPublisher(businessTransactionPublisher);
-        setPublisher(responseTimePublisher);
-        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        setRetryPublisher(nodeDetailsPublisher);
+        setTypeReference(new TypeReference<java.util.List<NodeDetails>>() {
         });
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
+     */
+    @Override
+    protected void process(String tenantId, List<NodeDetails> items, int retryCount) throws Exception {
+        analyticsService.storeNodeDetails(tenantId, items);
     }
 
 }

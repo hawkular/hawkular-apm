@@ -14,11 +14,11 @@
 /// limitations under the License.
 
 /// <reference path="../../includes.ts"/>
-module BTM {
+module APM {
 
-  export var pluginName = "btm";
+  export var pluginName = "apm";
 
   export var log: Logging.Logger = Logger.get(pluginName);
 
-  export var templatePath = "plugins/btm/html";
+  export var templatePath = "plugins/apm/html";
 }
