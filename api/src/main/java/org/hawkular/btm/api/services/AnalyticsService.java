@@ -19,12 +19,14 @@ package org.hawkular.btm.api.services;
 import java.util.List;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.events.CompletionTime;
-import org.hawkular.btm.api.model.events.ResponseTime;
+import org.hawkular.btm.api.model.events.NodeDetails;
 
 /**
  * This interface represents the available analytics capabilities.
@@ -104,17 +106,17 @@ public interface AnalyticsService {
     Percentiles getCompletionPercentiles(String tenantId, CompletionTimeCriteria criteria);
 
     /**
-     * This method returns the completion time statistics, for the specified criteria, that were
+     * This method returns the completion timeseries statistics, for the specified criteria, that were
      * executed during the time range. The business transaction name must be specified
      * as part of the criteria.
      *
      * @param tenantId The tenant id
      * @param criteria The criteria
      * @param interval The aggregation interval (in milliseconds)
-     * @return The completion time statistics
+     * @return The completion timeseries statistics
      */
-    List<Statistics> getCompletionStatistics(String tenantId, CompletionTimeCriteria criteria,
-                                    long interval);
+    List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
+            CompletionTimeCriteria criteria, long interval);
 
     /**
      * This method returns the completion time fault details, for the specified criteria, that were
@@ -138,7 +140,7 @@ public interface AnalyticsService {
      * @return The completion time property details
      */
     List<Cardinality> getCompletionPropertyDetails(String tenantId, CompletionTimeCriteria criteria,
-                                    String property);
+            String property);
 
     /**
      * This method returns the number of alerts associated with the specified
@@ -151,13 +153,35 @@ public interface AnalyticsService {
     int getAlertCount(String tenantId, String name);
 
     /**
-     * This method stores the supplied list of completion times.
+     * This method returns the node timeseries statistics, for the specified criteria, that were
+     * executed during the time range.
      *
      * @param tenantId The tenant id
-     * @param completionTimes The completion times
+     * @param criteria The criteria
+     * @param interval The aggregation interval (in milliseconds)
+     * @return The node timeseries statistics
+     */
+    List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId, NodeCriteria criteria,
+            long interval);
+
+    /**
+     * This method returns the node summary statistics, for the specified criteria, that were
+     * executed during the time range.
+     *
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @return The node summary statistics
+     */
+    List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria);
+
+    /**
+     * This method stores the supplied list of node details.
+     *
+     * @param tenantId The tenant id
+     * @param nodeDetails The node details
      * @throws Exception Failed to store
      */
-    void storeResponseTimes(String tenantId, List<ResponseTime> responseTimes) throws Exception;
+    void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception;
 
     /**
      * This method stores the supplied list of completion times.

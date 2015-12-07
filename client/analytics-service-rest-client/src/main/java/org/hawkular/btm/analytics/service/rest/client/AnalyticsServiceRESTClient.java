@@ -25,14 +25,18 @@ import java.util.Map;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.events.CompletionTime;
-import org.hawkular.btm.api.model.events.ResponseTime;
+import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AnalyticsService;
+import org.hawkular.btm.api.services.BaseCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
+import org.hawkular.btm.api.services.NodeCriteria;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,8 +61,16 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
             new TypeReference<java.util.List<String>>() {
             };
 
-    private static final TypeReference<java.util.List<Statistics>> STATISTICS_LIST =
-            new TypeReference<java.util.List<Statistics>>() {
+    private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
+            new TypeReference<java.util.List<CompletionTimeseriesStatistics>>() {
+            };
+
+    private static final TypeReference<java.util.List<NodeTimeseriesStatistics>> NODE_TIMESERIES_STATISTICS_LIST =
+            new TypeReference<java.util.List<NodeTimeseriesStatistics>>() {
+            };
+
+    private static final TypeReference<java.util.List<NodeSummaryStatistics>> NODE_SUMMARY_STATISTICS_LIST =
+            new TypeReference<java.util.List<NodeSummaryStatistics>>() {
             };
 
     private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
@@ -590,7 +602,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                  org.hawkular.btm.api.services.CompletionTimeCriteria, long)
      */
     @Override
-    public List<Statistics> getCompletionStatistics(String tenantId, CompletionTimeCriteria criteria,
+    public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
+            CompletionTimeCriteria criteria,
             long interval) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion statistics: tenantId=[" + tenantId + "] criteria="
@@ -644,7 +657,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), STATISTICS_LIST);
+                        return mapper.readValue(resp.toString(), COMPLETION_STATISTICS_LIST);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }
@@ -819,7 +832,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @param builder The url
      * @param criteria The criteria
      */
-    protected void buildQueryString(StringBuilder builder, CompletionTimeCriteria criteria) {
+    protected boolean buildQueryString(StringBuilder builder, BaseCriteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
         if (!queryParams.isEmpty()) {
@@ -836,7 +849,11 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 builder.append(value);
                 first = false;
             }
+
+            return true;
         }
+
+        return false;
     }
 
     /* (non-Javadoc)
@@ -910,6 +927,162 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         return 0;
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getNodeStatistics(java.lang.String,
+     *                      org.hawkular.btm.api.services.NodeCriteria, long)
+     */
+    @Override
+    public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId,
+            NodeCriteria criteria, long interval) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get node timeseries statistics: tenantId=[" + tenantId + "] criteria="
+                    + criteria + " interval=" + interval);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/node/statistics");
+
+        if (buildQueryString(builder, criteria)) {
+            builder.append('&');
+        } else {
+            builder.append('?');
+        }
+
+        builder.append("interval=");
+        builder.append(interval);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), NODE_TIMESERIES_STATISTICS_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get node timeseries statistics: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get node timeseries statistics", e);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getNodeSummaryStatistics(java.lang.String,
+     *                          org.hawkular.btm.api.services.NodeCriteria)
+     */
+    @Override
+    public List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get node summary statistics: tenantId=[" + tenantId + "] criteria="
+                    + criteria);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/node/summary");
+
+        buildQueryString(builder, criteria);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), NODE_SUMMARY_STATISTICS_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get node summary statistics: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get node summary statistics", e);
+        }
+
+        return null;
+    }
+
     /**
      * Add the header values to the supplied connection.
      *
@@ -934,10 +1107,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#storeResponseTimes(java.lang.String, java.util.List)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
      */
     @Override
-    public void storeResponseTimes(String tenantId, List<ResponseTime> responseTimes) throws Exception {
+    public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception {
         throw new UnsupportedOperationException();
     }
 

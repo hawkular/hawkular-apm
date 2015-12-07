@@ -18,20 +18,20 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.events.ResponseTime;
-import org.hawkular.btm.server.api.services.ResponseTimePublisher;
+import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.server.api.services.NodeDetailsPublisher;
 
 /**
- * This class represents the response time JMS publisher.
+ * This class represents the node details JMS publisher.
  *
  * @author gbrown
  */
-public class ResponseTimePublisherJMS extends AbstractPublisherJMS<ResponseTime>
-implements ResponseTimePublisher {
+public class NodeDetailsPublisherJMS extends AbstractPublisherJMS<NodeDetails>
+                                        implements NodeDetailsPublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;
-    private static final String DESTINATION = "java:/ResponseTimes";
+    private static final String DESTINATION = "java:/NodeDetails";
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.server.jms.AbstractPublisherJMS#getDestinationURI()
@@ -42,10 +42,10 @@ implements ResponseTimePublisher {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.services.ResponseTimePublisher#publish(java.lang.String, java.util.List)
+     * @see org.hawkular.btm.server.api.services.NodeDetailsPublisher#publish(java.lang.String, java.util.List)
      */
     @Override
-    public void publish(String tenantId, List<ResponseTime> rts) throws Exception {
+    public void publish(String tenantId, List<NodeDetails> rts) throws Exception {
         doPublish(tenantId, rts, MAX_RETRIES);
     }
 

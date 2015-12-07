@@ -46,14 +46,18 @@ import org.elasticsearch.search.aggregations.bucket.missing.MissingBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.metrics.avg.Avg;
+import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.Percentile;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.Statistics;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -62,11 +66,12 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.events.CompletionTime;
-import org.hawkular.btm.api.model.events.ResponseTime;
+import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
+import org.hawkular.btm.api.services.NodeCriteria;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +87,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
-    private static final String RESPONSE_TIME_TYPE = "responsetime";
+    private static final String NODE_DETAILS_TYPE = "nodedetails";
 
     /**  */
     private static final String COMPLETION_TIME_TYPE = "completiontime";
@@ -132,7 +137,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setStartTime(startTime)
-                .setEndTime(endTime);
+        .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -243,8 +248,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setBusinessTransaction(businessTransaction)
-                .setStartTime(startTime)
-                .setEndTime(endTime);
+        .setStartTime(startTime)
+        .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -289,8 +294,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
         criteria.setStartTime(startTime)
-                .setEndTime(endTime)
-                .setBusinessTransaction(businessTransaction);
+        .setEndTime(endTime)
+        .setBusinessTransaction(businessTransaction);
 
         List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
@@ -442,8 +447,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *                  org.hawkular.btm.api.services.CompletionTimeCriteria, long)
      */
     @Override
-    public List<Statistics> getCompletionStatistics(String tenantId, CompletionTimeCriteria criteria,
-            long interval) {
+    public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
+                    CompletionTimeCriteria criteria, long interval) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -484,7 +489,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             msgLog.warnQueryTimedOut();
         }
 
-        List<Statistics> stats = new ArrayList<Statistics>();
+        List<CompletionTimeseriesStatistics> stats = new ArrayList<CompletionTimeseriesStatistics>();
 
         DateHistogram histogram = response.getAggregations().get("histogram");
 
@@ -492,7 +497,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             Stats stat = bucket.getAggregations().get("stats");
             Missing missing = bucket.getAggregations().get("faults");
 
-            Statistics s = new Statistics();
+            CompletionTimeseriesStatistics s = new CompletionTimeseriesStatistics();
             s.setTimestamp(bucket.getKeyAsDate().getMillis());
             s.setAverage(stat.getAvg());
             s.setMin(stat.getMin());
@@ -632,18 +637,246 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#storeResponseTimes(java.lang.String, java.util.List)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getNodeStatistics(java.lang.String,
+     *                      org.hawkular.btm.api.services.NodeCriteria, long)
      */
     @Override
-    public void storeResponseTimes(String tenantId, List<ResponseTime> responseTimes) throws Exception {
+    public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId, NodeCriteria criteria,
+                                long interval) {
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+        AvgBuilder avgBuilder = AggregationBuilders
+                .avg("avg")
+                .field("actual");
+
+        TermsBuilder componentsBuilder = AggregationBuilders
+                .terms("components")
+                .field("componentType")
+                .size(criteria.getMaxResponseSize())
+                .subAggregation(avgBuilder);
+
+        DateHistogramBuilder histogramBuilder = AggregationBuilders
+                .dateHistogram("histogram")
+                .interval(interval)
+                .field("timestamp")
+                .subAggregation(componentsBuilder);
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(NODE_DETAILS_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addAggregation(histogramBuilder)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(query);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        List<NodeTimeseriesStatistics> stats = new ArrayList<NodeTimeseriesStatistics>();
+
+        DateHistogram histogram = response.getAggregations().get("histogram");
+
+        for (Bucket bucket : histogram.getBuckets()) {
+            Terms term = bucket.getAggregations().get("components");
+
+            NodeTimeseriesStatistics s = new NodeTimeseriesStatistics();
+            s.setTimestamp(bucket.getKeyAsDate().getMillis());
+
+            for (Terms.Bucket termBucket : term.getBuckets()) {
+                Avg avg=termBucket.getAggregations().get("avg");
+                s.getNodeDurations().put(termBucket.getKey(), avg.getValue());
+            }
+
+            stats.add(s);
+        }
+
+        return stats;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getNodeSummaryStatistics(java.lang.String,
+     *                  org.hawkular.btm.api.services.NodeCriteria)
+     */
+    @Override
+    public List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria) {
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+        AvgBuilder actualBuilder = AggregationBuilders
+                .avg("actual")
+                .field("actual");
+
+        AvgBuilder elapsedBuilder = AggregationBuilders
+                .avg("elapsed")
+                .field("elapsed");
+
+        TermsBuilder operationsBuilder = AggregationBuilders
+                .terms("operations")
+                .field("operation")
+                .size(criteria.getMaxResponseSize())
+                .subAggregation(actualBuilder)
+                .subAggregation(elapsedBuilder);
+
+        MissingBuilder missingOperationBuilder = AggregationBuilders
+                .missing("missingOperation")
+                .field("operation")
+                .subAggregation(actualBuilder)
+                .subAggregation(elapsedBuilder);
+
+        TermsBuilder urisBuilder = AggregationBuilders
+                .terms("uris")
+                .field("uri")
+                .size(criteria.getMaxResponseSize())
+                .subAggregation(operationsBuilder)
+                .subAggregation(missingOperationBuilder);
+
+        TermsBuilder componentsBuilder = AggregationBuilders
+                .terms("components")
+                .field("componentType")
+                .size(criteria.getMaxResponseSize())
+                .subAggregation(urisBuilder);
+
+        TermsBuilder interactionUrisBuilder = AggregationBuilders
+                .terms("uris")
+                .field("uri")
+                .size(criteria.getMaxResponseSize())
+                .subAggregation(actualBuilder)
+                .subAggregation(elapsedBuilder);
+
+        MissingBuilder missingComponentsBuilder = AggregationBuilders
+                .missing("missingcomponent")
+                .field("componentType")
+                .subAggregation(interactionUrisBuilder);
+
+        TermsBuilder nodesBuilder = AggregationBuilders
+                .terms("types")
+                .field("type")
+                .size(criteria.getMaxResponseSize())
+                .subAggregation(componentsBuilder)
+                .subAggregation(missingComponentsBuilder);
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(NODE_DETAILS_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addAggregation(nodesBuilder)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(query);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        List<NodeSummaryStatistics> stats = new ArrayList<NodeSummaryStatistics>();
+
+        Terms types = response.getAggregations().get("types");
+
+        for (Terms.Bucket typeBucket : types.getBuckets()) {
+            Terms components = typeBucket.getAggregations().get("components");
+
+            for (Terms.Bucket componentBucket : components.getBuckets()) {
+                Terms uris = componentBucket.getAggregations().get("uris");
+
+                for (Terms.Bucket uriBucket : uris.getBuckets()) {
+                    Terms operations = uriBucket.getAggregations().get("operations");
+
+                    for (Terms.Bucket operationBucket : operations.getBuckets()) {
+                        Avg actual=operationBucket.getAggregations().get("actual");
+                        Avg elapsed=operationBucket.getAggregations().get("elapsed");
+
+                        NodeSummaryStatistics stat=new NodeSummaryStatistics();
+
+                        if (typeBucket.getKey().equalsIgnoreCase("consumer")) {
+                            stat.setComponentType("consumer");
+                        } else if (typeBucket.getKey().equalsIgnoreCase("producer")) {
+                            stat.setComponentType("producer");
+                        } else {
+                            stat.setComponentType(componentBucket.getKey());
+                        }
+                        stat.setUri(uriBucket.getKey());
+                        stat.setOperation(operationBucket.getKey());
+                        stat.setActual(actual.getValue());
+                        stat.setElapsed(elapsed.getValue());
+                        stat.setCount(operationBucket.getDocCount());
+
+                        stats.add(stat);
+                    }
+
+                    Missing missingOp = uriBucket.getAggregations().get("missingOperation");
+                    Avg actual=missingOp.getAggregations().get("actual");
+                    Avg elapsed=missingOp.getAggregations().get("elapsed");
+
+                    // TODO: For some reason doing comparison of value against Double.NaN does not work
+                    if (!actual.getValueAsString().equals("NaN")) {
+                        NodeSummaryStatistics stat=new NodeSummaryStatistics();
+
+                        if (typeBucket.getKey().equalsIgnoreCase("consumer")) {
+                            stat.setComponentType("consumer");
+                        } else if (typeBucket.getKey().equalsIgnoreCase("producer")) {
+                            stat.setComponentType("producer");
+                        } else {
+                            stat.setComponentType(componentBucket.getKey());
+                        }
+                        stat.setUri(uriBucket.getKey());
+                        stat.setActual(actual.getValue());
+                        stat.setElapsed(elapsed.getValue());
+                        stat.setCount(missingOp.getDocCount());
+
+                        stats.add(stat);
+                    }
+                }
+            }
+
+            Missing missingComponents = typeBucket.getAggregations().get("missingcomponent");
+
+            Terms uris = missingComponents.getAggregations().get("uris");
+
+            for (Terms.Bucket uriBucket : uris.getBuckets()) {
+                Avg actual=uriBucket.getAggregations().get("actual");
+                Avg elapsed=uriBucket.getAggregations().get("elapsed");
+
+                NodeSummaryStatistics stat=new NodeSummaryStatistics();
+
+                stat.setComponentType(typeBucket.getKey());
+                stat.setUri(uriBucket.getKey());
+                stat.setActual(actual.getValue());
+                stat.setElapsed(elapsed.getValue());
+                stat.setCount(uriBucket.getDocCount());
+
+                stats.add(stat);
+            }
+        }
+
+        return stats;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception {
         client.initTenant(tenantId);
 
         BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
 
-        for (int i = 0; i < responseTimes.size(); i++) {
-            ResponseTime rt = responseTimes.get(i);
+        for (int i = 0; i < nodeDetails.size(); i++) {
+            NodeDetails rt = nodeDetails.get(i);
             bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    RESPONSE_TIME_TYPE, rt.getId()).setSource(mapper.writeValueAsString(rt)));
+                    NODE_DETAILS_TYPE, rt.getId()).setSource(mapper.writeValueAsString(rt)));
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
@@ -651,15 +884,15 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         if (bulkItemResponses.hasFailures()) {
 
             // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store response times: " + bulkItemResponses.buildFailureMessage());
+            msgLog.error("Failed to store node details: " + bulkItemResponses.buildFailureMessage());
 
             if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Failed to store response times to elasticsearch: "
+                msgLog.trace("Failed to store node details to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
         } else {
             if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Success storing response times to elasticsearch");
+                msgLog.trace("Success storing node details to elasticsearch");
             }
         }
     }

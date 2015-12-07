@@ -65,7 +65,7 @@
                 }
             }
         },
-        "responsetime": {
+        "nodedetails": {
             "dynamic_templates": [{
                 "notanalyzed": {
                       "match": "*",

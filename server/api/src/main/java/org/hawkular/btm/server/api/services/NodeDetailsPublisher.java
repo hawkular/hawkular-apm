@@ -16,14 +16,14 @@
  */
 package org.hawkular.btm.server.api.services;
 
-import org.hawkular.btm.api.model.events.ResponseTime;
+import org.hawkular.btm.api.model.events.NodeDetails;
 
 /**
- * This interface provides the capability for publishing response time
+ * This interface provides the capability for publishing node details
  * information.
  *
  * @author gbrown
  */
-public interface ResponseTimePublisher extends Publisher<ResponseTime> {
+public interface NodeDetailsPublisher extends Publisher<NodeDetails> {
 
 }
