@@ -21,7 +21,9 @@ module APM {
   export var APMController = _module.controller("APM.APMController", ["$scope", "$routeParams", "$http", '$location', '$interval', ($scope, $routeParams, $http, $location, $interval) => {
 
     $scope.criteria = {
+      type: "Node",
       businessTransaction: undefined,
+      hostName: $routeParams.hostName,
       properties: [],
       startTime: -3600000,
       endTime: "0"
@@ -112,6 +114,14 @@ module APM {
         console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
 
+      $http.get('/hawkular/btm/analytics/hostnames').then(function(resp) {
+        $scope.hostNames = [ ];
+        for (var i=0; i < resp.data.length; i++) {
+          $scope.hostNames.add(resp.data[i]);
+        }
+      },function(resp) {
+        console.log("Failed to get host names: "+JSON.stringify(resp));
+      });
     };
 
     $scope.redrawAreaChart = function() {

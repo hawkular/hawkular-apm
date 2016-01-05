@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1201,6 +1201,39 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(1, stats.get(2).getCount());
         assertTrue(stats.get(2).getActual() == 100.0);
         assertTrue(stats.get(2).getElapsed() == 200.0);
+    }
+
+    @Test
+    public void testHostNames() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000);
+        btxn1.setHostName("hostA");
+        btxns.add(btxn1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000);
+        btxn2.setHostName("hostB");
+        btxns.add(btxn2);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store");
+        }
+
+        java.util.List<String> hostnames = analytics.getHostNames(null, new NodeCriteria().setStartTime(100));
+
+        assertNotNull(hostnames);
+        assertEquals(2, hostnames.size());
+
+        assertEquals("hostA", hostnames.get(0));
+        assertEquals("hostB", hostnames.get(1));
     }
 
 }

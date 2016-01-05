@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -191,5 +191,15 @@ public interface AnalyticsService {
      * @throws Exception Failed to store
      */
     void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
+
+    /**
+     * This method returns the list of host names where activities were executed, subject to the supplied
+     * criteria.
+     *
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @return The list of host names
+     */
+    List<String> getHostNames(String tenantId, BaseCriteria criteria);
 
 }

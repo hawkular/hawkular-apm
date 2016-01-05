@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,6 +64,9 @@ public class NodeDetails {
 
     @JsonInclude(Include.NON_NULL)
     private String fault;
+
+    @JsonInclude(Include.NON_NULL)
+    private String hostName;
 
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> properties = new HashMap<String, String>();
@@ -215,6 +218,20 @@ public class NodeDetails {
     }
 
     /**
+     * @return the hostName
+     */
+    public String getHostName() {
+        return hostName;
+    }
+
+    /**
+     * @param hostName the hostName to set
+     */
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -270,6 +287,7 @@ public class NodeDetails {
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
+        result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
@@ -320,6 +338,11 @@ public class NodeDetails {
                 return false;
         } else if (!fault.equals(other.fault))
             return false;
+        if (hostName == null) {
+            if (other.hostName != null)
+                return false;
+        } else if (!hostName.equals(other.hostName))
+            return false;
         if (id == null) {
             if (other.id != null)
                 return false;
@@ -354,8 +377,9 @@ public class NodeDetails {
     public String toString() {
         return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
                 + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual
-                + ", componentType=" + componentType + ", operation=" + operation + ", fault=" + fault
-                + ", properties=" + properties + ", details=" + details + ", correlationIds=" + correlationIds + "]";
+                + ", componentType=" + componentType + ", operation=" + operation + ", fault=" + fault + ", hostName="
+                + hostName + ", properties=" + properties + ", details=" + details + ", correlationIds="
+                + correlationIds + "]";
     }
 
 }

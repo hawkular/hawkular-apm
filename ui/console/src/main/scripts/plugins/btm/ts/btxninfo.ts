@@ -28,6 +28,7 @@ module BTM {
     $scope.faultValues = [];
 
     $scope.criteria = {
+      type: "CompletionTime",
       businessTransaction: $scope.businessTransactionName,
       properties: [],
       faults: [],

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
     private static final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
-    private static final String BUSINESS_TRANSACTION_TYPE = "businesstransaction";
+    public static final String BUSINESS_TRANSACTION_TYPE = "businesstransaction";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 

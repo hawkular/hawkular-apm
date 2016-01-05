@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,12 +26,15 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.Node;
 
+import io.swagger.annotations.ApiModel;
+
 /**
  * This class represents the query criteria for retrieving a set of business
  * transaction (fragments).
  *
  * @author gbrown
  */
+@ApiModel(parent = BaseCriteria.class)
 public class BusinessTransactionCriteria extends BaseCriteria {
 
     private final Logger log = Logger.getLogger(BusinessTransactionCriteria.class.getName());
