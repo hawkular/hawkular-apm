@@ -120,7 +120,7 @@ module BTM {
       return "Unknown expression type";
     };
 
-    $scope.changedExpressionType = function(expression) {
+    $scope.changedExpressionType = function(parent,field,expression) {
       $scope.setDirty();
       expression.key = undefined;
       expression.source = undefined;
@@ -130,6 +130,8 @@ module BTM {
       if (expression.type === 'XML' || expression.type === 'JSON' || expression.type === 'Text') {
         expression.key = '0';
         expression.source = 'Content';
+      } else if (expression.type === '') {
+        parent[field] = undefined;
       }
     };
 
@@ -192,12 +194,20 @@ module BTM {
     };
 
     $scope.save = function() {
+      $scope.messages = [];
+
       $http.put('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName,$scope.businessTransaction).then(function(resp) {
         $scope.messages = resp.data;
         $scope.original = angular.copy($scope.businessTransaction);
         $scope.dirty = false;
       },function(resp) {
         console.log("Failed to save business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
+        var message = {
+          severity: Error,
+          message: "Failed to save '"+$scope.businessTransactionName+"'",
+          details: JSON.stringify(resp.data)
+        };
+        $scope.messages.add(message);
       });
     };
 

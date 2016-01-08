@@ -8,7 +8,11 @@
     <br>
     <br>
 
-    <uib-alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong></uib-alert>
+    <uib-alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong>
+      <div ng-hide="message.details === undefined">
+        {{message.details}}
+      </div>
+    </uib-alert>
 
     <a href="#" editable-textarea="businessTransaction.description" e-rows="14" e-cols="120" rows="7" onaftersave="setDirty()" >
         <pre><i>{{ businessTransaction.description || 'No description' }}</i></pre>
@@ -134,7 +138,7 @@
 
             <div class="form-group">
               <label for="predicateType" style="width: 15%" >Predicate Type: </label>
-              <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor.predicate)" style="width: 30%">
+              <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor,'predicate',processor.predicate)" style="width: 30%">
                 <option value=""></option>
                 <option value="Literal">Literal</option>
                 <option value="XML">XML</option>
@@ -195,7 +199,7 @@
 
                 <div class="form-group">
                   <label for="actionPredicateType" style="width: 15%" >Predicate Type: </label>
-                  <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action.predicate)" style="width: 30%">
+                  <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action,'predicate',action.predicate)" style="width: 30%">
                     <option value=""></option>
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
@@ -256,7 +260,7 @@
                 <div class="form-group" ng-if="action.actionType !== 'EvaluateURI' && action.actionType !== undefined" >
 
                   <label for="actionValueType" ng-class="{error:isError(processor,action,'expression')}" style="width: 15%" >Value Type: </label>
-                  <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action.expression)" style="width: 30%">
+                  <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action,'expression',action.expression)" style="width: 30%">
                     <option value=""></option>
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
