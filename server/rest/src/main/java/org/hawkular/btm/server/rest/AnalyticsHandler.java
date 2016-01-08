@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,6 +46,7 @@ import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
+import org.hawkular.btm.api.services.BaseCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.NodeCriteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
@@ -732,6 +733,8 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
                             @ApiParam(required = false,
+                    value = "host name") @QueryParam("hostName") String hostName,
+                            @ApiParam(required = false,
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -744,6 +747,7 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -830,6 +834,8 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
                             @ApiParam(required = false,
+                    value = "host name") @QueryParam("hostName") String hostName,
+                            @ApiParam(required = false,
                     value = "business transactions with these properties, defined as a comma "
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
@@ -839,6 +845,7 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -880,7 +887,7 @@ public class AnalyticsHandler {
             value = "query criteria") NodeCriteria criteria) {
 
         try {
-            log.tracef("Get business transaction node summary statistics for criteria [%s] interval [%s]",
+            log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
             List<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
@@ -890,6 +897,100 @@ public class AnalyticsHandler {
             log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
+    @Path("hostnames")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the host names associated with the criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getHostNames(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+            @ApiParam(required = false,
+                    value = "business transactions after this time,"
+                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+                    @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+                            @ApiParam(required = false,
+                    value = "host name") @QueryParam("hostName") String hostName,
+                            @ApiParam(required = false,
+                    value = "business transactions with these properties, defined as a comma "
+                            + "separated list of name|value "
+                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+
+        try {
+            NodeCriteria criteria = new NodeCriteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get host names for criteria [%s]",
+                    criteria);
+
+            List<String> hostnames = analyticsService.getHostNames(
+                    securityProvider.getTenantId(context),
+                    criteria);
+
+            log.tracef("Got host names for criteria [%s] = %s", criteria, hostnames);
+
+            response.resume(Response.status(Response.Status.OK).entity(hostnames).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debugf(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @POST
+    @Path("hostnames")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the host names associated with the criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getHostNames(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "query criteria") BaseCriteria criteria) {
+
+        try {
+            log.tracef("Get host names for criteria [%s]",
+                    criteria);
+
+            List<String> hostnames = analyticsService.getHostNames(
+                    securityProvider.getTenantId(context),
+                    criteria);
+
+            log.tracef("Got host names for criteria [%s] = %s", criteria, hostnames);
+
+            response.resume(Response.status(Response.Status.OK).entity(hostnames).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Throwable e) {

@@ -84,6 +84,13 @@
             <option ng-repeat="btxn in businessTransactions" value="{{btxn}}">{{btxn}}</option>
         </select>
 
+        <br>
+        <br>
+        <label for="hostNameField" >Host Name:</label>
+        <input type="text" class="form-control" name="hostNameField" typeahead-on-select="selectAction()"
+                   ng-model="criteria.hostName" ng-model-options="{ updateOn: 'default blur'}"
+                   placeholder="Enter a host name"
+                   uib-typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" required>
       </div>
 
     </div>

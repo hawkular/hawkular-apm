@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.swagger.annotations.ApiModel;
+
 /**
  * This class represents the query criteria for retrieving a set of node details.
  *
  * @author gbrown
  */
+@ApiModel(parent = BaseCriteria.class)
 public class NodeCriteria extends BaseCriteria {
 
     private final Logger log = Logger.getLogger(NodeCriteria.class.getName());
@@ -52,4 +55,5 @@ public class NodeCriteria extends BaseCriteria {
     public String toString() {
         return "NodeCriteria [toString()=" + super.toString() + "]";
     }
+
 }

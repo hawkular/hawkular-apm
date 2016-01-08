@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram.Bucket;
@@ -68,6 +69,7 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
+import org.hawkular.btm.api.services.BaseCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
@@ -928,6 +930,59 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 msgLog.trace("Success storing completion times to elasticsearch");
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getHostNames(java.lang.String,
+     *                      org.hawkular.btm.api.services.BaseCriteria)
+     */
+    @Override
+    public List<String> getHostNames(String tenantId, BaseCriteria criteria) {
+        List<String> ret=new ArrayList<String>();
+        String index = client.getIndex(tenantId);
+
+        RefreshRequestBuilder refreshRequestBuilder =
+                client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+        client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+        BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "name");
+
+        SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(BusinessTransactionServiceElasticsearch.BUSINESS_TRANSACTION_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(query);
+
+        SearchResponse response = request.execute().actionGet();
+        if (response.isTimedOut()) {
+            msgLog.warnQueryTimedOut();
+        }
+
+        List<BusinessTransaction> btxns=new ArrayList<BusinessTransaction>();
+
+        for (SearchHit searchHitFields : response.getHits()) {
+            try {
+                btxns.add(mapper.readValue(searchHitFields.getSourceAsString(),
+                        BusinessTransaction.class));
+            } catch (Exception e) {
+                msgLog.errorFailedToParse(e);
+            }
+        }
+
+        // Process the fragments to identify host names
+        for (int i = 0; i < btxns.size(); i++) {
+            BusinessTransaction btxn = btxns.get(i);
+
+            if (btxn.getHostName() != null && btxn.getHostName().trim().length() != 0
+                    && !ret.contains(btxn.getHostName())) {
+                ret.add(btxn.getHostName());
+            }
+        }
+
+        Collections.sort(ret);
+
+        return ret;
     }
 
     /**

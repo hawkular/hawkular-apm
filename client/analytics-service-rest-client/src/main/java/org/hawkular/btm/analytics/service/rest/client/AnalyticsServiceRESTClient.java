@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1120,6 +1120,80 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     @Override
     public void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         throw new UnsupportedOperationException();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getHostNames(java.lang.String,
+     *                      org.hawkular.btm.api.services.BaseCriteria)
+     */
+    @Override
+    public List<String> getHostNames(String tenantId, BaseCriteria criteria) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get host names: tenantId=[" + tenantId + "] criteria="
+                    + criteria);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/hostnames");
+
+        buildQueryString(builder, criteria);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), STRING_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get host names: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get host names", e);
+        }
+
+        return null;
     }
 
 }

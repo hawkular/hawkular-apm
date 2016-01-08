@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,11 +23,23 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import io.swagger.annotations.ApiModel;
+
 /**
  * This class represents the base query criteria.
  *
  * @author gbrown
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = BusinessTransactionCriteria.class, name="BusinessTransaction"),
+    @Type(value = CompletionTimeCriteria.class, name="CompletionTime"),
+    @Type(value = NodeCriteria.class, name="Node") })
+@ApiModel(subTypes = { BusinessTransactionCriteria.class, CompletionTimeCriteria.class,
+        NodeCriteria.class}, discriminator = "type")
 public abstract class BaseCriteria {
 
     private final Logger log = Logger.getLogger(BaseCriteria.class.getName());
@@ -36,6 +48,7 @@ public abstract class BaseCriteria {
     private long endTime = 0L;
     private String businessTransaction;
     private Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+    private String hostName;
 
     /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
@@ -128,6 +141,22 @@ public abstract class BaseCriteria {
     }
 
     /**
+     * @return the hostName
+     */
+    public String getHostName() {
+        return hostName;
+    }
+
+    /**
+     * @param hostName the hostName to set
+     * @return The criteria
+     */
+    public BaseCriteria setHostName(String hostName) {
+        this.hostName = hostName;
+        return this;
+    }
+
+    /**
      * @return the timeout
      */
     public long getTimeout() {
@@ -193,6 +222,10 @@ public abstract class BaseCriteria {
             ret.put("properties", buf.toString());
         }
 
+        if (hostName != null) {
+            ret.put("hostName", hostName);
+        }
+
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Criteria parameters [" + ret + "]");
         }
@@ -205,8 +238,10 @@ public abstract class BaseCriteria {
      */
     @Override
     public String toString() {
-        return "BaseCriteria [startTime=" + startTime + ", endTime=" + endTime
-                + ", businessTransaction=" + businessTransaction + ", properties=" + properties + "]";
+        return "BaseCriteria [log=" + log + ", startTime=" + startTime + ", endTime=" + endTime
+                + ", businessTransaction=" + businessTransaction + ", properties=" + properties + ", hostName="
+                + hostName + ", timeout=" + timeout + ", maxResponseSize=" + maxResponseSize + ", toString()="
+                + super.toString() + "]";
     }
 
     /**

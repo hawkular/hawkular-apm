@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -117,6 +117,10 @@ public class NodeDetailsDeriver implements Processor<BusinessTransaction, NodeDe
 
             if (n.getFault() != null && n.getFault().trim().length() > 0) {
                 nd.setFault(n.getFault());
+            }
+
+            if (btxn.getHostName() != null && btxn.getHostName().trim().length() > 0) {
+                nd.setHostName(btxn.getHostName());
             }
 
             nd.setProperties(btxn.getProperties());
