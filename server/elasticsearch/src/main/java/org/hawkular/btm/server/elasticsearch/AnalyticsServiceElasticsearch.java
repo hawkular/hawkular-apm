@@ -877,8 +877,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         for (int i = 0; i < nodeDetails.size(); i++) {
             NodeDetails rt = nodeDetails.get(i);
+            String json=mapper.writeValueAsString(rt);
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Storing node details: %s", json);
+            }
+
             bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    NODE_DETAILS_TYPE, rt.getId()).setSource(mapper.writeValueAsString(rt)));
+                    NODE_DETAILS_TYPE, rt.getId()).setSource(json));
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
@@ -910,8 +916,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         for (int i = 0; i < completionTimes.size(); i++) {
             CompletionTime ct = completionTimes.get(i);
+            String json=mapper.writeValueAsString(ct);
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Storing completion time: %s", json);
+            }
+
             bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    COMPLETION_TIME_TYPE, ct.getId()).setSource(mapper.writeValueAsString(ct)));
+                    COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();

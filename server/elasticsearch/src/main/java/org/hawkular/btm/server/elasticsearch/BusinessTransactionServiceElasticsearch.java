@@ -174,8 +174,14 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
 
         for (int i = 0; i < businessTransactions.size(); i++) {
             BusinessTransaction btxn = businessTransactions.get(i);
+            String json=mapper.writeValueAsString(btxn);
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Storing business transaction: %s", json);
+            }
+
             bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    BUSINESS_TRANSACTION_TYPE, btxn.getId()).setSource(mapper.writeValueAsString(btxn)));
+                    BUSINESS_TRANSACTION_TYPE, btxn.getId()).setSource(json));
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
@@ -183,7 +189,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
         if (bulkItemResponses.hasFailures()) {
 
             // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store completion times: " + bulkItemResponses.buildFailureMessage());
+            msgLog.error("Failed to store business transactions: " + bulkItemResponses.buildFailureMessage());
 
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Failed to store business transactions to elasticsearch: "
