@@ -266,6 +266,103 @@
           "endpointTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
           "uriExpression": "$3.getEndpointUri()"
         }]
+      },{
+        "ruleName": "Apache Camel Multicast Producer Create ID",
+        "notes": [
+          "This rule caters for internal spawning of exchanges to handle tasks in parallel.",
+          "The parent exchange has an id set, which is then copied into the child exchanges",
+          "to be picked up by the code that performs the child exchange in a different thread."
+        ],
+        "className": "org.apache.camel.processor.MulticastProcessor",
+        "methodName": "process",
+        "parameterTypes": [
+           "*"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "condition": "isActive() && $0.isParallelProcessing()",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "simpleClassName($0)",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.setProperty(\"BTMMulticastId\",id)"
+        },{
+          "type": "SetDetail",
+          "name": "btm_publish",
+          "valueExpression": "\"true\""
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast Producer Clear ID",
+        "notes": [
+          "When the spawning has finished, cleanup the id so does not cause problems",
+          "in other multicast situations. Also close the producer scope."
+        ],
+        "className": "org.apache.camel.processor.MulticastProcessor",
+        "methodName": "process",
+        "parameterTypes": [
+           "*"
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && $0.isParallelProcessing()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$1.removeProperty(\"BTMMulticastId\")"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "simpleClassName($0)"
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast",
+        "notes": [
+          "If the exchange has a multicast id, then need to track the exchange as a",
+          "spawned sub-exchange, using the id as correlation to the spawning exchange.",
+          "This association is tracked by creating a consumer."
+        ],
+        "className": "org.apache.camel.processor.MulticastProcessor",
+        "methodName": "doProcessParallel",
+        "parameterTypes": [
+           "org.apache.camel.processor.ProcessorExchangePair"
+        ],
+        "location": "ENTRY",
+        "condition": "$1.getExchange().getProperty(\"BTMMulticastId\") != null",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$1.getExchange().setProperty(\"BTMMulticastExchange\",$1.getExchange().getExchangeId())"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "simpleClassName($0)",
+          "idExpression": "$1.getExchange().getProperty(\"BTMMulticastId\")"
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast Consumer End",
+        "notes": [
+          "As multicast sub-exchange is performed asynchronously, we need to use the 'notifyExchangeDone'",
+          "event as a trigger for signifying the end of the exchange - but only if the exchange was",
+          "created to handle a multicast sub-exchange - which is determined by the presence of the ",
+          "'BTMMulticastExchange' property having the correct id value (i.e. itself - just to validate ",
+          "has not been copied accidently)."
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getProperty(\"BTMMulticastExchange\") != null && $2.getProperty(\"BTMMulticastExchange\").equals($2.getExchangeId())",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Out"
+        }]
       }]
     }
   }
