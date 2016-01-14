@@ -91,7 +91,7 @@
           <label for="lowerBoundField" style="width: 8%" >Lower Bound(%):</label>
           <input type="number" ng-model="config.lowerBoundDisplay"
                 name="lowerBoundField" ng-change="updatedBounds()"
-                min="0" max="100">
+                min="0" max="100"/>
         </div>
       </form>
     </span>
@@ -99,19 +99,19 @@
     <div id="completiontimelinechart"></div>
 
     <div class="col-md-6">
-        <h2><span style="color:grey">Faults</span></h2>
+      <h2><span style="color:grey">Faults</span></h2>
 
-        <div id="completiontimefaultschart"></div>
+      <div id="completiontimefaultschart"></div>
     </div>
 
     <div class="col-md-6">
-        <h2><span style="color:grey">Property</span>
-          <select name="propertyField" ng-model="config.selectedProperty" ng-change="propertyClicked()">
-            <option ng-repeat="property in properties">{{property.name}}</option>
-          </select>
-        </h2>
+      <h2><span style="color:grey">Property</span>
+        <select name="propertyField" ng-model="config.selectedProperty" ng-change="propertyClicked()">
+          <option ng-repeat="property in properties">{{property.name}}</option>
+        </select>
+      </h2>
 
-        <div id="completiontimepropertychart"></div>
+      <div id="completiontimepropertychart"></div>
     </div>
 
   </div>
