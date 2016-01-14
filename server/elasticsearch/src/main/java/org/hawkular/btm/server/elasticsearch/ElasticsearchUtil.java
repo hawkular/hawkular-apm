@@ -132,7 +132,7 @@ public class ElasticsearchUtil {
             }
         }
 
-        if (criteria.getHostName() != null) {
+        if (criteria.getHostName() != null && criteria.getHostName().trim().length() > 0) {
             query = query.must(QueryBuilders.matchQuery("hostName", criteria.getHostName()));
         }
 

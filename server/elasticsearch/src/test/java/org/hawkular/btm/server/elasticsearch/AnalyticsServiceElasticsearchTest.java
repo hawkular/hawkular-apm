@@ -1204,6 +1204,172 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetNodeSummaryStatisticsWithBlankHostNameFilter() {
+        List<NodeDetails> nds = new ArrayList<NodeDetails>();
+
+        NodeDetails ct1_0 = new NodeDetails();
+        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setTimestamp(1500);
+        ct1_0.setActual(100);
+        ct1_0.setElapsed(200);
+        ct1_0.setType(NodeType.Consumer);
+        ct1_0.setUri("hello");
+        ct1_0.setHostName("hostA");
+        nds.add(ct1_0);
+
+        NodeDetails ct1_1 = new NodeDetails();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setActual(100);
+        ct1_1.setElapsed(200);
+        ct1_1.setType(NodeType.Component);
+        ct1_1.setComponentType("Database");
+        ct1_1.setUri("jdbc");
+        ct1_1.setHostName("hostA");
+        nds.add(ct1_1);
+
+        NodeDetails ct1_2 = new NodeDetails();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setActual(300);
+        ct1_2.setElapsed(600);
+        ct1_2.setType(NodeType.Component);
+        ct1_2.setComponentType("Database");
+        ct1_2.setUri("jdbc");
+        ct1_2.setHostName("hostB");
+        nds.add(ct1_2);
+
+        NodeDetails ct1_3 = new NodeDetails();
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1700);
+        ct1_3.setActual(150);
+        ct1_3.setElapsed(300);
+        ct1_3.setType(NodeType.Component);
+        ct1_3.setComponentType("EJB");
+        ct1_3.setUri("BookingService");
+        ct1_3.setOperation("createBooking");
+        ct1_3.setHostName("hostB");
+        nds.add(ct1_3);
+
+        try {
+            analytics.storeNodeDetails(null, nds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        NodeCriteria criteria = new NodeCriteria();
+        criteria.setStartTime(1000).setEndTime(10000).setHostName("");
+
+        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(3, stats.size());
+
+        assertTrue(stats.get(0).getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(stats.get(0).getUri().equalsIgnoreCase("jdbc"));
+        assertNull(stats.get(0).getOperation());
+        assertEquals(2, stats.get(0).getCount());
+        assertTrue(stats.get(0).getActual() == 200.0);
+        assertTrue(stats.get(0).getElapsed() == 400.0);
+        assertTrue(stats.get(1).getComponentType().equalsIgnoreCase("EJB"));
+        assertTrue(stats.get(1).getUri().equalsIgnoreCase("BookingService"));
+        assertTrue(stats.get(1).getOperation().equalsIgnoreCase("createBooking"));
+        assertEquals(1, stats.get(1).getCount());
+        assertTrue(stats.get(1).getActual() == 150.0);
+        assertTrue(stats.get(1).getElapsed() == 300.0);
+        assertTrue(stats.get(2).getComponentType().equalsIgnoreCase("Consumer"));
+        assertTrue(stats.get(2).getUri().equalsIgnoreCase("hello"));
+        assertNull(stats.get(2).getOperation());
+        assertEquals(1, stats.get(2).getCount());
+        assertTrue(stats.get(2).getActual() == 100.0);
+        assertTrue(stats.get(2).getElapsed() == 200.0);
+    }
+
+    @Test
+    public void testGetNodeSummaryStatisticsWithHostNameFilter() {
+        List<NodeDetails> nds = new ArrayList<NodeDetails>();
+
+        NodeDetails ct1_0 = new NodeDetails();
+        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setTimestamp(1500);
+        ct1_0.setActual(100);
+        ct1_0.setElapsed(200);
+        ct1_0.setType(NodeType.Consumer);
+        ct1_0.setUri("hello");
+        ct1_0.setHostName("hostA");
+        nds.add(ct1_0);
+
+        NodeDetails ct1_1 = new NodeDetails();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setActual(100);
+        ct1_1.setElapsed(200);
+        ct1_1.setType(NodeType.Component);
+        ct1_1.setComponentType("Database");
+        ct1_1.setUri("jdbc");
+        ct1_1.setHostName("hostA");
+        nds.add(ct1_1);
+
+        NodeDetails ct1_2 = new NodeDetails();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setActual(300);
+        ct1_2.setElapsed(600);
+        ct1_2.setType(NodeType.Component);
+        ct1_2.setComponentType("Database");
+        ct1_2.setUri("jdbc");
+        ct1_2.setHostName("hostB");
+        nds.add(ct1_2);
+
+        NodeDetails ct1_3 = new NodeDetails();
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1700);
+        ct1_3.setActual(150);
+        ct1_3.setElapsed(300);
+        ct1_3.setType(NodeType.Component);
+        ct1_3.setComponentType("EJB");
+        ct1_3.setUri("BookingService");
+        ct1_3.setOperation("createBooking");
+        ct1_3.setHostName("hostB");
+        nds.add(ct1_3);
+
+        try {
+            analytics.storeNodeDetails(null, nds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        NodeCriteria criteria = new NodeCriteria();
+        criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
+
+        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        assertTrue(stats.get(0).getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(stats.get(0).getUri().equalsIgnoreCase("jdbc"));
+        assertNull(stats.get(0).getOperation());
+        assertEquals(1, stats.get(0).getCount());
+        assertTrue(stats.get(0).getActual() == 100.0);
+        assertTrue(stats.get(0).getElapsed() == 200.0);
+        assertTrue(stats.get(1).getComponentType().equalsIgnoreCase("Consumer"));
+        assertTrue(stats.get(1).getUri().equalsIgnoreCase("hello"));
+        assertNull(stats.get(1).getOperation());
+        assertEquals(1, stats.get(1).getCount());
+        assertTrue(stats.get(1).getActual() == 100.0);
+        assertTrue(stats.get(1).getElapsed() == 200.0);
+    }
+
+    @Test
     public void testHostNames() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
