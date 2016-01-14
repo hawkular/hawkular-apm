@@ -19,15 +19,15 @@
 
     <section id="active" class="hk-tab-content">
 
-      <br>
+      <br/>
 
-      <form class="form-horizontal hk-add-url" name="addBTxnForm" role="form" novalidate >
+      <form class="form-horizontal hk-add-url" name="addBTxnForm" role="form" novalidate="" >
         <div class="form-group input">
           <div class="col-lg-6 col-sm-8 col-xs-12 hk-align-center">
             <div class="input-group input-group-lg">
               <input type="text" class="form-control" name="newBTxnNameField"
                    ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Business transaction name">
+                   placeholder="Business transaction name"/>
               <span class="input-group-btn">
                 <input class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" ng-click="addBusinessTxn()" value="Manage" />
                 <input class="btn btn-danger" type="button" ng-disabled="!newBTxnName" ng-click="ignoreBusinessTxn()" value="Ignore" />
@@ -37,7 +37,7 @@
               </span>
 
               <select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
-                <option value="">Select existing ....</i></option>
+                <option value="">Select existing ....</option>
                 <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
               </select>
               <span class="input-group-btn">
@@ -50,11 +50,11 @@
 
       <div class="col-md-9 hk-align-center">
         <ul class="list-group" >
-          <br>
+          <br/>
           <div class="row" >
-            Search: <input ng-model="query">
+            Search: <input ng-model="query"/>
           </div>
-          <br>
+          <br/>
 
           <div class="panel panel-default hk-url-heading">
             <div ng-repeat="uriinfo in unbounduris | filter:query" >
@@ -63,13 +63,13 @@
                   value="{{uriinfo.uri}}"
                   ng-checked="isSelected(uriinfo)"
                   ng-click="selectionChanged(uriinfo)"
-                  ng-disabled="!newBTxnName && !existingBTxnName">
-                  <span ng-hide="!newBTxnName && !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
-                  <span ng-show="!newBTxnName && !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>
+                  ng-disabled="!newBTxnName &amp;&amp; !existingBTxnName"/>
+                <span ng-hide="!newBTxnName &amp;&amp; !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
+                <span ng-show="!newBTxnName &amp;&amp; !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>
               </label>
             </div>
           </div>
-       </ul>
+        </ul>
       </div>
     </section>
   </div>

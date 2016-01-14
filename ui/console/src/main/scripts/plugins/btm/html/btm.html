@@ -20,9 +20,9 @@
 
       <div class="col-md-12">
         <ul class="list-group" >
-          <br>
+          <br/>
           <div class="row" >
-            Search: <input ng-model="query">
+            Search: <input ng-model="query"/>
 
             <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
             <label for="chartType" style="width: 3%" >Chart:</label>
@@ -53,21 +53,21 @@
               <div class="row">
                 <div class="col-sm-3 hk-summary-item">
                   <a href="info/{{btxn.summary.name}}">
-                    <span class="hk-data" ng-show="btxn.count !== undefined">{{btxn.count}}</i></span>
+                    <span class="hk-data" ng-show="btxn.count !== undefined">{{btxn.count}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Transactions (per hour)</span>
                   </a>
                 </div>
                 <div class="col-sm-3 hk-summary-item">
                   <a href="info/{{btxn.summary.name}}">
-                    <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}}</i></span>
+                    <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Completion (secs 95%)</span>
                   </a>
                 </div>
                 <div class="col-sm-3 hk-summary-item">
                   <a href="info/{{btxn.summary.name}}">
-                    <span class="hk-data" ng-show="btxn.faultcount !== undefined">{{btxn.faultcount}}</i></span>
+                    <span class="hk-data" ng-show="btxn.faultcount !== undefined">{{btxn.faultcount}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.faultcount !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Faults</span>
                   </a>
@@ -84,7 +84,7 @@
             </div>
 
           </div>
-       </ul>
+        </ul>
       </div>
     </section>
   </div>

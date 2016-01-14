@@ -73,24 +73,24 @@
       <h2>Filters</h2>
 
       <div class="form-group">
-        <input type="text" ng-model="search" class="form-control" placeholder="Search">
+        <input type="text" ng-model="search" class="form-control" placeholder="Search"/>
 
-        <br>
+        <br/>
 
         <label for="businessTransactionField" >Business Transaction:</label>
-        <br>
+        <br/>
         <select name="businessTransactionField" ng-model="criteria.businessTransaction" ng-change="selectAction()">
-            <option value="">All</option>
-            <option ng-repeat="btxn in businessTransactions" value="{{btxn}}">{{btxn}}</option>
+          <option value="">All</option>
+          <option ng-repeat="btxn in businessTransactions" value="{{btxn}}">{{btxn}}</option>
         </select>
 
-        <br>
-        <br>
+        <br/>
+        <br/>
         <label for="hostNameField" >Host Name:</label>
         <input type="text" class="form-control" name="hostNameField" typeahead-on-select="selectAction()"
                    ng-model="criteria.hostName" ng-model-options="{ updateOn: 'default blur'}"
                    placeholder="Enter a host name"
-                   uib-typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" required>
+                   uib-typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
       </div>
 
     </div>
