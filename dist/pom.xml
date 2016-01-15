@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,15 +32,10 @@
   <description>Hawkular BTM distribution.</description>
 
   <properties>
-    <dist.zip.root.dir>hawkular-accounts-distribution-${version.org.hawkular.accounts}</dist.zip.root.dir>
+    <dist.zip.root.dir>${project.artifactId}-${project.version}</dist.zip.root.dir>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-distribution</artifactId>
-      <type>zip</type>
-    </dependency>
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
@@ -81,23 +76,24 @@
           </excludes>
         </configuration>
       </plugin>
-      <!-- unpack the hawkular distribution to get its configuration that we need to customize -->
+
       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.wildfly.build</groupId>
+        <artifactId>wildfly-server-provisioning-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-hawkular</id>
-            <phase>prepare-package</phase>
+            <id>server-provisioning</id>
             <goals>
-              <goal>unpack-dependencies</goal>
+              <goal>build</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
-              <outputDirectory>${basedir}/target/hawkular</outputDirectory>
-              <includeArtifactIds>hawkular-accounts-distribution</includeArtifactIds>
+              <config-file>server-provisioning.xml</config-file>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
@@ -111,12 +107,12 @@
             <configuration>
               <transformationSets>
                 <transformationSet>
-                  <dir>${basedir}/target/hawkular/${dist.zip.root.dir}/standalone/configuration</dir>
+                  <dir>${basedir}/target/${dist.zip.root.dir}/standalone/configuration</dir>
                   <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
                   <includes>
                     <include>standalone.xml</include>
                   </includes>
-                  <outputDir>${basedir}/target/hawkular/${dist.zip.root.dir}/standalone/configuration</outputDir>
+                  <outputDir>${basedir}/target/${dist.zip.root.dir}/standalone/configuration</outputDir>
                 </transformationSet>
               </transformationSets>
             </configuration>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,15 +54,15 @@
       </secure-deployment>
       <secure-deployment name="hawkular-btm-ui.war">
         <realm>hawkular</realm>
-        <resource>hawkular-ui</resource>
+        <resource>hawkular-accounts-backend</resource>
         <enable-cors>true</enable-cors>
-        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts-sample-ui.war']/*[local-name()='credential']/text()" /></credential>
+        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
       </secure-deployment>
       <secure-deployment name="hawkular-btm-ui-kibana.war">
         <realm>hawkular</realm>
-        <resource>hawkular-ui</resource>
+        <resource>hawkular-accounts-backend</resource>
         <enable-cors>true</enable-cors>
-        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts-sample-ui.war']/*[local-name()='credential']/text()" /></credential>
+        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
       </secure-deployment>
     </xsl:variable>
 

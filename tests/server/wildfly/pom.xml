@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -236,7 +236,7 @@
                 <javaOpt>-Dsun.rmi.dgc.server.gcInterval=3600000</javaOpt>
                 <javaOpt>-Xdebug</javaOpt>
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
-                <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm.json</javaOpt>
+                <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm-for-dev.json</javaOpt>
               </javaOpts>
               <startup-timeout>180</startup-timeout>
             </configuration>
