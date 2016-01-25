@@ -56,11 +56,6 @@
       <artifactId>hawkular-btm-ui</artifactId>
       <type>war</type>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-ui-kibana</artifactId>
-      <type>war</type>
-    </dependency>
 
   </dependencies>
 
