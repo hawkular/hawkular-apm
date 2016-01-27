@@ -57,6 +57,7 @@ import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.URIInfo;
@@ -694,7 +695,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
             for (Terms.Bucket termBucket : term.getBuckets()) {
                 Avg avg=termBucket.getAggregations().get("avg");
-                s.getNodeDurations().put(termBucket.getKey(), avg.getValue());
+                s.getComponentTypes().put(termBucket.getKey(),
+                        new NodeComponentTypeStatistics(avg.getValue(), termBucket.getDocCount()));
             }
 
             stats.add(s);
