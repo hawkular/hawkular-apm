@@ -73,5 +73,10 @@ module BTM {
     log.debug("loaded");
   }]);
 
+  hawtioPluginLoader.registerPreBootstrapTask((next) => {
+    window['KeycloakConfig'] = '/hawkular-ui/btm/keycloak.json';
+    next();
+  }, true);
+
   hawtioPluginLoader.addModule(BTM.pluginName);
 }

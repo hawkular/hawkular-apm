@@ -1,0 +1,7 @@
+{
+  "realm": "hawkular",
+  "auth-server-url": "${keycloak.server.url}",
+  "ssl-required": "none",
+  "resource": "hawkular-ui",
+  "public-client": true
+}
