@@ -61,7 +61,7 @@ module APM {
           
           $scope.nodeComponents.push($scope.timestamps);
           
-          var keys=Object.keys($scope.statistics[i].nodeDurations);
+          var keys=Object.keys($scope.statistics[i].componentTypes);
 
           for (var j=0; j < keys.length; j++) {
             var list=$scope.lists[keys[j]];
@@ -81,7 +81,7 @@ module APM {
               list.push(0);
             }
             
-            list.push($scope.statistics[i].nodeDurations[keys[j]]);
+            list.push($scope.statistics[i].componentTypes[keys[j]].duration);
           }
         }
 

@@ -32,7 +32,8 @@ public class NodeTimeseriesStatistics {
     private long timestamp = 0;
 
     @JsonInclude
-    private Map<String,Double> nodeDurations=new HashMap<String,Double>();
+    private Map<String, NodeComponentTypeStatistics> componentTypes =
+            new HashMap<String, NodeComponentTypeStatistics>();
 
     /**
      * @return the timestamp
@@ -49,17 +50,17 @@ public class NodeTimeseriesStatistics {
     }
 
     /**
-     * @return the nodeDurations
+     * @return the componentTypes
      */
-    public Map<String, Double> getNodeDurations() {
-        return nodeDurations;
+    public Map<String, NodeComponentTypeStatistics> getComponentTypes() {
+        return componentTypes;
     }
 
     /**
-     * @param nodeDurations the nodeDurations to set
+     * @param componentTypes the componentTypes to set
      */
-    public void setNodeDurations(Map<String, Double> nodeDurations) {
-        this.nodeDurations = nodeDurations;
+    public void setComponentTypes(Map<String, NodeComponentTypeStatistics> componentTypes) {
+        this.componentTypes = componentTypes;
     }
 
     /* (non-Javadoc)
@@ -67,7 +68,64 @@ public class NodeTimeseriesStatistics {
      */
     @Override
     public String toString() {
-        return "NodeTimeseriesStatistics [timestamp=" + timestamp + ", nodeDurations=" + nodeDurations + "]";
+        return "NodeTimeseriesStatistics [timestamp=" + timestamp + ", componentTypes=" + componentTypes + "]";
     }
 
+    /**
+     * This class represents the stats associated with a node's component type.
+     *
+     * @author gbrown
+     */
+    public static class NodeComponentTypeStatistics {
+
+        private double duration;
+
+        private long count;
+
+        /**
+         * The default constructor.
+         */
+        public NodeComponentTypeStatistics() {
+        }
+
+        /**
+         * This constructor initialises the stats.
+         *
+         * @param duration The duration
+         * @param count The count
+         */
+        public NodeComponentTypeStatistics(double duration, long count) {
+            this.duration = duration;
+            this.count = count;
+        }
+
+        /**
+         * @return the duration
+         */
+        public double getDuration() {
+            return duration;
+        }
+
+        /**
+         * @param duration the duration to set
+         */
+        public void setDuration(double duration) {
+            this.duration = duration;
+        }
+
+        /**
+         * @return the count
+         */
+        public long getCount() {
+            return count;
+        }
+
+        /**
+         * @param count the count to set
+         */
+        public void setCount(long count) {
+            this.count = count;
+        }
+
+    }
 }

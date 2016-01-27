@@ -1109,16 +1109,19 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(1000, stats.get(0).getTimestamp());
         assertEquals(2000, stats.get(1).getTimestamp());
 
-        assertEquals(2, stats.get(0).getNodeDurations().size());
-        assertEquals(1, stats.get(1).getNodeDurations().size());
+        assertEquals(2, stats.get(0).getComponentTypes().size());
+        assertEquals(1, stats.get(1).getComponentTypes().size());
 
-        assertTrue(stats.get(0).getNodeDurations().containsKey("database"));
-        assertTrue(stats.get(0).getNodeDurations().containsKey("ejb"));
-        assertTrue(stats.get(1).getNodeDurations().containsKey("database"));
+        assertTrue(stats.get(0).getComponentTypes().containsKey("database"));
+        assertTrue(stats.get(0).getComponentTypes().containsKey("ejb"));
+        assertTrue(stats.get(1).getComponentTypes().containsKey("database"));
 
-        assertTrue(stats.get(0).getNodeDurations().get("database").doubleValue() == 200);
-        assertTrue(stats.get(0).getNodeDurations().get("ejb").doubleValue() == 150);
-        assertTrue(stats.get(1).getNodeDurations().get("database").doubleValue() == 500);
+        assertTrue(stats.get(0).getComponentTypes().get("database").getDuration() == 200);
+        assertTrue(stats.get(0).getComponentTypes().get("database").getCount() == 2);
+        assertTrue(stats.get(0).getComponentTypes().get("ejb").getDuration() == 150);
+        assertTrue(stats.get(0).getComponentTypes().get("ejb").getCount() == 1);
+        assertTrue(stats.get(1).getComponentTypes().get("database").getDuration() == 500);
+        assertTrue(stats.get(1).getComponentTypes().get("database").getCount() == 1);
     }
 
     @Test
