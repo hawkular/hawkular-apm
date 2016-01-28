@@ -34,6 +34,8 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -51,16 +53,26 @@ public class BusinessTransactionServiceRESTTest {
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-    };
+            };
+
+    private static BusinessTransactionServiceRESTClient service;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @Test
-    public void testStoreAndRetrieveById() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+    @BeforeClass
+    public static void initClass() {
+        service = new BusinessTransactionServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
+    }
 
+    @Before
+    public void initTest() {
+        service.clear(null);
+    }
+
+    @Test
+    public void testStoreAndRetrieveById() {
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
 
@@ -91,10 +103,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryAll() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -127,10 +135,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryStartTimeInclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setStartTime(1000);
         btxn1.setId("1");
@@ -169,10 +173,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryStartTimeExclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setStartTime(1000);
         btxn1.setId("1");
@@ -209,10 +209,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryEndTimeInclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setStartTime(1000);
         btxn1.setId("1");
@@ -251,10 +247,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryEndTimeExclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setStartTime(1200);
         btxn1.setId("1");
@@ -291,10 +283,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryPropertiesInclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -331,10 +319,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryPropertiesNotFound() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -369,10 +353,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryPropertiesExclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -407,10 +387,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryCorrelationsInclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -454,10 +430,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryCorrelationsExclude() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -499,10 +471,6 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testQueryPOST() {
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour

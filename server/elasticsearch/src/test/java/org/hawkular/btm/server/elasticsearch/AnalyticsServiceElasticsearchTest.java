@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -302,6 +303,12 @@ public class AnalyticsServiceElasticsearchTest {
             public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
                 return null;
             }
+
+            @Override
+            public void clear(String tenantId) {
+                // TODO Auto-generated method stub
+
+            }
         });
 
         java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
@@ -371,6 +378,12 @@ public class AnalyticsServiceElasticsearchTest {
             @Override
             public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
                 return null;
+            }
+
+            @Override
+            public void clear(String tenantId) {
+                // TODO Auto-generated method stub
+
             }
         });
 
@@ -537,6 +550,44 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(1, analytics.getCompletionCount(null, criteria));
+    }
+
+    @Test
+    public void testGetCompletionCountForNotFault() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        ct2.setFault("TestFault1");
+        cts.add(ct2);
+
+        CompletionTime ct3 = new CompletionTime();
+        ct3.setBusinessTransaction("testapp");
+        ct3.setTimestamp(2000);
+        ct3.setFault("TestFault2");
+        cts.add(ct3);
+
+        try {
+            analytics.storeCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        criteria.getFaults().add(new FaultCriteria("TestFault1", true));
+        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+
+        assertEquals(2, analytics.getCompletionCount(null, criteria));
     }
 
     @Test
@@ -1181,29 +1232,42 @@ public class AnalyticsServiceElasticsearchTest {
         NodeCriteria criteria = new NodeCriteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
-        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+        Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
         assertEquals(3, stats.size());
 
-        assertTrue(stats.get(0).getComponentType().equalsIgnoreCase("Database"));
-        assertTrue(stats.get(0).getUri().equalsIgnoreCase("jdbc"));
-        assertNull(stats.get(0).getOperation());
-        assertEquals(2, stats.get(0).getCount());
-        assertTrue(stats.get(0).getActual() == 200.0);
-        assertTrue(stats.get(0).getElapsed() == 400.0);
-        assertTrue(stats.get(1).getComponentType().equalsIgnoreCase("EJB"));
-        assertTrue(stats.get(1).getUri().equalsIgnoreCase("BookingService"));
-        assertTrue(stats.get(1).getOperation().equalsIgnoreCase("createBooking"));
-        assertEquals(1, stats.get(1).getCount());
-        assertTrue(stats.get(1).getActual() == 150.0);
-        assertTrue(stats.get(1).getElapsed() == 300.0);
-        assertTrue(stats.get(2).getComponentType().equalsIgnoreCase("Consumer"));
-        assertTrue(stats.get(2).getUri().equalsIgnoreCase("hello"));
-        assertNull(stats.get(2).getOperation());
-        assertEquals(1, stats.get(2).getCount());
-        assertTrue(stats.get(2).getActual() == 100.0);
-        assertTrue(stats.get(2).getElapsed() == 200.0);
+        NodeSummaryStatistics dbstat = null;
+        NodeSummaryStatistics ejbstat = null;
+        NodeSummaryStatistics consumerstat = null;
+
+        for (NodeSummaryStatistics nss : stats) {
+            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+                dbstat = nss;
+            } else if (nss.getComponentType().equalsIgnoreCase("EJB")) {
+                ejbstat = nss;
+            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
+                consumerstat = nss;
+            }
+        }
+
+        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
+        assertNull(dbstat.getOperation());
+        assertEquals(2, dbstat.getCount());
+        assertTrue(dbstat.getActual() == 200.0);
+        assertTrue(dbstat.getElapsed() == 400.0);
+
+        assertTrue(ejbstat.getUri().equalsIgnoreCase("BookingService"));
+        assertTrue(ejbstat.getOperation().equalsIgnoreCase("createBooking"));
+        assertEquals(1, ejbstat.getCount());
+        assertTrue(ejbstat.getActual() == 150.0);
+        assertTrue(ejbstat.getElapsed() == 300.0);
+
+        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
+        assertNull(consumerstat.getOperation());
+        assertEquals(1, consumerstat.getCount());
+        assertTrue(consumerstat.getActual() == 100.0);
+        assertTrue(consumerstat.getElapsed() == 200.0);
     }
 
     @Test
@@ -1267,29 +1331,43 @@ public class AnalyticsServiceElasticsearchTest {
         NodeCriteria criteria = new NodeCriteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("");
 
-        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+        Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
         assertEquals(3, stats.size());
 
-        assertTrue(stats.get(0).getComponentType().equalsIgnoreCase("Database"));
-        assertTrue(stats.get(0).getUri().equalsIgnoreCase("jdbc"));
-        assertNull(stats.get(0).getOperation());
-        assertEquals(2, stats.get(0).getCount());
-        assertTrue(stats.get(0).getActual() == 200.0);
-        assertTrue(stats.get(0).getElapsed() == 400.0);
-        assertTrue(stats.get(1).getComponentType().equalsIgnoreCase("EJB"));
-        assertTrue(stats.get(1).getUri().equalsIgnoreCase("BookingService"));
-        assertTrue(stats.get(1).getOperation().equalsIgnoreCase("createBooking"));
-        assertEquals(1, stats.get(1).getCount());
-        assertTrue(stats.get(1).getActual() == 150.0);
-        assertTrue(stats.get(1).getElapsed() == 300.0);
-        assertTrue(stats.get(2).getComponentType().equalsIgnoreCase("Consumer"));
-        assertTrue(stats.get(2).getUri().equalsIgnoreCase("hello"));
-        assertNull(stats.get(2).getOperation());
-        assertEquals(1, stats.get(2).getCount());
-        assertTrue(stats.get(2).getActual() == 100.0);
-        assertTrue(stats.get(2).getElapsed() == 200.0);
+        NodeSummaryStatistics dbstat = null;
+        NodeSummaryStatistics ejbstat = null;
+        NodeSummaryStatistics consumerstat = null;
+
+        for (NodeSummaryStatistics nss : stats) {
+            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+                dbstat = nss;
+            } else if (nss.getComponentType().equalsIgnoreCase("EJB")) {
+                ejbstat = nss;
+            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
+                consumerstat = nss;
+            }
+        }
+
+        assertTrue(dbstat.getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
+        assertNull(dbstat.getOperation());
+        assertEquals(2, dbstat.getCount());
+        assertTrue(dbstat.getActual() == 200.0);
+        assertTrue(dbstat.getElapsed() == 400.0);
+        assertTrue(ejbstat.getComponentType().equalsIgnoreCase("EJB"));
+        assertTrue(ejbstat.getUri().equalsIgnoreCase("BookingService"));
+        assertTrue(ejbstat.getOperation().equalsIgnoreCase("createBooking"));
+        assertEquals(1, ejbstat.getCount());
+        assertTrue(ejbstat.getActual() == 150.0);
+        assertTrue(ejbstat.getElapsed() == 300.0);
+        assertTrue(consumerstat.getComponentType().equalsIgnoreCase("Consumer"));
+        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
+        assertNull(consumerstat.getOperation());
+        assertEquals(1, consumerstat.getCount());
+        assertTrue(consumerstat.getActual() == 100.0);
+        assertTrue(consumerstat.getElapsed() == 200.0);
     }
 
     @Test
@@ -1353,23 +1431,34 @@ public class AnalyticsServiceElasticsearchTest {
         NodeCriteria criteria = new NodeCriteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
 
-        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+        Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        assertTrue(stats.get(0).getComponentType().equalsIgnoreCase("Database"));
-        assertTrue(stats.get(0).getUri().equalsIgnoreCase("jdbc"));
-        assertNull(stats.get(0).getOperation());
-        assertEquals(1, stats.get(0).getCount());
-        assertTrue(stats.get(0).getActual() == 100.0);
-        assertTrue(stats.get(0).getElapsed() == 200.0);
-        assertTrue(stats.get(1).getComponentType().equalsIgnoreCase("Consumer"));
-        assertTrue(stats.get(1).getUri().equalsIgnoreCase("hello"));
-        assertNull(stats.get(1).getOperation());
-        assertEquals(1, stats.get(1).getCount());
-        assertTrue(stats.get(1).getActual() == 100.0);
-        assertTrue(stats.get(1).getElapsed() == 200.0);
+        NodeSummaryStatistics dbstat = null;
+        NodeSummaryStatistics consumerstat = null;
+
+        for (NodeSummaryStatistics nss : stats) {
+            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+                dbstat = nss;
+            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
+                consumerstat = nss;
+            }
+        }
+
+        assertTrue(dbstat.getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
+        assertNull(dbstat.getOperation());
+        assertEquals(1, dbstat.getCount());
+        assertTrue(dbstat.getActual() == 100.0);
+        assertTrue(dbstat.getElapsed() == 200.0);
+        assertTrue(consumerstat.getComponentType().equalsIgnoreCase("Consumer"));
+        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
+        assertNull(consumerstat.getOperation());
+        assertEquals(1, consumerstat.getCount());
+        assertTrue(consumerstat.getActual() == 100.0);
+        assertTrue(consumerstat.getElapsed() == 200.0);
     }
 
     @Test

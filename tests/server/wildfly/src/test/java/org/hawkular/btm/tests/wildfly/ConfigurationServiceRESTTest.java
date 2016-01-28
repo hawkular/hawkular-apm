@@ -31,6 +31,8 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.config.service.rest.client.ConfigurationServiceRESTClient;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -51,12 +53,22 @@ public class ConfigurationServiceRESTTest {
     /**  */
     private static final String TEST_USERNAME = "jdoe";
 
-    @Test
-    public void testGetCollectorConfiguration() {
-        ConfigurationServiceRESTClient service = new ConfigurationServiceRESTClient();
+    private static ConfigurationServiceRESTClient service;
+
+    @BeforeClass
+    public static void initClass() {
+        service = new ConfigurationServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
+    }
 
+    @Before
+    public void initTest() {
+        service.clear(null);
+    }
+
+    @Test
+    public void testGetCollectorConfiguration() {
         try {
             CollectorConfiguration cc = service.getCollector(null, null, null);
 
@@ -71,10 +83,6 @@ public class ConfigurationServiceRESTTest {
 
     @Test
     public void testAddUpdateDeleteBusinessTxnConfig() {
-        ConfigurationServiceRESTClient service = new ConfigurationServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         // Check config not already defined
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
 
@@ -154,10 +162,6 @@ public class ConfigurationServiceRESTTest {
 
     @Test
     public void testGetCollectorConfigurationWithBusinessTxnConfigs() {
-        ConfigurationServiceRESTClient service = new ConfigurationServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         // Check config not already defined
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
@@ -220,10 +224,6 @@ public class ConfigurationServiceRESTTest {
 
     @Test
     public void testGetBusinessTxnConfigurations() {
-        ConfigurationServiceRESTClient service = new ConfigurationServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         // Check config not already defined
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));

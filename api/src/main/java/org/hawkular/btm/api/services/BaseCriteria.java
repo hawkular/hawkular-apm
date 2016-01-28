@@ -77,6 +77,24 @@ public abstract class BaseCriteria {
     }
 
     /**
+     * This method calculates the start time to use. If
+     * the configured value is 0, then it will default to
+     * an hour before the end time. If negative, then the
+     * value will be deducted from the end time.
+     *
+     * @return The calculated start time
+     */
+    public long calculateStartTime() {
+        if (startTime == 0) {
+            // Set to 1 hour before end time
+            return calculateEndTime() - 3600000;
+        } else if (startTime < 0) {
+            return calculateEndTime() + startTime;
+        }
+        return startTime;
+    }
+
+    /**
      * @return the endTime, or 0 meaning 'current time'
      */
     public long getEndTime() {
@@ -90,6 +108,22 @@ public abstract class BaseCriteria {
     public BaseCriteria setEndTime(long endTime) {
         this.endTime = endTime;
         return this;
+    }
+
+    /**
+     * This method returns an end time based on the configured
+     * value. If end time is less or equal to 0, then its value
+     * will be deducted from the current time.
+     *
+     * @return The calculated end time
+     */
+    public long calculateEndTime() {
+        if (endTime == 0) {
+            return System.currentTimeMillis();
+        } else if (endTime < 0) {
+            return System.currentTimeMillis() - endTime;
+        }
+        return endTime;
     }
 
     /**

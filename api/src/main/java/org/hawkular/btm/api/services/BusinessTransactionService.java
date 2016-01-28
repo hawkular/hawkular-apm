@@ -57,4 +57,11 @@ public interface BusinessTransactionService {
      */
     void storeBusinessTransactions(String tenantId, List<BusinessTransaction> businessTransactions) throws Exception;
 
+    /**
+     * This method clears the business transaction data for the supplied tenant.
+     *
+     * @param tenantId The tenant id
+     */
+    void clear(String tenantId);
+
 }

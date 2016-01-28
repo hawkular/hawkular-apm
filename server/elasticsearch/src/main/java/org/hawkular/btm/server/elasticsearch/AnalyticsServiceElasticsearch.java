@@ -17,13 +17,12 @@
 package org.hawkular.btm.server.elasticsearch;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -60,21 +59,13 @@ import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
-import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
 import org.hawkular.btm.api.services.BaseCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.NodeCriteria;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
@@ -88,6 +79,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
+    private static final Logger log = Logger.getLogger(AnalyticsServiceElasticsearch.class.getName());
+
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
@@ -100,9 +93,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
     @Inject
     private ElasticsearchClient client;
-
-    @Inject
-    private ConfigurationService configService;
 
     /**
      * This method gets the elasticsearch client.
@@ -122,220 +112,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         this.client = client;
     }
 
-    /**
-     * This method gets the configuration service.
-     *
-     * @return The configuration service
-     */
-    public ConfigurationService getConfigurationService() {
-        return this.configService;
-    }
-
-    /**
-     * This method sets the configuration service.
-     *
-     * @param cs The configuration service
-     */
-    public void setConfigurationService(ConfigurationService cs) {
-        this.configService = cs;
-    }
-
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String,
-     *                                  long, long, boolean)
+     * @see org.hawkular.btm.api.services.AbstractAnalyticsService#getFragments(java.lang.String,
+     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
      */
     @Override
-    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
-        List<URIInfo> ret = new ArrayList<URIInfo>();
-        Map<String, URIInfo> map = new HashMap<String, URIInfo>();
-
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.setStartTime(startTime)
-                .setEndTime(endTime);
-
-        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
+    protected List<BusinessTransaction> getFragments(String tenantId, BusinessTransactionCriteria criteria) {
+        return BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
-
-        // Process the fragments to identify which URIs are no used in any business transaction
-        for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
-
-            if (btxn.initialFragment() && !btxn.getNodes().isEmpty() && btxn.getName() == null) {
-
-                // Check if top level node is Consumer
-                if (btxn.getNodes().get(0) instanceof Consumer) {
-                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
-                    String uri = consumer.getUri();
-
-                    // Check whether URI already known, and that it did not result
-                    // in a fault (e.g. want to ignore spurious URIs that are not
-                    // associated with a valid transaction)
-                    if (!map.containsKey(uri) && consumer.getFault() == null) {
-                        URIInfo info = new URIInfo();
-                        info.setUri(uri);
-                        info.setEndpointType(consumer.getEndpointType());
-                        ret.add(info);
-                        map.put(uri, info);
-                    }
-                } else {
-                    obtainProducerURIs(btxn.getNodes(), ret, map);
-                }
-            }
-        }
-
-        // Check whether any of the top level URIs are already associated with
-        // a business txn config
-        if (configService != null) {
-            Map<String, BusinessTxnConfig> configs = configService.getBusinessTransactions(tenantId, 0);
-            for (BusinessTxnConfig config : configs.values()) {
-                if (config.getFilter() != null && config.getFilter().getInclusions() != null) {
-                    if (msgLog.isTraceEnabled()) {
-                        msgLog.trace("Remove unbound URIs associated with btxn config=" + config);
-                    }
-                    for (String filter : config.getFilter().getInclusions()) {
-
-                        if (filter != null && filter.trim().length() > 0) {
-                            Iterator<URIInfo> iter = ret.iterator();
-                            while (iter.hasNext()) {
-                                URIInfo info = iter.next();
-                                if (Pattern.matches(filter, info.getUri())) {
-                                    iter.remove();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Check if the URIs should be compressed to identify common patterns
-        if (compress) {
-            ret = compressURIInfo(ret);
-        }
-
-        Collections.sort(ret, new Comparator<URIInfo>() {
-            @Override
-            public int compare(URIInfo arg0, URIInfo arg1) {
-                return arg0.getUri().compareTo(arg1.getUri());
-            }
-        });
-
-        return ret;
-    }
-
-    /**
-     * This method collects the information regarding URIs for
-     * contained producers.
-     *
-     * @param nodes The nodes
-     * @param uris The list of URI info
-     * @param map The map of URis to info
-     */
-    protected void obtainProducerURIs(List<Node> nodes, List<URIInfo> uris, Map<String, URIInfo> map) {
-        for (int i = 0; i < nodes.size(); i++) {
-            Node node = nodes.get(i);
-
-            if (node instanceof Producer) {
-                String uri = node.getUri();
-
-                if (!map.containsKey(uri)) {
-                    URIInfo info = new URIInfo();
-                    info.setUri(uri);
-                    info.setEndpointType(((Producer) node).getEndpointType());
-                    uris.add(info);
-                    map.put(uri, info);
-                }
-            }
-
-            if (node instanceof ContainerNode) {
-                obtainProducerURIs(((ContainerNode) node).getNodes(), uris, map);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
-     */
-    @Override
-    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
-        List<String> ret = new ArrayList<String>();
-
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.setBusinessTransaction(businessTransaction)
-                .setStartTime(startTime)
-                .setEndTime(endTime);
-
-        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
-                tenantId, criteria);
-
-        for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
-            obtainURIs(btxn.getNodes(), ret);
-        }
-
-        return ret;
-    }
-
-    /**
-     * This method collects the information regarding URIs.
-     *
-     * @param nodes The nodes
-     * @param uris The list of URIs
-     */
-    protected void obtainURIs(List<Node> nodes, List<String> uris) {
-        for (int i = 0; i < nodes.size(); i++) {
-            Node node = nodes.get(i);
-
-            if (node.getUri() != null && !uris.contains(node.getUri())) {
-                uris.add(node.getUri());
-            }
-
-            if (node instanceof ContainerNode) {
-                obtainURIs(((ContainerNode) node).getNodes(), uris);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String,
-     *                      java.lang.String, long, long)
-     */
-    @Override
-    public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
-            long startTime, long endTime) {
-        List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
-        List<String> propertyNames = new ArrayList<String>();
-
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
-        criteria.setStartTime(startTime)
-                .setEndTime(endTime)
-                .setBusinessTransaction(businessTransaction);
-
-        List<BusinessTransaction> fragments = BusinessTransactionServiceElasticsearch.internalQuery(client,
-                tenantId, criteria);
-
-        // Process the fragments to identify which URIs are no used in any business transaction
-        for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
-
-            for (String property : btxn.getProperties().keySet()) {
-                if (!propertyNames.contains(property)) {
-                    propertyNames.add(property);
-                    PropertyInfo pi = new PropertyInfo();
-                    pi.setName(property);
-                    ret.add(pi);
-                }
-            }
-        }
-
-        Collections.sort(ret, new Comparator<PropertyInfo>() {
-            @Override
-            public int compare(PropertyInfo arg0, PropertyInfo arg1) {
-                return arg0.getName().compareTo(arg1.getName());
-            }
-        });
-
-        return ret;
     }
 
     /* (non-Javadoc)
@@ -713,6 +497,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         List<NodeTimeseriesStatistics> stats = new ArrayList<NodeTimeseriesStatistics>();
 
+        long queryTime = 0;
+        int numOfNodes = 0;
+        if (log.isLoggable(Level.FINEST)) {
+            queryTime = System.currentTimeMillis();
+        }
+
         try {
             RefreshRequestBuilder refreshRequestBuilder =
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
@@ -764,6 +554,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 }
 
                 stats.add(s);
+
+                numOfNodes += bucket.getDocCount();
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
             // Ignore, as means that no business transactions have
@@ -771,6 +563,11 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get node timeseries stats");
             }
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Performance: Results processed in " + (System.currentTimeMillis() - queryTime) + "ms and "
+                    + "number of nodes processed = " + numOfNodes);
         }
 
         return stats;
@@ -781,7 +578,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *                  org.hawkular.btm.api.services.NodeCriteria)
      */
     @Override
-    public List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria) {
+    public Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria) {
         String index = client.getIndex(tenantId);
 
         List<NodeSummaryStatistics> stats = new ArrayList<NodeSummaryStatistics>();
@@ -1086,12 +883,10 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         return ret;
     }
 
-    /**
-     * This method clears the Elasticsearch database, and is currently only intended for
-     * testing purposes.
-     *
-     * @param tenantId The optional tenant id
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#clear(java.lang.String)
      */
+    @Override
     public void clear(String tenantId) {
         String index = client.getIndex(tenantId);
 

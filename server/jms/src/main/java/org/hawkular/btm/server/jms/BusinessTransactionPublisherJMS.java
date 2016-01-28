@@ -18,6 +18,8 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 
@@ -26,6 +28,7 @@ import org.hawkular.btm.api.services.BusinessTransactionPublisher;
  *
  * @author gbrown
  */
+@Singleton
 public class BusinessTransactionPublisherJMS extends AbstractPublisherJMS<BusinessTransaction>
         implements BusinessTransactionPublisher {
 

@@ -71,6 +71,7 @@
     <module>processors/notification-deriver</module>
     <module>processors/nodedetails-deriver</module>
     <module>server/api</module>
+    <module>server/cassandra</module>
     <module>server/elasticsearch</module>
     <module>server/jms</module>
     <module>server/rest</module>
@@ -94,6 +95,8 @@
   </issueManagement>
 
   <properties>
+    <hawkular-btm-db>cassandra</hawkular-btm-db>
+
     <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
 
     <version.com.fasterxml.jackson.core>2.4.1</version.com.fasterxml.jackson.core>
@@ -213,6 +216,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-cassandra</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

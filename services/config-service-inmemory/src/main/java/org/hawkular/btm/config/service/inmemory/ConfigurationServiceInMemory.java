@@ -90,4 +90,13 @@ public class ConfigurationServiceInMemory extends AbstractConfigurationService {
     public void removeBusinessTransaction(String tenantId, String name) {
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#clear(java.lang.String)
+     */
+    @Override
+    public void clear(String tenantId) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

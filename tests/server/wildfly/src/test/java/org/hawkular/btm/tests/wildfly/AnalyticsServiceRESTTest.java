@@ -43,6 +43,8 @@ import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.CompletionTimeCriteria;
 import org.hawkular.btm.api.services.NodeCriteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -80,19 +82,29 @@ public class AnalyticsServiceRESTTest {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    // NOTE: Tests are using the fact that the business transaction service is
-    // overwriting the same business transaction id (i.e. 1).
+    private static AnalyticsServiceRESTClient analytics;
 
-    @Test
-    public void testGetUnboundURIs() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
+    private static BusinessTransactionServiceRESTClient service;
+
+    @BeforeClass
+    public static void initClass() {
+        analytics = new AnalyticsServiceRESTClient();
         analytics.setUsername(TEST_USERNAME);
         analytics.setPassword(TEST_PASSWORD);
 
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service = new BusinessTransactionServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
+    }
 
+    @Before
+    public void initTest() {
+        analytics.clear(null);
+        service.clear(null);
+    }
+
+    @Test
+    public void testGetUnboundURIs() {
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -135,14 +147,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetBoundURIs() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("btxn1");
@@ -186,14 +190,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetPropertyInfo() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("btxn1");
@@ -234,14 +230,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionCount() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -287,14 +275,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionFaultCount() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -341,14 +321,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionTimeseriesStatistics() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -395,14 +367,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionTimeseriesStatisticsPOST() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -493,14 +457,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionPropertyDetails() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -548,14 +504,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionPropertyDetailsPOST() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -647,14 +595,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionFaultDetails() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -702,14 +642,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionFaultDetailsPOST() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -801,14 +733,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatistics() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -819,7 +743,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -863,14 +787,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatisticsPOST() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -881,7 +797,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -969,14 +885,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatisticsHostName() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -988,7 +896,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -1041,14 +949,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatisticsPOSTHostName() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1060,7 +960,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -1199,14 +1099,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatistics() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1217,7 +1109,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -1260,14 +1152,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatisticsPOST() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1278,7 +1162,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -1366,14 +1250,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatisticsHostName() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1385,7 +1261,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -1436,14 +1312,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatisticsPOSTHostName() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1455,7 +1323,7 @@ public class AnalyticsServiceRESTTest {
         c1.setDuration(1000000);
         btxn1.getNodes().add(c1);
 
-        Component comp1=new Component();
+        Component comp1 = new Component();
         comp1.setComponentType("Database");
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
@@ -1510,7 +1378,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            NodeCriteria criteria=new NodeCriteria();
+            NodeCriteria criteria = new NodeCriteria();
             criteria.setHostName("hostA");
 
             os.write(mapper.writeValueAsBytes(criteria));
@@ -1563,7 +1431,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            NodeCriteria criteria=new NodeCriteria();
+            NodeCriteria criteria = new NodeCriteria();
             criteria.setHostName("hostB");
 
             os.write(mapper.writeValueAsBytes(criteria));
@@ -1597,14 +1465,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetHostNames() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1648,14 +1508,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetHostNamesPOST() {
-        AnalyticsServiceRESTClient analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
-
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
-
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1710,7 +1562,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            NodeCriteria criteria=new NodeCriteria();
+            NodeCriteria criteria = new NodeCriteria();
 
             os.write(mapper.writeValueAsBytes(criteria));
 

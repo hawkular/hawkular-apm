@@ -17,11 +17,26 @@
 package org.hawkular.btm.api.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
+import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.URIInfo;
+import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.btxn.ContainerNode;
+import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 
 /**
  * The abstract base class for implementations of the Analytics Service.
@@ -29,6 +44,115 @@ import org.hawkular.btm.api.model.analytics.URIInfo;
  * @author gbrown
  */
 public abstract class AbstractAnalyticsService implements AnalyticsService {
+
+    private static final Logger log = Logger.getLogger(AbstractAnalyticsService.class.getName());
+
+    @Inject
+    private ConfigurationService configService;
+
+    /**
+     * This method gets the configuration service.
+     *
+     * @return The configuration service
+     */
+    public ConfigurationService getConfigurationService() {
+        return this.configService;
+    }
+
+    /**
+     * This method sets the configuration service.
+     *
+     * @param cs The configuration service
+     */
+    public void setConfigurationService(ConfigurationService cs) {
+        this.configService = cs;
+    }
+
+    /**
+     * This method returns the list of business transactions for the supplied criteria.
+     *
+     * @param tenantId The tenant
+     * @param criteria The criteria
+     * @return The list of fragments
+     */
+    protected abstract List<BusinessTransaction> getFragments(String tenantId, BusinessTransactionCriteria criteria);
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String,
+     *                                  long, long, boolean)
+     */
+    @Override
+    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(startTime).setEndTime(endTime);
+
+        List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
+
+        return (doGetUnboundURIs(tenantId, fragments, compress));
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
+     */
+    @Override
+    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
+        List<String> ret = new ArrayList<String>();
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setBusinessTransaction(businessTransaction)
+                .setStartTime(startTime)
+                .setEndTime(endTime);
+
+        List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
+
+        for (int i = 0; i < fragments.size(); i++) {
+            BusinessTransaction btxn = fragments.get(i);
+            obtainURIs(btxn.getNodes(), ret);
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String,
+     *                      java.lang.String, long, long)
+     */
+    @Override
+    public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
+            long startTime, long endTime) {
+        List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
+        List<String> propertyNames = new ArrayList<String>();
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(startTime)
+                .setEndTime(endTime)
+                .setBusinessTransaction(businessTransaction);
+
+        List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
+
+        // Process the fragments to identify which URIs are no used in any business transaction
+        for (int i = 0; i < fragments.size(); i++) {
+            BusinessTransaction btxn = fragments.get(i);
+
+            for (String property : btxn.getProperties().keySet()) {
+                if (!propertyNames.contains(property)) {
+                    propertyNames.add(property);
+                    PropertyInfo pi = new PropertyInfo();
+                    pi.setName(property);
+                    ret.add(pi);
+                }
+            }
+        }
+
+        Collections.sort(ret, new Comparator<PropertyInfo>() {
+            @Override
+            public int compare(PropertyInfo arg0, PropertyInfo arg1) {
+                return arg0.getName().compareTo(arg1.getName());
+            }
+        });
+
+        return ret;
+    }
 
     // Don't collapse if a part node has a certain level of count, as may indicate a common component
     // Other indicate to collapse may be if multiple parts share the same child name? - but may only be
@@ -143,8 +267,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                             template.append("}");
                         } else {
                             // Check if plural
-                            if (part.length() > 1 && part.charAt(part.length()-1) == 's') {
-                                part = part.substring(0, part.length()-1);
+                            if (part.length() > 1 && part.charAt(part.length() - 1) == 's') {
+                                part = part.substring(0, part.length() - 1);
                             }
                             template.append("{");
                             template.append(part);
@@ -158,6 +282,137 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                 }
 
                 info.setTemplate(template.toString());
+            }
+        }
+    }
+
+    /**
+     * This method obtains the unbound URIs from a list of business
+     * transaction fragments.
+     *
+     * @param tenantId The tenant
+     * @param fragments The list of business txn fragments
+     * @param compress Whether the list should be compressed (i.e. to identify patterns)
+     * @return The list of unbound URIs
+     */
+    protected List<URIInfo> doGetUnboundURIs(String tenantId,
+            List<BusinessTransaction> fragments, boolean compress) {
+        List<URIInfo> ret = new ArrayList<URIInfo>();
+        Map<String, URIInfo> map = new HashMap<String, URIInfo>();
+
+        // Process the fragments to identify which URIs are no used in any business transaction
+        for (int i = 0; i < fragments.size(); i++) {
+            BusinessTransaction btxn = fragments.get(i);
+
+            if (btxn.initialFragment() && !btxn.getNodes().isEmpty() && btxn.getName() == null) {
+
+                // Check if top level node is Consumer
+                if (btxn.getNodes().get(0) instanceof Consumer) {
+                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
+                    String uri = consumer.getUri();
+
+                    // Check whether URI already known, and that it did not result
+                    // in a fault (e.g. want to ignore spurious URIs that are not
+                    // associated with a valid transaction)
+                    if (!map.containsKey(uri) && consumer.getFault() == null) {
+                        URIInfo info = new URIInfo();
+                        info.setUri(uri);
+                        info.setEndpointType(consumer.getEndpointType());
+                        ret.add(info);
+                        map.put(uri, info);
+                    }
+                } else {
+                    obtainProducerURIs(btxn.getNodes(), ret, map);
+                }
+            }
+        }
+
+        // Check whether any of the top level URIs are already associated with
+        // a business txn config
+        if (configService != null) {
+            Map<String, BusinessTxnConfig> configs = configService.getBusinessTransactions(tenantId, 0);
+            for (BusinessTxnConfig config : configs.values()) {
+                if (config.getFilter() != null && config.getFilter().getInclusions() != null) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Remove unbound URIs associated with btxn config=" + config);
+                    }
+                    for (String filter : config.getFilter().getInclusions()) {
+
+                        if (filter != null && filter.trim().length() > 0) {
+                            Iterator<URIInfo> iter = ret.iterator();
+                            while (iter.hasNext()) {
+                                URIInfo info = iter.next();
+                                if (Pattern.matches(filter, info.getUri())) {
+                                    iter.remove();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check if the URIs should be compressed to identify common patterns
+        if (compress) {
+            ret = compressURIInfo(ret);
+        }
+
+        Collections.sort(ret, new Comparator<URIInfo>() {
+            @Override
+            public int compare(URIInfo arg0, URIInfo arg1) {
+                return arg0.getUri().compareTo(arg1.getUri());
+            }
+        });
+
+        return ret;
+    }
+
+    /**
+     * This method collects the information regarding URIs.
+     *
+     * @param nodes The nodes
+     * @param uris The list of URIs
+     */
+    protected void obtainURIs(List<Node> nodes, List<String> uris) {
+        for (int i = 0; i < nodes.size(); i++) {
+            Node node = nodes.get(i);
+
+            if (node.getUri() != null && !uris.contains(node.getUri())) {
+                uris.add(node.getUri());
+            }
+
+            if (node instanceof ContainerNode) {
+                obtainURIs(((ContainerNode) node).getNodes(), uris);
+            }
+        }
+    }
+
+    /**
+     * This method collects the information regarding URIs for
+     * contained producers.
+     *
+     * @param nodes The nodes
+     * @param uris The list of URI info
+     * @param map The map of URis to info
+     */
+    protected void obtainProducerURIs(List<Node> nodes, List<URIInfo> uris, Map<String, URIInfo> map) {
+        for (int i = 0; i < nodes.size(); i++) {
+            Node node = nodes.get(i);
+
+            if (node instanceof Producer) {
+                String uri = node.getUri();
+
+                if (!map.containsKey(uri)) {
+                    URIInfo info = new URIInfo();
+                    info.setUri(uri);
+                    info.setEndpointType(((Producer) node).getEndpointType());
+                    uris.add(info);
+                    map.put(uri, info);
+                }
+            }
+
+            if (node instanceof ContainerNode) {
+                obtainProducerURIs(((ContainerNode) node).getNodes(), uris, map);
             }
         }
     }

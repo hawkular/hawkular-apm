@@ -19,12 +19,14 @@ package org.hawkular.btm.server.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -852,7 +854,7 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
-            List<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
+            Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
                     securityProvider.getTenantId(context),
                     criteria);
 
@@ -890,7 +892,7 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
-            List<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
+            Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
                     securityProvider.getTenantId(context),
                     criteria);
 
@@ -1000,6 +1002,34 @@ public class AnalyticsHandler {
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errors).type(APPLICATION_JSON_TYPE).build());
         }
+    }
+
+    @DELETE
+    @Path("/")
+    @Produces(APPLICATION_JSON)
+    public void clear(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response) {
+
+        try {
+            if (System.getProperties().containsKey("hawkular-btm.testmode")) {
+                analyticsService.clear(securityProvider.getTenantId(context));
+
+                response.resume(Response.status(Response.Status.OK).type(APPLICATION_JSON_TYPE)
+                        .build());
+            } else {
+                response.resume(Response.status(Response.Status.FORBIDDEN).type(APPLICATION_JSON_TYPE)
+                        .build());
+            }
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
     }
 
 }

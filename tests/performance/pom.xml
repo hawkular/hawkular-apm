@@ -42,7 +42,19 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-server-cassandra</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-elasticsearch</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.datastax.cassandra</groupId>
+      <artifactId>cassandra-driver-core</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -104,6 +116,7 @@
           <classpathDependencyScopeExclude>compile</classpathDependencyScopeExclude>
           <systemPropertyVariables>
             <hawkular-btm.data.dir>${project.build.directory}/data</hawkular-btm.data.dir>
+            <hawkular-btm.elasticsearch.hosts>localhost:9300</hawkular-btm.elasticsearch.hosts>
           </systemPropertyVariables>
         </configuration>
         <executions>

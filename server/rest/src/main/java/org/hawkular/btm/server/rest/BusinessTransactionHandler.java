@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -218,6 +219,34 @@ public class BusinessTransactionHandler {
 
             response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
                     .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @DELETE
+    @Path("/")
+    @Produces(APPLICATION_JSON)
+    public void clear(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response) {
+
+        try {
+            if (System.getProperties().containsKey("hawkular-btm.testmode")) {
+                btxnService.clear(securityProvider.getTenantId(context));
+
+                response.resume(Response.status(Response.Status.OK).type(APPLICATION_JSON_TYPE)
+                        .build());
+            } else {
+                response.resume(Response.status(Response.Status.FORBIDDEN).type(APPLICATION_JSON_TYPE)
+                        .build());
+            }
 
         } catch (Throwable e) {
             log.debug(e.getMessage(), e);
