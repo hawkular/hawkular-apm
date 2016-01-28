@@ -112,7 +112,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -154,7 +154,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -196,7 +196,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -253,7 +253,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -310,7 +310,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -367,7 +367,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -430,7 +430,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -472,7 +472,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -530,7 +530,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -568,7 +568,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -628,7 +628,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -668,7 +668,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -703,7 +703,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -764,7 +764,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -805,7 +805,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -862,7 +862,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -900,7 +900,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -957,7 +957,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -994,7 +994,7 @@ public class AnalyticsHandler {
                     .build());
 
         } catch (Throwable e) {
-            log.debugf(e.getMessage(), e);
+            log.debug(e.getMessage(), e);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + e.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
