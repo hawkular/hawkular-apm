@@ -52,18 +52,6 @@
         <enable-basic-auth>true</enable-basic-auth>
         <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
       </secure-deployment>
-      <secure-deployment name="hawkular-btm-ui.war">
-        <realm>hawkular</realm>
-        <resource>hawkular-accounts-backend</resource>
-        <enable-cors>true</enable-cors>
-        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
-      </secure-deployment>
-      <secure-deployment name="hawkular-btm-ui-kibana.war">
-        <realm>hawkular</realm>
-        <resource>hawkular-accounts-backend</resource>
-        <enable-cors>true</enable-cors>
-        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
-      </secure-deployment>
     </xsl:variable>
 
     <xsl:copy>

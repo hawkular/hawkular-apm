@@ -23,4 +23,5 @@
       http://www.jboss.com/xml/ns/javaee
       http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd">
   <context-root>/hawkular-ui/btm</context-root>
+  <security-domain>keycloak</security-domain>
 </jboss-web>
