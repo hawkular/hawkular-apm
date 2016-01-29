@@ -57,11 +57,21 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
     @Inject
     private ElasticsearchClient client;
 
-    protected ElasticsearchClient getElasticsearchClient() {
+    /**
+     * This method gets the elasticsearch client.
+     *
+     * @return The elasticsearch client
+     */
+    public ElasticsearchClient getElasticsearchClient() {
         return client;
     }
 
-    protected void setElasticsearchClient(ElasticsearchClient client) {
+    /**
+     * This method sets the elasticsearch client.
+     *
+     * @param client The elasticsearch client
+     */
+    public void setElasticsearchClient(ElasticsearchClient client) {
         this.client = client;
     }
 
