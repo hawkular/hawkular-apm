@@ -37,6 +37,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
@@ -103,11 +104,21 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     @Inject
     private ConfigurationService configService;
 
-    protected ElasticsearchClient getElasticsearchClient() {
+    /**
+     * This method gets the elasticsearch client.
+     *
+     * @return The elasticsearch client
+     */
+    public ElasticsearchClient getElasticsearchClient() {
         return client;
     }
 
-    protected void setElasticsearchClient(ElasticsearchClient client) {
+    /**
+     * This method sets the elasticsearch client.
+     *
+     * @param client The elasticsearch client
+     */
+    public void setElasticsearchClient(ElasticsearchClient client) {
         this.client = client;
     }
 
@@ -1081,10 +1092,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *
      * @param tenantId The optional tenant id
      */
-    protected void clear(String tenantId) {
+    public void clear(String tenantId) {
         String index = client.getIndex(tenantId);
 
-        client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+        try {
+            client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+        } catch (IndexMissingException ime) {
+            // Ignore
+        }
     }
 
 }

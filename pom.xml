@@ -574,6 +574,12 @@
       </modules>
     </profile>
     <profile>
+      <id>performance</id>
+      <modules>
+        <module>tests/performance</module>
+      </modules>
+    </profile>
+    <profile>
       <id>vertx</id>
       <modules>
         <module>tests/container/vertx</module>
