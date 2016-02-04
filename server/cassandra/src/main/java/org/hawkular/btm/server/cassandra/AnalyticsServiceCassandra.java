@@ -43,11 +43,8 @@ import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
-import org.hawkular.btm.api.services.BaseCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.server.cassandra.log.MsgLogger;
 
 import com.datastax.driver.core.BatchStatement;
@@ -144,10 +141,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AbstractAnalyticsService#getFragments(java.lang.String,
-     *                  org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                  org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    protected List<BusinessTransaction> getFragments(String tenantId, BusinessTransactionCriteria criteria) {
+    protected List<BusinessTransaction> getFragments(String tenantId, Criteria criteria) {
         return businessTransactionService.query(tenantId, criteria);
     }
 
@@ -158,7 +155,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      * @param criteria The criteria
      * @return Whether full evaluation is required
      */
-    protected boolean requiresFullEvaluation(CompletionTimeCriteria criteria) {
+    protected boolean requiresFullEvaluation(Criteria criteria) {
         return CassandraServiceUtil.hasExclusions(criteria) ||
                 criteria.getLowerBound() > 0 ||
                 criteria.getUpperBound() > 0;
@@ -172,7 +169,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      * @param criteria The criteria
      * @return Whether to exclude the completion time
      */
-    protected boolean exclude(CompletionTime ct, CompletionTimeCriteria criteria) {
+    protected boolean exclude(CompletionTime ct, Criteria criteria) {
         return CassandraServiceUtil.exclude(ct.getProperties(), ct.getFault(), criteria) ||
                 (criteria.getLowerBound() > 0 && ct.getDuration() < criteria.getLowerBound()) ||
                 (criteria.getUpperBound() > 0 && ct.getDuration() > criteria.getUpperBound());
@@ -180,10 +177,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionCount(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, CompletionTimeCriteria criteria) {
+    public long getCompletionCount(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder();
         boolean fullEvaluation = requiresFullEvaluation(criteria);
 
@@ -236,10 +233,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultCount(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, CompletionTimeCriteria criteria) {
+    public long getCompletionFaultCount(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder();
         boolean fullEvaluation = requiresFullEvaluation(criteria);
 
@@ -299,10 +296,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPercentiles(java.lang.String,
-     *                          org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                          org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, CompletionTimeCriteria criteria) {
+    public Percentiles getCompletionPercentiles(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_btm.completiontimes");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
         statement.append(" ALLOW FILTERING;");
@@ -337,11 +334,11 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionTimeseriesStatistics(java.lang.String,
-     *                  org.hawkular.btm.api.services.CompletionTimeCriteria, long)
+     *                  org.hawkular.btm.api.services.Criteria, long)
      */
     @Override
     public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
-            CompletionTimeCriteria criteria, long interval) {
+            Criteria criteria, long interval) {
         // Calculate the number of entries required
         long endTime = criteria.calculateEndTime();
 
@@ -441,10 +438,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, CompletionTimeCriteria criteria) {
+    public List<Cardinality> getCompletionFaultDetails(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_btm.completiontimes");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
         statement.append(" ALLOW FILTERING;");
@@ -506,10 +503,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria, java.lang.String)
+     *                      org.hawkular.btm.api.services.Criteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, CompletionTimeCriteria criteria,
+    public List<Cardinality> getCompletionPropertyDetails(String tenantId, Criteria criteria,
             String property) {
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_btm.completiontimes");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
@@ -582,10 +579,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getNodeTimeseriesStatistics(java.lang.String,
-     *                  org.hawkular.btm.api.services.NodeCriteria, long)
+     *                  org.hawkular.btm.api.services.Criteria, long)
      */
     @Override
-    public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId, NodeCriteria criteria,
+    public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId, Criteria criteria,
             long interval) {
         // Calculate the number of entries required
         long endTime = criteria.calculateEndTime();
@@ -686,10 +683,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getNodeSummaryStatistics(java.lang.String,
-     *                      org.hawkular.btm.api.services.NodeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria) {
+    public Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, Criteria criteria) {
         Map<String, NodeSummaryStatistics> intermediate = new HashMap<String, NodeSummaryStatistics>();
 
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_btm.nodedetails");
@@ -811,7 +808,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                  org.hawkular.btm.api.services.BaseCriteria)
      */
     @Override
-    public List<String> getHostNames(String tenantId, BaseCriteria criteria) {
+    public List<String> getHostNames(String tenantId, Criteria criteria) {
         List<String> ret = new ArrayList<String>();
 
         StringBuilder statement = new StringBuilder("SELECT hostName FROM hawkular_btm.businesstransactions");

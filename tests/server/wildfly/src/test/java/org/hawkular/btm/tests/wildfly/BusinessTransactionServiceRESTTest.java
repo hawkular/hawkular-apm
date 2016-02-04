@@ -32,7 +32,7 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -126,7 +126,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -161,7 +161,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -199,7 +199,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1100);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -235,7 +235,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setEndTime(2000);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -273,7 +273,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setEndTime(1100);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -307,7 +307,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", false);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -343,7 +343,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.addProperty("hello", "fred", false);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -377,7 +377,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", true);
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -418,7 +418,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "myid"));
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -461,7 +461,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "notmyid"));
 
         List<BusinessTransaction> result = service.query(null, criteria);
@@ -495,7 +495,7 @@ public class BusinessTransactionServiceRESTTest {
         }
 
         // Query stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", false);
 
         List<BusinessTransaction> result = null;

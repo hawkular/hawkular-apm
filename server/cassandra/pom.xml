@@ -127,37 +127,47 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <threadCount>1</threadCount>
-          <threadCountClasses>1</threadCountClasses>
-          <argLine>
-              -Dcassandra.storagedir=${basedir}/target/cassandra
-          </argLine>
-        </configuration>
-        <executions>
-          <execution>
-            <id>exec-standalone-tests</id>
-            <goals>
-              <goal>integration-test</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>**/*Test.java</include>
-              </includes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>final-verify</id>
-            <goals>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>cassandra</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <threadCount>1</threadCount>
+              <threadCountClasses>1</threadCountClasses>
+              <argLine>
+                  -Dcassandra.storagedir=${basedir}/target/cassandra
+              </argLine>
+            </configuration>
+            <executions>
+              <execution>
+                <id>exec-standalone-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/*Test.java</include>
+                  </includes>
+                </configuration>
+              </execution>
+              <execution>
+                <id>final-verify</id>
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

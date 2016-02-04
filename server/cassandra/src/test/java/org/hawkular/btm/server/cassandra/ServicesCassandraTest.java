@@ -50,10 +50,8 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.services.Criteria.FaultCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -179,7 +177,7 @@ public class ServicesCassandraTest {
             fail("Failed to store@ " + e);
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("btxn1");
 
@@ -222,7 +220,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("");
 
@@ -266,7 +264,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", false);
 
@@ -309,7 +307,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", true);
 
@@ -360,7 +358,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", false);
         criteria.addProperty("prop3", "value3", false);
@@ -404,7 +402,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", true);
         criteria.addProperty("prop1", "value3", true);
@@ -448,7 +446,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "gid1"));
 
@@ -851,7 +849,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(2, analytics.getCompletionCount(null, criteria));
@@ -882,7 +880,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", false));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
@@ -920,7 +918,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault1", true));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
@@ -952,7 +950,7 @@ public class ServicesCassandraTest {
             fail("Failed to store");
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(1, analytics.getCompletionFaultCount(null, criteria));
@@ -990,7 +988,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
@@ -1049,7 +1047,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setLowerBound(200);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -1109,7 +1107,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setUpperBound(400);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -1171,7 +1169,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
@@ -1235,7 +1233,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
@@ -1290,7 +1288,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", false));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -1334,7 +1332,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", true));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -1384,7 +1382,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
@@ -1431,7 +1429,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
@@ -1497,7 +1495,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1596,7 +1594,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("");
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1696,7 +1694,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1775,7 +1773,7 @@ public class ServicesCassandraTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
         List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,

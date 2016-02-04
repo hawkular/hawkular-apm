@@ -34,8 +34,8 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -107,7 +107,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
      *          org.hawkular.btm.api.services.BusinessTransactionQuery)
      */
     @Override
-    public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+    public List<BusinessTransaction> query(String tenantId, Criteria criteria) {
         return internalQuery(client, tenantId, criteria);
     }
 
@@ -120,7 +120,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
      * @return The list of business transactions
      */
     protected static List<BusinessTransaction> internalQuery(ElasticsearchClient client, String tenantId,
-            BusinessTransactionCriteria criteria) {
+            Criteria criteria) {
         List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
 
         String index = client.getIndex(tenantId);
@@ -185,7 +185,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
 
         for (int i = 0; i < businessTransactions.size(); i++) {
             BusinessTransaction btxn = businessTransactions.get(i);
-            String json=mapper.writeValueAsString(btxn);
+            String json = mapper.writeValueAsString(btxn);
 
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("Storing business transaction: %s", json);

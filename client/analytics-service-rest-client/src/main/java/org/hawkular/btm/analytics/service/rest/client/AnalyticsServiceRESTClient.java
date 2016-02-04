@@ -34,9 +34,7 @@ import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BaseCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -378,10 +376,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionCount(java.lang.String,
-     *                          org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                          org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, CompletionTimeCriteria criteria) {
+    public long getCompletionCount(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion count: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -452,10 +450,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultCount(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, CompletionTimeCriteria criteria) {
+    public long getCompletionFaultCount(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion fault count: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
@@ -525,10 +523,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPercentiles(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, CompletionTimeCriteria criteria) {
+    public Percentiles getCompletionPercentiles(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion percentiles: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -599,11 +597,11 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionStatistics(java.lang.String,
-     *                  org.hawkular.btm.api.services.CompletionTimeCriteria, long)
+     *                  org.hawkular.btm.api.services.Criteria, long)
      */
     @Override
     public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
-            CompletionTimeCriteria criteria,
+            Criteria criteria,
             long interval) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion statistics: tenantId=[" + tenantId + "] criteria="
@@ -678,10 +676,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
-     *                      org.hawkular.btm.api.services.CompletionTimeCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, CompletionTimeCriteria criteria) {
+    public List<Cardinality> getCompletionFaultDetails(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion fault details: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -752,10 +750,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
-     *              org.hawkular.btm.api.services.CompletionTimeCriteria, java.lang.String)
+     *              org.hawkular.btm.api.services.Criteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, CompletionTimeCriteria criteria,
+    public List<Cardinality> getCompletionPropertyDetails(String tenantId, Criteria criteria,
             String property) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion property details: tenantId=[" + tenantId + "] criteria="
@@ -832,7 +830,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @param builder The url
      * @param criteria The criteria
      */
-    protected boolean buildQueryString(StringBuilder builder, BaseCriteria criteria) {
+    protected boolean buildQueryString(StringBuilder builder, Criteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
         if (!queryParams.isEmpty()) {
@@ -929,11 +927,11 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getNodeStatistics(java.lang.String,
-     *                      org.hawkular.btm.api.services.NodeCriteria, long)
+     *                      org.hawkular.btm.api.services.Criteria, long)
      */
     @Override
     public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId,
-            NodeCriteria criteria, long interval) {
+            Criteria criteria, long interval) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get node timeseries statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria + " interval=" + interval);
@@ -1011,10 +1009,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getNodeSummaryStatistics(java.lang.String,
-     *                          org.hawkular.btm.api.services.NodeCriteria)
+     *                          org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria) {
+    public List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get node summary statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -1127,7 +1125,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                      org.hawkular.btm.api.services.BaseCriteria)
      */
     @Override
-    public List<String> getHostNames(String tenantId, BaseCriteria criteria) {
+    public List<String> getHostNames(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get host names: tenantId=[" + tenantId + "] criteria="
                     + criteria);

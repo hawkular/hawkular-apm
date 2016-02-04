@@ -40,10 +40,10 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.model.config.btxn.Filter;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.api.services.ConfigurationService;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.client.collector.internal.FragmentBuilder;
 import org.junit.Test;
 
@@ -632,7 +632,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.activate("not relevant");
         collector.consumerStart(null, "not relevant", "HTTP", null);
         collector.getFragmentManager().getFragmentBuilder()
-                .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
+            .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
 
         // Cause a fragment builder to be created
         collector.activate("/test");
@@ -803,10 +803,10 @@ public class DefaultBusinessTransactionCollectorTest {
 
         /* (non-Javadoc)
          * @see org.hawkular.btm.api.services.BusinessTransactionService#query(java.lang.String,
-         *              org.hawkular.btm.api.services.BusinessTransactionCriteria)
+         *              org.hawkular.btm.api.services.Criteria)
          */
         @Override
-        public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+        public List<BusinessTransaction> query(String tenantId, Criteria criteria) {
             return null;
         }
 

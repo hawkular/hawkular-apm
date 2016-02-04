@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
+import org.hawkular.btm.api.services.Criteria.PropertyCriteria;
 import org.junit.Test;
 
 /**

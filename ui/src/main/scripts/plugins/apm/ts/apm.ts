@@ -21,7 +21,6 @@ module APM {
   export var APMController = _module.controller("APM.APMController", ["$scope", "$routeParams", "$http", '$location', '$interval', ($scope, $routeParams, $http, $location, $interval) => {
 
     $scope.criteria = {
-      type: "Node",
       businessTransaction: undefined,
       hostName: $routeParams.hostName,
       properties: [],

@@ -21,11 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.services.BaseCriteria;
-import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
+import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.services.Criteria.FaultCriteria;
+import org.hawkular.btm.api.services.Criteria.PropertyCriteria;
 
 /**
  * @author gbrown
@@ -79,7 +77,7 @@ public class CassandraServiceUtil {
      * @param criteria The criteria
      * @return The where clause
      */
-    public static String whereClause(String tenantId, BaseCriteria criteria) {
+    public static String whereClause(String tenantId, Criteria criteria) {
         StringBuilder ret = new StringBuilder();
 
         ret.append(" WHERE tenantId = '");
@@ -125,32 +123,27 @@ public class CassandraServiceUtil {
             }
         }
 
-        if (criteria instanceof BusinessTransactionCriteria) {
-            BusinessTransactionCriteria btcriteria = (BusinessTransactionCriteria) criteria;
+        for (CorrelationIdentifier ci : criteria.getCorrelationIds()) {
+            ret.append(" AND ");
+            ret.append("correlationIds CONTAINS '");
+            ret.append(propertyEncoding(ci));
+            ret.append('\'');
+        }
 
-            for (CorrelationIdentifier ci : btcriteria.getCorrelationIds()) {
+        for (org.hawkular.btm.api.services.Criteria.FaultCriteria fc : criteria.getFaults()) {
+            // TODO: Currently ignoring 'excluded' faults - but
+            // need to find a way to handle - either using Stratio or
+            // client side filtering
+
+            if (!fc.isExcluded()) {
                 ret.append(" AND ");
-                ret.append("correlationIds CONTAINS '");
-                ret.append(propertyEncoding(ci));
+                ret.append("fault = '");
+                ret.append(fc.getValue());
                 ret.append('\'');
             }
-
-        } else if (criteria instanceof CompletionTimeCriteria) {
-            for (FaultCriteria fc : ((CompletionTimeCriteria) criteria).getFaults()) {
-                // TODO: Currently ignoring 'excluded' faults - but
-                // need to find a way to handle - either using Stratio or
-                // client side filtering
-
-                if (!fc.isExcluded()) {
-                    ret.append(" AND ");
-                    ret.append("fault = '");
-                    ret.append(fc.getValue());
-                    ret.append('\'');
-                }
-            }
-
-            // NOTE: Upper and lower bounds cannot be added to query
         }
+
+        // NOTE: Upper and lower bounds cannot be added to query
 
         if (ret.length() > 0) {
             return ret.toString();
@@ -214,7 +207,7 @@ public class CassandraServiceUtil {
      * @param criteria The criteria
      * @return Whether the information should be excluded
      */
-    public static boolean exclude(Map<String, String> properties, String fault, BaseCriteria criteria) {
+    public static boolean exclude(Map<String, String> properties, String fault, Criteria criteria) {
         if (!criteria.getProperties().isEmpty()) {
             for (PropertyCriteria pc : criteria.getProperties()) {
                 if (pc.isExcluded() && properties.containsKey(pc.getName())
@@ -223,12 +216,11 @@ public class CassandraServiceUtil {
                 }
             }
         }
-        if (criteria instanceof CompletionTimeCriteria) {
-            if (!((CompletionTimeCriteria) criteria).getFaults().isEmpty()) {
-                for (FaultCriteria fc : ((CompletionTimeCriteria) criteria).getFaults()) {
-                    if (fc.isExcluded() && fault != null && fault.equals(fc.getValue())) {
-                        return true;
-                    }
+
+        if (!criteria.getFaults().isEmpty()) {
+            for (FaultCriteria fc : criteria.getFaults()) {
+                if (fc.isExcluded() && fault != null && fault.equals(fc.getValue())) {
+                    return true;
                 }
             }
         }
@@ -242,7 +234,7 @@ public class CassandraServiceUtil {
      * @param criteria The criteria
      * @return Whether it has exclusions
      */
-    public static boolean hasExclusions(BaseCriteria criteria) {
+    public static boolean hasExclusions(Criteria criteria) {
         if (!criteria.getProperties().isEmpty()) {
             for (PropertyCriteria pc : criteria.getProperties()) {
                 if (pc.isExcluded()) {
@@ -250,15 +242,15 @@ public class CassandraServiceUtil {
                 }
             }
         }
-        if (criteria instanceof CompletionTimeCriteria) {
-            if (!((CompletionTimeCriteria) criteria).getFaults().isEmpty()) {
-                for (FaultCriteria fc : ((CompletionTimeCriteria) criteria).getFaults()) {
-                    if (fc.isExcluded()) {
-                        return true;
-                    }
+
+        if (!criteria.getFaults().isEmpty()) {
+            for (FaultCriteria fc : criteria.getFaults()) {
+                if (fc.isExcluded()) {
+                    return true;
                 }
             }
         }
+
         return false;
     }
 

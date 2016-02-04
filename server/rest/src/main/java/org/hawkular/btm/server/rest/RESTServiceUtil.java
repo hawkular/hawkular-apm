@@ -21,8 +21,8 @@ import java.util.StringTokenizer;
 
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
+import org.hawkular.btm.api.services.Criteria.FaultCriteria;
+import org.hawkular.btm.api.services.Criteria.PropertyCriteria;
 import org.jboss.logging.Logger;
 
 /**
