@@ -46,7 +46,7 @@ public interface BusinessTransactionService {
      * @param criteria The query criteria
      * @return The list of business transactions that meet the criteria
      */
-    List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria);
+    List<BusinessTransaction> query(String tenantId, Criteria criteria);
 
     /**
      * This method stores the supplied list of business transaction fragments.

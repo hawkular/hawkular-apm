@@ -26,9 +26,9 @@ import java.util.Map;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.btxn.publisher.rest.client.BusinessTransactionPublisherRESTClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,13 +41,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author gbrown
  */
 public class BusinessTransactionServiceRESTClient extends BusinessTransactionPublisherRESTClient
-        implements BusinessTransactionService, BusinessTransactionPublisher {
+implements BusinessTransactionService, BusinessTransactionPublisher {
 
     private static final Logger log = Logger.getLogger(BusinessTransactionServiceRESTClient.class.getName());
 
     private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
             new TypeReference<java.util.List<BusinessTransaction>>() {
-            };
+    };
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -107,10 +107,10 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.BusinessTransactionService#query(java.lang.String,
-     *                      org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+    public List<BusinessTransaction> query(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get business transaction fragments: tenantId=[" + tenantId + "] query=[" + criteria + "]");
         }
@@ -173,7 +173,7 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
      * @param criteria The criteria
      * @return The query URL
      */
-    protected String getQueryURL(BusinessTransactionCriteria criteria) {
+    protected String getQueryURL(Criteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
         StringBuilder builder = new StringBuilder().append(getBaseUrl()).append("fragments");

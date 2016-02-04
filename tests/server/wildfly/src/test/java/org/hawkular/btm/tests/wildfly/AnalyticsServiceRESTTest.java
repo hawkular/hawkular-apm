@@ -39,9 +39,7 @@ import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -131,7 +129,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -174,7 +172,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -215,7 +213,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -257,13 +255,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
@@ -303,13 +301,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
@@ -349,13 +347,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
@@ -395,7 +393,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -426,7 +424,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new CompletionTimeCriteria().setBusinessTransaction("testapp")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction("testapp")));
 
             os.flush();
             os.close();
@@ -487,13 +485,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analytics.getCompletionPropertyDetails(null, criteria, "prop1");
@@ -534,7 +532,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -564,7 +562,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new CompletionTimeCriteria().setBusinessTransaction("testapp")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction("testapp")));
 
             os.flush();
             os.close();
@@ -625,13 +623,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analytics.getCompletionFaultDetails(null, criteria);
@@ -672,7 +670,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -702,7 +700,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new CompletionTimeCriteria().setBusinessTransaction("testapp")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction("testapp")));
 
             os.flush();
             os.close();
@@ -769,13 +767,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
 
         // Get transaction count
@@ -823,7 +821,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -854,7 +852,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new NodeCriteria()));
+            os.write(mapper.writeValueAsBytes(new Criteria()));
 
             os.flush();
             os.close();
@@ -922,13 +920,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setHostName("hostA").setStartTime(0).setEndTime(0);
 
         // Get transaction count
@@ -937,7 +935,7 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(stats);
         assertEquals(1, stats.size());
 
-        criteria = new NodeCriteria();
+        criteria = new Criteria();
         criteria.setHostName("hostB").setStartTime(0).setEndTime(0);
 
         // Get transaction count
@@ -986,7 +984,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1017,7 +1015,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new NodeCriteria().setHostName("hostA")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setHostName("hostA")));
 
             os.flush();
             os.close();
@@ -1067,7 +1065,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new NodeCriteria().setHostName("hostB")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setHostName("hostB")));
 
             os.flush();
             os.close();
@@ -1135,13 +1133,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
 
         List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1188,7 +1186,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1219,7 +1217,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new NodeCriteria()));
+            os.write(mapper.writeValueAsBytes(new Criteria()));
 
             os.flush();
             os.close();
@@ -1287,13 +1285,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setHostName("hostA").setStartTime(0).setEndTime(0);
 
         List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1301,7 +1299,7 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        criteria = new NodeCriteria();
+        criteria = new Criteria();
         criteria.setHostName("hostB").setStartTime(0).setEndTime(0);
 
         stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1349,7 +1347,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1378,7 +1376,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            NodeCriteria criteria = new NodeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setHostName("hostA");
 
             os.write(mapper.writeValueAsBytes(criteria));
@@ -1431,7 +1429,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            NodeCriteria criteria = new NodeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setHostName("hostB");
 
             os.write(mapper.writeValueAsBytes(criteria));
@@ -1490,13 +1488,13 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
 
         List<String> hosts = analytics.getHostNames(null, criteria);
@@ -1533,7 +1531,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new BusinessTransactionCriteria());
+        List<BusinessTransaction> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1562,7 +1560,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            NodeCriteria criteria = new NodeCriteria();
+            Criteria criteria = new Criteria();
 
             os.write(mapper.writeValueAsBytes(criteria));
 

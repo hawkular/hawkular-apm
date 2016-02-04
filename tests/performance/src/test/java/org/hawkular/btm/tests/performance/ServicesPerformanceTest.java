@@ -26,7 +26,7 @@ import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.events.NodeDetails;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -113,7 +113,7 @@ public class ServicesPerformanceTest {
             }
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1);
         criteria.setEndTime((numberOfBatches+1) * batchSize);
         //criteria.setHostName("host5");

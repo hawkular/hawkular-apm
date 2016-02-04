@@ -46,10 +46,9 @@ import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
 import org.hawkular.btm.api.services.ConfigurationService;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.services.Criteria.FaultCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -514,7 +513,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(2, analytics.getCompletionCount(null, criteria));
@@ -545,7 +544,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", false));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
@@ -583,7 +582,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault1", true));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
@@ -615,7 +614,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(1, analytics.getCompletionFaultCount(null, criteria));
@@ -653,7 +652,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
@@ -712,7 +711,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setLowerBound(200);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -772,7 +771,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setUpperBound(400);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -834,7 +833,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
@@ -898,7 +897,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
@@ -953,7 +952,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", false));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -997,7 +996,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", true));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
@@ -1047,7 +1046,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
@@ -1094,7 +1093,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
@@ -1148,7 +1147,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
         List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,
@@ -1229,7 +1228,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1328,7 +1327,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("");
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1428,7 +1427,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store: " + e);
         }
 
-        NodeCriteria criteria = new NodeCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -1485,7 +1484,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        java.util.List<String> hostnames = analytics.getHostNames(null, new NodeCriteria().setStartTime(100));
+        java.util.List<String> hostnames = analytics.getHostNames(null, new Criteria().setStartTime(100));
 
         assertNotNull(hostnames);
         assertEquals(2, hostnames.size());

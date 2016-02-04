@@ -28,8 +28,8 @@ import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.server.cassandra.log.MsgLogger;
 
 import com.datastax.driver.core.BatchStatement;
@@ -112,10 +112,10 @@ public class BusinessTransactionServiceCassandra implements BusinessTransactionS
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.BusinessTransactionService#query(java.lang.String,
-     *              org.hawkular.btm.api.services.BusinessTransactionCriteria)
+     *              org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<BusinessTransaction> query(String tenantId, BusinessTransactionCriteria criteria) {
+    public List<BusinessTransaction> query(String tenantId, Criteria criteria) {
         List<BusinessTransaction> ret = new ArrayList<BusinessTransaction>();
 
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_btm.businesstransactions");
@@ -123,13 +123,13 @@ public class BusinessTransactionServiceCassandra implements BusinessTransactionS
         statement.append(" ALLOW FILTERING;");
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Query statement = "+statement.toString());
+            log.finest("Query statement = " + statement.toString());
         }
 
         ResultSet results = getClient().getSession().execute(statement.toString());
         for (Row row : results) {
             try {
-                BusinessTransaction btxn=mapper.readValue(row.getString("doc"), BusinessTransaction.class);
+                BusinessTransaction btxn = mapper.readValue(row.getString("doc"), BusinessTransaction.class);
                 if (!CassandraServiceUtil.exclude(btxn.getProperties(), null, criteria)) {
                     ret.add(btxn);
                 }

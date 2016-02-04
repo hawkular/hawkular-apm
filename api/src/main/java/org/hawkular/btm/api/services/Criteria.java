@@ -23,32 +23,26 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import io.swagger.annotations.ApiModel;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 
 /**
  * This class represents the base query criteria.
  *
  * @author gbrown
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = BusinessTransactionCriteria.class, name="BusinessTransaction"),
-    @Type(value = CompletionTimeCriteria.class, name="CompletionTime"),
-    @Type(value = NodeCriteria.class, name="Node") })
-@ApiModel(subTypes = { BusinessTransactionCriteria.class, CompletionTimeCriteria.class,
-        NodeCriteria.class}, discriminator = "type")
-public abstract class BaseCriteria {
+public class Criteria {
 
-    private final Logger log = Logger.getLogger(BaseCriteria.class.getName());
+    private final Logger log = Logger.getLogger(Criteria.class.getName());
 
     private long startTime = 0L;
     private long endTime = 0L;
     private String businessTransaction;
     private Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+    private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
+    private Set<FaultCriteria> faults = new HashSet<FaultCriteria>();
     private String hostName;
+    private long upperBound;
+    private long lowerBound;
 
     /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
@@ -71,7 +65,7 @@ public abstract class BaseCriteria {
      * @param startTime the startTime to set
      * @return The criteria
      */
-    public BaseCriteria setStartTime(long startTime) {
+    public Criteria setStartTime(long startTime) {
         this.startTime = startTime;
         return this;
     }
@@ -105,7 +99,7 @@ public abstract class BaseCriteria {
      * @param endTime the endTime to set
      * @return The criteria
      */
-    public BaseCriteria setEndTime(long endTime) {
+    public Criteria setEndTime(long endTime) {
         this.endTime = endTime;
         return this;
     }
@@ -142,7 +136,7 @@ public abstract class BaseCriteria {
      * @param name the business transaction name to set
      * @return The criteria
      */
-    public BaseCriteria setBusinessTransaction(String name) {
+    public Criteria setBusinessTransaction(String name) {
         this.businessTransaction = name;
         return this;
     }
@@ -158,7 +152,7 @@ public abstract class BaseCriteria {
      * @param properties the properties to set
      * @return The criteria
      */
-    public BaseCriteria setProperties(Set<PropertyCriteria> properties) {
+    public Criteria setProperties(Set<PropertyCriteria> properties) {
         this.properties = properties;
         return this;
     }
@@ -175,6 +169,22 @@ public abstract class BaseCriteria {
     }
 
     /**
+     * @return the correlationIds
+     */
+    public Set<CorrelationIdentifier> getCorrelationIds() {
+        return correlationIds;
+    }
+
+    /**
+     * @param correlationIds the correlationIds to set
+     * @return The criteria
+     */
+    public Criteria setCorrelationIds(Set<CorrelationIdentifier> correlationIds) {
+        this.correlationIds = correlationIds;
+        return this;
+    }
+
+    /**
      * @return the hostName
      */
     public String getHostName() {
@@ -185,8 +195,52 @@ public abstract class BaseCriteria {
      * @param hostName the hostName to set
      * @return The criteria
      */
-    public BaseCriteria setHostName(String hostName) {
+    public Criteria setHostName(String hostName) {
         this.hostName = hostName;
+        return this;
+    }
+
+    /**
+     * @return the upperBound
+     */
+    public long getUpperBound() {
+        return upperBound;
+    }
+
+    /**
+     * @param upperBound the upperBound to set
+     */
+    public void setUpperBound(long upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    /**
+     * @return the lowerBound
+     */
+    public long getLowerBound() {
+        return lowerBound;
+    }
+
+    /**
+     * @param lowerBound the lowerBound to set
+     */
+    public void setLowerBound(long lowerBound) {
+        this.lowerBound = lowerBound;
+    }
+
+    /**
+     * @return the faults
+     */
+    public Set<FaultCriteria> getFaults() {
+        return faults;
+    }
+
+    /**
+     * @param fault the fault to set
+     * @return The criteria
+     */
+    public Criteria setFaults(Set<FaultCriteria> faults) {
+        this.faults = faults;
         return this;
     }
 
@@ -258,6 +312,42 @@ public abstract class BaseCriteria {
 
         if (hostName != null) {
             ret.put("hostName", hostName);
+        }
+
+        // Only relevant for business transaction fragments
+        if (!getCorrelationIds().isEmpty()) {
+            boolean first = true;
+            StringBuilder buf = new StringBuilder();
+
+            for (CorrelationIdentifier cid : getCorrelationIds()) {
+                if (first) {
+                    first = false;
+                } else {
+                    buf.append(',');
+                }
+                buf.append(cid.getScope().name());
+                buf.append('|');
+                buf.append(cid.getValue());
+            }
+
+            ret.put("correlations", buf.toString());
+        }
+
+        // Only relevant for completion time queries
+        if (!getFaults().isEmpty()) {
+            boolean first = true;
+            StringBuilder buf = new StringBuilder();
+
+            for (FaultCriteria pc : getFaults()) {
+                if (first) {
+                    first = false;
+                } else {
+                    buf.append(',');
+                }
+                buf.append(pc.encoded());
+            }
+
+            ret.put("faults", buf.toString());
         }
 
         if (log.isLoggable(Level.FINEST)) {
@@ -362,6 +452,76 @@ public abstract class BaseCriteria {
             }
             buf.append(getName());
             buf.append('|');
+            buf.append(getValue());
+            return buf.toString();
+        }
+    }
+
+    /**
+     * This class represents the fault criteria.
+     */
+    public static class FaultCriteria {
+
+        private String value;
+
+        private boolean excluded = false;
+
+        /**
+         * This is the default constructor.
+         */
+        public FaultCriteria() {
+        }
+
+        /**
+         * This constructor initialises the fields.
+         *
+         * @param value The value
+         * @param excluded Whether excluded
+         */
+        public FaultCriteria(String value, boolean excluded) {
+            this.value = value;
+            this.excluded = excluded;
+        }
+
+        /**
+         * @return the value
+         */
+        public String getValue() {
+            return value;
+        }
+
+        /**
+         * @param value the value to set
+         */
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        /**
+         * @return the excluded
+         */
+        public boolean isExcluded() {
+            return excluded;
+        }
+
+        /**
+         * @param excluded the excluded to set
+         */
+        public void setExcluded(boolean excluded) {
+            this.excluded = excluded;
+        }
+
+        /**
+         * This method returns an encoded form for the
+         * property criteria.
+         *
+         * @return The encoded form
+         */
+        public String encoded() {
+            StringBuilder buf = new StringBuilder();
+            if (isExcluded()) {
+                buf.append('-');
+            }
             buf.append(getValue());
             return buf.toString();
         }

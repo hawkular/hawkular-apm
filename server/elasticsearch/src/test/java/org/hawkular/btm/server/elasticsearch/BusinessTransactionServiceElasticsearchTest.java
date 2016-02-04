@@ -29,7 +29,7 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -98,7 +98,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("btxn1");
 
@@ -141,7 +141,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("");
 
@@ -185,7 +185,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", false);
 
@@ -228,7 +228,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", true);
 
@@ -279,7 +279,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", false);
         criteria.addProperty("prop3", "value3", false);
@@ -323,7 +323,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", true);
         criteria.addProperty("prop1", "value3", true);
@@ -367,7 +367,7 @@ public class BusinessTransactionServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "gid1"));
 

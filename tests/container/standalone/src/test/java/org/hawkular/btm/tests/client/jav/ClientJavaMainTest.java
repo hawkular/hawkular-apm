@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -106,7 +106,7 @@ public class ClientJavaMainTest {
         service.setPassword(TEST_PASSWORD);
 
         // Retrieve stored business transaction
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(startTime);
         List<BusinessTransaction> result = service.query(null, criteria);
 

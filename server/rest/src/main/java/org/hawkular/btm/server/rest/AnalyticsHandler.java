@@ -48,9 +48,7 @@ import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BaseCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.NodeCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
@@ -93,8 +91,8 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
-                    @QueryParam("startTime") long startTime,
+                    value = "optional 'start' time, default 1 hour before current time")
+                    @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
                     value = "optional 'end' time, default current time") @DefaultValue("0")
                     @QueryParam("endTime") long endTime,
@@ -141,8 +139,8 @@ public class AnalyticsHandler {
                     value = "optional 'start' time, default 1 hour before current time")
                     @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "optional 'end' time, default current time") @DefaultValue("0")
-                    @QueryParam("endTime") long endTime) {
+                    value = "optional 'end' time, default current time")
+                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
 
         try {
             log.tracef("Get bound URIs: name [%s] start [%s] end [%s]", name, startTime, endTime);
@@ -180,11 +178,11 @@ public class AnalyticsHandler {
             @ApiParam(required = true,
                     value = "business transaction name") @PathParam("name") String name,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
-                    @QueryParam("startTime") long startTime,
+                    value = "optional 'start' time, default 1 hour before current time")
+                    @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "optional 'end' time, default current time") @DefaultValue("0")
-                    @QueryParam("endTime") long endTime) {
+                    value = "optional 'end' time, default current time")
+                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
 
         try {
             log.tracef("Get property info: name [%s] start [%s] end [%s]", name, startTime, endTime);
@@ -235,7 +233,7 @@ public class AnalyticsHandler {
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -292,7 +290,7 @@ public class AnalyticsHandler {
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -349,7 +347,7 @@ public class AnalyticsHandler {
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -403,13 +401,13 @@ public class AnalyticsHandler {
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
                                     @ApiParam(required = false,
-                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
-                        @QueryParam("interval") long interval,
+                    value = "aggregation time interval (in milliseconds)")
+                            @DefaultValue("60000") @QueryParam("interval") long interval,
             @ApiParam(required = false,
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -426,7 +424,7 @@ public class AnalyticsHandler {
                     criteria, interval);
 
             log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
-                                    criteria, stats);
+                    criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -454,10 +452,10 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
-            @QueryParam("interval") long interval,
+            value = "aggregation time interval (in milliseconds)")
+                    @DefaultValue("60000") @QueryParam("interval") long interval,
             @ApiParam(required = true,
-            value = "query criteria") CompletionTimeCriteria criteria) {
+            value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction completion timeseries statistics for criteria [%s] interval [%s]",
@@ -468,7 +466,7 @@ public class AnalyticsHandler {
                     criteria, interval);
 
             log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
-                                    criteria, stats);
+                    criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -510,7 +508,7 @@ public class AnalyticsHandler {
                     value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -554,7 +552,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") CompletionTimeCriteria criteria) {
+            value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction completion fault details for criteria (POST) [%s]",
@@ -608,7 +606,7 @@ public class AnalyticsHandler {
                     value = "property") @PathParam("property") String property) {
 
         try {
-            CompletionTimeCriteria criteria = new CompletionTimeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -654,7 +652,7 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
             value = "property") @PathParam("property") String property,
             @ApiParam(required = true,
-            value = "query criteria") CompletionTimeCriteria criteria) {
+            value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction completion property details for criteria (POST) [%s] property [%s]",
@@ -741,11 +739,11 @@ public class AnalyticsHandler {
                             + "separated list of name|value "
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
                                     @ApiParam(required = false,
-                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
-                        @QueryParam("interval") long interval) {
+                    value = "aggregation time interval (in milliseconds)")
+                        @DefaultValue("60000") @QueryParam("interval") long interval) {
 
         try {
-            NodeCriteria criteria = new NodeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -788,10 +786,10 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
-            @QueryParam("interval") long interval,
+            value = "aggregation time interval (in milliseconds)")
+                            @DefaultValue("60000") @QueryParam("interval") long interval,
             @ApiParam(required = true,
-            value = "query criteria") NodeCriteria criteria) {
+            value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction node timeseries statistics for criteria [%s] interval [%s]",
@@ -843,7 +841,7 @@ public class AnalyticsHandler {
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
 
         try {
-            NodeCriteria criteria = new NodeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -886,7 +884,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") NodeCriteria criteria) {
+            value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
@@ -938,7 +936,7 @@ public class AnalyticsHandler {
                             + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
 
         try {
-            NodeCriteria criteria = new NodeCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -980,7 +978,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") BaseCriteria criteria) {
+            value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get host names for criteria [%s]",

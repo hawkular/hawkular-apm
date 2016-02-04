@@ -18,7 +18,7 @@ package org.hawkular.btm.btxn.service.rest.client;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
+import org.hawkular.btm.api.services.Criteria;
 import org.junit.Test;
 
 /*
@@ -47,7 +47,7 @@ public class BusinessTransactionServiceRESTClientTest {
     public void testGetQueryURL() {
         BusinessTransactionServiceRESTClient client=new BusinessTransactionServiceRESTClient();
         client.setBaseUrl("base/");
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(100);
 
         String url=client.getQueryURL(criteria);

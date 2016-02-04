@@ -75,7 +75,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * @param criteria The criteria
      * @return The list of fragments
      */
-    protected abstract List<BusinessTransaction> getFragments(String tenantId, BusinessTransactionCriteria criteria);
+    protected abstract List<BusinessTransaction> getFragments(String tenantId, Criteria criteria);
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String,
@@ -83,7 +83,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      */
     @Override
     public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(startTime).setEndTime(endTime);
 
         List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
@@ -98,7 +98,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
         List<String> ret = new ArrayList<String>();
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(businessTransaction)
                 .setStartTime(startTime)
                 .setEndTime(endTime);
@@ -123,7 +123,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
         List<String> propertyNames = new ArrayList<String>();
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        Criteria criteria = new Criteria();
         criteria.setStartTime(startTime)
                 .setEndTime(endTime)
                 .setBusinessTransaction(businessTransaction);

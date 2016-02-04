@@ -95,7 +95,7 @@
   </issueManagement>
 
   <properties>
-    <hawkular-btm-db>cassandra</hawkular-btm-db>
+    <hawkular-btm-db>elasticsearch</hawkular-btm-db>
 
     <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
 
@@ -598,6 +598,12 @@
       <modules>
         <module>tests/container/wildfly</module>
       </modules>
+    </profile>
+    <profile>
+      <id>cassandra</id>
+      <properties>
+        <hawkular-btm-db>cassandra</hawkular-btm-db>
+      </properties>
     </profile>
   </profiles>
 

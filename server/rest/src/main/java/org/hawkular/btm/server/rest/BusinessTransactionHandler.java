@@ -41,9 +41,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.BusinessTransactionService;
+import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
 import org.jboss.logging.Logger;
 
@@ -81,7 +81,7 @@ public class BusinessTransactionHandler {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Adding business transactions succeeded."),
             @ApiResponse(code = 500, message =
-                        "Unexpected error happened while storing the business transaction fragments") })
+                    "Unexpected error happened while storing the business transaction fragments") })
     public void addBusinessTransactions(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
@@ -150,24 +150,24 @@ public class BusinessTransactionHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "retrieve business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "retrieve business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "retrieve business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "retrieve business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "retrieve business transactions with these correlation identifiers, defined as a comma "
-                            + "separated list of scope|value "
-                            + "pairs") @DefaultValue("") @QueryParam("correlations") String correlations) {
+            @ApiParam(required = false,
+                            value = "retrieve business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                      value = "retrieve business transactions with these correlation identifiers, defined as a comma "
+                                    + "separated list of scope|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("correlations") String correlations) {
 
         try {
-            BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+            Criteria criteria = new Criteria();
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
@@ -208,7 +208,7 @@ public class BusinessTransactionHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") BusinessTransactionCriteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Query Business transaction fragments for criteria [%s]", criteria);

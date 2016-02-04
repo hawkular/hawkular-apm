@@ -22,11 +22,9 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.services.BaseCriteria;
-import org.hawkular.btm.api.services.BaseCriteria.PropertyCriteria;
-import org.hawkular.btm.api.services.BusinessTransactionCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria;
-import org.hawkular.btm.api.services.CompletionTimeCriteria.FaultCriteria;
+import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.services.Criteria.FaultCriteria;
+import org.hawkular.btm.api.services.Criteria.PropertyCriteria;
 
 /**
  * This class provides utility functions for working with Elasticsearch.
@@ -44,59 +42,7 @@ public class ElasticsearchUtil {
      * @param criteria the criteria
      * @return The query
      */
-    public static BoolQueryBuilder buildQuery(BaseCriteria criteria, String timeProperty,
-            String businessTxnProperty) {
-        BoolQueryBuilder query = buildBaseQuery(criteria, timeProperty, businessTxnProperty);
-
-        if (criteria instanceof BusinessTransactionCriteria) {
-            if (!((BusinessTransactionCriteria)criteria).getCorrelationIds().isEmpty()) {
-                for (CorrelationIdentifier id : ((BusinessTransactionCriteria)criteria).getCorrelationIds()) {
-                    query.must(QueryBuilders.termQuery("value", id.getValue()));
-                    /* HWKBTM-186
-                    b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
-                            QueryBuilders.boolQuery()
-                                    .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
-                                    .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
-                     */
-                }
-            }
-        } else if (criteria instanceof CompletionTimeCriteria) {
-            if (!((CompletionTimeCriteria)criteria).getFaults().isEmpty()) {
-                for (FaultCriteria fc : ((CompletionTimeCriteria)criteria).getFaults()) {
-                    if (fc.isExcluded()) {
-                        query = query.mustNot(QueryBuilders.matchQuery("fault", fc.getValue()));
-                    } else {
-                        query = query.must(QueryBuilders.matchQuery("fault", fc.getValue()));
-                    }
-                }
-            }
-
-            if (((CompletionTimeCriteria)criteria).getLowerBound() > 0
-                    || ((CompletionTimeCriteria)criteria).getUpperBound() > 0) {
-                RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("duration");
-                if (((CompletionTimeCriteria)criteria).getLowerBound() > 0) {
-                    rangeQuery.gte(((CompletionTimeCriteria)criteria).getLowerBound());
-                }
-                if (((CompletionTimeCriteria)criteria).getUpperBound() > 0) {
-                    rangeQuery.lte(((CompletionTimeCriteria)criteria).getUpperBound());
-                }
-                query = query.must(rangeQuery);
-            }
-        }
-
-        return query;
-    }
-
-    /**
-     * This method builds the Elasticsearch query based on the supplied
-     * business transaction criteria.
-     *
-     * @param timeProperty The name of the time property
-     * @param businessTxnProperty The name of the business transaction property
-     * @param criteria the criteria
-     * @return The query
-     */
-    private static BoolQueryBuilder buildBaseQuery(BaseCriteria criteria, String timeProperty,
+    public static BoolQueryBuilder buildQuery(Criteria criteria, String timeProperty,
             String businessTxnProperty) {
         long startTime = criteria.calculateStartTime();
         long endTime = criteria.calculateEndTime();
@@ -123,6 +69,40 @@ public class ElasticsearchUtil {
             query = query.must(QueryBuilders.matchQuery("hostName", criteria.getHostName()));
         }
 
+        if (!criteria.getCorrelationIds().isEmpty()) {
+            for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
+                query.must(QueryBuilders.termQuery("value", id.getValue()));
+                /* HWKBTM-186
+                b2 = b2.must(QueryBuilders.nestedQuery("nodes.correlationIds", // Path
+                        QueryBuilders.boolQuery()
+                                .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
+                                .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
+                 */
+            }
+        }
+
+        if (!criteria.getFaults().isEmpty()) {
+            for (FaultCriteria fc : criteria.getFaults()) {
+                if (fc.isExcluded()) {
+                    query = query.mustNot(QueryBuilders.matchQuery("fault", fc.getValue()));
+                } else {
+                    query = query.must(QueryBuilders.matchQuery("fault", fc.getValue()));
+                }
+            }
+        }
+
+        if (criteria.getLowerBound() > 0
+                || criteria.getUpperBound() > 0) {
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("duration");
+            if (criteria.getLowerBound() > 0) {
+                rangeQuery.gte(criteria.getLowerBound());
+            }
+            if (criteria.getUpperBound() > 0) {
+                rangeQuery.lte(criteria.getUpperBound());
+            }
+            query = query.must(rangeQuery);
+        }
+
         return query;
     }
 
@@ -133,7 +113,7 @@ public class ElasticsearchUtil {
      * @param criteria The business transaction criteria
      * @return The filter, or null if not relevant
      */
-    public static FilterBuilder buildFilter(BusinessTransactionCriteria criteria) {
+    public static FilterBuilder buildFilter(Criteria criteria) {
         if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().length() == 0) {
             return FilterBuilders.missingFilter("name");
         }
