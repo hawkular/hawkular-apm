@@ -319,6 +319,17 @@ public class ElasticsearchClient {
     }
 
     /**
+     * This method returns the tenant.
+     *
+     * @param tenantId The tenant id
+     */
+    protected void clear(String tenantId) {
+        synchronized (knownTenants) {
+            knownTenants.remove(tenantId);
+        }
+    }
+
+    /**
      * This method closes the Elasticsearch client.
      *
      */
