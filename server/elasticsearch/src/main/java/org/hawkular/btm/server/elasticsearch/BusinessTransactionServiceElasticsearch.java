@@ -222,6 +222,7 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
 
         try {
             client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+            client.clear(tenantId);
         } catch (IndexMissingException ime) {
             // Ignore
         }

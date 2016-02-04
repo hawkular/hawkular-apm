@@ -404,6 +404,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
         try {
             client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+            client.clear(tenantId);
         } catch (IndexMissingException ime) {
             // Ignore
         }
