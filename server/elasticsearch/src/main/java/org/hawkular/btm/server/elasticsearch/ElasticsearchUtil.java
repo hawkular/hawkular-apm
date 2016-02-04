@@ -98,21 +98,8 @@ public class ElasticsearchUtil {
      */
     private static BoolQueryBuilder buildBaseQuery(BaseCriteria criteria, String timeProperty,
             String businessTxnProperty) {
-        long startTime = criteria.getStartTime();
-        long endTime = criteria.getEndTime();
-
-        if (endTime == 0) {
-            endTime = System.currentTimeMillis();
-        } else if (endTime < 0) {
-            endTime = System.currentTimeMillis() - endTime;
-        }
-
-        if (startTime == 0) {
-            // Set to 1 hour before end time
-            startTime = endTime - 3600000;
-        } else if (startTime < 0) {
-            startTime = endTime + startTime;
-        }
+        long startTime = criteria.calculateStartTime();
+        long endTime = criteria.calculateEndTime();
 
         BoolQueryBuilder query = QueryBuilders.boolQuery()
                 .must(QueryBuilders.rangeQuery(timeProperty).from(startTime).to(endTime));

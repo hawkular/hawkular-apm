@@ -31,6 +31,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
@@ -394,16 +395,18 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         }
     }
 
-    /**
-     * This method clears the Elasticsearch database, and is currently only intended for
-     * testing purposes.
-     *
-     * @param tenantId The optional tenant id
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#clear(java.lang.String)
      */
-    protected void clear(String tenantId) {
+    @Override
+    public void clear(String tenantId) {
         String index = client.getIndex(tenantId);
 
-        client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+        try {
+            client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+        } catch (IndexMissingException ime) {
+            // Ignore
+        }
     }
 
 }

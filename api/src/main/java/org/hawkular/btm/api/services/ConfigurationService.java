@@ -106,4 +106,11 @@ public interface ConfigurationService {
      */
     void removeBusinessTransaction(String tenantId, String name) throws Exception;
 
+    /**
+     * This method clears the configuration data for the supplied tenant.
+     *
+     * @param tenantId The tenant id
+     */
+    void clear(String tenantId);
+
 }

@@ -632,7 +632,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.activate("not relevant");
         collector.consumerStart(null, "not relevant", "HTTP", null);
         collector.getFragmentManager().getFragmentBuilder()
-        .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
+                .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
 
         // Cause a fragment builder to be created
         collector.activate("/test");
@@ -847,6 +847,15 @@ public class DefaultBusinessTransactionCollectorTest {
                 throws Exception {
         }
 
+        /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.BusinessTransactionService#clear(java.lang.String)
+         */
+        @Override
+        public void clear(String tenantId) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 
     public class TestConfigurationService implements ConfigurationService {
@@ -890,6 +899,15 @@ public class DefaultBusinessTransactionCollectorTest {
         public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.ConfigurationService#clear(java.lang.String)
+         */
+        @Override
+        public void clear(String tenantId) {
+            // TODO Auto-generated method stub
+
         }
     }
 }

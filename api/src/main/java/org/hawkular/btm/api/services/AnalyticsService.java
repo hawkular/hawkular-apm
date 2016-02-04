@@ -16,6 +16,7 @@
  */
 package org.hawkular.btm.api.services;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
@@ -172,7 +173,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The node summary statistics
      */
-    List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria);
+    Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, NodeCriteria criteria);
 
     /**
      * This method stores the supplied list of node details.
@@ -201,5 +202,12 @@ public interface AnalyticsService {
      * @return The list of host names
      */
     List<String> getHostNames(String tenantId, BaseCriteria criteria);
+
+    /**
+     * This method clears the analytics data for the specified tenant.
+     *
+     * @param tenantId The tenant id
+     */
+    void clear(String tenantId);
 
 }

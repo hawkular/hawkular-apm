@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.services.BusinessTransactionCriteria;
 import org.junit.After;
 import org.junit.Before;
@@ -330,5 +333,48 @@ public class BusinessTransactionServiceElasticsearchTest {
         assertNotNull(result1);
         assertEquals(1, result1.size());
         assertEquals("id2", result1.get(0).getId());
+    }
+
+    @Test
+    public void testQueryCorrelationId() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("id1");
+        btxn1.setStartTime(1000);
+        btxns.add(btxn1);
+
+        Consumer c1=new Consumer();
+        c1.addGlobalId("gid1");
+        btxn1.getNodes().add(c1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setId("id2");
+        btxn2.setStartTime(2000);
+        btxns.add(btxn2);
+
+        Consumer c2=new Consumer();
+        c2.addGlobalId("gid2");
+        btxn2.getNodes().add(c2);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store");
+        }
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria();
+        criteria.setStartTime(100);
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "gid1"));
+
+        List<BusinessTransaction> result1 = bts.query(null, criteria);
+
+        assertNotNull(result1);
+        assertEquals(1, result1.size());
+        assertEquals("id1", result1.get(0).getId());
     }
 }

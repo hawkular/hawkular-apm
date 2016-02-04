@@ -206,4 +206,44 @@ public class BusinessTransactionServiceRESTClient extends BusinessTransactionPub
             throws Exception {
         throw new UnsupportedOperationException();
     }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.BusinessTransactionService#clear(java.lang.String)
+     */
+    @Override
+    public void clear(String tenantId) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Clear business transaction fragments: tenantId=[" + tenantId + "]");
+        }
+
+        try {
+            URL url = new URL(new StringBuilder().append(getBaseUrl()).append("fragments").toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("DELETE");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Business transaction fragments cleared");
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to clear business transaction fragments: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to send 'query' business transaction request", e);
+        }
+    }
 }

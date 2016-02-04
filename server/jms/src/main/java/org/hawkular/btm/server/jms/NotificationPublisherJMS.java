@@ -18,6 +18,8 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import org.hawkular.btm.api.model.events.Notification;
 import org.hawkular.btm.server.api.services.NotificationPublisher;
 
@@ -26,6 +28,7 @@ import org.hawkular.btm.server.api.services.NotificationPublisher;
  *
  * @author gbrown
  */
+@Singleton
 public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
         implements NotificationPublisher {
 

@@ -17,6 +17,7 @@
 package org.hawkular.btm.tests.performance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class ServicesPerformanceTest {
     @BeforeClass
     public static void init() throws Exception {
         servicesManager.add(new ServicesManagerElasticsearch().init());
+        servicesManager.add(new ServicesManagerCassandra().init());
     }
 
     @AfterClass
@@ -59,7 +61,7 @@ public class ServicesPerformanceTest {
 
     @Test
     public void testStoreAndQueryNodeDetails() throws Exception {
-        testStoreAndQueryNodeDetails(1000, 100);
+        testStoreAndQueryNodeDetails(6250, 40);
     }
 
     protected void testStoreAndQueryNodeDetails(int numberOfBatches, int batchSize) throws Exception {
@@ -83,6 +85,13 @@ public class ServicesPerformanceTest {
                 nd.setTimestamp((i * batchSize) + j + 1);
                 nd.setType(NodeType.Component);
                 nd.setUri("uri" + j);
+                nd.setHostName("host"+i);
+                nd.getProperties().put("btm:hostName", nd.getHostName());
+                nd.getProperties().put("btm:prop1", nd.getHostName());
+                nd.getProperties().put("btm:prop2", nd.getHostName());
+                nd.getProperties().put("btm:prop3", nd.getHostName());
+                nd.getProperties().put("btm:prop4", nd.getHostName());
+                nd.getProperties().put("btm:prop5", nd.getHostName());
                 nds.add(nd);
             }
 
@@ -106,10 +115,14 @@ public class ServicesPerformanceTest {
 
         NodeCriteria criteria = new NodeCriteria();
         criteria.setStartTime(1);
+        criteria.setEndTime((numberOfBatches+1) * batchSize);
+        //criteria.setHostName("host5");
+        //criteria.addProperty("btm:hostName", "host5", false);
 
         for (ServicesManager sm : servicesManager) {
             long startTime = System.currentTimeMillis();
-            List<NodeSummaryStatistics> result = sm.getAnalyticsService().getNodeSummaryStatistics(null, criteria);
+            Collection<NodeSummaryStatistics> result = sm.getAnalyticsService().getNodeSummaryStatistics(null,
+                    criteria);
             long duration = System.currentTimeMillis() - startTime;
 
             queryNodeSummariesTime.put(sm, duration);

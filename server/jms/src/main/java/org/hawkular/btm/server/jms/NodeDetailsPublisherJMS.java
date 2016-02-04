@@ -18,6 +18,8 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.server.api.services.NodeDetailsPublisher;
 
@@ -26,6 +28,7 @@ import org.hawkular.btm.server.api.services.NodeDetailsPublisher;
  *
  * @author gbrown
  */
+@Singleton
 public class NodeDetailsPublisherJMS extends AbstractPublisherJMS<NodeDetails>
                                         implements NodeDetailsPublisher {
 

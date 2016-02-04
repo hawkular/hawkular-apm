@@ -18,6 +18,8 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.server.api.services.CompletionTimePublisher;
 
@@ -26,8 +28,9 @@ import org.hawkular.btm.server.api.services.CompletionTimePublisher;
  *
  * @author gbrown
  */
+@Singleton
 public class CompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
-implements CompletionTimePublisher {
+                        implements CompletionTimePublisher {
 
     /**  */
     private static final int MAX_RETRIES = 3;
