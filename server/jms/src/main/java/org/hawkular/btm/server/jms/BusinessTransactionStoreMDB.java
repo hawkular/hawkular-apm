@@ -17,6 +17,8 @@
 package org.hawkular.btm.server.jms;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -49,6 +51,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
 public class BusinessTransactionStoreMDB extends RetryCapableMDB<BusinessTransaction> {
 
+    private static final Logger perfLog=Logger.getLogger("org.hawkular.btm.performance.btxn");
+
     @Inject
     private BusinessTransactionPublisherJMS businessTransactionPublisher;
 
@@ -67,7 +71,16 @@ public class BusinessTransactionStoreMDB extends RetryCapableMDB<BusinessTransac
      */
     @Override
     protected void process(String tenantId, List<BusinessTransaction> items, int retryCount) throws Exception {
+        long startTime=0;
+        if (perfLog.isLoggable(Level.FINEST)) {
+            startTime = System.currentTimeMillis();
+            perfLog.finest("Performance: about to store btxn (first id="+items.get(0).getId()+")");
+        }
         businessTransactionService.storeBusinessTransactions(tenantId, items);
+        if (perfLog.isLoggable(Level.FINEST)) {
+            perfLog.finest("Performance: store btxn (first id="+items.get(0).getId()+") duration="+
+                        (System.currentTimeMillis()-startTime)+"ms");
+        }
     }
 
 }
