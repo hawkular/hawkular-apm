@@ -137,15 +137,22 @@ module BTM {
     };
 
     $scope.selectionChanged = function(uriinfo) {
-      if ($scope.selecteduris.contains(uriinfo)) {
-        $scope.selecteduris.remove(uriinfo);
-      } else {
-        $scope.selecteduris.add(uriinfo);
+      for (var i=0; i < $scope.selecteduris.length; i++) {
+        if ($scope.selecteduris[i].uri === uriinfo.uri) {
+          $scope.selecteduris.remove($scope.selecteduris[i]);
+          return;
+        }
       }
+      $scope.selecteduris.add(uriinfo);
     };
     
     $scope.isSelected = function(uriinfo) {
-      return $scope.selecteduris.contains(uriinfo);
+      for (var i=0; i < $scope.selecteduris.length; i++) {
+        if ($scope.selecteduris[i].uri === uriinfo.uri) {
+          return true;
+        }
+      }
+      return false;
     };
     
     $scope.getLevel = function(level) {
