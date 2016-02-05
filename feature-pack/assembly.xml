@@ -17,17 +17,23 @@
     limitations under the License.
 
 -->
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 
-<assembly>
-  <id>distribution</id>
+  <id>${project.artifactId}</id>
   <formats>
     <format>zip</format>
   </formats>
-
   <includeBaseDirectory>false</includeBaseDirectory>
-  <baseDirectory>${project.build.finalName}</baseDirectory>
-
   <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/upstream-subsystem-templates</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>subsystem-templates/hawkular-accounts-ejb3.xml</include>
+        <include>subsystem-templates/hawkular-accounts-security.xml</include>
+      </includes>
+    </fileSet>
     <fileSet>
       <directory>target/${project.artifactId}-${project.version}</directory>
       <outputDirectory/>
