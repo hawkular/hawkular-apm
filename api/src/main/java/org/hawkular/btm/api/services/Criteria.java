@@ -362,10 +362,10 @@ public class Criteria {
      */
     @Override
     public String toString() {
-        return "BaseCriteria [log=" + log + ", startTime=" + startTime + ", endTime=" + endTime
-                + ", businessTransaction=" + businessTransaction + ", properties=" + properties + ", hostName="
-                + hostName + ", timeout=" + timeout + ", maxResponseSize=" + maxResponseSize + ", toString()="
-                + super.toString() + "]";
+        return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
+                + businessTransaction + ", properties=" + properties + ", correlationIds=" + correlationIds
+                + ", faults=" + faults + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound="
+                + lowerBound + ", timeout=" + timeout + ", maxResponseSize=" + maxResponseSize + "]";
     }
 
     /**
@@ -455,6 +455,14 @@ public class Criteria {
             buf.append(getValue());
             return buf.toString();
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "PropertyCriteria [name=" + name + ", value=" + value + ", excluded=" + excluded + "]";
+        }
     }
 
     /**
@@ -524,6 +532,14 @@ public class Criteria {
             }
             buf.append(getValue());
             return buf.toString();
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "FaultCriteria [value=" + value + ", excluded=" + excluded + "]";
         }
     }
 }

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -69,6 +70,9 @@ import io.swagger.annotations.ApiResponses;
 @Produces(APPLICATION_JSON)
 @Api(value = "analytics", description = "Analytics")
 public class AnalyticsHandler {
+
+    private static final java.util.logging.Logger perfLog=
+            java.util.logging.Logger.getLogger("org.hawkular.btm.performance.analytics");
 
     private static final Logger log = Logger.getLogger(AnalyticsHandler.class);
 
@@ -754,9 +758,20 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node timeseriesstatistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
+            long perfStartTime=0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query node timeseries (criteria hash="+criteria.hashCode()+")");
+            }
+
             List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
                     securityProvider.getTenantId(context),
                     criteria, interval);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query node timeseries (criteria hash="+criteria.hashCode()+") duration="+
+                            (System.currentTimeMillis()-perfStartTime)+"ms");
+            }
 
             log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
 
@@ -795,9 +810,20 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node timeseries statistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
+            long perfStartTime=0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query node timeseries (criteria hash="+criteria.hashCode()+")");
+            }
+
             List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
                     securityProvider.getTenantId(context),
                     criteria, interval);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query node timeseries (criteria hash="+criteria.hashCode()+") duration="+
+                            (System.currentTimeMillis()-perfStartTime)+"ms");
+            }
 
             log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
 
@@ -852,9 +878,20 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
+            long perfStartTime=0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query node summary (criteria hash="+criteria.hashCode()+")");
+            }
+
             Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
                     securityProvider.getTenantId(context),
                     criteria);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query node summary (criteria hash="+criteria.hashCode()+") duration="+
+                            (System.currentTimeMillis()-perfStartTime)+"ms");
+            }
 
             log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
 
@@ -890,9 +927,20 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
+            long perfStartTime=0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query node summary (criteria hash="+criteria.hashCode()+")");
+            }
+
             Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
                     securityProvider.getTenantId(context),
                     criteria);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query node summary (criteria hash="+criteria.hashCode()+") duration="+
+                            (System.currentTimeMillis()-perfStartTime)+"ms");
+            }
 
             log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
 
@@ -947,9 +995,20 @@ public class AnalyticsHandler {
             log.tracef("Get host names for criteria [%s]",
                     criteria);
 
+            long perfStartTime=0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query host names (criteria hash="+criteria.hashCode()+")");
+            }
+
             List<String> hostnames = analyticsService.getHostNames(
                     securityProvider.getTenantId(context),
                     criteria);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query host names (criteria hash="+criteria.hashCode()+") duration="+
+                            (System.currentTimeMillis()-perfStartTime)+"ms");
+            }
 
             log.tracef("Got host names for criteria [%s] = %s", criteria, hostnames);
 
@@ -984,9 +1043,20 @@ public class AnalyticsHandler {
             log.tracef("Get host names for criteria [%s]",
                     criteria);
 
+            long perfStartTime=0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query host names (criteria hash="+criteria.hashCode()+")");
+            }
+
             List<String> hostnames = analyticsService.getHostNames(
                     securityProvider.getTenantId(context),
                     criteria);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query host names (criteria hash="+criteria.hashCode()+") duration="+
+                            (System.currentTimeMillis()-perfStartTime)+"ms");
+            }
 
             log.tracef("Got host names for criteria [%s] = %s", criteria, hostnames);
 
