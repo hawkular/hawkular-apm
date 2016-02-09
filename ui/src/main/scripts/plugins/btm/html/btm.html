@@ -8,10 +8,10 @@
     <hawkular-subtab class="hk-align-center">
       <div class="hk-nav-tabs-container">
         <ul class="nav nav-tabs nav-tabs-pf">
-          <li class="active"><a href="active" >Active</a></li>
-          <li><a href="candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
-          <li><a href="disabled">Disabled</a></li>
-          <li><a href="ignored">Ignored</a></li>
+          <li class="active"><a href="/hawkular-ui/btm" >Active</a></li>
+          <li><a href="/hawkular-ui/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
+          <li><a href="/hawkular-ui/btm/disabled">Disabled</a></li>
+          <li><a href="/hawkular-ui/btm/ignored">Ignored</a></li>
         </ul>
       </div>
     </hawkular-subtab>
@@ -40,9 +40,9 @@
 
           <div class="hk-url-item col-md-6" ng-repeat="btxn in businessTransactions | filter:query" >
             <div class="panel panel-default hk-url-heading" ng-show="btxn.summary.level === 'All'">
-              <a href="info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
+              <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
               <span class="hk-settings pull-right">
-                <a href="config/{{btxn.summary.name}}" ><i class="fa fa-cog"></i></a>
+                <a href="/hawkular-ui/btm/config/{{btxn.summary.name}}" ><i class="fa fa-cog"></i></a>
                 <a href="#" ng-click="deleteBusinessTxn(btxn)"><i class="fa fa-trash-o"></i></a>
               </span>
             </div>
@@ -50,28 +50,28 @@
             <div class="panel panel-default hk-summary" ng-show="btxn.summary.level === 'All'">
               <div class="row">
                 <div class="col-sm-3 hk-summary-item">
-                  <a href="info/{{btxn.summary.name}}">
+                  <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">
                     <span class="hk-data" ng-show="btxn.count !== undefined">{{btxn.count}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Transactions (per hour)</span>
                   </a>
                 </div>
                 <div class="col-sm-3 hk-summary-item">
-                  <a href="info/{{btxn.summary.name}}">
+                  <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">
                     <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Completion (secs 95%)</span>
                   </a>
                 </div>
                 <div class="col-sm-3 hk-summary-item">
-                  <a href="info/{{btxn.summary.name}}">
+                  <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">
                     <span class="hk-data" ng-show="btxn.faultcount !== undefined">{{btxn.faultcount}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.faultcount !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Faults</span>
                   </a>
                 </div>
                 <div class="col-sm-3 hk-summary-item">
-                  <a href="info/{{btxn.summary.name}}">
+                  <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">
                     <span class="hk-data" ng-show="btxn.alerts !== undefined">{{btxn.alerts}} <i class="fa fa-flag" ng-show="btxn.alerts > 0"></i></span>
                     <span class="hk-data spinner" ng-hide="btxn.alerts !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Alerts</span>

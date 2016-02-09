@@ -115,7 +115,7 @@ module BTM {
           ],
           type: 'pie',
           onclick: function (d, i) {
-            $location.path('info/'+d.id);
+            $location.path('/hawkular-ui/btm/info/'+d.id);
           }
         }
       });
@@ -127,7 +127,7 @@ module BTM {
           ],
           type: 'pie',
           onclick: function (d, i) {
-            $location.path('info/'+d.id);
+            $location.path('/hawkular-ui/btm/info/'+d.id);
           }
         }
       });
@@ -146,7 +146,7 @@ module BTM {
           record.push(btxn.count);
           btxndata.push(record);
 
-          if ($scope.txnCountValues.contains(btxn.summary.name)) {
+          if ($scope.txnCountValues.indexOf(btxn.summary.name) !== -1) {
             removeTxnCountValues.remove(btxn.summary.name);
           } else {
             $scope.txnCountValues.add(btxn.summary.name);
@@ -177,7 +177,7 @@ module BTM {
           record.push(btxn.faultcount);
           btxnfaultdata.push(record);
 
-          if ($scope.faultCountValues.contains(btxn.summary.name)) {
+          if ($scope.faultCountValues.indexOf(btxn.summary.name) !== -1) {
             removeFaultCountValues.remove(btxn.summary.name);
           } else {
             $scope.faultCountValues.add(btxn.summary.name);

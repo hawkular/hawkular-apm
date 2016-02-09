@@ -222,7 +222,7 @@ gulp.task('connect', ['watch'], function() {
     */
     ],
     staticAssets: [{
-      path: '/hawkular-ui/btm/',
+      path: '/',
       dir: '.'
 
     }],

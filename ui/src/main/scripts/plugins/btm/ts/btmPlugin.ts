@@ -26,43 +26,36 @@ module BTM {
     tab = builder.create()
       .id(BTM.pluginName)
       .title(() => "Business Transactions")
-      .href(() => "/active")
+      .href(() => "/hawkular-ui/btm")
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
     $routeProvider.
-      when('/active', {
+      when('/hawkular-ui/btm', {
         templateUrl: 'plugins/btm/html/btm.html',
         controller: 'BTM.BTMController'
       }).
-      when('/candidates', {
+      when('/hawkular-ui/btm/candidates', {
         templateUrl: 'plugins/btm/html/btxncandidates.html',
         controller: 'BTM.BTMCandidatesController'
       }).
-      when('/disabled', {
+      when('/hawkular-ui/btm/disabled', {
         templateUrl: 'plugins/btm/html/btxndisabled.html',
         controller: 'BTM.BTMDisabledController'
       }).
-      when('/ignored', {
+      when('/hawkular-ui/btm/ignored', {
         templateUrl: 'plugins/btm/html/btxnignored.html',
         controller: 'BTM.BTMIgnoredController'
       }).
-      when('/config/:businesstransaction', {
+      when('/hawkular-ui/btm/config/:businesstransaction', {
         templateUrl: 'plugins/btm/html/btxnconfig.html',
         controller: 'BTM.BTxnConfigController'
       }).
-      when('/info/:businesstransaction', {
+      when('/hawkular-ui/btm/info/:businesstransaction', {
         templateUrl: 'plugins/btm/html/btxninfo.html',
         controller: 'BTM.BTxnInfoController'
       });
   }]);
-
-  _module.run(function($http,$location) {
-    // Only set authorization if using development URL
-    if ($location.absUrl().indexOf('http://localhost:2772/') === 0) {
-      $http.defaults.headers.common.Authorization = 'Basic amRvZTpwYXNzd29yZA==';
-    }
-  });
 
   _module.run(function(editableOptions) {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
@@ -74,7 +67,7 @@ module BTM {
   }]);
 
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
-    window['KeycloakConfig'] = '/hawkular-ui/btm/keycloak.json';
+    window['KeycloakConfig'] = '/keycloak.json';
     next();
   }, true);
 

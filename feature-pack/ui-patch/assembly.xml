@@ -17,31 +17,20 @@
     limitations under the License.
 
 -->
-<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
-        "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
 
-<!--
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
 
-    Configuration file for UrlRewriteFilter
-    http://www.tuckey.org/urlrewrite/
+  <includeBaseDirectory>false</includeBaseDirectory>
 
--->
-<urlrewrite>
-  <rule match-type="wildcard">
-    <from>/hawkular-ui/apm/**</from>
-    <to>/</to>
-  </rule>
-  <rule match-type="wildcard">
-    <from>/hawkular-ui/apm</from>
-    <to>/</to>
-  </rule>
-  <rule match-type="wildcard">
-    <from>/hawkular-ui/btm/**</from>
-    <to>/</to>
-  </rule>
-  <rule match-type="wildcard">
-    <from>/hawkular-ui/btm</from>
-    <to>/</to>
-  </rule>
-</urlrewrite>
+  <fileSets>
+    <fileSet>
+      <directory>target/ui-patch</directory>
+      <outputDirectory/>
+    </fileSet>
+  </fileSets>
+</assembly>
 

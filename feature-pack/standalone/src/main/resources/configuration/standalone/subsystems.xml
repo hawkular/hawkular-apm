@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!-- See src/resources/configuration/ReadMe.txt for how the configuration assembly works -->
+<config>
+  <subsystems>
+    <!-- taken from KC Server -->
+    <subsystem>logging.xml</subsystem>
+    <subsystem>batch.xml</subsystem>
+    <subsystem>bean-validation.xml</subsystem>
+    <subsystem>keycloak-datasources.xml</subsystem>
+    <subsystem>ee.xml</subsystem>
+    <subsystem>hawkular-accounts-ejb3.xml</subsystem>
+    <subsystem>io.xml</subsystem>
+    <subsystem>keycloak-infinispan.xml</subsystem>
+    <subsystem>jaxrs.xml</subsystem>
+    <subsystem>jca.xml</subsystem>
+    <subsystem>jdr.xml</subsystem>
+    <subsystem>jmx.xml</subsystem>
+    <subsystem>jpa.xml</subsystem>
+    <subsystem>jsf.xml</subsystem>
+    <subsystem>mail.xml</subsystem>
+    <subsystem>naming.xml</subsystem>
+    <subsystem>pojo.xml</subsystem>
+    <subsystem>remoting.xml</subsystem>
+    <subsystem>resource-adapters.xml</subsystem>
+    <subsystem>request-controller.xml</subsystem>
+    <subsystem>sar.xml</subsystem>
+    <subsystem>security-manager.xml</subsystem>
+    <subsystem>hawkular-accounts-security.xml</subsystem>
+    <subsystem>transactions.xml</subsystem>
+    <subsystem>undertow.xml</subsystem>
+    <subsystem>webservices.xml</subsystem>
+    <subsystem>weld.xml</subsystem>
+    <subsystem>keycloak-server.xml</subsystem>
+
+    <!-- required by KC Adapter -->
+    <subsystem>hawkular-accounts-keycloak-adapter.xml</subsystem>
+    <subsystem>deployment-scanner.xml</subsystem>
+
+    <!-- required by Hawkular Accounts -->
+    <subsystem>hawkular-accounts-messaging-activemq.xml</subsystem>
+
+    <!-- required by Nest -->
+    <subsystem>nest.xml</subsystem>
+  </subsystems>
+</config>
