@@ -71,7 +71,7 @@ module BTM {
           record.push(fault.count);
           faultdata.push(record);
 
-          if ($scope.faultValues.contains(fault.value)) {
+          if ($scope.faultValues.indexOf(fault.value) !== -1) {
             removeFaultValues.remove(fault.value);
           } else {
             $scope.faultValues.add(fault.value);
@@ -130,7 +130,7 @@ module BTM {
           record.push(prop.count);
           propertydata.push(record);
 
-          if ($scope.propertyValues.contains(prop.value)) {
+          if ($scope.propertyValues.indexOf(prop.value) !== -1) {
             removePropertyValues.remove(prop.value);
           } else {
             $scope.propertyValues.add(prop.value);

@@ -26,23 +26,16 @@ module APM {
     tab = builder.create()
       .id(APM.pluginName)
       .title(() => "Application Performance")
-      .href(() => "/")
+      .href(() => "/hawkular-ui/apm")
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
     $routeProvider.
-      when('/', {
+      when('/hawkular-ui/apm', {
         templateUrl: 'plugins/apm/html/apm.html',
         controller: 'APM.APMController'
       });
   }]);
-
-  _module.run(function($http,$location) {
-    // Only set authorization if using development URL
-    if ($location.absUrl().indexOf('http://localhost:2772/') === 0) {
-      $http.defaults.headers.common.Authorization = 'Basic amRvZTpwYXNzd29yZA==';
-    }
-  });
 
   _module.run(function(editableOptions) {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'

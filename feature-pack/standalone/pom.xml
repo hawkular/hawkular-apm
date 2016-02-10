@@ -25,9 +25,9 @@
     <version>0.7.1.Final-SNAPSHOT</version>
   </parent>
 
-  <artifactId>hawkular-btm-feature-pack</artifactId>
+  <artifactId>hawkular-btm-standalone-feature-pack</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular BTM::Feature Pack</name>
+  <name>Hawkular BTM::Feature Pack (Standalone)</name>
 
   <dependencies>
     <dependency>
