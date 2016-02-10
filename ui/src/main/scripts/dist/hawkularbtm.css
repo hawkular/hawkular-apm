@@ -14,9 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* PatternFly specific */
-/* Bootstrap overrides */
-/* PatternFly-specific variables based on Bootstrap overides */
 /* Error message handling */
 label.error {
   color: red;
