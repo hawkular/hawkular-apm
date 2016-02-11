@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "declarationFiles": true,
+    "noExternalResolve": false
+  },
+  "filesGlob": [
+    "./plugins/**/*.ts",
+    "!./node_modules/**/*.ts",
+    "!./lib/**/*.ts",
+    "!./d.ts/**/*.ts"
+  ]
+}

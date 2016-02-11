@@ -28,8 +28,8 @@
   </config>
 
   <copy-artifacts>
-    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-server" to-location="standalone/deployments/hawkular-btm-server.war" />
-    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-ui" to-location="standalone/deployments/hawkular-btm-ui.war" />
+    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-server" to-location="modules/org/hawkular/nest/main/deployments/hawkular-btm-server.war" />
+    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-ui" to-location="modules/org/hawkular/nest/main/deployments/hawkular-btm-ui.war" extract="true" />
     <copy-artifact artifact="org.hawkular.btm:hawkular-btm-agent-rest" to-location="btm/hawkular-btm-agent-rest.jar" />
     <copy-artifact artifact="org.hawkular.btm:hawkular-btm-btxn-instrumentation" to-location="standalone/data" extract="true" />
   </copy-artifacts>
