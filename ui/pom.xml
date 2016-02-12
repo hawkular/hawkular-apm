@@ -32,9 +32,19 @@
   <name>Hawkular BTM::UI::Console</name>
 
   <properties>
-    <!-- TODO: should be /hawkular/btm-ui and /hawkular/btm-ui/ -->
-    <hawkular-btm.console.context>/</hawkular-btm.console.context>
-    <hawkular-btm.console.index.html.base.href>/</hawkular-btm.console.index.html.base.href>
+    <hawkular.console.timestamp>${maven.build.timestamp}</hawkular.console.timestamp>
+    <hawkular.console.context>/</hawkular.console.context>
+    <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+    <bower.link.package />
+    <node.version>v4.2.2</node.version>
+    <node.npm.version>2.14.7</node.npm.version>
+    <hawkular.checkstyle.excludes>
+      release.properties,
+      **/*.d.ts,
+      **/vendor/**/*.js,
+      **/vendor/**/*.css,
+      **/vendor/fonts/*.*,
+    </hawkular.checkstyle.excludes>
   </properties>
 
   <dependencies>
@@ -50,10 +60,9 @@
   </dependencies>
 
   <build>
-    <finalName>${project.artifactId}</finalName>
-
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
@@ -63,6 +72,9 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
               <outputDirectory>${basedir}/target/gulp-build/</outputDirectory>
               <resources>
                 <resource>
@@ -78,96 +90,11 @@
               </resources>
             </configuration>
           </execution>
-          <execution>
-            <id>copy-js-dist</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/src/main/scripts/dist</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>target/gulp-build/dist</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
 
       <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes combine.children="append">
-            <exclude>**/*.ts</exclude>
-            <exclude>**/*.js</exclude>
-            <exclude>**/*.css</exclude>
-            <exclude>**/.tern-project</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
-      <!-- Download node.js and related modules to install 3rd party frontend libraries -->
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.23</version>
-
-        <configuration>
-          <workingDirectory>target/gulp-build/</workingDirectory>
-        </configuration>
-
-        <executions>
-          <execution>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <nodeVersion>v0.10.33</nodeVersion>
-              <npmVersion>2.1.10</npmVersion>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>npm install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>gulp build</id>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <arguments>build</arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <webResources>
@@ -182,48 +109,267 @@
               <directory>target/gulp-build/</directory>
               <includes>
                 <include>index.html</include>
+                <include>time-out.html</include>
                 <include>libs/**</include>
                 <include>dist/**</include>
-                <include>css/**</include>
-                <include>plugins/**</include>
+                <include>plugins/**/*.html</include>
               </includes>
+              <excludes>
+                <exclude>node_modules/**</exclude>
+                <exclude>.bower/**</exclude>
+                <exclude>node/**</exclude>
+                <exclude>libs/hawkular-ui-components/node_modules/**</exclude>
+              </excludes>
               <filtering>false</filtering>
             </resource>
           </webResources>
         </configuration>
       </plugin>
+
       <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
         <configuration>
-          <excludeDefaultDirectories>true</excludeDefaultDirectories>
-          <filesets>
-            <fileset>
-              <directory>target</directory>
-              <!-- Attempt to avoid additional build work, but sometimes causes build to fail, so needs
-                   clearing out.
-              <directory>target/gulp-build/</directory>
-              <excludes>
-                <exclude>node/**</exclude>
-                <exclude>node_modules/**</exclude>
-                <exclude>libs/**</exclude>
-              </excludes>
-              -->
-              <followSymlinks>false</followSymlinks>
-            </fileset>
-            <fileset>
-              <directory>src/main/scripts</directory>
-              <includes>
-                <include>d.ts/**</include>
-                <include>node_modules/**</include>
-                <include>libs/**</include>
-                <include>defs.d.ts</include>
-              </includes>
-              <followSymlinks>false</followSymlinks>
-            </fileset>
-          </filesets>
+          <excludes combine.children="append">
+            <exclude>**/scripts/**/.babelrc</exclude>
+            <exclude>**/vendor/**/*.js</exclude>
+            <exclude>**/vendor/**/*.css</exclude>
+            <exclude>**/vendor/fonts/*.*</exclude>
+          </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <excludes>${hawkular.checkstyle.excludes}</excludes>
+        </configuration>
+      </plugin>
+
     </plugins>
+
   </build>
+
+  <profiles>
+    <profile>
+      <id>cache</id>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>target/gulp-build/</directory>
+                  <excludes>
+                    <exclude>node/**</exclude>
+                    <exclude>node_modules/**</exclude>
+                    <exclude>libs/**</exclude>
+                  </excludes>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower install</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Download node.js and related modules to install 3rd party frontend libraries -->
+    <profile>
+      <id>default-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower install</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build --production</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>link</id>
+      <activation>
+        <property>
+          <name>bower.link.package</name>
+          <value />
+        </property>
+      </activation>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower link</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>link ${bower.link.package}</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
 </project>
 

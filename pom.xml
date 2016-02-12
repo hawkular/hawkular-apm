@@ -101,6 +101,7 @@
     <hawkular-btm-db>elasticsearch</hawkular-btm-db>
 
     <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
+    <version.com.github.eirslett.frontend-maven-plugin>0.0.26</version.com.github.eirslett.frontend-maven-plugin>
 
     <version.com.fasterxml.jackson.core>2.4.1</version.com.fasterxml.jackson.core>
     <version.com.jayway.jsonpath>2.0.0</version.com.jayway.jsonpath>
@@ -569,6 +570,18 @@
         <version>${plugin.version.org.apache.maven.plugins.shade}</version>
       </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>${version.com.github.eirslett.frontend-maven-plugin}</version>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
   </build>
 
   <profiles>
