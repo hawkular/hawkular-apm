@@ -8,11 +8,11 @@
     <br/>
     <br/>
 
-    <uib-alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong>
+    <alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong>
       <div ng-hide="message.details === undefined">
         {{message.details}}
       </div>
-    </uib-alert>
+    </alert>
 
     <a href="#" editable-textarea="businessTransaction.description" e-rows="14" e-cols="120" rows="7" onaftersave="setDirty()" >
       <pre><i>{{ businessTransaction.description || 'No description' }}</i></pre>
@@ -36,7 +36,7 @@
               <input type="text" class="form-control" name="newInclusionFilterField"
                    ng-model="newInclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
                    placeholder="Enter an inclusion filter (regular expression)"
-                   uib-typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
+                   typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit" ng-disabled="!newInclusionFilter" >
                   <div ng-show="addProgress" class="spinner spinner-sm"></div>
@@ -60,7 +60,7 @@
               <input type="text" class="form-control" name="newExclusionFilterField"
                    ng-model="newExclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
                    placeholder="Enter an exclusion filter (regular expression)"
-                   uib-typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
+                   typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit" ng-disabled="!newExclusionFilter" >
                   <div ng-show="addProgress" class="spinner spinner-sm"></div>
@@ -94,9 +94,9 @@
 
     <div class="col-md-12" >
 
-      <uib-accordion>
-        <uib-accordion-group ng-repeat="processor in businessTransaction.processors" is-open="false" is-disabled="false">
-          <uib-accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></uib-accordion-heading>
+      <accordion>
+        <accordion-group ng-repeat="processor in businessTransaction.processors" is-open="false" is-disabled="false">
+          <accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></accordion-heading>
 
           <form>
             <div class="form-group">
@@ -124,7 +124,7 @@
               <input type="text" name="uriFilter"
                    ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
                    placeholder="Enter URI filter (regular expression)"
-                   uib-typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12"
+                   typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12"
                    ng-change="setDirty()" style="width: 80%" />
 
               <label for="operation" style="width: 15%" >Operation:</label>
@@ -172,11 +172,11 @@
           </form>
 
           <h4>Actions
-            <span uib-dropdown="">
-              <a href="" id="simple-dropdown" uib-dropdown-toggle="" class="btn btn-primary">
+            <span dropdown="">
+              <a href="" id="simple-dropdown" dropdown-toggle="" class="btn btn-primary">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
               </a>
-              <ul class="uib-dropdown-menu" aria-labelledby="simple-dropdown">
+              <ul class="dropdown-menu" aria-labelledby="simple-dropdown">
                 <li><a href="" ng-click="addAction(processor, 'AddContent')">Add Content</a></li>
                 <li><a href="" ng-click="addAction(processor, 'AddCorrelationId')">Add Correlation Identifier</a></li>
                 <li><a href="" ng-click="addAction(processor, 'EvaluateURI')">Evaluate URI</a></li>
@@ -188,9 +188,9 @@
             </span>
           </h4>
 
-          <uib-accordion>
-            <uib-accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
-              <uib-accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></uib-accordion-heading>
+          <accordion>
+            <accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
+              <accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></accordion-heading>
 
               <form>
                 <div class="form-group">
@@ -294,8 +294,8 @@
                 </div>
               </form>
 
-            </uib-accordion-group>
-          </uib-accordion>
+            </accordion-group>
+          </accordion>
 
           <!-- Provide padding as otherwise the action dropdown, when no actions, gets hidden
                (Must be a better way, but this works for now) -->
@@ -311,8 +311,8 @@
             <br/>
           </div>
 
-        </uib-accordion-group>
-      </uib-accordion>
+        </accordion-group>
+      </accordion>
     </div>
 
   </div>
