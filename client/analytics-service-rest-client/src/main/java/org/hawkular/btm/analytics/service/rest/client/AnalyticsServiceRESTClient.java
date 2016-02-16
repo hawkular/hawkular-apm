@@ -19,18 +19,21 @@ package org.hawkular.btm.analytics.service.rest.client;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.URIInfo;
+import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AnalyticsService;
@@ -69,6 +72,10 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final TypeReference<java.util.List<NodeSummaryStatistics>> NODE_SUMMARY_STATISTICS_LIST =
             new TypeReference<java.util.List<NodeSummaryStatistics>>() {
+            };
+
+    private static final TypeReference<java.util.List<CommunicationSummaryStatistics>> COMMS_SUMMARY_STATISTICS_LIST =
+            new TypeReference<java.util.List<CommunicationSummaryStatistics>>() {
             };
 
     private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
@@ -1012,7 +1019,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                          org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, Criteria criteria) {
+    public Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get node summary statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -1081,6 +1088,81 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
+     *                          org.hawkular.btm.api.services.Criteria)
+     */
+    @Override
+    public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
+            Criteria criteria) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get communication summary statistics: tenantId=[" + tenantId + "] criteria="
+                    + criteria);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("analytics/communication/summary");
+
+        buildQueryString(builder, criteria);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), COMMS_SUMMARY_STATISTICS_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get communication summary statistics: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get communication summary statistics", e);
+        }
+
+        return null;
+    }
+
     /**
      * Add the header values to the supplied connection.
      *
@@ -1105,6 +1187,15 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
+            throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
      */
     @Override
@@ -1116,7 +1207,16 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @see org.hawkular.btm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
+     *                      java.util.List)
+     */
+    @Override
+    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         throw new UnsupportedOperationException();
     }
 

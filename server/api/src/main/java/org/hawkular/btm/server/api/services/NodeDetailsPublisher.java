@@ -17,6 +17,7 @@
 package org.hawkular.btm.server.api.services;
 
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.services.Publisher;
 
 /**
  * This interface provides the capability for publishing node details

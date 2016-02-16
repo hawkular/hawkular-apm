@@ -65,6 +65,45 @@
                 }
             }
         },
+        "communicationdetails": {
+            "dynamic_templates": [{
+                "notanalyzed": {
+                      "match": "*",
+                      "match_mapping_type": "string",
+                      "mapping": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                      }
+                }
+            }],
+            "date_detection" : false,
+            "numeric_detection": false,
+            "_timestamp": {
+                "enabled": true,
+                "path": "timestamp",
+                "format": "yyyy/MM/dd HH:mm:ss"
+            },
+            "properties": {
+                "businessTransaction": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "uri": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "latency": {
+                    "type": "long"
+                },
+                "timestampOffset": {
+                    "type": "long"
+                },
+                "timestamp": {
+                    "type": "date",
+                    "format": "yyyy/MM/dd HH:mm:ss"
+                }
+            }
+        },
         "nodedetails": {
             "dynamic_templates": [{
                 "notanalyzed": {
@@ -125,7 +164,43 @@
                 }
             }
         },
-        "completiontime": {
+        "btxncompletiontime": {
+            "dynamic_templates": [{
+                "notanalyzed": {
+                      "match": "*",
+                      "match_mapping_type": "string",
+                      "mapping": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                      }
+                }
+            }],
+            "date_detection" : false,
+            "numeric_detection": false,
+            "_timestamp": {
+                "enabled": true,
+                "path": "timestamp",
+                "format": "yyyy/MM/dd HH:mm:ss"
+            },
+            "properties": {
+                "businessTransaction": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "fault": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "duration": {
+                    "type": "long"
+                },
+                "timestamp": {
+                    "type": "date",
+                    "format": "yyyy/MM/dd HH:mm:ss"
+                }
+            }
+        },
+        "fragmentcompletiontime": {
             "dynamic_templates": [{
                 "notanalyzed": {
                       "match": "*",

@@ -54,7 +54,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-completiontime-deriver</artifactId>
+      <artifactId>hawkular-btm-btxncompletiontime-deriver</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>

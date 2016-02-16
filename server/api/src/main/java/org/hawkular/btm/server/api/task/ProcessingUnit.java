@@ -104,6 +104,8 @@ public class ProcessingUnit<T, R> implements Handler<T> {
         List<T> retries = null;
         Exception lastException = null;
 
+        processor.initialise(items);
+
         for (int i = 0; i < items.size(); i++) {
             try {
                 if (processor.isMultiple()) {
@@ -133,6 +135,8 @@ public class ProcessingUnit<T, R> implements Handler<T> {
                 }
             }
         }
+
+        processor.cleanup(items);
 
         if (results != null && results.size() > 0) {
             resultHandler.handle(results);

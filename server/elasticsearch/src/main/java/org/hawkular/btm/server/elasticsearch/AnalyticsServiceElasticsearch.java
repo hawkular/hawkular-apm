@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,12 +56,15 @@ import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuil
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
@@ -81,10 +86,16 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
+    private static final String COMMUNICATION_DETAILS_TYPE = "communicationdetails";
+
+    /**  */
     private static final String NODE_DETAILS_TYPE = "nodedetails";
 
     /**  */
-    private static final String COMPLETION_TIME_TYPE = "completiontime";
+    private static final String BTXN_COMPLETION_TIME_TYPE = "btxncompletiontime";
+
+    /**  */
+    private static final String FRAGMENT_COMPLETION_TIME_TYPE = "fragmentcompletiontime";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -139,7 +150,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(COMPLETION_TIME_TYPE)
+                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
@@ -185,7 +196,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             FilterBuilder filter = FilterBuilders.existsFilter("fault");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(COMPLETION_TIME_TYPE)
+                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
@@ -236,7 +247,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .field("duration");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(COMPLETION_TIME_TYPE)
+                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(percentileAgg)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -303,7 +314,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .subAggregation(faultCountBuilder);
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(COMPLETION_TIME_TYPE)
+                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(histogramBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -370,7 +381,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .size(criteria.getMaxResponseSize());
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(COMPLETION_TIME_TYPE)
+                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -437,7 +448,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .size(criteria.getMaxResponseSize());
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(COMPLETION_TIME_TYPE)
+                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -742,6 +753,171 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
+     *                          org.hawkular.btm.api.services.Criteria)
+     */
+    @Override
+    public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
+            Criteria criteria) {
+        String index = client.getIndex(tenantId);
+
+        Map<String, CommunicationSummaryStatistics> stats = new HashMap<String, CommunicationSummaryStatistics>();
+
+        try {
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+            StatsBuilder latencyBuilder = AggregationBuilders
+                    .stats("latency")
+                    .field("latency");
+
+            TermsBuilder urisBuilder = AggregationBuilders
+                    .terms("uris")
+                    .field("uri")
+                    .size(criteria.getMaxResponseSize())
+                    .subAggregation(latencyBuilder);
+
+            TermsBuilder originsBuilder = AggregationBuilders
+                    .terms("origins")
+                    .field("originUri")
+                    .size(criteria.getMaxResponseSize())
+                    .subAggregation(urisBuilder);
+
+            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(COMMUNICATION_DETAILS_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .addAggregation(originsBuilder)
+                    .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                    .setSize(criteria.getMaxResponseSize())
+                    .setQuery(query);
+
+            SearchResponse response = request.execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            Terms origins = response.getAggregations().get("origins");
+
+            for (Terms.Bucket originBucket : origins.getBuckets()) {
+                Terms uris = originBucket.getAggregations().get("uris");
+
+                CommunicationSummaryStatistics css = new CommunicationSummaryStatistics();
+                css.setUri(originBucket.getKey());
+                css.setCount(originBucket.getDocCount());
+
+                stats.put(css.getUri(), css);
+
+                for (Terms.Bucket uriBucket : uris.getBuckets()) {
+                    Stats latency = uriBucket.getAggregations().get("latency");
+
+                    ConnectionStatistics con = new ConnectionStatistics();
+                    con.setMinimumLatency(latency.getMin());
+                    con.setAverageLatency(latency.getAvg());
+                    con.setMaximumLatency(latency.getMax());
+                    con.setCount(uriBucket.getDocCount());
+
+                    css.getOutbound().put(uriBucket.getKey(), con);
+                }
+            }
+
+            // Obtain information about the fragments
+            StatsBuilder durationBuilder = AggregationBuilders
+                    .stats("duration")
+                    .field("duration");
+
+            TermsBuilder completionsBuilder = AggregationBuilders
+                    .terms("completions")
+                    .field("uri")
+                    .size(criteria.getMaxResponseSize())
+                    .subAggregation(durationBuilder);
+
+            SearchRequestBuilder request2 = client.getElasticsearchClient().prepareSearch(index)
+                .setTypes(FRAGMENT_COMPLETION_TIME_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addAggregation(completionsBuilder)
+                .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                .setSize(criteria.getMaxResponseSize())
+                .setQuery(query);
+
+            SearchResponse response2 = request2.execute().actionGet();
+            if (response2.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            Terms completions = response2.getAggregations().get("completions");
+
+            for (Terms.Bucket completionBucket : completions.getBuckets()) {
+                Stats duration = completionBucket.getAggregations().get("duration");
+                String uri = completionBucket.getKey();
+
+                CommunicationSummaryStatistics css = stats.get(uri);
+                if (css == null) {
+                    css = new CommunicationSummaryStatistics();
+                    css.setUri(uri);
+                    stats.put(uri, css);
+                }
+
+                css.setMinimumDuration(duration.getMin());
+                css.setAverageDuration(duration.getAvg());
+                css.setMaximumDuration(duration.getMax());
+                css.setCount(completionBucket.getDocCount());
+            }
+
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transactions have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to get communication summary stats");
+            }
+        }
+
+        return stats.values();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
+            throws Exception {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        for (int i = 0; i < communicationDetails.size(); i++) {
+            CommunicationDetails cd = communicationDetails.get(i);
+            String json = mapper.writeValueAsString(cd);
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Storing communication details: %s", json);
+            }
+
+            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                    COMMUNICATION_DETAILS_TYPE, cd.getId()).setSource(json));
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            // TODO: Candidate for retry??? HWKBTM-187
+            msgLog.error("Failed to store communication details: " + bulkItemResponses.buildFailureMessage());
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store communication details to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing communication details to elasticsearch");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
      */
     @Override
@@ -784,7 +960,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      * @see org.hawkular.btm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         client.initTenant(tenantId);
 
         BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
@@ -794,11 +970,11 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             String json = mapper.writeValueAsString(ct);
 
             if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("Storing completion time: %s", json);
+                msgLog.tracef("Storing btxn completion time: %s", json);
             }
 
             bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
+                    BTXN_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
@@ -806,15 +982,55 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         if (bulkItemResponses.hasFailures()) {
 
             // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store completion times: " + bulkItemResponses.buildFailureMessage());
+            msgLog.error("Failed to store btxn completion times: " + bulkItemResponses.buildFailureMessage());
 
             if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Failed to store completion times to elasticsearch: "
+                msgLog.trace("Failed to store btxn completion times to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
         } else {
             if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Success storing completion times to elasticsearch");
+                msgLog.trace("Success storing btxn completion times to elasticsearch");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
+     *                                      java.util.List)
+     */
+    @Override
+    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        for (int i = 0; i < completionTimes.size(); i++) {
+            CompletionTime ct = completionTimes.get(i);
+            String json = mapper.writeValueAsString(ct);
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Storing fragment completion time: %s", json);
+            }
+
+            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                    FRAGMENT_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            // TODO: Candidate for retry??? HWKBTM-187
+            msgLog.error("Failed to store fragment completion times: " + bulkItemResponses.buildFailureMessage());
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store fragment completion times to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing fragment completion times to elasticsearch");
             }
         }
     }

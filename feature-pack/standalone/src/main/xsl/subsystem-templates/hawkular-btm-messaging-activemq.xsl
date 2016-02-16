@@ -31,8 +31,16 @@
       <xsl:attribute name="entries">java:/BusinessTransactions</xsl:attribute>
     </xsl:element>
     <xsl:element name="jms-topic" namespace="{namespace-uri()}">
-      <xsl:attribute name="name">CompletionTimes</xsl:attribute>
-      <xsl:attribute name="entries">java:/CompletionTimes</xsl:attribute>
+      <xsl:attribute name="name">CommunicationDetails</xsl:attribute>
+      <xsl:attribute name="entries">java:/CommunicationDetails</xsl:attribute>
+    </xsl:element>
+    <xsl:element name="jms-topic" namespace="{namespace-uri()}">
+      <xsl:attribute name="name">BTxnCompletionTimes</xsl:attribute>
+      <xsl:attribute name="entries">java:/BTxnCompletionTimes</xsl:attribute>
+    </xsl:element>
+    <xsl:element name="jms-topic" namespace="{namespace-uri()}">
+      <xsl:attribute name="name">FragmentCompletionTimes</xsl:attribute>
+      <xsl:attribute name="entries">java:/FragmentCompletionTimes</xsl:attribute>
     </xsl:element>
     <xsl:element name="jms-topic" namespace="{namespace-uri()}">
       <xsl:attribute name="name">NodeDetails</xsl:attribute>

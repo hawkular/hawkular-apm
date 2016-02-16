@@ -26,6 +26,15 @@ import java.util.List;
 public interface Processor<T, R> {
 
     /**
+     * This method enables the processor to perform some initialisation
+     * tasks before processing the items individually to generate new
+     * information.
+     *
+     * @param items
+     */
+    void initialise(List<T> items);
+
+    /**
      * This method determines whether the processor results in multiple results
      * per item.
      *
@@ -52,5 +61,16 @@ public interface Processor<T, R> {
      * @throws Exception Failed to process the item
      */
     List<R> processMultiple(T item) throws Exception;
+
+    /**
+     * This method is called once all of the items in the list of been
+     * processed to generate new information. It can be used to
+     * clean up any information managed by the processor related to
+     * those items. Generally the processor should not store
+     * any state outside the processing of the individual items.
+     *
+     * @param items
+     */
+    void cleanup(List<T> items);
 
 }

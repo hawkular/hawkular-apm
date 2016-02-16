@@ -20,12 +20,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.analytics.URIInfo;
+import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 
@@ -176,6 +178,16 @@ public interface AnalyticsService {
     Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, Criteria criteria);
 
     /**
+     * This method returns the communication summary statistics, for the specified criteria, that were
+     * executed during the time range.
+     *
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @return The communication summary statistics
+     */
+    Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId, Criteria criteria);
+
+    /**
      * This method stores the supplied list of node details.
      *
      * @param tenantId The tenant id
@@ -185,13 +197,32 @@ public interface AnalyticsService {
     void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception;
 
     /**
-     * This method stores the supplied list of completion times.
+     * This method stores the supplied list of communication details.
+     *
+     * @param tenantId The tenant id
+     * @param communicationDetails The communication details
+     * @throws Exception Failed to store
+     */
+    void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails) throws Exception;
+
+    /**
+     * This method stores the supplied list of completion times for end to end business
+     * transactions.
      *
      * @param tenantId The tenant id
      * @param completionTimes The completion times
      * @throws Exception Failed to store
      */
-    void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
+    void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
+
+    /**
+     * This method stores the supplied list of completion times for individual fragments.
+     *
+     * @param tenantId The tenant id
+     * @param completionTimes The completion times
+     * @throws Exception Failed to store
+     */
+    void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
 
     /**
      * This method returns the list of host names where activities were executed, subject to the supplied

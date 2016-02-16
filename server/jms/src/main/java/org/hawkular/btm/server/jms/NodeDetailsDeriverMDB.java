@@ -28,7 +28,7 @@ import javax.jms.MessageListener;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.NodeDetails;
-import org.hawkular.btm.processor.responsetime.NodeDetailsDeriver;
+import org.hawkular.btm.processor.nodedetails.NodeDetailsDeriver;
 import org.hawkular.btm.server.api.services.NodeDetailsPublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,7 +42,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
                 @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientId", propertyValue = "NodeDetailsDeriver"),
+                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "NodeDetailsDeriver"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NodeDetailsDeriver")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)

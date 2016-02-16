@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
@@ -71,7 +72,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "analytics", description = "Analytics")
 public class AnalyticsHandler {
 
-    private static final java.util.logging.Logger perfLog=
+    private static final java.util.logging.Logger perfLog =
             java.util.logging.Logger.getLogger("org.hawkular.btm.performance.analytics");
 
     private static final Logger log = Logger.getLogger(AnalyticsHandler.class);
@@ -95,14 +96,14 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time")
-                    @DefaultValue("0") @QueryParam("startTime") long startTime,
+            value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
+            @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "optional 'end' time, default current time") @DefaultValue("0")
-                    @QueryParam("endTime") long endTime,
+            value = "optional 'end' time, default current time") @DefaultValue("0") @QueryParam("endTime")
+            long endTime,
             @ApiParam(required = false,
-                    value = "compress list to show common patterns") @DefaultValue("false")
-                    @QueryParam("compress") boolean compress) {
+            value = "compress list to show common patterns") @DefaultValue("false") @QueryParam("compress")
+            boolean compress) {
 
         try {
             log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
@@ -138,13 +139,13 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-                    value = "business transaction name") @PathParam("name") String name,
+            value = "business transaction name") @PathParam("name") String name,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time")
-                    @DefaultValue("0") @QueryParam("startTime") long startTime,
+            value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
+            @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "optional 'end' time, default current time")
-                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
+            value = "optional 'end' time, default current time") @DefaultValue("0") @QueryParam("endTime")
+            long endTime) {
 
         try {
             log.tracef("Get bound URIs: name [%s] start [%s] end [%s]", name, startTime, endTime);
@@ -180,13 +181,13 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-                    value = "business transaction name") @PathParam("name") String name,
+            value = "business transaction name") @PathParam("name") String name,
             @ApiParam(required = false,
-                    value = "optional 'start' time, default 1 hour before current time")
-                    @DefaultValue("0") @QueryParam("startTime") long startTime,
+            value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
+            @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "optional 'end' time, default current time")
-                    @DefaultValue("0") @QueryParam("endTime") long endTime) {
+            value = "optional 'end' time, default current time") @DefaultValue("0") @QueryParam("endTime")
+            long endTime) {
 
         try {
             log.tracef("Get property info: name [%s] start [%s] end [%s]", name, startTime, endTime);
@@ -222,19 +223,20 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction")
+            String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "faults") @QueryParam("faults") String faults) {
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
             Criteria criteria = new Criteria();
@@ -279,19 +281,20 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction")
+            String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "faults") @QueryParam("faults") String faults) {
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
             Criteria criteria = new Criteria();
@@ -336,19 +339,20 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction")
+            String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "faults") @QueryParam("faults") String faults) {
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
             Criteria criteria = new Criteria();
@@ -393,22 +397,22 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "aggregation time interval (in milliseconds)")
-                            @DefaultValue("60000") @QueryParam("interval") long interval,
             @ApiParam(required = false,
-                    value = "faults") @QueryParam("faults") String faults) {
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+            @QueryParam("interval") long interval,
+            @ApiParam(required = false,
+            value = "faults") @QueryParam("faults") String faults) {
 
         try {
             Criteria criteria = new Criteria();
@@ -456,10 +460,10 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "aggregation time interval (in milliseconds)")
-                    @DefaultValue("60000") @QueryParam("interval") long interval,
+                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+            @QueryParam("interval") long interval,
             @ApiParam(required = true,
-            value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction completion timeseries statistics for criteria [%s] interval [%s]",
@@ -497,19 +501,19 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "faults") @QueryParam("faults") String faults) {
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
             Criteria criteria = new Criteria();
@@ -556,7 +560,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction completion fault details for criteria (POST) [%s]",
@@ -593,21 +597,21 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "faults") @QueryParam("faults") String faults,
-                                    @ApiParam(required = false,
-                    value = "property") @PathParam("property") String property) {
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults,
+            @ApiParam(required = false,
+                                    value = "property") @PathParam("property") String property) {
 
         try {
             Criteria criteria = new Criteria();
@@ -654,9 +658,9 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "property") @PathParam("property") String property,
+                    value = "property") @PathParam("property") String property,
             @ApiParam(required = true,
-            value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction completion property details for criteria (POST) [%s] property [%s]",
@@ -693,7 +697,7 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-                    value = "business transaction name") @PathParam("name") String name) {
+            value = "business transaction name") @PathParam("name") String name) {
 
         try {
             log.tracef("Get alert count: name [%s]", name);
@@ -729,22 +733,22 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "host name") @QueryParam("hostName") String hostName,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-                                    @ApiParam(required = false,
-                    value = "aggregation time interval (in milliseconds)")
-                        @DefaultValue("60000") @QueryParam("interval") long interval) {
+            @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+            @QueryParam("interval") long interval) {
 
         try {
             Criteria criteria = new Criteria();
@@ -758,10 +762,11 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node timeseriesstatistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
-            long perfStartTime=0;
+            long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfStartTime = System.currentTimeMillis();
-                perfLog.finest("Performance: about to query node timeseries (criteria hash="+criteria.hashCode()+")");
+                perfLog.finest("Performance: about to query node timeseries (criteria hash=" + criteria.hashCode()
+                        + ")");
             }
 
             List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
@@ -769,8 +774,9 @@ public class AnalyticsHandler {
                     criteria, interval);
 
             if (perfLog.isLoggable(Level.FINEST)) {
-                perfLog.finest("Performance: query node timeseries (criteria hash="+criteria.hashCode()+") duration="+
-                            (System.currentTimeMillis()-perfStartTime)+"ms");
+                perfLog.finest("Performance: query node timeseries (criteria hash=" + criteria.hashCode()
+                        + ") duration=" +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
             log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
@@ -801,19 +807,20 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "aggregation time interval (in milliseconds)")
-                            @DefaultValue("60000") @QueryParam("interval") long interval,
+                    value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
+            @QueryParam("interval") long interval,
             @ApiParam(required = true,
-            value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction node timeseries statistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
-            long perfStartTime=0;
+            long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfStartTime = System.currentTimeMillis();
-                perfLog.finest("Performance: about to query node timeseries (criteria hash="+criteria.hashCode()+")");
+                perfLog.finest("Performance: about to query node timeseries (criteria hash=" + criteria.hashCode()
+                        + ")");
             }
 
             List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
@@ -821,8 +828,9 @@ public class AnalyticsHandler {
                     criteria, interval);
 
             if (perfLog.isLoggable(Level.FINEST)) {
-                perfLog.finest("Performance: query node timeseries (criteria hash="+criteria.hashCode()+") duration="+
-                            (System.currentTimeMillis()-perfStartTime)+"ms");
+                perfLog.finest("Performance: query node timeseries (criteria hash=" + criteria.hashCode()
+                        + ") duration=" +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
             log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
@@ -852,19 +860,19 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "host name") @QueryParam("hostName") String hostName,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+            @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
 
         try {
             Criteria criteria = new Criteria();
@@ -878,10 +886,10 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
-            long perfStartTime=0;
+            long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfStartTime = System.currentTimeMillis();
-                perfLog.finest("Performance: about to query node summary (criteria hash="+criteria.hashCode()+")");
+                perfLog.finest("Performance: about to query node summary (criteria hash=" + criteria.hashCode() + ")");
             }
 
             Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
@@ -889,8 +897,9 @@ public class AnalyticsHandler {
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
-                perfLog.finest("Performance: query node summary (criteria hash="+criteria.hashCode()+") duration="+
-                            (System.currentTimeMillis()-perfStartTime)+"ms");
+                perfLog.finest("Performance: query node summary (criteria hash=" + criteria.hashCode() + ") duration="
+                        +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
             log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
@@ -921,16 +930,16 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get business transaction node summary statistics for criteria [%s]",
                     criteria);
 
-            long perfStartTime=0;
+            long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfStartTime = System.currentTimeMillis();
-                perfLog.finest("Performance: about to query node summary (criteria hash="+criteria.hashCode()+")");
+                perfLog.finest("Performance: about to query node summary (criteria hash=" + criteria.hashCode() + ")");
             }
 
             Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
@@ -938,11 +947,134 @@ public class AnalyticsHandler {
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
-                perfLog.finest("Performance: query node summary (criteria hash="+criteria.hashCode()+") duration="+
-                            (System.currentTimeMillis()-perfStartTime)+"ms");
+                perfLog.finest("Performance: query node summary (criteria hash=" + criteria.hashCode() + ") duration="
+                        + (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
             log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+    }
+
+    @GET
+    @Path("communication/summary")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction communication summary statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCommunicationSummaryStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = false,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+            @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+            @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+
+        try {
+            Criteria criteria = new Criteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            log.tracef("Get business transaction communication summary statistics for criteria [%s]",
+                    criteria);
+
+            long perfStartTime = 0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query communication summary (criteria hash="
+                        + criteria.hashCode() + ")");
+            }
+
+            Collection<CommunicationSummaryStatistics> stats = analyticsService.getCommunicationSummaryStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query communication summary (criteria hash=" + criteria.hashCode()
+                        + ") duration=" +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
+            }
+
+            log.tracef("Got business transaction communication summary statistics for criteria [%s] = %s", criteria,
+                    stats);
+
+            response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("communication/summary")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the business transaction communication summary statistics associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getCommunicationSummaryStatistics(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "query criteria") Criteria criteria) {
+
+        try {
+            log.tracef("Get business transaction communication summary statistics for criteria [%s]",
+                    criteria);
+
+            long perfStartTime = 0;
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfStartTime = System.currentTimeMillis();
+                perfLog.finest("Performance: about to query communication summary (criteria hash="
+                        + criteria.hashCode() + ")");
+            }
+
+            Collection<CommunicationSummaryStatistics> stats = analyticsService.getCommunicationSummaryStatistics(
+                    securityProvider.getTenantId(context),
+                    criteria);
+
+            if (perfLog.isLoggable(Level.FINEST)) {
+                perfLog.finest("Performance: query communication summary (criteria hash=" + criteria.hashCode()
+                        + ") duration=" +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
+            }
+
+            log.tracef("Got business transaction communication summary statistics for criteria [%s] = %s", criteria,
+                    stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -969,19 +1101,19 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
-            value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-                    value = "business transactions after this time,"
-                            + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-                    @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-                            @ApiParam(required = false,
-                    value = "host name") @QueryParam("hostName") String hostName,
-                            @ApiParam(required = false,
-                    value = "business transactions with these properties, defined as a comma "
-                            + "separated list of name|value "
-                            + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+            @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
 
         try {
             Criteria criteria = new Criteria();
@@ -995,10 +1127,10 @@ public class AnalyticsHandler {
             log.tracef("Get host names for criteria [%s]",
                     criteria);
 
-            long perfStartTime=0;
+            long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfStartTime = System.currentTimeMillis();
-                perfLog.finest("Performance: about to query host names (criteria hash="+criteria.hashCode()+")");
+                perfLog.finest("Performance: about to query host names (criteria hash=" + criteria.hashCode() + ")");
             }
 
             List<String> hostnames = analyticsService.getHostNames(
@@ -1006,8 +1138,8 @@ public class AnalyticsHandler {
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
-                perfLog.finest("Performance: query host names (criteria hash="+criteria.hashCode()+") duration="+
-                            (System.currentTimeMillis()-perfStartTime)+"ms");
+                perfLog.finest("Performance: query host names (criteria hash=" + criteria.hashCode() + ") duration=" +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
             log.tracef("Got host names for criteria [%s] = %s", criteria, hostnames);
@@ -1037,16 +1169,16 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria) {
 
         try {
             log.tracef("Get host names for criteria [%s]",
                     criteria);
 
-            long perfStartTime=0;
+            long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfStartTime = System.currentTimeMillis();
-                perfLog.finest("Performance: about to query host names (criteria hash="+criteria.hashCode()+")");
+                perfLog.finest("Performance: about to query host names (criteria hash=" + criteria.hashCode() + ")");
             }
 
             List<String> hostnames = analyticsService.getHostNames(
@@ -1054,8 +1186,8 @@ public class AnalyticsHandler {
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
-                perfLog.finest("Performance: query host names (criteria hash="+criteria.hashCode()+") duration="+
-                            (System.currentTimeMillis()-perfStartTime)+"ms");
+                perfLog.finest("Performance: query host names (criteria hash=" + criteria.hashCode() + ") duration=" +
+                        (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
             log.tracef("Got host names for criteria [%s] = %s", criteria, hostnames);

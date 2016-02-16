@@ -18,7 +18,7 @@ package org.hawkular.btm.server.jms;
 
 import java.util.List;
 
-import org.hawkular.btm.server.api.services.Publisher;
+import org.hawkular.btm.api.services.Publisher;
 import org.hawkular.btm.server.api.task.Handler;
 import org.hawkular.btm.server.api.task.ProcessingUnit;
 import org.hawkular.btm.server.api.task.Processor;
