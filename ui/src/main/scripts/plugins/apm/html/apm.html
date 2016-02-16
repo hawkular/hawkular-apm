@@ -90,7 +90,7 @@
         <input type="text" class="form-control" name="hostNameField" typeahead-on-select="selectAction()"
                    ng-model="criteria.hostName" ng-model-options="{ updateOn: 'default blur'}"
                    placeholder="Enter a host name"
-                   uib-typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
+                   typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
       </div>
 
     </div>
@@ -125,12 +125,12 @@
           <tbody>
             <tr dir-paginate="summary in summaries|orderBy:sortKey:reverse|filter:search|itemsPerPage:config.maxRows" ng-class="{'danger': getElapsedPercentage(summary) > 80,'warning': getElapsedPercentage(summary) > 60}" >
               <td scope="row">
-                <uib-progress>
-                  <uib-bar type="danger" value="getActualPercentage(summary)">
-                  </uib-bar>
-                  <uib-bar type="warning" value="getElapsedMinusActualPercentage(summary)">
-                  </uib-bar>
-                </uib-progress>
+                <progress>
+                  <bar type="danger" value="getActualPercentage(summary)">
+                  </bar>
+                  <bar type="warning" value="getElapsedMinusActualPercentage(summary)">
+                  </bar>
+                </progress>
               </td>
               <td scope="row">{{(summary.actual / 1000000000) | number: 3}}</td>
               <td scope="row">{{(summary.elapsed / 1000000000) | number: 3}}</td>
