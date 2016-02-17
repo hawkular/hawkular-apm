@@ -34,28 +34,22 @@ module BTM {
     $locationProvider.html5Mode(true);
     $routeProvider.
       when('/hawkular-ui/btm', {
-        templateUrl: 'plugins/btm/html/btm.html',
-        controller: 'BTM.BTMController'
+        templateUrl: 'plugins/btm/html/btm.html'
       }).
       when('/hawkular-ui/btm/candidates', {
-        templateUrl: 'plugins/btm/html/btxncandidates.html',
-        controller: 'BTM.BTMCandidatesController'
+        templateUrl: 'plugins/btm/html/btxncandidates.html'
       }).
       when('/hawkular-ui/btm/disabled', {
-        templateUrl: 'plugins/btm/html/btxndisabled.html',
-        controller: 'BTM.BTMDisabledController'
+        templateUrl: 'plugins/btm/html/btxndisabled.html'
       }).
       when('/hawkular-ui/btm/ignored', {
-        templateUrl: 'plugins/btm/html/btxnignored.html',
-        controller: 'BTM.BTMIgnoredController'
+        templateUrl: 'plugins/btm/html/btxnignored.html'
       }).
       when('/hawkular-ui/btm/config/:businesstransaction', {
-        templateUrl: 'plugins/btm/html/btxnconfig.html',
-        controller: 'BTM.BTxnConfigController'
+        templateUrl: 'plugins/btm/html/btxnconfig.html'
       }).
       when('/hawkular-ui/btm/info/:businesstransaction', {
-        templateUrl: 'plugins/btm/html/btxninfo.html',
-        controller: 'BTM.BTxnInfoController'
+        templateUrl: 'plugins/btm/html/btxninfo.html'
       });
   }]);
 
