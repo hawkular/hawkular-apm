@@ -26,12 +26,12 @@ module APM {
       businessTransaction: undefined,
       hostName: $routeParams.hostName,
       properties: [],
-      startTime: -3600000,
-      endTime: "0"
+      startTime: '-3600000',
+      endTime: '0'
     };
 
     $scope.config = {
-      interval: 60000,
+      interval: '60000',
       maxRows: 10
     };
     

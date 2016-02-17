@@ -33,13 +33,13 @@ module BTM {
       businessTransaction: $scope.businessTransactionName,
       properties: [],
       faults: [],
-      startTime: -3600000,
-      endTime: "0",
+      startTime: '-3600000',
+      endTime: '0',
       lowerBound: 0
     };
 
     $scope.config = {
-      interval: 60000,
+      interval: '60000',
       selectedProperty: undefined,
       lowerBoundDisplay: 0,
       prevLowerBoundDisplay: 0,
