@@ -185,6 +185,11 @@ module APM {
       $scope.reloadData();
     };
 
+    $scope.pauseLiveData = function() {
+      $scope.criteria.endTime = $scope.criteria.endTime === '0' ? ('' + +new Date()) : '0';
+      $scope.reloadData();
+    };
+
     $scope.currentDateTime = function() {
       return new Date();
     };

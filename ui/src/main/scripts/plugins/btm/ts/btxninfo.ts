@@ -292,6 +292,11 @@ module BTM {
       $scope.reload();
     };
 
+    $scope.pauseLiveData = function() {
+      $scope.criteria.endTime = $scope.criteria.endTime === '0' ? ('' + +new Date()) : '0';
+      $scope.reload();
+    };
+
     $scope.currentDateTime = function() {
       return new Date();
     };

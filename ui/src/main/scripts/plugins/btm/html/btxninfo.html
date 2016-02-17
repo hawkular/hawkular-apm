@@ -80,18 +80,27 @@
 
           <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
 
-          <label for="endTimeField" style="width: 3%" >Until:</label>
-          <select name="endTimeField" ng-model="criteria.endTime" ng-change="selectAction()" style="width: 10%">
-            <option value="0">Now</option>
-            <option value="{{currentDateTime().getTime()}}">{{currentDateTime() | date:'dd MMM yyyy HH:mm:ss'}}</option>
-          </select>
-
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
-
           <label for="lowerBoundField" style="width: 8%" >Lower Bound(%):</label>
           <input type="number" ng-model="config.lowerBoundDisplay"
                 name="lowerBoundField" ng-change="updatedBounds()"
                 min="0" max="100"/>
+
+          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+
+          <span>
+            <strong>Last Update</strong>
+            <small>{{ (criteria.endTime !== '0' ? criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</small>
+          </span>
+
+          <div class="pull-right">
+            <button class="btn" ng-class="criteria.endTime !== '0' ? 'btn-danger' : 'btn-default'" ng-click="pauseLiveData()">
+              <i class="glyphicon" ng-class="criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
+              <span ng-show="criteria.endTime === '0'">Pause Live Data</span>
+              <span ng-hide="criteria.endTime === '0'">Resume Live Data</span>
+            </button>
+            <br>
+          </div>
+
         </div>
       </form>
     </span>
