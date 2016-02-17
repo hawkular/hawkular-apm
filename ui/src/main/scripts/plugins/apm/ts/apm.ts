@@ -34,39 +34,39 @@ module APM {
       interval: '60000',
       maxRows: 10
     };
-    
+
     $scope.nodeComponents = [];
-    
+
     $scope.businessTransactions = [];
-    
+
     $scope.components = [];
 
     $scope.timestamps = ['timestamp'];
-        
+
     $scope.lists = {};
-        
+
     $scope.businessTransactions = [];
-    
+
     $scope.reloadData = function() {
 
       $http.post('/hawkular/btm/analytics/node/statistics?interval='+$scope.config.interval, $scope.criteria).then(function(resp) {
         $scope.statistics = resp.data;
-        
+
         for (var i=0; i < $scope.statistics.length; i++) {
-          
+
           if (i === 0) {
             $scope.timestamps.length = 0;
             $scope.timestamps.push('timestamp');
           }
           $scope.timestamps.push($scope.statistics[i].timestamp);
-          
+
           $scope.nodeComponents.push($scope.timestamps);
-          
+
           var keys=Object.keys($scope.statistics[i].componentTypes);
 
           for (var j=0; j < keys.length; j++) {
             var list=$scope.lists[keys[j]];
-            
+
             if (list === undefined) {
               list = [keys[j]];
               $scope.lists[keys[j]] = list;
@@ -77,11 +77,11 @@ module APM {
               list.length = 0;
               list.push(keys[j]);
             }
-            
+
             for (var k=list.length; k < $scope.timestamps.length-1; k++) {
               list.push(0);
             }
-            
+
             list.push($scope.statistics[i].componentTypes[keys[j]].duration);
           }
         }
@@ -93,7 +93,7 @@ module APM {
 
       $http.post('/hawkular/btm/analytics/node/summary', $scope.criteria).then(function(resp) {
         $scope.summaries = resp.data;
-        
+
         $scope.max = 0;
 
         for (var i=0; i < $scope.summaries.length; i++) {
@@ -141,7 +141,7 @@ module APM {
     $interval(function() {
       if ($scope.criteria.endTime === "0") {
         $scope.reloadData();
-      }    
+      }
     },10000);
 
     $scope.initGraph = function() {
@@ -178,7 +178,7 @@ module APM {
       });
 
     };
-    
+
     $scope.initGraph();
 
     $scope.selectAction = function() {

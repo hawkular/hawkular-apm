@@ -25,7 +25,7 @@ module BTM {
     $scope.businessTransactionName = $routeParams.businesstransaction;
 
     $scope.properties = [];
-    
+
     $scope.propertyValues = [];
     $scope.faultValues = [];
 
@@ -61,11 +61,11 @@ module BTM {
 
       $http.post('/hawkular/btm/analytics/completion/faults', faultCriteria).then(function(resp) {
         $scope.faults = resp.data;
-        
+
         var removeFaultValues = angular.copy($scope.faultValues);
 
         var faultdata = [];
-        
+
         for (var i=0; i < $scope.faults.length; i++) {
           var fault = $scope.faults[i];
           var record=[ ];
@@ -79,7 +79,7 @@ module BTM {
             $scope.faultValues.add(fault.value);
           }
         }
-        
+
         $scope.ctfaultschart.load({
           columns: faultdata
         });
@@ -98,7 +98,7 @@ module BTM {
       },function(resp) {
         console.log("Failed to get property info: "+JSON.stringify(resp));
       });
-    
+
       if ($scope.config.selectedProperty !== undefined) {
         $scope.reloadProperty();
       }
@@ -120,11 +120,11 @@ module BTM {
 
       $http.post('/hawkular/btm/analytics/completion/property/'+$scope.config.selectedProperty, propertyCriteria).then(function(resp) {
         $scope.propertyDetails = resp.data;
-        
+
         var removePropertyValues = angular.copy($scope.propertyValues);
 
         var propertydata = [];
-        
+
         for (var i=0; i < $scope.propertyDetails.length; i++) {
           var prop = $scope.propertyDetails[i];
           var record=[ ];
@@ -158,7 +158,7 @@ module BTM {
     $interval(function() {
       if ($scope.criteria.endTime === "0" || $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
         $scope.reload();
-        
+
         $scope.config.prevLowerBoundDisplay = $scope.config.lowerBoundDisplay;
       }
     },10000);
@@ -229,7 +229,7 @@ module BTM {
       });
 
     };
-    
+
     $scope.initGraph();
 
     $scope.propertyClicked = function() {
