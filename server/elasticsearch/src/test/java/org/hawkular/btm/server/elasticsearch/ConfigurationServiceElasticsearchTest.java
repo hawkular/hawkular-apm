@@ -25,8 +25,10 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.Map;
 
+import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.junit.After;
 import org.junit.Before;
@@ -184,7 +186,10 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating valid config
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            List<ConfigMessage> messages=cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            assertNotNull(messages);
+            assertEquals(1, messages.size());
+            assertEquals(Severity.Info, messages.get(0).getSeverity());
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -231,6 +236,34 @@ public class ConfigurationServiceElasticsearchTest {
         assertNotNull(valid);
 
         assertEquals(VALID_DESCRIPTION, valid.getDescription());
+
+        // Check that once description is fixed, the valid one is returned
+        btc1.setDescription(VALID_DESCRIPTION);
+        btc1.setFilter(new Filter());
+        btc1.getFilter().getInclusions().add("myfilter");
+
+        try {
+            // Updating with valid config
+            List<ConfigMessage> messages=cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            assertNotNull(messages);
+            assertEquals(1, messages.size());
+            assertEquals(Severity.Info, messages.get(0).getSeverity());
+        } catch (Exception e) {
+            fail("Failed to update btc1: " + e);
+        }
+
+        try {
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        BusinessTxnConfig valid2 = cfgs.getBusinessTransaction(null, "btc1");
+        assertNotNull(valid2);
+
+        assertEquals(VALID_DESCRIPTION, valid2.getDescription());
     }
 
     @Test
