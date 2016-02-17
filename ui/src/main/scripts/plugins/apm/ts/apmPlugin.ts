@@ -19,7 +19,8 @@
 /// <reference path="apmGlobals.ts"/>
 module APM {
 
-  export var _module = angular.module(APM.pluginName, ["xeditable","ui.bootstrap","angularUtils.directives.dirPagination"]);
+  export var _module = angular.module(APM.pluginName,
+    ["xeditable","ui.bootstrap","angularUtils.directives.dirPagination","hawkularbtm-templates"]);
 
   var tab = undefined;
 

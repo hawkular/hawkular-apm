@@ -19,7 +19,7 @@
 /// <reference path="btmGlobals.ts"/>
 module BTM {
 
-  export var _module = angular.module(BTM.pluginName, ["xeditable","ui.bootstrap"]);
+  export var _module = angular.module(BTM.pluginName, ["xeditable","ui.bootstrap","hawkularbtm-templates"]);
 
   var tab = undefined;
 
