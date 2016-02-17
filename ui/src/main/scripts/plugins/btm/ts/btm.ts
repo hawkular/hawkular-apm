@@ -20,31 +20,33 @@ module BTM {
 
   declare var c3: any;
 
-  export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', ($scope, $http, $location, $interval) => {
+  export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', '$q', ($scope, $http, $location, $interval, $q) => {
 
     $scope.newBTxnName = '';
     $scope.candidateCount = 0;
-    
+
     $scope.chart = "None";
-    
+
     $scope.txnCountValues = [];
     $scope.faultCountValues = [];
 
+    $scope.businessTransactions = [];
+
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
-        $scope.businessTransactions = [];
-        for (var i = 0; i < resp.data.length; i++) {
-          var btxn = {
-            summary: resp.data[i],
-            count: undefined,
-            faultcount: undefined,
-            percentile95: undefined,
-            alerts: undefined
-          };
-          $scope.businessTransactions.add(btxn);
 
-          $scope.getBusinessTxnDetails(btxn);
+        var allPromises = [];
+        for (var i = 0; i < resp.data.length; i++) {
+          resp.data[i].summary = resp.data[i];
+          angular.extend(allPromises, $scope.getBusinessTxnDetails(resp.data[i]));
         }
+
+        $q.all(allPromises).then(() => {
+          $scope.businessTransactions = resp.data;
+
+          $scope.reloadTxnCountGraph();
+          $scope.reloadFaultCountGraph();
+        });
       },function(resp) {
         console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
@@ -63,16 +65,20 @@ module BTM {
     },10000);
 
     $scope.getBusinessTxnDetails = function(btxn) {
-      $http.get('/hawkular/btm/analytics/completion/count?businessTransaction='+btxn.summary.name).then(function(resp) {
-        btxn.count = resp.data;
-        
-        $scope.reloadTxnCountGraph();
+      var promises = [];
 
-      },function(resp) {
+      var countPromise = $http.get('/hawkular/btm/analytics/completion/count?businessTransaction='+btxn.summary.name);
+      promises.push(countPromise);
+      countPromise.then(function(resp) {
+        btxn.count = resp.data;
+      }, function(resp) {
         console.log("Failed to get count: "+JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/completion/percentiles?businessTransaction='+btxn.summary.name).then(function(resp) {
+
+      var pct95Promise = $http.get('/hawkular/btm/analytics/completion/percentiles?businessTransaction='+btxn.summary.name);
+      promises.push(pct95Promise);
+      pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
           btxn.percentile95 = Math.round( resp.data.percentiles[95] / 1000000 ) / 1000;
         } else {
@@ -82,20 +88,23 @@ module BTM {
         console.log("Failed to get completion percentiles: "+JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/completion/faultcount?businessTransaction='+btxn.summary.name).then(function(resp) {
+      var faultsPromise = $http.get('/hawkular/btm/analytics/completion/faultcount?businessTransaction='+btxn.summary.name);
+      promises.push(faultsPromise);
+      faultsPromise.then(function(resp) {
         btxn.faultcount = resp.data;
-        
-        $scope.reloadFaultCountGraph();
-
       },function(resp) {
         console.log("Failed to get fault count: "+JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.summary.name).then(function(resp) {
+      var alertsPromise = $http.get('/hawkular/btm/analytics/alerts/count/'+btxn.summary.name);
+      promises.push(alertsPromise);
+      alertsPromise.then(function(resp) {
         btxn.alerts = resp.data;
       },function(resp) {
         console.log("Failed to get alerts count: "+JSON.stringify(resp));
       });
+
+      return promises;
     };
 
     $scope.deleteBusinessTxn = function(btxn) {
@@ -134,7 +143,7 @@ module BTM {
         }
       });
     };
-    
+
     $scope.reloadTxnCountGraph = function() {
       var removeTxnCountValues = angular.copy($scope.txnCountValues);
 
@@ -196,7 +205,7 @@ module BTM {
         $scope.faultCountValues.remove(removeFaultCountValues[j]);
       }
     };
-    
+
     $scope.initGraph();
 
   }]);

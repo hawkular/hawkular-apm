@@ -26,8 +26,8 @@
             Search: <input ng-model="query"/>
           </div>
 
-          <div class="hk-url-item" ng-repeat="btxn in businessTransactions | filter:query" >
-            <div class="panel panel-default hk-url-heading" ng-show="btxn.summary.level === 'None'">
+          <div class="hk-txn-item" ng-repeat="btxn in businessTransactions | filter:query" >
+            <div class="panel panel-default hk-txn-heading" ng-show="btxn.summary.level === 'None'">
               <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
               <span class="hk-settings pull-right">
                 <a href="/hawkular-ui/btm/config/{{btxn.summary.name}}" ><i class="fa fa-cog"></i></a>

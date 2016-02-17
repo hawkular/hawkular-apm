@@ -33,13 +33,13 @@
             </select>
           </div>
 
-          <div class="hk-url-item col-md-6" ng-hide="chart === 'None'" >
+          <div class="hk-txn-item col-md-6" ng-hide="chart === 'None'" >
             <div id="btxntxncountpiechart" ng-show="chart === 'TxnCount'"></div>
             <div id="btxnfaultcountpiechart" ng-show="chart === 'FaultCount'"></div>
           </div>
 
-          <div class="hk-url-item col-md-6" ng-repeat="btxn in businessTransactions | filter:query" >
-            <div class="panel panel-default hk-url-heading" ng-show="btxn.summary.level === 'All'">
+          <div class="hk-txn-item col-md-6" ng-repeat="btxn in businessTransactions track by btxn.summary.name | filter:query" >
+            <div class="panel panel-default hk-txn-heading" ng-show="btxn.summary.level === 'All'">
               <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
               <span class="hk-settings pull-right">
                 <a href="/hawkular-ui/btm/config/{{btxn.summary.name}}" ><i class="fa fa-cog"></i></a>
