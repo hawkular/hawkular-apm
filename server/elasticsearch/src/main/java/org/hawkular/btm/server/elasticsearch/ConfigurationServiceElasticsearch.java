@@ -170,6 +170,13 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
             cm.setSeverity(Severity.Info);
             cm.setMessage("Configuration successfully published");
             messages.add(cm);
+
+            // Delete any invalid entry
+            DeleteRequestBuilder deletion = client.getElasticsearchClient().prepareDelete(client.getIndex(tenantId),
+                    BUSINESS_TXN_CONFIG_INVALID_TYPE, name);
+
+            deletion.execute().actionGet();
+
         } else {
             ConfigMessage cm = new ConfigMessage();
             cm.setSeverity(Severity.Warning);
