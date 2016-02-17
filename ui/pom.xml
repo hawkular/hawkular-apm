@@ -112,7 +112,6 @@
                 <include>time-out.html</include>
                 <include>libs/**</include>
                 <include>dist/**</include>
-                <include>plugins/**/*.html</include>
               </includes>
               <excludes>
                 <exclude>node_modules/**</exclude>
