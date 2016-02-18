@@ -39,9 +39,6 @@ module BTM {
       when('/hawkular-ui/btm/candidates', {
         templateUrl: 'plugins/btm/html/btxncandidates.html'
       }).
-      when('/hawkular-ui/btm/disabled', {
-        templateUrl: 'plugins/btm/html/btxndisabled.html'
-      }).
       when('/hawkular-ui/btm/ignored', {
         templateUrl: 'plugins/btm/html/btxnignored.html'
       }).

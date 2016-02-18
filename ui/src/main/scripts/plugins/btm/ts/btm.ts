@@ -22,13 +22,7 @@ module BTM {
 
   export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', '$q', ($scope, $http, $location, $interval, $q) => {
 
-    $scope.newBTxnName = '';
     $scope.candidateCount = 0;
-
-    $scope.chart = "None";
-
-    $scope.txnCountValues = [];
-    $scope.faultCountValues = [];
 
     $scope.businessTransactions = [];
 
@@ -37,8 +31,9 @@ module BTM {
 
         var allPromises = [];
         for (var i = 0; i < resp.data.length; i++) {
-          angular.extend(allPromises, $scope.getBusinessTxnDetails(resp.data[i]));
+          allPromises = allPromises.concat($scope.getBusinessTxnDetails(resp.data[i]));
         }
+        console.log(allPromises.length);
 
         $q.all(allPromises).then(() => {
           $scope.businessTransactions = resp.data;
@@ -140,71 +135,35 @@ module BTM {
           }
         }
       });
+      $scope.reloadTxnCountGraph();
+      $scope.reloadFaultCountGraph();
     };
 
     $scope.reloadTxnCountGraph = function() {
-      var removeTxnCountValues = angular.copy($scope.txnCountValues);
-
-      var btxndata = [];
-
-      for (var i = 0; i < $scope.businessTransactions.length; i++) {
-        var btxn = $scope.businessTransactions[i];
-        if (btxn.count !== undefined && btxn.count > 0) {
-          var record=[ ];
-          record.push(btxn.name);
-          record.push(btxn.count);
-          btxndata.push(record);
-
-          if ($scope.txnCountValues.indexOf(btxn.name) !== -1) {
-            removeTxnCountValues.remove(btxn.name);
-          } else {
-            $scope.txnCountValues.add(btxn.name);
-          }
+      var btxnCountData = [];
+      _.each($scope.businessTransactions, (btxn: any) => {
+        if (btxn.count) {
+          btxnCountData.push([btxn.name, btxn.count]);
         }
-      }
-
-      $scope.btxncountpiechart.load({
-        columns: btxndata
       });
 
-      for (var j=0; j < removeTxnCountValues.length; j++) {
-        $scope.btxncountpiechart.unload(removeTxnCountValues[j]);
-        $scope.txnCountValues.remove(removeTxnCountValues[j]);
-      }
+      $scope.btxncountpiechart.load({
+        columns: btxnCountData
+      });
     };
 
     $scope.reloadFaultCountGraph = function() {
-      var removeFaultCountValues = angular.copy($scope.faultCountValues);
-
-      var btxnfaultdata = [];
-
-      for (var i = 0; i < $scope.businessTransactions.length; i++) {
-        var btxn = $scope.businessTransactions[i];
-        if (btxn.faultcount !== undefined && btxn.faultcount > 0) {
-          var record=[ ];
-          record.push(btxn.name);
-          record.push(btxn.faultcount);
-          btxnfaultdata.push(record);
-
-          if ($scope.faultCountValues.indexOf(btxn.name) !== -1) {
-            removeFaultCountValues.remove(btxn.name);
-          } else {
-            $scope.faultCountValues.add(btxn.name);
-          }
+      var btxnFaultData = [];
+      _.each($scope.businessTransactions, (btxn: any) => {
+        if (btxn.faultcount) {
+          btxnFaultData.push([btxn.name, btxn.faultcount]);
         }
-      }
-
-      $scope.btxnfaultcountpiechart.load({
-        columns: btxnfaultdata
       });
 
-      for (var j=0; j < removeFaultCountValues.length; j++) {
-        $scope.btxnfaultcountpiechart.unload(removeFaultCountValues[j]);
-        $scope.faultCountValues.remove(removeFaultCountValues[j]);
-      }
+      $scope.btxnfaultcountpiechart.load({
+        columns: btxnFaultData
+      });
     };
-
-    $scope.initGraph();
 
   }]);
 
