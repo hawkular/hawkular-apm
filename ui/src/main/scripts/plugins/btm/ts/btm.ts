@@ -59,9 +59,8 @@ module BTM {
 
     $scope.reload();
 
-    $interval(function() {
-      $scope.reload();
-    },10000);
+    var refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.getBusinessTxnDetails = function(btxn) {
       var promises = [];

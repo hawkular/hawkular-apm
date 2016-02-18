@@ -138,11 +138,12 @@ module APM {
 
     $scope.reloadData();
 
-    $interval(function() {
+    var refreshPromise = $interval(() => {
       if ($scope.criteria.endTime === "0") {
         $scope.reloadData();
       }
-    },10000);
+    }, 10000);
+    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.initGraph = function() {
       $scope.nodesareachart = c3.generate({

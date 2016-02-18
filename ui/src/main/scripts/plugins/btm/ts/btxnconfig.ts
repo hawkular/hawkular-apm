@@ -66,9 +66,8 @@ module BTM {
 
     $scope.reload();
 
-    $interval(function() {
-      $scope.reload();
-    },10000);
+    var refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.addInclusionFilter = function() {
       console.log('Add inclusion filter: '+$scope.newInclusionFilter);
@@ -166,7 +165,7 @@ module BTM {
 
     $scope.addAction = function(processor, type) {
       $scope.setDirty();
-      
+
       var newAction = {
         actionType: type,
         description: "Action " + (processor.actions.length + 1)
@@ -240,19 +239,19 @@ module BTM {
       }
       return type;
     };
-    
+
     $scope.getMessageText = function(entry) {
       var message = "";
       if (entry.processor !== undefined) {
         message = "[" + entry.processor;
-        
+
         if (entry.action !== undefined) {
           message = message + "/" + entry.action;
         }
-        
+
         message = message + "] ";
       }
-      
+
       message = message + entry.message;
 
       return message;
