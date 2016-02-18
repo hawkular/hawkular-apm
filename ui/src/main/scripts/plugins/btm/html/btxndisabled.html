@@ -23,14 +23,14 @@
         <ul class="list-group" >
           <br/>
           <div class="row" >
-            Search: <input ng-model="query"/>
+            Search: <input ng-model="query.name"/>
           </div>
 
-          <div class="hk-url-item" ng-repeat="btxn in businessTransactions | filter:query" >
-            <div class="panel panel-default hk-url-heading" ng-show="btxn.summary.level === 'None'">
-              <a href="/hawkular-ui/btm/info/{{btxn.summary.name}}">{{btxn.summary.name}}</a>
+          <div class="hk-txn-item" ng-repeat="btxn in businessTransactions | filter:query track by btxn.name" ng-show="btxn.level === 'None'">
+            <div class="panel panel-default hk-txn-heading">
+              <a href="/hawkular-ui/btm/info/{{btxn.name}}">{{btxn.name}}</a>
               <span class="hk-settings pull-right">
-                <a href="/hawkular-ui/btm/config/{{btxn.summary.name}}" ><i class="fa fa-cog"></i></a>
+                <a href="/hawkular-ui/btm/config/{{btxn.name}}" ><i class="fa fa-cog"></i></a>
                 <a href="#" ng-click="deleteBusinessTxn(btxn)"><i class="fa fa-trash-o"></i></a>
               </span>
             </div>
