@@ -25,13 +25,7 @@ module BTM {
 
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
-        $scope.businessTransactions = [];
-        for (var i = 0; i < resp.data.length; i++) {
-          var btxn = {
-            summary: resp.data[i]
-          };
-          $scope.businessTransactions.add(btxn);
-        }
+        $scope.businessTransactions = resp.data;
       },function(resp) {
         console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
@@ -46,12 +40,12 @@ module BTM {
     $scope.reload();
 
     $scope.deleteBusinessTxn = function(btxn) {
-      if (confirm('Are you sure you want to delete business transaction \"'+btxn.summary.name+'\"?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/full/'+btxn.summary.name).then(function(resp) {
-          console.log('Deleted: '+btxn.summary.name);
+      if (confirm('Are you sure you want to delete business transaction \"'+btxn.name+'\"?')) {
+        $http.delete('/hawkular/btm/config/businesstxn/full/'+btxn.name).then(function(resp) {
+          console.log('Deleted: '+btxn.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {
-          console.log("Failed to delete business txn '"+btxn.summary.name+"': "+JSON.stringify(resp));
+          console.log("Failed to delete business txn '"+btxn.name+"': "+JSON.stringify(resp));
         });
       }
     };
