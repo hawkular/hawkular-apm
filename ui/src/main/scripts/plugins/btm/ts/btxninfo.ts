@@ -155,13 +155,14 @@ module BTM {
 
     $scope.reload();
 
-    $interval(function() {
+    var refreshPromise = $interval(() => {
       if ($scope.criteria.endTime === "0" || $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
         $scope.reload();
 
         $scope.config.prevLowerBoundDisplay = $scope.config.lowerBoundDisplay;
       }
-    },10000);
+    }, 10000);
+    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.initGraph = function() {
       $scope.ctlinechart = c3.generate({

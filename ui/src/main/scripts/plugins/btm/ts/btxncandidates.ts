@@ -35,10 +35,10 @@ module BTM {
       $http.get('/hawkular/btm/analytics/unbounduris?compress=true').then(function(resp) {
         $scope.unbounduris = resp.data;
         $scope.candidateCount = Object.keys(resp.data).length;
-        
+
         var selected = $scope.selecteduris;
         $scope.selecteduris = [];
-        
+
         for (var i=0; i < $scope.unbounduris.length; i++) {
           for (var j=0; j < selected.length; j++) {
             if ($scope.unbounduris[i].uri === selected[j].uri) {
@@ -53,9 +53,8 @@ module BTM {
 
     $scope.reload();
 
-    $interval(function() {
-      $scope.reload();
-    },10000);
+    var refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.addBusinessTxn = function() {
       var defn = {
@@ -147,7 +146,7 @@ module BTM {
       }
       $scope.selecteduris.add(uriinfo);
     };
-    
+
     $scope.isSelected = function(uriinfo) {
       for (var i=0; i < $scope.selecteduris.length; i++) {
         if ($scope.selecteduris[i].uri === uriinfo.uri) {
@@ -156,7 +155,7 @@ module BTM {
       }
       return false;
     };
-    
+
     $scope.getLevel = function(level) {
       if (level === 'All') {
         return "Active";
