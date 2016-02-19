@@ -178,7 +178,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
             URIInfo uri = uris.get(i);
 
             if (uri.getUri() != null
-                    && uri.getUri().length() > 0
+                    && uri.getUri().length() > 1
                     && uri.getUri().charAt(0) == '/') {
                 String[] parts = uri.getUri().split("/");
 

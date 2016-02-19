@@ -179,4 +179,22 @@ public class AbstractAnalyticsServiceTest {
         assertNotNull(result.get(1).getRegex());
         assertNotNull(result.get(2).getRegex());
     }
+
+    @Test
+    public void testCompressRootContext() {
+        List<URIInfo> uris = new ArrayList<URIInfo>();
+
+        uris.add(new URIInfo().setUri("/").setEndpointType("http"));
+
+        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("/", result.get(0).getUri());
+        assertEquals("http", result.get(0).getEndpointType());
+
+        assertFalse(result.get(0).metaURI());
+
+        assertNotNull(result.get(0).getRegex());
+    }
 }
