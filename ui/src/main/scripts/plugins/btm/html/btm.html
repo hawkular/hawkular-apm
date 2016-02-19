@@ -4,7 +4,7 @@
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <div class="row" ng-show="businessTransactions" >
+  <div class="row" ng-show="businessTransactions">
     <hawkular-subtab class="hk-align-center hk-screen-top-nav">
       <div class="hk-nav-tabs-container">
         <ul class="nav nav-tabs nav-tabs-pf">
@@ -15,7 +15,15 @@
       </div>
     </hawkular-subtab>
 
-    <section id="active" class="hk-tab-content">
+    <div class="blank-slate-pf" ng-show="!businessTransactions.length">
+      <div class="blank-slate-pf-icon">
+        <i class="fa fa-gears"></i>
+      </div>
+      <h1>No Business Transactions defined.</h1>
+      <h2>Create a new one at <a href="/hawkular-ui/btm/candidates">Candidates</a></h2>
+    </div>
+
+    <section id="active" class="hk-tab-content" ng-show="businessTransactions.length">
 
       <div class="hk-control-actions-bar pull-left">
         <div class="hk-container-separator">
@@ -29,7 +37,7 @@
     </section>
   </div>
 
-  <div class="row">
+  <div class="row" ng-show="businessTransactions.length">
 
     <div class="col-md-3" ng-if="!hideCharts" ng-init="initGraph()">
       <h2 class="card-pf-title">Transaction Count</h2>
