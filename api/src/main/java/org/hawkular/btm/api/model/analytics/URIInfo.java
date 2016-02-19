@@ -40,6 +40,24 @@ public class URIInfo {
     private String template;
 
     /**
+     * The default constructor.
+     */
+    public URIInfo() {
+    }
+
+    /**
+     * The copy constructor.
+     *
+     * @param uriInfo The info to copy
+     */
+    public URIInfo(URIInfo uriInfo) {
+        this.uri = uriInfo.uri;
+        this.endpointType = uriInfo.endpointType;
+        this.regex = uriInfo.regex;
+        this.template = uriInfo.template;
+    }
+
+    /**
      * @return the uri
      */
     public String getUri() {
