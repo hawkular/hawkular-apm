@@ -100,8 +100,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(businessTransaction)
-                .setStartTime(startTime)
-                .setEndTime(endTime);
+        .setStartTime(startTime)
+        .setEndTime(endTime);
 
         List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
 
@@ -125,8 +125,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime)
-                .setEndTime(endTime)
-                .setBusinessTransaction(businessTransaction);
+        .setEndTime(endTime)
+        .setBusinessTransaction(businessTransaction);
 
         List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
 
@@ -185,18 +185,22 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                 buildTree(rootPart, parts, 1, uri.getEndpointType());
 
             } else {
-                others.add(uri);
+                others.add(new URIInfo(uri));
             }
         }
 
-        if (others.size() == uris.size()) {
-            return uris;
-        }
-
         // Construct new list
-        rootPart.collapse();
+        List<URIInfo> info = null;
 
-        List<URIInfo> info = extractURIInfo(rootPart);
+        if (uris.size() != others.size()) {
+            rootPart.collapse();
+
+            info = extractURIInfo(rootPart);
+
+            info.addAll(others);
+        } else {
+            info = others;
+        }
 
         // Initialise the URI info
         initURIInfo(info);
@@ -426,13 +430,23 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * @return The regular expression
      */
     protected static String createRegex(String uri, boolean meta) {
-        String regex = "^" + uri.replaceAll("/", "\\\\/") + "$";
+        StringBuffer regex = new StringBuffer();
 
-        if (meta) {
-            regex = regex.replaceAll("\\*", ".*");
+        regex.append('^');
+
+        for (int i=0; i < uri.length(); i++) {
+            char ch=uri.charAt(i);
+            if ("*".indexOf(ch) != -1) {
+                regex.append('.');
+            } else if ("\\.^$|?+[]{}()".indexOf(ch) != -1) {
+                regex.append('\\');
+            }
+            regex.append(ch);
         }
 
-        return regex;
+        regex.append('$');
+
+        return regex.toString();
     }
 
     /**

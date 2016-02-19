@@ -48,7 +48,7 @@ public class AbstractAnalyticsServiceTest {
         assertEquals("http", result.get(0).getEndpointType());
 
         assertTrue(result.get(0).metaURI());
-        assertEquals("^\\/hello\\/.*$", result.get(0).getRegex());
+        assertEquals("^/hello/.*$", result.get(0).getRegex());
         assertEquals("/hello/{helloId}", result.get(0).getTemplate());
     }
 
@@ -68,7 +68,7 @@ public class AbstractAnalyticsServiceTest {
         assertEquals("http", result.get(0).getEndpointType());
 
         assertTrue(result.get(0).metaURI());
-        assertEquals("^\\/events\\/.*$", result.get(0).getRegex());
+        assertEquals("^/events/.*$", result.get(0).getRegex());
         assertEquals("/events/{eventId}", result.get(0).getTemplate());
     }
 
@@ -88,7 +88,7 @@ public class AbstractAnalyticsServiceTest {
         assertEquals("http", result.get(0).getEndpointType());
 
         assertTrue(result.get(0).metaURI());
-        assertEquals("^\\/hello\\/.*\\/mid\\/.*$", result.get(0).getRegex());
+        assertEquals("^/hello/.*/mid/.*$", result.get(0).getRegex());
         assertEquals("/hello/{helloId}/mid/{midId}", result.get(0).getTemplate());
     }
 
@@ -108,7 +108,7 @@ public class AbstractAnalyticsServiceTest {
         assertEquals("http", result.get(0).getEndpointType());
 
         assertTrue(result.get(0).metaURI());
-        assertEquals("^\\/.*\\/leaf$", result.get(0).getRegex());
+        assertEquals("^/.*/leaf$", result.get(0).getRegex());
         assertEquals("/{param1}/leaf", result.get(0).getTemplate());
     }
 
@@ -128,7 +128,7 @@ public class AbstractAnalyticsServiceTest {
         assertEquals("http", result.get(0).getEndpointType());
 
         assertTrue(result.get(0).metaURI());
-        assertEquals("^\\/.*\\/.*$", result.get(0).getRegex());
+        assertEquals("^/.*/.*$", result.get(0).getRegex());
         assertEquals("/{param1}/{param2}", result.get(0).getTemplate());
     }
 
@@ -150,5 +150,33 @@ public class AbstractAnalyticsServiceTest {
 
         assertFalse(result.get(0).metaURI());
         assertFalse(result.get(1).metaURI());
+    }
+
+    @Test
+    public void testCompressDontNonRest() {
+        List<URIInfo> uris = new ArrayList<URIInfo>();
+
+        uris.add(new URIInfo().setUri("/events").setEndpointType("http"));
+        uris.add(new URIInfo().setUri("[HornetQ]MyQueue").setEndpointType("mom"));
+        uris.add(new URIInfo().setUri("OtherURI-with-no-slash").setEndpointType("other"));
+
+        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        assertEquals("/events", result.get(0).getUri());
+        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("[HornetQ]MyQueue", result.get(1).getUri());
+        assertEquals("mom", result.get(1).getEndpointType());
+        assertEquals("OtherURI-with-no-slash", result.get(2).getUri());
+        assertEquals("other", result.get(2).getEndpointType());
+
+        assertFalse(result.get(0).metaURI());
+        assertFalse(result.get(1).metaURI());
+        assertFalse(result.get(2).metaURI());
+
+        assertNotNull(result.get(0).getRegex());
+        assertNotNull(result.get(1).getRegex());
+        assertNotNull(result.get(2).getRegex());
     }
 }
