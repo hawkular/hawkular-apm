@@ -190,7 +190,7 @@
 
           <accordion>
             <accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
-              <accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></accordion-heading>
+              <accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" tooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></accordion-heading>
 
               <form>
                 <div class="form-group">
