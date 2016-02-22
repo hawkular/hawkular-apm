@@ -1,10 +1,7 @@
 <div class="col-md-12" ng-controller="BTM.BTMController">
-  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="businessTransactions">
-    <div class="spinner spinner-lg"></div>
-    <p class="hk-spinner-legend-below">Loading...</p>
-  </div>
 
   <div class="row" ng-show="businessTransactions">
+    <!-- BTxns Tabs -->
     <hawkular-subtab class="hk-align-center hk-screen-top-nav">
       <div class="hk-nav-tabs-container">
         <ul class="nav nav-tabs nav-tabs-pf">
@@ -15,7 +12,14 @@
       </div>
     </hawkular-subtab>
 
-    <div class="blank-slate-pf" ng-show="!businessTransactions.length">
+    <!-- Loader -->
+    <div class="text-center hk-urls-list hk-spinner-container" ng-hide="businessTransactions.$resolved">
+      <div class="spinner spinner-lg"></div>
+      <p class="hk-spinner-legend-below">Loading...</p>
+    </div>
+
+    <!-- No BTxns Slate -->
+    <div class="blank-slate-pf" ng-show="businessTransactions.$resolved && !businessTransactions.length">
       <div class="blank-slate-pf-icon">
         <i class="fa fa-gears"></i>
       </div>
@@ -23,8 +27,8 @@
       <h2>Create a new one at <a href="/hawkular-ui/btm/candidates">Candidates</a></h2>
     </div>
 
+    <!-- BTxns toolbar -->
     <section id="active" class="hk-tab-content" ng-show="businessTransactions.length">
-
       <div class="hk-control-actions-bar pull-left">
         <div class="hk-container-separator">
           <input type="text" class="form-control separator" ng-model="query.name" placeholder="Filter by Name...">
@@ -33,7 +37,6 @@
           <span ng-hide="hideCharts">Hide</span><span ng-show="hideCharts">Show</span> Charts
         </button>
       </div>
-
     </section>
   </div>
 
@@ -44,7 +47,7 @@
       <div id="btxntxncountpiechart" style="height: 250px;" ng-init="reloadTxnCountGraph()"></div>
       <hr>
       <h2 class="card-pf-title">Fault Count</h2>
-      <div id="btxnfaultcountpiechart" style="height: 250px;"></div>
+      <div id="btxnfaultcountpiechart" style="height: 250px;" ng-init="reloadFaultCountGraph()"></div>
     </div>
 
     <div pf-c3-chart id="chartId"  config="chartConfig"></div>
