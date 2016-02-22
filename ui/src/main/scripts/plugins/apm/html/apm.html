@@ -1,159 +1,165 @@
-<div class="row">
-  <div class="col-md-12" ng-controller="APM.APMController">
+<div ng-controller="APM.APMController">
 
-    <div class="form-group" >
-      <span ng-repeat="property in criteria.properties">
-        <span ng-show="!property.excluded">
-          <a class="btn btn-success" ng-click="toggleExclusion(property)">
-            <i>{{property.name}}</i>: {{property.value}}
-            <a class="btn btn-default" ng-click="removeProperty(property)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-            </a>
-          </a>
-        </span>
-        <span ng-show="property.excluded">
-          <a class="btn btn-danger" ng-click="toggleExclusion(property)">
-            <i>{{property.name}}</i>: {{property.value}}
-            <a class="btn btn-default" ng-click="removeProperty(property)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-            </a>
-          </a>
-        </span>
-        <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
-      </span>
-    </div>
+  <div class="row row-cards-pf">
+    <div class="col-xs-12">
+      <div class="card-pf">
+        <div class="card-pf-body">
 
-    <span>
-      <form>
-        <div class="form-group">
-          <label for="intervalField" style="width: 10%" class="" >Aggregation Interval:</label>
-          <select name="intervalField" ng-model="config.interval" ng-change="selectAction()" style="width: 10%">
-            <option value="1000">1 Second</option>
-            <option value="10000">10 Second</option>
-            <option value="30000">30 Second</option>
-            <option value="60000">1 Minute</option>
-            <option value="600000">10 Minutes</option>
-            <option value="3600000">1 Hour</option>
-            <option value="86400000">1 Day</option>
-            <option value="604800000">7 Day</option>
-          </select>
-
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
-
-          <label for="timeSpanField" style="width: 5%" >Time Span:</label>
-          <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()" style="width: 10%">
-            <option value="-60000">1 Minute</option>
-            <option value="-600000">10 Minutes</option>
-            <option value="-1800000">30 Minutes</option>
-            <option value="-3600000">1 Hour</option>
-            <option value="-14400000">4 Hours</option>
-            <option value="-28800000">8 Hours</option>
-            <option value="-43200000">12 Hours</option>
-            <option value="-86400000">Day</option>
-            <option value="-604800000">Week</option>
-            <option value="-2419200000">Month</option>
-            <option value="-15768000000">6 Months</option>
-            <option value="-31536000000">Year</option>
-            <option value="1">All</option>
-          </select>
-
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
-
-          <span>
-            <strong>Last Update</strong>
-            <small>{{ (criteria.endTime !== '0' ? criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</small>
-          </span>
-
-          <div class="pull-right">
-            <button class="btn" ng-class="criteria.endTime !== '0' ? 'btn-danger' : 'btn-default'" ng-click="pauseLiveData()">
-              <i class="glyphicon" ng-class="criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
-              <span ng-show="criteria.endTime === '0'">Pause Live Data</span>
-              <span ng-hide="criteria.endTime === '0'">Resume Live Data</span>
-            </button>
-            <br>
+          <div class="form-group">
+            <span ng-repeat="property in criteria.properties">
+              <span ng-show="!property.excluded">
+                <a class="btn btn-success" ng-click="toggleExclusion(property)">
+                  <i>{{property.name}}</i>: {{property.value}}
+                  <a class="btn btn-default" ng-click="removeProperty(property)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  </a>
+                </a>
+              </span>
+              <span ng-show="property.excluded">
+                <a class="btn btn-danger" ng-click="toggleExclusion(property)">
+                  <i>{{property.name}}</i>: {{property.value}}
+                  <a class="btn btn-default" ng-click="removeProperty(property)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  </a>
+                </a>
+              </span>
+              <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
+            </span>
           </div>
 
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="intervalField">Aggregation Interval:</label>
+              <select pf-select name="intervalField" ng-model="config.interval" ng-change="selectAction()">
+                <option value="1000">1 Second</option>
+                <option value="10000">10 Second</option>
+                <option value="30000">30 Second</option>
+                <option value="60000">1 Minute</option>
+                <option value="600000">10 Minutes</option>
+                <option value="3600000">1 Hour</option>
+                <option value="86400000">1 Day</option>
+                <option value="604800000">7 Day</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="timeSpanField">Time Span:</label>
+              <select pf-select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()">
+                <option value="-60000">1 Minute</option>
+                <option value="-600000">10 Minutes</option>
+                <option value="-1800000">30 Minutes</option>
+                <option value="-3600000">1 Hour</option>
+                <option value="-14400000">4 Hours</option>
+                <option value="-28800000">8 Hours</option>
+                <option value="-43200000">12 Hours</option>
+                <option value="-86400000">Day</option>
+                <option value="-604800000">Week</option>
+                <option value="-2419200000">Month</option>
+                <option value="-15768000000">6 Months</option>
+                <option value="-31536000000">Year</option>
+                <option value="1">All</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Last Update:</label>
+              <span class="hk-input-text">{{ (criteria.endTime !== '0' ? criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</span>
+            </div>
+            <div class="pull-right">
+              <button class="btn" ng-class="criteria.endTime !== '0' ? 'btn-danger' : 'btn-default'" ng-click="pauseLiveData()">
+                <i class="glyphicon" ng-class="criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
+                <span ng-show="criteria.endTime === '0'">Pause Live Data</span>
+                <span ng-hide="criteria.endTime === '0'">Resume Live Data</span>
+              </button>
+            </div>
+          </form>
+
+          <div id="nodesareachart"></div>
+
         </div>
-      </form>
-    </span>
-
-    <div id="nodesareachart"></div>
-
-    <div class="col-md-2" >
-      <h2>Filters</h2>
-
-      <div class="form-group">
-        <input type="text" ng-model="search" class="form-control" placeholder="Search"/>
-
-        <br/>
-
-        <label for="businessTransactionField" >Business Transaction:</label>
-        <br/>
-        <select name="businessTransactionField" ng-model="criteria.businessTransaction" ng-change="selectAction()">
-          <option value="">All</option>
-          <option ng-repeat="btxn in businessTransactions" value="{{btxn}}">{{btxn}}</option>
-        </select>
-
-        <br/>
-        <br/>
-        <label for="hostNameField" >Host Name:</label>
-        <input type="text" class="form-control" name="hostNameField" typeahead-on-select="selectAction()"
-                   ng-model="criteria.hostName" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter a host name"
-                   typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
       </div>
+    </div>
+  </div><!-- .row-cards-pf -->
 
+  <div class="row row-cards-pf">
+
+    <div class="col-md-2">
+      <div class="card-pf">
+        <div class="card-pf-title">
+          Filters
+        </div>
+        <div class="card-pf-body">
+          <div class="form-group">
+            <label for="filtersSearch" class="hide">Search for:</label>
+            <input id="filtersSearch" type="text" ng-model="search" class="form-control" placeholder="Search"/>
+          </div>
+          <div class="form-group">
+            <label for="businessTransactionField" >Business Transaction:</label>
+            <select name="businessTransactionField" ng-model="criteria.businessTransaction" ng-change="selectAction()" class="form-control">
+              <option value="">All</option>
+              <option ng-repeat="btxn in businessTransactions" value="{{btxn}}">{{btxn}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="hostNameField" >Host Name:</label>
+            <input type="text" class="form-control" name="hostNameField" typeahead-on-select="selectAction()"
+                       ng-model="criteria.hostName" ng-model-options="{ updateOn: 'default blur'}"
+                       placeholder="Enter a host name"
+                       typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="col-md-10" >
+      <div class="card-pf">
+        <div class="card-pf-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="col-md-2" ></th>
+                <th ng-click="sort('actual')">Actual (secs)
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='actual'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </th>
+                <th ng-click="sort('elapsed')">Elapsed (secs)
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='elapsed'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </th>
+                <th ng-click="sort('count')">Count
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='count'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </th>
+                <th ng-click="sort('componentType')">Component
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='componentType'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </th>
+                <th ng-click="sort('uri')">URI
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='uri'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </th>
+                <th ng-click="sort('operation')">Operation
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='operation'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr dir-paginate="summary in summaries|orderBy:sortKey:reverse|filter:search|itemsPerPage:config.maxRows" ng-class="{'danger': getElapsedPercentage(summary) > 80,'warning': getElapsedPercentage(summary) > 60}" >
+                <td scope="row">
+                  <progress>
+                    <bar type="danger" value="getActualPercentage(summary)">
+                    </bar>
+                    <bar type="warning" value="getElapsedMinusActualPercentage(summary)">
+                    </bar>
+                  </progress>
+                </td>
+                <td scope="row">{{(summary.actual / 1000000000) | number: 3}}</td>
+                <td scope="row">{{(summary.elapsed / 1000000000) | number: 3}}</td>
+                <td>{{summary.count}}</td>
+                <td>{{summary.componentType}}</td>
+                <td>{{summary.uri}}</td>
+                <td>{{summary.operation}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <dir-pagination-controls max-size="config.maxRows" direction-links="true" boundary-links="true" />
+    </div><!-- .col-md-10 -->
 
-      <form class="form-inline">
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="col-md-2" ></th>
-              <th ng-click="sort('actual')">Actual (secs)
-                <span class="glyphicon sort-icon" ng-show="sortKey=='actual'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-              </th>
-              <th ng-click="sort('elapsed')">Elapsed (secs)
-                <span class="glyphicon sort-icon" ng-show="sortKey=='elapsed'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-              </th>
-              <th ng-click="sort('count')">Count
-                <span class="glyphicon sort-icon" ng-show="sortKey=='count'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-              </th>
-              <th ng-click="sort('componentType')">Component
-                <span class="glyphicon sort-icon" ng-show="sortKey=='componentType'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-              </th>
-              <th ng-click="sort('uri')">URI
-                <span class="glyphicon sort-icon" ng-show="sortKey=='uri'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-              </th>
-              <th ng-click="sort('operation')">Operation
-                <span class="glyphicon sort-icon" ng-show="sortKey=='operation'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr dir-paginate="summary in summaries|orderBy:sortKey:reverse|filter:search|itemsPerPage:config.maxRows" ng-class="{'danger': getElapsedPercentage(summary) > 80,'warning': getElapsedPercentage(summary) > 60}" >
-              <td scope="row">
-                <progress>
-                  <bar type="danger" value="getActualPercentage(summary)">
-                  </bar>
-                  <bar type="warning" value="getElapsedMinusActualPercentage(summary)">
-                  </bar>
-                </progress>
-              </td>
-              <td scope="row">{{(summary.actual / 1000000000) | number: 3}}</td>
-              <td scope="row">{{(summary.elapsed / 1000000000) | number: 3}}</td>
-              <td>{{summary.count}}</td>
-              <td>{{summary.componentType}}</td>
-              <td>{{summary.uri}}</td>
-              <td>{{summary.operation}}</td>
-            </tr>
-          </tbody>
-        </table>
+  </div><!-- .row-cards-pf -->
 
-        <dir-pagination-controls max-size="config.maxRows" direction-links="true" boundary-links="true" />
-      </form>
-    </div>
-  </div>
 </div>
