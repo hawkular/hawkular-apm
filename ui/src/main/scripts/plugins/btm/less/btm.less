@@ -1,0 +1,116 @@
+/*
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import "hawkular.less";
+
+.hk-screen-top-nav {
+
+  .hk-back {
+    display: inline-block;
+    font-size: @font-size-base + 1;
+    margin-top: @grid-gutter-width/8;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: @grid-gutter-width/4;
+    margin-top: @grid-gutter-width/4;
+  }
+
+  .hk-update {
+    margin-top: 10px;
+  }
+
+  .hk-nav-tabs-container {
+    border-bottom: 1px solid @table-border-color;
+    margin-bottom: @grid-gutter-width/2;
+    text-align: center;
+  }
+
+  .nav-tabs {
+    border-bottom: none;
+    display: inline-block;
+    margin-bottom: -3px;
+    text-align: center;
+  }
+
+  .nav-tabs-pf > li > a {
+    padding-bottom: 13px;
+    padding-top: 13px;
+
+    .label-alert {
+      margin-left: 8px;
+    }
+  }
+
+  .nav-tabs > li.active > a,
+  .nav-tabs > li.active > a:active,
+  .nav-tabs > li.active > a:focus,
+  .nav-tabs > li.active > a:hover {
+    background-color: transparent;
+  }
+}
+
+.disabled-txn-card {
+  opacity: 0.7;
+
+  a, .btn-link .fa, a .fa {
+    color: grey;
+  }
+}
+
+.hk-txn-item {
+  margin-top: @grid-gutter-width/4*3;
+
+  .hk-txn-heading {
+    margin-bottom: 1px;
+    padding: @grid-gutter-width/4;
+
+    a {
+      font-size: ceil(@font-size-base * 1.333333);
+    }
+
+    span {
+      color: @gray-light;
+      margin-top: ceil(@font-size-base * 1.333333) - @font-size-base;
+    }
+  }
+
+  .hk-summary {
+    position: relative;
+  }
+
+  .hk-delete {
+    right: -@grid-gutter-width/4*3;
+    position: absolute;
+    top: @grid-gutter-width/4*3;
+    z-index: 1000;
+  }
+
+  // Animations
+  &.ng-leave {
+    -webkit-animation: flipOutX 1s;
+    -moz-animation: flipOutX 1s;
+    -ms-animation: flipOutX 1s;
+    animation: flipOutX 1s;
+  }
+}
+
+.hk-txn-item {
+  .hk-txn-heading span {
+    margin-top: -2px;
+  }
+}

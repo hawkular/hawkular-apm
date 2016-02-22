@@ -33,10 +33,10 @@ module BTM {
         for (var i = 0; i < resp.data.length; i++) {
           allPromises = allPromises.concat($scope.getBusinessTxnDetails(resp.data[i]));
         }
-        console.log(allPromises.length);
 
         $q.all(allPromises).then(() => {
           $scope.businessTransactions = resp.data;
+          $scope.businessTransactions.$resolved = true;
 
           $scope.reloadTxnCountGraph();
           $scope.reloadFaultCountGraph();
