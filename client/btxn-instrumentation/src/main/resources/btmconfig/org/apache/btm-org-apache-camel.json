@@ -175,26 +175,26 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),$2.getProperty(\"Hawkular-btid\"))",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),$2.getProperty(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "$2.getProperty(\"Hawkular-btname\")"
+          "nameExpression": "$2.getProperty(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$2.getProperty(\"Hawkular-btlevel\")"
+          "levelExpression": "$2.getProperty(\"Hawkularbtlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
-          "idExpression": "$2.getProperty(\"Hawkular-btid\")"
+          "idExpression": "$2.getProperty(\"Hawkularbtid\")"
         },{
           "type": "SetDetail",
           "name": "btm_source",
           "valueExpression": "\"org.apache.camel\""
         },{
           "type": "FreeFormAction",
-          "action": "$2.removeProperty(\"Hawkular-btid\")"
+          "action": "$2.removeProperty(\"Hawkularbtid\")"
         }]
       },{
         "ruleName": "Apache Camel Inbound Consumer End",
@@ -240,13 +240,13 @@
           "valueExpression": "\"org.apache.camel\""
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkular-btid\",id)"
+          "action": "$2.setProperty(\"Hawkularbtid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkular-btname\",getBusinessTransactionName())"
+          "action": "$2.setProperty(\"Hawkularbtname\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkular-btlevel\",getLevel())"
+          "action": "$2.setProperty(\"Hawkularbtlevel\",getLevel())"
         }]
       },{
         "ruleName": "Apache Camel Outbound Producer End",

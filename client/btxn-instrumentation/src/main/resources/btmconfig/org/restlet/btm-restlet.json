@@ -18,20 +18,20 @@
         },{
           "name": "id",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkular-btid\")"
+          "expression": "headers.getFirstValue(\"Hawkularbtid\")"
         },{
           "name": "btname",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkular-btname\")"
+          "expression": "headers.getFirstValue(\"Hawkularbtname\")"
         },{
           "name": "btlevel",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkular-btlevel\")"
+          "expression": "headers.getFirstValue(\"Hawkularbtlevel\")"
         }],
         "condition": "activate($1.getResourceRef().getPath(),id)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "headers.removeAll(\"Hawkular-btid\")"
+          "action": "headers.removeAll(\"Hawkularbtid\")"
         },{
           "type": "SetName",
           "nameExpression": "btname"

@@ -10,19 +10,19 @@
           "*"
         ],
         "location": "EXIT",
-        "condition": "activate($0.path(),$0.getHeader(\"Hawkular-btid\"))",
+        "condition": "activate($0.path(),$0.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "$0.getHeader(\"Hawkular-btname\")"
+          "nameExpression": "$0.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$0.getHeader(\"Hawkular-btlevel\")"
+          "levelExpression": "$0.getHeader(\"Hawkularbtlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$0.path()",
-          "idExpression": "$0.getHeader(\"Hawkular-btid\")"
+          "idExpression": "$0.getHeader(\"Hawkularbtid\")"
         },{
           "type": "SetDetail",
           "name": "btm_source",
@@ -143,13 +143,13 @@
           "valueExpression": "uri.getQuery()"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btid\",id)"
+          "action": "$0.putHeader(\"Hawkularbtid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
+          "action": "$0.putHeader(\"Hawkularbtname\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btlevel\",getLevel())"
+          "action": "$0.putHeader(\"Hawkularbtlevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Start 2",
@@ -204,13 +204,13 @@
           "valueExpression": "uri.getQuery()"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btid\",id)"
+          "action": "$0.putHeader(\"Hawkularbtid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btname\",getBusinessTransactionName())"
+          "action": "$0.putHeader(\"Hawkularbtname\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.putHeader(\"Hawkular-btlevel\",getLevel())"
+          "action": "$0.putHeader(\"Hawkularbtlevel\",getLevel())"
         }]
       },{
         "ruleName": "Vertx HTTP Producer Establish Out Link",
