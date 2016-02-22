@@ -4,6 +4,9 @@
       "description": "JBoss AS EE instrumentation",
       "rules": [{
         "ruleName": "EE Component Start",
+        "notes": [
+          "Need to exclude 'onMessage' methods as the ordering of the exit was conflicting with the JMS/MDB rules"
+        ],
         "className": "org.jboss.as.ee.component.ProxyInvocationHandler",
         "methodName": "invoke",
         "parameterTypes": [
@@ -12,6 +15,7 @@
            "Object[]"
         ],
         "location": "ENTRY",
+        "condition": "!$2.getName().equals(\"onMessage\")",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "In",
@@ -21,6 +25,9 @@
         }]
       },{
         "ruleName": "EE Component End",
+        "notes": [
+          "Need to exclude 'onMessage' methods as the ordering of the exit was conflicting with the JMS/MDB rules"
+        ],
         "className": "org.jboss.as.ee.component.ProxyInvocationHandler",
         "methodName": "invoke",
         "parameterTypes": [
@@ -29,6 +36,7 @@
            "Object[]"
         ],
         "location": "EXIT",
+        "condition": "!$2.getName().equals(\"onMessage\")",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "Out",
