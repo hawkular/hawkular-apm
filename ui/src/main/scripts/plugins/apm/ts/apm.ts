@@ -50,41 +50,43 @@ module APM {
     $scope.reloadData = function() {
 
       $http.post('/hawkular/btm/analytics/node/statistics?interval='+$scope.config.interval, $scope.criteria).then(function(resp) {
-        $scope.statistics = resp.data;
 
-        for (var i=0; i < $scope.statistics.length; i++) {
+        // get all component keys
+        var components = {};
+        var timestamps = ['timestamp'];
+        var nodeComponents = [];
+        var componentTypes = [];
 
-          if (i === 0) {
-            $scope.timestamps.length = 0;
-            $scope.timestamps.push('timestamp');
-          }
-          $scope.timestamps.push($scope.statistics[i].timestamp);
+        _.forEach(resp.data, (datapoint: any) => {
+            timestamps.push(datapoint.timestamp);
 
-          $scope.nodeComponents.push($scope.timestamps);
+            // Iterate and gather the available component types in this datapoint
+            _.forEach(Object.keys(datapoint.componentTypes), (compType) => {
+              if (!components[compType]) {
+                componentTypes.push(compType);
+                // in case there's datapoints processed already, we fill the new with so many 0's
+                components[compType] = _.fill(Array(timestamps.length - 1), 0);
+                // and the first entry is always the component type name
+                components[compType][0] = compType;
+                nodeComponents.push(components[compType]);
+              }
+            });
 
-          var keys=Object.keys($scope.statistics[i].componentTypes);
+            // Add 0 value for all types, in case they are not present
+            _.forEach(nodeComponents, (nodeComponent: any) => {
+              nodeComponent.push(0);
+            });
 
-          for (var j=0; j < keys.length; j++) {
-            var list=$scope.lists[keys[j]];
+            // in case they are present, will now be replaced by correct value
+            _.forEach(datapoint.componentTypes, (value: any, component: string) => {
+                components[component][components[component].length - 1] = value.duration;
+            });
+        });
 
-            if (list === undefined) {
-              list = [keys[j]];
-              $scope.lists[keys[j]] = list;
-              $scope.nodeComponents.push(list);
-              $scope.components.push(keys[j]);
-            } else if (i === 0) {
-              // Clear out list
-              list.length = 0;
-              list.push(keys[j]);
-            }
+        nodeComponents.unshift(timestamps);
 
-            for (var k=list.length; k < $scope.timestamps.length-1; k++) {
-              list.push(0);
-            }
-
-            list.push($scope.statistics[i].componentTypes[keys[j]].duration);
-          }
-        }
+        $scope.nodeComponents = nodeComponents;
+        $scope.components = componentTypes;
 
         $scope.redrawAreaChart();
       },function(resp) {
