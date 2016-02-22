@@ -20,19 +20,19 @@
           "type": "java.net.URI",
           "expression": "java.net.URI.create(req.getRequestURI())"
         }],
-        "condition": "activate(uri.getPath(),req.getHeader(\"Hawkular-btid\"))",
+        "condition": "activate(uri.getPath(),req.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "req.getHeader(\"Hawkular-btname\")"
+          "nameExpression": "req.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "req.getHeader(\"Hawkular-btlevel\")"
+          "levelExpression": "req.getHeader(\"Hawkularbtlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "uri.getPath()",
-          "idExpression": "req.getHeader(\"Hawkular-btid\")"
+          "idExpression": "req.getHeader(\"Hawkularbtid\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",

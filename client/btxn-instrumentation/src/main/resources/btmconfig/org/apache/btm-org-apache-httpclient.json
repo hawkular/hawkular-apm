@@ -53,13 +53,13 @@
           "valueExpression": "uri.getPort()"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setHeader(\"Hawkular-btid\",id)"
+          "action": "$2.setHeader(\"Hawkularbtid\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setHeader(\"Hawkular-btname\",getBusinessTransactionName())"
+          "action": "$2.setHeader(\"Hawkularbtname\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setHeader(\"Hawkular-btlevel\",getLevel())"
+          "action": "$2.setHeader(\"Hawkularbtlevel\",getLevel())"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Request",

@@ -15,19 +15,19 @@
           "javax.servlet.http.HttpServletResponse"
         ],
         "location": "ENTRY",
-        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),$2.getHeader(\"Hawkular-btid\"))",
+        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),$2.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "$2.getHeader(\"Hawkular-btname\")"
+          "nameExpression": "$2.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$2.getHeader(\"Hawkular-btlevel\")"
+          "levelExpression": "$2.getHeader(\"Hawkularbtlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$2.getRequestURL().toString()",
-          "idExpression": "$2.getHeader(\"Hawkular-btid\")"
+          "idExpression": "$2.getHeader(\"Hawkularbtid\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
