@@ -1,127 +1,145 @@
-<div class="row">
-  <div class="col-md-12" ng-controller="BTM.BTxnInfoController">
-    <h1><span style="color:grey">{{businessTransactionName}}</span></h1>
+<div ng-controller="BTM.BTxnInfoController">
 
-    <div class="form-group" >
-      <span ng-repeat="fault in criteria.faults">
-        <span ng-show="!fault.excluded">
-          <a class="btn btn-success" ng-click="toggleExclusion(fault)">
-            <i>fault</i>: {{fault.value}}
-            <a class="btn btn-default" ng-click="removeFault(fault)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-            </a>
-          </a>
-        </span>
-        <span ng-show="fault.excluded">
-          <a class="btn btn-danger" ng-click="toggleExclusion(fault)">
-            <i>fault</i>: {{fault.value}}
-            <a class="btn btn-default" ng-click="removeFault(fault)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-            </a>
-          </a>
-        </span>
-        <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
-      </span>
+  <h1 class="hk-top">{{businessTransactionName}}</h1>
 
-      <span ng-repeat="property in criteria.properties">
-        <span ng-show="!property.excluded">
-          <a class="btn btn-success" ng-click="toggleExclusion(property)">
-            <i>{{property.name}}</i>: {{property.value}}
-            <a class="btn btn-default" ng-click="removeProperty(property)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-            </a>
-          </a>
-        </span>
-        <span ng-show="property.excluded">
-          <a class="btn btn-danger" ng-click="toggleExclusion(property)">
-            <i>{{property.name}}</i>: {{property.value}}
-            <a class="btn btn-default" ng-click="removeProperty(property)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-            </a>
-          </a>
-        </span>
-        <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
-      </span>
-    </div>
+  <div class="row row-cards-pf">
+    <div class="col-xs-12">
+      <div class="card-pf">
+        <div class="card-pf-body">
 
-    <span>
-      <form>
-        <div class="form-group">
-          <label for="intervalField" style="width: 10%" class="" >Aggregation Interval:</label>
-          <select name="intervalField" ng-model="config.interval" ng-change="selectAction()" style="width: 10%">
-            <option value="1000">1 Second</option>
-            <option value="10000">10 Second</option>
-            <option value="30000">30 Second</option>
-            <option value="60000">1 Minute</option>
-            <option value="600000">10 Minutes</option>
-            <option value="3600000">1 Hour</option>
-            <option value="86400000">1 Day</option>
-            <option value="604800000">7 Day</option>
-          </select>
+          <div class="form-group" >
+            <span ng-repeat="fault in criteria.faults">
+              <span ng-show="!fault.excluded">
+                <a class="btn btn-success" ng-click="toggleExclusion(fault)">
+                  <i>fault</i>: {{fault.value}}
+                  <a class="btn btn-default" ng-click="removeFault(fault)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  </a>
+                </a>
+              </span>
+              <span ng-show="fault.excluded">
+                <a class="btn btn-danger" ng-click="toggleExclusion(fault)">
+                  <i>fault</i>: {{fault.value}}
+                  <a class="btn btn-default" ng-click="removeFault(fault)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  </a>
+                </a>
+              </span>
+              <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
+            </span>
 
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
-
-          <label for="timeSpanField" style="width: 5%" >Time Span:</label>
-          <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()" style="width: 10%">
-            <option value="-60000">1 Minute</option>
-            <option value="-600000">10 Minutes</option>
-            <option value="-1800000">30 Minutes</option>
-            <option value="-3600000">1 Hour</option>
-            <option value="-14400000">4 Hours</option>
-            <option value="-28800000">8 Hours</option>
-            <option value="-43200000">12 Hours</option>
-            <option value="-86400000">Day</option>
-            <option value="-604800000">Week</option>
-            <option value="-2419200000">Month</option>
-            <option value="-15768000000">6 Months</option>
-            <option value="-31536000000">Year</option>
-            <option value="1">All</option>
-          </select>
-
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
-
-          <label for="lowerBoundField" style="width: 8%" >Lower Bound(%):</label>
-          <input type="number" ng-model="config.lowerBoundDisplay"
-                name="lowerBoundField" ng-change="updatedBounds()"
-                min="0" max="100"/>
-
-          <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
-
-          <span>
-            <strong>Last Update</strong>
-            <small>{{ (criteria.endTime !== '0' ? criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</small>
-          </span>
-
-          <div class="pull-right">
-            <button class="btn" ng-class="criteria.endTime !== '0' ? 'btn-danger' : 'btn-default'" ng-click="pauseLiveData()">
-              <i class="glyphicon" ng-class="criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
-              <span ng-show="criteria.endTime === '0'">Pause Live Data</span>
-              <span ng-hide="criteria.endTime === '0'">Resume Live Data</span>
-            </button>
-            <br>
+            <span ng-repeat="property in criteria.properties">
+              <span ng-show="!property.excluded">
+                <a class="btn btn-success" ng-click="toggleExclusion(property)">
+                  <i>{{property.name}}</i>: {{property.value}}
+                  <a class="btn btn-default" ng-click="removeProperty(property)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  </a>
+                </a>
+              </span>
+              <span ng-show="property.excluded">
+                <a class="btn btn-danger" ng-click="toggleExclusion(property)">
+                  <i>{{property.name}}</i>: {{property.value}}
+                  <a class="btn btn-default" ng-click="removeProperty(property)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  </a>
+                </a>
+              </span>
+              <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
+            </span>
           </div>
 
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="intervalField">Aggregation Interval:</label>
+              <select name="intervalField" ng-model="config.interval" ng-change="selectAction()">
+                <option value="1000">1 Second</option>
+                <option value="10000">10 Second</option>
+                <option value="30000">30 Second</option>
+                <option value="60000">1 Minute</option>
+                <option value="600000">10 Minutes</option>
+                <option value="3600000">1 Hour</option>
+                <option value="86400000">1 Day</option>
+                <option value="604800000">7 Day</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="timeSpanField">Time Span:</label>
+              <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()">
+                <option value="-60000">1 Minute</option>
+                <option value="-600000">10 Minutes</option>
+                <option value="-1800000">30 Minutes</option>
+                <option value="-3600000">1 Hour</option>
+                <option value="-14400000">4 Hours</option>
+                <option value="-28800000">8 Hours</option>
+                <option value="-43200000">12 Hours</option>
+                <option value="-86400000">Day</option>
+                <option value="-604800000">Week</option>
+                <option value="-2419200000">Month</option>
+                <option value="-15768000000">6 Months</option>
+                <option value="-31536000000">Year</option>
+                <option value="1">All</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="lowerBoundField">Lower Bound(%):</label>
+              <input type="number" ng-model="config.lowerBoundDisplay"
+                    name="lowerBoundField" ng-change="updatedBounds()"
+                    min="0" max="100"/>
+            </div>
+
+            <div class="form-group">
+              <label>Last Update:</label>
+              <span class="hk-input-text">{{ (criteria.endTime !== '0' ? criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</span>
+            </div>
+
+            <div class="pull-right">
+              <button class="btn" ng-class="criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-click="pauseLiveData()">
+                <i class="glyphicon" ng-class="criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
+                <span ng-show="criteria.endTime === '0'">Pause Live Data</span>
+                <span ng-hide="criteria.endTime === '0'">Resume Live Data</span>
+              </button>
+              <br>
+            </div>
+
+          </form>
+
+          <div id="completiontimelinechart"></div>
+
         </div>
-      </form>
-    </span>
+      </div>
+    </div>
+  </div><!-- .row-cards-pf -->
 
-    <div id="completiontimelinechart"></div>
+  <div class="row row-cards-pf">
 
-    <div class="col-md-6">
-      <h2><span style="color:grey">Faults</span></h2>
-
-      <div id="completiontimefaultschart"></div>
+    <div class="col-md-6 col-sm-12">
+      <div class="card-pf">
+        <div class="card-pf-title">
+          Faults
+        </div>
+        <div class="card-pf-body">
+          <div id="completiontimefaultschart"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-6">
-      <h2><span style="color:grey">Property</span>
-        <select name="propertyField" ng-model="config.selectedProperty" ng-change="propertyClicked()">
-          <option ng-repeat="property in properties">{{property.name}}</option>
-        </select>
-      </h2>
-
+    <div class="col-md-6 col-sm-12">
+      <div class="card-pf">
+        <div class="card-pf-title">
+          Property
+        </div>
+        <div class="card-pf-body">
+          <select name="propertyField" ng-model="config.selectedProperty" ng-change="propertyClicked()">
+            <option ng-repeat="property in properties">{{property.name}}</option>
+          </select>
+        </div>
+      </div>
       <div id="completiontimepropertychart"></div>
     </div>
 
-  </div>
+  </div><!-- .row-cards-pf -->
+
 </div>
