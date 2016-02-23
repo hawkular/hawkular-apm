@@ -47,6 +47,8 @@ module APM {
 
     $scope.businessTransactions = [];
 
+    $scope.chartStacked = true;
+
     $scope.reloadData = function() {
 
       $http.post('/hawkular/btm/analytics/node/statistics?interval='+$scope.config.interval, $scope.criteria).then(function(resp) {
@@ -85,10 +87,22 @@ module APM {
 
         nodeComponents.unshift(timestamps);
 
+        var firstData = $scope.components.length === 0 && componentTypes.length > 0;
+        var lastData = $scope.components.length > 0 && componentTypes.length === 0;
+
         $scope.nodeComponents = nodeComponents;
         $scope.components = componentTypes;
+        $scope.componentsGroups = !$scope.chartStacked ? [] :
+          $scope.components.length > 0 ? $scope.components : [];
+
+        // have to initialize to pick stacked/layered option and also to empty the chart
+        // when there's no more data to show, otherwise it stalls at last data
+        if (!$scope.nodesareachart || lastData || (firstData && $scope.chartStacked)) {
+          $scope.initGraph();
+        }
 
         $scope.redrawAreaChart();
+
       },function(resp) {
         console.log("Failed to get node timeseries statistics: "+JSON.stringify(resp));
       });
@@ -134,7 +148,7 @@ module APM {
           value: $scope.components,
           x: 'timestamp'
         },
-        groups: [$scope.components]
+        groups: [$scope.componentsGroups]
       });
     };
 
@@ -158,7 +172,7 @@ module APM {
             value: $scope.components,
             x: 'timestamp'
           },
-          groups: [$scope.components]
+          groups: [$scope.componentsGroups]
         },
         axis: {
           x: {
@@ -182,10 +196,15 @@ module APM {
 
     };
 
-    $scope.initGraph();
-
     $scope.selectAction = function() {
       $scope.reloadData();
+    };
+
+    $scope.toggleStacked = function() {
+      $scope.chartStacked = !$scope.chartStacked;
+      $scope.componentsGroups = $scope.chartStacked ? $scope.components : [];
+      $scope.initGraph();
+      $scope.redrawAreaChart();
     };
 
     $scope.pauseLiveData = function() {
