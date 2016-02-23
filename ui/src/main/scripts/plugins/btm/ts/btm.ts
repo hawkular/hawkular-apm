@@ -20,7 +20,7 @@ module BTM {
 
   declare var c3: any;
 
-  export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', '$q', ($scope, $http, $location, $interval, $q) => {
+  export var BTMController = _module.controller("BTM.BTMController", ["$scope", "$http", '$location', '$interval', '$q', '$timeout', ($scope, $http, $location, $interval, $q, $timeout) => {
 
     $scope.candidateCount = 0;
 
@@ -112,31 +112,34 @@ module BTM {
     };
 
     $scope.initGraph = function() {
-      $scope.btxncountpiechart = c3.generate({
-        bindto: '#btxntxncountpiechart',
-        data: {
-          json: [
-          ],
-          type: 'pie',
-          onclick: function (d, i) {
-            $location.path('/hawkular-ui/btm/info/'+d.id);
+      $timeout(() => {
+        $scope.btxncountpiechart = c3.generate({
+          bindto: '#btxntxncountpiechart',
+          data: {
+            json: [
+            ],
+            type: 'pie',
+            onclick: function(d, i) {
+              $location.path('/hawkular-ui/btm/info/' + d.id);
+            }
           }
-        }
-      });
+        });
 
-      $scope.btxnfaultcountpiechart = c3.generate({
-        bindto: '#btxnfaultcountpiechart',
-        data: {
-          json: [
-          ],
-          type: 'pie',
-          onclick: function (d, i) {
-            $location.path('/hawkular-ui/btm/info/'+d.id);
+        $scope.btxnfaultcountpiechart = c3.generate({
+          bindto: d3.select('#btxnfaultcountpiechart'),
+          data: {
+            json: [
+            ],
+            type: 'pie',
+            onclick: function(d, i) {
+              $location.path('/hawkular-ui/btm/info/' + d.id);
+            }
           }
-        }
+        });
+
+        $scope.reloadTxnCountGraph();
+        $scope.reloadFaultCountGraph();
       });
-      $scope.reloadTxnCountGraph();
-      $scope.reloadFaultCountGraph();
     };
 
     $scope.reloadTxnCountGraph = function() {
