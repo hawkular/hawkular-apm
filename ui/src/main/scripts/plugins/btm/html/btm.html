@@ -42,14 +42,13 @@
 
   <div class="row row-cards-pf" ng-show="businessTransactions.length">
 
-    <div class="col-md-3 col-sm-4">
-      <div class="card-pf" ng-init="initGraph()">
+    <div class="col-md-3 col-sm-4" ng-if="businessTransactions.$resolved && !hideCharts" ng-init="initGraph()">
+      <div class="card-pf">
         <div class="card-pf-title">Transaction Count</div>
         <div class="card-pf-body">
           <div id="btxntxncountpiechart" style="height: 250px;" ng-init="reloadTxnCountGraph()"></div>
         </div>
       </div>
-
       <div class="card-pf">
         <div class="card-pf-title">Fault Count</div>
           <div class="card-pf-body">
