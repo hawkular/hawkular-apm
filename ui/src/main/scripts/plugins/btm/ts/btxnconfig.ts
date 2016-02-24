@@ -18,7 +18,9 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export var BTxnConfigController = _module.controller("BTM.BTxnConfigController", ["$scope", "$routeParams", "$http", '$location', '$interval', ($scope, $routeParams, $http, $location, $interval) => {
+    export var BTxnConfigController = _module.controller("BTM.BTxnConfigController", ["$scope", "$routeParams", "$http", '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
+
+    $scope.btxn = btxn;
 
     $scope.businessTransactionName = $routeParams.businesstransaction;
     $scope.dirty = false;

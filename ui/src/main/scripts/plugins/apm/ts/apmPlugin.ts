@@ -35,7 +35,8 @@ module APM {
     $locationProvider.html5Mode(true);
     $routeProvider.
       when('/hawkular-ui/apm', {
-        templateUrl: 'plugins/apm/html/apm.html'
+        templateUrl: 'plugins/apm/html/apm.html',
+        controller: 'APM.APMController'
       });
   }]);
 

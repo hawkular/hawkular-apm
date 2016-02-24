@@ -20,8 +20,9 @@ module BTM {
 
   declare var c3: any;
 
-  export var BTxnInfoController = _module.controller("BTM.BTxnInfoController", ["$scope", "$routeParams", "$http", '$location', '$interval', ($scope, $routeParams, $http, $location, $interval) => {
+  export var BTxnInfoController = _module.controller("BTM.BTxnInfoController", ["$scope", "$routeParams", "$http", '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
 
+    $scope.btxn = btxn;
     $scope.businessTransactionName = $routeParams.businesstransaction;
 
     $scope.properties = [];
