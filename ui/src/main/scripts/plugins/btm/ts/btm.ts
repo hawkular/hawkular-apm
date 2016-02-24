@@ -38,8 +38,13 @@ module BTM {
           $scope.businessTransactions = resp.data;
           $scope.businessTransactions.$resolved = true;
 
-          $scope.reloadTxnCountGraph();
-          $scope.reloadFaultCountGraph();
+          if (!$scope.btxncountpiechart || !$scope.btxnfaultcountpiechart) {
+            $scope.initGraph();
+          } else {
+            $scope.reloadTxnCountGraph();
+            $scope.reloadFaultCountGraph();
+          }
+
         });
       },function(resp) {
         console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
@@ -116,8 +121,7 @@ module BTM {
         $scope.btxncountpiechart = c3.generate({
           bindto: '#btxntxncountpiechart',
           data: {
-            json: [
-            ],
+            columns: [],
             type: 'pie',
             onclick: function(d, i) {
               $location.path('/hawkular-ui/btm/info/' + d.id);
@@ -126,10 +130,9 @@ module BTM {
         });
 
         $scope.btxnfaultcountpiechart = c3.generate({
-          bindto: d3.select('#btxnfaultcountpiechart'),
+          bindto: '#btxnfaultcountpiechart',
           data: {
-            json: [
-            ],
+            columns: [],
             type: 'pie',
             onclick: function(d, i) {
               $location.path('/hawkular-ui/btm/info/' + d.id);
