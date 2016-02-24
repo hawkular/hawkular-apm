@@ -1,4 +1,11 @@
-<div ng-controller="BTM.BTxnInfoController">
+<div>
+
+  <ol class="breadcrumb">
+    <li> <a href="/hawkular-ui/btm">Business Transactions</a> </li>
+    <li ng-hide="btxn.level === 'Ignore'"> <a href="/hawkular-ui/btm">Managed</a> </li>
+    <li ng-show="btxn.level === 'Ignore'"> <a href="/hawkular-ui/btm/ignored">Ignored</a> </li>
+    <li class="active"> <strong>{{businessTransactionName}}</strong> </li>
+  </ol>
 
   <h1 class="hk-top">{{businessTransactionName}}</h1>
 
