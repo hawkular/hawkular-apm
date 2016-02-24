@@ -1,5 +1,14 @@
 <div class="row">
   <div class="col-md-12">
+
+    <ol class="breadcrumb">
+      <li> <a href="/hawkular-ui/btm">Business Transactions</a> </li>
+      <li ng-hide="btxn.level === 'Ignore'"> <a href="/hawkular-ui/btm">Managed</a> </li>
+      <li ng-show="btxn.level === 'Ignore'"> <a href="/hawkular-ui/btm/ignored">Ignored</a> </li>
+      <li> <a href="/hawkular-ui/btm/info/{{businessTransactionName}}">{{businessTransactionName}}</a> </li>
+      <li class="active"> <strong>Configuration</strong> </li>
+    </ol>
+
     <h1><span style="color:grey">{{businessTransactionName}}</span></h1>
 
     <button type="button" class="btn btn-success btn-sm" ng-click="save()" ng-disabled="!dirty">Save</button>
