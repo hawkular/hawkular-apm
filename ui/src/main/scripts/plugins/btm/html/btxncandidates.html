@@ -1,11 +1,11 @@
-<div class="col-md-12" ng-controller="BTM.BTMCandidatesController">
+<div ng-controller="BTM.BTMCandidatesController">
 
   <div class="text-center hk-urls-list hk-spinner-container" ng-hide="unbounduris">
     <div class="spinner spinner-lg"></div>
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <div class="row" ng-show="unbounduris" >
+  <div ng-show="unbounduris" >
 
     <hawkular-subtab class="hk-align-center hk-screen-top-nav">
       <div class="hk-nav-tabs-container">
@@ -17,60 +17,64 @@
       </div>
     </hawkular-subtab>
 
-    <section id="active" class="hk-tab-content">
+    <section id="active" class="hk-btm-candidates">
 
-      <br/>
+      <div class="row">
+        <div class="col-lg-8 col-md-10 col-sm-12 hk-align-center">
+          <form class="form-inline hk-btm-candidates" name="addBTxnForm" role="form" novalidate="" >
+            <div class="row hk-align-center">
+              <div class="form-group input col-sm-6">
+                <div class="input-group input-group-lg">
+                  <input type="text" class="form-control" name="newBTxnNameField"
+                       ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
+                       placeholder="Business transaction name"/>
+                  <span class="input-group-btn">
+                    <input class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" ng-click="addBusinessTxn()" value="Manage" />
+                    <input class="btn btn-default" type="button" ng-disabled="!newBTxnName" ng-click="ignoreBusinessTxn()" value="Ignore" />
+                  </span>
+                  <span class="input-group-btn">
+                  </span>
+                </div>
+              </div>
+              <div class="form-group input col-sm-6">
+                <div class="input-group input-group-lg">
+                  <select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
+                    <option value="">Select existing ....</option>
+                    <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
+                  </select>
+                  <span class="input-group-btn">
+                    <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selecteduris.length == 0" ng-click="updateBusinessTxn()" value="Update" />
+                  </span>
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
 
-      <form class="form-horizontal hk-add-url" name="addBTxnForm" role="form" novalidate="" >
-        <div class="form-group input">
-          <div class="col-lg-6 col-sm-8 col-xs-12 hk-align-center">
-            <div class="input-group input-group-lg">
-              <input type="text" class="form-control" name="newBTxnNameField"
-                   ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Business transaction name"/>
-              <span class="input-group-btn">
-                <input class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" ng-click="addBusinessTxn()" value="Manage" />
-                <input class="btn btn-danger" type="button" ng-disabled="!newBTxnName" ng-click="ignoreBusinessTxn()" value="Ignore" />
-              </span>
-
-              <span class="input-group-btn">
-              </span>
-
-              <select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
-                <option value="">Select existing ....</option>
-                <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
-              </select>
-              <span class="input-group-btn">
-                <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selecteduris.length == 0" ng-click="updateBusinessTxn()" value="Update" />
-              </span>
-            </div>
+      <div class="col-lg-8 col-md-10 col-sm-12 hk-align-center">
+        <hr/>
+        <div class="form-inline hk-candidates-search">
+          <div class="form-group">
+            <label for="searchField">Search:</label>
+            <input ng-model="query" class="form-control" id="searchField"/>
           </div>
         </div>
-      </form>
 
-      <div class="col-md-9 hk-align-center">
-        <ul class="list-group" >
-          <br/>
-          <div class="row" >
-            Search: <input ng-model="query"/>
+        <div class="panel panel-default">
+          <div class="panel-body">
+          <div ng-repeat="uriinfo in unbounduris | filter:query" >
+            <label>
+              <input type="checkbox" name="selectedURIs[]"
+                value="{{uriinfo.uri}}"
+                ng-checked="isSelected(uriinfo)"
+                ng-click="selectionChanged(uriinfo)"
+                ng-disabled="!newBTxnName &amp;&amp; !existingBTxnName"/>
+              <span ng-hide="!newBTxnName &amp;&amp; !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
+              <span ng-show="!newBTxnName &amp;&amp; !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>
+            </label>
           </div>
-          <br/>
-
-          <div class="panel panel-default hk-txn-heading">
-            <div ng-repeat="uriinfo in unbounduris | filter:query" >
-              <label>
-                <input type="checkbox" name="selectedURIs[]"
-                  value="{{uriinfo.uri}}"
-                  ng-checked="isSelected(uriinfo)"
-                  ng-click="selectionChanged(uriinfo)"
-                  ng-disabled="!newBTxnName &amp;&amp; !existingBTxnName"/>
-                <span ng-hide="!newBTxnName &amp;&amp; !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
-                <span ng-show="!newBTxnName &amp;&amp; !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>
-              </label>
-            </div>
           </div>
-        </ul>
-      </div>
+        </div>
     </section>
   </div>
 </div>
