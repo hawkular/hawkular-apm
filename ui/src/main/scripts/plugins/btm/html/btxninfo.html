@@ -59,7 +59,7 @@
           <form class="form-inline">
             <div class="form-group">
               <label for="intervalField">Aggregation Interval:</label>
-              <select name="intervalField" ng-model="config.interval" ng-change="selectAction()">
+              <select name="intervalField" ng-model="config.interval" ng-change="selectAction()" class="form-control">
                 <option value="1000">1 Second</option>
                 <option value="10000">10 Second</option>
                 <option value="30000">30 Second</option>
@@ -73,7 +73,7 @@
 
             <div class="form-group">
               <label for="timeSpanField">Time Span:</label>
-              <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()">
+              <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()" class="form-control">
                 <option value="-60000">1 Minute</option>
                 <option value="-600000">10 Minutes</option>
                 <option value="-1800000">30 Minutes</option>
