@@ -4,7 +4,7 @@
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <div class="row" ng-show="businessTransactions" >
+  <div ng-show="businessTransactions" >
 
     <hawkular-subtab class="hk-align-center hk-screen-top-nav">
       <div class="hk-nav-tabs-container">
@@ -16,27 +16,30 @@
       </div>
     </hawkular-subtab>
 
-    <section id="active" class="hk-tab-content">
-
-      <div class="col-md-9 hk-align-center">
-        <ul class="list-group" >
-          <br/>
-          <div class="row" >
-            Search: <input ng-model="query.name"/>
-          </div>
-
-          <div class="hk-txn-item" ng-repeat="btxn in businessTransactions | filter:query track by btxn.name" ng-show="btxn.level === 'Ignore'">
-            <div class="panel panel-default hk-txn-heading">
-              <a href="/hawkular-ui/btm/info/{{btxn.name}}">{{btxn.name}}</a>
-              <span class="hk-settings pull-right">
-                <a href="/hawkular-ui/btm/config/{{btxn.name}}" ><i class="fa fa-cog"></i></a>
-                <a href="#" ng-click="deleteBusinessTxn(btxn)"><i class="fa fa-trash-o"></i></a>
-              </span>
+    <section id="active" class="hk-btm-ignored">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 col-sm-12 hk-align-center">
+          <div class="form-inline hk-candidates-search">
+            <div class="form-group">
+              <label for="searchField">Search:</label>
+              <input ng-model="query.name" class="form-control" id="searchField"/>
             </div>
           </div>
-        </ul>
+          <div class="hk-txn-item" ng-repeat="btxn in businessTransactions | filter:query track by btxn.name" ng-show="btxn.level === 'Ignore'">
+            <div class="panel panel-default hk-txn-heading">
+              <div class="panel-body">
+                <a href="/hawkular-ui/btm/info/{{btxn.name}}" class="hk-panel-item">{{btxn.name}}</a>
+                <span class="hk-settings pull-right">
+                  <a href="/hawkular-ui/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
+                  <a href="#" ng-click="deleteBusinessTxn(btxn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+
   </div>
 </div>
 

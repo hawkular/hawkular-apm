@@ -1,5 +1,5 @@
-<div class="row">
-  <div class="col-md-12">
+<div class="row hk-btm-configuration">
+  <div class="col-xs-12">
 
     <ol class="breadcrumb">
       <li> <a href="/hawkular-ui/btm">Business Transactions</a> </li>
@@ -9,13 +9,7 @@
       <li class="active"> <strong>Configuration</strong> </li>
     </ol>
 
-    <h1><span style="color:grey">{{businessTransactionName}}</span></h1>
-
-    <button type="button" class="btn btn-success btn-sm" ng-click="save()" ng-disabled="!dirty">Save</button>
-    <button type="button" class="btn btn-danger btn-sm" ng-click="reset()" ng-disabled="!dirty">Discard</button>
-
-    <br/>
-    <br/>
+    <h1>{{businessTransactionName}}</h1>
 
     <alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong>
       <div ng-hide="message.details === undefined">
@@ -23,167 +17,196 @@
       </div>
     </alert>
 
-    <a href="#" editable-textarea="businessTransaction.description" e-rows="14" e-cols="120" rows="7" onaftersave="setDirty()" >
-      <pre><i>{{ businessTransaction.description || 'No description' }}</i></pre>
+    <a href="#" class="hk-transaction-description" editable-textarea="businessTransaction.description" e-rows="3" e-cols="108" onaftersave="setDirty()" tooltip="Click to edit">
+      <span>{{ businessTransaction.description || 'No description' }}</span>
     </a>
 
-    <div class="col-md-12" >
-      <h2>Filters</h2>
-    </div>
+    <div class="row">
 
-    <div class="col-md-6" >
+      <div class="col-md-12">
+        <h2>Filters</h2>
+      </div>
 
-      <h4>Inclusion</h4>
+      <div class="col-md-6" >
+        <h4>Inclusion</h4>
+        <!-- TODO: Use angular-ui/bootstrap typeahead to autofill possible inclusion URIs -->
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="inclusion in businessTransaction.filter.inclusions" >{{inclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeInclusionFilter(inclusion)" tooltip="Remove"></span></li>
+          <li class="list-group-item clearfix">
+            <form class="form-horizontal" name="addInclusionForm" role="form" autocomplete="off" ng-submit="addInclusionFilter()">
+              <div class="input-group">
+                <input type="text" class="form-control" name="newInclusionFilterField"
+                     ng-model="newInclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
+                     placeholder="Enter an inclusion filter (regular expression)"
+                     typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit" ng-disabled="!newInclusionFilter"  tooltip="Add">
+                    <div ng-show="addProgress" class="spinner spinner-sm"></div>
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  </button>
+                </span>
+              </div>
+            </form>
+          </li>
+        </ul>
+      </div>
 
-      <!-- TODO: Use angular-ui/bootstrap typeahead to autofill possible inclusion URIs -->
+      <div class="col-md-6" >
+        <h4>Exclusion (applied after inclusions)</h4>
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="exclusion in businessTransaction.filter.exclusions" >{{exclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeExclusionFilter(exclusion)" tooltip="Remove"></span></li>
+          <li class="list-group-item clearfix" >
+            <form class="form-horizontal" name="addExclusionForm" role="form" autocomplete="off" novalidate="" ng-submit="addExclusionFilter()">
+              <div class="input-group">
+                <input type="text" class="form-control" name="newExclusionFilterField"
+                     ng-model="newExclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
+                     placeholder="Enter an exclusion filter (regular expression)"
+                     typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit" ng-disabled="!newExclusionFilter" tooltip="Add">
+                    <div ng-show="addProgress" class="spinner spinner-sm"></div>
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  </button>
+                </span>
+              </div>
+            </form>
+          </li>
+        </ul>
+      </div>
 
-      <ul class="list-group">
-        <li class="list-group-item" ng-repeat="inclusion in businessTransaction.filter.inclusions" >{{inclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeInclusionFilter(inclusion)"></span></li>
-        <li class="list-group-item" >
-          <form class="form-horizontal hk-add-url" name="addInclusionForm" role="form" autocomplete="off" ng-submit="addInclusionFilter()">
-            <div class="input-group input-group-lg">
-              <input type="text" class="form-control" name="newInclusionFilterField"
-                   ng-model="newInclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter an inclusion filter (regular expression)"
-                   typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
-              <span class="input-group-btn">
-                <button class="btn btn-primary" type="submit" ng-disabled="!newInclusionFilter" >
-                  <div ng-show="addProgress" class="spinner spinner-sm"></div>
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </button>
-              </span>
-            </div>
-          </form>
-        </li>
-      </ul>
-    </div>
+      <div class="col-md-12" >
+        <form class="form-inline">
+          <div class="form-group clearfix">
+            <label for="level" >Reporting Level:</label>
+            <select name="nodeType" ng-model="businessTransaction.level" ng-change="setDirty()" class="form-control">
+              <option value="All">All</option>
+              <option value="None">None</option>
+              <option value="Ignore">Ignore</option>
+            </select>
+          </div>
+        </form>
+      </div>
 
-    <div class="col-md-6" >
-      <h4>Exclusion (applied after inclusions)</h4>
+      <div class="col-md-12" >
+        <a class="btn btn-primary hk-btn-accordeon-processor" ng-click="addProcessor()">Add Processor</a>
+      </div>
 
-      <ul class="list-group">
-        <li class="list-group-item" ng-repeat="exclusion in businessTransaction.filter.exclusions" >{{exclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeExclusionFilter(exclusion)"></span></li>
-        <li class="list-group-item" >
-          <form class="form-horizontal hk-add-url" name="addExclusionForm" role="form" autocomplete="off" novalidate="" ng-submit="addExclusionFilter()">
-            <div class="input-group input-group-lg">
-              <input type="text" class="form-control" name="newExclusionFilterField"
-                   ng-model="newExclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter an exclusion filter (regular expression)"
-                   typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
-              <span class="input-group-btn">
-                <button class="btn btn-primary" type="submit" ng-disabled="!newExclusionFilter" >
-                  <div ng-show="addProgress" class="spinner spinner-sm"></div>
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </button>
-              </span>
-            </div>
-          </form>
-        </li>
-      </ul>
-    </div>
+      <div class="col-md-12" >
 
-    <!-- TODO: Styles -->
+        <accordion>
+          <accordion-group ng-repeat="processor in businessTransaction.processors" is-open="false" is-disabled="false">
+            <accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></accordion-heading>
 
-    <div class="col-md-12" >
-      <form>
-        <div class="form-group">
-          <label for="level" style="width: 10%" >Reporting Level:</label>
-          <select name="nodeType" ng-model="businessTransaction.level" ng-change="setDirty()" style="width: 10%">
-            <option value="All">All</option>
-            <option value="None">None</option>
-            <option value="Ignore">Ignore</option>
-          </select>
-        </div>
-      </form>
-    </div>
+            <form>
+              <div class="form-group clearfix">
+                <label for="description" class="col-sm-3">Description:</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" name="description" ng-model="processor.description" ng-change="setDirty()" />
+                </div>
+              </div>
 
-    <div class="col-md-12" >
-      <h2>Processors <a class="btn btn-primary" ng-click="addProcessor()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h2>
-    </div>
+              <div class="form-group clearfix">
+                <label for="nodeType" class="col-sm-3" > Node type: </label>
+                <div class="col-sm-6">
+                  <select name="nodeType" ng-model="processor.nodeType" ng-change="setDirty()" class="form-control">
+                    <option value="Consumer">Consumer</option>
+                    <option value="Producer">Producer</option>
+                    <option value="Component">Component</option>
+                  </select>
+                </div>
+              </div>
 
-    <div class="col-md-12" >
+              <div class="form-group clearfix">
+                <label for="direction" class="col-sm-3">Direction: </label>
+                <div class="col-sm-6">
+                  <select name="direction" ng-model="processor.direction" ng-change="setDirty()" class="form-control">
+                    <option value="In">In</option>
+                    <option value="Out">Out</option>
+                  </select>
+                </div>
+              </div>
 
-      <accordion>
-        <accordion-group ng-repeat="processor in businessTransaction.processors" is-open="false" is-disabled="false">
-          <accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></accordion-heading>
+              <div class="form-group clearfix">
+                <label for="uriFilter" class="col-sm-3">URI filter:</label>
+                <div class="col-sm-6">
+                  <input type="text" name="uriFilter" class="form-control"
+                       ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
+                       placeholder="Enter URI filter (regular expression)"
+                       typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12"
+                       ng-change="setDirty()" />
+                </div>
+              </div>
 
-          <form>
-            <div class="form-group">
-              <label for="description" style="width: 15%" >Description:</label>
-              <input type="text" name="description" ng-model="processor.description" ng-change="setDirty()" style="width: 80%" />
-            </div>
+              <div class="form-group clearfix">
+                <label for="operation" class="col-sm-3">Operation:</label>
+                <div class="col-sm-6">
+                  <input type="text" name="operation" ng-model="processor.operation" ng-change="setDirty()" class="form-control" />
+                </div>
+              </div>
 
-            <div class="form-group">
-              <label for="nodeType" style="width: 15%" > Node type: </label>
-              <select name="nodeType" ng-model="processor.nodeType" ng-change="setDirty()" style="width: 30%">
-                <option value="Consumer">Consumer</option>
-                <option value="Producer">Producer</option>
-                <option value="Component">Component</option>
-              </select>
+              <div class="form-group clearfix">
+                <label for="faultFilter" class="col-sm-3">Fault filter:</label>
+                <div class="col-sm-6">
+                  <input type="text" name="faultFilter" ng-model="processor.faultFilter" ng-change="setDirty()" class="form-control" />
+                </div>
+              </div>
 
-              <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+              <div class="form-group clearfix">
+                <label for="predicateType" class="col-sm-3">Predicate Type: </label>
+                <div class="col-sm-6">
+                  <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor,'predicate',processor.predicate)" class="form-control">
+                    <option value=""></option>
+                    <option value="Literal">Literal</option>
+                    <option value="XML">XML</option>
+                    <option value="JSON">JSON</option>
+                    <option value="Text">Text</option>
+                    <option value="FreeForm">Free Form</option>
+                  </select>
+                </div>
+              </div>
 
-              <label for="direction" style="width: 15%" >Direction: </label>
-              <select name="direction" ng-model="processor.direction" ng-change="setDirty()" style="width: 30%">
-                <option value="In">In</option>
-                <option value="Out">Out</option>
-              </select>
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">
+                <label class="col-sm-3" for="predicateSource" >Source: </label>
+                <div class="col-sm-6">
+                  <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'" class="form-control">
+                    <option value="Content">Content</option>
+                    <option value="Header">Header</option>
+                  </select>
+                </div>
+              </div>
 
-              <label for="uriFilter" style="width: 15%" >URI filter:</label>
-              <input type="text" name="uriFilter"
-                   ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter URI filter (regular expression)"
-                   typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12"
-                   ng-change="setDirty()" style="width: 80%" />
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">
+                <label class="col-sm-3" for="predicateKey">Key: </label>
+                <div class="col-sm-6">
+                  <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'"/>
+                </div>
+              </div>
 
-              <label for="operation" style="width: 15%" >Operation:</label>
-              <input type="text" name="operation" ng-model="processor.operation" ng-change="setDirty()" style="width: 30%" />
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML'">
+                <label class="col-sm-3" for="predicateXPath" >XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                <div class="col-sm-6">
+                  <input type="text" name="predicateXPath" ng-model="processor.predicate.xpath" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'XML'"/>
+                </div>
+              </div>
 
-              <label style="width: 5%" ></label> <!-- TODO: Must be a better way -->
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'JSON'">
+                <label class="col-sm-3" for="predicateJSONPath" >JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                <div class="col-sm-6">
+                  <input type="text" name="predicateJSONPath" ng-model="processor.predicate.jsonpath" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'JSON'"/>
+                </div>
+              </div>
 
-              <label for="faultFilter" style="width: 15%" >Fault filter:</label>
-              <input type="text" name="faultFilter" ng-model="processor.faultFilter" ng-change="setDirty()" style="width: 30%" />
-            </div>
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">
+                <label class="col-sm-3" for="predicateValue" >Value:</label>
+                <div class="col-sm-6">
+                  <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'"/>
+                </div>
+              </div>
+            </form>
 
-            <div class="form-group">
-              <label for="predicateType" style="width: 15%" >Predicate Type: </label>
-              <select name="predicateType" ng-model="processor.predicate.type" ng-change="changedExpressionType(processor,'predicate',processor.predicate)" style="width: 30%">
-                <option value=""></option>
-                <option value="Literal">Literal</option>
-                <option value="XML">XML</option>
-                <option value="JSON">JSON</option>
-                <option value="Text">Text</option>
-                <option value="FreeForm">Free Form</option>
-              </select>
-
-              <br/>
-
-              <label for="predicateSource" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">Source: </label>
-              <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'" style="width: 30%">
-                <option value="Content">Content</option>
-                <option value="Header">Header</option>
-              </select>
-
-              <label style="width: 5%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
-
-              <label for="predicateKey" style="width: 15%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">Key: </label>
-              <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'"/>
-
-              <label for="predicateXPath" style="width: 15%" ng-show="processor.predicate.type === 'XML'">XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
-              <input type="text" name="predicateXPath" ng-model="processor.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'XML'"/>
-
-              <label for="predicateJSONPath" style="width: 15%" ng-show="processor.predicate.type === 'JSON'">JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
-              <input type="text" name="predicateJSONPath" ng-model="processor.predicate.jsonpath" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'JSON'"/>
-
-              <label for="predicateValue" style="width: 15%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
-              <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'"/>
-            </div>
-          </form>
-
-          <h4>Actions
-            <span dropdown="">
-              <a href="" id="simple-dropdown" dropdown-toggle="" class="btn btn-primary">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <div dropdown="">
+              <a href="" id="simple-dropdown" dropdown-toggle="" class="btn btn-default hk-btn-accordeon-add">
+                Add Action
               </a>
               <ul class="dropdown-menu" aria-labelledby="simple-dropdown">
                 <li><a href="" ng-click="addAction(processor, 'AddContent')">Add Content</a></li>
@@ -194,135 +217,176 @@
                 <li><a href="" ng-click="addAction(processor, 'SetFaultDescription')">Set Fault Description</a></li>
                 <li><a href="" ng-click="addAction(processor, 'SetProperty')">Set Property</a></li>
               </ul>
-            </span>
-          </h4>
+            </div>
 
-          <accordion>
-            <accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
-              <accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" tooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></accordion-heading>
+            <accordion>
+              <accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
+                <accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" tooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></accordion-heading>
 
-              <form>
-                <div class="form-group">
-                  <label for="description" style="width: 15%" >Description:</label>
-                  <input type="text" name="description" ng-model="action.description" ng-change="setDirty()" style="width: 80%" />
-                </div>
+                <form>
+                  <div class="form-group clearfix">
+                    <label for="description" class="col-sm-3">Description:</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="description" ng-model="action.description" ng-change="setDirty()" class="form-control" />
+                    </div>
+                  </div>
 
-                <div class="form-group">
-                  <label for="actionPredicateType" style="width: 15%" >Predicate Type: </label>
-                  <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action,'predicate',action.predicate)" style="width: 30%">
-                    <option value=""></option>
-                    <option value="Literal">Literal</option>
-                    <option value="XML">XML</option>
-                    <option value="JSON">JSON</option>
-                    <option value="Text">Text</option>
-                    <option value="FreeForm">Free Form</option>
-                  </select>
+                  <div class="form-group clearfix">
+                    <label for="actionPredicateType" class="col-sm-3">Predicate Type: </label>
+                    <div class="col-sm-6">
+                      <select name="actionPredicateType" ng-model="action.predicate.type" ng-change="changedExpressionType(action,'predicate',action.predicate)" class="form-control">
+                        <option value=""></option>
+                        <option value="Literal">Literal</option>
+                        <option value="XML">XML</option>
+                        <option value="JSON">JSON</option>
+                        <option value="Text">Text</option>
+                        <option value="FreeForm">Free Form</option>
+                      </select>
+                    </div>
+                  </div>
 
-                  <br/>
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">
+                    <label for="actionPredicateSource" class="col-sm-3" >Predicate Source: </label>
+                    <div class="col-sm-6">
+                      <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' ||action.predicate.type === 'JSON' || action.predicate.type === 'Text'" class="form-control">
+                        <option value="Content">Content</option>
+                        <option value="Header">Header</option>
+                      </select>
+                    </div>
+                  </div>
 
-                  <label for="actionPredicateSource" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">Predicate Source: </label>
-                  <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' ||action.predicate.type === 'JSON' || action.predicate.type === 'Text'" style="width: 30%">
-                    <option value="Content">Content</option>
-                    <option value="Header">Header</option>
-                  </select>
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">
+                    <label for="actionPredicateKey" class="col-sm-3" >Predicate Key: </label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()"  ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'" class="form-control"/>
+                    </div>
+                  </div>
 
-                  <label style="width: 5%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML'">
+                    <label for="actionPredicateXPath" class="col-sm-3" >Predicate XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionPredicateXPath" ng-model="action.predicate.xpath" ng-change="setDirty()"  ng-show="action.predicate.type === 'XML'" class="form-control"/>
+                    </div>
+                  </div>
 
-                  <label for="actionPredicateKey" style="width: 15%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">Predicate Key: </label>
-                  <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()" style="width: 30%" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'"/>
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'JSON'">
+                    <label for="actionPredicateJSONPath" class="col-sm-3" >Predicate JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionPredicateJSONPath" ng-model="action.predicate.jsonpath" ng-change="setDirty()"  ng-show="action.predicate.type === 'JSON'" class="form-control"/>
+                    </div>
+                  </div>
 
-                  <label for="actionPredicateXPath" style="width: 15%" ng-show="action.predicate.type === 'XML'">Predicate XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
-                  <input type="text" name="actionPredicateXPath" ng-model="action.predicate.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'XML'"/>
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">
+                    <label for="actionPredicate" class="col-sm-3" >Predicate Value:</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()"  ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'" class="form-control"/>
+                    </div>
+                  </div>
 
-                  <label for="actionPredicateJSONPath" style="width: 15%" ng-show="action.predicate.type === 'JSON'">Predicate JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
-                  <input type="text" name="actionPredicateJSONPath" ng-model="action.predicate.jsonpath" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'JSON'"/>
+                    <!-- HWKBTM-273 Using 'ng-class' attribute to try to highlight the error field, but at the point
+                         where the form is displayed the errors aren't available, and their retrieval does not
+                         cause a change in state that refreshes the field. -->
 
-                  <label for="actionPredicate" style="width: 15%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">Predicate Value:</label>
-                  <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()" style="width: 80%" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'"/>
-                </div>
+                  <div class="form-group clearfix">
+                    <label for="actionName" ng-class="{error:isError(processor,action,'name')}" class="col-sm-3" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" class="form-control" />
+                    </div>
+                  </div>
 
-                <div class="form-group">
+                  <div class="form-group clearfix" ng-show="action.actionType === 'AddContent'" >
+                    <label for="actionType" class="col-sm-3" >Type:</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionType" ng-model="action.type" ng-change="setDirty()" ng-show="action.actionType === 'AddContent'" class="form-control" />
+                    </div>
+                  </div>
 
-                  <!-- HWKBTM-273 Using 'ng-class' attribute to try to highlight the error field, but at the point
-                       where the form is displayed the errors aren't available, and their retrieval does not
-                       cause a change in state that refreshes the field. -->
+                  <div class="form-group clearfix" ng-show="action.actionType === 'AddCorrelationId'">
+                    <label for="correlationScope"  class="col-sm-3" >Correlation Scope: </label>
+                    <div class="col-sm-6">
+                      <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" class="form-control">
+                        <option value="Global">Global</option>
+                        <option value="Interaction">Interaction</option>
+                        <option value="Local">Local</option>
+                      </select>
+                    </div>
+                  </div>
 
-                  <label for="actionName" ng-class="{error:isError(processor,action,'name')}" style="width: 15%" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
-                  <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" style="width: 30%" />
+                  <div class="form-group clearfix" ng-show="action.actionType === 'EvaluateURI'" >
+                    <label for="actionTemplate" ng-class="{error:isError(processor,action,'template')}" class="col-sm-3" >Template URI:</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'EvaluateURI'" class="form-control" />
+                    </div>
+                  </div>
 
-                  <label style="width: 5%" ng-show="action.actionType === 'AddContent'" ></label> <!-- TODO: Must be a better way -->
+                  <div class="form-group clearfix" ng-if="action.actionType !== 'EvaluateURI' &amp;&amp; action.actionType !== undefined" >
+                    <label for="actionValueType" ng-class="{error:isError(processor,action,'expression')}" class="col-sm-3" >Value Type: </label>
+                    <div class="col-sm-6">
+                      <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action,'expression',action.expression)" class="form-control">
+                        <option value=""></option>
+                        <option value="Literal">Literal</option>
+                        <option value="XML">XML</option>
+                        <option value="JSON">JSON</option>
+                        <option value="Text">Text</option>
+                        <option value="FreeForm">Free Form</option>
+                      </select>
+                    </div>
+                  </div>
 
-                  <label for="actionType" style="width: 15%" ng-show="action.actionType === 'AddContent'" >Type:</label>
-                  <input type="text" name="actionType" ng-model="action.type" ng-change="setDirty()" ng-show="action.actionType === 'AddContent'" style="width: 30%" />
 
-                  <label for="correlationScope" ng-show="action.actionType === 'AddCorrelationId'" style="width: 15%" >Correlation Scope: </label>
-                  <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" style="width: 30%">
-                    <option value="Global">Global</option>
-                    <option value="Interaction">Interaction</option>
-                    <option value="Local">Local</option>
-                  </select>
+                  <div class="form-group clearfix" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">
+                    <label for="actionValueSource" class="col-sm-3" >Value Source: </label>
+                    <div class="col-sm-6">
+                      <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'" class="form-control">
+                        <option value="Content">Content</option>
+                        <option value="Header">Header</option>
+                      </select>
+                    </div>
+                  </div>
 
-                  <label for="actionTemplate" ng-class="{error:isError(processor,action,'template')}" ng-show="action.actionType === 'EvaluateURI'" style="width: 15%" >Template URI:</label>
-                  <input type="text" name="actionTemplate" ng-model="action.template" ng-change="setDirty()" ng-show="action.actionType === 'EvaluateURI'" style="width: 30%" />
+                  <div class="form-group clearfix" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">
+                    <label for="actionValueKey" class="col-sm-3" >Value Key: </label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionValueKey" ng-model="action.expression.key" ng-change="setDirty()"  ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'" class="form-control"/>
+                    </div>
+                  </div>
 
-                </div>
+                  <div class="form-group clearfix" ng-show="action.expression.type === 'XML'">
+                    <label for="actionValueXPath" class="col-sm-3" >Value XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionValueXPath" ng-model="action.expression.xpath" ng-change="setDirty()"  ng-show="action.expression.type === 'XML'" class="form-control"/>
+                    </div>
+                  </div>
 
-                <div class="form-group" ng-if="action.actionType !== 'EvaluateURI' &amp;&amp; action.actionType !== undefined" >
+                  <div class="form-group clearfix" ng-show="action.expression.type === 'JSON'">
+                    <label for="actionValueJSONPath" class="col-sm-3" >Value JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionValueJSONPath" ng-model="action.expression.jsonpath" ng-change="setDirty()"  ng-show="action.expression.type === 'JSON'" class="form-control"/>
+                    </div>
+                  </div>
 
-                  <label for="actionValueType" ng-class="{error:isError(processor,action,'expression')}" style="width: 15%" >Value Type: </label>
-                  <select name="actionValueType" ng-model="action.expression.type" ng-change="changedExpressionType(action,'expression',action.expression)" style="width: 30%">
-                    <option value=""></option>
-                    <option value="Literal">Literal</option>
-                    <option value="XML">XML</option>
-                    <option value="JSON">JSON</option>
-                    <option value="Text">Text</option>
-                    <option value="FreeForm">Free Form</option>
-                  </select>
+                  <div class="form-group clearfix" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">
+                    <label for="actionValue" class="col-sm-3" >Value:</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'" class="form-control"/>
+                    </div>
+                  </div>
 
-                  <br/>
+                </form>
 
-                  <label for="actionValueSource" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">Value Source: </label>
-                  <select name="actionValueSource" ng-model="action.expression.source" ng-change="setDirty()" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'" style="width: 30%">
-                    <option value="Content">Content</option>
-                    <option value="Header">Header</option>
-                  </select>
+              </accordion-group>
+            </accordion>
 
-                  <label style="width: 5%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'"></label> <!-- TODO: Must be a better way -->
+          </accordion-group>
+        </accordion>
+      </div>
 
-                  <label for="actionValueKey" style="width: 15%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'">Value Key: </label>
-                  <input type="text" name="actionValueKey" ng-model="action.expression.key" ng-change="setDirty()" style="width: 30%" ng-show="action.expression.type === 'XML' || action.expression.type === 'JSON' || action.expression.type === 'Text'"/>
-
-                  <label for="actionValueXPath" style="width: 15%" ng-show="action.expression.type === 'XML'">Value XPath: <a href="http://www.w3schools.com/xsl/xpath_syntax.asp"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
-                  <input type="text" name="actionValueXPath" ng-model="action.expression.xpath" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'XML'"/>
-
-                  <label for="actionValueJSONPath" style="width: 15%" ng-show="action.expression.type === 'JSON'">Value JSONPath: <a href="http://goessner.net/articles/JsonPath/"  target="_blank"><i class="fa fa-info-circle"></i></a></label>
-                  <input type="text" name="actionValueJSONPath" ng-model="action.expression.jsonpath" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'JSON'"/>
-
-                  <label for="actionValue" style="width: 15%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">Value:</label>
-                  <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" style="width: 80%" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'"/>
-                </div>
-              </form>
-
-            </accordion-group>
-          </accordion>
-
-          <!-- Provide padding as otherwise the action dropdown, when no actions, gets hidden
-               (Must be a better way, but this works for now) -->
-          <div>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-          </div>
-
-        </accordion-group>
-      </accordion>
-    </div>
+      <div class="col-md-12">
+        <div class="hk-form-actions">
+          <button type="button" class="btn btn-primary" ng-click="save()" ng-disabled="!dirty">Save</button>
+          <button type="button" class="btn btn-default" ng-click="reset()" ng-disabled="!dirty">Discard</button>
+        </div>
+      </div>
 
   </div>
 </div>

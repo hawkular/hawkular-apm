@@ -22,6 +22,23 @@
   margin-top: 0;
 }
 
+.hk-btm-configuration {
+  padding-bottom: @grid-gutter-width*3;
+}
+
+.hk-btn-accordeon-processor {
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.hk-btn-accordeon-add {
+  margin-top: 15px;
+}
+
+he .dropdown {
+  margin-left: @grid-gutter-width/4;
+}
+
 .disabled-txn-card {
   opacity: 0.7;
 
@@ -58,6 +75,30 @@
   }
 }
 
+// Alerts {
+
+.alert {
+  &.alert-danger {
+    background-color:  #fbe7e7;
+  }
+
+  &.alert-warning {
+    background-color: #fdf4ea;
+  }
+
+  &.alert-success {
+    background-color: #e8f9e7;
+  }
+
+  &.alert-info {
+    background-color: #f2f2f2;
+  }
+
+  &.alert-dismissible .close {
+    right: 0;
+  }
+}
+
 // Charts
 
 .form-inline + .c3 {
@@ -68,6 +109,42 @@
 
 .form-inline .form-group {
   margin-right: @grid-gutter-width/2;
+}
+
+.hk-btm-candidates {
+  margin-top: @grid-gutter-width/4;
+  margin-bottom: @grid-gutter-width/2;
+
+ .form-group {
+    margin-right: 0;
+
+    .input-group {
+      width: 100%;
+    }
+  }
+}
+
+.hk-candidates-search {
+  margin-bottom: @grid-gutter-width/2;
+}
+
+.hk-transaction-description {
+  width: 100%;
+
+  span {
+    color: @gray-dark;
+    font-style: normal;
+  }
+}
+
+label[class*="col-"] {
+  text-align: right;
+}
+
+// Panels
+
+.hk-panel-item {
+  font-size: 16px;
 }
 
 // Top nav
