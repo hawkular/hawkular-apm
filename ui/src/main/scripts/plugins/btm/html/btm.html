@@ -19,7 +19,7 @@
     </div>
 
     <!-- No BTxns Slate -->
-    <div class="blank-slate-pf" ng-show="businessTransactions.$resolved && !businessTransactions.length">
+    <div class="blank-slate-pf" ng-show="businessTransactions.$resolved && !managedBT.length">
       <div class="blank-slate-pf-icon">
         <i class="fa fa-gears"></i>
       </div>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- BTxns toolbar -->
-    <section id="active" class="hk-tab-content" ng-show="businessTransactions.length">
+    <section id="active" class="hk-tab-content" ng-show="managedBT.length">
       <div class="hk-control-actions-bar pull-left">
         <div class="hk-container-separator">
           <input type="text" class="form-control separator" ng-model="query.name" placeholder="Filter by Name...">
@@ -40,7 +40,7 @@
     </section>
   </div>
 
-  <div class="row row-cards-pf" ng-show="businessTransactions.length">
+  <div class="row row-cards-pf" ng-show="managedBT.length">
 
     <div class="col-md-3 col-sm-4" ng-if="businessTransactions.$resolved && !hideCharts" ng-init="initGraph()">
       <div class="card-pf">
@@ -59,7 +59,7 @@
 
     <div ng-class="hideCharts ? 'col-md-12' : 'col-md-9 col-sm-8'">
       <div class="row">
-        <div class="hk-txn-item col-md-6" ng-repeat="btxn in businessTransactions | filter:query track by btxn.name" ng-show="btxn.level !== 'Ignore'" ng-class="{'disabled-txn-card': btxn.level === 'None'}">
+        <div class="hk-txn-item col-md-6" ng-repeat="btxn in managedBT = (businessTransactions | filter: {level: '!Ignore'}) | filter:query track by btxn.name" ng-show="btxn.level !== 'Ignore'" ng-class="{'disabled-txn-card': btxn.level === 'None'}">
           <div class="card-pf">
             <div class="card-pf-title">
               <span tooltip="No data being collected for this service. Activate it to collect." ng-show="btxn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
