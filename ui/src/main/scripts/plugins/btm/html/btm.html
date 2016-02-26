@@ -59,7 +59,14 @@
 
     <div ng-class="hideCharts ? 'col-md-12' : 'col-md-9 col-sm-8'">
       <div class="row">
-        <div class="hk-txn-item col-md-6" ng-repeat="btxn in managedBT = (businessTransactions | filter: {level: '!Ignore'}) | filter:query track by btxn.name" ng-show="btxn.level !== 'Ignore'" ng-class="{'disabled-txn-card': btxn.level === 'None'}">
+        <div class="hk-txn-item col-md-12" ng-show="managedBT.length && !filteredManBT.length">
+          <div class="card-pf">
+            <div class="card-pf-body">
+              <h2><i class="fa fa-info-circle"></i> No Business Transactions matching the filter criteria.</h2>
+            </div>
+          </div>
+        </div>
+        <div class="hk-txn-item col-md-6" ng-repeat="btxn in filteredManBT = (managedBT = (businessTransactions | filter: {level: '!Ignore'}) | filter:query) track by btxn.name" ng-show="btxn.level !== 'Ignore'" ng-class="{'disabled-txn-card': btxn.level === 'None'}">
           <div class="card-pf">
             <div class="card-pf-title">
               <span tooltip="No data being collected for this service. Activate it to collect." ng-show="btxn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
