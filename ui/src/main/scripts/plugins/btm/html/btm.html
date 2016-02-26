@@ -57,8 +57,6 @@
       </div>
     </div><!-- .col-md-3 -->
 
-    <div pf-c3-chart id="chartId"  config="chartConfig"></div>
-
     <div ng-class="hideCharts ? 'col-md-12' : 'col-md-9 col-sm-8'">
       <div class="row">
         <div class="hk-txn-item col-md-6" ng-repeat="btxn in businessTransactions | filter:query track by btxn.name" ng-show="btxn.level !== 'Ignore'" ng-class="{'disabled-txn-card': btxn.level === 'None'}">
