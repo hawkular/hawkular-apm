@@ -23,13 +23,13 @@
   </dependencies>
 
   <config>
-    <standalone template="configuration/standalone/template.xml" subsystems="configuration/standalone/subsystems.xml"
+    <standalone template="configuration/standalone/hawkular-accounts-template.xml" subsystems="configuration/standalone/hawkular-btm-subsystems.xml"
       output-file="standalone/configuration/standalone.xml" />
   </config>
 
   <copy-artifacts>
-    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-server" to-location="modules/org/hawkular/nest/main/deployments/hawkular-btm-server.war" />
-    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-ui" to-location="modules/org/hawkular/nest/main/deployments/hawkular-btm-ui.war" extract="true" />
+    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-server" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-btm-server.war" />
+    <copy-artifact artifact="org.hawkular.btm:hawkular-btm-ui" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-btm-ui.war" extract="true" />
     <copy-artifact artifact="org.hawkular.btm:hawkular-btm-agent-rest" to-location="btm/hawkular-btm-agent-rest.jar" />
     <copy-artifact artifact="org.hawkular.btm:hawkular-btm-btxn-instrumentation" to-location="standalone/data" extract="true" />
   </copy-artifacts>

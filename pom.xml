@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>35</version>
+    <version>36</version>
   </parent>
 
   <groupId>org.hawkular.btm</groupId>
@@ -119,7 +119,7 @@
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
-    <version.org.hawkular.accounts>2.0.21.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.accounts>2.0.22.Final-SRC-revision-c4d80759cf8a8b02d4d75a36ab2b3e78e77a4494</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.2</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
