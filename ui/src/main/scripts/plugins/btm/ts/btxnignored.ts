@@ -26,6 +26,7 @@ module BTM {
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
         $scope.businessTransactions = resp.data;
+        $scope.businessTransactions.$resolved = true;
       },function(resp) {
         console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
       });
