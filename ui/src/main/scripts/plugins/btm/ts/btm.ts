@@ -156,6 +156,8 @@ module BTM {
       $scope.btxncountpiechart.load({
         columns: btxnCountData
       });
+
+      $scope.countChartHasData = btxnCountData.length > 0;
     };
 
     $scope.reloadFaultCountGraph = function() {
@@ -169,6 +171,8 @@ module BTM {
       $scope.btxnfaultcountpiechart.load({
         columns: btxnFaultData
       });
+
+      $scope.faultChartHasData = btxnFaultData.length > 0;
     };
 
   }]);

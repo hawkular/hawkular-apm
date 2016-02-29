@@ -46,13 +46,21 @@
       <div class="card-pf">
         <div class="card-pf-title">Transaction Count</div>
         <div class="card-pf-body">
-          <div id="btxntxncountpiechart" style="height: 250px;"></div>
+          <div id="btxntxncountpiechart" style="height: 250px;" ng-show="countChartHasData"></div>
+          <div id="btxntxncountplaceholder" class="text-center" style="height: 250px;" ng-hide="countChartHasData">
+            <i class="fa fa-pie-chart hk-no-pie-data"></i>
+            <h1> No Data Available </h1>
+          </div>
         </div>
       </div>
       <div class="card-pf">
         <div class="card-pf-title">Fault Count</div>
           <div class="card-pf-body">
-            <div id="btxnfaultcountpiechart" style="height: 250px;"></div>
+            <div id="btxnfaultcountpiechart" style="height: 250px;" ng-show="faultChartHasData"></div>
+            <div id="btxnfaultcountplaceholder" class="text-center" style="height: 250px;" ng-hide="faultChartHasData">
+              <i class="fa fa-pie-chart hk-no-pie-data"></i>
+              <h1> No Data Available </h1>
+            </div>
           </div>
       </div>
     </div><!-- .col-md-3 -->
