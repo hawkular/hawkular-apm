@@ -1,45 +1,65 @@
 <div class="col-md-12">
-  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="businessTransactions">
+
+  <!-- BTxns Tabs -->
+  <hawkular-subtab class="hk-align-center hk-screen-top-nav">
+    <div class="hk-nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li><a href="/hawkular-ui/btm" >Managed</a></li>
+        <li><a href="/hawkular-ui/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
+        <li class="active"><a href="/hawkular-ui/btm/ignored">Ignored</a></li>
+      </ul>
+    </div>
+  </hawkular-subtab>
+
+  <!-- Loader -->
+  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="businessTransactions.$resolved">
     <div class="spinner spinner-lg"></div>
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <div ng-show="businessTransactions" >
+  <!-- No BTxns Slate -->
+  <div class="blank-slate-pf" ng-show="businessTransactions.$resolved && !ignoredBT.length">
+    <div class="blank-slate-pf-icon">
+      <i class="fa fa-gears"></i>
+    </div>
+    <h1>No Business Transactions ignored.</h1>
+  </div>
 
-    <hawkular-subtab class="hk-align-center hk-screen-top-nav">
-      <div class="hk-nav-tabs-container">
-        <ul class="nav nav-tabs nav-tabs-pf">
-          <li><a href="/hawkular-ui/btm" >Managed</a></li>
-          <li><a href="/hawkular-ui/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
-          <li class="active"><a href="/hawkular-ui/btm/ignored">Ignored</a></li>
-        </ul>
-      </div>
-    </hawkular-subtab>
+  <section id="active" class="hk-btm-ignored" ng-show="ignoredBT.length">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 col-sm-12 hk-align-center">
 
-    <section id="active" class="hk-btm-ignored">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 col-sm-12 hk-align-center">
-          <div class="form-inline hk-candidates-search">
-            <div class="form-group">
-              <label for="searchField">Search:</label>
-              <input ng-model="query.name" class="form-control" id="searchField"/>
+        <!-- BTxns toolbar -->
+        <div class="form-inline hk-candidates-search">
+          <div class="form-group">
+            <input type="text" class="form-control" ng-model="query.name" placeholder="Filter by Name...">
+          </div>
+        </div>
+
+        <!-- No BTxns matching filter slate -->
+        <div class="hk-txn-item col-md-12" ng-show="ignoredBT.length && !filteredIgnBT.length">
+          <div class="card-pf">
+            <div class="card-pf-body">
+              <h2><i class="fa fa-info-circle"></i> No Ignored Business Transactions matching the filter criteria.</h2>
             </div>
           </div>
-          <div class="hk-txn-item" ng-repeat="btxn in businessTransactions | filter:query track by btxn.name" ng-show="btxn.level === 'Ignore'">
-            <div class="panel panel-default hk-txn-heading">
-              <div class="panel-body">
-                <a href="/hawkular-ui/btm/info/{{btxn.name}}" class="hk-panel-item">{{btxn.name}}</a>
-                <span class="hk-settings pull-right">
-                  <a href="/hawkular-ui/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
-                  <a href="#" ng-click="deleteBusinessTxn(btxn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
-                </span>
-              </div>
+        </div>
+
+        <!-- Ignored BTxns -->
+        <div class="hk-txn-item" ng-repeat="btxn in filteredIgnBT = (ignoredBT = (businessTransactions | filter: {level: 'Ignore'}) | filter:query) track by btxn.name" ng-show="btxn.level === 'Ignore'">
+          <div class="panel panel-default hk-txn-heading">
+            <div class="panel-body">
+              <a href="/hawkular-ui/btm/info/{{btxn.name}}" class="hk-panel-item">{{btxn.name}}</a>
+              <span class="hk-settings pull-right">
+                <a href="/hawkular-ui/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
+                <a href="#" ng-click="deleteBusinessTxn(btxn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
+              </span>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </div>
 </div>
 
