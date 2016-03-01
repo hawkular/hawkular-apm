@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.btm</groupId>
     <artifactId>hawkular-btm</artifactId>
-    <version>0.7.2.Final</version>
+    <version>0.7.3.Final-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
