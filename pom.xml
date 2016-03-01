@@ -67,7 +67,9 @@
     <module>client/btxn-service-rest-client</module>
     <module>client/client-manager</module>
     <module>client/config-service-rest-client</module>
-    <module>processors/completiontime-deriver</module>
+    <module>processors/communicationdetails-deriver</module>
+    <module>processors/btxncompletiontime-deriver</module>
+    <module>processors/fragmentcompletiontime-deriver</module>
     <module>processors/notification-deriver</module>
     <module>processors/nodedetails-deriver</module>
     <module>server/api</module>
@@ -191,7 +193,17 @@
       <!-- BTM Processors -->
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-completiontime-deriver</artifactId>
+        <artifactId>hawkular-btm-communicationdetails-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-btxncompletiontime-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-fragmentcompletiontime-deriver</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

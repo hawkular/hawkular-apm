@@ -33,6 +33,9 @@ public class CompletionTime {
     private String id;
 
     @JsonInclude
+    private String uri;
+
+    @JsonInclude
     private String businessTransaction;
 
     @JsonInclude
@@ -59,6 +62,20 @@ public class CompletionTime {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /**
@@ -144,6 +161,7 @@ public class CompletionTime {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
 
@@ -183,6 +201,11 @@ public class CompletionTime {
             return false;
         if (timestamp != other.timestamp)
             return false;
+        if (uri == null) {
+            if (other.uri != null)
+                return false;
+        } else if (!uri.equals(other.uri))
+            return false;
         return true;
     }
 
@@ -191,8 +214,9 @@ public class CompletionTime {
      */
     @Override
     public String toString() {
-        return "CompletionTime [id=" + id + ", businessTransaction=" + businessTransaction + ", timestamp="
-                + timestamp + ", duration=" + duration + ", fault=" + fault + ", properties=" + properties + "]";
+        return "CompletionTime [id=" + id + ", uri=" + uri + ", businessTransaction=" + businessTransaction
+                + ", timestamp=" + timestamp + ", duration=" + duration + ", fault=" + fault + ", properties="
+                + properties + "]";
     }
 
 }

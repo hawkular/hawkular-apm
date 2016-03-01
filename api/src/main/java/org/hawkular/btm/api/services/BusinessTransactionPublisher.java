@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.api.services;
 
-import java.util.List;
-
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 
 /**
@@ -26,15 +24,6 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
  *
  * @author gbrown
  */
-public interface BusinessTransactionPublisher {
-
-    /**
-     * This method publishes the list of business transaction fragments.
-     *
-     * @param tenantId The tenant
-     * @param btxns The list of business transactions
-     * @throws Exception Failed to publish business transactions
-     */
-    void publish(String tenantId, List<BusinessTransaction> btxns) throws Exception;
+public interface BusinessTransactionPublisher extends Publisher<BusinessTransaction> {
 
 }

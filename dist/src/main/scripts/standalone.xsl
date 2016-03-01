@@ -36,45 +36,19 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="node()[name(.)='auth-server-url']">
-    <auth-server-url>/auth</auth-server-url>
-  </xsl:template>
+  <!-- Add new cache container -->
+  <xsl:template match="node()[name(.)='cache-container'][last()]">
 
-  <!-- Add new secure-deployment -->
-  <xsl:template match="node()[name(.)='secure-deployment'][last()]">
-
-    <xsl:variable name="newSecureDeployment">
-      <secure-deployment name="hawkular-btm-server.war">
-        <realm>hawkular</realm>
-        <resource>hawkular-accounts-backend</resource>
-        <use-resource-role-mappings>true</use-resource-role-mappings>
-        <enable-cors>true</enable-cors>
-        <enable-basic-auth>true</enable-basic-auth>
-        <credential name="secret"><xsl:value-of select="//*[local-name()='secure-deployment'][@name='hawkular-accounts.war']/*[local-name()='credential']/text()" /></credential>
-      </secure-deployment>
+    <xsl:variable name="newCacheContainer">
+      <cache-container name="btm" jndi-name="infinispan/BTM">
+        <local-cache name="communicationdetails"/>
+      </cache-container>
     </xsl:variable>
 
     <xsl:copy>
       <xsl:apply-templates select="node()|@*"/>
     </xsl:copy>
-    <xsl:copy-of select="$newSecureDeployment" />
-
-  </xsl:template>
-
-  <!-- Add new topic -->
-  <xsl:template match="node()[name(.)='jms-topic'][last()]">
-
-    <xsl:variable name="newJMSTopic">
-      <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions" />
-      <jms-topic name="CompletionTimes" entries="java:/CompletionTimes" />
-      <jms-topic name="NodeDetails" entries="java:/NodeDetails" />
-      <jms-topic name="Notifications" entries="java:/Notifications" />
-    </xsl:variable>
-
-    <xsl:copy>
-      <xsl:apply-templates select="node()|@*"/>
-    </xsl:copy>
-    <xsl:copy-of select="$newJMSTopic" />
+    <xsl:copy-of select="$newCacheContainer" />
 
   </xsl:template>
 

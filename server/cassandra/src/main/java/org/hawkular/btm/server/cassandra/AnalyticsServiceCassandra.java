@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
@@ -40,6 +41,7 @@ import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeCompone
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.NodeType;
+import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
@@ -737,6 +739,30 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
+     *                          org.hawkular.btm.api.services.Criteria)
+     */
+    @Override
+    public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
+            Criteria criteria) {
+
+        // TODO HWKBTM-324
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
+            throws Exception {
+
+        // TODO HWKBTM-324
+
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
      */
     @Override
@@ -773,7 +799,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      * @see org.hawkular.btm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Store completion times (tenantId=" + tenantId + "):" + completionTimes);
         }
@@ -794,6 +820,17 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
         }
 
         getClient().getSession().execute(batch);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
+     *                          java.util.List)
+     */
+    @Override
+    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+
+        // TODO HWKBTM-324
+
     }
 
     protected String valueOrEmptyString(String value) {

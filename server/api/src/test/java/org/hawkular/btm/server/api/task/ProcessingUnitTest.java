@@ -33,7 +33,7 @@ public class ProcessingUnitTest {
     public void testSingleResult() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new Processor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>() {
 
             @Override
             public boolean isMultiple() {
@@ -79,7 +79,7 @@ public class ProcessingUnitTest {
     public void testSingleRetry() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new Processor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>() {
 
             @Override
             public boolean isMultiple() {
@@ -126,7 +126,7 @@ public class ProcessingUnitTest {
     public void testSingleRetryNoHandler() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new Processor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>() {
 
             @Override
             public boolean isMultiple() {
@@ -176,7 +176,7 @@ public class ProcessingUnitTest {
     public void testMultipleResult() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new Processor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>() {
 
             @Override
             public boolean isMultiple() {
@@ -225,7 +225,7 @@ public class ProcessingUnitTest {
     public void testMultipleRetry() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new Processor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>() {
 
             @Override
             public boolean isMultiple() {
@@ -272,7 +272,7 @@ public class ProcessingUnitTest {
     public void testMultipleRetryNoHandler() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new Processor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>() {
 
             @Override
             public boolean isMultiple() {

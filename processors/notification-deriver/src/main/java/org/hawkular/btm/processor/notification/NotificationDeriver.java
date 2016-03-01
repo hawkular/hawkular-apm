@@ -24,14 +24,14 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.events.Notification;
-import org.hawkular.btm.server.api.task.Processor;
+import org.hawkular.btm.server.api.task.AbstractProcessor;
 
 /**
  * This class represents the notification deriver.
  *
  * @author gbrown
  */
-public class NotificationDeriver implements Processor<BusinessTransaction, Notification> {
+public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, Notification> {
 
     private static final Logger log = Logger.getLogger(NotificationDeriver.class.getName());
 

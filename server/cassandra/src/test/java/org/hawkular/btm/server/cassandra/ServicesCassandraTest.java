@@ -840,7 +840,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -871,7 +871,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -909,7 +909,7 @@ public class ServicesCassandraTest {
         cts.add(ct3);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -941,7 +941,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -979,7 +979,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1038,7 +1038,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1098,7 +1098,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1160,7 +1160,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1224,7 +1224,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1279,7 +1279,7 @@ public class ServicesCassandraTest {
         cts.add(ct1_2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(2000);
@@ -1323,7 +1323,7 @@ public class ServicesCassandraTest {
         cts.add(ct1_2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(2000);
@@ -1373,7 +1373,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1420,7 +1420,7 @@ public class ServicesCassandraTest {
         cts.add(ct2);
 
         try {
-            analytics.storeCompletionTimes(null, cts);
+            analytics.storeBTxnCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);

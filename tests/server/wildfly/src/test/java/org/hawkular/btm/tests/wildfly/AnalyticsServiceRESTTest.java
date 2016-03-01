@@ -27,10 +27,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 
 import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient;
 import org.hawkular.btm.api.model.analytics.Cardinality;
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
@@ -39,14 +41,17 @@ import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author gbrown
@@ -68,6 +73,10 @@ public class AnalyticsServiceRESTTest {
 
     private static final TypeReference<java.util.List<NodeSummaryStatistics>> NODE_SUMMARY_STATISTICS_LIST =
             new TypeReference<java.util.List<NodeSummaryStatistics>>() {
+    };
+
+    private static final TypeReference<java.util.List<CommunicationSummaryStatistics>> COMMS_SUMMARY_STATISTICS_LIST =
+            new TypeReference<java.util.List<CommunicationSummaryStatistics>>() {
     };
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
@@ -1142,7 +1151,7 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
 
-        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+        Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
         assertEquals(2, stats.size());
@@ -1294,7 +1303,7 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setHostName("hostA").setStartTime(0).setEndTime(0);
 
-        List<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+        Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
         assertEquals(2, stats.size());
@@ -1459,6 +1468,237 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(stats);
         assertEquals(0, stats.size());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatistics() {
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("originuri");
+        c1.setDuration(1200000);
+
+        Producer p1 = new Producer();
+        p1.setUri("testuri");
+        p1.setDuration(1000000);
+        p1.addInteractionId("interaction1");
+        c1.getNodes().add(p1);
+
+        btxn1.getNodes().add(c1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setId("2");
+        btxn2.setName("testapp");
+        btxn2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
+
+        Consumer c2 = new Consumer();
+        c2.setUri("testuri");
+        c2.setDuration(500000);
+        c2.addInteractionId("interaction1");
+        btxn2.getNodes().add(c2);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+        btxns.add(btxn2);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new Criteria());
+
+        assertEquals(2, result.size());
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(0).setEndTime(0);
+
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        CommunicationSummaryStatistics first = null;
+        CommunicationSummaryStatistics second = null;
+
+        for (CommunicationSummaryStatistics css : stats) {
+            if (css.getUri().equals("originuri")) {
+                first = css;
+            } else if (css.getUri().equals("testuri")) {
+                second = css;
+            } else {
+                fail("Unknown uri: " + css.getUri());
+            }
+        }
+
+        assertNotNull(first);
+        assertNotNull(second);
+
+        assertEquals(1, first.getOutbound().size());
+        assertEquals(0, second.getOutbound().size());
+
+        assertEquals(first.getOutbound().keySet().iterator().next(), second.getUri());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticsPOST() {
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("originuri");
+        c1.setDuration(1200000);
+
+        Producer p1 = new Producer();
+        p1.setUri("testuri");
+        p1.setDuration(1000000);
+        p1.addInteractionId("interaction1");
+        c1.getNodes().add(p1);
+
+        btxn1.getNodes().add(c1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setId("2");
+        btxn2.setName("testapp");
+        btxn2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
+
+        Consumer c2 = new Consumer();
+        c2.setUri("testuri");
+        c2.setDuration(500000);
+        c2.addInteractionId("interaction1");
+        btxn2.getNodes().add(c2);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+        btxns.add(btxn2);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new Criteria());
+
+        assertEquals(2, result.size());
+
+        // Get transaction count
+        List<CommunicationSummaryStatistics> stats = null;
+
+        try {
+            URL url = new URL(service.getBaseUrl() + "analytics/communication/summary");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
+            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+
+            String authorization = "Basic " + encoded;
+
+            connection.setRequestProperty("Authorization", authorization);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(new Criteria()));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            StringBuilder builder = new StringBuilder();
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                builder.append(str);
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                stats = mapper.readValue(builder.toString(), COMMS_SUMMARY_STATISTICS_LIST);
+            }
+        } catch (Exception e) {
+            fail("Failed to send node summary statistics request: " + e);
+        }
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        CommunicationSummaryStatistics first = null;
+        CommunicationSummaryStatistics second = null;
+
+        for (CommunicationSummaryStatistics css : stats) {
+            if (css.getUri().equals("originuri")) {
+                first = css;
+            } else if (css.getUri().equals("testuri")) {
+                second = css;
+            } else {
+                fail("Unknown uri: " + css.getUri());
+            }
+        }
+
+        assertNotNull(first);
+        assertNotNull(second);
+
+        assertEquals(1, first.getOutbound().size());
+        assertEquals(0, second.getOutbound().size());
+
+        assertEquals(first.getOutbound().keySet().iterator().next(), second.getUri());
     }
 
     @Test
