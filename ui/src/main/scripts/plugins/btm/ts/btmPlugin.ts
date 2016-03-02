@@ -19,16 +19,16 @@
 /// <reference path="btmGlobals.ts"/>
 module BTM {
 
-  export var _module = angular.module(BTM.pluginName, ["xeditable", "ui.bootstrap", "hawkularbtm-templates", "toastr"]);
+  export let _module = angular.module(BTM.pluginName, ['xeditable', 'ui.bootstrap', 'hawkularbtm-templates', 'toastr']);
 
-  var tab = undefined;
+  let tab = undefined;
 
-  _module.config(["$locationProvider", "$routeProvider", "HawtioNavBuilderProvider",
+  _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
     tab = builder.create()
       .id(BTM.pluginName)
-      .title(() => "Business Transactions")
-      .href(() => "/hawkular-ui/btm")
+      .title(() => 'Business Transactions')
+      .href(() => '/hawkular-ui/btm')
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
@@ -50,7 +50,8 @@ module BTM {
         controller: 'BTM.BTxnConfigController',
         resolve: {
           btxn: function($http, $route, $location, toastr) {
-            return $http.get('/hawkular/btm/config/businesstxn/full/' + $route.current.params.businesstransaction).then(function(resp) {
+            return $http.get('/hawkular/btm/config/businesstxn/full/' +
+              $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
                 $location.path('/hawkular-ui/btm');
                 toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
@@ -68,7 +69,8 @@ module BTM {
         controller: 'BTM.BTxnInfoController',
         resolve: {
           btxn: function($http, $route, $location, toastr) {
-            return $http.get('/hawkular/btm/config/businesstxn/full/' + $route.current.params.businesstransaction).then(function(resp) {
+            return $http.get('/hawkular/btm/config/businesstxn/full/' +
+              $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
                 $location.path('/hawkular-ui/btm');
                 toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
@@ -87,9 +89,9 @@ module BTM {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
   });
 
-  _module.run(["HawtioNav", (HawtioNav: HawtioMainNav.Registry) => {
+  _module.run(['HawtioNav', (HawtioNav: HawtioMainNav.Registry) => {
     HawtioNav.add(tab);
-    log.debug("loaded");
+    log.debug('loaded');
   }]);
 
   hawtioPluginLoader.registerPreBootstrapTask((next) => {

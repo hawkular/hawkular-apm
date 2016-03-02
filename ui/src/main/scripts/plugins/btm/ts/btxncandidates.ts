@@ -18,7 +18,8 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export var BTMCandidatesController = _module.controller("BTM.BTMCandidatesController", ["$scope", "$http", '$location', '$interval', ($scope, $http, $location, $interval) => {
+  export let BTMCandidatesController = _module.controller('BTM.BTMCandidatesController', ['$scope', '$http',
+    '$location', '$interval', ($scope, $http, $location, $interval) => {
 
     $scope.newBTxnName = '';
     $scope.existingBTxnName = '';
@@ -28,7 +29,7 @@ module BTM {
     $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
       $scope.businessTransactions = resp.data;
     },function(resp) {
-      console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
+      console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
     });
 
     $scope.reload = function() {
@@ -36,109 +37,109 @@ module BTM {
         $scope.unbounduris = resp.data;
         $scope.candidateCount = Object.keys(resp.data).length;
 
-        var selected = $scope.selecteduris;
+        let selected = $scope.selecteduris;
         $scope.selecteduris = [];
 
-        for (var i=0; i < $scope.unbounduris.length; i++) {
-          for (var j=0; j < selected.length; j++) {
+        for (let i = 0; i < $scope.unbounduris.length; i++) {
+          for (let j = 0; j < selected.length; j++) {
             if ($scope.unbounduris[i].uri === selected[j].uri) {
               $scope.selecteduris.add($scope.unbounduris[i]);
             }
           }
         }
       },function(resp) {
-        console.log("Failed to get unbound URIs: "+JSON.stringify(resp));
+        console.log('Failed to get unbound URIs: ' + JSON.stringify(resp));
       });
     };
 
     $scope.reload();
 
-    var refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.addBusinessTxn = function() {
-      var defn = {
+      let defn = {
         filter: {
           inclusions: []
         },
         processors: []
       };
-      for (var i = 0; i < $scope.selecteduris.length; i++) {
+      for (let i = 0; i < $scope.selecteduris.length; i++) {
         defn.filter.inclusions.add($scope.selecteduris[i].regex);
         if ($scope.selecteduris[i].template !== undefined) {
           defn.processors.add({
-            description: "Process inbound request",
-            nodeType: "Consumer",
-            direction: "In",
+            description: 'Process inbound request',
+            nodeType: 'Consumer',
+            direction: 'In',
             uriFilter: $scope.selecteduris[i].regex,
             actions: [{
-              actionType: "EvaluateURI",
-              description: "Extract parameters from path",
+              actionType: 'EvaluateURI',
+              description: 'Extract parameters from path',
               template: $scope.selecteduris[i].template
             }]
           });
         }
       }
-      $http.put('/hawkular/btm/config/businesstxn/full/'+$scope.newBTxnName, defn).then(function(resp) {
-        $location.path('/hawkular-ui/btm/config/'+$scope.newBTxnName);
+      $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
+        $location.path('/hawkular-ui/btm/config/' + $scope.newBTxnName);
       },function(resp) {
-        console.log("Failed to add business txn '"+$scope.newBTxnName+"': "+JSON.stringify(resp));
+        console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
       });
     };
 
     $scope.ignoreBusinessTxn = function() {
-      var defn = {
+      let defn = {
         level: 'Ignore',
         filter: {
           inclusions: []
         },
         processors: []
       };
-      for (var i = 0; i < $scope.selecteduris.length; i++) {
+      for (let i = 0; i < $scope.selecteduris.length; i++) {
         defn.filter.inclusions.add($scope.selecteduris[i].regex);
         // Even though ignored, add URI evaluation in case later on we want to manage the btxn
         if ($scope.selecteduris[i].template !== undefined) {
           defn.processors.add({
-            description: "Process inbound request",
-            nodeType: "Consumer",
-            direction: "In",
+            description: 'Process inbound request',
+            nodeType: 'Consumer',
+            direction: 'In',
             uriFilter: $scope.selecteduris[i].regex,
             actions: [{
-              actionType: "EvaluateURI",
-              description: "Extract parameters from path",
+              actionType: 'EvaluateURI',
+              description: 'Extract parameters from path',
               template: $scope.selecteduris[i].template
             }]
           });
         }
       }
-      $http.put('/hawkular/btm/config/businesstxn/full/'+$scope.newBTxnName, defn).then(function(resp) {
-        $location.path('/hawkular-ui/btm/config/'+$scope.newBTxnName);
+      $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
+        $location.path('/hawkular-ui/btm/config/' + $scope.newBTxnName);
       },function(resp) {
-        console.log("Failed to ignore business txn '"+$scope.newBTxnName+"': "+JSON.stringify(resp));
+        console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
       });
     };
 
     $scope.updateBusinessTxn = function() {
-      $http.get('/hawkular/btm/config/businesstxn/full/'+$scope.existingBTxnName).then(function(resp) {
-        var btxn = resp.data;
-        for (var i = 0; i < $scope.selecteduris.length; i++) {
+      $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName).then(function(resp) {
+        let btxn = resp.data;
+        for (let i = 0; i < $scope.selecteduris.length; i++) {
           if (btxn.filter.inclusions.indexOf($scope.selecteduris[i].regex) === -1) {
             btxn.filter.inclusions.add($scope.selecteduris[i].regex);
           }
         }
-        $http.put('/hawkular/btm/config/businesstxn/full/'+$scope.existingBTxnName,btxn).then(function(resp) {
-          console.log("Saved updated business txn '"+$scope.existingBTxnName+"': "+JSON.stringify(resp));
-          $location.path('/hawkular-ui/btm/config/'+$scope.existingBTxnName);
+        $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
+          console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
+          $location.path('/hawkular-ui/btm/config/' + $scope.existingBTxnName);
         },function(resp) {
-          console.log("Failed to save business txn '"+$scope.existingBTxnName+"': "+JSON.stringify(resp));
+          console.log('Failed to save business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
         });
       },function(resp) {
-        console.log("Failed to get business txn '"+$scope.existingBTxnName+"': "+JSON.stringify(resp));
+        console.log('Failed to get business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
       });
     };
 
     $scope.selectionChanged = function(uriinfo) {
-      for (var i=0; i < $scope.selecteduris.length; i++) {
+      for (let i = 0; i < $scope.selecteduris.length; i++) {
         if ($scope.selecteduris[i].uri === uriinfo.uri) {
           $scope.selecteduris.remove($scope.selecteduris[i]);
           return;
@@ -148,7 +149,7 @@ module BTM {
     };
 
     $scope.isSelected = function(uriinfo) {
-      for (var i=0; i < $scope.selecteduris.length; i++) {
+      for (let i = 0; i < $scope.selecteduris.length; i++) {
         if ($scope.selecteduris[i].uri === uriinfo.uri) {
           return true;
         }
@@ -158,7 +159,7 @@ module BTM {
 
     $scope.getLevel = function(level) {
       if (level === 'All') {
-        return "Active";
+        return 'Active';
       }
       return level;
     };

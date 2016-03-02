@@ -18,9 +18,10 @@
 /// <reference path="apmPlugin.ts"/>
 module APM {
 
-  declare var c3: any;
+  declare let c3: any;
 
-  export var APMController = _module.controller("APM.APMController", ["$scope", "$routeParams", "$http", '$location', '$interval', ($scope, $routeParams, $http, $location, $interval) => {
+  export let APMController = _module.controller('APM.APMController', ['$scope', '$routeParams', '$http', '$location',
+    '$interval', ($scope, $routeParams, $http, $location, $interval) => {
 
     $scope.criteria = {
       businessTransaction: undefined,
@@ -51,13 +52,14 @@ module APM {
 
     $scope.reloadData = function() {
 
-      $http.post('/hawkular/btm/analytics/node/statistics?interval='+$scope.config.interval, $scope.criteria).then(function(resp) {
+      $http.post('/hawkular/btm/analytics/node/statistics?interval=' +
+        $scope.config.interval, $scope.criteria).then(function(resp) {
 
         // get all component keys
-        var components = {};
-        var timestamps = ['timestamp'];
-        var nodeComponents = [];
-        var componentTypes = [];
+        let components = {};
+        let timestamps = ['timestamp'];
+        let nodeComponents = [];
+        let componentTypes = [];
 
         _.forEach(resp.data, (datapoint: any) => {
             timestamps.push(datapoint.timestamp);
@@ -87,8 +89,8 @@ module APM {
 
         nodeComponents.unshift(timestamps);
 
-        var firstData = $scope.components.length === 0 && componentTypes.length > 0;
-        var lastData = $scope.components.length > 0 && componentTypes.length === 0;
+        let firstData = $scope.components.length === 0 && componentTypes.length > 0;
+        let lastData = $scope.components.length > 0 && componentTypes.length === 0;
 
         $scope.nodeComponents = nodeComponents;
         $scope.components = componentTypes;
@@ -104,7 +106,7 @@ module APM {
         $scope.redrawAreaChart();
 
       },function(resp) {
-        console.log("Failed to get node timeseries statistics: "+JSON.stringify(resp));
+        console.log('Failed to get node timeseries statistics: ' + JSON.stringify(resp));
       });
 
       $http.post('/hawkular/btm/analytics/node/summary', $scope.criteria).then(function(resp) {
@@ -112,32 +114,32 @@ module APM {
 
         $scope.max = 0;
 
-        for (var i=0; i < $scope.summaries.length; i++) {
+        for (let i = 0; i < $scope.summaries.length; i++) {
           if ($scope.summaries[i].elapsed > $scope.max) {
             $scope.max = $scope.summaries[i].elapsed;
           }
         }
       },function(resp) {
-        console.log("Failed to get node summary statistics: "+JSON.stringify(resp));
+        console.log('Failed to get node summary statistics: ' + JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
         $scope.businessTransactions.length = 0;
 
-        for (var i=0; i < resp.data.length; i++) {
+        for (let i = 0; i < resp.data.length; i++) {
           $scope.businessTransactions.add(resp.data[i].name);
         }
       },function(resp) {
-        console.log("Failed to get business txn summaries: "+JSON.stringify(resp));
+        console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/hostnames').then(function(resp) {
         $scope.hostNames = [ ];
-        for (var i=0; i < resp.data.length; i++) {
+        for (let i = 0; i < resp.data.length; i++) {
           $scope.hostNames.add(resp.data[i]);
         }
       },function(resp) {
-        console.log("Failed to get host names: "+JSON.stringify(resp));
+        console.log('Failed to get host names: ' + JSON.stringify(resp));
       });
     };
 
@@ -154,8 +156,8 @@ module APM {
 
     $scope.reloadData();
 
-    var refreshPromise = $interval(() => {
-      if ($scope.criteria.endTime === "0") {
+    let refreshPromise = $interval(() => {
+      if ($scope.criteria.endTime === '0') {
         $scope.reloadData();
       }
     }, 10000);

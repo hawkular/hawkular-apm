@@ -20,16 +20,16 @@
 module APM {
 
   export var _module = angular.module(APM.pluginName,
-    ["xeditable","ui.bootstrap","angularUtils.directives.dirPagination","hawkularbtm-templates"]);
+    ['xeditable','ui.bootstrap','angularUtils.directives.dirPagination','hawkularbtm-templates']);
 
-  var tab = undefined;
+  let tab = undefined;
 
-  _module.config(["$locationProvider", "$routeProvider", "HawtioNavBuilderProvider",
+  _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
     tab = builder.create()
       .id(APM.pluginName)
-      .title(() => "Application Performance")
-      .href(() => "/hawkular-ui/apm")
+      .title(() => 'Application Performance')
+      .href(() => '/hawkular-ui/apm')
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
@@ -44,9 +44,9 @@ module APM {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
   });
 
-  _module.run(["HawtioNav", (HawtioNav: HawtioMainNav.Registry) => {
+  _module.run(['HawtioNav', (HawtioNav: HawtioMainNav.Registry) => {
     HawtioNav.add(tab);
-    log.debug("loaded");
+    log.debug('loaded');
   }]);
 
   hawtioPluginLoader.addModule(APM.pluginName);

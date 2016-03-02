@@ -18,7 +18,8 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-    export var BTxnConfigController = _module.controller("BTM.BTxnConfigController", ["$scope", "$routeParams", "$http", '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
+    export let BTxnConfigController = _module.controller('BTM.BTxnConfigController', ['$scope', '$routeParams',
+      '$http', '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
 
     $scope.btxn = btxn;
 
@@ -30,49 +31,51 @@ module BTM {
 
     $scope.messages = [];
 
-    $http.get('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
 
       $http.post('/hawkular/btm/config/businesstxn/validate',$scope.businessTransaction).then(function(resp) {
         $scope.messages = resp.data;
       },function(resp) {
-        console.log("Failed to validate business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
+        console.log('Failed to validate business txn \'' + $scope.businessTransactionName + '\': ' +
+          JSON.stringify(resp));
       });
     },function(resp) {
-      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
+      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
     });
 
     $http.get('/hawkular/btm/analytics/unbounduris?compress=true').then(function(resp) {
       $scope.unboundURIs = [ ];
-      for (var i=0; i < resp.data.length; i++) {
+      for (let i = 0; i < resp.data.length; i++) {
         if (resp.data[i].regex !== undefined) {
           $scope.unboundURIs.add(resp.data[i].regex);
         }
       }
     },function(resp) {
-      console.log("Failed to get unbound URIs: "+JSON.stringify(resp));
+      console.log('Failed to get unbound URIs: ' + JSON.stringify(resp));
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/bounduris/'+$scope.businessTransactionName).then(function(resp) {
+      $http.get('/hawkular/btm/analytics/bounduris/' + $scope.businessTransactionName).then(function(resp) {
         $scope.boundURIs = [ ];
-        for (var i = 0; i < resp.data.length; i++) {
-          var regex = $scope.escapeRegExp(resp.data[i]);
+        for (let i = 0; i < resp.data.length; i++) {
+          let regex = $scope.escapeRegExp(resp.data[i]);
           $scope.boundURIs.add(regex);
         }
       },function(resp) {
-        console.log("Failed to get bound URIs for business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
+        console.log('Failed to get bound URIs for business txn \'' + $scope.businessTransactionName + '\': ' +
+          JSON.stringify(resp));
       });
     };
 
     $scope.reload();
 
-    var refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.addInclusionFilter = function() {
-      console.log('Add inclusion filter: '+$scope.newInclusionFilter);
+      console.log('Add inclusion filter: ' + $scope.newInclusionFilter);
       if ($scope.businessTransaction.filter === null) {
         $scope.businessTransaction.filter = {
           inclusions: [],
@@ -90,7 +93,7 @@ module BTM {
     };
 
     $scope.addExclusionFilter = function() {
-      console.log('Add exclusion filter: '+$scope.newExclusionFilter);
+      console.log('Add exclusion filter: ' + $scope.newExclusionFilter);
       if ($scope.businessTransaction.filter === null) {
         $scope.businessTransaction.filter = {
           inclusions: [],
@@ -109,18 +112,18 @@ module BTM {
 
     $scope.getExpressionText = function(expression) {
       if (expression === undefined) {
-        return "";
+        return '';
       }
-      if (expression.type === "XML") {
-        return expression.source + "[" + expression.key + "]" + " xpath=" + expression.xpath;
+      if (expression.type === 'XML') {
+        return expression.source + '[' + expression.key + ']' + ' xpath=' + expression.xpath;
       }
-      if (expression.type === "JSON") {
-        return expression.source + "[" + expression.key + "]" + " jsonpath=" + expression.jsonpath;
+      if (expression.type === 'JSON') {
+        return expression.source + '[' + expression.key + ']' + ' jsonpath=' + expression.jsonpath;
       }
-      if (expression.type === "Text") {
-        return expression.source + "[" + expression.key + "]";
+      if (expression.type === 'Text') {
+        return expression.source + '[' + expression.key + ']';
       }
-      return "Unknown expression type";
+      return 'Unknown expression type';
     };
 
     $scope.changedExpressionType = function(parent,field,expression) {
@@ -151,9 +154,9 @@ module BTM {
     $scope.addProcessor = function() {
       $scope.setDirty();
       $scope.businessTransaction.processors.add({
-        description: "Processor " + ($scope.businessTransaction.processors.length + 1),
-        nodeType: "Consumer",
-        direction: "In",
+        description: 'Processor ' + ($scope.businessTransaction.processors.length + 1),
+        nodeType: 'Consumer',
+        direction: 'In',
         actions: []
       });
     };
@@ -168,9 +171,9 @@ module BTM {
     $scope.addAction = function(processor, type) {
       $scope.setDirty();
 
-      var newAction = {
+      let newAction = {
         actionType: type,
-        description: "Action " + (processor.actions.length + 1)
+        description: 'Action ' + (processor.actions.length + 1)
       };
 
       if (type === 'AddCorrelationId') {
@@ -199,33 +202,34 @@ module BTM {
     $scope.save = function() {
       $scope.messages = [];
 
-      $http.put('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName,$scope.businessTransaction).then(function(resp) {
+      $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.businessTransactionName, $scope.businessTransaction)
+        .then(function(resp) {
         $scope.messages = resp.data;
         $scope.original = angular.copy($scope.businessTransaction);
         $scope.dirty = false;
       },function(resp) {
-        console.log("Failed to save business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
-        var message = {
+        console.log('Failed to save business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
+        let message = {
           severity: Error,
-          message: "Failed to save '"+$scope.businessTransactionName+"'",
+          message: 'Failed to save \'' + $scope.businessTransactionName + '\'',
           details: JSON.stringify(resp.data)
         };
         $scope.messages.add(message);
       });
     };
 
-    $http.get('/hawkular/btm/config/businesstxn/full/'+$scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
     },function(resp) {
-      console.log("Failed to get business txn '"+$scope.businessTransactionName+"': "+JSON.stringify(resp));
+      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
     });
 
     $scope.escapeRegExp = function(str) {
       if (str === undefined) {
         return;
       }
-      return "^" + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "$";
+      return '^' + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + '$';
     };
 
     $scope.closeMessage = function(index) {
@@ -233,7 +237,7 @@ module BTM {
     };
 
     $scope.getMessageType = function(entry) {
-      var type = 'danger';
+      let type = 'danger';
       if (entry.severity === 'Warning') {
         type = 'warning';
       } else if (entry.severity === 'Info') {
@@ -243,15 +247,15 @@ module BTM {
     };
 
     $scope.getMessageText = function(entry) {
-      var message = "";
+      let message = '';
       if (entry.processor !== undefined) {
-        message = "[" + entry.processor;
+        message = '[' + entry.processor;
 
         if (entry.action !== undefined) {
-          message = message + "/" + entry.action;
+          message = message + '/' + entry.action;
         }
 
-        message = message + "] ";
+        message = message + '] ';
       }
 
       message = message + entry.message;
@@ -260,7 +264,7 @@ module BTM {
     };
 
     $scope.isError = function(processor,action,field) {
-      for (var i = 0; i < $scope.messages.length; i++) {
+      for (let i = 0; i < $scope.messages.length; i++) {
         if ($scope.messages[i].processor === processor.description
             && $scope.messages[i].action === action.description
             && $scope.messages[i].field === field) {
