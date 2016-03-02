@@ -43,6 +43,9 @@ import org.infinispan.manager.CacheContainer;
  */
 public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTransaction, CommunicationDetails> {
 
+    /**  */
+    protected static final String CLIENT_PREFIX = "[client]";
+
     private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class.getName());
 
     @Resource(lookup = "java:jboss/infinispan/BTM")
@@ -78,17 +81,14 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
     public void initialise(List<BusinessTransaction> items) {
         // This method initialises the deriver with a list of business transaction fragments
         // that will need to be referenced when correlating a consumer with a producer
-        String originUri = null;
-
         for (int i = 0; i < items.size(); i++) {
+            String originUri = null;
+
             // Need to check for Producer nodes
             BusinessTransaction btxn = items.get(i);
             for (int j = 0; j < btxn.getNodes().size(); j++) {
                 Node node = btxn.getNodes().get(j);
-                if (j == 0) {
-                    originUri = node.getUri();
-                }
-                initialiseNode(btxn, originUri, node);
+                originUri = initialiseNode(btxn, originUri, node);
             }
         }
     }
@@ -99,11 +99,19 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @param btxn The business transaction
      * @param originUri The origin uri
      * @param node The node
+     * @return The origin URI
      */
-    protected void initialiseNode(BusinessTransaction btxn, String originUri, Node node) {
+    protected String initialiseNode(BusinessTransaction btxn, String originUri, Node node) {
         if (node.getClass() == Producer.class) {
             // Check for interaction correlation ids
             Producer producer = (Producer) node;
+
+            // Check if origin URI has already been set - if not
+            // identify based on being a client of the URI associated
+            // with the producer
+            if (originUri == null) {
+                originUri = CLIENT_PREFIX + producer.getUri();
+            }
 
             // Calculate the timestamp for the producer
             long diffns = producer.getBaseTime() - btxn.getNodes().get(0).getBaseTime();
@@ -129,10 +137,15 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                 }
             }
         } else if (node instanceof ContainerNode) {
+            if (originUri == null && node.getClass() == Consumer.class) {
+                originUri = node.getUri();
+            }
             for (int j = 0; j < ((ContainerNode) node).getNodes().size(); j++) {
-                initialiseNode(btxn, originUri, ((ContainerNode) node).getNodes().get(j));
+                originUri = initialiseNode(btxn, originUri, ((ContainerNode) node).getNodes().get(j));
             }
         }
+
+        return originUri;
     }
 
     /* (non-Javadoc)
