@@ -18,9 +18,9 @@
 /// <reference path="../../includes.ts"/>
 module BTM {
 
-  export var pluginName = "btm";
+  export var pluginName = 'btm';
 
   export var log: Logging.Logger = Logger.get(pluginName);
 
-  export var templatePath = "plugins/btm/html";
+  export var templatePath = 'plugins/btm/html';
 }

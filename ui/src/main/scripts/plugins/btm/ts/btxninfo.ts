@@ -18,9 +18,10 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  declare var c3: any;
+  declare let c3: any;
 
-  export var BTxnInfoController = _module.controller("BTM.BTxnInfoController", ["$scope", "$routeParams", "$http", '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
+  export let BTxnInfoController = _module.controller('BTM.BTxnInfoController', ['$scope', '$routeParams', '$http',
+    '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
 
     $scope.btxn = btxn;
     $scope.businessTransactionName = $routeParams.businesstransaction;
@@ -49,27 +50,28 @@ module BTM {
     };
 
     $scope.reload = function() {
-      $http.post('/hawkular/btm/analytics/completion/statistics?interval='+$scope.config.interval, $scope.criteria).then(function(resp) {
+      $http.post('/hawkular/btm/analytics/completion/statistics?interval=' + $scope.config.interval, $scope.criteria)
+        .then(function(resp) {
         $scope.statistics = resp.data;
         $scope.updatedBounds();
         $scope.redrawLineChart();
       },function(resp) {
-        console.log("Failed to get statistics: "+JSON.stringify(resp));
+        console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
 
-      var faultCriteria = angular.copy($scope.criteria);
+      let faultCriteria = angular.copy($scope.criteria);
       faultCriteria.maxResponseSize = $scope.config.maxFaultValues;
 
       $http.post('/hawkular/btm/analytics/completion/faults', faultCriteria).then(function(resp) {
         $scope.faults = resp.data;
 
-        var removeFaultValues = angular.copy($scope.faultValues);
+        let removeFaultValues = angular.copy($scope.faultValues);
 
-        var faultdata = [];
+        let faultdata = [];
 
-        for (var i=0; i < $scope.faults.length; i++) {
-          var fault = $scope.faults[i];
-          var record=[ ];
+        for (let i = 0; i < $scope.faults.length; i++) {
+          let fault = $scope.faults[i];
+          let record = [];
           record.push(fault.value);
           record.push(fault.count);
           faultdata.push(record);
@@ -85,19 +87,19 @@ module BTM {
           columns: faultdata
         });
 
-        for (var j=0; j < removeFaultValues.length; j++) {
+        for (let j = 0; j < removeFaultValues.length; j++) {
           $scope.ctfaultschart.unload(removeFaultValues[j]);
           $scope.faultValues.remove(removeFaultValues[j]);
         }
 
       },function(resp) {
-        console.log("Failed to get statistics: "+JSON.stringify(resp));
+        console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/properties/'+$scope.businessTransactionName).then(function(resp) {
+      $http.get('/hawkular/btm/analytics/properties/' + $scope.businessTransactionName).then(function(resp) {
         $scope.properties = resp.data;
       },function(resp) {
-        console.log("Failed to get property info: "+JSON.stringify(resp));
+        console.log('Failed to get property info: ' + JSON.stringify(resp));
       });
 
       if ($scope.config.selectedProperty !== undefined) {
@@ -116,19 +118,20 @@ module BTM {
     };
 
     $scope.reloadProperty = function() {
-      var propertyCriteria = angular.copy($scope.criteria);
+      let propertyCriteria = angular.copy($scope.criteria);
       propertyCriteria.maxResponseSize = $scope.config.maxPropertyValues;
 
-      $http.post('/hawkular/btm/analytics/completion/property/'+$scope.config.selectedProperty, propertyCriteria).then(function(resp) {
+      $http.post('/hawkular/btm/analytics/completion/property/' + $scope.config.selectedProperty, propertyCriteria)
+        .then(function(resp) {
         $scope.propertyDetails = resp.data;
 
-        var removePropertyValues = angular.copy($scope.propertyValues);
+        let removePropertyValues = angular.copy($scope.propertyValues);
 
-        var propertydata = [];
+        let propertydata = [];
 
-        for (var i=0; i < $scope.propertyDetails.length; i++) {
-          var prop = $scope.propertyDetails[i];
-          var record=[ ];
+        for (let i = 0; i < $scope.propertyDetails.length; i++) {
+          let prop = $scope.propertyDetails[i];
+          let record = [];
           record.push(prop.value);
           record.push(prop.count);
           propertydata.push(record);
@@ -144,20 +147,21 @@ module BTM {
           columns: propertydata
         });
 
-        for (var j=0; j < removePropertyValues.length; j++) {
+        for (let j = 0; j < removePropertyValues.length; j++) {
           $scope.propertychart.unload(removePropertyValues[j]);
           $scope.propertyValues.remove(removePropertyValues[j]);
         }
 
       },function(resp) {
-        console.log("Failed to get property details for '"+$scope.config.selectedProperty+"': "+JSON.stringify(resp));
+        console.log('Failed to get property details for \'' + $scope.config.selectedProperty + '\': ' +
+          JSON.stringify(resp));
       });
     };
 
     $scope.reload();
 
-    var refreshPromise = $interval(() => {
-      if ($scope.criteria.endTime === "0" || $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
+    let refreshPromise = $interval(() => {
+      if ($scope.criteria.endTime === '0' || $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
         $scope.reload();
 
         $scope.config.prevLowerBoundDisplay = $scope.config.lowerBoundDisplay;
@@ -221,7 +225,7 @@ module BTM {
           ],
           type: 'pie',
           onclick: function (d, i) {
-            var fault = {
+            let fault = {
               value: d.id
             };
             $scope.criteria.faults.add(fault);
@@ -246,7 +250,7 @@ module BTM {
           ],
           type: 'pie',
           onclick: function (d, i) {
-            var property = {
+            let property = {
               name: name,
               value: d.id
             };
@@ -278,8 +282,8 @@ module BTM {
       if ($scope.config.lowerBoundDisplay === 0) {
         $scope.criteria.lowerBound = 0;
       } else {
-        var maxDuration = 0;
-        for (var i=0; i < $scope.statistics.length; i++) {
+        let maxDuration = 0;
+        for (let i = 0; i < $scope.statistics.length; i++) {
           if ($scope.statistics[i].max > maxDuration) {
             maxDuration = $scope.statistics[i].max;
           }

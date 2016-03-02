@@ -7,8 +7,11 @@
     "indent": [true, "spaces"],
     "label-position": true,
     "label-undefined": true,
+    "max-line-length": [true, 120],
+    "member-access": true,
     "no-arg": true,
     "no-bitwise": true,
+    "no-consecutive-blank-lines": true,
     "no-console": [true,
       "trace"
     ],
@@ -18,28 +21,32 @@
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
+    "no-require-imports": true,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
+    "no-trailing-whitespace": true,
     "no-unused-expression": true,
-    "no-unused-variable": false,
+    "no-unused-variable": true,
     "no-unreachable": true,
     "no-use-before-declare": true,
+    "no-var-keyword": true,
     "one-line": [true,
       "check-open-brace",
+      "check-whitespace",
       "check-catch",
-      "check-else",
-      "check-whitespace"
+      "check-else"
     ],
+    "quotemark": [true, "single"],
     "radix": true,
     "semicolon": true,
     "trailing-comma": [false, {"multiline": "always", "singleline": "never"}],
     "triple-equals": [true, "allow-null-check"],
-    "variable-name": false,
-    "whitespace": [false,
-      "check-branch",
+    "typedef-whitespace": [true],
+    "variable-name": [true, "ban-keywords",  "allow-leading-underscore"],
+    "whitespace": [true,
       "check-decl",
       "check-operator",
-      "check-separator"
+      "check-type"
     ]
   }
 }

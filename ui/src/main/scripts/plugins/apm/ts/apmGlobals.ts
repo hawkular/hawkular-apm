@@ -18,9 +18,9 @@
 /// <reference path="../../includes.ts"/>
 module APM {
 
-  export var pluginName = "apm";
+  export var pluginName = 'apm';
 
   export var log: Logging.Logger = Logger.get(pluginName);
 
-  export var templatePath = "plugins/apm/html";
+  export var templatePath = 'plugins/apm/html';
 }
