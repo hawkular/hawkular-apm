@@ -28,7 +28,7 @@ import javax.jms.MessageListener;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.CompletionTime;
-import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionTimeDeriver;
+import org.hawkular.btm.processor.fragmentcompletiontime.FragmentCompletionTimeDeriver;
 import org.hawkular.btm.server.api.services.FragmentCompletionTimePublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -59,7 +59,7 @@ public class FragmentCompletionTimeDeriverMDB extends ProcessorMDB<BusinessTrans
 
     @PostConstruct
     public void init() {
-        setProcessor(new BTxnCompletionTimeDeriver());
+        setProcessor(new FragmentCompletionTimeDeriver());
         setRetryPublisher(businessTransactionPublisher);
         setPublisher(fragmentCompletionTimePublisher);
         setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {

@@ -30,9 +30,10 @@ public interface Processor<T, R> {
      * tasks before processing the items individually to generate new
      * information.
      *
+     * @param tenantId The optional tenant id
      * @param items
      */
-    void initialise(List<T> items);
+    void initialise(String tenantId, List<T> items);
 
     /**
      * This method determines whether the processor results in multiple results
@@ -46,21 +47,23 @@ public interface Processor<T, R> {
      * This method processes the supplied item to optionally
      * generated a new resulting value.
      *
+     * @param tenantId The optional tenant id
      * @param item The item
      * @return The optional value
      * @throws Exception Failed to process the item
      */
-    R processSingle(T item) throws Exception;
+    R processSingle(String tenantId, T item) throws Exception;
 
     /**
      * This method processes the supplied item to
      * generate zero or more resulting values.
      *
+     * @param tenantId The optional tenant id
      * @param item The item
      * @return The list of values
      * @throws Exception Failed to process the item
      */
-    List<R> processMultiple(T item) throws Exception;
+    List<R> processMultiple(String tenantId, T item) throws Exception;
 
     /**
      * This method is called once all of the items in the list of been
@@ -69,8 +72,9 @@ public interface Processor<T, R> {
      * those items. Generally the processor should not store
      * any state outside the processing of the individual items.
      *
+     * @param tenantId The optional tenant id
      * @param items
      */
-    void cleanup(List<T> items);
+    void cleanup(String tenantId, List<T> items);
 
 }

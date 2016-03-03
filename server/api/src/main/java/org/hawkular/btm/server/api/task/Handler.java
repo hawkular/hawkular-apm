@@ -28,9 +28,10 @@ public interface Handler<T> {
     /**
      * This method handles the list of items.
      *
+     * @param tenantId The optional tenant id
      * @param items The list of items
      * @throws Exception Failed to handle the list of items
      */
-    void handle(List<T> items) throws Exception;
+    void handle(String tenantId, List<T> items) throws Exception;
 
 }

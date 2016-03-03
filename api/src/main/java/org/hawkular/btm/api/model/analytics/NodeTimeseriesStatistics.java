@@ -78,7 +78,7 @@ public class NodeTimeseriesStatistics {
      */
     public static class NodeComponentTypeStatistics {
 
-        private double duration;
+        private long duration;
 
         private long count;
 
@@ -94,7 +94,7 @@ public class NodeTimeseriesStatistics {
          * @param duration The duration
          * @param count The count
          */
-        public NodeComponentTypeStatistics(double duration, long count) {
+        public NodeComponentTypeStatistics(long duration, long count) {
             this.duration = duration;
             this.count = count;
         }
@@ -102,14 +102,14 @@ public class NodeTimeseriesStatistics {
         /**
          * @return the duration
          */
-        public double getDuration() {
+        public long getDuration() {
             return duration;
         }
 
         /**
          * @param duration the duration to set
          */
-        public void setDuration(double duration) {
+        public void setDuration(long duration) {
             this.duration = duration;
         }
 

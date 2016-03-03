@@ -51,6 +51,10 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-fragmentcompletiontime-deriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-notification-deriver</artifactId>
     </dependency>
     <dependency>

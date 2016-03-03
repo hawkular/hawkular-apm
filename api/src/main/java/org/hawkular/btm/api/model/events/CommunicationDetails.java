@@ -16,8 +16,17 @@
  */
 package org.hawkular.btm.api.model.events;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * This class represents communication details derived from two correlated business transaction
@@ -25,8 +34,10 @@ import java.util.Map;
  *
  * @author gbrown
  */
-public class CommunicationDetails {
+@Indexed
+public class CommunicationDetails implements Externalizable {
 
+    @Field
     private String id;
 
     private String businessTransaction;
@@ -35,13 +46,15 @@ public class CommunicationDetails {
 
     private String originUri;
 
+    private boolean multiConsumer = false;
+
     private long timestamp = 0;
 
-    private double latency = 0;
+    private long latency = 0;
 
-    private double consumerDuration = 0;
+    private long consumerDuration = 0;
 
-    private double producerDuration = 0;
+    private long producerDuration = 0;
 
     private long timestampOffset = 0;
 
@@ -57,7 +70,11 @@ public class CommunicationDetails {
 
     private String targetHostAddress;
 
+    private long targetFragmentDuration;
+
     private Map<String, String> properties = new HashMap<String, String>();
+
+    private List<Outbound> outbound = new ArrayList<Outbound>();
 
     /**
      * @return the id
@@ -116,6 +133,20 @@ public class CommunicationDetails {
     }
 
     /**
+     * @return the multiConsumer
+     */
+    public boolean isMultiConsumer() {
+        return multiConsumer;
+    }
+
+    /**
+     * @param multiConsumer the multiConsumer to set
+     */
+    public void setMultiConsumer(boolean multiConsumer) {
+        this.multiConsumer = multiConsumer;
+    }
+
+    /**
      * @return the timestamp
      */
     public long getTimestamp() {
@@ -131,49 +162,49 @@ public class CommunicationDetails {
 
     /**
      * This method returns the latency, between a producer and
-     * consumer, in nano-seconds.
+     * consumer, in milliseconds.
      *
      * @return the latency
      */
-    public double getLatency() {
+    public long getLatency() {
         return latency;
     }
 
     /**
      * This method sets the latency, between a producer and
-     * consumer, in nano-seconds.
+     * consumer, in milliseconds.
      *
      * @param latency the latency to set
      */
-    public void setLatency(double latency) {
+    public void setLatency(long latency) {
         this.latency = latency;
     }
 
     /**
      * @return the consumerDuration
      */
-    public double getConsumerDuration() {
+    public long getConsumerDuration() {
         return consumerDuration;
     }
 
     /**
      * @param consumerDuration the consumerDuration to set
      */
-    public void setConsumerDuration(double consumerDuration) {
+    public void setConsumerDuration(long consumerDuration) {
         this.consumerDuration = consumerDuration;
     }
 
     /**
      * @return the producerDuration
      */
-    public double getProducerDuration() {
+    public long getProducerDuration() {
         return producerDuration;
     }
 
     /**
      * @param producerDuration the producerDuration to set
      */
-    public void setProducerDuration(double producerDuration) {
+    public void setProducerDuration(long producerDuration) {
         this.producerDuration = producerDuration;
     }
 
@@ -282,6 +313,20 @@ public class CommunicationDetails {
     }
 
     /**
+     * @return the targetFragmentDuration
+     */
+    public long getTargetFragmentDuration() {
+        return targetFragmentDuration;
+    }
+
+    /**
+     * @param targetFragmentDuration the targetFragmentDuration to set
+     */
+    public void setTargetFragmentDuration(long targetFragmentDuration) {
+        this.targetFragmentDuration = targetFragmentDuration;
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -295,6 +340,20 @@ public class CommunicationDetails {
         this.properties = properties;
     }
 
+    /**
+     * @return the outbound
+     */
+    public List<Outbound> getOutbound() {
+        return outbound;
+    }
+
+    /**
+     * @param outbound the outbound to set
+     */
+    public void setOutbound(List<Outbound> outbound) {
+        this.outbound = outbound;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -303,19 +362,18 @@ public class CommunicationDetails {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
-        long temp;
-        temp = Double.doubleToLongBits(consumerDuration);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + (int) (consumerDuration ^ (consumerDuration >>> 32));
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        temp = Double.doubleToLongBits(latency);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + (int) (latency ^ (latency >>> 32));
+        result = prime * result + (multiConsumer ? 1231 : 1237);
         result = prime * result + ((originUri == null) ? 0 : originUri.hashCode());
-        temp = Double.doubleToLongBits(producerDuration);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
+        result = prime * result + (int) (producerDuration ^ (producerDuration >>> 32));
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + ((sourceFragmentId == null) ? 0 : sourceFragmentId.hashCode());
         result = prime * result + ((sourceHostAddress == null) ? 0 : sourceHostAddress.hashCode());
         result = prime * result + ((sourceHostName == null) ? 0 : sourceHostName.hashCode());
+        result = prime * result + (int) (targetFragmentDuration ^ (targetFragmentDuration >>> 32));
         result = prime * result + ((targetFragmentId == null) ? 0 : targetFragmentId.hashCode());
         result = prime * result + ((targetHostAddress == null) ? 0 : targetHostAddress.hashCode());
         result = prime * result + ((targetHostName == null) ? 0 : targetHostName.hashCode());
@@ -330,78 +388,121 @@ public class CommunicationDetails {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CommunicationDetails other = (CommunicationDetails) obj;
         if (businessTransaction == null) {
-            if (other.businessTransaction != null)
+            if (other.businessTransaction != null) {
                 return false;
-        } else if (!businessTransaction.equals(other.businessTransaction))
+            }
+        } else if (!businessTransaction.equals(other.businessTransaction)) {
             return false;
-        if (Double.doubleToLongBits(consumerDuration) != Double.doubleToLongBits(other.consumerDuration))
+        }
+        if (consumerDuration != other.consumerDuration) {
             return false;
+        }
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
-        if (Double.doubleToLongBits(latency) != Double.doubleToLongBits(other.latency))
+        }
+        if (latency != other.latency) {
             return false;
+        }
+        if (multiConsumer != other.multiConsumer) {
+            return false;
+        }
         if (originUri == null) {
-            if (other.originUri != null)
+            if (other.originUri != null) {
                 return false;
-        } else if (!originUri.equals(other.originUri))
+            }
+        } else if (!originUri.equals(other.originUri)) {
             return false;
-        if (Double.doubleToLongBits(producerDuration) != Double.doubleToLongBits(other.producerDuration))
+        }
+        if (outbound == null) {
+            if (other.outbound != null) {
+                return false;
+            }
+        } else if (!outbound.equals(other.outbound)) {
             return false;
+        }
+        if (producerDuration != other.producerDuration) {
+            return false;
+        }
         if (properties == null) {
-            if (other.properties != null)
+            if (other.properties != null) {
                 return false;
-        } else if (!properties.equals(other.properties))
+            }
+        } else if (!properties.equals(other.properties)) {
             return false;
+        }
         if (sourceFragmentId == null) {
-            if (other.sourceFragmentId != null)
+            if (other.sourceFragmentId != null) {
                 return false;
-        } else if (!sourceFragmentId.equals(other.sourceFragmentId))
+            }
+        } else if (!sourceFragmentId.equals(other.sourceFragmentId)) {
             return false;
+        }
         if (sourceHostAddress == null) {
-            if (other.sourceHostAddress != null)
+            if (other.sourceHostAddress != null) {
                 return false;
-        } else if (!sourceHostAddress.equals(other.sourceHostAddress))
+            }
+        } else if (!sourceHostAddress.equals(other.sourceHostAddress)) {
             return false;
+        }
         if (sourceHostName == null) {
-            if (other.sourceHostName != null)
+            if (other.sourceHostName != null) {
                 return false;
-        } else if (!sourceHostName.equals(other.sourceHostName))
+            }
+        } else if (!sourceHostName.equals(other.sourceHostName)) {
             return false;
+        }
+        if (targetFragmentDuration != other.targetFragmentDuration) {
+            return false;
+        }
         if (targetFragmentId == null) {
-            if (other.targetFragmentId != null)
+            if (other.targetFragmentId != null) {
                 return false;
-        } else if (!targetFragmentId.equals(other.targetFragmentId))
+            }
+        } else if (!targetFragmentId.equals(other.targetFragmentId)) {
             return false;
+        }
         if (targetHostAddress == null) {
-            if (other.targetHostAddress != null)
+            if (other.targetHostAddress != null) {
                 return false;
-        } else if (!targetHostAddress.equals(other.targetHostAddress))
+            }
+        } else if (!targetHostAddress.equals(other.targetHostAddress)) {
             return false;
+        }
         if (targetHostName == null) {
-            if (other.targetHostName != null)
+            if (other.targetHostName != null) {
                 return false;
-        } else if (!targetHostName.equals(other.targetHostName))
+            }
+        } else if (!targetHostName.equals(other.targetHostName)) {
             return false;
-        if (timestamp != other.timestamp)
+        }
+        if (timestamp != other.timestamp) {
             return false;
-        if (timestampOffset != other.timestampOffset)
+        }
+        if (timestampOffset != other.timestampOffset) {
             return false;
+        }
         if (uri == null) {
-            if (other.uri != null)
+            if (other.uri != null) {
                 return false;
-        } else if (!uri.equals(other.uri))
+            }
+        } else if (!uri.equals(other.uri)) {
             return false;
+        }
         return true;
     }
 
@@ -411,12 +512,217 @@ public class CommunicationDetails {
     @Override
     public String toString() {
         return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", uri=" + uri
-                + ", originUri=" + originUri + ", timestamp=" + timestamp + ", latency=" + latency
-                + ", consumerDuration=" + consumerDuration + ", producerDuration=" + producerDuration
-                + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
+                + ", originUri=" + originUri + ", multiConsumer=" + multiConsumer + ", timestamp=" + timestamp
+                + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
+                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
                 + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
                 + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
-                + ", targetHostAddress=" + targetHostAddress + ", properties=" + properties + "]";
+                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
+                + ", properties=" + properties + ", outbound=" + outbound + "]";
     }
 
+    /* (non-Javadoc)
+     * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
+        ois.readInt(); // Version
+
+        id = ois.readUTF();
+        businessTransaction = ois.readUTF();
+        uri = ois.readUTF();
+        originUri = ois.readUTF();
+        multiConsumer = ois.readBoolean();
+        timestamp = ois.readLong();
+        latency = ois.readLong();
+        consumerDuration = ois.readLong();
+        producerDuration = ois.readLong();
+        timestampOffset = ois.readLong();
+        sourceFragmentId = ois.readUTF();
+        sourceHostName = ois.readUTF();
+        sourceHostAddress = ois.readUTF();
+        targetFragmentId = ois.readUTF();
+        targetHostName = ois.readUTF();
+        targetHostAddress = ois.readUTF();
+        properties = (Map<String, String>) ois.readObject();    // TODO: Serialise properly
+
+        int size = ois.readInt();
+        for (int i = 0; i < size; i++) {
+            outbound.add((Outbound) ois.readObject());
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
+     */
+    @Override
+    public void writeExternal(ObjectOutput oos) throws IOException {
+        oos.writeInt(1); // Version
+
+        oos.writeUTF(id);
+        oos.writeUTF(businessTransaction);
+        oos.writeUTF(uri);
+        oos.writeUTF(originUri);
+        oos.writeBoolean(multiConsumer);
+        oos.writeLong(timestamp);
+        oos.writeLong(latency);
+        oos.writeLong(consumerDuration);
+        oos.writeLong(producerDuration);
+        oos.writeLong(timestampOffset);
+        oos.writeUTF(sourceFragmentId);
+        oos.writeUTF(sourceHostName);
+        oos.writeUTF(sourceHostAddress);
+        oos.writeUTF(targetFragmentId);
+        oos.writeUTF(targetHostName);
+        oos.writeUTF(targetHostAddress);
+        oos.writeObject(properties);    // TODO: Serialise properly
+
+        oos.writeInt(outbound.size());
+        for (int i = 0; i < outbound.size(); i++) {
+            oos.writeObject(outbound.get(i));
+        }
+    }
+
+    /**
+     * This class represents the outbound connectivity information associated with
+     * the target fragment id. This can be used to build a complete end to end communication
+     * map for the business transaction id.
+     *
+     * @author gbrown
+     */
+    public static class Outbound implements Externalizable {
+
+        private List<String> ids = new ArrayList<String>();
+        private boolean multiConsumer = false;
+        private long producerOffset = 0;
+
+        /**
+         * @return the ids
+         */
+        public List<String> getIds() {
+            return ids;
+        }
+
+        /**
+         * @param ids the ids to set
+         */
+        public void setIds(List<String> ids) {
+            this.ids = ids;
+        }
+
+        /**
+         * @return the multiConsumer
+         */
+        public boolean isMultiConsumer() {
+            return multiConsumer;
+        }
+
+        /**
+         * @param multiConsumer the multiConsumer to set
+         */
+        public void setMultiConsumer(boolean multiConsumer) {
+            this.multiConsumer = multiConsumer;
+        }
+
+        /**
+         * @return the producerOffset
+         */
+        public long getProducerOffset() {
+            return producerOffset;
+        }
+
+        /**
+         * @param producerOffset the producerOffset to set
+         */
+        public void setProducerOffset(long producerOffset) {
+            this.producerOffset = producerOffset;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((ids == null) ? 0 : ids.hashCode());
+            result = prime * result + (multiConsumer ? 1231 : 1237);
+            result = prime * result + (int) (producerOffset ^ (producerOffset >>> 32));
+            return result;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Outbound other = (Outbound) obj;
+            if (ids == null) {
+                if (other.ids != null) {
+                    return false;
+                }
+            } else if (!ids.equals(other.ids)) {
+                return false;
+            }
+            if (multiConsumer != other.multiConsumer) {
+                return false;
+            }
+            if (producerOffset != other.producerOffset) {
+                return false;
+            }
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "Outbound [ids=" + ids + ", multiConsumer=" + multiConsumer + ", producerOffset=" + producerOffset
+                    + "]";
+        }
+
+        /* (non-Javadoc)
+         * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
+         */
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            in.readInt(); // Version
+
+            int size = in.readInt();
+            for (int i = 0; i < size; i++) {
+                ids.add(in.readUTF());
+            }
+
+            multiConsumer = in.readBoolean();
+            producerOffset = in.readLong();
+        }
+
+        /* (non-Javadoc)
+         * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
+         */
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            out.writeInt(1); // Version
+
+            out.writeInt(ids.size());
+            for (int i = 0; i < ids.size(); i++) {
+                out.writeUTF(ids.get(i));
+            }
+
+            out.writeBoolean(multiConsumer);
+            out.writeLong(producerOffset);
+        }
+
+    }
 }

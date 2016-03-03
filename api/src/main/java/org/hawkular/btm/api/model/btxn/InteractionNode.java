@@ -36,6 +36,8 @@ import io.swagger.annotations.ApiModel;
     subTypes = { Consumer.class, Producer.class, Component.class }, discriminator = "type")
 public abstract class InteractionNode extends ContainerNode {
 
+    public static final String DETAILS_PUBLISH = "btm_publish";
+
     @JsonInclude(Include.NON_NULL)
     private Message in;
 
@@ -83,6 +85,18 @@ public abstract class InteractionNode extends ContainerNode {
      */
     public void setOut(Message out) {
         this.out = out;
+    }
+
+    /**
+     * This method determines whether the interaction node is associated with
+     * a multi-consumer communication.
+     *
+     * @return Whether interaction relates to multiple consumers
+     */
+    public boolean multipleConsumers() {
+        return getDetails().containsKey(Producer.DETAILS_PUBLISH)
+                && getDetails().get(Producer.DETAILS_PUBLISH)
+                .equalsIgnoreCase(Boolean.TRUE.toString());
     }
 
     /* (non-Javadoc)

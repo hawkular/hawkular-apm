@@ -234,4 +234,31 @@ public class BusinessTransactionTest {
         return (btxn);
     }
 
+    @Test
+    public void testCalculateDuration() {
+        long baseTime = System.currentTimeMillis();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(baseTime); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("originuri");
+        c1.setDuration(1000000000);
+        c1.setBaseTime(100000000);
+
+        Producer p1 = new Producer();
+        p1.setUri("testuri");
+        p1.setDuration(1000000000);
+        p1.setBaseTime(500000000);
+        p1.addInteractionId("interaction1");
+        c1.getNodes().add(p1);
+
+        btxn1.getNodes().add(c1);
+
+        long duration = btxn1.calculateDuration();
+
+        assertEquals(1400, duration);
+    }
 }

@@ -46,7 +46,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CompletionTime processSingle(BusinessTransaction item) throws Exception {
+    public CompletionTime processSingle(String tenantId, BusinessTransaction item) throws Exception {
         // Check fragment has top level node
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -55,7 +55,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
             ct.setId(item.getId());
             ct.setUri(n.getUri());
             ct.setBusinessTransaction(item.getName());
-            ct.setDuration(n.getDuration());
+            ct.setDuration(item.calculateDuration());
             ct.setFault(n.getFault());
             ct.setProperties(item.getProperties());
             ct.setTimestamp(item.getStartTime());
@@ -72,7 +72,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<CompletionTime> processMultiple(BusinessTransaction item) throws Exception {
+    public List<CompletionTime> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
         return null;
     }
 }

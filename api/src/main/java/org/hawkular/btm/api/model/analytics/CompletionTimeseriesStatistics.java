@@ -35,13 +35,13 @@ public class CompletionTimeseriesStatistics {
     private long faultCount = 0;
 
     @JsonInclude
-    private double min = 0;
+    private long min = 0;
 
     @JsonInclude
-    private double average = 0;
+    private long average = 0;
 
     @JsonInclude
-    private double max = 0;
+    private long max = 0;
 
     /**
      * @return the timestamp
@@ -88,42 +88,42 @@ public class CompletionTimeseriesStatistics {
     /**
      * @return the min
      */
-    public double getMin() {
+    public long getMin() {
         return min;
     }
 
     /**
      * @param min the min to set
      */
-    public void setMin(double min) {
+    public void setMin(long min) {
         this.min = min;
     }
 
     /**
      * @return the average
      */
-    public double getAverage() {
+    public long getAverage() {
         return average;
     }
 
     /**
      * @param average the average to set
      */
-    public void setAverage(double average) {
+    public void setAverage(long average) {
         this.average = average;
     }
 
     /**
      * @return the max
      */
-    public double getMax() {
+    public long getMax() {
         return max;
     }
 
     /**
      * @param max the max to set
      */
-    public void setMax(double max) {
+    public void setMax(long max) {
         this.max = max;
     }
 

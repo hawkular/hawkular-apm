@@ -214,10 +214,20 @@ public class BusinessTransaction {
      * This method returns the end time of the business
      * transaction.
      *
-     * @return The end time (in milliseconds), or 0 if no time defined
+     * @return The end time (in milliseconds)
      */
     public long endTime() {
-        if (startTime > 0L && !nodes.isEmpty()) {
+        return getStartTime() + calculateDuration();
+    }
+
+    /**
+     * This method returns the duration of the business
+     * transaction fragment.
+     *
+     * @return The duration (in milliseconds), or 0 if no nodes defined
+     */
+    public long calculateDuration() {
+        if (!nodes.isEmpty()) {
             long endTimeNS = 0;
 
             for (int i=0; i < getNodes().size(); i++) {
@@ -231,8 +241,8 @@ public class BusinessTransaction {
 
             long elapsedTime=endTimeNS - getNodes().get(0).getBaseTime();
 
-            // Convert elapsed time to milliseconds and add to business txn start time
-            return getStartTime() + TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS);
+            // Convert elapsed time to milliseconds
+            return TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS);
         }
 
         return 0L;

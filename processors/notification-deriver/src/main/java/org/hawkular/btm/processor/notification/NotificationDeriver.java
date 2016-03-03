@@ -47,7 +47,7 @@ public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, 
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public Notification processSingle(BusinessTransaction item) throws Exception {
+    public Notification processSingle(String tenantId, BusinessTransaction item) throws Exception {
         // Check if named txn and has nodes
         if (item.getName() != null && item.getName().trim().length() > 0 && !item.getNodes().isEmpty()) {
             Notification notification = new Notification();
@@ -94,7 +94,7 @@ public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, 
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<Notification> processMultiple(BusinessTransaction item) throws Exception {
+    public List<Notification> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
         return null;
     }
 }

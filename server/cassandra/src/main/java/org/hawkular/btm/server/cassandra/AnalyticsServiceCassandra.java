@@ -330,7 +330,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
 
         // TODO: Need to work out percentile - also change to request percentile of interest
         Percentiles ret = new Percentiles();
-        ret.getPercentiles().put(95, average);
+        ret.getPercentiles().put(95, (long)average);
         return ret;
     }
 
@@ -395,7 +395,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
                     if (stats[index] == null) {
                         stats[index] = new CompletionTimeseriesStatistics();
                         stats[index].setTimestamp(CassandraServiceUtil.getBaseTimestamp(startTime, interval, index));
-                        stats[index].setMin(Double.MAX_VALUE);
+                        stats[index].setMin(Long.MAX_VALUE);
                     }
 
                     // Incremental averaging

@@ -87,7 +87,7 @@ module BTM {
           label: 'Seconds',
           padding: { bottom: 0 },
           tick: {
-            format: function(y) { return y / 1000000000; }
+            format: function(y) { return y / 1000; }
           }
         },
         y2: {

@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class NodeSummaryStatistics {
 
     @JsonInclude
-    private double actual;
+    private long actual;
 
     @JsonInclude
-    private double elapsed;
+    private long elapsed;
 
     @JsonInclude
     private long count;
@@ -47,28 +47,28 @@ public class NodeSummaryStatistics {
     /**
      * @return the actual
      */
-    public double getActual() {
+    public long getActual() {
         return actual;
     }
 
     /**
      * @param actual the actual to set
      */
-    public void setActual(double actual) {
+    public void setActual(long actual) {
         this.actual = actual;
     }
 
     /**
      * @return the elapsed
      */
-    public double getElapsed() {
+    public long getElapsed() {
         return elapsed;
     }
 
     /**
      * @param elapsed the elapsed to set
      */
-    public void setElapsed(double elapsed) {
+    public void setElapsed(long elapsed) {
         this.elapsed = elapsed;
     }
 

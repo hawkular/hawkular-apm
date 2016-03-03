@@ -75,6 +75,7 @@
     <module>server/api</module>
     <module>server/cassandra</module>
     <module>server/elasticsearch</module>
+    <module>server/infinispan</module>
     <module>server/jms</module>
     <module>server/rest</module>
     <module>server/security-hwkaccs</module>
@@ -242,6 +243,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-server-elasticsearch</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-server-infinispan</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

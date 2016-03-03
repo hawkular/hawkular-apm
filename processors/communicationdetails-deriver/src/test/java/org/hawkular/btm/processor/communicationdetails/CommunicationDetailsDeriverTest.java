@@ -79,7 +79,7 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p1);
 
-        deriver.initialise(btxns);
+        deriver.initialise(null, btxns);
 
         assertTrue(deriver.getProducerinfoCache().containsKey("pid1"));
         assertFalse(deriver.getProducerinfoCache().containsKey("cid1"));
@@ -122,7 +122,7 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p2);
 
-        deriver.initialise(btxns);
+        deriver.initialise(null, btxns);
 
         assertTrue(deriver.getProducerinfoCache().containsKey("pid1"));
         assertTrue(deriver.getProducerinfoCache().containsKey("pid2"));
@@ -176,7 +176,7 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p2);
 
-        deriver.initialise(btxns);
+        deriver.initialise(null, btxns);
 
         assertTrue(deriver.getProducerinfoCache().containsKey("pid1"));
         assertTrue(deriver.getProducerinfoCache().containsKey("pid2"));
@@ -217,7 +217,7 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p1);
 
         try {
-            deriver.processSingle(btxn1);
+            deriver.processSingle(null, btxn1);
             fail("Should have thrown exception");
         } catch (Exception e) {
         }
@@ -288,9 +288,9 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetails details = null;
         try {
-            deriver.initialise(btxns1);
-            deriver.initialise(btxns2);
-            details = deriver.processSingle(btxn2);
+            deriver.initialise(null, btxns1);
+            deriver.initialise(null, btxns2);
+            details = deriver.processSingle(null, btxn2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -301,9 +301,12 @@ public class CommunicationDetailsDeriverTest {
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
         assertEquals("FirstURI", details.getOriginUri());
         assertEquals("SecondURI", details.getUri());
+
+        assertFalse(details.isMultiConsumer());
+
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
-        assertTrue(400000000 == details.getLatency());
+        assertTrue(400 == details.getLatency());
         assertTrue(details.getProperties().containsKey("prop1"));
         assertEquals("btxn1", details.getSourceFragmentId());
         assertEquals("host1", details.getSourceHostName());
@@ -317,6 +320,85 @@ public class CommunicationDetailsDeriverTest {
         assertEquals(timestamp, details.getTimestamp());
 
         assertEquals(999599, details.getTimestampOffset());
+    }
+
+    @Test
+    public void testProcessSingleMultiConsumer() {
+        CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
+        deriver.setProducerInfoCache(cache);
+
+        List<BusinessTransaction> btxns1 = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setStartTime(1000000);
+
+        btxns1.add(btxn1);
+
+        btxn1.setName(BTXN_NAME);
+        btxn1.setId("btxn1");
+        btxn1.setHostName("host1");
+        btxn1.setHostAddress("addr1");
+
+        Consumer c1 = new Consumer();
+        c1.setUri("FirstURI");
+        c1.setBaseTime(0);
+
+        CorrelationIdentifier cid1 = new CorrelationIdentifier();
+        cid1.setScope(Scope.Interaction);
+        cid1.setValue("cid1");
+        c1.getCorrelationIds().add(cid1);
+
+        btxn1.getNodes().add(c1);
+
+        Producer p1 = new Producer();
+        p1.setBaseTime(1000000);
+        p1.setDuration(2000000000);
+        p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
+
+        CorrelationIdentifier pid1 = new CorrelationIdentifier();
+        pid1.setScope(Scope.Interaction);
+        pid1.setValue("pid1");
+        p1.getCorrelationIds().add(pid1);
+
+        c1.getNodes().add(p1);
+
+        List<BusinessTransaction> btxns2 = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000000);
+
+        btxns2.add(btxn2);
+
+        btxn2.setName(BTXN_NAME);
+        btxn2.setId("btxn2");
+        btxn2.setHostName("host2");
+        btxn2.setHostAddress("addr2");
+        btxn2.getProperties().put("prop1", "value1");
+
+        Consumer c2 = new Consumer();
+        c2.setUri("SecondURI");
+        c2.setDuration(1200000000);
+        c2.getDetails().put(Consumer.DETAILS_PUBLISH, "true");
+
+        CorrelationIdentifier cid2 = new CorrelationIdentifier();
+        cid2.setScope(Scope.Interaction);
+        cid2.setValue("pid1");
+        c2.getCorrelationIds().add(cid2);
+
+        btxn2.getNodes().add(c2);
+
+        CommunicationDetails details = null;
+        try {
+            deriver.initialise(null, btxns1);
+            deriver.initialise(null, btxns2);
+            details = deriver.processSingle(null, btxn2);
+        } catch (Exception e) {
+            fail("Failed to process: " + e);
+        }
+
+        assertNotNull(details);
+
+        assertTrue(details.isMultiConsumer());
     }
 
     @Test
@@ -339,7 +421,7 @@ public class CommunicationDetailsDeriverTest {
         Producer p1 = new Producer();
         p1.setUri("TheURI");
         p1.setBaseTime(System.nanoTime());
-        p1.setDuration(2000);
+        p1.setDuration(2000000000);
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -361,7 +443,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("TheURI");
-        c2.setDuration(1200);
+        c2.setDuration(1200000000);
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -372,9 +454,9 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetails details = null;
         try {
-            deriver.initialise(btxns1);
-            deriver.initialise(btxns2);
-            details = deriver.processSingle(btxn2);
+            deriver.initialise(null, btxns1);
+            deriver.initialise(null, btxns2);
+            details = deriver.processSingle(null, btxn2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }

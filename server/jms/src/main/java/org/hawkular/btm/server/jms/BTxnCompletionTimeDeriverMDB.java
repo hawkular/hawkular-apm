@@ -26,8 +26,8 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionInformation;
 import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionTimeDeriver;
 import org.hawkular.btm.server.api.services.BTxnCompletionTimePublisher;
 
@@ -36,11 +36,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_BTxnCompletionTimeDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "BTxnCompletionInformation_BTxnCompletionTimeDeriver",
+        messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BTxnCompletionInformation"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "BTxnCompletionTimeDeriver"),
                 @ActivationConfigProperty(propertyName = "subscriptionName",
@@ -48,10 +49,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class BTxnCompletionTimeDeriverMDB extends ProcessorMDB<BusinessTransaction, CompletionTime> {
+public class BTxnCompletionTimeDeriverMDB extends ProcessorMDB<BTxnCompletionInformation, CompletionTime> {
 
     @Inject
-    private BusinessTransactionPublisherJMS businessTransactionPublisher;
+    private BTxnCompletionInformationPublisherJMS btxnCompletionInformationPublisher;
 
     @Inject
     private BTxnCompletionTimePublisher btxnCompletionTimePublisher;
@@ -59,9 +60,9 @@ public class BTxnCompletionTimeDeriverMDB extends ProcessorMDB<BusinessTransacti
     @PostConstruct
     public void init() {
         setProcessor(new BTxnCompletionTimeDeriver());
-        setRetryPublisher(businessTransactionPublisher);
+        setRetryPublisher(btxnCompletionInformationPublisher);
         setPublisher(btxnCompletionTimePublisher);
-        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        setTypeReference(new TypeReference<java.util.List<BTxnCompletionInformation>>() {
         });
     }
 

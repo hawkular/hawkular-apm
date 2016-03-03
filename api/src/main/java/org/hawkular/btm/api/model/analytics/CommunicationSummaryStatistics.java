@@ -29,11 +29,11 @@ public class CommunicationSummaryStatistics {
 
     private String uri;
 
-    private double minimumDuration;
+    private long minimumDuration;
 
-    private double averageDuration;
+    private long averageDuration;
 
-    private double maximumDuration;
+    private long maximumDuration;
 
     private long count;
 
@@ -56,42 +56,42 @@ public class CommunicationSummaryStatistics {
     /**
      * @return the minimumDuration
      */
-    public double getMinimumDuration() {
+    public long getMinimumDuration() {
         return minimumDuration;
     }
 
     /**
      * @param minimumDuration the minimumDuration to set
      */
-    public void setMinimumDuration(double minimumDuration) {
+    public void setMinimumDuration(long minimumDuration) {
         this.minimumDuration = minimumDuration;
     }
 
     /**
      * @return the averageDuration
      */
-    public double getAverageDuration() {
+    public long getAverageDuration() {
         return averageDuration;
     }
 
     /**
      * @param averageDuration the averageDuration to set
      */
-    public void setAverageDuration(double averageDuration) {
+    public void setAverageDuration(long averageDuration) {
         this.averageDuration = averageDuration;
     }
 
     /**
      * @return the maximumDuration
      */
-    public double getMaximumDuration() {
+    public long getMaximumDuration() {
         return maximumDuration;
     }
 
     /**
      * @param maximumDuration the maximumDuration to set
      */
-    public void setMaximumDuration(double maximumDuration) {
+    public void setMaximumDuration(long maximumDuration) {
         this.maximumDuration = maximumDuration;
     }
 
@@ -141,53 +141,53 @@ public class CommunicationSummaryStatistics {
      */
     public static class ConnectionStatistics {
 
-        private double minimumLatency;
+        private long minimumLatency;
 
-        private double averageLatency;
+        private long averageLatency;
 
-        private double maximumLatency;
+        private long maximumLatency;
 
         private long count;
 
         /**
          * @return the minimumLatency
          */
-        public double getMinimumLatency() {
+        public long getMinimumLatency() {
             return minimumLatency;
         }
 
         /**
          * @param minimumLatency the minimumLatency to set
          */
-        public void setMinimumLatency(double minimumLatency) {
+        public void setMinimumLatency(long minimumLatency) {
             this.minimumLatency = minimumLatency;
         }
 
         /**
          * @return the averageLatency
          */
-        public double getAverageLatency() {
+        public long getAverageLatency() {
             return averageLatency;
         }
 
         /**
          * @param averageLatency the averageLatency to set
          */
-        public void setAverageLatency(double averageLatency) {
+        public void setAverageLatency(long averageLatency) {
             this.averageLatency = averageLatency;
         }
 
         /**
          * @return the maximumLatency
          */
-        public double getMaximumLatency() {
+        public long getMaximumLatency() {
             return maximumLatency;
         }
 
         /**
          * @param maximumLatency the maximumLatency to set
          */
-        public void setMaximumLatency(double maximumLatency) {
+        public void setMaximumLatency(long maximumLatency) {
             this.maximumLatency = maximumLatency;
         }
 

@@ -41,6 +41,10 @@
     <!-- Service implementations -->
     <dependency>
       <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-server-infinispan</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-server-jms</artifactId>
     </dependency>
     <dependency>
