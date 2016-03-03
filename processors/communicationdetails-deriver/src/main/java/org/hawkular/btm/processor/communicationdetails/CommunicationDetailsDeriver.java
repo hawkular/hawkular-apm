@@ -201,10 +201,14 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setTargetHostName(item.getHostName());
                         ret.setTargetHostAddress(item.getHostAddress());
 
-                        // TODO: HWKBTM-349 Deal with timestamp and offset. Currently
+                        // HWKBTM-349 Deal with timestamp and offset. Currently
                         // just copying timestamp as-is from producer fragment
                         ret.setTimestamp(pi.getTimestamp());
-                        //ret.setTimestampOffset(timestampOffset);
+
+                        long latencyms = TimeUnit.MILLISECONDS.convert((long) ret.getLatency(), TimeUnit.NANOSECONDS);
+                        long timestampOffset = item.getStartTime() - pi.getTimestamp() - latencyms;
+
+                        ret.setTimestampOffset(timestampOffset);
                     }
                 }
                 if (ret == null) {

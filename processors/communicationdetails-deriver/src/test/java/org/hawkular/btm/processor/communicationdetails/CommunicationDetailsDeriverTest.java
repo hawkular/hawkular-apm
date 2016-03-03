@@ -130,12 +130,12 @@ public class CommunicationDetailsDeriverTest {
         ProducerInfo pi1 = deriver.getProducerinfoCache().get("pid1");
         ProducerInfo pi2 = deriver.getProducerinfoCache().get("pid2");
 
-        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX+"p1", pi1.getOriginUri());
+        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi1.getOriginUri());
 
         // Check that producer info 2 has same origin URI as p1, as they
         // are from the same fragment (without a consumer) so are being identified
         // as a client of the first producer URI found (see HWKBTM-353).
-        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX+"p1", pi2.getOriginUri());
+        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi2.getOriginUri());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class CommunicationDetailsDeriverTest {
         List<BusinessTransaction> btxns1 = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(System.currentTimeMillis());
+        btxn1.setStartTime(1000000);
 
         btxns1.add(btxn1);
 
@@ -242,7 +242,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(System.nanoTime());
+        c1.setBaseTime(0);
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -252,8 +252,8 @@ public class CommunicationDetailsDeriverTest {
         btxn1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(System.nanoTime());
-        p1.setDuration(2000);
+        p1.setBaseTime(1000000);
+        p1.setDuration(2000000000);
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -265,6 +265,8 @@ public class CommunicationDetailsDeriverTest {
         List<BusinessTransaction> btxns2 = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setStartTime(2000000);
+
         btxns2.add(btxn2);
 
         btxn2.setName(BTXN_NAME);
@@ -275,7 +277,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
-        c2.setDuration(1200);
+        c2.setDuration(1200000000);
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -301,7 +303,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("SecondURI", details.getUri());
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
-        assertTrue(400 == details.getLatency());
+        assertTrue(400000000 == details.getLatency());
         assertTrue(details.getProperties().containsKey("prop1"));
         assertEquals("btxn1", details.getSourceFragmentId());
         assertEquals("host1", details.getSourceHostName());
@@ -313,6 +315,8 @@ public class CommunicationDetailsDeriverTest {
         long timestamp = btxn1.getStartTime() + TimeUnit.MILLISECONDS.convert(p1.getBaseTime() -
                 c1.getBaseTime(), TimeUnit.NANOSECONDS);
         assertEquals(timestamp, details.getTimestamp());
+
+        assertEquals(999599, details.getTimestampOffset());
     }
 
     @Test
@@ -379,7 +383,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertEquals("pid1", details.getId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
-        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX+"TheURI", details.getOriginUri());
+        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "TheURI", details.getOriginUri());
         assertEquals("TheURI", details.getUri());
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
