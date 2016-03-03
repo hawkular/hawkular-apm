@@ -130,6 +130,9 @@ public class CommunicationDetails {
     }
 
     /**
+     * This method returns the latency, between a producer and
+     * consumer, in nano-seconds.
+     *
      * @return the latency
      */
     public double getLatency() {
@@ -137,6 +140,9 @@ public class CommunicationDetails {
     }
 
     /**
+     * This method sets the latency, between a producer and
+     * consumer, in nano-seconds.
+     *
      * @param latency the latency to set
      */
     public void setLatency(double latency) {
@@ -172,6 +178,9 @@ public class CommunicationDetails {
     }
 
     /**
+     * This method returns the timestamp offset, between the producer node
+     * and the consumer node, in milliseconds.
+     *
      * @return the timestampOffset
      */
     public long getTimestampOffset() {
@@ -179,6 +188,9 @@ public class CommunicationDetails {
     }
 
     /**
+     * This method sets the timestamp offset, between the producer node
+     * and the consumer node, in milliseconds.
+     *
      * @param timestampOffset the timestampOffset to set
      */
     public void setTimestampOffset(long timestampOffset) {
