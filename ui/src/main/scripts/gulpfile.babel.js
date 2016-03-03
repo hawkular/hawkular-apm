@@ -44,7 +44,7 @@ let inProgress = false;
 
 const POM_MAIN_PATH = '../../../pom.xml';
 const DIST_TARGET_PATH = '../../../dist/target/';
-const WF_CONSOLE_PATH = 'modules/org/hawkular/nest/main/deployments/hawkular-btm-ui.war/dist/';
+const WF_CONSOLE_PATH = 'modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-btm-ui.war/dist/';
 
 const plugins = gulpLoadPlugins({
   rename: {
