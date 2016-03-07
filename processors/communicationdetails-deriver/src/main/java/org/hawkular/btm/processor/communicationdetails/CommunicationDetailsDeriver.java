@@ -55,7 +55,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
 
     @PostConstruct
     public void init() {
-        producerInfo = container.getCache("communicationdetails");
+        producerInfo = container.getCache("producerinfo");
     }
 
     /**

@@ -42,6 +42,7 @@
     <xsl:variable name="newCacheContainer">
       <cache-container name="btm" jndi-name="infinispan/BTM">
         <local-cache name="communicationdetails"/>
+        <local-cache name="producerinfo"/>
       </cache-container>
     </xsl:variable>
 

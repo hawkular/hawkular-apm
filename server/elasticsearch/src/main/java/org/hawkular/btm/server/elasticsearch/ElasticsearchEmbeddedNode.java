@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.server.elasticsearch;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -35,6 +37,9 @@ import org.elasticsearch.node.NodeBuilder;
  * Time: 23:41
  */
 public final class ElasticsearchEmbeddedNode {
+
+    /**  */
+    private static final String HAWKULAR_ELASTICSEARCH_PROPERTIES = "hawkular-elasticsearch.properties";
 
     private static final Logger log = Logger.getLogger(ElasticsearchEmbeddedNode.class.getName());
 
@@ -64,8 +69,16 @@ public final class ElasticsearchEmbeddedNode {
 
             final Properties properties = new Properties();
             try {
-                final InputStream stream =
-                    this.getClass().getResourceAsStream("/hawkular-btm-elasticsearch.properties");
+                InputStream stream = null;
+
+                if (System.getProperties().containsKey("jboss.server.config.dir")) {
+                    File file = new File(System.getProperty("jboss.server.config.dir") + File.separatorChar +
+                            HAWKULAR_ELASTICSEARCH_PROPERTIES);
+                    stream = new FileInputStream(file);
+                } else {
+                    stream = this.getClass().getResourceAsStream(File.separatorChar +
+                                    HAWKULAR_ELASTICSEARCH_PROPERTIES);
+                }
                 properties.load(stream);
                 stream.close();
             } catch (Exception e) {
