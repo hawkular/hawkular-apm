@@ -48,6 +48,37 @@ module APM {
 
     $scope.businessTransactions = [];
 
+    $scope.apmChartConfig = {
+      data: {
+        columns: $scope.nodeComponents || [],
+        type: 'area',
+        x: 'timestamp',
+        keys: {
+          value: $scope.components || [],
+          x: 'timestamp'
+        },
+        groups: [$scope.componentsGroups || []]
+      },
+      axis: {
+        x: {
+          type: 'timeseries',
+          tick: {
+            culling: {
+              max: 6 // the number of tick texts will be adjusted to less than this value
+            },
+            format: '%Y-%m-%d %H:%M:%S'
+          }
+        },
+        y: {
+          label: 'Seconds',
+          padding: {bottom: 0},
+          tick: {
+            format: function (y) { return y / 1000000000; }
+          }
+        }
+      }
+    };
+
     $scope.chartStacked = true;
 
     $scope.reloadData = function() {
@@ -89,19 +120,10 @@ module APM {
 
         nodeComponents.unshift(timestamps);
 
-        let firstData = $scope.components.length === 0 && componentTypes.length > 0;
-        let lastData = $scope.components.length > 0 && componentTypes.length === 0;
-
         $scope.nodeComponents = nodeComponents;
         $scope.components = componentTypes;
         $scope.componentsGroups = !$scope.chartStacked ? [] :
           $scope.components.length > 0 ? $scope.components : [];
-
-        // have to initialize to pick stacked/layered option and also to empty the chart
-        // when there's no more data to show, otherwise it stalls at last data
-        if (!$scope.nodesareachart || lastData || (firstData && $scope.chartStacked)) {
-          $scope.initGraph();
-        }
 
         $scope.redrawAreaChart();
 
@@ -144,14 +166,9 @@ module APM {
     };
 
     $scope.redrawAreaChart = function() {
-      $scope.nodesareachart.load({
-        columns: $scope.nodeComponents,
-        keys: {
-          value: $scope.components,
-          x: 'timestamp'
-        },
-        groups: [$scope.componentsGroups]
-      });
+      $scope.apmChartConfig.data.columns = $scope.nodeComponents;
+      $scope.apmChartConfig.data.groups = [$scope.componentsGroups || []];
+      $scope.apmChartConfig.data.keys.value = $scope.components || [];
     };
 
     $scope.reloadData();
@@ -163,41 +180,6 @@ module APM {
     }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
-    $scope.initGraph = function() {
-      $scope.nodesareachart = c3.generate({
-        bindto: '#nodesareachart',
-        data: {
-          columns: [],
-          type: 'area',
-          x: 'timestamp',
-          keys: {
-            value: $scope.components,
-            x: 'timestamp'
-          },
-          groups: [$scope.componentsGroups]
-        },
-        axis: {
-          x: {
-            type: 'timeseries',
-            tick: {
-              culling: {
-                max: 6 // the number of tick texts will be adjusted to less than this value
-              },
-              format: '%Y-%m-%d %H:%M:%S'
-            }
-          },
-          y: {
-            label: 'Seconds',
-            padding: {bottom: 0},
-            tick: {
-              format: function (y) { return y / 1000000000; }
-            }
-          }
-        }
-      });
-
-    };
-
     $scope.selectAction = function() {
       $scope.reloadData();
     };
@@ -205,8 +187,7 @@ module APM {
     $scope.toggleStacked = function() {
       $scope.chartStacked = !$scope.chartStacked;
       $scope.componentsGroups = $scope.chartStacked ? $scope.components : [];
-      $scope.initGraph();
-      $scope.redrawAreaChart();
+      $scope.apmChartConfig.data.groups = [$scope.componentsGroups];
     };
 
     $scope.pauseLiveData = function() {

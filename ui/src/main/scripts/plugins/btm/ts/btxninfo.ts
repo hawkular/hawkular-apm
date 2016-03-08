@@ -49,6 +49,84 @@ module BTM {
       maxFaultValues: 20
     };
 
+    $scope.statistics = [];
+    $scope.compTimeChartConfig = {
+      data: {
+        json: $scope.statistics,
+        axes: {
+          max: 'y',
+          average: 'y',
+          min: 'y',
+          count: 'y2',
+          faultCount: 'y2'
+        },
+        type: 'line',
+        types: {
+          count: 'bar',
+          faultCount: 'bar'
+        },
+        keys: {
+          value: ['max', 'average', 'min', 'count', 'faultCount'],
+          x: 'timestamp'
+        }
+      },
+      color: {
+        pattern: ['#ff0000', '#33cc33', '#e5e600', '#99ccff', '#ffb3b3']
+      },
+      axis: {
+        x: {
+          type: 'timeseries',
+          tick: {
+            culling: {
+              max: 6 // the number of tick texts will be adjusted to less than this value
+            },
+            format: '%Y-%m-%d %H:%M:%S'
+          }
+        },
+        y: {
+          label: 'Seconds',
+          padding: { bottom: 0 },
+          tick: {
+            format: function(y) { return y / 1000000000; }
+          }
+        },
+        y2: {
+          show: true
+        }
+      }
+    };
+
+    $scope.faultData = [];
+    $scope.ctFaultChartConfig = {
+      data: {
+        columns: $scope.faultData,
+        type: 'pie',
+        onclick: function(d, i) {
+          let fault = {
+            value: d.id
+          };
+          $scope.criteria.faults.add(fault);
+          $scope.reload();
+        }
+      }
+    };
+
+    $scope.propertyData = [];
+    $scope.ctPropChartConfig = {
+      data: {
+        columns: $scope.propertyData,
+        type: 'pie',
+        onclick: function(d, i) {
+          let property = {
+            name: $scope.config.selectedProperty,
+            value: d.id
+          };
+          $scope.criteria.properties.add(property);
+          $scope.reload();
+        }
+      }
+    };
+
     $scope.reload = function() {
       $http.post('/hawkular/btm/analytics/completion/statistics?interval=' + $scope.config.interval, $scope.criteria)
         .then(function(resp) {
@@ -65,33 +143,17 @@ module BTM {
       $http.post('/hawkular/btm/analytics/completion/faults', faultCriteria).then(function(resp) {
         $scope.faults = resp.data;
 
-        let removeFaultValues = angular.copy($scope.faultValues);
-
         let faultdata = [];
 
-        for (let i = 0; i < $scope.faults.length; i++) {
-          let fault = $scope.faults[i];
-          let record = [];
-          record.push(fault.value);
-          record.push(fault.count);
-          faultdata.push(record);
+        _.each($scope.faults, (fault: any) => {
+          faultdata.push([fault.value, fault.count]);
 
-          if ($scope.faultValues.indexOf(fault.value) !== -1) {
-            removeFaultValues.remove(fault.value);
-          } else {
+          if ($scope.faultValues.indexOf(fault.value) === -1) {
             $scope.faultValues.add(fault.value);
           }
-        }
-
-        $scope.ctfaultschart.load({
-          columns: faultdata
         });
 
-        for (let j = 0; j < removeFaultValues.length; j++) {
-          $scope.ctfaultschart.unload(removeFaultValues[j]);
-          $scope.faultValues.remove(removeFaultValues[j]);
-        }
-
+        $scope.ctFaultChartConfig.data.columns = faultdata;
       },function(resp) {
         console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
@@ -108,13 +170,7 @@ module BTM {
     };
 
     $scope.redrawLineChart = function() {
-      $scope.ctlinechart.load({
-        json: $scope.statistics,
-        keys: {
-          value: ['max','average','min','count','faultCount'],
-          x: 'timestamp'
-        }
-      });
+      $scope.compTimeChartConfig.data.json = $scope.statistics;
     };
 
     $scope.reloadProperty = function() {
@@ -125,33 +181,14 @@ module BTM {
         .then(function(resp) {
         $scope.propertyDetails = resp.data;
 
-        let removePropertyValues = angular.copy($scope.propertyValues);
-
         let propertydata = [];
 
-        for (let i = 0; i < $scope.propertyDetails.length; i++) {
-          let prop = $scope.propertyDetails[i];
-          let record = [];
-          record.push(prop.value);
-          record.push(prop.count);
-          propertydata.push(record);
-
-          if ($scope.propertyValues.indexOf(prop.value) !== -1) {
-            removePropertyValues.remove(prop.value);
-          } else {
-            $scope.propertyValues.add(prop.value);
-          }
-        }
-
-        $scope.propertychart.load({
-          columns: propertydata
+        _.each($scope.propertyDetails, (prop: any) => {
+          propertydata.push([prop.value, prop.count]);
         });
 
-        for (let j = 0; j < removePropertyValues.length; j++) {
-          $scope.propertychart.unload(removePropertyValues[j]);
-          $scope.propertyValues.remove(removePropertyValues[j]);
-        }
-
+        $scope.propertyData = propertydata;
+        $scope.ctPropChartConfig.data.columns = $scope.propertyData;
       },function(resp) {
         console.log('Failed to get property details for \'' + $scope.config.selectedProperty + '\': ' +
           JSON.stringify(resp));
@@ -168,100 +205,6 @@ module BTM {
       }
     }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
-
-    $scope.initGraph = function() {
-      $scope.ctlinechart = c3.generate({
-        bindto: '#completiontimelinechart',
-        data: {
-          json: [
-          ],
-          axes: {
-            max: 'y',
-            average: 'y',
-            min: 'y',
-            count: 'y2',
-            faultCount: 'y2'
-          },
-          type: 'line',
-          types: {
-            count: 'bar',
-            faultCount: 'bar'
-          },
-          keys: {
-            value: ['max','average','min','count','faultCount'],
-            x: 'timestamp'
-          }
-        },
-        color: {
-          pattern: ['#ff0000', '#33cc33', '#e5e600', '#99ccff', '#ffb3b3']
-        },
-        axis: {
-          x: {
-            type: 'timeseries',
-            tick: {
-              culling: {
-                max: 6 // the number of tick texts will be adjusted to less than this value
-              },
-              format: '%Y-%m-%d %H:%M:%S'
-            }
-          },
-          y: {
-            label: 'Seconds',
-            padding: {bottom: 0},
-            tick: {
-              format: function (y) { return y / 1000000000; }
-            }
-          },
-          y2: {
-            show: true
-          }
-        }
-      });
-
-      $scope.ctfaultschart = c3.generate({
-        bindto: '#completiontimefaultschart',
-        data: {
-          json: [
-          ],
-          type: 'pie',
-          onclick: function (d, i) {
-            let fault = {
-              value: d.id
-            };
-            $scope.criteria.faults.add(fault);
-            $scope.reload();
-          }
-        }
-      });
-
-    };
-
-    $scope.initGraph();
-
-    $scope.propertyClicked = function() {
-      $scope.initPropertyGraph($scope.config.selectedProperty);
-    };
-
-    $scope.initPropertyGraph = function(name) {
-      $scope.propertychart = c3.generate({
-        bindto: '#completiontimepropertychart',
-        data: {
-          columns: [
-          ],
-          type: 'pie',
-          onclick: function (d, i) {
-            let property = {
-              name: name,
-              value: d.id
-            };
-            $scope.criteria.properties.add(property);
-            $scope.reload();
-          }
-        }
-      });
-
-      $scope.reloadProperty();
-    };
 
     $scope.removeProperty = function(property) {
       $scope.criteria.properties.remove(property);

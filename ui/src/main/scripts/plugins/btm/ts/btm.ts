@@ -27,25 +27,42 @@ module BTM {
 
     $scope.businessTransactions = [];
 
+    $scope.countChartConfig = {
+      data: {
+        type: 'pie',
+        columns: $scope.btxnCountData || [],
+        onclick: function(d, i) {
+          $timeout(() => {
+            $location.path('/hawkular-ui/btm/info/' + d.id);
+          });
+        }
+      }
+    };
+
+    $scope.faultChartConfig = {
+      data: {
+        type: 'pie',
+        columns: $scope.btxnFaultData || [],
+        onclick: function(d, i) {
+          $location.path('/hawkular-ui/btm/info/' + d.id);
+        }
+      }
+    };
+
     $scope.reload = function() {
       $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
 
         let allPromises = [];
-        for (let i = 0; i < resp.data.length; i++) {
-          allPromises = allPromises.concat($scope.getBusinessTxnDetails(resp.data[i]));
-        }
+        _.each(resp.data, (btxn: any) => {
+          allPromises = allPromises.concat($scope.getBusinessTxnDetails(btxn));
+        });
 
         $q.all(allPromises).then(() => {
           $scope.businessTransactions = resp.data;
           $scope.businessTransactions.$resolved = true;
 
-          if (!$scope.btxncountpiechart || !$scope.btxnfaultcountpiechart) {
-            $scope.initGraph();
-          } else {
-            $scope.reloadTxnCountGraph();
-            $scope.reloadFaultCountGraph();
-          }
-
+          $scope.reloadTxnCountGraph();
+          $scope.reloadFaultCountGraph();
         });
       },function(resp) {
         console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
@@ -116,35 +133,6 @@ module BTM {
       }
     };
 
-    $scope.initGraph = function() {
-      $timeout(() => {
-        $scope.btxncountpiechart = c3.generate({
-          bindto: '#btxntxncountpiechart',
-          data: {
-            columns: [],
-            type: 'pie',
-            onclick: function(d, i) {
-              $location.path('/hawkular-ui/btm/info/' + d.id);
-            }
-          }
-        });
-
-        $scope.btxnfaultcountpiechart = c3.generate({
-          bindto: '#btxnfaultcountpiechart',
-          data: {
-            columns: [],
-            type: 'pie',
-            onclick: function(d, i) {
-              $location.path('/hawkular-ui/btm/info/' + d.id);
-            }
-          }
-        });
-
-        $scope.reloadTxnCountGraph();
-        $scope.reloadFaultCountGraph();
-      });
-    };
-
     $scope.reloadTxnCountGraph = function() {
       let btxnCountData = [];
       _.each($scope.businessTransactions, (btxn: any) => {
@@ -153,10 +141,7 @@ module BTM {
         }
       });
 
-      $scope.btxncountpiechart.load({
-        columns: btxnCountData
-      });
-
+      $scope.countChartConfig.data.columns = btxnCountData;
       $scope.countChartHasData = btxnCountData.length > 0;
     };
 
@@ -168,10 +153,7 @@ module BTM {
         }
       });
 
-      $scope.btxnfaultcountpiechart.load({
-        columns: btxnFaultData
-      });
-
+      $scope.faultChartConfig.data.columns = btxnFaultData;
       $scope.faultChartHasData = btxnFaultData.length > 0;
     };
 
