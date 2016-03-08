@@ -113,7 +113,7 @@
 
           </form>
 
-          <div id="completiontimelinechart"></div>
+          <div id="completiontimelinechart" pf-c3-chart config="compTimeChartConfig"></div>
 
         </div>
       </div>
@@ -128,7 +128,7 @@
           Faults
         </div>
         <div class="card-pf-body">
-          <div id="completiontimefaultschart"></div>
+          <div id="completiontimefaultschart" pf-c3-chart config="ctFaultChartConfig"></div>
         </div>
       </div>
     </div>
@@ -139,10 +139,10 @@
           Property
         </div>
         <div class="card-pf-body">
-          <select name="propertyField" ng-model="config.selectedProperty" ng-change="propertyClicked()">
+          <select name="propertyField" ng-model="config.selectedProperty" ng-change="reloadProperty()">
             <option ng-repeat="property in properties">{{property.name}}</option>
           </select>
-          <div id="completiontimepropertychart"></div>
+          <div id="completiontimepropertychart" pf-c3-chart config="ctPropChartConfig"></div>
         </div>
       </div>
     </div>
