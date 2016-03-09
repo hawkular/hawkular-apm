@@ -28,7 +28,7 @@
 
   <groupId>org.hawkular.btm</groupId>
   <artifactId>hawkular-btm</artifactId>
-  <version>0.7.4.Final-SNAPSHOT</version>
+  <version>0.7.4.Final</version>
   <packaging>pom</packaging>
 
   <name>Hawkular BTM</name>
@@ -92,7 +92,7 @@
     <connection>scm:git:git://github.com/hawkular/hawkular-btm.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/hawkular/hawkular-btm.git</developerConnection>
     <url>https://github.com/hawkular/hawkular-btm</url>
-    <tag>HEAD</tag>
+    <tag>0.7.4.Final</tag>
   </scm>
   <issueManagement>
     <url>https://issues.jboss.org/browse/HWKBTM</url>
