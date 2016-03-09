@@ -71,6 +71,7 @@ module APM {
         },
         y: {
           label: 'Seconds',
+          default: [0, 10000000000],
           padding: {bottom: 0},
           tick: {
             format: function (y) { return y / 1000000000; }
