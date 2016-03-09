@@ -39,6 +39,10 @@
       <xsl:attribute name="entries">java:/BTxnCompletionTimes</xsl:attribute>
     </xsl:element>
     <xsl:element name="jms-topic" namespace="{namespace-uri()}">
+      <xsl:attribute name="name">BTxnCompletionInformation</xsl:attribute>
+      <xsl:attribute name="entries">java:/BTxnCompletionInformation</xsl:attribute>
+    </xsl:element>
+    <xsl:element name="jms-topic" namespace="{namespace-uri()}">
       <xsl:attribute name="name">FragmentCompletionTimes</xsl:attribute>
       <xsl:attribute name="entries">java:/FragmentCompletionTimes</xsl:attribute>
     </xsl:element>

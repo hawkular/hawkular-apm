@@ -33,13 +33,15 @@ public class ProducerInfo implements Externalizable {
 
     private long timestamp = 0;
 
-    private double duration = 0;
+    private long duration = 0;
 
     private String fragmentId;
 
     private String hostName;
 
     private String hostAddress;
+
+    private boolean multipleConsumers = false;
 
     /**
      * @return the originUri
@@ -72,14 +74,14 @@ public class ProducerInfo implements Externalizable {
     /**
      * @return the duration
      */
-    public double getDuration() {
+    public long getDuration() {
         return duration;
     }
 
     /**
      * @param duration the duration to set
      */
-    public void setDuration(double duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 
@@ -125,6 +127,20 @@ public class ProducerInfo implements Externalizable {
         this.hostAddress = hostAddress;
     }
 
+    /**
+     * @return the multipleConsumers
+     */
+    public boolean isMultipleConsumers() {
+        return multipleConsumers;
+    }
+
+    /**
+     * @param multipleConsumers the multipleConsumers to set
+     */
+    public void setMultipleConsumers(boolean multipleConsumers) {
+        this.multipleConsumers = multipleConsumers;
+    }
+
     /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
@@ -134,10 +150,11 @@ public class ProducerInfo implements Externalizable {
 
         originUri = ois.readUTF();
         timestamp = ois.readLong();
-        duration = ois.readDouble();
+        duration = ois.readLong();
         fragmentId = ois.readUTF();
         hostName = ois.readUTF();
         hostAddress = ois.readUTF();
+        multipleConsumers = ois.readBoolean();
     }
 
     /* (non-Javadoc)
@@ -149,10 +166,11 @@ public class ProducerInfo implements Externalizable {
 
         oos.writeUTF(originUri);
         oos.writeLong(timestamp);
-        oos.writeDouble(duration);
+        oos.writeLong(duration);
         oos.writeUTF(fragmentId);
         oos.writeUTF(hostName);
         oos.writeUTF(hostAddress);
+        oos.writeBoolean(multipleConsumers);
     }
 
 }

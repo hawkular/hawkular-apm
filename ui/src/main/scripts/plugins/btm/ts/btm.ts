@@ -95,7 +95,7 @@ module BTM {
       promises.push(pct95Promise);
       pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
-          btxn.percentile95 = Math.round( resp.data.percentiles[95] / 1000000 ) / 1000;
+          btxn.percentile95 = resp.data.percentiles[95] / 1000;
         } else {
           btxn.percentile95 = 0;
         }

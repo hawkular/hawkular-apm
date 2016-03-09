@@ -107,13 +107,15 @@ public class CompletionTime {
     }
 
     /**
-     * @return the duration
+     * @return the duration (ms)
      */
     public long getDuration() {
         return duration;
     }
 
     /**
+     * The duration in milliseconds.
+     *
      * @param duration the duration to set
      */
     public void setDuration(long duration) {

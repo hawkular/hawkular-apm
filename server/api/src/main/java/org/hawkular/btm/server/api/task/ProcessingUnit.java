@@ -96,20 +96,20 @@ public class ProcessingUnit<T, R> implements Handler<T> {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.task.Handler#handle(java.util.List)
+     * @see org.hawkular.btm.server.api.task.Handler#handle(java.lang.String,java.util.List)
      */
     @Override
-    public void handle(List<T> items) throws Exception {
+    public void handle(String tenantId, List<T> items) throws Exception {
         List<R> results = null;
         List<T> retries = null;
         Exception lastException = null;
 
-        processor.initialise(items);
+        processor.initialise(tenantId, items);
 
         for (int i = 0; i < items.size(); i++) {
             try {
                 if (processor.isMultiple()) {
-                    List<R> result = processor.processMultiple(items.get(i));
+                    List<R> result = processor.processMultiple(tenantId, items.get(i));
                     if (resultHandler != null && result != null && result.size() > 0) {
                         if (results == null) {
                             results = new ArrayList<R>();
@@ -117,7 +117,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
                         results.addAll(result);
                     }
                 } else {
-                    R result = processor.processSingle(items.get(i));
+                    R result = processor.processSingle(tenantId, items.get(i));
                     if (resultHandler != null && result != null) {
                         if (results == null) {
                             results = new ArrayList<R>();
@@ -136,15 +136,15 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             }
         }
 
-        processor.cleanup(items);
+        processor.cleanup(tenantId, items);
 
         if (results != null && results.size() > 0) {
-            resultHandler.handle(results);
+            resultHandler.handle(tenantId, results);
         }
 
         if (retries != null && retries.size() > 0) {
             if (getRetryCount() > 0) {
-                retryHandler.handle(retries);
+                retryHandler.handle(tenantId, retries);
             } else {
                 msgLog.warnMaxRetryReached(lastException);
             }

@@ -78,7 +78,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#initialise(java.util.List)
      */
     @Override
-    public void initialise(List<BusinessTransaction> items) {
+    public void initialise(String tenantId, List<BusinessTransaction> items) {
         // This method initialises the deriver with a list of business transaction fragments
         // that will need to be referenced when correlating a consumer with a producer
         for (int i = 0; i < items.size(); i++) {
@@ -128,6 +128,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                     pi.setFragmentId(btxn.getId());
                     pi.setHostName(btxn.getHostName());
                     pi.setHostAddress(btxn.getHostAddress());
+                    pi.setMultipleConsumers(producer.multipleConsumers());
 
                     // TODO: HWKBTM-348: Should be configurable based on the wait interval plus
                     // some margin of error - primarily for cases where a job scheduler
@@ -160,7 +161,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CommunicationDetails processSingle(BusinessTransaction item) throws Exception {
+    public CommunicationDetails processSingle(String tenantId, BusinessTransaction item) throws Exception {
         CommunicationDetails ret = null;
 
         if (log.isLoggable(Level.FINEST)) {
@@ -182,7 +183,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setBusinessTransaction(item.getName());
                         ret.setUri(consumer.getUri());
 
-                        double diff = pi.getDuration() - consumer.getDuration();
+                        long diff = TimeUnit.MILLISECONDS.convert(pi.getDuration() - consumer.getDuration(),
+                                            TimeUnit.NANOSECONDS);
                         if (diff > 0) {
                             ret.setLatency(diff / 2);
                         } else if (diff < 0) {
@@ -193,6 +195,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setConsumerDuration(consumer.getDuration());
 
                         ret.setOriginUri(pi.getOriginUri());
+                        ret.setMultiConsumer(pi.isMultipleConsumers());
                         ret.setProperties(item.getProperties());
                         ret.setSourceFragmentId(pi.getFragmentId());
                         ret.setSourceHostName(pi.getHostName());
@@ -200,15 +203,18 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setTargetFragmentId(item.getId());
                         ret.setTargetHostName(item.getHostName());
                         ret.setTargetHostAddress(item.getHostAddress());
+                        ret.setTargetFragmentDuration(item.calculateDuration());
 
                         // HWKBTM-349 Deal with timestamp and offset. Currently
                         // just copying timestamp as-is from producer fragment
                         ret.setTimestamp(pi.getTimestamp());
 
-                        long latencyms = TimeUnit.MILLISECONDS.convert((long) ret.getLatency(), TimeUnit.NANOSECONDS);
-                        long timestampOffset = item.getStartTime() - pi.getTimestamp() - latencyms;
+                        long timestampOffset = item.getStartTime() - pi.getTimestamp() - ret.getLatency();
 
                         ret.setTimestampOffset(timestampOffset);
+
+                        // Build outbound information
+                        initialiseOutbound(consumer.getNodes(), item.getNodes().get(0).getBaseTime(), ret);
                     }
                 }
                 if (ret == null) {
@@ -229,11 +235,45 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
         return ret;
     }
 
+    /**
+     * This method initialises the outbound information from the consumer's nodes in the supplied
+     * communication details.
+     *
+     * @param consumerNodes The consumer nodes
+     * @param baseTime The fragment's base time (ns)
+     * @param cd The communication details
+     */
+    protected static void initialiseOutbound(List<Node> consumerNodes, long baseTime, CommunicationDetails cd) {
+        for (int i = 0; i < consumerNodes.size(); i++) {
+            Node n = consumerNodes.get(i);
+            if (n.getClass() == Producer.class) {
+                CommunicationDetails.Outbound ob = new CommunicationDetails.Outbound();
+                for (int j = 0; j < ((Producer) n).getCorrelationIds().size(); j++) {
+                    CorrelationIdentifier ci = ((Producer) n).getCorrelationIds().get(j);
+                    if (ci.getScope() == Scope.Interaction) {
+                        ob.getIds().add(ci.getValue());
+                    }
+                }
+                // Only record if outbound ids found
+                if (!ob.getIds().isEmpty()) {
+                    // Check if pub/sub
+                    ob.setMultiConsumer(((Producer) n).multipleConsumers());
+
+                    ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
+                            TimeUnit.NANOSECONDS));
+                    cd.getOutbound().add(ob);
+                }
+            } else if (n.containerNode()) {
+                initialiseOutbound(((ContainerNode) n).getNodes(), baseTime, cd);
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<CommunicationDetails> processMultiple(BusinessTransaction item) throws Exception {
+    public List<CommunicationDetails> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
         return null;
     }
 
@@ -241,6 +281,6 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#cleanup(java.util.List)
      */
     @Override
-    public void cleanup(List<BusinessTransaction> items) {
+    public void cleanup(String tenantId, List<BusinessTransaction> items) {
     }
 }

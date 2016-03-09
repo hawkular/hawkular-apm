@@ -52,7 +52,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public NodeDetails processSingle(BusinessTransaction item) throws Exception {
+    public NodeDetails processSingle(String tenantId, BusinessTransaction item) throws Exception {
         return null;
     }
 
@@ -60,7 +60,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<NodeDetails> processMultiple(BusinessTransaction item) throws Exception {
+    public List<NodeDetails> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
         long baseTime = 0;

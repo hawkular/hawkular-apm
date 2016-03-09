@@ -41,12 +41,12 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public String processSingle(String item) throws Exception {
+            public String processSingle(String tenantId, String item) throws Exception {
                 return item;
             }
 
             @Override
-            public List<String> processMultiple(String item) throws Exception {
+            public List<String> processMultiple(String tenantId, String item) throws Exception {
                 return null;
             }
         };
@@ -57,7 +57,7 @@ public class ProcessingUnitTest {
 
         pu.setResultHandler(new Handler<String>() {
             @Override
-            public void handle(List<String> items) throws Exception {
+            public void handle(String tenantId, List<String> items) throws Exception {
                 results.addAll(items);
             }
         });
@@ -67,7 +67,7 @@ public class ProcessingUnitTest {
         source.add("world");
 
         try {
-            pu.handle(source);
+            pu.handle(null, source);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -87,12 +87,12 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public String processSingle(String item) throws Exception {
+            public String processSingle(String tenantId, String item) throws Exception {
                 throw new Exception("PLEASE RETRY");
             }
 
             @Override
-            public List<String> processMultiple(String item) throws Exception {
+            public List<String> processMultiple(String tenantId, String item) throws Exception {
                 return null;
             }
         };
@@ -104,7 +104,7 @@ public class ProcessingUnitTest {
 
         pu.setRetryHandler(new Handler<String>() {
             @Override
-            public void handle(List<String> items) throws Exception {
+            public void handle(String tenantId, List<String> items) throws Exception {
                 results.addAll(items);
             }
         });
@@ -114,7 +114,7 @@ public class ProcessingUnitTest {
         source.add("world");
 
         try {
-            pu.handle(source);
+            pu.handle(null, source);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -134,7 +134,7 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public String processSingle(String item) throws Exception {
+            public String processSingle(String tenantId, String item) throws Exception {
                 if (item.equals("world")) {
                     throw new Exception("PLEASE RETRY");
                 }
@@ -142,7 +142,7 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public List<String> processMultiple(String item) throws Exception {
+            public List<String> processMultiple(String tenantId, String item) throws Exception {
                 return null;
             }
         };
@@ -153,7 +153,7 @@ public class ProcessingUnitTest {
 
         pu.setResultHandler(new Handler<String>() {
             @Override
-            public void handle(List<String> items) throws Exception {
+            public void handle(String tenantId, List<String> items) throws Exception {
                 results.addAll(items);
             }
         });
@@ -163,7 +163,7 @@ public class ProcessingUnitTest {
         source.add("world");
 
         try {
-            pu.handle(source);
+            pu.handle(null, source);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -184,12 +184,12 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public String processSingle(String item) throws Exception {
+            public String processSingle(String tenantId, String item) throws Exception {
                 return null;
             }
 
             @Override
-            public List<String> processMultiple(String item) throws Exception {
+            public List<String> processMultiple(String tenantId, String item) throws Exception {
                 List<String> ret = new ArrayList<String>();
                 ret.add(item);
                 ret.add(item);
@@ -203,7 +203,7 @@ public class ProcessingUnitTest {
 
         pu.setResultHandler(new Handler<String>() {
             @Override
-            public void handle(List<String> items) throws Exception {
+            public void handle(String tenantId, List<String> items) throws Exception {
                 results.addAll(items);
             }
         });
@@ -213,7 +213,7 @@ public class ProcessingUnitTest {
         source.add("world");
 
         try {
-            pu.handle(source);
+            pu.handle(null, source);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -233,12 +233,12 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public String processSingle(String item) throws Exception {
+            public String processSingle(String tenantId, String item) throws Exception {
                 return null;
             }
 
             @Override
-            public List<String> processMultiple(String item) throws Exception {
+            public List<String> processMultiple(String tenantId, String item) throws Exception {
                 throw new Exception("PLEASE RETRY");
             }
         };
@@ -250,7 +250,7 @@ public class ProcessingUnitTest {
 
         pu.setRetryHandler(new Handler<String>() {
             @Override
-            public void handle(List<String> items) throws Exception {
+            public void handle(String tenantId, List<String> items) throws Exception {
                 results.addAll(items);
             }
         });
@@ -260,7 +260,7 @@ public class ProcessingUnitTest {
         source.add("world");
 
         try {
-            pu.handle(source);
+            pu.handle(null, source);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -280,12 +280,12 @@ public class ProcessingUnitTest {
             }
 
             @Override
-            public String processSingle(String item) throws Exception {
+            public String processSingle(String tenantId, String item) throws Exception {
                 return null;
             }
 
             @Override
-            public List<String> processMultiple(String item) throws Exception {
+            public List<String> processMultiple(String tenantId, String item) throws Exception {
                 if (item.equals("world")) {
                     throw new Exception("PLEASE RETRY");
                 }
@@ -302,7 +302,7 @@ public class ProcessingUnitTest {
 
         pu.setResultHandler(new Handler<String>() {
             @Override
-            public void handle(List<String> items) throws Exception {
+            public void handle(String tenantId, List<String> items) throws Exception {
                 results.addAll(items);
             }
         });
@@ -312,7 +312,7 @@ public class ProcessingUnitTest {
         source.add("world");
 
         try {
-            pu.handle(source);
+            pu.handle(null, source);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }

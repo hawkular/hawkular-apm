@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
@@ -30,7 +28,7 @@ import org.hawkular.btm.server.api.task.AbstractProcessor;
  *
  * @author gbrown
  */
-public class BTxnCompletionTimeDeriver extends AbstractProcessor<BusinessTransaction, CompletionTime> {
+public class BTxnCompletionTimeDeriver extends AbstractProcessor<BTxnCompletionInformation, CompletionTime> {
 
     private static final Logger log = Logger.getLogger(BTxnCompletionTimeDeriver.class.getName());
 
@@ -43,38 +41,27 @@ public class BTxnCompletionTimeDeriver extends AbstractProcessor<BusinessTransac
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
+     * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
      */
     @Override
-    public CompletionTime processSingle(BusinessTransaction item) throws Exception {
+    public CompletionTime processSingle(String tenantId, BTxnCompletionInformation item) throws Exception {
         // Check if named txn
-        if (item.getName() != null && item.getName().trim().length() > 0 && !item.getNodes().isEmpty()) {
-            Node n = item.getNodes().get(0);
-
-            // NOTE: This is deriving the completion time for each fragment associated
-            // with a business txn. HWKBTM-340 will address need to calculate end to end completion time.
-            CompletionTime ct = new CompletionTime();
-            ct.setId(item.getId());
-            ct.setUri(n.getUri());
-            ct.setBusinessTransaction(item.getName());
-            ct.setDuration(n.getDuration());
-            ct.setFault(n.getFault());
-            ct.setProperties(item.getProperties());
-            ct.setTimestamp(item.getStartTime());
+        if (item.getCommunications().isEmpty()) {
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("CompletionTimeDeriver ret=" + ct);
+                log.finest("CompletionTimeDeriver ret=" + item.getCompletionTime());
             }
-            return ct;
+
+            return item.getCompletionTime();
         }
         return null;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
+     * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
      */
     @Override
-    public List<CompletionTime> processMultiple(BusinessTransaction item) throws Exception {
+    public List<CompletionTime> processMultiple(String tenantId, BTxnCompletionInformation item) throws Exception {
         return null;
     }
 }

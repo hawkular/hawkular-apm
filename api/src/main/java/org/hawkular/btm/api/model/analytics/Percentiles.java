@@ -29,19 +29,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Percentiles {
 
     @JsonInclude
-    private Map<Integer,Double> percentiles = new HashMap<Integer,Double>();
+    private Map<Integer,Long> percentiles = new HashMap<Integer,Long>();
 
     /**
      * @return the percentiles
      */
-    public Map<Integer, Double> getPercentiles() {
+    public Map<Integer, Long> getPercentiles() {
         return percentiles;
     }
 
     /**
      * @param percentiles the percentiles to set
      */
-    public void setPercentiles(Map<Integer, Double> percentiles) {
+    public void setPercentiles(Map<Integer, Long> percentiles) {
         this.percentiles = percentiles;
     }
 
@@ -51,7 +51,7 @@ public class Percentiles {
      * @param percent The percentage
      * @param value The value
      */
-    public void addPercentile(int percent, double value) {
+    public void addPercentile(int percent, long value) {
         percentiles.put(percent, value);
     }
 

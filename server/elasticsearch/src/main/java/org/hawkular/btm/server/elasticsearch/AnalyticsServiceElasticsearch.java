@@ -263,7 +263,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     response.getAggregations().get("percentiles");
 
             for (Percentile entry : agg) {
-                percentiles.addPercentile((int) entry.getPercent(), entry.getValue());
+                percentiles.addPercentile((int) entry.getPercent(), (long)entry.getValue());
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
             // Ignore, as means that no business transactions have
@@ -334,9 +334,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
                 CompletionTimeseriesStatistics s = new CompletionTimeseriesStatistics();
                 s.setTimestamp(bucket.getKeyAsDate().getMillis());
-                s.setAverage(stat.getAvg());
-                s.setMin(stat.getMin());
-                s.setMax(stat.getMax());
+                s.setAverage((long)stat.getAvg());
+                s.setMin((long)stat.getMin());
+                s.setMax((long)stat.getMax());
                 s.setCount(stat.getCount());
                 s.setFaultCount(stat.getCount() - missing.getDocCount());
 
@@ -558,7 +558,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 for (Terms.Bucket termBucket : term.getBuckets()) {
                     Avg avg = termBucket.getAggregations().get("avg");
                     s.getComponentTypes().put(termBucket.getKey(),
-                            new NodeComponentTypeStatistics(avg.getValue(), termBucket.getDocCount()));
+                            new NodeComponentTypeStatistics((long)avg.getValue(), termBucket.getDocCount()));
                 }
 
                 stats.add(s);
@@ -690,8 +690,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                             }
                             stat.setUri(uriBucket.getKey());
                             stat.setOperation(operationBucket.getKey());
-                            stat.setActual(actual.getValue());
-                            stat.setElapsed(elapsed.getValue());
+                            stat.setActual((long)actual.getValue());
+                            stat.setElapsed((long)elapsed.getValue());
                             stat.setCount(operationBucket.getDocCount());
 
                             stats.add(stat);
@@ -713,8 +713,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                                 stat.setComponentType(componentBucket.getKey());
                             }
                             stat.setUri(uriBucket.getKey());
-                            stat.setActual(actual.getValue());
-                            stat.setElapsed(elapsed.getValue());
+                            stat.setActual((long)actual.getValue());
+                            stat.setElapsed((long)elapsed.getValue());
                             stat.setCount(missingOp.getDocCount());
 
                             stats.add(stat);
@@ -734,8 +734,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
                     stat.setComponentType(typeBucket.getKey());
                     stat.setUri(uriBucket.getKey());
-                    stat.setActual(actual.getValue());
-                    stat.setElapsed(elapsed.getValue());
+                    stat.setActual((long)actual.getValue());
+                    stat.setElapsed((long)elapsed.getValue());
                     stat.setCount(uriBucket.getDocCount());
 
                     stats.add(stat);
@@ -814,9 +814,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     Stats latency = uriBucket.getAggregations().get("latency");
 
                     ConnectionStatistics con = new ConnectionStatistics();
-                    con.setMinimumLatency(latency.getMin());
-                    con.setAverageLatency(latency.getAvg());
-                    con.setMaximumLatency(latency.getMax());
+                    con.setMinimumLatency((long)latency.getMin());
+                    con.setAverageLatency((long)latency.getAvg());
+                    con.setMaximumLatency((long)latency.getMax());
                     con.setCount(uriBucket.getDocCount());
 
                     css.getOutbound().put(uriBucket.getKey(), con);
@@ -860,9 +860,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     stats.put(uri, css);
                 }
 
-                css.setMinimumDuration(duration.getMin());
-                css.setAverageDuration(duration.getAvg());
-                css.setMaximumDuration(duration.getMax());
+                css.setMinimumDuration((long)duration.getMin());
+                css.setAverageDuration((long)duration.getAvg());
+                css.setMaximumDuration((long)duration.getMax());
                 css.setCount(completionBucket.getDocCount());
             }
 

@@ -1832,4 +1832,94 @@ public class AnalyticsServiceRESTTest {
         assertEquals("hostA", hosts.get(0));
     }
 
+    @Test
+    public void testGetCompletionTimeMultiFragment() {
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        long baseTime=System.currentTimeMillis() - 4000;
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(baseTime); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("originuri2");
+        c1.setDuration(1000000000);
+        c1.setBaseTime(1);
+
+        Producer p1 = new Producer();
+        p1.setUri("testuri2");
+        p1.setDuration(1000000000);
+        c1.setBaseTime(1);
+        p1.addInteractionId("interaction2");
+        c1.getNodes().add(p1);
+
+        btxn1.getNodes().add(c1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setId("2");
+        btxn2.setName("testapp");
+        btxn2.setStartTime(baseTime + 1000); // Within last hour
+
+        Consumer c2 = new Consumer();
+        c2.setUri("testuri2");
+        c2.setDuration(500000000);
+        c2.setBaseTime(1);
+        c2.addInteractionId("interaction2");
+
+        Component comp2 = new Component();
+        comp2.setDuration(1500000000);
+        comp2.setBaseTime(1);
+        c2.getNodes().add(comp2);
+
+        btxn2.getNodes().add(c2);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+        btxns.add(btxn2);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        assertEquals(1000, btxn1.calculateDuration());
+        assertEquals(1500, btxn2.calculateDuration());
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new Criteria());
+
+        assertEquals(2, result.size());
+
+        Criteria criteria = new Criteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+
+        // Get transaction count
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria, 10000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+
+        assertEquals(1750, stats.get(0).getAverage());
+        assertEquals(1, stats.get(0).getCount());
+    }
+
 }

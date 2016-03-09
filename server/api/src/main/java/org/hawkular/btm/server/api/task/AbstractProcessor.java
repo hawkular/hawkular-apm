@@ -26,17 +26,17 @@ import java.util.List;
 public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.task.Processor#initialise(java.util.List)
+     * @see org.hawkular.btm.server.api.task.Processor#initialise(java.lang.String,java.util.List)
      */
     @Override
-    public void initialise(List<T> items) {
+    public void initialise(String tenantId, List<T> items) {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.task.Processor#cleanup(java.util.List)
+     * @see org.hawkular.btm.server.api.task.Processor#cleanup(java.lang.String,java.util.List)
      */
     @Override
-    public void cleanup(List<T> items) {
+    public void cleanup(String tenantId, List<T> items) {
     }
 
 }
