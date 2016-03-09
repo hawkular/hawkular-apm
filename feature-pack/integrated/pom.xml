@@ -53,7 +53,14 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-integrated-ui-patch</artifactId>
+      <artifactId>hawkular-btm-ui</artifactId>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-standalone-feature-pack</artifactId>
+      <version>${project.version}</version>
       <type>zip</type>
     </dependency>
 
@@ -61,18 +68,45 @@
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts-feature-pack</artifactId>
       <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
   </dependencies>
 
   <build>
     <plugins>
+
+      <!-- Unpack the upstream artifacts that host various *.xml files that we want to use unchanged or adapt in the next steps -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-deps</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-standalone-feature-pack</artifactId>
+                  <type>zip</type>
+                  <includes>subsystem-templates/*.xml,configuration/**/*.xml,content/**/*</includes>
+                  <outputDirectory>${project.build.directory}/feature-pack-resources</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.btm</groupId>
+                  <artifactId>hawkular-btm-ui</artifactId>
+                  <type>war</type>
+                  <includes>dist/hawkularbtm.*</includes>
+                  <outputDirectory>${project.build.directory}/feature-pack-resources/content/modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-console.war</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>org.wildfly.build</groupId>
@@ -85,7 +119,7 @@
               <goal>build</goal>
             </goals>
             <configuration>
-              <config-file>feature-pack-build.xml</config-file>
+              <resources-dir>target/feature-pack-resources</resources-dir>
             </configuration>
           </execution>
         </executions>

@@ -83,7 +83,6 @@
     <module>server/war</module>
     <module>services/config-service-inmemory</module>
     <module>ui</module>
-    <module>feature-pack/ui-patch</module>
     <module>feature-pack/integrated</module>
     <module>feature-pack/standalone</module>
     <module>dist</module>
@@ -293,12 +292,6 @@
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-ui</artifactId>
         <type>war</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-integrated-ui-patch</artifactId>
-        <type>zip</type>
         <version>${project.version}</version>
       </dependency>
 

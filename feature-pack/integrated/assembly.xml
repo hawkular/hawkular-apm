@@ -27,7 +27,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/${project.artifactId}-${project.version}</directory>
+      <directory>target/${project.build.finalName}</directory>
       <outputDirectory/>
     </fileSet>
   </fileSets>

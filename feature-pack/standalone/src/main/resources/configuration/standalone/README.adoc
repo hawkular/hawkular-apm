@@ -1,6 +1,0 @@
-== template.xml
-
- * needs to be kept in sync with the
-   https://github.com/keycloak/keycloak/blob/master/distribution/feature-packs/server-feature-pack/src/main/resources/configuration/standalone/template.xml[server template.xml from KeyCloak]
- * Also note that the named template.xml from KeyCloak needs to be kept in sync with the
-   https://github.com/wildfly/wildfly/blob/master/feature-pack/src/main/resources/configuration/standalone/template.xml[template.xml from WildFly]
