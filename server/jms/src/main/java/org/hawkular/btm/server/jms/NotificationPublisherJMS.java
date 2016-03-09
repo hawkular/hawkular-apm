@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.server.jms;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.events.Notification;
@@ -32,8 +30,6 @@ import org.hawkular.btm.server.api.services.NotificationPublisher;
 public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
         implements NotificationPublisher {
 
-    /**  */
-    private static final int MAX_RETRIES = 3;
     private static final String DESTINATION = "java:/Notifications";
 
     /* (non-Javadoc)
@@ -42,14 +38,6 @@ public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
     @Override
     protected String getDestinationURI() {
         return DESTINATION;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.services.NotificationPublisher#publish(java.lang.String, java.util.List)
-     */
-    @Override
-    public void publish(String tenantId, List<Notification> nots) throws Exception {
-        doPublish(tenantId, nots, MAX_RETRIES);
     }
 
 }

@@ -66,6 +66,24 @@ public interface Processor<T, R> {
     List<R> processMultiple(String tenantId, T item) throws Exception;
 
     /**
+     * This method determines the delivery delay (in milliseconds)
+     * associated with the supplied list of results.
+     *
+     * @param results The results
+     * @return The delivery delay, or 0 if no delay
+     */
+    long getDeliveryDelay(List<R> results);
+
+    /**
+     * This method determines the retry delay (in milliseconds)
+     * associated with the supplied list of items.
+     *
+     * @param items The items
+     * @return The retry delay, or 0 if no delay
+     */
+    long getRetryDelay(List<T> items);
+
+    /**
      * This method is called once all of the items in the list of been
      * processed to generate new information. It can be used to
      * clean up any information managed by the processor related to

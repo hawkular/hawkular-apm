@@ -74,14 +74,16 @@ public abstract class ProcessorMDB<S, T> extends RetryCapableMDB<S> {
         pu.setResultHandler(new Handler<T>() {
             @Override
             public void handle(String tenantId, List<T> items) throws Exception {
-                getPublisher().publish(tenantId, items);
+                getPublisher().publish(tenantId, items, getPublisher().getInitialRetryCount(),
+                        getProcessor().getDeliveryDelay(items));
             }
         });
 
         pu.setRetryHandler(new Handler<S>() {
             @Override
             public void handle(String tenantId, List<S> items) throws Exception {
-                getRetryPublisher().publish(tenantId, items, pu.getRetryCount() - 1);
+                getRetryPublisher().publish(tenantId, items, pu.getRetryCount() - 1,
+                        getProcessor().getRetryDelay(items));
             }
         });
 

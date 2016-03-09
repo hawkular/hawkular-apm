@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.server.jms;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.events.CompletionTime;
@@ -32,8 +30,6 @@ import org.hawkular.btm.server.api.services.BTxnCompletionTimePublisher;
 public class BTxnCompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
                         implements BTxnCompletionTimePublisher {
 
-    /**  */
-    private static final int MAX_RETRIES = 3;
     private static final String DESTINATION = "java:/BTxnCompletionTimes";
 
     /* (non-Javadoc)
@@ -42,14 +38,6 @@ public class BTxnCompletionTimePublisherJMS extends AbstractPublisherJMS<Complet
     @Override
     protected String getDestinationURI() {
         return DESTINATION;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.services.CompletionTimePublisher#publish(java.lang.String, java.util.List)
-     */
-    @Override
-    public void publish(String tenantId, List<CompletionTime> cts) throws Exception {
-        doPublish(tenantId, cts, MAX_RETRIES);
     }
 
 }

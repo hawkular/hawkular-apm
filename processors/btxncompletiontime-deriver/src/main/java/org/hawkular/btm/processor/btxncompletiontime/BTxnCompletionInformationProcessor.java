@@ -37,8 +37,21 @@ public class BTxnCompletionInformationProcessor extends
 
     private static final Logger log = Logger.getLogger(BTxnCompletionInformationProcessor.class.getName());
 
+    private static final long DEFAULT_DELAY = 500;
+
     @Inject
     private CommunicationDetailsCache communicationDetailsCache;
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.server.api.task.Processor#getDeliveryDelay(java.util.List)
+     */
+    @Override
+    public long getDeliveryDelay(List<BTxnCompletionInformation> results) {
+        // TODO: Just return default 500msec delay for now, but when supporting long running
+        // processes HWKBTM-348, then will need to detect delivery delay on a
+        // per result basis, in case some long delays are required
+        return DEFAULT_DELAY;
+    }
 
     /**
      * @return the communicationDetailsCache
