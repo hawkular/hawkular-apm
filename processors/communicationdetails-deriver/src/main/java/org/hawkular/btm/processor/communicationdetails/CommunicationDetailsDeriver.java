@@ -21,8 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -33,8 +32,6 @@ import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
-import org.infinispan.Cache;
-import org.infinispan.manager.CacheContainer;
 
 /**
  * This class represents the communication details deriver.
@@ -48,30 +45,21 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
 
     private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class.getName());
 
-    @Resource(lookup = "java:jboss/infinispan/BTM")
-    private CacheContainer container;
+    @Inject
+    private ProducerInfoCache producerInfoCache;
 
-    private Cache<String, ProducerInfo> producerInfo;
-
-    @PostConstruct
-    public void init() {
-        producerInfo = container.getCache("producerinfo");
+    /**
+     * @return the producerInfoCache
+     */
+    public ProducerInfoCache getProducerInfoCache() {
+        return producerInfoCache;
     }
 
     /**
-     * This method sets the cache for producer info.
-     *
-     * @param cache The cache
+     * @param producerInfoCache the producerInfoCache to set
      */
-    protected void setProducerInfoCache(Cache<String, ProducerInfo> cache) {
-        producerInfo = cache;
-    }
-
-    /**
-     * @return the producerinfo cache
-     */
-    protected Cache<String, ProducerInfo> getProducerinfoCache() {
-        return producerInfo;
+    public void setProducerInfoCache(ProducerInfoCache producerInfoCache) {
+        this.producerInfoCache = producerInfoCache;
     }
 
     /* (non-Javadoc)
@@ -88,7 +76,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
             BusinessTransaction btxn = items.get(i);
             for (int j = 0; j < btxn.getNodes().size(); j++) {
                 Node node = btxn.getNodes().get(j);
-                originUri = initialiseNode(btxn, originUri, node);
+                originUri = initialiseNode(tenantId, btxn, originUri, node);
             }
         }
     }
@@ -96,12 +84,13 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
     /**
      * This method initialises an individual node within a business transaction.
      *
+     * @param tenantId The tenant id
      * @param btxn The business transaction
      * @param originUri The origin uri
      * @param node The node
      * @return The origin URI
      */
-    protected String initialiseNode(BusinessTransaction btxn, String originUri, Node node) {
+    protected String initialiseNode(String tenantId, BusinessTransaction btxn, String originUri, Node node) {
         if (node.getClass() == Producer.class) {
             // Check for interaction correlation ids
             Producer producer = (Producer) node;
@@ -134,7 +123,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                     // some margin of error - primarily for cases where a job scheduler
                     // is used. If direct communications, then only need to cater for
                     // latency.
-                    producerInfo.put(cids.get(i).getValue(), pi, 1, TimeUnit.MINUTES);
+                    producerInfoCache.put(tenantId, cids.get(i).getValue(), pi);
                 }
             }
         } else if (node instanceof ContainerNode) {
@@ -142,7 +131,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                 originUri = node.getUri();
             }
             for (int j = 0; j < ((ContainerNode) node).getNodes().size(); j++) {
-                originUri = initialiseNode(btxn, originUri, ((ContainerNode) node).getNodes().get(j));
+                originUri = initialiseNode(tenantId, btxn, originUri, ((ContainerNode) node).getNodes().get(j));
             }
         }
 
@@ -176,7 +165,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
             if (!cids.isEmpty()) {
                 for (int i = 0; ret == null && i < cids.size(); i++) {
                     String id = cids.get(i).getValue();
-                    ProducerInfo pi = producerInfo.get(id);
+                    ProducerInfo pi = producerInfoCache.get(tenantId, id);
                     if (pi != null) {
                         ret = new CommunicationDetails();
                         ret.setId(id);
@@ -184,7 +173,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setUri(consumer.getUri());
 
                         long diff = TimeUnit.MILLISECONDS.convert(pi.getDuration() - consumer.getDuration(),
-                                            TimeUnit.NANOSECONDS);
+                                TimeUnit.NANOSECONDS);
                         if (diff > 0) {
                             ret.setLatency(diff / 2);
                         } else if (diff < 0) {

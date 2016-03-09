@@ -19,6 +19,7 @@ package org.hawkular.btm.processor.communicationdetails;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,8 +34,6 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
-import org.infinispan.Cache;
-import org.infinispan.manager.DefaultCacheManager;
 import org.junit.Test;
 
 /**
@@ -42,13 +41,13 @@ import org.junit.Test;
  */
 public class CommunicationDetailsDeriverTest {
 
-    private static Cache<String, ProducerInfo> cache = new DefaultCacheManager().getCache();
-
     /**  */
     private static final String BTXN_NAME = "btxnName";
 
     @Test
     public void testInitialise() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
@@ -81,12 +80,14 @@ public class CommunicationDetailsDeriverTest {
 
         deriver.initialise(null, btxns);
 
-        assertTrue(deriver.getProducerinfoCache().containsKey("pid1"));
-        assertFalse(deriver.getProducerinfoCache().containsKey("cid1"));
+        assertNotNull(deriver.getProducerInfoCache().get(null, "pid1"));
+        assertNull(deriver.getProducerInfoCache().get(null, "cid1"));
     }
 
     @Test
     public void testInitialiseClientFragment() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
@@ -124,11 +125,11 @@ public class CommunicationDetailsDeriverTest {
 
         deriver.initialise(null, btxns);
 
-        assertTrue(deriver.getProducerinfoCache().containsKey("pid1"));
-        assertTrue(deriver.getProducerinfoCache().containsKey("pid2"));
+        ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
+        ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
 
-        ProducerInfo pi1 = deriver.getProducerinfoCache().get("pid1");
-        ProducerInfo pi2 = deriver.getProducerinfoCache().get("pid2");
+        assertNotNull(pi1);
+        assertNotNull(pi2);
 
         assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi1.getOriginUri());
 
@@ -140,6 +141,8 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testInitialiseServerFragment() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
@@ -178,11 +181,11 @@ public class CommunicationDetailsDeriverTest {
 
         deriver.initialise(null, btxns);
 
-        assertTrue(deriver.getProducerinfoCache().containsKey("pid1"));
-        assertTrue(deriver.getProducerinfoCache().containsKey("pid2"));
+        ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
+        ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
 
-        ProducerInfo pi1 = deriver.getProducerinfoCache().get("pid1");
-        ProducerInfo pi2 = deriver.getProducerinfoCache().get("pid2");
+        assertNotNull(pi1);
+        assertNotNull(pi2);
 
         assertEquals("consumerURI", pi1.getOriginUri());
         assertEquals("consumerURI", pi2.getOriginUri());
@@ -190,6 +193,8 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingleNoProducer() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
@@ -225,6 +230,8 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingle() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
@@ -324,6 +331,8 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingleMultiConsumer() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
@@ -403,6 +412,8 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingleWithClient() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
