@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.server.jms;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.events.CommunicationDetails;
@@ -32,8 +30,6 @@ import org.hawkular.btm.server.api.services.CommunicationDetailsPublisher;
 public class CommunicationDetailsPublisherJMS extends AbstractPublisherJMS<CommunicationDetails>
         implements CommunicationDetailsPublisher {
 
-    /**  */
-    private static final int MAX_RETRIES = 3;
     private static final String DESTINATION = "java:/CommunicationDetails";
 
     /* (non-Javadoc)
@@ -42,14 +38,6 @@ public class CommunicationDetailsPublisherJMS extends AbstractPublisherJMS<Commu
     @Override
     protected String getDestinationURI() {
         return DESTINATION;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.server.api.services.NodeDetailsPublisher#publish(java.lang.String, java.util.List)
-     */
-    @Override
-    public void publish(String tenantId, List<CommunicationDetails> rts) throws Exception {
-        doPublish(tenantId, rts, MAX_RETRIES);
     }
 
 }

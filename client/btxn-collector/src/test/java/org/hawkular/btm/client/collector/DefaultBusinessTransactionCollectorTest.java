@@ -794,6 +794,15 @@ public class DefaultBusinessTransactionCollectorTest {
         }
 
         /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
+         */
+        @Override
+        public void publish(String tenantId, List<BusinessTransaction> items, int retryCount, long delay)
+                                    throws Exception {
+            publish(tenantId, items);
+        }
+
+        /* (non-Javadoc)
          * @see org.hawkular.btm.api.services.BusinessTransactionService#get(java.lang.String, java.lang.String)
          */
         @Override
@@ -854,6 +863,14 @@ public class DefaultBusinessTransactionCollectorTest {
         public void clear(String tenantId) {
             // TODO Auto-generated method stub
 
+        }
+
+        /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.Publisher#getInitialRetryCount()
+         */
+        @Override
+        public int getInitialRetryCount() {
+            return 0;
         }
 
     }

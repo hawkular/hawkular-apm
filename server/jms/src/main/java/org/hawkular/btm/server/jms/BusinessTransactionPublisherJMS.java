@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.server.jms;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
@@ -32,8 +30,6 @@ import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 public class BusinessTransactionPublisherJMS extends AbstractPublisherJMS<BusinessTransaction>
         implements BusinessTransactionPublisher {
 
-    /**  */
-    private static final int MAX_RETRIES = 3;
     private static final String DESTINATION = "java:/BusinessTransactions";
 
     /* (non-Javadoc)
@@ -42,14 +38,6 @@ public class BusinessTransactionPublisherJMS extends AbstractPublisherJMS<Busine
     @Override
     protected String getDestinationURI() {
         return DESTINATION;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.BusinessTransactionPublisher#publish(java.lang.String, java.util.List)
-     */
-    @Override
-    public void publish(String tenantId, List<BusinessTransaction> btxns) throws Exception {
-        doPublish(tenantId, btxns, MAX_RETRIES);
     }
 
 }

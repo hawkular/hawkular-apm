@@ -26,6 +26,13 @@ import java.util.List;
 public interface Publisher<T> {
 
     /**
+     * The initial retry count for messages sent by this publisher.
+     *
+     * @return The initial retry count
+     */
+    int getInitialRetryCount();
+
+    /**
      * This method publishes the list of items.
      *
      * @param tenantId The tenant
@@ -33,5 +40,16 @@ public interface Publisher<T> {
      * @throws Exception Failed to publish
      */
     void publish(String tenantId, List<T> items) throws Exception;
+
+    /**
+     * This method publishes the list of items.
+     *
+     * @param tenantId The tenant
+     * @param items The list of items
+     * @param retryCount The retry count
+     * @param delay The delay
+     * @throws Exception Failed to publish
+     */
+    void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception;
 
 }

@@ -25,11 +25,30 @@ import java.util.List;
  */
 public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
 
+    /**  */
+    private static final int DEFAULT_RETRY_DELAY = 1000;
+
     /* (non-Javadoc)
      * @see org.hawkular.btm.server.api.task.Processor#initialise(java.lang.String,java.util.List)
      */
     @Override
     public void initialise(String tenantId, List<T> items) {
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.server.api.task.Processor#getDeliveryDelay(java.util.List)
+     */
+    @Override
+    public long getDeliveryDelay(List<R> results) {
+        return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.server.api.task.Processor#getRetryDelay(java.util.List)
+     */
+    @Override
+    public long getRetryDelay(List<T> items) {
+        return DEFAULT_RETRY_DELAY;
     }
 
     /* (non-Javadoc)

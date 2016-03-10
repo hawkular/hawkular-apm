@@ -30,6 +30,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 
+import org.hawkular.btm.api.services.Publisher;
 import org.hawkular.btm.server.jms.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +40,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public abstract class AbstractPublisherJMS<T> {
+public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
 
     private static final Logger log = Logger.getLogger(AbstractPublisherJMS.class.getName());
+
+    private static final int DEFAULT_INITIAL_RETRY_COUNT = 3;
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
@@ -51,7 +54,29 @@ public abstract class AbstractPublisherJMS<T> {
     private Session session;
     private MessageProducer producer;
 
+    private int initialRetryCount = DEFAULT_INITIAL_RETRY_COUNT;
+
+    /**
+     * This method returns the destination associated with the publisher.
+     *
+     * @return The destination
+     */
     protected abstract String getDestinationURI();
+
+    /**
+     * @return the initialRetryCount
+     */
+    @Override
+    public int getInitialRetryCount() {
+        return initialRetryCount;
+    }
+
+    /**
+     * @param initialRetryCount the initialRetryCount to set
+     */
+    public void setInitialRetryCount(int initialRetryCount) {
+        this.initialRetryCount = initialRetryCount;
+    }
 
     @PostConstruct
     public void init() {
@@ -68,6 +93,40 @@ public abstract class AbstractPublisherJMS<T> {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.Publisher#publish(java.lang.String, java.util.List, long)
+     */
+    @Override
+    public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
+        String data = mapper.writeValueAsString(items);
+
+        TextMessage tm = session.createTextMessage(data);
+
+        if (tenantId != null) {
+            tm.setStringProperty("tenant", tenantId);
+        }
+
+        tm.setIntProperty("retryCount", retryCount);
+
+        if (delay > 0) {
+            tm.setLongProperty("_AMQ_SCHED_DELIVERY", System.currentTimeMillis() + delay);
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Publish: " + tm);
+        }
+
+        producer.send(tm);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.Publisher#publish(java.lang.String, java.util.List)
+     */
+    @Override
+    public void publish(String tenantId, List<T> items) throws Exception {
+        publish(tenantId, items, getInitialRetryCount(), 0);
+    }
+
     @PreDestroy
     public void close() {
         try {
@@ -80,44 +139,6 @@ public abstract class AbstractPublisherJMS<T> {
         } catch (Exception e) {
             msgLog.errorFailedToClosePublisher(getDestinationURI(), e);
         }
-    }
-
-    /**
-     * This method publishes a list of items.
-     *
-     * @param tenantId The optional tenant id
-     * @param items The list of items
-     * @param retryCount The retry count remaining
-     * @throws Exception Failed to publish
-     */
-    public void publish(String tenantId, List<T> items, int retryCount) throws Exception {
-        doPublish(tenantId, items, retryCount);
-    }
-
-    /**
-     * This method publishes the supplied data.
-     *
-     * @param tenantId The tenant id
-     * @param items The data
-     * @param retryCount The retry count remaining
-     * @throws Exception Failed to publish
-     */
-    protected void doPublish(String tenantId, List<T> items, int retryCount) throws Exception {
-        String data = mapper.writeValueAsString(items);
-
-        TextMessage tm = session.createTextMessage(data);
-
-        if (tenantId != null) {
-            tm.setStringProperty("tenant", tenantId);
-        }
-
-        tm.setIntProperty("retryCount", retryCount);
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Publish: "+tm);
-        }
-
-        producer.send(tm);
     }
 
 }

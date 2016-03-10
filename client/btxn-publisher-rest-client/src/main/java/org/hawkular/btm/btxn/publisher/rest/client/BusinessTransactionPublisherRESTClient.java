@@ -106,6 +106,14 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.Publisher#getInitialRetryCount()
+     */
+    @Override
+    public int getInitialRetryCount() {
+        return 0;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.BusinessTransactionPublisher#publish(java.lang.String, java.util.List)
      */
     @Override
@@ -149,6 +157,15 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
             }
             throw new Exception(connection.getResponseMessage());
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
+     */
+    @Override
+    public void publish(String tenantId, List<BusinessTransaction> items, int retryCount, long delay)
+                            throws Exception {
+        throw new java.lang.UnsupportedOperationException("Cannot set the retry count and delay");
     }
 
     /**
