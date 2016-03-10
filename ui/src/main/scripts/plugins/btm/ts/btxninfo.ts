@@ -97,17 +97,29 @@ module BTM {
       }
     };
 
+    let addIfAbsent = function(filterList, newPropName, newPropValue) {
+      let found = false;
+      _.each(filterList, (prop: any) => {
+        if (prop.name === newPropName && prop.value === newPropValue) {
+          found = true;
+        }
+      });
+      if (!found) {
+        filterList.push({name: newPropName, value: newPropValue});
+      }
+      return !found;
+    };
+
     $scope.faultData = [];
     $scope.ctFaultChartConfig = {
       data: {
         columns: $scope.faultData,
         type: 'pie',
         onclick: function(d, i) {
-          let fault = {
-            value: d.id
-          };
-          $scope.criteria.faults.add(fault);
-          $scope.reload();
+          let added = addIfAbsent($scope.criteria.faults, undefined, d.id);
+          if (added) {
+            $scope.reload();
+          }
         }
       }
     };
@@ -118,12 +130,10 @@ module BTM {
         columns: $scope.propertyData,
         type: 'pie',
         onclick: function(d, i) {
-          let property = {
-            name: $scope.config.selectedProperty,
-            value: d.id
-          };
-          $scope.criteria.properties.add(property);
-          $scope.reload();
+          let added = addIfAbsent($scope.criteria.properties, $scope.config.selectedProperty, d.id);
+          if (added) {
+            $scope.reload();
+          }
         }
       }
     };
