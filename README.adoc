@@ -58,6 +58,8 @@ This folder contains the modules related to the server.
 This folder contains the services provided by BTM.
 | tests |
 This folder contains the integration tests.
+| ui |
+The angularjs based user interface.
 |=======================
 
 
@@ -66,7 +68,7 @@ This folder contains the integration tests.
 Hawkular-BTM is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document
 
 ----
-   Copyright 2015 Red Hat, Inc.
+   Copyright 2015-2016 Red Hat, Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

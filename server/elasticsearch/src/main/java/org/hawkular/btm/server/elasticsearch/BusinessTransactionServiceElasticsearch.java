@@ -33,6 +33,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.api.services.Criteria;
@@ -137,7 +138,8 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
-                    .setQuery(query);
+                    .setQuery(query)
+                    .addSort("startTime", SortOrder.ASC);
 
             FilterBuilder filter = ElasticsearchUtil.buildFilter(criteria);
             if (filter != null) {
