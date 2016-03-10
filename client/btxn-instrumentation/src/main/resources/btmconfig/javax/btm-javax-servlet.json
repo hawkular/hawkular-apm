@@ -20,7 +20,7 @@
           "type": "java.net.URI",
           "expression": "java.net.URI.create(req.getRequestURI())"
         }],
-        "condition": "activate(uri.getPath(),req.getHeader(\"Hawkularbtid\"))",
+        "condition": "!isActive() && activate(uri.getPath(),req.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "req.getHeader(\"Hawkularbtname\")"
