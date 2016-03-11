@@ -169,9 +169,15 @@ module BTM {
         console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/properties/' + $scope.businessTransactionName).then(function(resp) {
+      let propsCriteria = {
+        startTime: $scope.criteria.startTime,
+        endTime: $scope.criteria.endTime
+      };
+      $http.get('/hawkular/btm/analytics/properties/' + $scope.businessTransactionName, {params: propsCriteria}).then(
+      function(resp) {
         $scope.properties = resp.data;
-      },function(resp) {
+      },
+      function(resp) {
         console.log('Failed to get property info: ' + JSON.stringify(resp));
       });
 
@@ -236,12 +242,7 @@ module BTM {
       if ($scope.config.lowerBoundDisplay === 0) {
         $scope.criteria.lowerBound = 0;
       } else {
-        let maxDuration = 0;
-        for (let i = 0; i < $scope.statistics.length; i++) {
-          if ($scope.statistics[i].max > maxDuration) {
-            maxDuration = $scope.statistics[i].max;
-          }
-        }
+        let maxDuration: any = _.max($scope.statistics, 'max').max;
         if (maxDuration > 0) {
           $scope.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
         }
