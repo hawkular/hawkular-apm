@@ -109,9 +109,21 @@
           "type": "AssertComplete"
         }]
       },{
-        "ruleName": "Javax Servlet Consumer InputStream Complete Async Link",
+        "ruleName": "Javax Servlet Consumer GetInputStream Complete Async Link",
         "interfaceName": "^javax.servlet.ServletRequest",
         "methodName": "getInputStream",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"javax.servlet-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer GetMethod Complete Async Link",
+        "interfaceName": "^javax.servlet.http.HttpServletRequest",
+        "methodName": "getMethod",
         "parameterTypes": [
         ],
         "location": "ENTRY",
@@ -216,18 +228,6 @@
           "action": "recordInBuffer($0)"
         }]
       },{
-        "ruleName": "Javax Servlet Consumer OutputStream Complete Async Link",
-        "interfaceName": "^javax.servlet.ServletResponse",
-        "methodName": "getOutputStream",
-        "parameterTypes": [
-        ],
-        "location": "ENTRY",
-        "condition": "isCorrelated(\"javax.servlet-async-\"+$0.hashCode())",
-        "actions": [{
-          "type": "CompleteCorrelation",
-          "idExpression": "\"javax.servlet-async-\"+$0.hashCode()"
-        }]
-      },{
         "ruleName": "Javax Servlet Consumer OutputStream Init",
         "interfaceName": "^javax.servlet.ServletResponse",
         "methodName": "getOutputStream",
@@ -293,14 +293,27 @@
         "interfaceName": "^javax.servlet.http.HttpServletRequest",
         "methodName": "startAsync",
         "parameterTypes": [
+          "*"
         ],
-        "location": "EXIT",
+        "location": "ENTRY",
         "condition": "isActive()",
         "actions": [{
           "type": "InitiateCorrelation",
-          "idExpression": "\"javax.servlet-async-\"+hashCode($!.getRequest())"
+          "idExpression": "\"javax.servlet-async-\"+hashCode($0)"
         },{
           "type": "Unlink"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer Async Context Get Requests",
+        "interfaceName": "^javax.servlet.AsyncContext",
+        "methodName": "getRequest",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isCorrelated(\"javax.servlet-async-\"+$!.hashCode())",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"javax.servlet-async-\"+$!.hashCode()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer Complete Async Context Fault",
