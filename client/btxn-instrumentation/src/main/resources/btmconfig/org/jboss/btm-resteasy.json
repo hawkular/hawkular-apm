@@ -1,0 +1,27 @@
+{
+  "instrumentation": {
+    "jboss-resteasy": {
+      "description": "JBoss RESTEasy specific rules",
+      "rules": [{
+        "notes": [
+          "This rules addresses an issue with asyncResponse methods, where thread is ",
+          "unlinked but then the correlation to the new thread (which can be the same ",
+          "thread again, is not performed. This fix prods the rules associated with ",
+          "javax.servlet to perform this correlation completion, by invoking the ",
+          "getInputStream() method on the http request."
+        ],
+        "ruleName": "Javax Servlet Consumer MethodInjectorImpl REQUEST",
+        "className": "org.jboss.resteasy.core.MethodInjectorImpl",
+        "methodName": "injectArguments",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "EXIT",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$1.getInputStream()"
+        }]
+      }]
+    }
+  }
+}
