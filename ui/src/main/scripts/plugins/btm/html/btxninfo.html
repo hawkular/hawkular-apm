@@ -128,7 +128,11 @@
           Faults
         </div>
         <div class="card-pf-body">
-          <div id="completiontimefaultschart" pf-c3-chart config="ctFaultChartConfig"></div>
+          <div id="completiontimefaultschart" pf-c3-chart config="ctFaultChartConfig" ng-show="faults.length"></div>
+          <div id="btm-faults-placeholder" class="text-center" ng-hide="faults.length">
+            <i class="fa fa-pie-chart hk-no-pie-data"></i>
+            <h1> No Data Available </h1>
+          </div>
         </div>
       </div>
     </div>
@@ -139,10 +143,15 @@
           Property
         </div>
         <div class="card-pf-body">
-          <select name="propertyField" ng-model="config.selectedProperty" ng-change="reloadProperty()">
+          <select name="propertyField" class="form-control"
+            ng-model="config.selectedProperty" ng-change="reloadProperty()" ng-show="properties.length">
             <option ng-repeat="property in properties">{{property.name}}</option>
           </select>
-          <div id="completiontimepropertychart" pf-c3-chart config="ctPropChartConfig"></div>
+          <div id="completiontimepropertychart" pf-c3-chart config="ctPropChartConfig" ng-show="properties.length"></div>
+          <div id="btm-properties-placeholder" class="text-center" ng-hide="properties.length">
+            <i class="fa fa-pie-chart hk-no-pie-data"></i>
+            <h1> No Data Available </h1>
+          </div>
         </div>
       </div>
     </div>
