@@ -36,7 +36,7 @@ public class JbossResteasyHeadersAccessor implements HeadersAccessor {
     private static final String TARGET_TYPE = "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation";
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getTargetType()
+     * @see org.hawkular.btm.api.client.HeadersAccessor#getTargetType()
      */
     @Override
     public String getTargetType() {
@@ -44,7 +44,7 @@ public class JbossResteasyHeadersAccessor implements HeadersAccessor {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getHeaders(java.lang.Object)
+     * @see org.hawkular.btm.api.client.HeadersAccessor#getHeaders(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override

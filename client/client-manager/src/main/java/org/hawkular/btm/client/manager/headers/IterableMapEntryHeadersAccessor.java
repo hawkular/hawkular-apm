@@ -16,8 +16,8 @@
  */
 package org.hawkular.btm.client.manager.headers;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
@@ -25,19 +25,16 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.client.api.HeadersAccessor;
 
 /**
- * The headers accessor implementation for JBoss Switchyard.
+ * The headers accessor implementation for Iterable<Map.Entry>.
  *
  * @author gbrown
  */
-public class JbossSwitchyardHeadersAccessor implements HeadersAccessor {
+public class IterableMapEntryHeadersAccessor implements HeadersAccessor {
 
-    private static final Logger log = Logger.getLogger(JbossSwitchyardHeadersAccessor.class.getName());
-
-    /**  */
-    private static final String TARGET_TYPE = "org.switchyard.Context";
+    private static final Logger log = Logger.getLogger(IterableMapEntryHeadersAccessor.class.getName());
 
     /**  */
-    private static final String PROPERTY_CLASS = "org.switchyard.Property";
+    private static final String TARGET_TYPE = "java.lang.Iterable<Map.Entry>";
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.HeadersAccessor#getTargetType()
@@ -50,30 +47,22 @@ public class JbossSwitchyardHeadersAccessor implements HeadersAccessor {
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.HeadersAccessor#getHeaders(java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, String> getHeaders(Object target) {
         try {
-            Class<?> cls = Thread.currentThread().getContextClassLoader().
-                    loadClass(TARGET_TYPE);
-            Class<?> propertyClass = Thread.currentThread().getContextClassLoader().
-                    loadClass(PROPERTY_CLASS);
-            Method getPropertiesMethod = cls.getMethod("getProperties");
-            Method nameMethod = propertyClass.getMethod("getName");
-            Method valueMethod = propertyClass.getMethod("getValue");
+            Iterable<Map.Entry<String, ?>> iterable = (Iterable<Map.Entry<String, ?>>) target;
+            Iterator<Map.Entry<String, ?>> iter = iterable.iterator();
 
-            java.util.Set<?> properties = (java.util.Set<?>)getPropertiesMethod.invoke(target);
+            // Copy header values for now, but may be more efficient to create proxy onto request
+            Map<String, String> ret = new HashMap<String, String>();
 
-            Map<String,String> headers=new HashMap<String,String>();
-
-            for (Object prop : properties) {
-                String name=(String)nameMethod.invoke(prop);
-                Object value=valueMethod.invoke(prop);
-                if (value instanceof String) {
-                    headers.put(name, (String)value);
-                }
+            while (iter.hasNext()) {
+                Map.Entry<String, ?> entry = iter.next();
+                ret.put(entry.getKey(), entry.getValue().toString());
             }
 
-            return headers;
+            return ret;
         } catch (Throwable t) {
             if (log.isLoggable(Level.FINEST)) {
                 log.log(Level.FINEST, "Failed to obtain headers", t);
