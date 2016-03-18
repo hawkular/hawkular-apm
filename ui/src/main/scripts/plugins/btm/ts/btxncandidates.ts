@@ -43,7 +43,7 @@ module BTM {
         for (let i = 0; i < $scope.unbounduris.length; i++) {
           for (let j = 0; j < selected.length; j++) {
             if ($scope.unbounduris[i].uri === selected[j].uri) {
-              $scope.selecteduris.add($scope.unbounduris[i]);
+              $scope.selecteduris.push($scope.unbounduris[i]);
             }
           }
         }
@@ -65,9 +65,9 @@ module BTM {
         processors: []
       };
       for (let i = 0; i < $scope.selecteduris.length; i++) {
-        defn.filter.inclusions.add($scope.selecteduris[i].regex);
+        defn.filter.inclusions.push($scope.selecteduris[i].regex);
         if ($scope.selecteduris[i].template !== undefined) {
-          defn.processors.add({
+          defn.processors.push({
             description: 'Process inbound request',
             nodeType: 'Consumer',
             direction: 'In',
@@ -96,10 +96,10 @@ module BTM {
         processors: []
       };
       for (let i = 0; i < $scope.selecteduris.length; i++) {
-        defn.filter.inclusions.add($scope.selecteduris[i].regex);
+        defn.filter.inclusions.push($scope.selecteduris[i].regex);
         // Even though ignored, add URI evaluation in case later on we want to manage the btxn
         if ($scope.selecteduris[i].template !== undefined) {
-          defn.processors.add({
+          defn.processors.push({
             description: 'Process inbound request',
             nodeType: 'Consumer',
             direction: 'In',
@@ -124,7 +124,7 @@ module BTM {
         let btxn = resp.data;
         for (let i = 0; i < $scope.selecteduris.length; i++) {
           if (btxn.filter.inclusions.indexOf($scope.selecteduris[i].regex) === -1) {
-            btxn.filter.inclusions.add($scope.selecteduris[i].regex);
+            btxn.filter.inclusions.push($scope.selecteduris[i].regex);
           }
         }
         $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
@@ -145,7 +145,7 @@ module BTM {
           return;
         }
       }
-      $scope.selecteduris.add(uriinfo);
+      $scope.selecteduris.push(uriinfo);
     };
 
     $scope.isSelected = function(uriinfo) {
