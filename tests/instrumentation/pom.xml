@@ -132,6 +132,13 @@
       <artifactId>commons-io</artifactId>
     </dependency>
 
+    <!-- RX Netty HTTP dependencies -->
+    <dependency>
+      <groupId>io.reactivex</groupId>
+      <artifactId>rxnetty-http</artifactId>
+      <version>0.5.2-RC1</version>
+    </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>

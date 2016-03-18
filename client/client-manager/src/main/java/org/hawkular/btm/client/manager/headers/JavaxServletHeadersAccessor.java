@@ -38,7 +38,7 @@ public class JavaxServletHeadersAccessor implements HeadersAccessor {
     private static final String TARGET_TYPE = "javax.servlet.http.HttpServletRequest";
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getTargetType()
+     * @see org.hawkular.btm.api.client.HeadersAccessor#getTargetType()
      */
     @Override
     public String getTargetType() {
@@ -46,7 +46,7 @@ public class JavaxServletHeadersAccessor implements HeadersAccessor {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getHeaders(java.lang.Object)
+     * @see org.hawkular.btm.api.client.HeadersAccessor#getHeaders(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override

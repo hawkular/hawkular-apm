@@ -38,7 +38,7 @@ public class ApacheHttpclientHeadersAccessor implements HeadersAccessor {
     private static final String TARGET_TYPE = "org.apache.http.HttpMessage";
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getTargetType()
+     * @see org.hawkular.btm.api.client.HeadersAccessor#getTargetType()
      */
     @Override
     public String getTargetType() {
@@ -46,7 +46,7 @@ public class ApacheHttpclientHeadersAccessor implements HeadersAccessor {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.HeadersFactory#getHeaders(java.lang.Object)
+     * @see org.hawkular.btm.api.client.HeadersAccessor#getHeaders(java.lang.Object)
      */
     @Override
     public Map<String, String> getHeaders(Object target) {
