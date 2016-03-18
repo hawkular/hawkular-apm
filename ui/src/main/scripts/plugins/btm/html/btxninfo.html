@@ -141,12 +141,15 @@
       <div class="card-pf">
         <div class="card-pf-title">
           Property
+          <div class="col-md-6 pull-right">
+            <select name="propertyField" class="form-control"
+              ng-model="config.selectedProperty" ng-change="reloadProperty()" ng-show="properties.length">
+              <option value="" disabled>Select a property</option>
+              <option ng-repeat="property in properties">{{property.name}}</option>
+            </select>
+          </div>
         </div>
         <div class="card-pf-body">
-          <select name="propertyField" class="form-control"
-            ng-model="config.selectedProperty" ng-change="reloadProperty()" ng-show="properties.length">
-            <option ng-repeat="property in properties">{{property.name}}</option>
-          </select>
           <div id="completiontimepropertychart" pf-c3-chart config="ctPropChartConfig" ng-show="properties.length"></div>
           <div id="btm-properties-placeholder" class="text-center" ng-hide="properties.length">
             <i class="fa fa-pie-chart hk-no-pie-data"></i>
