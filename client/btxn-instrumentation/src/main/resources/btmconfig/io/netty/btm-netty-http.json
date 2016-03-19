@@ -67,6 +67,34 @@
       },{
         "ruleName": "Netty HTTP Producer End",
         "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
+        "notes": [
+          "TODO: Store contents of byte buffer if data is required (HWKBTM-373). For now",
+          "just using detection of DefaultHttpResponse in the list as the end of the producer ",
+          "but when content is of interest, will need to delay the end of the producer until ",
+          "the data has been read."
+        ],
+        "methodName": "decode",
+        "parameterTypes": [
+          "*"
+        ],
+        "binds": [{
+          "name": "list",
+          "type": "java.util.List",
+          "expression": "$3"
+        }],
+        "location": "ENTRY",
+        "condition": "isActive() && list.size() > 0 && isInstanceOf(list.get(0),io.netty.handler.codec.http.DefaultHttpResponse.class)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      },{
+        "ruleName": "Netty HTTP Producer End",
+        "notes": [
+          "TODO: Store contents of byte buffer if data is required (HWKBTM-373)"
+        ],
+        "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
         "methodName": "decode",
         "parameterTypes": [
           "*"
