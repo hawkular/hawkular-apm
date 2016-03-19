@@ -242,7 +242,7 @@ module BTM {
       if ($scope.config.lowerBoundDisplay === 0) {
         $scope.criteria.lowerBound = 0;
       } else {
-        let maxDuration: any = _.max($scope.statistics, 'max').max;
+        let maxDuration: any = (_.max($scope.statistics, 'max') as any).max;
         if (maxDuration > 0) {
           $scope.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
         }
