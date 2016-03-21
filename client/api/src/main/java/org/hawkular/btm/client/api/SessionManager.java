@@ -139,6 +139,12 @@ public interface SessionManager {
     void suppress();
 
     /**
+     * This method indicates that the current node can be ignored if handled out of
+     * order.
+     */
+    void ignoreNode();
+
+    /**
      * This method asserts that the current thread of execution is complete. It has no
      * impact on business transaction reporting, but is used as a sanity check to ensure
      * the collection is working correctly.

@@ -1,3 +1,4 @@
+org.hawkular.btm.client.manager.config.IgnoreNodeTransformer
 org.hawkular.btm.client.manager.config.InstrumentComponentTransformer
 org.hawkular.btm.client.manager.config.InstrumentConsumerTransformer
 org.hawkular.btm.client.manager.config.InstrumentProducerTransformer

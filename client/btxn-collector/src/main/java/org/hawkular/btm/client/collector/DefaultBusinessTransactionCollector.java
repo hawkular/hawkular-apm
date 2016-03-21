@@ -1608,6 +1608,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#ignoreNode()
+     */
+    @Override
+    public void ignoreNode() {
+        FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+        if (builder != null) {
+            builder.ignoreNode();
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.SessionManager#assertComplete()
      */
     @Override
@@ -1621,8 +1633,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
                 if (!builder.isComplete()) {
-                    log.severe("Business transaction has not completed: "
+                    if (builder.isCompleteExceptIgnoredNodes() && log.isLoggable(Level.FINEST)) {
+                        log.finest("Business transaction fragment only contains 'ignored' nodes: "
                             + fragmentManager.getFragmentBuilder());
+                    } else if (log.isLoggable(Level.FINEST)) {
+                        log.finest("ERROR: Business transaction has not completed: "
+                            + fragmentManager.getFragmentBuilder());
+                    }
                 }
             }
         } catch (Throwable t) {
