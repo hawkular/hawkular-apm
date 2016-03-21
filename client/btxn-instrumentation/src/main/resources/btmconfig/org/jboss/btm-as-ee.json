@@ -22,6 +22,8 @@
           "componentTypeExpression": "\"EJB\"",
           "operationExpression": "$2.getName()",
           "uriExpression": "removeAfter(simpleClassName($1),\"$$$\")"
+        },{
+          "type": "IgnoreNode"
         }]
       },{
         "ruleName": "EE Component End",

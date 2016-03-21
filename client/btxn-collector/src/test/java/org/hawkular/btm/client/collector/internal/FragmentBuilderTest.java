@@ -272,6 +272,30 @@ public class FragmentBuilderTest {
 
         assertNotNull(builder.popNode(Consumer.class, null));
 
+        assertFalse(builder.isComplete());
+
+        assertNotNull(builder.popNode(Component.class, null));
+
+        assertTrue(builder.isComplete());
+    }
+
+    @Test
+    public void testAsyncStackIgnoreNodeNoUri() {
+        FragmentBuilder builder = new FragmentBuilder();
+
+        Consumer consumer = new Consumer();
+        builder.pushNode(consumer);
+
+        Component c1 = new Component();
+        builder.pushNode(c1);
+        builder.ignoreNode();
+
+        assertNotNull(builder.popNode(Consumer.class, null));
+
+        assertFalse(builder.isComplete());
+
+        assertTrue(builder.isCompleteExceptIgnoredNodes());
+
         assertNotNull(builder.popNode(Component.class, null));
 
         assertTrue(builder.isComplete());

@@ -419,6 +419,17 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#ignoreNode()
+     */
+    @Override
+    public void ignoreNode() {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Ignore node location=[" + getRuleName() + "]");
+        }
+        collector().session().ignoreNode();
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.SessionManager#assertComplete()
      */
     @Override

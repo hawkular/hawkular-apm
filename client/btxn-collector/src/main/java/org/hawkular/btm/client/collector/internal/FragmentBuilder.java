@@ -56,6 +56,8 @@ public class FragmentBuilder {
 
     private Map<String, Node> retainedNodes = new HashMap<String, Node>();
 
+    private List<Node> ignoredNodes = new ArrayList<Node>();
+
     private List<String> uncompletedCorrelationIds = new ArrayList<String>();
 
     private boolean suppress = false;
@@ -100,6 +102,34 @@ public class FragmentBuilder {
     public boolean isComplete() {
         synchronized (nodeStack) {
             return nodeStack.isEmpty() && retainedNodes.isEmpty();
+        }
+    }
+
+    /**
+     * This method determines if the fragment is complete
+     * with the exception of ignored nodes.
+     *
+     * @return Whether the fragment is complete with the exception of
+     *              ignored nodes
+     */
+    public boolean isCompleteExceptIgnoredNodes() {
+        synchronized (nodeStack) {
+            if (nodeStack.isEmpty() && retainedNodes.isEmpty()) {
+                return true;
+            } else {
+                // Check that remaining nodes can be ignored
+                for (int i=0; i < nodeStack.size(); i++) {
+                    if (!ignoredNodes.contains(nodeStack.get(i))) {
+                        return false;
+                    }
+                }
+                for (int i=0; i < retainedNodes.size(); i++) {
+                    if (!ignoredNodes.contains(retainedNodes.get(i))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
     }
 
@@ -247,7 +277,7 @@ public class FragmentBuilder {
                         return suppressed;
                     }
                 } else {
-                    // If suppression parent popped, then canel the suppress mode
+                    // If suppression parent popped, then cancel the suppress mode
                     suppress = false;
                 }
             }
@@ -373,6 +403,18 @@ public class FragmentBuilder {
      */
     public boolean isSuppressed() {
         return suppress;
+    }
+
+    /**
+     * This method adds the current node to the list of 'ignored'
+     * nodes. These nodes are irrelant when determining if the business
+     * transaction has completed.
+     */
+    public void ignoreNode() {
+        Node node=getCurrentNode();
+        if (node != null) {
+            ignoredNodes.add(node);
+        }
     }
 
     /**
