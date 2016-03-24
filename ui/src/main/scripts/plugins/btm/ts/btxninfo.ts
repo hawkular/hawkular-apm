@@ -21,7 +21,7 @@ module BTM {
   declare let c3: any;
 
   export let BTxnInfoController = _module.controller('BTM.BTxnInfoController', ['$scope', '$routeParams', '$http',
-    '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
+    '$interval', '$timeout', 'btxn', ($scope, $routeParams, $http, $interval, $timeout, btxn) => {
 
     $scope.btxn = btxn;
     $scope.businessTransactionName = $routeParams.businesstransaction;
@@ -97,6 +97,14 @@ module BTM {
       }
     };
 
+    $scope.getPropsChart = function(theChart) {
+      $scope.propsChart = theChart;
+    };
+
+    $scope.getFaultsChart = function(theChart) {
+      $scope.faultsChart = theChart;
+    };
+
     let addIfAbsent = function(filterList, newPropName, newPropValue) {
       let found = false;
       _.each(filterList, (prop: any) => {
@@ -152,6 +160,7 @@ module BTM {
       faultCriteria.maxResponseSize = $scope.config.maxFaultValues;
 
       $http.post('/hawkular/btm/analytics/completion/faults', faultCriteria).then(function(resp) {
+        let removeFaultValues = angular.copy($scope.faultValues || []);
         $scope.faults = resp.data;
 
         let faultdata = [];
@@ -161,10 +170,23 @@ module BTM {
 
           if ($scope.faultValues.indexOf(fault.value) === -1) {
             $scope.faultValues.add(fault.value);
+          } else {
+            removeFaultValues.remove(fault.value);
           }
         });
 
-        $scope.ctFaultChartConfig.data.columns = faultdata;
+        if($scope.faultsChart) {
+          $timeout(() => {
+            $scope.faultsChart.load({ columns: faultdata });
+
+            _.each(removeFaultValues, (remValue) => {
+              $scope.faultsChart.unload(remValue);
+              $scope.faultValues.remove(remValue);
+            });
+          });
+        } else {
+          $scope.ctFaultChartConfig.data.columns = faultdata;
+        }
       },function(resp) {
         console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
@@ -196,16 +218,32 @@ module BTM {
 
       $http.post('/hawkular/btm/analytics/completion/property/' + $scope.config.selectedProperty, propertyCriteria)
         .then(function(resp) {
+        let removePropValues = angular.copy($scope.propertyValues || []);
         $scope.propertyDetails = resp.data;
 
         let propertydata = [];
 
         _.each($scope.propertyDetails, (prop: any) => {
           propertydata.push([prop.value, prop.count]);
+
+          if ($scope.propertyValues.indexOf(prop.value) === -1) {
+            $scope.propertyValues.add(prop.value);
+          } else {
+            removePropValues.remove(prop.value);
+          }
         });
 
-        $scope.propertyData = propertydata;
-        $scope.ctPropChartConfig.data.columns = $scope.propertyData;
+        if ($scope.propsChart) {
+          $scope.propsChart.load({ columns: propertydata });
+
+          _.each(removePropValues, (remValue) => {
+            $scope.propsChart.unload(remValue);
+            $scope.propertyValues.remove(remValue);
+          });
+        } else {
+          $scope.ctPropChartConfig.data.columns = propertydata;
+        }
+
       },function(resp) {
         console.log('Failed to get property details for \'' + $scope.config.selectedProperty + '\': ' +
           JSON.stringify(resp));
