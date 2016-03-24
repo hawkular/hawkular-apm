@@ -109,6 +109,30 @@
           "type": "AssertComplete"
         }]
       },{
+        "ruleName": "Javax Servlet Consumer End Async Unlink",
+        "notes": [
+          "This rule is required to ensure that when an async thread is initiated, ",
+          "that this thread is unlinked from the business txn fragment, so that subsequent ",
+          "activity on this thread is not incorrectly associated with the existing async ",
+          "business txn"
+        ],
+        "interfaceName": "^javax.servlet.Servlet",
+        "methodName": "service",
+        "parameterTypes": [
+          "javax.servlet.ServletRequest",
+          "javax.servlet.ServletResponse"
+        ],
+        "location": "EXIT",
+        "binds": [{
+          "name": "req",
+          "type": "javax.servlet.http.HttpServletRequest",
+          "expression": "$1"
+        }],
+        "condition": "isActive() && $1.isAsyncStarted()",
+        "actions": [{
+          "type": "Unlink"
+        }]
+      },{
         "ruleName": "Javax Servlet Consumer GetInputStream Complete Async Link",
         "interfaceName": "^javax.servlet.ServletRequest",
         "methodName": "getInputStream",
@@ -300,8 +324,6 @@
         "actions": [{
           "type": "InitiateCorrelation",
           "idExpression": "\"javax.servlet-async-\"+hashCode($0)"
-        },{
-          "type": "Unlink"
         }]
       },{
         "ruleName": "Javax Servlet Consumer Async Context Get Requests",
