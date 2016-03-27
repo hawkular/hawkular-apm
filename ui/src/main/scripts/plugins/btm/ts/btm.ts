@@ -27,15 +27,17 @@ module BTM {
 
     $scope.businessTransactions = [];
 
+    let redirectToInfo = function(btxn) {
+      $timeout(() => {
+        $location.path('/hawkular-ui/btm/info/' + btxn.id);
+      });
+    };
+
     $scope.countChartConfig = {
       data: {
         type: 'pie',
         columns: $scope.btxnCountData || [],
-        onclick: function(d, i) {
-          $timeout(() => {
-            $location.path('/hawkular-ui/btm/info/' + d.id);
-          });
-        }
+        onclick: redirectToInfo
       }
     };
 
@@ -43,9 +45,7 @@ module BTM {
       data: {
         type: 'pie',
         columns: $scope.btxnFaultData || [],
-        onclick: function(d, i) {
-          $location.path('/hawkular-ui/btm/info/' + d.id);
-        }
+        onclick: redirectToInfo
       }
     };
 
