@@ -113,7 +113,7 @@
 
           </form>
 
-          <div id="completiontimelinechart" pf-c3-chart config="compTimeChartConfig"></div>
+          <div id="completiontimelinechart" class="chart-card" pf-c3-chart config="compTimeChartConfig"></div>
 
         </div>
       </div>
@@ -128,7 +128,7 @@
           Faults
         </div>
         <div class="card-pf-body">
-          <div id="completiontimefaultschart" pf-c3-chart config="ctFaultChartConfig" ng-show="faults.length" get-chart-callback="getFaultsChart"></div>
+          <div id="completiontimefaultschart" class="chart-card" pf-c3-chart config="ctFaultChartConfig" ng-show="faults.length" get-chart-callback="getFaultsChart"></div>
           <div id="btm-faults-placeholder" class="text-center" ng-hide="faults.length">
             <i class="fa fa-pie-chart hk-no-pie-data"></i>
             <h1> No Data Available </h1>
@@ -150,7 +150,7 @@
           </div>
         </div>
         <div class="card-pf-body">
-          <div id="completiontimepropertychart" pf-c3-chart config="ctPropChartConfig" ng-show="properties.length" get-chart-callback="getPropsChart"></div>
+          <div id="completiontimepropertychart" class="chart-card" pf-c3-chart config="ctPropChartConfig" ng-show="properties.length" get-chart-callback="getPropsChart"></div>
           <div id="btm-properties-placeholder" class="text-center" ng-hide="properties.length">
             <i class="fa fa-pie-chart hk-no-pie-data"></i>
             <h1> No Data Available </h1>
