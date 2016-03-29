@@ -21,6 +21,32 @@
           "type": "FreeFormAction",
           "action": "$1.getInputStream()"
         }]
+      },{
+        "ruleName": "Javax Servlet Consumer Async Response <init>",
+        "className": "org.jboss.resteasy.core.AbstractAsynchronousResponse",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"jboss.resteasy-async-\"+$0.hashCode()"
+        }]
+      },{
+        "ruleName": "Javax Servlet Consumer Async Response resume",
+        "className": "org.jboss.resteasy.core.AbstractAsynchronousResponse",
+        "methodName": "internalResume",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"jboss.resteasy-async-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"jboss.resteasy-async-\"+$0.hashCode()"
+        }]
       }]
     }
   }
