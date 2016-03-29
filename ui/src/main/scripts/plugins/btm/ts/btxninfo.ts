@@ -191,11 +191,7 @@ module BTM {
         console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
 
-      let propsCriteria = {
-        startTime: $scope.criteria.startTime,
-        endTime: $scope.criteria.endTime
-      };
-      $http.get('/hawkular/btm/analytics/properties/' + $scope.businessTransactionName, {params: propsCriteria}).then(
+      $http.post('/hawkular/btm/analytics/properties', $scope.criteria).then(
       function(resp) {
         $scope.properties = resp.data;
       },

@@ -304,25 +304,20 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String, java.lang.String,
-     *                                              long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String,
+     *                      org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
-            long startTime, long endTime) {
+    public List<PropertyInfo> getPropertyInfo(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get property info: tenantId=[" + tenantId + "] businessTransaction="
-                    + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
+            log.finest("Get property info: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/properties/")
-                .append(businessTransaction)
-                .append("?startTime=")
-                .append(startTime)
-                .append("&endTime=")
-                .append(endTime);
+                .append("analytics/properties");
+
+        buildQueryString(builder, criteria);
 
         try {
             URL url = new URL(builder.toString());
