@@ -169,10 +169,10 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("properties/{name}")
+    @Path("properties")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the properties used by a business transaction",
+            value = "Get property information",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -181,21 +181,73 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-            value = "business transaction name") @PathParam("name") String name,
+            value = "business transaction name") @QueryParam("businessTransaction")
+            String businessTransaction,
             @ApiParam(required = false,
-            value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
-            @QueryParam("startTime") long startTime,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-            value = "optional 'end' time, default current time") @DefaultValue("0") @QueryParam("endTime")
-            long endTime) {
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
 
         try {
-            log.tracef("Get property info: name [%s] start [%s] end [%s]", name, startTime, endTime);
+            Criteria criteria = new Criteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
+
+            log.tracef("Get property info for criteria [%s]", criteria);
 
             java.util.List<PropertyInfo> pis = analyticsService.getPropertyInfo(
-                    securityProvider.getTenantId(context), name, startTime, endTime);
+                    securityProvider.getTenantId(context), criteria);
 
-            log.tracef("Got property info: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime, pis);
+            log.tracef("Got property info for criteria [%s] = [%s]", criteria, pis);
+
+            response.resume(Response.status(Response.Status.OK).entity(pis).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("properties")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get property information",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getPropertyInfo(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "query criteria") Criteria criteria) {
+
+        try {
+            log.tracef("Get property info for criteria [POST] [%s]", criteria);
+
+            java.util.List<PropertyInfo> pis = analyticsService.getPropertyInfo(
+                    securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Got property info for criteria [POST] [%s] = [%s]", criteria, pis);
 
             response.resume(Response.status(Response.Status.OK).entity(pis).type(APPLICATION_JSON_TYPE)
                     .build());

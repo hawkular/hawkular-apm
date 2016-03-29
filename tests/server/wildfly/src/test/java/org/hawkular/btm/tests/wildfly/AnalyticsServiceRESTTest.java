@@ -228,7 +228,12 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
-        List<PropertyInfo> pis = analytics.getPropertyInfo(null, "btxn1", 0, 0);
+        Criteria criteria=new Criteria()
+            .setBusinessTransaction("btxn1")
+            .setStartTime(0)
+            .setEndTime(0);
+
+        List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
 
         assertNotNull(pis);
         assertEquals(1, pis.size());

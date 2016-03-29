@@ -63,17 +63,14 @@ public interface AnalyticsService {
     List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime);
 
     /**
-     * This method returns the properties
-     * associated with a business transaction during the specified
-     * time range.
+     * This method returns the properties associated with the specified
+     * criteria.
      *
      * @param tenantId The optional tenant id
-     * @param businessTransaction The business transaction name
-     * @param startTime The start time
-     * @param endTime The end time (if 0, then current time)
+     * @param criteria The criteria
      * @return The list of property info
      */
-    List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction, long startTime, long endTime);
+    List<PropertyInfo> getPropertyInfo(String tenantId, Criteria criteria);
 
     /**
      * This method returns the number of completed transactions, of the specified named

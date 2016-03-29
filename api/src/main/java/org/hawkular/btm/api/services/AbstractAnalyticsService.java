@@ -115,18 +115,12 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getPropertyInfo(java.lang.String,
-     *                      java.lang.String, long, long)
+     *                  org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    public List<PropertyInfo> getPropertyInfo(String tenantId, String businessTransaction,
-            long startTime, long endTime) {
+    public List<PropertyInfo> getPropertyInfo(String tenantId, Criteria criteria) {
         List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
         List<String> propertyNames = new ArrayList<String>();
-
-        Criteria criteria = new Criteria();
-        criteria.setStartTime(startTime)
-        .setEndTime(endTime)
-        .setBusinessTransaction(businessTransaction);
 
         List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
 

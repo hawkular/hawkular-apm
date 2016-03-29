@@ -816,7 +816,12 @@ public class ServicesCassandraTest {
             fail("Failed to wait");
         }
 
-        java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, "btxn1", 100, 0);
+        Criteria criteria=new Criteria()
+            .setBusinessTransaction("btxn1")
+            .setStartTime(100)
+            .setEndTime(0);
+
+        java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
 
         assertNotNull(pis);
         assertEquals(3, pis.size());
