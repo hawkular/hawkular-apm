@@ -52,6 +52,8 @@ public class Transformer {
     public String transform(String name, Instrumentation types, String version) {
         StringBuilder builder = new StringBuilder();
 
+        builder.append(types.isCompile() ? "COMPILE\r\n" : "NOCOMPILE\r\n");
+
         for (int ruleno=0; ruleno < types.getRules().size(); ruleno++) {
             InstrumentRule rule=types.getRules().get(ruleno);
 
@@ -60,9 +62,7 @@ public class Transformer {
                 continue;
             }
 
-            if (builder.length() > 0) {
-                builder.append("\r\n");
-            }
+            builder.append("\r\n");
 
             builder.append("RULE ");
             builder.append(name);
@@ -112,6 +112,10 @@ public class Transformer {
             builder.append("AT ");
             builder.append(rule.getLocation());
             builder.append("\r\n");
+
+            if (rule.isCompile() != types.isCompile()) {
+                builder.append(rule.isCompile() ? "COMPILE\r\n" : "NOCOMPILE\r\n");
+            }
 
             if (!rule.getBinds().isEmpty()) {
                 builder.append("BIND ");

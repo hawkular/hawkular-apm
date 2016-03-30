@@ -1,0 +1,84 @@
+{
+  "instrumentation": {
+    "rx.java": {
+      "description": "RxJava instrumentation",
+      "rules": [{
+        "ruleName": "RxJava Create Subscriber",
+        "notes": [
+        ],
+        "className": "rx.observers.Subscribers",
+        "methodName": "create",
+        "parameterTypes": [
+          "*"
+        ],
+        "condition": "isActive()",
+        "location": "EXIT",
+        "actions": [{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"rx.java-async-start-\"+hashCode($!)"
+        }]
+      },{
+        "ruleName": "RxJava Subscriber onNext",
+        "notes": [
+        ],
+        "className": "^rx.Subscriber",
+        "methodName": "onNext",
+        "parameterTypes": [
+          "*"
+        ],
+        "compile": false,
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"rx.java-async-start-\"+hashCode($0))",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"rx.java-async-start-\"+hashCode($0)"
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"rx.java-async-end-\"+hashCode($0)"
+        }]
+      },{
+        "ruleName": "RxJava Subscriber onCompleted",
+        "notes": [
+          "HWKBTM-388 Previously also had an 'unlink' action but this removed the association ",
+          "with the fragment before the Netty HTTP rule could record the completion of the ",
+          "Producer. So need a 'pending cleanup' state for unlink to enable the completion of ",
+          "nodes, but cause the link between the thread and the fragment to be removed if a new ",
+          "business transaction starts."
+        ],
+        "className": "^rx.Subscriber",
+        "methodName": "onCompleted",
+        "parameterTypes": [
+          "*"
+        ],
+        "compile": false,
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"rx.java-async-end-\"+hashCode($0))",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"rx.java-async-end-\"+hashCode($0)"
+        }]
+      },{
+        "ruleName": "RxJava Subscriber onError",
+        "notes": [
+          "HWKBTM-388 Previously also had an 'unlink' action but this removed the association ",
+          "with the fragment before the Netty HTTP rule could record the completion of the ",
+          "Producer. So need a 'pending cleanup' state for unlink to enable the completion of ",
+          "nodes, but cause the link between the thread and the fragment to be removed if a new ",
+          "business transaction starts."
+        ],
+        "className": "^rx.Subscriber",
+        "methodName": "onError",
+        "parameterTypes": [
+          "*"
+        ],
+        "compile": false,
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"rx.java-async-end-\"+hashCode($0))",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"rx.java-async-end-\"+hashCode($0)"
+        }]
+      }]
+    }
+  }
+}

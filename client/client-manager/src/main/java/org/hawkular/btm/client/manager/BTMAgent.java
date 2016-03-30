@@ -53,6 +53,5 @@ public class BTMAgent {
 
     protected static void initProperties() {
         System.setProperty("org.jboss.byteman.transform.all", "");
-        System.setProperty("org.jboss.byteman.compileToBytecode", "");
     }
 }

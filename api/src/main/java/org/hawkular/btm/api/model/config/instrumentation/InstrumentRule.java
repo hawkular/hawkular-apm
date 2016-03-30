@@ -68,6 +68,9 @@ public class InstrumentRule {
     @JsonInclude(Include.NON_NULL)
     private String toVersion;
 
+    @JsonInclude(Include.NON_DEFAULT)
+    private boolean compile = true;
+
     /**
      * @return the ruleName
      */
@@ -272,4 +275,19 @@ public class InstrumentRule {
         }
         return true;
     }
+
+    /**
+     * @return the compile
+     */
+    public boolean isCompile() {
+        return compile;
+    }
+
+    /**
+     * @param compile the compile to set
+     */
+    public void setCompile(boolean compile) {
+        this.compile = compile;
+    }
+
 }

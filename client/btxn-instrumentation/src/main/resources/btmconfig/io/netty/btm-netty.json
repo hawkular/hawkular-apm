@@ -1,0 +1,41 @@
+{
+  "instrumentation": {
+    "io.netty": {
+      "description": "Netty instrumentation",
+      "rules": [{
+        "ruleName": "Netty WriteTask Init",
+        "notes": [
+          "HWKBTM-388 - is this a candidate for unlink pending completion?"
+        ],
+        "className": "^io.netty.channel.AbstractChannelHandlerContext$AbstractWriteTask",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "*"
+        ],
+        "compile": false,
+        "condition": "isActive()",
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"io.netty-async-\"+hashCode($0)"
+        }]
+      },{
+        "ruleName": "Netty WriteTask Run",
+        "notes": [
+        ],
+        "className": "^io.netty.channel.AbstractChannelHandlerContext$AbstractWriteTask",
+        "methodName": "run",
+        "parameterTypes": [
+          "*"
+        ],
+        "compile": false,
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"io.netty-async-\"+hashCode($0))",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"io.netty-async-\"+hashCode($0)"
+        }]
+      }]
+    }
+  }
+}
