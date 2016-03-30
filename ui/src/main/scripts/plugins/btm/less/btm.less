@@ -101,6 +101,14 @@ he .dropdown {
 
 // Charts
 
+.chart-card {
+  min-height: 320px;
+
+  @media (max-width: @screen-xs-max) {
+    min-height: 240px;
+  }
+}
+
 .form-inline + .c3 {
   margin-top: @grid-gutter-width/2;
 }

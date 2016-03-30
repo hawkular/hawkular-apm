@@ -46,7 +46,7 @@
       <div class="card-pf">
         <div class="card-pf-title">Transaction Count</div>
         <div class="card-pf-body">
-          <div id="btxntxncountpiechart" pf-c3-chart config="countChartConfig" ng-show="countChartHasData"></div>
+          <div id="btxntxncountpiechart" class="chart-card" pf-c3-chart config="countChartConfig" ng-show="countChartHasData"></div>
           <div id="btxntxncountplaceholder" class="text-center" style="height: 320px;" ng-hide="countChartHasData">
             <i class="fa fa-pie-chart hk-no-pie-data"></i>
             <h1> No Data Available </h1>
@@ -56,7 +56,7 @@
       <div class="card-pf">
         <div class="card-pf-title">Fault Count</div>
           <div class="card-pf-body">
-          <div id="btxnfaultcountpiechart" pf-c3-chart config="faultChartConfig" ng-show="faultChartHasData"></div>
+          <div id="btxnfaultcountpiechart" class="chart-card" pf-c3-chart config="faultChartConfig" ng-show="faultChartHasData"></div>
             <div id="btxnfaultcountplaceholder" class="text-center" style="height: 320px;" ng-hide="faultChartHasData">
               <i class="fa fa-pie-chart hk-no-pie-data"></i>
               <h1> No Data Available </h1>
