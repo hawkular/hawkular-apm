@@ -190,9 +190,6 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             is.close();
 
             if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
                 try {
                     return mapper.readValue(resp.toString(), CollectorConfiguration.class);
                 } catch (Throwable t) {

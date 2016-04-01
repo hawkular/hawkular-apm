@@ -122,7 +122,7 @@
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
     <version.org.hawkular.accounts>2.0.22.Final</version.org.hawkular.accounts>
-    <version.org.jboss.byteman>3.0.2</version.org.jboss.byteman>
+    <version.org.jboss.byteman>3.0.4</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
     <version.org.tuckey>4.0.3</version.org.tuckey>

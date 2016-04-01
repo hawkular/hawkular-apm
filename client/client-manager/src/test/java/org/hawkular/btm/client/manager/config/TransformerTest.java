@@ -76,7 +76,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -106,7 +107,7 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, "1.0.0");
 
-        String expected = "";
+        String expected = "COMPILE\r\n";
 
         assertEquals(expected, transformed);
     }
@@ -131,7 +132,7 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "";
+        String expected = "COMPILE\r\n";
 
         assertEquals(expected, transformed);
     }
@@ -156,7 +157,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, "2.0.0");
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -186,7 +188,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "()\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -216,7 +219,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -247,7 +251,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\nIF TRUE\r\n"
@@ -279,7 +284,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT EXIT\r\nIF "
@@ -312,7 +318,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT EXCEPTION EXIT\r\nIF "
@@ -350,7 +357,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER TestHelper\r\n"
                 + "AT ENTRY\r\nIF "
@@ -395,7 +403,8 @@ public class TransformerTest {
 
         String transformed = transformer.transform("test", in, null);
 
-        String expected = "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
                 + "METHOD " + TEST_METHOD + "(" + TEST_PARAM1 + "," + TEST_PARAM2 + ")\r\n"
                 + "HELPER " + RuleHelper.class.getName() + "\r\n"
                 + "AT ENTRY\r\n"
@@ -408,4 +417,103 @@ public class TransformerTest {
         assertEquals(expected, transformed);
     }
 
+    @Test
+    public void testTransformNoCompileScript() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        im.setAction("Action1");
+        ir.setCompile(false);
+
+        Instrumentation in = new Instrumentation();
+        in.setCompile(false);
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform("test", in, null);
+
+        String expected = "NOCOMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "()\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\nIF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformCompileScriptNoCompileRule() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        im.setAction("Action1");
+        ir.setCompile(false);
+
+        Instrumentation in = new Instrumentation();
+        in.setCompile(true);
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform("test", in, null);
+
+        String expected = "COMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "()\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\n"
+                + "NOCOMPILE\r\n"
+                + "IF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
+
+    @Test
+    public void testTransformNoCompileScriptCompileRule() {
+        InstrumentRule ir = new InstrumentRule();
+        FreeFormAction im = new FreeFormAction();
+
+        ir.setRuleName(TEST_RULE);
+        ir.setClassName(TEST_CLASS);
+        ir.setMethodName(TEST_METHOD);
+        ir.setLocation("ENTRY");
+        ir.getActions().add(im);
+        im.setAction("Action1");
+        ir.setCompile(true);
+
+        Instrumentation in = new Instrumentation();
+        in.setCompile(false);
+        in.getRules().add(ir);
+
+        Transformer transformer = new Transformer();
+
+        String transformed = transformer.transform("test", in, null);
+
+        String expected = "NOCOMPILE\r\n\r\n"
+                + "RULE test(1) " + TEST_RULE + "\r\nCLASS " + TEST_CLASS + "\r\n"
+                + "METHOD " + TEST_METHOD + "()\r\n"
+                + "HELPER " + RuleHelper.class.getName() + "\r\n"
+                + "AT ENTRY\r\n"
+                + "COMPILE\r\n"
+                + "IF TRUE\r\n"
+                + "DO\r\n  " + im.getAction() + "\r\n"
+                + "ENDRULE\r\n\r\n";
+
+        assertEquals(expected, transformed);
+    }
 }

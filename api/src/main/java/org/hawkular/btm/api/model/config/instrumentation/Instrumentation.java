@@ -32,6 +32,9 @@ public class Instrumentation {
     @JsonInclude(Include.NON_NULL)
     private String description;
 
+    @JsonInclude(Include.NON_DEFAULT)
+    private boolean compile = true;
+
     @JsonInclude
     private List<InstrumentRule> rules = new ArrayList<InstrumentRule>();
 
@@ -47,6 +50,20 @@ public class Instrumentation {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the compile
+     */
+    public boolean isCompile() {
+        return compile;
+    }
+
+    /**
+     * @param compile the compile to set
+     */
+    public void setCompile(boolean compile) {
+        this.compile = compile;
     }
 
     /**
