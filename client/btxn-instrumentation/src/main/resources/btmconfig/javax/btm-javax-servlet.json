@@ -48,6 +48,10 @@
           "valueExpression": "req.getQueryString()"
         },{
           "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "req.getMethod()"
+        },{
+          "type": "SetDetail",
           "name": "http_host",
           "valueExpression": "req.getServerName()"
         },{
