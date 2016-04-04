@@ -264,6 +264,8 @@ public class ClientJettyReaderWriterAsyncTest extends ClientTestBase {
             assertEquals(QUERY_STRING, testConsumer.getDetails().get("http_query"));
         }
 
+        assertEquals(method, testConsumer.getDetails().get("http_method"));
+
         // Check headers
         assertFalse("testConsumer has no headers", testConsumer.getIn().getHeaders().isEmpty());
         assertTrue("testConsumer does not have test header",
