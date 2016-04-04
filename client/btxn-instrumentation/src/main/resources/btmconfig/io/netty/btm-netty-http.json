@@ -28,6 +28,7 @@
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPath()",
+          "operationExpression": "req.getMethod().name()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",

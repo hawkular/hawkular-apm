@@ -31,6 +31,7 @@
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "req.getMethod()",
           "uriExpression": "uri.getPath()",
           "idExpression": "req.getHeader(\"Hawkularbtid\")"
         },{

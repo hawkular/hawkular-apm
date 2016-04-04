@@ -15,6 +15,7 @@
           "type": "InstrumentComponent",
           "direction": "In",
           "componentTypeExpression": "\"Database\"",
+          "operationExpression": "\"query\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
           "type": "SetDetail",
@@ -58,6 +59,7 @@
           "type": "InstrumentComponent",
           "direction": "In",
           "componentTypeExpression": "\"Database\"",
+          "operationExpression": "\"query\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
           "type": "SetDetail",
@@ -101,6 +103,7 @@
           "type": "InstrumentComponent",
           "direction": "In",
           "componentTypeExpression": "\"Database\"",
+          "operationExpression": "\"update\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
           "type": "SetDetail",
@@ -144,6 +147,7 @@
           "type": "InstrumentComponent",
           "direction": "In",
           "componentTypeExpression": "\"Database\"",
+          "operationExpression": "\"update\"",
           "uriExpression": "$0.getConnection().getMetaData().getURL()"
         },{
           "type": "SetDetail",

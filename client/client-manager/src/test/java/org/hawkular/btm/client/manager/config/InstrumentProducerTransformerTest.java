@@ -35,12 +35,13 @@ public class InstrumentProducerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
 
         InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",null)";
+        String expected = ACTION_PREFIX + "producerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\",null)";
 
         assertEquals(expected, transformed);
     }
@@ -51,13 +52,15 @@ public class InstrumentProducerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
         im.setIdExpression("\"MyId\"");
 
         InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyId\")";
+        String expected = ACTION_PREFIX +
+                "producerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\",\"MyId\")";
 
         assertEquals(expected, transformed);
     }
@@ -68,13 +71,14 @@ public class InstrumentProducerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
         im.setDirection(Direction.Out);
 
         InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\")";
+        String expected = ACTION_PREFIX + "producerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }
@@ -85,13 +89,14 @@ public class InstrumentProducerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
         im.setDirection(Direction.Out);
 
         InstrumentProducerTransformer transformer = new InstrumentProducerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "producerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\")";
+        String expected = ACTION_PREFIX + "producerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }

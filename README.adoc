@@ -7,21 +7,29 @@ image::https://travis-ci.org/hawkular/hawkular-btm.svg?branch=master[Build Statu
 endif::[]
 
 [.lead]
-*Hawkular BTM* is the Business Transaction Management module for Hawkular.
+*Hawkular BTM* is the Business Transaction Management (BTM) and Application Performance
+Management (APM) module for Hawkular.
 
 The project will provide the capabilities to monitor the flow of a business transaction
-instance across servers, tiers, on-premises and in the cloud.
+instance across servers, tiers, on-premises and in the cloud. It will also enable detailed
+performance analysis to be performed of the individual components that make up an
+application.
 
 == Build
 
 To build the project, run:
 
 ```shell
-mvn clean install [ -Ptests ]
+mvn clean install [ -Ptests,vertx,wildfly ]
 ```
 
 The optional 'tests' profile will automatically run integration tests within a WildFly instance
 configured with Hawkular Bus and BTM.
+
+The optional 'vertx' profile provides integration tests running in a vertx environment.
+
+The optional 'wildfly' profile provides integration tests against the Hawkular BTM REST APIs
+running in a WildFly server.
 
 The distribution (a preconfigured version of WildFly with all necessary Hawkular components) can be
 found here: _dist/target/hawkular-btm-dist-<version>.zip_.

@@ -136,6 +136,7 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
 
         assertEquals(PATH_1, testProducer.getUri());
         assertEquals(QUERY_1, testProducer.getDetails().get("http_query"));
+        assertEquals("GET", testProducer.getOperation());
         assertEquals("GET", testProducer.getDetails().get("http_method"));
     }
 
@@ -188,6 +189,7 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
 
         assertEquals(PATH_2, testProducer.getUri());
         assertFalse(testProducer.getDetails().containsKey("http_query"));
+        assertEquals("POST", testProducer.getOperation());
         assertEquals("POST", testProducer.getDetails().get("http_method"));
     }
 
@@ -240,6 +242,7 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
 
         assertEquals(PATH_3, testProducer.getUri());
         assertFalse(testProducer.getDetails().containsKey("http_query"));
+        assertEquals("PUT", testProducer.getOperation());
         assertEquals("PUT", testProducer.getDetails().get("http_method"));
     }
 }

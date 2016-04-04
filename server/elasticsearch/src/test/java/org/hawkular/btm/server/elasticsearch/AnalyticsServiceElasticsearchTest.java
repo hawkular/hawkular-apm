@@ -1468,7 +1468,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCommunicationSummaryStatistics() {
+    public void testGetCommunicationSummaryStatisticsWithoutOps() {
         List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
@@ -1529,8 +1529,8 @@ public class AnalyticsServiceElasticsearchTest {
         cd1.setBusinessTransaction("testapp");
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
-        cd1.setOriginUri("in1");
-        cd1.setUri("out1.1");
+        cd1.setSource("in1");
+        cd1.setTarget("out1.1");
         cds.add(cd1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
@@ -1538,8 +1538,8 @@ public class AnalyticsServiceElasticsearchTest {
         cd2.setBusinessTransaction("testapp");
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
-        cd2.setOriginUri("in1");
-        cd2.setUri("out1.2");
+        cd2.setSource("in1");
+        cd2.setTarget("out1.2");
         cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
@@ -1547,8 +1547,8 @@ public class AnalyticsServiceElasticsearchTest {
         cd3.setBusinessTransaction("testapp");
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
-        cd3.setOriginUri("in2");
-        cd3.setUri("out2.1");
+        cd3.setSource("in2");
+        cd3.setTarget("out2.1");
         cds.add(cd3);
 
         CommunicationDetails cd4 = new CommunicationDetails();
@@ -1556,8 +1556,8 @@ public class AnalyticsServiceElasticsearchTest {
         cd4.setBusinessTransaction("testapp");
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
-        cd4.setOriginUri("in1");
-        cd4.setUri("out1.2");
+        cd4.setSource("in1");
+        cd4.setTarget("out1.2");
         cds.add(cd4);
 
         CommunicationDetails cd5 = new CommunicationDetails();
@@ -1565,8 +1565,8 @@ public class AnalyticsServiceElasticsearchTest {
         cd5.setBusinessTransaction("testapp");
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
-        cd5.setOriginUri("in2");
-        cd5.setUri("out2.1");
+        cd5.setSource("in2");
+        cd5.setTarget("out2.1");
         cds.add(cd5);
 
         try {
@@ -1594,18 +1594,18 @@ public class AnalyticsServiceElasticsearchTest {
         CommunicationSummaryStatistics out2_1 = null;
 
         for (CommunicationSummaryStatistics css : stats) {
-            if (css.getUri().equals("in1")) {
+            if (css.getId().equals("in1")) {
                 in1 = css;
-            } else if (css.getUri().equals("in2")) {
+            } else if (css.getId().equals("in2")) {
                 in2 = css;
-            } else if (css.getUri().equals("out1.1")) {
+            } else if (css.getId().equals("out1.1")) {
                 out1_1 = css;
-            } else if (css.getUri().equals("out1.2")) {
+            } else if (css.getId().equals("out1.2")) {
                 out1_2 = css;
-            } else if (css.getUri().equals("out2.1")) {
+            } else if (css.getId().equals("out2.1")) {
                 out2_1 = css;
             } else {
-                fail("Unexpected uri: " + css.getUri());
+                fail("Unexpected uri: " + css.getId());
             }
         }
 
@@ -1649,6 +1649,196 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(1, in1.getOutbound().get("out1.1").getCount());
         assertEquals(2, in1.getOutbound().get("out1.2").getCount());
         assertEquals(2, in2.getOutbound().get("out2.1").getCount());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticsWithOps() {
+        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setUri("in1");
+        ct1_1.setOperation("op1");
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setUri("out1.1");
+        ct1_2.setOperation("op1.1");
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        cts.add(ct1_2);
+
+        CompletionTime ct1_3 = new CompletionTime();
+        ct1_3.setUri("out1.2");
+        ct1_3.setOperation("op1.2");
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1600);
+        ct1_3.setDuration(200);
+        cts.add(ct1_3);
+
+        CompletionTime ct2_1 = new CompletionTime();
+        ct2_1.setUri("in2");
+        ct2_1.setOperation("op2");
+        ct2_1.setBusinessTransaction("testapp");
+        ct2_1.setTimestamp(1600);
+        ct2_1.setDuration(500);
+        cts.add(ct2_1);
+
+        CompletionTime ct2_2 = new CompletionTime();
+        ct2_2.setUri("out2.1");
+        ct2_2.setOperation("op2.1");
+        ct2_2.setBusinessTransaction("testapp");
+        ct2_2.setTimestamp(1700);
+        ct2_2.setDuration(400);
+        cts.add(ct2_2);
+
+        CompletionTime ct2_3 = new CompletionTime();
+        ct2_3.setUri("in2");
+        ct2_3.setOperation("op2");
+        ct2_3.setBusinessTransaction("testapp");
+        ct2_3.setTimestamp(1700);
+        ct2_3.setDuration(600);
+        cts.add(ct2_3);
+
+        try {
+            analytics.storeFragmentCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        CommunicationDetails cd1 = new CommunicationDetails();
+        cd1.setId("cd1");
+        cd1.setBusinessTransaction("testapp");
+        cd1.setTimestamp(1500);
+        cd1.setLatency(100);
+        cd1.setSource("in1[op1]");
+        cd1.setTarget("out1.1[op1.1]");
+        cds.add(cd1);
+
+        CommunicationDetails cd2 = new CommunicationDetails();
+        cd2.setId("cd2");
+        cd2.setBusinessTransaction("testapp");
+        cd2.setTimestamp(1500);
+        cd2.setLatency(200);
+        cd2.setSource("in1[op1]");
+        cd2.setTarget("out1.2[op1.2]");
+        cds.add(cd2);
+
+        CommunicationDetails cd3 = new CommunicationDetails();
+        cd3.setId("cd3");
+        cd3.setBusinessTransaction("testapp");
+        cd3.setTimestamp(1500);
+        cd3.setLatency(300);
+        cd3.setSource("in2[op2]");
+        cd3.setTarget("out2.1[op2.1]");
+        cds.add(cd3);
+
+        CommunicationDetails cd4 = new CommunicationDetails();
+        cd4.setId("cd4");
+        cd4.setBusinessTransaction("testapp");
+        cd4.setTimestamp(1600);
+        cd4.setLatency(300);
+        cd4.setSource("in1[op1]");
+        cd4.setTarget("out1.2[op1.2]");
+        cds.add(cd4);
+
+        CommunicationDetails cd5 = new CommunicationDetails();
+        cd5.setId("cd5");
+        cd5.setBusinessTransaction("testapp");
+        cd5.setTimestamp(1600);
+        cd5.setLatency(500);
+        cd5.setSource("in2[op2]");
+        cd5.setTarget("out2.1[op2.1]");
+        cds.add(cd5);
+
+        try {
+            analytics.storeCommunicationDetails(null, cds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(5, stats.size());
+
+        CommunicationSummaryStatistics in1 = null;
+        CommunicationSummaryStatistics in2 = null;
+        CommunicationSummaryStatistics out1_1 = null;
+        CommunicationSummaryStatistics out1_2 = null;
+        CommunicationSummaryStatistics out2_1 = null;
+
+        for (CommunicationSummaryStatistics css : stats) {
+            if (css.getId().equals("in1[op1]")) {
+                in1 = css;
+            } else if (css.getId().equals("in2[op2]")) {
+                in2 = css;
+            } else if (css.getId().equals("out1.1[op1.1]")) {
+                out1_1 = css;
+            } else if (css.getId().equals("out1.2[op1.2]")) {
+                out1_2 = css;
+            } else if (css.getId().equals("out2.1[op2.1]")) {
+                out2_1 = css;
+            } else {
+                fail("Unexpected id: " + css.getId());
+            }
+        }
+
+        assertNotNull(in1);
+        assertNotNull(in2);
+        assertNotNull(out1_1);
+        assertNotNull(out1_2);
+        assertNotNull(out2_1);
+
+        assertEquals(1, in1.getCount());
+        assertEquals(2, in2.getCount());
+        assertEquals(1, out1_1.getCount());
+        assertEquals(1, out1_2.getCount());
+        assertEquals(1, out2_1.getCount());
+
+        // Only check in2 node, as others only have single completion time
+        assertTrue(500 == in2.getMinimumDuration());
+        assertTrue(550 == in2.getAverageDuration());
+        assertTrue(600 == in2.getMaximumDuration());
+
+        assertEquals(2, in1.getOutbound().size());
+        assertEquals(1, in2.getOutbound().size());
+        assertEquals(0, out1_1.getOutbound().size());
+        assertEquals(0, out1_2.getOutbound().size());
+        assertEquals(0, out2_1.getOutbound().size());
+
+        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
+        assertTrue(in1.getOutbound().containsKey("out1.2[op1.2]"));
+        assertTrue(in2.getOutbound().containsKey("out2.1[op2.1]"));
+
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
+        assertTrue(200 == in1.getOutbound().get("out1.2[op1.2]").getMinimumLatency());
+        assertTrue(250 == in1.getOutbound().get("out1.2[op1.2]").getAverageLatency());
+        assertTrue(300 == in1.getOutbound().get("out1.2[op1.2]").getMaximumLatency());
+        assertTrue(300 == in2.getOutbound().get("out2.1[op2.1]").getMinimumLatency());
+        assertTrue(400 == in2.getOutbound().get("out2.1[op2.1]").getAverageLatency());
+        assertTrue(500 == in2.getOutbound().get("out2.1[op2.1]").getMaximumLatency());
+
+        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
+        assertEquals(2, in1.getOutbound().get("out1.2[op1.2]").getCount());
+        assertEquals(2, in2.getOutbound().get("out2.1[op2.1]").getCount());
     }
 
     @Test

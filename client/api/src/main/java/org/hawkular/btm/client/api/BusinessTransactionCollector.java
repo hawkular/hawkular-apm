@@ -92,9 +92,10 @@ public interface BusinessTransactionCollector {
      * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
+     * @param operation The operation
      * @param id The unique interaction id
      */
-    void consumerStart(String location, String uri, String type, String id);
+    void consumerStart(String location, String uri, String type, String operation, String id);
 
     /**
      * This method indicates the end of a message being consumed.
@@ -102,8 +103,9 @@ public interface BusinessTransactionCollector {
      * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
+     * @param operation The operation
      */
-    void consumerEnd(String location, String uri, String type);
+    void consumerEnd(String location, String uri, String type, String operation);
 
     /**
      * This method indicates the start of a component invocation.
@@ -131,9 +133,10 @@ public interface BusinessTransactionCollector {
      * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
+     * @param operation The operation
      * @param id The unique interaction id
      */
-    void producerStart(String location, String uri, String type, String id);
+    void producerStart(String location, String uri, String type, String operation, String id);
 
     /**
      * This method indicates the end of a message being produced.
@@ -141,8 +144,9 @@ public interface BusinessTransactionCollector {
      * @param location The instrumentation location
      * @param uri The uri
      * @param type The endpoint type
+     * @param operation The operation
      */
-    void producerEnd(String location, String uri, String type);
+    void producerEnd(String location, String uri, String type, String operation);
 
     /**
      * This method identifies whether the in data (content and headers) for the current

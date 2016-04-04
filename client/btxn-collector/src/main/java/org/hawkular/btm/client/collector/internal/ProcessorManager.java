@@ -34,7 +34,6 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Issue;
 import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
@@ -415,8 +414,8 @@ public class ProcessorManager {
                     return;
                 }
 
-                // Check if operation has been specified, and node is Component
-                if (processor.getOperation() != null && node.getType() == NodeType.Component
+                // Check if operation has been specified
+                if (processor.getOperation() != null
                         && !processor.getOperation().equals(((Component) node).getOperation())) {
                     return;
                 }

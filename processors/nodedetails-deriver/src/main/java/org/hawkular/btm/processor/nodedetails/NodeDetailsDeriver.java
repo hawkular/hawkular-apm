@@ -110,7 +110,6 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
 
             if (n.getType() == NodeType.Component) {
                 nd.setComponentType(((Component) n).getComponentType());
-                nd.setOperation(((Component) n).getOperation());
             } else {
                 nd.setComponentType(n.getType().name());
             }
@@ -127,6 +126,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
             nd.setTimestamp(btxn.getStartTime() + diffms);
             nd.setType(n.getType());
             nd.setUri(n.getUri());
+            nd.setOperation(n.getOperation());
 
             rts.add(nd);
 

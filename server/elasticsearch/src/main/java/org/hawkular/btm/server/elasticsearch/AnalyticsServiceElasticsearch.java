@@ -698,26 +698,28 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                         }
 
                         Missing missingOp = uriBucket.getAggregations().get("missingOperation");
-                        Avg actual = missingOp.getAggregations().get("actual");
-                        Avg elapsed = missingOp.getAggregations().get("elapsed");
+                        if (missingOp != null && missingOp.getDocCount() > 0) {
+                            Avg actual = missingOp.getAggregations().get("actual");
+                            Avg elapsed = missingOp.getAggregations().get("elapsed");
 
-                        // TODO: For some reason doing comparison of value against Double.NaN does not work
-                        if (!actual.getValueAsString().equals("NaN")) {
-                            NodeSummaryStatistics stat = new NodeSummaryStatistics();
+                            // TODO: For some reason doing comparison of value against Double.NaN does not work
+                            if (!actual.getValueAsString().equals("NaN")) {
+                                NodeSummaryStatistics stat = new NodeSummaryStatistics();
 
-                            if (typeBucket.getKey().equalsIgnoreCase("consumer")) {
-                                stat.setComponentType("consumer");
-                            } else if (typeBucket.getKey().equalsIgnoreCase("producer")) {
-                                stat.setComponentType("producer");
-                            } else {
-                                stat.setComponentType(componentBucket.getKey());
+                                if (typeBucket.getKey().equalsIgnoreCase("consumer")) {
+                                    stat.setComponentType("consumer");
+                                } else if (typeBucket.getKey().equalsIgnoreCase("producer")) {
+                                    stat.setComponentType("producer");
+                                } else {
+                                    stat.setComponentType(componentBucket.getKey());
+                                }
+                                stat.setUri(uriBucket.getKey());
+                                stat.setActual((long)actual.getValue());
+                                stat.setElapsed((long)elapsed.getValue());
+                                stat.setCount(missingOp.getDocCount());
+
+                                stats.add(stat);
                             }
-                            stat.setUri(uriBucket.getKey());
-                            stat.setActual((long)actual.getValue());
-                            stat.setElapsed((long)elapsed.getValue());
-                            stat.setCount(missingOp.getDocCount());
-
-                            stats.add(stat);
                         }
                     }
                 }
@@ -774,22 +776,22 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .stats("latency")
                     .field("latency");
 
-            TermsBuilder urisBuilder = AggregationBuilders
-                    .terms("uris")
-                    .field("uri")
+            TermsBuilder targetBuilder = AggregationBuilders
+                    .terms("target")
+                    .field("target")
                     .size(criteria.getMaxResponseSize())
                     .subAggregation(latencyBuilder);
 
-            TermsBuilder originsBuilder = AggregationBuilders
-                    .terms("origins")
-                    .field("originUri")
+            TermsBuilder sourceBuilder = AggregationBuilders
+                    .terms("source")
+                    .field("source")
                     .size(criteria.getMaxResponseSize())
-                    .subAggregation(urisBuilder);
+                    .subAggregation(targetBuilder);
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                     .setTypes(COMMUNICATION_DETAILS_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .addAggregation(originsBuilder)
+                    .addAggregation(sourceBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
                     .setQuery(query);
@@ -799,27 +801,27 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 msgLog.warnQueryTimedOut();
             }
 
-            Terms origins = response.getAggregations().get("origins");
+            Terms sources = response.getAggregations().get("source");
 
-            for (Terms.Bucket originBucket : origins.getBuckets()) {
-                Terms uris = originBucket.getAggregations().get("uris");
+            for (Terms.Bucket sourceBucket : sources.getBuckets()) {
+                Terms targets = sourceBucket.getAggregations().get("target");
 
                 CommunicationSummaryStatistics css = new CommunicationSummaryStatistics();
-                css.setUri(originBucket.getKey());
-                css.setCount(originBucket.getDocCount());
+                css.setId(sourceBucket.getKey());
+                css.setCount(sourceBucket.getDocCount());
 
-                stats.put(css.getUri(), css);
+                stats.put(css.getId(), css);
 
-                for (Terms.Bucket uriBucket : uris.getBuckets()) {
-                    Stats latency = uriBucket.getAggregations().get("latency");
+                for (Terms.Bucket targetBucket : targets.getBuckets()) {
+                    Stats latency = targetBucket.getAggregations().get("latency");
 
                     ConnectionStatistics con = new ConnectionStatistics();
                     con.setMinimumLatency((long)latency.getMin());
                     con.setAverageLatency((long)latency.getAvg());
                     con.setMaximumLatency((long)latency.getMax());
-                    con.setCount(uriBucket.getDocCount());
+                    con.setCount(targetBucket.getDocCount());
 
-                    css.getOutbound().put(uriBucket.getKey(), con);
+                    css.getOutbound().put(targetBucket.getKey(), con);
                 }
             }
 
@@ -828,16 +830,28 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .stats("duration")
                     .field("duration");
 
-            TermsBuilder completionsBuilder = AggregationBuilders
-                    .terms("completions")
-                    .field("uri")
+            TermsBuilder operationsBuilder2 = AggregationBuilders
+                    .terms("operations")
+                    .field("operation")
                     .size(criteria.getMaxResponseSize())
                     .subAggregation(durationBuilder);
+
+            MissingBuilder missingOperationBuilder2 = AggregationBuilders
+                    .missing("missingOperation")
+                    .field("operation")
+                    .subAggregation(durationBuilder);
+
+            TermsBuilder urisBuilder2 = AggregationBuilders
+                    .terms("uris")
+                    .field("uri")
+                    .size(criteria.getMaxResponseSize())
+                    .subAggregation(operationsBuilder2)
+                    .subAggregation(missingOperationBuilder2);
 
             SearchRequestBuilder request2 = client.getElasticsearchClient().prepareSearch(index)
                 .setTypes(FRAGMENT_COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .addAggregation(completionsBuilder)
+                .addAggregation(urisBuilder2)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                 .setSize(criteria.getMaxResponseSize())
                 .setQuery(query);
@@ -847,23 +861,47 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 msgLog.warnQueryTimedOut();
             }
 
-            Terms completions = response2.getAggregations().get("completions");
+            Terms completions = response2.getAggregations().get("uris");
 
-            for (Terms.Bucket completionBucket : completions.getBuckets()) {
-                Stats duration = completionBucket.getAggregations().get("duration");
-                String uri = completionBucket.getKey();
+            for (Terms.Bucket urisBucket : completions.getBuckets()) {
+                Terms operations = urisBucket.getAggregations().get("operations");
 
-                CommunicationSummaryStatistics css = stats.get(uri);
-                if (css == null) {
-                    css = new CommunicationSummaryStatistics();
-                    css.setUri(uri);
-                    stats.put(uri, css);
+                for (Terms.Bucket operationBucket : operations.getBuckets()) {
+                    Stats duration = operationBucket.getAggregations().get("duration");
+                    String id = CommunicationDetails.encodeUriAndOperation(urisBucket.getKey(),
+                            operationBucket.getKey());
+
+                    CommunicationSummaryStatistics css = stats.get(id);
+                    if (css == null) {
+                        css = new CommunicationSummaryStatistics();
+                        css.setId(id);
+                        stats.put(id, css);
+                    }
+
+                    css.setMinimumDuration((long)duration.getMin());
+                    css.setAverageDuration((long)duration.getAvg());
+                    css.setMaximumDuration((long)duration.getMax());
+                    css.setCount(operationBucket.getDocCount());
                 }
 
-                css.setMinimumDuration((long)duration.getMin());
-                css.setAverageDuration((long)duration.getAvg());
-                css.setMaximumDuration((long)duration.getMax());
-                css.setCount(completionBucket.getDocCount());
+                Missing missingOp = urisBucket.getAggregations().get("missingOperation");
+
+                if (missingOp != null && missingOp.getDocCount() > 0) {
+                    Stats duration = missingOp.getAggregations().get("duration");
+                    String id = urisBucket.getKey();
+
+                    CommunicationSummaryStatistics css = stats.get(id);
+                    if (css == null) {
+                        css = new CommunicationSummaryStatistics();
+                        css.setId(id);
+                        stats.put(id, css);
+                    }
+
+                    css.setMinimumDuration((long)duration.getMin());
+                    css.setAverageDuration((long)duration.getAvg());
+                    css.setMaximumDuration((long)duration.getMax());
+                    css.setCount(missingOp.getDocCount());
+                }
             }
 
         } catch (org.elasticsearch.indices.IndexMissingException t) {
