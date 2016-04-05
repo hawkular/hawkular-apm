@@ -771,7 +771,7 @@ public class ServicesCassandraTest {
             fail("Failed to wait: " + e);
         }
 
-        java.util.List<String> uris1 = analytics.getBoundURIs(null, "btxn1", 100, 0);
+        java.util.List<String> uris1 = analytics.getBoundEndpoints(null, "btxn1", 100, 0);
 
         assertNotNull(uris1);
         assertEquals(3, uris1.size());
@@ -779,7 +779,7 @@ public class ServicesCassandraTest {
         assertTrue(uris1.contains("uri2"));
         assertTrue(uris1.contains("uri3"));
 
-        java.util.List<String> uris2 = analytics.getBoundURIs(null, "btxn2", 100, 0);
+        java.util.List<String> uris2 = analytics.getBoundEndpoints(null, "btxn2", 100, 0);
 
         assertNotNull(uris2);
         assertEquals(1, uris2.size());

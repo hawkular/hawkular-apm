@@ -32,30 +32,33 @@ public interface SessionManager {
      * create and record a Consumer as part of a business transaction fragment.
      * If the fragment is not currently active, then the id will be check
      * first, and if defined then the function will return true, allowing
-     * the Consumer node to be created. If the id is null, then the URI will
-     * be checked against any filters that have been configured. If the URI
-     * passes, then the instrumentation rule will be permitted to proceed and
-     * create the Consumer node in the business transaction fragment.
+     * the Consumer node to be created. If the id is null, then the URI and
+     * optional operation will be checked against any filters that have been
+     * configured. If the URI and operation passes, then the instrumentation
+     * rule will be permitted to proceed and create the Consumer node in the
+     * business transaction fragment.
      *
      * @param uri The URI
+     * @param operation The optional operation
      * @param id The id
      * @return Whether the fragment is already, or can be, active
      */
-    boolean activate(String uri, String id);
+    boolean activate(String uri, String operation, String id);
 
     /**
      * This method is a guard condition for instrumentation rules, used
      * to determine whether the invoker should be permitted to create
      * and record a node as part of a business transaction fragment. If
-     * the fragment is not currently active, then the URI will be checked
-     * against any filters that have been configured. If it passes, then the
-     * instrumentation rule will be permitted to proceed and create the
-     * appropriate node in the business transaction fragment.
+     * the fragment is not currently active, then the URI and optional
+     * operation will be checked against any filters that have been configured.
+     * If it passes, then the instrumentation rule will be permitted to
+     * proceed and create the appropriate node in the business transaction fragment.
      *
      * @param uri The URI
+     * @param operation The optional operation
      * @return Whether the fragment is already, or can be, active
      */
-    boolean activate(String uri);
+    boolean activate(String uri, String operation);
 
     /**
      * This method determines if there is an active session associated with

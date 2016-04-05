@@ -97,24 +97,24 @@ public class FilterProcessor {
     }
 
     /**
-     * This method determines whether all URIs are included.
+     * This method determines whether all endpoints are included.
      *
-     * @return Whether 'all' URIs are included
+     * @return Whether 'all' endpoints are included
      */
     public boolean isIncludeAll() {
         return (inclusions.isEmpty());
     }
 
     /**
-     * This method determines whether the supplied URI should be
+     * This method determines whether the supplied endpoint should be
      * included.
      *
-     * @param uri The URI to check
-     * @return Whether the supplied URI should be included
+     * @param endpoint The endpoint to check
+     * @return Whether the supplied endpoint should be included
      */
-    public boolean isIncluded(String uri) {
+    public boolean isIncluded(String endpoint) {
         for (int i = 0; i < inclusions.size(); i++) {
-            if (inclusions.get(i).test(uri)) {
+            if (inclusions.get(i).test(endpoint)) {
                 return true;
             }
         }
@@ -122,15 +122,15 @@ public class FilterProcessor {
     }
 
     /**
-     * This method determines whether the supplied URI should be
+     * This method determines whether the supplied endpoint should be
      * excluded.
      *
-     * @param uri The URI to check
-     * @return Whether the supplied URI should be excluded
+     * @param endpoint The endpoint to check
+     * @return Whether the supplied endpoint should be excluded
      */
-    public boolean isExcluded(String uri) {
+    public boolean isExcluded(String endpoint) {
         for (int i = 0; i < exclusions.size(); i++) {
-            if (exclusions.get(i).test(uri)) {
+            if (exclusions.get(i).test(endpoint)) {
                 return true;
             }
         }

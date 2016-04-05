@@ -13,7 +13,7 @@
           "javax.jms.Message"
         ],
         "location": "ENTRY",
-        "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),$1.getStringProperty(\"Hawkularbtid\"))",
+        "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),null,$1.getStringProperty(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$1.getStringProperty(\"Hawkularbtname\")"
@@ -131,7 +131,7 @@
           "long"
         ],
         "location": "ENTRY",
-        "condition": "$2.getJMSReplyTo() == null && !isInstanceOf($1,javax.jms.TemporaryQueue.class) && activate($1)",
+        "condition": "$2.getJMSReplyTo() == null && !isInstanceOf($1,javax.jms.TemporaryQueue.class) && activate($1,null)",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",
@@ -203,7 +203,7 @@
           "long"
         ],
         "location": "ENTRY",
-        "condition": "$2.getJMSReplyTo() != null && !isInstanceOf($1,javax.jms.TemporaryQueue.class) && activate($1)",
+        "condition": "$2.getJMSReplyTo() != null && !isInstanceOf($1,javax.jms.TemporaryQueue.class) && activate($1,null)",
         "binds": [{
           "name": "id",
           "type": "java.lang.String",

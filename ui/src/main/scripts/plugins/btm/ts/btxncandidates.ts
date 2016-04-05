@@ -23,7 +23,7 @@ module BTM {
 
     $scope.newBTxnName = '';
     $scope.existingBTxnName = '';
-    $scope.selecteduris = [ ];
+    $scope.selectedendpoints = [ ];
     $scope.candidateCount = 0;
 
     $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
@@ -33,17 +33,17 @@ module BTM {
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/unbounduris?compress=true').then(function(resp) {
-        $scope.unbounduris = resp.data;
+      $http.get('/hawkular/btm/analytics/unboundendpoints?compress=true').then(function(resp) {
+        $scope.unboundendpoints = resp.data;
         $scope.candidateCount = Object.keys(resp.data).length;
 
-        let selected = $scope.selecteduris;
-        $scope.selecteduris = [];
+        let selected = $scope.selectedendpoints;
+        $scope.selectedendpoints = [];
 
-        for (let i = 0; i < $scope.unbounduris.length; i++) {
+        for (let i = 0; i < $scope.unboundendpoints.length; i++) {
           for (let j = 0; j < selected.length; j++) {
-            if ($scope.unbounduris[i].uri === selected[j].uri) {
-              $scope.selecteduris.push($scope.unbounduris[i]);
+            if ($scope.unboundendpoints[i].endpoint === selected[j].endpoint) {
+              $scope.selectedendpoints.push($scope.unboundendpoints[i]);
             }
           }
         }
@@ -64,18 +64,17 @@ module BTM {
         },
         processors: []
       };
-      for (let i = 0; i < $scope.selecteduris.length; i++) {
-        defn.filter.inclusions.push($scope.selecteduris[i].regex);
-        if ($scope.selecteduris[i].template !== undefined) {
+      for (let i = 0; i < $scope.selectedendpoints.length; i++) {
+        defn.filter.inclusions.push($scope.selectedendpoints[i].regex);
+        if ($scope.selectedendpoints[i].template !== undefined) {
           defn.processors.push({
             description: 'Process inbound request',
             nodeType: 'Consumer',
             direction: 'In',
-            uriFilter: $scope.selecteduris[i].regex,
             actions: [{
               actionType: 'EvaluateURI',
               description: 'Extract parameters from path',
-              template: $scope.selecteduris[i].template
+              template: $scope.selectedendpoints[i].template
             }]
           });
         }
@@ -95,19 +94,18 @@ module BTM {
         },
         processors: []
       };
-      for (let i = 0; i < $scope.selecteduris.length; i++) {
-        defn.filter.inclusions.push($scope.selecteduris[i].regex);
+      for (let i = 0; i < $scope.selectedendpoints.length; i++) {
+        defn.filter.inclusions.push($scope.selectedendpoints[i].regex);
         // Even though ignored, add URI evaluation in case later on we want to manage the btxn
-        if ($scope.selecteduris[i].template !== undefined) {
+        if ($scope.selectedendpoints[i].template !== undefined) {
           defn.processors.push({
             description: 'Process inbound request',
             nodeType: 'Consumer',
             direction: 'In',
-            uriFilter: $scope.selecteduris[i].regex,
             actions: [{
               actionType: 'EvaluateURI',
               description: 'Extract parameters from path',
-              template: $scope.selecteduris[i].template
+              template: $scope.selectedendpoints[i].template
             }]
           });
         }
@@ -122,9 +120,9 @@ module BTM {
     $scope.updateBusinessTxn = function() {
       $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName).then(function(resp) {
         let btxn = resp.data;
-        for (let i = 0; i < $scope.selecteduris.length; i++) {
-          if (btxn.filter.inclusions.indexOf($scope.selecteduris[i].regex) === -1) {
-            btxn.filter.inclusions.push($scope.selecteduris[i].regex);
+        for (let i = 0; i < $scope.selectedendpoints.length; i++) {
+          if (btxn.filter.inclusions.indexOf($scope.selectedendpoints[i].regex) === -1) {
+            btxn.filter.inclusions.push($scope.selectedendpoints[i].regex);
           }
         }
         $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
@@ -139,18 +137,18 @@ module BTM {
     };
 
     $scope.selectionChanged = function(uriinfo) {
-      for (let i = 0; i < $scope.selecteduris.length; i++) {
-        if ($scope.selecteduris[i].uri === uriinfo.uri) {
-          $scope.selecteduris.remove($scope.selecteduris[i]);
+      for (let i = 0; i < $scope.selectedendpoints.length; i++) {
+        if ($scope.selectedendpoints[i].endpoint === uriinfo.endpoint) {
+          $scope.selectedendpoints.remove($scope.selectedendpoints[i]);
           return;
         }
       }
-      $scope.selecteduris.push(uriinfo);
+      $scope.selectedendpoints.push(uriinfo);
     };
 
     $scope.isSelected = function(uriinfo) {
-      for (let i = 0; i < $scope.selecteduris.length; i++) {
-        if ($scope.selecteduris[i].uri === uriinfo.uri) {
+      for (let i = 0; i < $scope.selectedendpoints.length; i++) {
+        if ($scope.selectedendpoints[i].endpoint === uriinfo.endpoint) {
           return true;
         }
       }

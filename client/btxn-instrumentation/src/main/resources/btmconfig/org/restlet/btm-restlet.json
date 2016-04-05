@@ -4,6 +4,9 @@
       "description": "Restlet instrumentation",
       "rules": [{
         "ruleName": "Restlet Async Consumer Start",
+        "notes": [
+          "TODO: Should this rule extract the HTTP method and pass to activate method as well as InstrumentConsumer?"
+        ],
         "className": "org.restlet.Server",
         "methodName": "handle",
         "parameterTypes": [
@@ -28,7 +31,7 @@
           "type": "java.lang.String",
           "expression": "headers.getFirstValue(\"Hawkularbtlevel\")"
         }],
-        "condition": "activate($1.getResourceRef().getPath(),id)",
+        "condition": "activate($1.getResourceRef().getPath(),null,id)",
         "actions": [{
           "type": "FreeFormAction",
           "action": "headers.removeAll(\"Hawkularbtid\")"

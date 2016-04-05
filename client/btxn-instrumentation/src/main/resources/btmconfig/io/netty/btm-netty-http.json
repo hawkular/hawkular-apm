@@ -22,7 +22,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "isInstanceOf($2,io.netty.handler.codec.http.DefaultHttpRequest.class) && activate((new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPath())",
+        "condition": "isInstanceOf($2,io.netty.handler.codec.http.DefaultHttpRequest.class) && activate((new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPath(),req.getMethod().name())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",

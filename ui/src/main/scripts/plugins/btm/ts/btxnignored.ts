@@ -32,7 +32,7 @@ module BTM {
         console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/unbounduris').then(function(resp) {
+      $http.get('/hawkular/btm/analytics/unboundendpoints').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
         console.log('Failed to get candidate count: ' + JSON.stringify(resp));

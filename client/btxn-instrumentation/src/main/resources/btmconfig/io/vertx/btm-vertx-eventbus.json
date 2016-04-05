@@ -10,7 +10,7 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() == null && !isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),$1.headers().get(\"Hawkularbtid\"))",
+        "condition": "$1.replyAddress() == null && !isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),null,$1.headers().get(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$1.headers().get(\"Hawkularbtname\")"
@@ -57,7 +57,7 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() != null && activate($1.address(),$1.headers().get(\"Hawkularbtid\"))",
+        "condition": "$1.replyAddress() != null && activate($1.address(),null,$1.headers().get(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$1.headers().get(\"Hawkularbtname\")"
@@ -118,7 +118,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "$4 == null && activate($1)",
+        "condition": "$4 == null && activate($1,null)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
@@ -176,7 +176,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "activate($1)",
+        "condition": "activate($1,null)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
@@ -235,7 +235,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "activate($0.address())",
+        "condition": "activate($0.address(),null)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",

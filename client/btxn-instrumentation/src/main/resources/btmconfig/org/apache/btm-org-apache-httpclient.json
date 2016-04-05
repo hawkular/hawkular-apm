@@ -19,7 +19,7 @@
           "type": "java.net.URI",
           "expression": "new java.net.URI($2.getRequestLine().getUri())"
         }],
-        "condition": "activate(uri.getPath())",
+        "condition": "activate(uri.getPath(),$2.getRequestLine().getMethod())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",

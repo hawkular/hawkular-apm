@@ -10,7 +10,7 @@
           "*"
         ],
         "location": "EXIT",
-        "condition": "activate($0.path(),$0.getHeader(\"Hawkularbtid\"))",
+        "condition": "activate($0.path(),$0.method(),$0.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$0.getHeader(\"Hawkularbtname\")"
@@ -101,7 +101,7 @@
           "type": "java.net.URI",
           "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
         }],
-        "condition": "activate(uri.getPath())",
+        "condition": "activate(uri.getPath(),$0.method())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
@@ -169,7 +169,7 @@
           "type": "java.net.URI",
           "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
         }],
-        "condition": "activate(uri.getPath())",
+        "condition": "activate(uri.getPath(),$0.method())",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",

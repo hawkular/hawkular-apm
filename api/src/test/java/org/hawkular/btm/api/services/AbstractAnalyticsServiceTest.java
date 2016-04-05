@@ -20,11 +20,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hawkular.btm.api.model.analytics.URIInfo;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
+import org.hawkular.btm.api.utils.EndpointUtil;
 import org.junit.Test;
 
 /**
@@ -33,19 +35,20 @@ import org.junit.Test;
 public class AbstractAnalyticsServiceTest {
 
     @Test
-    public void testCompressLeaf() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+    public void testCompressLeafNoOp() {
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
         for (int i = 0; i < 20; i++) {
-            uris.add(new URIInfo().setUri("/hello/" + i).setEndpointType("http"));
+            uris.add(new EndpointInfo().setEndpoint(EndpointUtil.encodeEndpoint("/hello/" + i, null))
+                    .setType("http"));
         }
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("/hello/*", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("/hello/*", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/hello/.*$", result.get(0).getRegex());
@@ -53,19 +56,80 @@ public class AbstractAnalyticsServiceTest {
     }
 
     @Test
-    public void testCompressPluralParameter() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+    public void testCompressLeafWithSingleOp() {
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
         for (int i = 0; i < 20; i++) {
-            uris.add(new URIInfo().setUri("/events/" + i).setEndpointType("http"));
+            uris.add(new EndpointInfo().setEndpoint(EndpointUtil.encodeEndpoint("/hello/" + i, "op"))
+                    .setType("http"));
         }
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("/events/*", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("/hello/*[op]", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
+
+        assertTrue(result.get(0).metaURI());
+        assertEquals("^/hello/.*\\[op\\]$", result.get(0).getRegex());
+        assertEquals("/hello/{helloId}", result.get(0).getTemplate());
+    }
+
+    @Test
+    public void testCompressLeafWithMultiOp() {
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
+
+        for (int i = 0; i < 30; i++) {
+            uris.add(new EndpointInfo().setEndpoint(EndpointUtil.encodeEndpoint("/hello/" + i, "op" + (i%2)))
+                    .setType("http"));
+        }
+
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        EndpointInfo op0=null;
+        EndpointInfo op1=null;
+
+        for (EndpointInfo ei : result) {
+            if (ei.getEndpoint().endsWith("[op0]")) {
+                op0 = ei;
+            } else if (ei.getEndpoint().endsWith("[op1]")) {
+                op1 = ei;
+            } else {
+                fail("Unknown endpoint: "+ei);
+            }
+        }
+
+        assertEquals("/hello/*[op0]", op0.getEndpoint());
+        assertEquals("/hello/*[op1]", op1.getEndpoint());
+        assertEquals("http", op0.getType());
+        assertEquals("http", op1.getType());
+
+        assertTrue(op0.metaURI());
+        assertTrue(op1.metaURI());
+        assertEquals("^/hello/.*\\[op0\\]$", op0.getRegex());
+        assertEquals("^/hello/.*\\[op1\\]$", op1.getRegex());
+        assertEquals("/hello/{helloId}", op0.getTemplate());
+        assertEquals("/hello/{helloId}", op1.getTemplate());
+    }
+
+    @Test
+    public void testCompressPluralParameter() {
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
+
+        for (int i = 0; i < 20; i++) {
+            uris.add(new EndpointInfo().setEndpoint("/events/" + i).setType("http"));
+        }
+
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("/events/*", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/events/.*$", result.get(0).getRegex());
@@ -74,18 +138,18 @@ public class AbstractAnalyticsServiceTest {
 
     @Test
     public void testCompressMidAndLeaf() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
         for (int i = 0; i < 400; i++) {
-            uris.add(new URIInfo().setUri("/hello/" + (i % 10) + "/mid/" + i / 10).setEndpointType("http"));
+            uris.add(new EndpointInfo().setEndpoint("/hello/" + (i % 10) + "/mid/" + i / 10).setType("http"));
         }
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("/hello/*/mid/*", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("/hello/*/mid/*", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/hello/.*/mid/.*$", result.get(0).getRegex());
@@ -94,18 +158,18 @@ public class AbstractAnalyticsServiceTest {
 
     @Test
     public void testCompressTop() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
         for (int i = 0; i < 20; i++) {
-            uris.add(new URIInfo().setUri("/" + i + "/leaf").setEndpointType("http"));
+            uris.add(new EndpointInfo().setEndpoint("/" + i + "/leaf").setType("http"));
         }
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("/*/leaf", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("/*/leaf", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/.*/leaf$", result.get(0).getRegex());
@@ -114,18 +178,18 @@ public class AbstractAnalyticsServiceTest {
 
     @Test
     public void testCompressConcurrentLevels() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
         for (int i = 0; i < 400; i++) {
-            uris.add(new URIInfo().setUri("/" + (i % 10) + "/" + i / 10).setEndpointType("http"));
+            uris.add(new EndpointInfo().setEndpoint("/" + (i % 10) + "/" + i / 10).setType("http"));
         }
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("/*/*", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("/*/*", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/.*/.*$", result.get(0).getRegex());
@@ -134,19 +198,19 @@ public class AbstractAnalyticsServiceTest {
 
     @Test
     public void testCompressDontObscureIntermediateLevel() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
-        uris.add(new URIInfo().setUri("/events").setEndpointType("http"));
-        uris.add(new URIInfo().setUri("/events/1").setEndpointType("http"));
+        uris.add(new EndpointInfo().setEndpoint("/events").setType("http"));
+        uris.add(new EndpointInfo().setEndpoint("/events/1").setType("http"));
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertEquals("/events", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
-        assertEquals("/events/1", result.get(1).getUri());
-        assertEquals("http", result.get(1).getEndpointType());
+        assertEquals("/events", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
+        assertEquals("/events/1", result.get(1).getEndpoint());
+        assertEquals("http", result.get(1).getType());
 
         assertFalse(result.get(0).metaURI());
         assertFalse(result.get(1).metaURI());
@@ -154,22 +218,22 @@ public class AbstractAnalyticsServiceTest {
 
     @Test
     public void testCompressDontNonRest() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
-        uris.add(new URIInfo().setUri("/events").setEndpointType("http"));
-        uris.add(new URIInfo().setUri("[HornetQ]MyQueue").setEndpointType("mom"));
-        uris.add(new URIInfo().setUri("OtherURI-with-no-slash").setEndpointType("other"));
+        uris.add(new EndpointInfo().setEndpoint("/events").setType("http"));
+        uris.add(new EndpointInfo().setEndpoint("[HornetQ]MyQueue").setType("mom"));
+        uris.add(new EndpointInfo().setEndpoint("OtherURI-with-no-slash").setType("other"));
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(3, result.size());
-        assertEquals("/events", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
-        assertEquals("[HornetQ]MyQueue", result.get(1).getUri());
-        assertEquals("mom", result.get(1).getEndpointType());
-        assertEquals("OtherURI-with-no-slash", result.get(2).getUri());
-        assertEquals("other", result.get(2).getEndpointType());
+        assertEquals("/events", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
+        assertEquals("[HornetQ]MyQueue", result.get(1).getEndpoint());
+        assertEquals("mom", result.get(1).getType());
+        assertEquals("OtherURI-with-no-slash", result.get(2).getEndpoint());
+        assertEquals("other", result.get(2).getType());
 
         assertFalse(result.get(0).metaURI());
         assertFalse(result.get(1).metaURI());
@@ -182,16 +246,16 @@ public class AbstractAnalyticsServiceTest {
 
     @Test
     public void testCompressRootContext() {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+        List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
-        uris.add(new URIInfo().setUri("/").setEndpointType("http"));
+        uris.add(new EndpointInfo().setEndpoint("/").setType("http"));
 
-        List<URIInfo> result = AbstractAnalyticsService.compressURIInfo(uris);
+        List<EndpointInfo> result = AbstractAnalyticsService.compressEndpointInfo(uris);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("/", result.get(0).getUri());
-        assertEquals("http", result.get(0).getEndpointType());
+        assertEquals("/", result.get(0).getEndpoint());
+        assertEquals("http", result.get(0).getType());
 
         assertFalse(result.get(0).metaURI());
 

@@ -22,11 +22,11 @@ import java.util.List;
 import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
@@ -39,28 +39,28 @@ import org.hawkular.btm.api.model.events.NodeDetails;
 public interface AnalyticsService {
 
     /**
-     * This method returns the unbound URIs (i.e. ones not
+     * This method returns the unbound endpoints (i.e. ones not
      * associated with a business transaction).
      *
      * @param tenantId The optional tenant id
      * @param startTime The start time
      * @param endTime The end time (if 0, then current time)
      * @param compress Whether to compress the list and show common patterns
-     * @return The unbound URIs
+     * @return The unbound endpoints
      */
-    List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress);
+    List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress);
 
     /**
-     * This method returns the bound URIs associated with a business
+     * This method returns the bound endpoints associated with a business
      * transaction.
      *
      * @param tenantId The optional tenant id
      * @param businessTransaction The business transaction name
      * @param startTime The start time
      * @param endTime The end time (if 0, then current time)
-     * @return The bound URIs
+     * @return The bound endpoints
      */
-    List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime);
+    List<String> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime);
 
     /**
      * This method returns the properties associated with the specified

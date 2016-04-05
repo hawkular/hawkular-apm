@@ -31,7 +31,6 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.Severity;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Issue;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.ProcessorIssue;
@@ -274,11 +273,11 @@ public class ProcessorManager {
          * This method initialises the processor.
          */
         protected void init() {
-            if (processor.getUriFilter() != null) {
+            if (processor.getUriFilter() != null && processor.getUriFilter().trim().length() > 0) {
                 uriFilter = Pattern.compile(processor.getUriFilter()).asPredicate();
             }
 
-            if (processor.getFaultFilter() != null) {
+            if (processor.getFaultFilter() != null && processor.getFaultFilter().trim().length() > 0) {
                 faultFilter = Pattern.compile(processor.getFaultFilter()).asPredicate();
             }
 
@@ -416,7 +415,8 @@ public class ProcessorManager {
 
                 // Check if operation has been specified
                 if (processor.getOperation() != null
-                        && !processor.getOperation().equals(((Component) node).getOperation())) {
+                        && processor.getOperation().trim().length() > 0
+                        && !processor.getOperation().equals(node.getOperation())) {
                     return;
                 }
 

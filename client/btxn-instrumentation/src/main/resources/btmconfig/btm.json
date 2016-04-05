@@ -16,18 +16,18 @@
       "description": "Configuration for excluding Web pages and their resources",
       "filter": {
         "exclusions": [
-          "\\.html$",
-          "\\.htm$",
-          "\\.css$",
-          "\\.js$",
-          "\\.jsp$",
-          "\\.gif$",
-          "\\.bmp$",
-          "\\.jpg$",
-          "\\.tif$",
-          "\\.png$",
-          "\\.ico$",
-          "\\.woff$"
+          "\\.html\\[GET\\]$",
+          "\\.htm\\[GET\\]$",
+          "\\.css\\[GET\\]$",
+          "\\.js\\[GET\\]$",
+          "\\.jsp\\[GET\\]$",
+          "\\.gif\\[GET\\]$",
+          "\\.bmp\\[GET\\]$",
+          "\\.jpg\\[GET\\]$",
+          "\\.tif\\[GET\\]$",
+          "\\.png\\[GET\\]$",
+          "\\.ico\\[GET\\]$",
+          "\\.woff\\[GET\\]$"
         ]
       }
     },
@@ -35,7 +35,7 @@
       "description": "Configuration for excluding xsds",
       "filter": {
         "exclusions": [
-          "\\.xsd$"
+          "\\.xsd\\[GET\\]$"
         ]
       }
     }

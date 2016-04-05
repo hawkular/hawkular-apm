@@ -69,6 +69,7 @@ import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
 import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.utils.EndpointUtil;
 import org.hawkular.btm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -868,7 +869,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
                 for (Terms.Bucket operationBucket : operations.getBuckets()) {
                     Stats duration = operationBucket.getAggregations().get("duration");
-                    String id = CommunicationDetails.encodeUriAndOperation(urisBucket.getKey(),
+                    String id = EndpointUtil.encodeEndpoint(urisBucket.getKey(),
                             operationBucket.getKey());
 
                     CommunicationSummaryStatistics css = stats.get(id);

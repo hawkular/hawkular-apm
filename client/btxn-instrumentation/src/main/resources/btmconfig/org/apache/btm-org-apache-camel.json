@@ -41,7 +41,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri())",
+        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "In",
@@ -113,7 +113,7 @@
            "org.apache.camel.Endpoint"
         ],
         "location": "ENTRY",
-        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && activate($3.getEndpointUri())",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && activate($3.getEndpointUri(),null)",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "In",
@@ -175,7 +175,7 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),$2.getProperty(\"Hawkularbtid\"))",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null,$2.getProperty(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$2.getProperty(\"Hawkularbtname\")"
@@ -227,7 +227,7 @@
           "type": "java.lang.String",
           "expression": "createUUID()"
         }],
-        "condition": "isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && activate($3.getEndpointUri())",
+        "condition": "isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && activate($3.getEndpointUri(),null)",
         "actions": [{
           "type": "InstrumentProducer",
           "direction": "In",
