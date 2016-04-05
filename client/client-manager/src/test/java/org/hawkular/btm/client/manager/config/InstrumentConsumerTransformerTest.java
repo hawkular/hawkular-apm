@@ -35,12 +35,13 @@ public class InstrumentConsumerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",null)";
+        String expected = ACTION_PREFIX + "consumerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\",null)";
 
         assertEquals(expected, transformed);
     }
@@ -51,13 +52,15 @@ public class InstrumentConsumerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
         im.setIdExpression("\"MyId\"");
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyId\")";
+        String expected = ACTION_PREFIX +
+                "consumerStart(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\",\"MyId\")";
 
         assertEquals(expected, transformed);
     }
@@ -68,13 +71,14 @@ public class InstrumentConsumerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
         im.setDirection(Direction.Out);
 
         InstrumentConsumerTransformer transformer = new InstrumentConsumerTransformer();
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\")";
+        String expected = ACTION_PREFIX + "consumerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }
@@ -85,6 +89,7 @@ public class InstrumentConsumerTransformerTest {
 
         im.setEndpointTypeExpression("\"MyEndpoint\"");
         im.setUriExpression("\"MyUri\"");
+        im.setOperationExpression("\"MyOperation\"");
         im.setIdExpression("\"MyId\"");
         im.setDirection(Direction.Out);
 
@@ -92,7 +97,7 @@ public class InstrumentConsumerTransformerTest {
 
         String transformed = transformer.convertToRuleAction(im);
 
-        String expected = ACTION_PREFIX + "consumerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\")";
+        String expected = ACTION_PREFIX + "consumerEnd(getRuleName(),\"MyUri\",\"MyEndpoint\",\"MyOperation\")";
 
         assertEquals(expected, transformed);
     }

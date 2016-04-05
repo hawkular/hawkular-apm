@@ -392,12 +392,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerStart(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String)
+     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void consumerStart(String location, String uri, String type, String id) {
+    public void consumerStart(String location, String uri, String type, String operation, String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Consumer start: location=[" + location + "] type=" + type + " uri=" + uri + " id=" + id);
+            log.finest("Consumer start: location=[" + location + "] type=" + type + " operation="
+                    + operation + " uri=" + uri + " id=" + id);
         }
 
         try {
@@ -407,6 +408,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 Consumer consumer = new Consumer();
                 consumer.setEndpointType(type);
                 consumer.setUri(uri);
+                consumer.setOperation(operation);
 
                 if (id != null) {
                     consumer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
@@ -423,12 +425,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#consumerEnd(java.lang.String,
-     *                          java.lang.String, java.lang.String)
+     *                          java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void consumerEnd(String location, String uri, String type) {
+    public void consumerEnd(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Consumer end: location=[" + location + "] type=" + type + " uri=" + uri);
+            log.finest("Consumer end: location=[" + location + "] type=" + type + " operation="
+                    + operation + " uri=" + uri);
         }
 
         try {
@@ -509,13 +512,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#producerStart(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String)
+     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void producerStart(String location, String uri, String type, String id) {
+    public void producerStart(String location, String uri, String type, String operation, String id) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Producer start: location=[" + location + "] type=" + type
-                    + " uri=" + uri + " id=" + id);
+            log.finest("Producer start: location=[" + location + "] type=" + type + " operation="
+                    + operation + " uri=" + uri + " id=" + id);
         }
 
         try {
@@ -525,6 +528,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 Producer producer = new Producer();
                 producer.setEndpointType(type);
                 producer.setUri(uri);
+                producer.setOperation(operation);
 
                 if (id != null) {
                     producer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
@@ -541,12 +545,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.api.BusinessTransactionCollector#producerEnd(java.lang.String,
-     *                          java.lang.String, java.lang.String)
+     *                          java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void producerEnd(String location, String uri, String type) {
+    public void producerEnd(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Producer end: location=[" + location + "] type=" + type + " uri=" + uri);
+            log.finest("Producer end: location=[" + location + "] type=" + type + " operation="
+                    + operation + " uri=" + uri);
         }
 
         try {

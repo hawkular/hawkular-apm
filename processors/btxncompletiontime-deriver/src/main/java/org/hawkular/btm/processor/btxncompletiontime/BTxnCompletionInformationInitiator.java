@@ -62,6 +62,7 @@ public class BTxnCompletionInformationInitiator extends
                 CompletionTime ct = new CompletionTime();
                 ct.setId(item.getId());
                 ct.setUri(n.getUri());
+                ct.setOperation(n.getOperation());
                 ct.setBusinessTransaction(item.getName());
                 ct.setDuration(item.calculateDuration());
                 ct.setFault(n.getFault());

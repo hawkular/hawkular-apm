@@ -29,7 +29,9 @@ import java.io.ObjectOutput;
  */
 public class ProducerInfo implements Externalizable {
 
-    private String originUri;
+    private String sourceUri;
+
+    private String sourceOperation;
 
     private long timestamp = 0;
 
@@ -44,17 +46,31 @@ public class ProducerInfo implements Externalizable {
     private boolean multipleConsumers = false;
 
     /**
-     * @return the originUri
+     * @return the sourceUri
      */
-    public String getOriginUri() {
-        return originUri;
+    public String getSourceUri() {
+        return sourceUri;
     }
 
     /**
-     * @param originUri the originUri to set
+     * @param sourceUri the sourceUri to set
      */
-    public void setOriginUri(String originUri) {
-        this.originUri = originUri;
+    public void setSourceUri(String sourceUri) {
+        this.sourceUri = sourceUri;
+    }
+
+    /**
+     * @return the sourceOperation
+     */
+    public String getSourceOperation() {
+        return sourceOperation;
+    }
+
+    /**
+     * @param sourceOperation the sourceOperation to set
+     */
+    public void setSourceOperation(String sourceOperation) {
+        this.sourceOperation = sourceOperation;
     }
 
     /**
@@ -148,7 +164,8 @@ public class ProducerInfo implements Externalizable {
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
 
-        originUri = ois.readUTF();
+        sourceUri = ois.readUTF();
+        sourceOperation = ois.readUTF();
         timestamp = ois.readLong();
         duration = ois.readLong();
         fragmentId = ois.readUTF();
@@ -164,7 +181,8 @@ public class ProducerInfo implements Externalizable {
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Write version
 
-        oos.writeUTF(originUri);
+        oos.writeUTF(sourceUri);
+        oos.writeUTF(sourceOperation);
         oos.writeLong(timestamp);
         oos.writeLong(duration);
         oos.writeUTF(fragmentId);

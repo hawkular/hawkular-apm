@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class CommunicationSummaryStatistics {
 
-    private String uri;
+    private String id;
 
     private long minimumDuration;
 
@@ -40,17 +40,17 @@ public class CommunicationSummaryStatistics {
     private Map<String, ConnectionStatistics> outbound = new HashMap<String, ConnectionStatistics>();
 
     /**
-     * @return the uri
+     * @return the id
      */
-    public String getUri() {
-        return uri;
+    public String getId() {
+        return id;
     }
 
     /**
-     * @param uri the uri to set
+     * @param id the id to set
      */
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -128,7 +128,7 @@ public class CommunicationSummaryStatistics {
      */
     @Override
     public String toString() {
-        return "CommunicationSummaryStatistics [uri=" + uri + ", minimumDuration=" + minimumDuration
+        return "CommunicationSummaryStatistics [id=" + id + ", minimumDuration=" + minimumDuration
                 + ", averageDuration=" + averageDuration + ", maximumDuration=" + maximumDuration + ", count=" + count
                 + ", outbound=" + outbound + "]";
     }

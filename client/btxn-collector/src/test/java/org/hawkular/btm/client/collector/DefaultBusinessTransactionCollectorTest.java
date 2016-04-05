@@ -58,6 +58,8 @@ public class DefaultBusinessTransactionCollectorTest {
     private static final String TYPE = "TestType";
     /**  */
     private static final String URI = "TestURI";
+    /**  */
+    private static final String OP = "TestOP";
 
     @Test
     public void testSetStartTimeAndDuration() {
@@ -66,7 +68,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new TestConfigurationService());
 
-        collector.consumerStart(null, URI, TYPE, null);
+        collector.consumerStart(null, URI, TYPE, OP, null);
 
         // Delay, to provide a reasonable value for duration
         synchronized (this) {
@@ -77,7 +79,7 @@ public class DefaultBusinessTransactionCollectorTest {
             }
         }
 
-        collector.consumerEnd(null, URI, TYPE);
+        collector.consumerEnd(null, URI, TYPE, OP);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -112,9 +114,9 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new TestConfigurationService());
 
-        collector.consumerStart(null, URI, TYPE, null);
+        collector.consumerStart(null, URI, TYPE, OP, null);
 
-        collector.consumerEnd(null, URI, TYPE);
+        collector.consumerEnd(null, URI, TYPE, OP);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -147,10 +149,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> respHeaders = new HashMap<String, String>();
         respHeaders.put("joe", "bloggs");
 
-        collector.consumerStart(null, URI, TYPE, null);
+        collector.consumerStart(null, URI, TYPE, OP, null);
         collector.processIn(null, reqHeaders);
         collector.processOut(null, respHeaders);
-        collector.consumerEnd(null, URI, TYPE);
+        collector.consumerEnd(null, URI, TYPE, OP);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -192,10 +194,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> reqHeaders2 = new HashMap<String, String>();
         reqHeaders2.put("joe", "bloggs");
 
-        collector.consumerStart(null, URI, TYPE, null);
+        collector.consumerStart(null, URI, TYPE, OP, null);
         collector.processIn(null, reqHeaders);
         collector.processIn(null, reqHeaders2);
-        collector.consumerEnd(null, URI, TYPE);
+        collector.consumerEnd(null, URI, TYPE, OP);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -233,10 +235,10 @@ public class DefaultBusinessTransactionCollectorTest {
         Map<String, String> reqHeaders = new HashMap<String, String>();
         reqHeaders.put("hello", "world");
 
-        collector.consumerStart(null, URI, TYPE, null);
+        collector.consumerStart(null, URI, TYPE, OP, null);
         collector.processIn(null, null);
         collector.processIn(null, reqHeaders);
-        collector.consumerEnd(null, URI, TYPE);
+        collector.consumerEnd(null, URI, TYPE, OP);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -270,9 +272,9 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setBusinessTransactionPublisher(btxnService);
         collector.setConfigurationService(new TestConfigurationService());
 
-        collector.consumerStart(null, null, null, "myid");
+        collector.consumerStart(null, null, null, null, "myid");
 
-        collector.consumerEnd(null, null, null);
+        collector.consumerEnd(null, null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -322,9 +324,9 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.activate("/test");
 
-        collector.consumerStart(null, "/test", null, null);
+        collector.consumerStart(null, "/test", null, null, null);
 
-        collector.consumerEnd(null, null, null);
+        collector.consumerEnd(null, null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -363,9 +365,9 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.setLevel(null, "None");
 
-        collector.consumerStart(null, "/test", null, null);
+        collector.consumerStart(null, "/test", null, null, null);
 
-        collector.consumerEnd(null, null, null);
+        collector.consumerEnd(null, null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -402,9 +404,9 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.activate("/test");
 
-        collector.consumerStart(null, "/test", null, null);
+        collector.consumerStart(null, "/test", null, null, null);
 
-        collector.consumerEnd(null, null, null);
+        collector.consumerEnd(null, null, null, null);
 
         // Delay necessary as reporting the business transaction is performed in a separate
         // thread
@@ -503,7 +505,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         // Cause a fragment builder to be created
         collector.activate("/test");
-        collector.producerStart(null, "/test", "HTTP", null);
+        collector.producerStart(null, "/test", "HTTP", null, null);
 
         collector.setName(null, "test");
 
@@ -541,7 +543,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         // Cause a fragment builder to be created
         collector.activate("/test");
-        collector.producerStart(null, "/test", "HTTP", null);
+        collector.producerStart(null, "/test", "HTTP", null, null);
 
         collector.setPrincipal(null, "test");
 
@@ -570,7 +572,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         // Cause a fragment builder to be created
         collector.activate("/test");
-        collector.producerStart(null, "/test", "HTTP", null);
+        collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
         assertEquals("testapp", collector.getName());
@@ -602,7 +604,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         // Cause a fragment builder to be created
         collector.activate("/test");
-        collector.producerStart(null, "/test", "HTTP", null);
+        collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
         assertEquals("testapp", collector.getName());
@@ -630,13 +632,13 @@ public class DefaultBusinessTransactionCollectorTest {
 
         // Create top level node
         collector.activate("not relevant");
-        collector.consumerStart(null, "not relevant", "HTTP", null);
+        collector.consumerStart(null, "not relevant", "HTTP", null, null);
         collector.getFragmentManager().getFragmentBuilder()
             .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
 
         // Cause a fragment builder to be created
         collector.activate("/test");
-        collector.producerStart(null, "/test", "HTTP", null);
+        collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
         assertEquals("", collector.getName());
@@ -651,7 +653,7 @@ public class DefaultBusinessTransactionCollectorTest {
         // Cause a fragment builder to be created
         FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
 
-        collector.consumerStart(null, "testconsumer", "testtype", "testid");
+        collector.consumerStart(null, "testconsumer", "testtype", "testop", "testid");
 
         Node node = builder.getCurrentNode();
 
@@ -671,7 +673,7 @@ public class DefaultBusinessTransactionCollectorTest {
         // Cause a fragment builder to be created
         FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
 
-        collector.consumerStart(null, "testconsumer", "testtype", "testid");
+        collector.consumerStart(null, "testconsumer", "testtype", "testop", "testid");
 
         Consumer consumer = (Consumer) builder.getCurrentNode();
 
@@ -698,7 +700,7 @@ public class DefaultBusinessTransactionCollectorTest {
         // Cause a fragment builder to be created
         FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
 
-        collector.consumerStart(null, "testconsumer", "testcontype", "testconid");
+        collector.consumerStart(null, "testconsumer", "testcontype", "testop", "testconid");
 
         Consumer consumer = (Consumer) builder.getCurrentNode();
 
@@ -716,14 +718,14 @@ public class DefaultBusinessTransactionCollectorTest {
 
         assertNotNull(component2);
 
-        collector.producerStart(null, "testproducer", "testprodtype", "tesprodid");
+        collector.producerStart(null, "testproducer", "testprodtype", "testop", "tesprodid");
 
         Producer producer = (Producer) builder.getCurrentNode();
 
         assertNotNull(producer);
 
         // Pop the producer and one of the components
-        collector.producerEnd(null, "testproducer", "testprodtype");
+        collector.producerEnd(null, "testproducer", "testprodtype", "testop");
         collector.componentEnd(null, "testcomponent2", "testcomptype", "testcompop");
 
         collector.setDetail(null, "testname", "testvalue", "Producer", false);
@@ -742,19 +744,19 @@ public class DefaultBusinessTransactionCollectorTest {
         // Cause a fragment builder to be created
         FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
 
-        collector.consumerStart(null, "testconsumer", "testcontype", "testconid");
+        collector.consumerStart(null, "testconsumer", "testcontype", "testop", "testconid");
 
         Consumer consumer = (Consumer) builder.getCurrentNode();
 
         assertNotNull(consumer);
 
-        collector.producerStart(null, "testproducer", "testprodtype", "testprodid1");
+        collector.producerStart(null, "testproducer", "testprodtype", "testop", "testprodid1");
 
         Producer producerOuter = (Producer) builder.getCurrentNode();
 
         assertNotNull(producerOuter);
 
-        collector.producerStart(null, "testproducer", "testprodtype", "testprodid2");
+        collector.producerStart(null, "testproducer", "testprodtype", "testop", "testprodid2");
 
         Producer producerInner = (Producer) builder.getCurrentNode();
 
@@ -767,8 +769,8 @@ public class DefaultBusinessTransactionCollectorTest {
         assertTrue(producerOuter.getCorrelationIds().get(0).getValue().equals("testprodid1"));
 
         // Pop the producer and one of the components
-        collector.producerEnd(null, "testproducer", "testprodtype");
-        collector.producerEnd(null, "testproducer", "testprodtype");
+        collector.producerEnd(null, "testproducer", "testprodtype", "testop");
+        collector.producerEnd(null, "testproducer", "testprodtype", "testop");
 
         // After merge
         assertFalse(producerOuter.getNodes().contains(producerInner));

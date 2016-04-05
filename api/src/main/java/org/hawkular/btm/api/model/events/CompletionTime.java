@@ -36,6 +36,9 @@ public class CompletionTime {
     private String uri;
 
     @JsonInclude
+    private String operation;
+
+    @JsonInclude
     private String businessTransaction;
 
     @JsonInclude
@@ -76,6 +79,20 @@ public class CompletionTime {
      */
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation the operation to set
+     */
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     /**
@@ -161,6 +178,7 @@ public class CompletionTime {
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
@@ -196,6 +214,11 @@ public class CompletionTime {
                 return false;
         } else if (!id.equals(other.id))
             return false;
+        if (operation == null) {
+            if (other.operation != null)
+                return false;
+        } else if (!operation.equals(other.operation))
+            return false;
         if (properties == null) {
             if (other.properties != null)
                 return false;
@@ -216,9 +239,9 @@ public class CompletionTime {
      */
     @Override
     public String toString() {
-        return "CompletionTime [id=" + id + ", uri=" + uri + ", businessTransaction=" + businessTransaction
-                + ", timestamp=" + timestamp + ", duration=" + duration + ", fault=" + fault + ", properties="
-                + properties + "]";
+        return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", businessTransaction="
+                + businessTransaction + ", timestamp=" + timestamp + ", duration=" + duration + ", fault=" + fault
+                + ", properties=" + properties + "]";
     }
 
 }

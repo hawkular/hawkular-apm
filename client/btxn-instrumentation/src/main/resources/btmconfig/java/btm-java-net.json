@@ -19,6 +19,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$0.getRequestMethod()",
           "uriExpression": "$0.getURL().getPath()",
           "idExpression": "id"
         },{
@@ -98,6 +99,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$0.getRequestMethod()",
           "uriExpression": "$0.getURL().getPath()",
           "idExpression": "id"
         },{
@@ -183,6 +185,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$0.getRequestMethod()",
           "uriExpression": "$0.getURL().getPath()",
           "idExpression": "id"
         },{

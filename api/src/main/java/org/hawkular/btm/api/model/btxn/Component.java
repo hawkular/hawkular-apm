@@ -32,9 +32,6 @@ public class Component extends InteractionNode {
     @JsonInclude
     private String componentType;
 
-    @JsonInclude
-    private String operation;
-
     public Component() {
         super(NodeType.Component);
     }
@@ -58,20 +55,6 @@ public class Component extends InteractionNode {
         this.componentType = componentType;
     }
 
-    /**
-     * @return the operation
-     */
-    public String getOperation() {
-        return operation;
-    }
-
-    /**
-     * @param operation the operation to set
-     */
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -80,7 +63,6 @@ public class Component extends InteractionNode {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
-        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         return result;
     }
 
@@ -106,13 +88,6 @@ public class Component extends InteractionNode {
         } else if (!componentType.equals(other.componentType)) {
             return false;
         }
-        if (operation == null) {
-            if (other.operation != null) {
-                return false;
-            }
-        } else if (!operation.equals(other.operation)) {
-            return false;
-        }
         return true;
     }
 
@@ -121,9 +96,12 @@ public class Component extends InteractionNode {
      */
     @Override
     public String toString() {
-        return "Component [componentType=" + componentType + ", operation=" + operation + ", getNodes()=" + getNodes()
-                + ", getUri()=" + getUri() + ", getBaseTime()=" + getBaseTime() + ", getDuration()=" + getDuration()
-                + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + "]";
+        return "Component [componentType=" + componentType + ", getOperation()=" + getOperation() + ", getIn()="
+                + getIn() + ", getOut()=" + getOut() + ", getNodes()=" + getNodes() + ", getBaseTime()="
+                + getBaseTime() + ", getDuration()=" + getDuration() + ", getFault()=" + getFault()
+                + ", getFaultDescription()=" + getFaultDescription() + ", getDetails()=" + getDetails()
+                + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()=" + getIssues() + "]";
     }
+
 
 }

@@ -28,6 +28,9 @@ public class InstrumentConsumer extends CollectorAction {
     @JsonInclude
     private String endpointTypeExpression;
 
+    @JsonInclude
+    private String operationExpression;
+
     /**
      * @return the endpointTypeExpression
      */
@@ -40,6 +43,20 @@ public class InstrumentConsumer extends CollectorAction {
      */
     public void setEndpointTypeExpression(String endpointTypeExpression) {
         this.endpointTypeExpression = endpointTypeExpression;
+    }
+
+    /**
+     * @return the operationExpression
+     */
+    public String getOperationExpression() {
+        return operationExpression;
+    }
+
+    /**
+     * @param operationExpression the operationExpression to set
+     */
+    public void setOperationExpression(String operationExpression) {
+        this.operationExpression = operationExpression;
     }
 
 }

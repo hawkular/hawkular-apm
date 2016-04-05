@@ -131,12 +131,12 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(pi1);
         assertNotNull(pi2);
 
-        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi1.getOriginUri());
+        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi1.getSourceUri());
 
         // Check that producer info 2 has same origin URI as p1, as they
         // are from the same fragment (without a consumer) so are being identified
         // as a client of the first producer URI found (see HWKBTM-353).
-        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi2.getOriginUri());
+        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "p1", pi2.getSourceUri());
     }
 
     @Test
@@ -187,8 +187,8 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(pi1);
         assertNotNull(pi2);
 
-        assertEquals("consumerURI", pi1.getOriginUri());
-        assertEquals("consumerURI", pi2.getOriginUri());
+        assertEquals("consumerURI", pi1.getSourceUri());
+        assertEquals("consumerURI", pi2.getSourceUri());
     }
 
     @Test
@@ -306,8 +306,8 @@ public class CommunicationDetailsDeriverTest {
 
         assertEquals("pid1", details.getId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
-        assertEquals("FirstURI", details.getOriginUri());
-        assertEquals("SecondURI", details.getUri());
+        assertEquals("FirstURI", details.getSource());
+        assertEquals("SecondURI", details.getTarget());
 
         assertFalse(details.isMultiConsumer());
 
@@ -476,8 +476,8 @@ public class CommunicationDetailsDeriverTest {
 
         assertEquals("pid1", details.getId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
-        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "TheURI", details.getOriginUri());
-        assertEquals("TheURI", details.getUri());
+        assertEquals(CommunicationDetailsDeriver.CLIENT_PREFIX + "TheURI", details.getSource());
+        assertEquals("TheURI", details.getTarget());
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
         assertTrue(400 == details.getLatency());

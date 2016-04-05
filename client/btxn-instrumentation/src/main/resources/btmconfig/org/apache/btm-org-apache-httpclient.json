@@ -24,6 +24,7 @@
           "type": "InstrumentProducer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$2.getRequestLine().getMethod()",
           "uriExpression": "uri.getPath()",
           "idExpression": "id"
         },{

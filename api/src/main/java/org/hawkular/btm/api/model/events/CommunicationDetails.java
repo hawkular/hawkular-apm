@@ -42,9 +42,9 @@ public class CommunicationDetails implements Externalizable {
 
     private String businessTransaction;
 
-    private String uri;
+    private String source;
 
-    private String originUri;
+    private String target;
 
     private boolean multiConsumer = false;
 
@@ -105,31 +105,31 @@ public class CommunicationDetails implements Externalizable {
     }
 
     /**
-     * @return the uri
+     * @return the source
      */
-    public String getUri() {
-        return uri;
+    public String getSource() {
+        return source;
     }
 
     /**
-     * @param uri the uri to set
+     * @param source the source to set
      */
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     /**
-     * @return the originUri
+     * @return the target
      */
-    public String getOriginUri() {
-        return originUri;
+    public String getTarget() {
+        return target;
     }
 
     /**
-     * @param originUri the originUri to set
+     * @param target the target to set
      */
-    public void setOriginUri(String originUri) {
-        this.originUri = originUri;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     /**
@@ -354,6 +354,39 @@ public class CommunicationDetails implements Externalizable {
         this.outbound = outbound;
     }
 
+    /**
+     * This method converts the supplied URI and optional operation
+     * into an 'origin' descriptor.
+     *
+     * @param uri The URI
+     * @param operation The optional operation
+     * @return The origin descriptor
+     */
+    public static String encodeUriAndOperation(String uri, String operation) {
+        StringBuffer buf=new StringBuffer(uri);
+        if (operation != null && operation.trim().length() > 0) {
+            buf.append('[');
+            buf.append(operation);
+            buf.append(']');
+        }
+        return buf.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source="
+                + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", timestamp=" + timestamp
+                + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
+                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
+                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
+                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
+                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
+                + ", properties=" + properties + ", outbound=" + outbound + "]";
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -366,20 +399,20 @@ public class CommunicationDetails implements Externalizable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + (int) (latency ^ (latency >>> 32));
         result = prime * result + (multiConsumer ? 1231 : 1237);
-        result = prime * result + ((originUri == null) ? 0 : originUri.hashCode());
         result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
         result = prime * result + (int) (producerDuration ^ (producerDuration >>> 32));
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        result = prime * result + ((source == null) ? 0 : source.hashCode());
         result = prime * result + ((sourceFragmentId == null) ? 0 : sourceFragmentId.hashCode());
         result = prime * result + ((sourceHostAddress == null) ? 0 : sourceHostAddress.hashCode());
         result = prime * result + ((sourceHostName == null) ? 0 : sourceHostName.hashCode());
+        result = prime * result + ((target == null) ? 0 : target.hashCode());
         result = prime * result + (int) (targetFragmentDuration ^ (targetFragmentDuration >>> 32));
         result = prime * result + ((targetFragmentId == null) ? 0 : targetFragmentId.hashCode());
         result = prime * result + ((targetHostAddress == null) ? 0 : targetHostAddress.hashCode());
         result = prime * result + ((targetHostName == null) ? 0 : targetHostName.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + (int) (timestampOffset ^ (timestampOffset >>> 32));
-        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
 
@@ -388,137 +421,88 @@ public class CommunicationDetails implements Externalizable {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         CommunicationDetails other = (CommunicationDetails) obj;
         if (businessTransaction == null) {
-            if (other.businessTransaction != null) {
+            if (other.businessTransaction != null)
                 return false;
-            }
-        } else if (!businessTransaction.equals(other.businessTransaction)) {
+        } else if (!businessTransaction.equals(other.businessTransaction))
             return false;
-        }
-        if (consumerDuration != other.consumerDuration) {
+        if (consumerDuration != other.consumerDuration)
             return false;
-        }
         if (id == null) {
-            if (other.id != null) {
+            if (other.id != null)
                 return false;
-            }
-        } else if (!id.equals(other.id)) {
+        } else if (!id.equals(other.id))
             return false;
-        }
-        if (latency != other.latency) {
+        if (latency != other.latency)
             return false;
-        }
-        if (multiConsumer != other.multiConsumer) {
+        if (multiConsumer != other.multiConsumer)
             return false;
-        }
-        if (originUri == null) {
-            if (other.originUri != null) {
-                return false;
-            }
-        } else if (!originUri.equals(other.originUri)) {
-            return false;
-        }
         if (outbound == null) {
-            if (other.outbound != null) {
+            if (other.outbound != null)
                 return false;
-            }
-        } else if (!outbound.equals(other.outbound)) {
+        } else if (!outbound.equals(other.outbound))
             return false;
-        }
-        if (producerDuration != other.producerDuration) {
+        if (producerDuration != other.producerDuration)
             return false;
-        }
         if (properties == null) {
-            if (other.properties != null) {
+            if (other.properties != null)
                 return false;
-            }
-        } else if (!properties.equals(other.properties)) {
+        } else if (!properties.equals(other.properties))
             return false;
-        }
+        if (source == null) {
+            if (other.source != null)
+                return false;
+        } else if (!source.equals(other.source))
+            return false;
         if (sourceFragmentId == null) {
-            if (other.sourceFragmentId != null) {
+            if (other.sourceFragmentId != null)
                 return false;
-            }
-        } else if (!sourceFragmentId.equals(other.sourceFragmentId)) {
+        } else if (!sourceFragmentId.equals(other.sourceFragmentId))
             return false;
-        }
         if (sourceHostAddress == null) {
-            if (other.sourceHostAddress != null) {
+            if (other.sourceHostAddress != null)
                 return false;
-            }
-        } else if (!sourceHostAddress.equals(other.sourceHostAddress)) {
+        } else if (!sourceHostAddress.equals(other.sourceHostAddress))
             return false;
-        }
         if (sourceHostName == null) {
-            if (other.sourceHostName != null) {
+            if (other.sourceHostName != null)
                 return false;
-            }
-        } else if (!sourceHostName.equals(other.sourceHostName)) {
+        } else if (!sourceHostName.equals(other.sourceHostName))
             return false;
-        }
-        if (targetFragmentDuration != other.targetFragmentDuration) {
+        if (target == null) {
+            if (other.target != null)
+                return false;
+        } else if (!target.equals(other.target))
             return false;
-        }
+        if (targetFragmentDuration != other.targetFragmentDuration)
+            return false;
         if (targetFragmentId == null) {
-            if (other.targetFragmentId != null) {
+            if (other.targetFragmentId != null)
                 return false;
-            }
-        } else if (!targetFragmentId.equals(other.targetFragmentId)) {
+        } else if (!targetFragmentId.equals(other.targetFragmentId))
             return false;
-        }
         if (targetHostAddress == null) {
-            if (other.targetHostAddress != null) {
+            if (other.targetHostAddress != null)
                 return false;
-            }
-        } else if (!targetHostAddress.equals(other.targetHostAddress)) {
+        } else if (!targetHostAddress.equals(other.targetHostAddress))
             return false;
-        }
         if (targetHostName == null) {
-            if (other.targetHostName != null) {
+            if (other.targetHostName != null)
                 return false;
-            }
-        } else if (!targetHostName.equals(other.targetHostName)) {
+        } else if (!targetHostName.equals(other.targetHostName))
             return false;
-        }
-        if (timestamp != other.timestamp) {
+        if (timestamp != other.timestamp)
             return false;
-        }
-        if (timestampOffset != other.timestampOffset) {
+        if (timestampOffset != other.timestampOffset)
             return false;
-        }
-        if (uri == null) {
-            if (other.uri != null) {
-                return false;
-            }
-        } else if (!uri.equals(other.uri)) {
-            return false;
-        }
         return true;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", uri=" + uri
-                + ", originUri=" + originUri + ", multiConsumer=" + multiConsumer + ", timestamp=" + timestamp
-                + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
-                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
-                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
-                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
-                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
-                + ", properties=" + properties + ", outbound=" + outbound + "]";
     }
 
     /* (non-Javadoc)
@@ -531,8 +515,8 @@ public class CommunicationDetails implements Externalizable {
 
         id = ois.readUTF();
         businessTransaction = ois.readUTF();
-        uri = ois.readUTF();
-        originUri = ois.readUTF();
+        source = ois.readUTF();
+        target = ois.readUTF();
         multiConsumer = ois.readBoolean();
         timestamp = ois.readLong();
         latency = ois.readLong();
@@ -562,8 +546,8 @@ public class CommunicationDetails implements Externalizable {
 
         oos.writeUTF(id);
         oos.writeUTF(businessTransaction);
-        oos.writeUTF(uri);
-        oos.writeUTF(originUri);
+        oos.writeUTF(source);
+        oos.writeUTF(target);
         oos.writeBoolean(multiConsumer);
         oos.writeLong(timestamp);
         oos.writeLong(latency);

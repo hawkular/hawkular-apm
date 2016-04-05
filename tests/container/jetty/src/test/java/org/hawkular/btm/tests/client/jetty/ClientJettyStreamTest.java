@@ -363,6 +363,7 @@ public class ClientJettyStreamTest extends ClientTestBase {
             assertEquals(QUERY_STRING, testConsumer.getDetails().get("http_query"));
         }
 
+        assertEquals(method, testConsumer.getOperation());
         assertEquals(method, testConsumer.getDetails().get("http_method"));
 
         // Check headers

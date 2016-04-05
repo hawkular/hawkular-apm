@@ -70,13 +70,13 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
         // This method initialises the deriver with a list of business transaction fragments
         // that will need to be referenced when correlating a consumer with a producer
         for (int i = 0; i < items.size(); i++) {
-            String originUri = null;
+            Origin originUri = new Origin();
 
             // Need to check for Producer nodes
             BusinessTransaction btxn = items.get(i);
             for (int j = 0; j < btxn.getNodes().size(); j++) {
                 Node node = btxn.getNodes().get(j);
-                originUri = initialiseNode(tenantId, btxn, originUri, node);
+                initialiseNode(tenantId, btxn, originUri, node);
             }
         }
     }
@@ -86,11 +86,10 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      *
      * @param tenantId The tenant id
      * @param btxn The business transaction
-     * @param originUri The origin uri
+     * @param origin The origin node information
      * @param node The node
-     * @return The origin URI
      */
-    protected String initialiseNode(String tenantId, BusinessTransaction btxn, String originUri, Node node) {
+    protected void initialiseNode(String tenantId, BusinessTransaction btxn, Origin origin, Node node) {
         if (node.getClass() == Producer.class) {
             // Check for interaction correlation ids
             Producer producer = (Producer) node;
@@ -98,8 +97,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
             // Check if origin URI has already been set - if not
             // identify based on being a client of the URI associated
             // with the producer
-            if (originUri == null) {
-                originUri = CLIENT_PREFIX + producer.getUri();
+            if (origin.getUri() == null) {
+                origin.setUri(CLIENT_PREFIX + producer.getUri());
             }
 
             // Calculate the timestamp for the producer
@@ -111,7 +110,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
             if (!cids.isEmpty()) {
                 for (int i = 0; i < cids.size(); i++) {
                     ProducerInfo pi = new ProducerInfo();
-                    pi.setOriginUri(originUri);
+                    pi.setSourceUri(origin.getUri());
+                    pi.setSourceOperation(origin.getOperation());
                     pi.setTimestamp(timestamp);
                     pi.setDuration(producer.getDuration());
                     pi.setFragmentId(btxn.getId());
@@ -127,15 +127,15 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                 }
             }
         } else if (node instanceof ContainerNode) {
-            if (originUri == null && node.getClass() == Consumer.class) {
-                originUri = node.getUri();
+            if (origin.getUri() == null && node.getClass() == Consumer.class) {
+                origin.setUri(node.getUri());
+                origin.setOperation(node.getOperation());
             }
             for (int j = 0; j < ((ContainerNode) node).getNodes().size(); j++) {
-                originUri = initialiseNode(tenantId, btxn, originUri, ((ContainerNode) node).getNodes().get(j));
+                initialiseNode(tenantId, btxn, origin,
+                        ((ContainerNode) node).getNodes().get(j));
             }
         }
-
-        return originUri;
     }
 
     /* (non-Javadoc)
@@ -170,7 +170,12 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret = new CommunicationDetails();
                         ret.setId(id);
                         ret.setBusinessTransaction(item.getName());
-                        ret.setUri(consumer.getUri());
+
+                        ret.setSource(CommunicationDetails.encodeUriAndOperation(pi.getSourceUri(),
+                                pi.getSourceOperation()));
+
+                        ret.setTarget(CommunicationDetails.encodeUriAndOperation(consumer.getUri(),
+                                consumer.getOperation()));
 
                         long diff = TimeUnit.MILLISECONDS.convert(pi.getDuration() - consumer.getDuration(),
                                 TimeUnit.NANOSECONDS);
@@ -183,7 +188,6 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setProducerDuration(pi.getDuration());
                         ret.setConsumerDuration(consumer.getDuration());
 
-                        ret.setOriginUri(pi.getOriginUri());
                         ret.setMultiConsumer(pi.isMultipleConsumers());
                         ret.setProperties(item.getProperties());
                         ret.setSourceFragmentId(pi.getFragmentId());
@@ -271,5 +275,45 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      */
     @Override
     public void cleanup(String tenantId, List<BusinessTransaction> items) {
+    }
+
+    /**
+     * Container for details about the origin node.
+     *
+     * @author gbrown
+     */
+    public class Origin {
+
+        private String uri;
+        private String operation;
+
+        /**
+         * @return the uri
+         */
+        public String getUri() {
+            return uri;
+        }
+
+        /**
+         * @param uri the uri to set
+         */
+        public void setUri(String uri) {
+            this.uri = uri;
+        }
+
+        /**
+         * @return the operation
+         */
+        public String getOperation() {
+            return operation;
+        }
+
+        /**
+         * @param operation the operation to set
+         */
+        public void setOperation(String operation) {
+            this.operation = operation;
+        }
+
     }
 }

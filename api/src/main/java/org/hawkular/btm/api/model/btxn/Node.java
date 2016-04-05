@@ -52,6 +52,9 @@ public abstract class Node {
     private String uri;
 
     @JsonInclude
+    private String operation;
+
+    @JsonInclude
     private long baseTime = 0;
 
     @JsonInclude
@@ -129,6 +132,20 @@ public abstract class Node {
     public Node setUri(String uri) {
         this.uri = uri;
         return this;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation the operation to set
+     */
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     /**
@@ -387,11 +404,14 @@ public abstract class Node {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + (int) (baseTime ^ (baseTime >>> 32));
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
-        result = prime * result + (int) (baseTime ^ (baseTime >>> 32));
+        result = prime * result + ((faultDescription == null) ? 0 : faultDescription.hashCode());
+        result = prime * result + ((issues == null) ? 0 : issues.hashCode());
+        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
@@ -409,6 +429,8 @@ public abstract class Node {
         if (getClass() != obj.getClass())
             return false;
         Node other = (Node) obj;
+        if (baseTime != other.baseTime)
+            return false;
         if (correlationIds == null) {
             if (other.correlationIds != null)
                 return false;
@@ -426,7 +448,20 @@ public abstract class Node {
                 return false;
         } else if (!fault.equals(other.fault))
             return false;
-        if (baseTime != other.baseTime)
+        if (faultDescription == null) {
+            if (other.faultDescription != null)
+                return false;
+        } else if (!faultDescription.equals(other.faultDescription))
+            return false;
+        if (issues == null) {
+            if (other.issues != null)
+                return false;
+        } else if (!issues.equals(other.issues))
+            return false;
+        if (operation == null) {
+            if (other.operation != null)
+                return false;
+        } else if (!operation.equals(other.operation))
             return false;
         if (type != other.type)
             return false;

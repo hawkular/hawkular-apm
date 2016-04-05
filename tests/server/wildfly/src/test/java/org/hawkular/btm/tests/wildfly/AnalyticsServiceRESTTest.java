@@ -1550,12 +1550,12 @@ public class AnalyticsServiceRESTTest {
         CommunicationSummaryStatistics second = null;
 
         for (CommunicationSummaryStatistics css : stats) {
-            if (css.getUri().equals("originuri")) {
+            if (css.getId().equals("originuri")) {
                 first = css;
-            } else if (css.getUri().equals("testuri")) {
+            } else if (css.getId().equals("testuri")) {
                 second = css;
             } else {
-                fail("Unknown uri: " + css.getUri());
+                fail("Unknown uri: " + css.getId());
             }
         }
 
@@ -1565,7 +1565,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(1, first.getOutbound().size());
         assertEquals(0, second.getOutbound().size());
 
-        assertEquals(first.getOutbound().keySet().iterator().next(), second.getUri());
+        assertEquals(first.getOutbound().keySet().iterator().next(), second.getId());
     }
 
     @Test
@@ -1688,12 +1688,12 @@ public class AnalyticsServiceRESTTest {
         CommunicationSummaryStatistics second = null;
 
         for (CommunicationSummaryStatistics css : stats) {
-            if (css.getUri().equals("originuri")) {
+            if (css.getId().equals("originuri")) {
                 first = css;
-            } else if (css.getUri().equals("testuri")) {
+            } else if (css.getId().equals("testuri")) {
                 second = css;
             } else {
-                fail("Unknown uri: " + css.getUri());
+                fail("Unknown uri: " + css.getId());
             }
         }
 
@@ -1703,7 +1703,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(1, first.getOutbound().size());
         assertEquals(0, second.getOutbound().size());
 
-        assertEquals(first.getOutbound().keySet().iterator().next(), second.getUri());
+        assertEquals(first.getOutbound().keySet().iterator().next(), second.getId());
     }
 
     @Test
