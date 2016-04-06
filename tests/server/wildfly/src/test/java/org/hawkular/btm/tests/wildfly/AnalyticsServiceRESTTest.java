@@ -188,11 +188,11 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Retrieve stored business transaction Endpoints
-        List<String> endpoints = analytics.getBoundEndpoints(null, "btxn1", 0, 0);
+        List<EndpointInfo> endpoints = analytics.getBoundEndpoints(null, "btxn1", 0, 0);
 
         assertNotNull(endpoints);
         assertEquals(1, endpoints.size());
-        assertTrue(endpoints.contains("testuri"));
+        assertTrue(endpoints.contains(new EndpointInfo("testuri")));
     }
 
     @Test

@@ -66,7 +66,7 @@ module BTM {
       };
       for (let i = 0; i < $scope.selectedendpoints.length; i++) {
         defn.filter.inclusions.push($scope.selectedendpoints[i].regex);
-        if ($scope.selectedendpoints[i].template !== undefined) {
+        if ($scope.selectedendpoints[i].uriTemplate !== undefined) {
           defn.processors.push({
             description: 'Process inbound request',
             nodeType: 'Consumer',
@@ -74,7 +74,7 @@ module BTM {
             actions: [{
               actionType: 'EvaluateURI',
               description: 'Extract parameters from path',
-              template: $scope.selectedendpoints[i].template
+              template: $scope.selectedendpoints[i].uriTemplate
             }]
           });
         }
@@ -97,7 +97,7 @@ module BTM {
       for (let i = 0; i < $scope.selectedendpoints.length; i++) {
         defn.filter.inclusions.push($scope.selectedendpoints[i].regex);
         // Even though ignored, add URI evaluation in case later on we want to manage the btxn
-        if ($scope.selectedendpoints[i].template !== undefined) {
+        if ($scope.selectedendpoints[i].uriTemplate !== undefined) {
           defn.processors.push({
             description: 'Process inbound request',
             nodeType: 'Consumer',
@@ -105,7 +105,7 @@ module BTM {
             actions: [{
               actionType: 'EvaluateURI',
               description: 'Extract parameters from path',
-              template: $scope.selectedendpoints[i].template
+              template: $scope.selectedendpoints[i].uriTemplate
             }]
           });
         }

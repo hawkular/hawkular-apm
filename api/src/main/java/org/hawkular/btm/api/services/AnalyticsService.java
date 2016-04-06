@@ -60,7 +60,7 @@ public interface AnalyticsService {
      * @param endTime The end time (if 0, then current time)
      * @return The bound endpoints
      */
-    List<String> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime);
+    List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime);
 
     /**
      * This method returns the properties associated with the specified
