@@ -171,6 +171,11 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         assertNotNull("checkStock null", checkStock);
         assertNotNull("createOrder null", createOrder);
 
+        // Check if operation specified
+        assertEquals("GET", creditCheck.getOperation());
+        assertEquals("GET", checkStock.getOperation());
+        assertEquals("GET", createOrder.getOperation());
+
         List<Producer> producers = new ArrayList<Producer>();
         findNodes(createOrder.getNodes(), Producer.class, producers);
 

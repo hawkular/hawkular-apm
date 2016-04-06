@@ -46,6 +46,7 @@
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "$1.getResourceRef().getPath()",
+          "operationExpression": "$1.getMethod().getName()",
           "idExpression": "id"
         },{
           "type": "ProcessHeaders",
@@ -59,6 +60,10 @@
           "type": "SetDetail",
           "name": "http_query",
           "valueExpression": "$1.getResourceRef().getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$1.getMethod().getName()"
         },{
           "type": "SetDetail",
           "name": "http_port",
