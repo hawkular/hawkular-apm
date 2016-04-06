@@ -45,11 +45,11 @@ module BTM {
       console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
     });
 
-    $http.get('/hawkular/btm/analytics/unbounduris?compress=true').then(function(resp) {
-      $scope.unboundURIs = [ ];
+    $http.get('/hawkular/btm/analytics/unboundendpoints?compress=true').then(function(resp) {
+      $scope.unboundEndpoints = [ ];
       for (let i = 0; i < resp.data.length; i++) {
         if (resp.data[i].regex !== undefined) {
-          $scope.unboundURIs.add(resp.data[i].regex);
+          $scope.unboundEndpoints.add(resp.data[i].regex);
         }
       }
     },function(resp) {
@@ -57,11 +57,11 @@ module BTM {
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/bounduris/' + $scope.businessTransactionName).then(function(resp) {
-        $scope.boundURIs = [ ];
+      $http.get('/hawkular/btm/analytics/boundendpoints/' + $scope.businessTransactionName).then(function(resp) {
+        $scope.boundEndpoints = [ ];
         for (let i = 0; i < resp.data.length; i++) {
           let regex = $scope.escapeRegExp(resp.data[i]);
-          $scope.boundURIs.add(regex);
+          $scope.boundEndpoints.add(regex);
         }
       },function(resp) {
         console.log('Failed to get bound URIs for business txn \'' + $scope.businessTransactionName + '\': ' +

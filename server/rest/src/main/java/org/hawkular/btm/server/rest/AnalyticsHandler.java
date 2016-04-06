@@ -44,11 +44,11 @@ import javax.ws.rs.core.SecurityContext;
 import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.server.api.security.SecurityProvider;
@@ -84,15 +84,15 @@ public class AnalyticsHandler {
     AnalyticsService analyticsService;
 
     @GET
-    @Path("unbounduris")
+    @Path("unboundendpoints")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Identify the unbound URIs",
+            value = "Identify the unbound endpoints",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getUnboundURIs(
+    public void getUnboundEndpoints(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
@@ -106,14 +106,14 @@ public class AnalyticsHandler {
             boolean compress) {
 
         try {
-            log.tracef("Get unbound URIs: start [%s] end [%s]", startTime, endTime);
+            log.tracef("Get unbound endpoints: start [%s] end [%s]", startTime, endTime);
 
-            java.util.List<URIInfo> uris = analyticsService.getUnboundURIs(
+            java.util.List<EndpointInfo> endpoints = analyticsService.getUnboundEndpoints(
                     securityProvider.getTenantId(context), startTime, endTime, compress);
 
-            log.tracef("Got unbound URIs: start [%s] end [%s] = [%s]", startTime, endTime, uris);
+            log.tracef("Got unbound endpoints: start [%s] end [%s] = [%s]", startTime, endTime, endpoints);
 
-            response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
+            response.resume(Response.status(Response.Status.OK).entity(endpoints).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Throwable e) {
@@ -127,15 +127,15 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("bounduris/{name}")
+    @Path("boundendpoints/{name}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Identify the bound URIs for a business transaction",
+            value = "Identify the bound endpoints for a business transaction",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getBoundURIs(
+    public void getBoundEndpoints(
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
@@ -148,14 +148,15 @@ public class AnalyticsHandler {
             long endTime) {
 
         try {
-            log.tracef("Get bound URIs: name [%s] start [%s] end [%s]", name, startTime, endTime);
+            log.tracef("Get bound endpoints: name [%s] start [%s] end [%s]", name, startTime, endTime);
 
-            java.util.List<String> uris = analyticsService.getBoundURIs(
+            java.util.List<String> endpoints = analyticsService.getBoundEndpoints(
                     securityProvider.getTenantId(context), name, startTime, endTime);
 
-            log.tracef("Got bound URIs: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime, uris);
+            log.tracef("Got bound endpoints: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime,
+                                                endpoints);
 
-            response.resume(Response.status(Response.Status.OK).entity(uris).type(APPLICATION_JSON_TYPE)
+            response.resume(Response.status(Response.Status.OK).entity(endpoints).type(APPLICATION_JSON_TYPE)
                     .build());
 
         } catch (Throwable e) {

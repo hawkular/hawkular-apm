@@ -31,10 +31,10 @@ import java.util.Map;
 import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -93,7 +93,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testAllDistinctUnboundURIsConsumer() {
+    public void testAllDistinctUnboundEndpointsConsumer() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -135,17 +135,17 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
+        java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(2, uris.size());
 
-        assertEquals("uri1", uris.get(0).getUri());
-        assertEquals("uri5", uris.get(1).getUri());
+        assertEquals("uri1", uris.get(0).getEndpoint());
+        assertEquals("uri5", uris.get(1).getEndpoint());
     }
 
     @Test
-    public void testAllDistinctUnboundURIsProducer() {
+    public void testAllDistinctUnboundEndpointsProducer() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -182,17 +182,17 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
+        java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(2, uris.size());
 
-        assertEquals("uri4", uris.get(0).getUri());
-        assertEquals("uri5", uris.get(1).getUri());
+        assertEquals("uri4", uris.get(0).getEndpoint());
+        assertEquals("uri5", uris.get(1).getEndpoint());
     }
 
     @Test
-    public void testAllDuplicationUnboundURIs() {
+    public void testAllDuplicationUnboundEndpoints() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -234,16 +234,16 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to store");
         }
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
+        java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(1, uris.size());
 
-        assertEquals("uri3", uris.get(0).getUri());
+        assertEquals("uri3", uris.get(0).getEndpoint());
     }
 
     @Test
-    public void testUnboundURIsExcludeBTxnConfig() {
+    public void testUnboundEndpointsExcludeBTxnConfig() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -312,14 +312,14 @@ public class AnalyticsServiceElasticsearchTest {
             }
         });
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
+        java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(0, uris.size());
     }
 
     @Test
-    public void testUnboundURIsExcludeBTxnConfigRegex() {
+    public void testUnboundEndpointsExcludeBTxnConfigRegex() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -388,14 +388,14 @@ public class AnalyticsServiceElasticsearchTest {
             }
         });
 
-        java.util.List<URIInfo> uris = analytics.getUnboundURIs(null, 100, 0, false);
+        java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
         assertEquals(0, uris.size());
     }
 
     @Test
-    public void testBoundURIs() {
+    public void testBoundEndpoints() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
         BusinessTransaction btxn1 = new BusinessTransaction();
@@ -439,7 +439,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        java.util.List<String> uris1 = analytics.getBoundURIs(null, "btxn1", 100, 0);
+        java.util.List<String> uris1 = analytics.getBoundEndpoints(null, "btxn1", 100, 0);
 
         assertNotNull(uris1);
         assertEquals(3, uris1.size());
@@ -447,7 +447,7 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(uris1.contains("uri2"));
         assertTrue(uris1.contains("uri3"));
 
-        java.util.List<String> uris2 = analytics.getBoundURIs(null, "btxn2", 100, 0);
+        java.util.List<String> uris2 = analytics.getBoundEndpoints(null, "btxn2", 100, 0);
 
         assertNotNull(uris2);
         assertEquals(1, uris2.size());

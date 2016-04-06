@@ -354,24 +354,6 @@ public class CommunicationDetails implements Externalizable {
         this.outbound = outbound;
     }
 
-    /**
-     * This method converts the supplied URI and optional operation
-     * into an 'origin' descriptor.
-     *
-     * @param uri The URI
-     * @param operation The optional operation
-     * @return The origin descriptor
-     */
-    public static String encodeUriAndOperation(String uri, String operation) {
-        StringBuffer buf=new StringBuffer(uri);
-        if (operation != null && operation.trim().length() > 0) {
-            buf.append('[');
-            buf.append(operation);
-            buf.append(']');
-        }
-        return buf.toString();
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

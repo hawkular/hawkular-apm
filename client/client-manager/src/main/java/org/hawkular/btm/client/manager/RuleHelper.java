@@ -308,19 +308,19 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.SessionManager#activate(java.lang.String, java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#activate(java.lang.String,java.lang.String,java.lang.String)
      */
     @Override
-    public boolean activate(String uri, String id) {
-        return collector().session().activate(uri, id);
+    public boolean activate(String uri, String operation, String id) {
+        return collector().session().activate(uri, operation, id);
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.SessionManager#activate(java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#activate(java.lang.String,java.lang.String)
      */
     @Override
-    public boolean activate(String uri) {
-        return collector().session().activate(uri);
+    public boolean activate(String uri, String operation) {
+        return collector().session().activate(uri, operation);
     }
 
     /* (non-Javadoc)

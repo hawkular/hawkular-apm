@@ -120,23 +120,23 @@ public class FilterManager {
     }
 
     /**
-     * This method determines whether the supplied URI is associated with
+     * This method determines whether the supplied endpoint is associated with
      * a defined business transaction, or valid due to global inclusion
      * criteria.
      *
-     * @param uri The URI
-     * @return The filter processor, with empty btxn name if URI globally valid,
-     *                  or null if URI should be excluded
+     * @param endpoint The endpoint
+     * @return The filter processor, with empty btxn name if endpoint globally valid,
+     *                  or null if endpoint should be excluded
      */
-    public FilterProcessor getFilterProcessor(String uri) {
+    public FilterProcessor getFilterProcessor(String endpoint) {
         FilterProcessor ret = (onlyNamedTransactions ? null : unnamedBTxn);
 
         synchronized (filterMap) {
             // First check if a global exclusion filter applies
             for (int i = 0; i < globalExclusionFilters.size(); i++) {
-                if (globalExclusionFilters.get(i).isExcluded(uri)) {
+                if (globalExclusionFilters.get(i).isExcluded(endpoint)) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Excluding uri=" + uri);
+                        log.finest("Excluding endpoint=" + endpoint);
                     }
                     return null;
                 }
@@ -144,20 +144,20 @@ public class FilterManager {
 
             // Check if business transaction specific applies
             for (int i = 0; i < btxnFilters.size(); i++) {
-                if (btxnFilters.get(i).isIncluded(uri)) {
+                if (btxnFilters.get(i).isIncluded(endpoint)) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("URI has passed inclusion filter: uri=" + uri);
+                        log.finest("Endpoint has passed inclusion filter: endpoint=" + endpoint);
                     }
-                    if (btxnFilters.get(i).isExcluded(uri)) {
+                    if (btxnFilters.get(i).isExcluded(endpoint)) {
                         if (log.isLoggable(Level.FINEST)) {
-                            log.finest("URI has failed exclusion filter: uri=" + uri);
+                            log.finest("Endpoint has failed exclusion filter: endpoint=" + endpoint);
                         }
                         return null;
                     }
                     ret = btxnFilters.get(i);
 
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("URI belongs to business transaction '" + ret + ": uri=" + uri);
+                        log.finest("Endpoint belongs to business transaction '" + ret + ": endpoint=" + endpoint);
                     }
                     break;
                 }

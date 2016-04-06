@@ -38,7 +38,7 @@
                 <input type="text" class="form-control" name="newInclusionFilterField"
                      ng-model="newInclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
                      placeholder="Enter an inclusion filter (regular expression)"
-                     typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
+                     typeahead="endpoint for endpoint in unboundEndpoints | filter:$viewValue | limitTo:12" />
                 <span class="input-group-btn">
                   <button class="btn btn-default" type="submit" ng-disabled="!newInclusionFilter"  tooltip="Add">
                     <div ng-show="addProgress" class="spinner spinner-sm"></div>
@@ -61,7 +61,7 @@
                 <input type="text" class="form-control" name="newExclusionFilterField"
                      ng-model="newExclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
                      placeholder="Enter an exclusion filter (regular expression)"
-                     typeahead="uri for uri in unboundURIs | filter:$viewValue | limitTo:12" />
+                     typeahead="endpoint for endpoint in unboundEndpoints | filter:$viewValue | limitTo:12" />
                 <span class="input-group-btn">
                   <button class="btn btn-default" type="submit" ng-disabled="!newExclusionFilter" tooltip="Add">
                     <div ng-show="addProgress" class="spinner spinner-sm"></div>
@@ -132,7 +132,7 @@
                   <input type="text" name="uriFilter" class="form-control"
                        ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
                        placeholder="Enter URI filter (regular expression)"
-                       typeahead="uri for uri in boundURIs | filter:$viewValue | limitTo:12"
+                       typeahead="endpoint for endpoint in boundEndpoints | filter:$viewValue | limitTo:12"
                        ng-change="setDirty()" />
                 </div>
               </div>

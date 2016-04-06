@@ -34,10 +34,10 @@ import org.hawkular.btm.analytics.service.rest.client.AnalyticsServiceRESTClient
 import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
@@ -111,7 +111,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetUnboundURIs() {
+    public void testGetUnboundEndpoints() {
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -145,15 +145,15 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         // Retrieve stored business transaction
-        List<URIInfo> uris = analytics.getUnboundURIs(null, 0, 0, true);
+        List<EndpointInfo> endpoints = analytics.getUnboundEndpoints(null, 0, 0, true);
 
-        assertNotNull(uris);
-        assertEquals(1, uris.size());
-        assertEquals("testuri", uris.get(0).getUri());
+        assertNotNull(endpoints);
+        assertEquals(1, endpoints.size());
+        assertEquals("testuri", endpoints.get(0).getEndpoint());
     }
 
     @Test
-    public void testGetBoundURIs() {
+    public void testGetBoundEndpoints() {
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("btxn1");
@@ -187,12 +187,12 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
-        // Retrieve stored business transaction URIs
-        List<String> uris = analytics.getBoundURIs(null, "btxn1", 0, 0);
+        // Retrieve stored business transaction Endpoints
+        List<String> endpoints = analytics.getBoundEndpoints(null, "btxn1", 0, 0);
 
-        assertNotNull(uris);
-        assertEquals(1, uris.size());
-        assertTrue(uris.contains("testuri"));
+        assertNotNull(endpoints);
+        assertEquals(1, endpoints.size());
+        assertTrue(endpoints.contains("testuri"));
     }
 
     @Test

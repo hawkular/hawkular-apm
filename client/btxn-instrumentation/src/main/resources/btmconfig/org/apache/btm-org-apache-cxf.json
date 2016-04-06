@@ -5,7 +5,9 @@
       "rules": [{
         "ruleName": "Apache CXF Jetty HTTPDestination Consumer Start",
         "notes": [
-          "This method was called one for the request, and then again for the response, but in a diff thread - so used link mechanism to firstly determine if call was first or second, then also to link the thread processing the response back to the original business txn session"
+          "This method was called one for the request, and then again for the response, but in a diff thread - so used link mechanism to ",
+          "firstly determine if call was first or second, then also to link the thread processing the response back to the original business txn session.",
+          "TODO: Should this rule extract the HTTP method? and then pass as second parameter to the activate method as well as to the InstrumentConsumer?"
         ],
         "className": "^org.apache.cxf.transport.http_jetty.JettyHTTPDestination",
         "methodName": "doService",
@@ -15,7 +17,7 @@
           "javax.servlet.http.HttpServletResponse"
         ],
         "location": "ENTRY",
-        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),$2.getHeader(\"Hawkularbtid\"))",
+        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
           "nameExpression": "$2.getHeader(\"Hawkularbtname\")"

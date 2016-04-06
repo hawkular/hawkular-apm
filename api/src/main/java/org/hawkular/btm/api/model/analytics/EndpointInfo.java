@@ -20,18 +20,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents information related to URIs associated with
+ * This class represents information related to endpoints associated with
  * unbound business transaction fragments.
  *
  * @author gbrown
  */
-public class URIInfo {
+public class EndpointInfo {
 
     @JsonInclude
-    private String uri;
+    private String endpoint;
 
     @JsonInclude
-    private String endpointType;
+    private String type;
 
     @JsonInclude(Include.NON_EMPTY)
     private String regex;
@@ -42,7 +42,7 @@ public class URIInfo {
     /**
      * The default constructor.
      */
-    public URIInfo() {
+    public EndpointInfo() {
     }
 
     /**
@@ -50,42 +50,42 @@ public class URIInfo {
      *
      * @param uriInfo The info to copy
      */
-    public URIInfo(URIInfo uriInfo) {
-        this.uri = uriInfo.uri;
-        this.endpointType = uriInfo.endpointType;
+    public EndpointInfo(EndpointInfo uriInfo) {
+        this.endpoint = uriInfo.endpoint;
+        this.type = uriInfo.type;
         this.regex = uriInfo.regex;
         this.template = uriInfo.template;
     }
 
     /**
-     * @return the uri
+     * @return the endpoint
      */
-    public String getUri() {
-        return uri;
+    public String getEndpoint() {
+        return endpoint;
     }
 
     /**
-     * @param uri the uri to set
-     * @return the URI info
+     * @param endpoint the endpoint to set
+     * @return the Endpoint info
      */
-    public URIInfo setUri(String uri) {
-        this.uri = uri;
+    public EndpointInfo setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
         return this;
     }
 
     /**
-     * @return the endpointType
+     * @return the type
      */
-    public String getEndpointType() {
-        return endpointType;
+    public String getType() {
+        return type;
     }
 
     /**
-     * @param endpointType the endpointType to set
-     * @return the URI info
+     * @param type the type to set
+     * @return the Endpoint info
      */
-    public URIInfo setEndpointType(String endpointType) {
-        this.endpointType = endpointType;
+    public EndpointInfo setType(String type) {
+        this.type = type;
         return this;
     }
 
@@ -124,7 +124,8 @@ public class URIInfo {
      * @return Whether this is a meta-URI
      */
     public boolean metaURI() {
-        return uri != null && (uri.indexOf("/*/") != -1 || uri.endsWith("/*"));
+        return endpoint != null && (endpoint.indexOf("/*/") != -1 || endpoint.endsWith("/*")
+                || endpoint.indexOf("/*[") != -1);
     }
 
     /* (non-Javadoc)
@@ -132,7 +133,7 @@ public class URIInfo {
      */
     @Override
     public String toString() {
-        return "URIInfo [uri=" + uri + ", endpointType=" + endpointType + ", regex=" + regex + ", template="
+        return "URIInfo [endpoint=" + endpoint + ", type=" + type + ", regex=" + regex + ", template="
                 + template + "]";
     }
 

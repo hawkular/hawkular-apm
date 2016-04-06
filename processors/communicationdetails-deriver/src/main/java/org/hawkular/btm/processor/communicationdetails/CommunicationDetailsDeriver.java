@@ -31,6 +31,7 @@ import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
+import org.hawkular.btm.api.utils.EndpointUtil;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
 /**
@@ -171,10 +172,10 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setId(id);
                         ret.setBusinessTransaction(item.getName());
 
-                        ret.setSource(CommunicationDetails.encodeUriAndOperation(pi.getSourceUri(),
+                        ret.setSource(EndpointUtil.encodeEndpoint(pi.getSourceUri(),
                                 pi.getSourceOperation()));
 
-                        ret.setTarget(CommunicationDetails.encodeUriAndOperation(consumer.getUri(),
+                        ret.setTarget(EndpointUtil.encodeEndpoint(consumer.getUri(),
                                 consumer.getOperation()));
 
                         long diff = TimeUnit.MILLISECONDS.convert(pi.getDuration() - consumer.getDuration(),

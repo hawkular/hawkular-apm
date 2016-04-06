@@ -43,6 +43,7 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.services.BusinessTransactionPublisher;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.ServiceResolver;
+import org.hawkular.btm.api.utils.EndpointUtil;
 import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.SessionManager;
 import org.hawkular.btm.client.collector.internal.BusinessTransactionReporter;
@@ -1325,18 +1326,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.SessionManager#activate(java.lang.String)
-     */
-    @Override
-    public boolean activate(String uri) {
-        return activate(uri, null);
-    }
-
-    /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.SessionManager#activate(java.lang.String,java.lang.String)
      */
     @Override
-    public boolean activate(String uri, String id) {
+    public boolean activate(String uri, String  operation) {
+        return activate(uri, operation, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.client.SessionManager#activate(java.lang.String,java.lang.String,java.lang.String)
+     */
+    @Override
+    public boolean activate(String uri, String operation, String id) {
         // If id is set, then fragment must be tracked
         if (id != null) {
             if (log.isLoggable(Level.FINEST)) {
@@ -1372,12 +1373,14 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         }
 
         if (uri != null) {
+            String endpoint = EndpointUtil.encodeEndpoint(uri, operation);
+
             if (filterManager == null) {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Unable to determine if fragment should be traced due to missing filter manager");
                 }
             } else {
-                FilterProcessor filterProcessor = filterManager.getFilterProcessor(uri);
+                FilterProcessor filterProcessor = filterManager.getFilterProcessor(endpoint);
 
                 if (filterProcessor != null && filterProcessor.getBusinessTransaction() != null) {
                     if (builder == null) {
@@ -1392,11 +1395,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
                 if (log.isLoggable(Level.FINEST)) {
                     if (filterProcessor != null) {
-                        log.finest("activate: URI[" + uri + "] business transaction name="
+                        log.finest("activate: Endpoint[" + endpoint + "] business transaction name="
                                 + filterProcessor.getBusinessTransaction() + " config="
                                 + filterProcessor.getConfig());
                     } else {
-                        log.finest("activate: URI[" + uri + "] no business transaction found");
+                        log.finest("activate: Endpoint[" + endpoint + "] no business transaction found");
                     }
                 }
                 return filterProcessor != null;

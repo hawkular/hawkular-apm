@@ -32,7 +32,7 @@
           "org.switchyard.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "activate($1.getConsumer().getName())",
+        "condition": "activate($1.getConsumer().getName(),$1.getContract().getConsumerOperation().getName())",
         "actions": [{
           "type": "InstrumentComponent",
           "direction": "In",

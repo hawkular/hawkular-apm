@@ -29,14 +29,15 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.utils.EndpointUtil;
 
 /**
  * The abstract base class for implementations of the Analytics Service.
@@ -78,24 +79,25 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     protected abstract List<BusinessTransaction> getFragments(String tenantId, Criteria criteria);
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String,
+     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundEndpoints(java.lang.String,
      *                                  long, long, boolean)
      */
     @Override
-    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
+    public List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress) {
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime).setEndTime(endTime);
 
         List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
 
-        return (doGetUnboundURIs(tenantId, fragments, compress));
+        return (doGetUnboundEndpoints(tenantId, fragments, compress));
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundEndpoints(java.lang.String,
+     *                               java.lang.String, long, long)
      */
     @Override
-    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
+    public List<String> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime) {
         List<String> ret = new ArrayList<String>();
 
         Criteria criteria = new Criteria();
@@ -107,7 +109,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
 
         for (int i = 0; i < fragments.size(); i++) {
             BusinessTransaction btxn = fragments.get(i);
-            obtainURIs(btxn.getNodes(), ret);
+            obtainEndpoints(btxn.getNodes(), ret);
         }
 
         return ret;
@@ -157,47 +159,47 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     // Initial rule - collapse if a node contains more than a threshold of children
 
     /**
-     * This method compresses the list of URIs to identify
+     * This method compresses the list of endpoints to identify
      * common patterns.
      *
-     * @param uris The URIs
-     * @return The compressed list of URIs
+     * @param endpoints The endpoints
+     * @return The compressed list of endpoints
      */
-    protected static List<URIInfo> compressURIInfo(List<URIInfo> uris) {
-        List<URIInfo> others = new ArrayList<URIInfo>();
+    protected static List<EndpointInfo> compressEndpointInfo(List<EndpointInfo> endpoints) {
+        List<EndpointInfo> others = new ArrayList<EndpointInfo>();
 
-        URIPart rootPart = new URIPart();
+        EndpointPart rootPart = new EndpointPart();
 
-        for (int i = 0; i < uris.size(); i++) {
-            URIInfo uri = uris.get(i);
+        for (int i = 0; i < endpoints.size(); i++) {
+            EndpointInfo endpoint = endpoints.get(i);
 
-            if (uri.getUri() != null
-                    && uri.getUri().length() > 1
-                    && uri.getUri().charAt(0) == '/') {
-                String[] parts = uri.getUri().split("/");
+            if (endpoint.getEndpoint() != null
+                    && endpoint.getEndpoint().length() > 1
+                    && endpoint.getEndpoint().charAt(0) == '/') {
+                String[] parts = endpoint.getEndpoint().split("/");
 
-                buildTree(rootPart, parts, 1, uri.getEndpointType());
+                buildTree(rootPart, parts, 1, endpoint.getType());
 
             } else {
-                others.add(new URIInfo(uri));
+                others.add(new EndpointInfo(endpoint));
             }
         }
 
         // Construct new list
-        List<URIInfo> info = null;
+        List<EndpointInfo> info = null;
 
-        if (uris.size() != others.size()) {
+        if (endpoints.size() != others.size()) {
             rootPart.collapse();
 
-            info = extractURIInfo(rootPart);
+            info = extractEndpointInfo(rootPart);
 
             info.addAll(others);
         } else {
             info = others;
         }
 
-        // Initialise the URI info
-        initURIInfo(info);
+        // Initialise the endpoint info
+        initEndpointInfo(info);
 
         return info;
     }
@@ -210,46 +212,62 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * @param index The current index into the parts array
      * @param endpointType The endpoint type
      */
-    protected static void buildTree(URIPart parent, String[] parts, int index, String endpointType) {
+    protected static void buildTree(EndpointPart parent, String[] parts, int index, String endpointType) {
+        // Check if operation qualifier is part of last element
+        String name = parts[index];
+        String qualifier = null;
+
+        if (index == parts.length - 1) {
+            qualifier = EndpointUtil.decodeEndpointOperation(parts[index], false);
+            name = EndpointUtil.decodeEndpointURI(parts[index]);
+        }
+
         // Check if part is defined in the parent
-        URIPart child = parent.addChild(parts[index]);
+        EndpointPart child = parent.addChild(name);
 
         if (index < parts.length - 1) {
             buildTree(child, parts, index + 1, endpointType);
         } else {
+            // Check if part has an operation qualifier
+            if (qualifier != null) {
+                child = child.addChild(qualifier);
+                child.setQualifier(true);
+            }
             child.setEndpointType(endpointType);
         }
     }
 
     /**
-     * This method expands a tree into the collapsed set of URIs.
+     * This method expands a tree into the collapsed set of endpoints.
      *
      * @param root The tree
-     * @return The list of URIs
+     * @return The list of endpoints
      */
-    protected static List<URIInfo> extractURIInfo(URIPart root) {
-        List<URIInfo> uris = new ArrayList<URIInfo>();
+    protected static List<EndpointInfo> extractEndpointInfo(EndpointPart root) {
+        List<EndpointInfo> endpoints = new ArrayList<EndpointInfo>();
 
-        root.extractURIInfo(uris, "");
+        root.extractEndpointInfo(endpoints, "");
 
-        return uris;
+        return endpoints;
     }
 
     /**
-     * This method initialises the list of URI information.
+     * This method initialises the list of endpoint information.
      *
-     * @param uris The URI information
+     * @param endpoints The endpoint information
      */
-    protected static void initURIInfo(List<URIInfo> uris) {
-        for (int i = 0; i < uris.size(); i++) {
-            URIInfo info = uris.get(i);
+    protected static void initEndpointInfo(List<EndpointInfo> endpoints) {
+        for (int i = 0; i < endpoints.size(); i++) {
+            EndpointInfo info = endpoints.get(i);
 
-            info.setRegex(createRegex(info.getUri(), info.metaURI()));
+            info.setRegex(createRegex(info.getEndpoint(), info.metaURI()));
 
             if (info.metaURI()) {
                 StringBuilder template = new StringBuilder();
 
-                String[] parts = info.getUri().split("/");
+                String uri = EndpointUtil.decodeEndpointURI(info.getEndpoint());
+
+                String[] parts = uri.split("/");
 
                 String part = null;
                 int paramNo = 1;
@@ -285,20 +303,20 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     }
 
     /**
-     * This method obtains the unbound URIs from a list of business
+     * This method obtains the unbound endpoints from a list of business
      * transaction fragments.
      *
      * @param tenantId The tenant
      * @param fragments The list of business txn fragments
      * @param compress Whether the list should be compressed (i.e. to identify patterns)
-     * @return The list of unbound URIs
+     * @return The list of unbound endpoints
      */
-    protected List<URIInfo> doGetUnboundURIs(String tenantId,
+    protected List<EndpointInfo> doGetUnboundEndpoints(String tenantId,
             List<BusinessTransaction> fragments, boolean compress) {
-        List<URIInfo> ret = new ArrayList<URIInfo>();
-        Map<String, URIInfo> map = new HashMap<String, URIInfo>();
+        List<EndpointInfo> ret = new ArrayList<EndpointInfo>();
+        Map<String, EndpointInfo> map = new HashMap<String, EndpointInfo>();
 
-        // Process the fragments to identify which URIs are no used in any business transaction
+        // Process the fragments to identify which endpoints are not used in any business transaction
         for (int i = 0; i < fragments.size(); i++) {
             BusinessTransaction btxn = fragments.get(i);
 
@@ -307,25 +325,26 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                 // Check if top level node is Consumer
                 if (btxn.getNodes().get(0) instanceof Consumer) {
                     Consumer consumer = (Consumer) btxn.getNodes().get(0);
-                    String uri = consumer.getUri();
+                    String endpoint = EndpointUtil.encodeEndpoint(consumer.getUri(),
+                                        consumer.getOperation());
 
-                    // Check whether URI already known, and that it did not result
+                    // Check whether endpoint already known, and that it did not result
                     // in a fault (e.g. want to ignore spurious URIs that are not
                     // associated with a valid transaction)
-                    if (!map.containsKey(uri) && consumer.getFault() == null) {
-                        URIInfo info = new URIInfo();
-                        info.setUri(uri);
-                        info.setEndpointType(consumer.getEndpointType());
+                    if (!map.containsKey(endpoint) && consumer.getFault() == null) {
+                        EndpointInfo info = new EndpointInfo();
+                        info.setEndpoint(endpoint);
+                        info.setType(consumer.getEndpointType());
                         ret.add(info);
-                        map.put(uri, info);
+                        map.put(endpoint, info);
                     }
                 } else {
-                    obtainProducerURIs(btxn.getNodes(), ret, map);
+                    obtainProducerEndpoints(btxn.getNodes(), ret, map);
                 }
             }
         }
 
-        // Check whether any of the top level URIs are already associated with
+        // Check whether any of the top level endpoints are already associated with
         // a business txn config
         if (configService != null) {
             Map<String, BusinessTxnConfig> configs = configService.getBusinessTransactions(tenantId, 0);
@@ -337,10 +356,10 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                     for (String filter : config.getFilter().getInclusions()) {
 
                         if (filter != null && filter.trim().length() > 0) {
-                            Iterator<URIInfo> iter = ret.iterator();
+                            Iterator<EndpointInfo> iter = ret.iterator();
                             while (iter.hasNext()) {
-                                URIInfo info = iter.next();
-                                if (Pattern.matches(filter, info.getUri())) {
+                                EndpointInfo info = iter.next();
+                                if (Pattern.matches(filter, info.getEndpoint())) {
                                     iter.remove();
                                 }
                             }
@@ -350,15 +369,15 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
             }
         }
 
-        // Check if the URIs should be compressed to identify common patterns
+        // Check if the endpoints should be compressed to identify common patterns
         if (compress) {
-            ret = compressURIInfo(ret);
+            ret = compressEndpointInfo(ret);
         }
 
-        Collections.sort(ret, new Comparator<URIInfo>() {
+        Collections.sort(ret, new Comparator<EndpointInfo>() {
             @Override
-            public int compare(URIInfo arg0, URIInfo arg1) {
-                return arg0.getUri().compareTo(arg1.getUri());
+            public int compare(EndpointInfo arg0, EndpointInfo arg1) {
+                return arg0.getEndpoint().compareTo(arg1.getEndpoint());
             }
         });
 
@@ -366,51 +385,52 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     }
 
     /**
-     * This method collects the information regarding URIs.
+     * This method collects the information regarding endpoints.
      *
      * @param nodes The nodes
-     * @param uris The list of URIs
+     * @param endpoints The list of endpoints
      */
-    protected void obtainURIs(List<Node> nodes, List<String> uris) {
+    protected void obtainEndpoints(List<Node> nodes, List<String> endpoints) {
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
 
-            if (node.getUri() != null && !uris.contains(node.getUri())) {
-                uris.add(node.getUri());
+            if (node.getUri() != null && !endpoints.contains(node.getUri())) {
+                endpoints.add(EndpointUtil.encodeEndpoint(node.getUri(), node.getOperation()));
             }
 
             if (node instanceof ContainerNode) {
-                obtainURIs(((ContainerNode) node).getNodes(), uris);
+                obtainEndpoints(((ContainerNode) node).getNodes(), endpoints);
             }
         }
     }
 
     /**
-     * This method collects the information regarding URIs for
+     * This method collects the information regarding endpoints for
      * contained producers.
      *
      * @param nodes The nodes
-     * @param uris The list of URI info
-     * @param map The map of URis to info
+     * @param endpoints The list of endpoint info
+     * @param map The map of endpoints to info
      */
-    protected void obtainProducerURIs(List<Node> nodes, List<URIInfo> uris, Map<String, URIInfo> map) {
+    protected void obtainProducerEndpoints(List<Node> nodes, List<EndpointInfo> endpoints,
+                                Map<String, EndpointInfo> map) {
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
 
             if (node instanceof Producer) {
-                String uri = node.getUri();
+                String endpoint = EndpointUtil.encodeEndpoint(node.getUri(), node.getOperation());
 
-                if (!map.containsKey(uri)) {
-                    URIInfo info = new URIInfo();
-                    info.setUri(uri);
-                    info.setEndpointType(((Producer) node).getEndpointType());
-                    uris.add(info);
-                    map.put(uri, info);
+                if (!map.containsKey(endpoint)) {
+                    EndpointInfo info = new EndpointInfo();
+                    info.setEndpoint(endpoint);
+                    info.setType(((Producer) node).getEndpointType());
+                    endpoints.add(info);
+                    map.put(endpoint, info);
                 }
             }
 
             if (node instanceof ContainerNode) {
-                obtainProducerURIs(((ContainerNode) node).getNodes(), uris, map);
+                obtainProducerEndpoints(((ContainerNode) node).getNodes(), endpoints, map);
             }
         }
     }
@@ -419,17 +439,17 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * This method derives the regular expression from the supplied
      * URI.
      *
-     * @param uri The URI
-     * @param meta Whether this is a meta URI
+     * @param endpoint The endpoint
+     * @param meta Whether this is a meta endpoint
      * @return The regular expression
      */
-    protected static String createRegex(String uri, boolean meta) {
+    protected static String createRegex(String endpoint, boolean meta) {
         StringBuffer regex = new StringBuffer();
 
         regex.append('^');
 
-        for (int i=0; i < uri.length(); i++) {
-            char ch=uri.charAt(i);
+        for (int i=0; i < endpoint.length(); i++) {
+            char ch=endpoint.charAt(i);
             if ("*".indexOf(ch) != -1) {
                 regex.append('.');
             } else if ("\\.^$|?+[]{}()".indexOf(ch) != -1) {
@@ -444,17 +464,18 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     }
 
     /**
-     * This class represents a node in a tree of URI parts.
+     * This class represents a node in a tree of endpoint (e.g. URI) parts.
      *
      * @author gbrown
      */
-    public static class URIPart {
+    public static class EndpointPart {
 
         /**  */
         private static final int CHILD_THRESHOLD = 10;
         private int count = 1;
-        private Map<String, URIPart> children;
+        private Map<String, EndpointPart> children;
         private String endpointType;
+        private boolean qualifier=false;
 
         /**
          * @return the count
@@ -473,14 +494,14 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         /**
          * @return the children
          */
-        public Map<String, URIPart> getChildren() {
+        public Map<String, EndpointPart> getChildren() {
             return children;
         }
 
         /**
          * @param children the children to set
          */
-        public void setChildren(Map<String, URIPart> children) {
+        public void setChildren(Map<String, EndpointPart> children) {
             this.children = children;
         }
 
@@ -491,15 +512,15 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
          * @param name The name
          * @return The added/existing child
          */
-        public URIPart addChild(String name) {
-            URIPart child = null;
+        public EndpointPart addChild(String name) {
+            EndpointPart child = null;
 
             if (children == null) {
-                children = new HashMap<String, URIPart>();
+                children = new HashMap<String, EndpointPart>();
             }
 
             if (!children.containsKey(name)) {
-                child = new URIPart();
+                child = new EndpointPart();
                 children.put(name, child);
             } else {
                 child = children.get(name);
@@ -515,8 +536,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         public void collapse() {
             if (children != null && !children.isEmpty()) {
                 if (children.size() >= CHILD_THRESHOLD) {
-                    URIPart merged = new URIPart();
-                    for (URIPart cur : children.values()) {
+                    EndpointPart merged = new EndpointPart();
+                    for (EndpointPart cur : children.values()) {
                         merged.merge(cur);
                     }
                     children.clear();
@@ -525,7 +546,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                     merged.collapse();
                 } else {
                     // Recursively perform on children
-                    for (URIPart part : children.values()) {
+                    for (EndpointPart part : children.values()) {
                         part.collapse();
                     }
                 }
@@ -533,12 +554,12 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         }
 
         /**
-         * This method merges the supplied URI part into
+         * This method merges the supplied endpoint part into
          * the current part.
          *
          * @param toMerge
          */
-        public void merge(URIPart toMerge) {
+        public void merge(EndpointPart toMerge) {
             if (endpointType == null) {
                 endpointType = toMerge.getEndpointType();
             }
@@ -548,7 +569,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
             // Process the supplied part's child nodes
             if (toMerge.getChildren() != null) {
                 if (children == null) {
-                    children = new HashMap<String, URIPart>();
+                    children = new HashMap<String, EndpointPart>();
                 }
                 for (String child : toMerge.getChildren().keySet()) {
                     if (getChildren().containsKey(child)) {
@@ -563,25 +584,25 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         }
 
         /**
-         * This method expands the URIInfo from the tree.
+         * This method expands the EndpointInfo from the tree.
          *
-         * @param uris The list of URIs
-         * @param uri The URI string
+         * @param endpoints The list of endpoints
+         * @param endpoint The endpoint string
          */
-        public void extractURIInfo(List<URIInfo> uris, String uri) {
+        public void extractEndpointInfo(List<EndpointInfo> endpoints, String endpoint) {
 
             if (endpointType != null) {
-                URIInfo info = new URIInfo();
-                info.setUri(uri);
-                info.setEndpointType(endpointType);
-                uris.add(info);
+                EndpointInfo info = new EndpointInfo();
+                info.setEndpoint(endpoint);
+                info.setType(endpointType);
+                endpoints.add(info);
             }
 
             if (getChildren() != null) {
                 for (String child : getChildren().keySet()) {
-                    URIPart part = getChildren().get(child);
+                    EndpointPart part = getChildren().get(child);
 
-                    part.extractURIInfo(uris, uri + "/" + child);
+                    part.extractEndpointInfo(endpoints, endpoint + (part.isQualifier() ? "" : "/") + child);
                 }
             }
         }
@@ -598,6 +619,20 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
          */
         public void setEndpointType(String endpointType) {
             this.endpointType = endpointType;
+        }
+
+        /**
+         * @return the qualifier
+         */
+        public boolean isQualifier() {
+            return qualifier;
+        }
+
+        /**
+         * @param qualifier the qualifier to set
+         */
+        public void setQualifier(boolean qualifier) {
+            this.qualifier = qualifier;
         }
     }
 }

@@ -28,11 +28,11 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.analytics.URIInfo;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
@@ -54,8 +54,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final TypeReference<java.util.List<URIInfo>> URIINFO_LIST =
-            new TypeReference<java.util.List<URIInfo>>() {
+    private static final TypeReference<java.util.List<EndpointInfo>> URIINFO_LIST =
+            new TypeReference<java.util.List<EndpointInfo>>() {
             };
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
@@ -152,18 +152,18 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundURIs(java.lang.String, long, long, boolean)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundEndpoints(java.lang.String, long, long, boolean)
      */
     @Override
-    public List<URIInfo> getUnboundURIs(String tenantId, long startTime, long endTime, boolean compress) {
+    public List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get unbound URIs: tenantId=[" + tenantId + "] startTime=" + startTime
+            log.finest("Get unbound endpoints: tenantId=[" + tenantId + "] startTime=" + startTime
                     + " endTime=" + endTime + " compress=" + compress);
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/unbounduris?startTime=")
+                .append("analytics/unboundendpoints?startTime=")
                 .append(startTime)
                 .append("&endTime=")
                 .append(endTime)
@@ -215,31 +215,32 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get unbound URIs: status=["
+                    log.finest("Failed to get unbound endpoints: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get unbound URIs", e);
+            log.log(Level.SEVERE, "Failed to get unbound endpoints", e);
         }
 
         return null;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundURIs(java.lang.String, java.lang.String, long, long)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getBoundEndpoints(java.lang.String, java.lang.String,
+     *                                  long, long)
      */
     @Override
-    public List<String> getBoundURIs(String tenantId, String businessTransaction, long startTime, long endTime) {
+    public List<String> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get bound URIs: tenantId=[" + tenantId + "] businessTransaction="
+            log.finest("Get bound endpoints: tenantId=[" + tenantId + "] businessTransaction="
                     + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
-                .append("analytics/bounduris/")
+                .append("analytics/boundendpoints/")
                 .append(businessTransaction)
                 .append("?startTime=")
                 .append(startTime)
@@ -291,13 +292,13 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get unbound URIs: status=["
+                    log.finest("Failed to get bound endpoints: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get unbound URIs", e);
+            log.log(Level.SEVERE, "Failed to get bound endpoints", e);
         }
 
         return null;

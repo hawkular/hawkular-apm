@@ -322,9 +322,49 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.setConfigurationService(tcs);
 
-        collector.activate("/test");
+        collector.activate("/test", null);
 
         collector.consumerStart(null, "/test", null, null, null);
+
+        collector.consumerEnd(null, null, null, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals(0, btxns.size());
+    }
+
+    @Test
+    public void testReportingWithOpLevelNoneByFilter() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
+
+        TestConfigurationService tcs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        tcs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setLevel(ReportingLevel.None);
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test\\[op\\]");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(tcs);
+
+        collector.activate("/test", "op");
+
+        collector.consumerStart(null, "/test", null, "op", null);
 
         collector.consumerEnd(null, null, null, null);
 
@@ -361,11 +401,52 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.setConfigurationService(tcs);
 
-        collector.activate("/test");
+        collector.activate("/test", null);
 
         collector.setLevel(null, "None");
 
         collector.consumerStart(null, "/test", null, null, null);
+
+        collector.consumerEnd(null, null, null, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals(0, btxns.size());
+    }
+
+    @Test
+    public void testReportingWithOpLevelNoneBySetter() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
+
+        TestConfigurationService tcs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        tcs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test\\[op\\]");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(tcs);
+
+        collector.activate("/test", "op");
+
+        collector.setLevel(null, "None");
+
+        collector.consumerStart(null, "/test", null, "op", null);
 
         collector.consumerEnd(null, null, null, null);
 
@@ -402,9 +483,48 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.setConfigurationService(tcs);
 
-        collector.activate("/test");
+        collector.activate("/test", null);
 
         collector.consumerStart(null, "/test", null, null, null);
+
+        collector.consumerEnd(null, null, null, null);
+
+        // Delay necessary as reporting the business transaction is performed in a separate
+        // thread
+        synchronized (this) {
+            try {
+                wait(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<BusinessTransaction> btxns = btxnService.getBusinessTransactions();
+
+        assertEquals(1, btxns.size());
+    }
+
+    @Test
+    public void testReportingWithOpLevelAll() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
+
+        TestConfigurationService tcs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        tcs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test\\[op\\]");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(tcs);
+
+        collector.activate("/test", "op");
+
+        collector.consumerStart(null, "/test", null, "op", null);
 
         collector.consumerEnd(null, null, null, null);
 
@@ -469,7 +589,21 @@ public class DefaultBusinessTransactionCollectorTest {
         assertFalse(collector.isActive());
 
         // Cause a fragment builder to be created
-        collector.activate("/test");
+        collector.activate("/test", null);
+
+        assertFalse(collector.isActive());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testActivateWithOpUnknownURI() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        assertFalse(collector.isActive());
+
+        // Cause a fragment builder to be created
+        collector.activate("/test", "op");
 
         assertFalse(collector.isActive());
 
@@ -504,7 +638,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setConfigurationService(cs);
 
         // Cause a fragment builder to be created
-        collector.activate("/test");
+        collector.activate("/test", null);
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         collector.setName(null, "test");
@@ -542,7 +676,7 @@ public class DefaultBusinessTransactionCollectorTest {
         collector.setConfigurationService(cs);
 
         // Cause a fragment builder to be created
-        collector.activate("/test");
+        collector.activate("/test", null);
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         collector.setPrincipal(null, "test");
@@ -571,7 +705,7 @@ public class DefaultBusinessTransactionCollectorTest {
         assertFalse(collector.isActive());
 
         // Cause a fragment builder to be created
-        collector.activate("/test");
+        collector.activate("/test", null);
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
@@ -599,12 +733,44 @@ public class DefaultBusinessTransactionCollectorTest {
         assertFalse(collector.isActive());
 
         // Create top level node
-        collector.activate("not relevant");
+        collector.activate("not relevant", null);
         collector.componentStart(null, "not relevant", "Database", "query");
 
         // Cause a fragment builder to be created
-        collector.activate("/test");
+        collector.activate("/test", null);
         collector.producerStart(null, "/test", "HTTP", null, null);
+
+        assertTrue(collector.isActive());
+        assertEquals("testapp", collector.getName());
+
+        collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testNamedOnSubsequentNodeInitialFragmentWithOp() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        TestConfigurationService cs = new TestConfigurationService();
+
+        CollectorConfiguration cc = new CollectorConfiguration();
+        cs.setCollectorConfiguration(cc);
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        btc.setFilter(new Filter());
+        btc.getFilter().getInclusions().add("/test\\[op\\]");
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        collector.setConfigurationService(cs);
+
+        assertFalse(collector.isActive());
+
+        // Create top level node
+        collector.activate("not relevant", null);
+        collector.componentStart(null, "not relevant", "Database", "query");
+
+        // Cause a fragment builder to be created
+        collector.activate("/test", "op");
+        collector.producerStart(null, "/test", "HTTP", "op", null);
 
         assertTrue(collector.isActive());
         assertEquals("testapp", collector.getName());
@@ -631,13 +797,13 @@ public class DefaultBusinessTransactionCollectorTest {
         assertFalse(collector.isActive());
 
         // Create top level node
-        collector.activate("not relevant");
+        collector.activate("not relevant", null);
         collector.consumerStart(null, "not relevant", "HTTP", null, null);
         collector.getFragmentManager().getFragmentBuilder()
             .getBusinessTransaction().getNodes().get(0).addInteractionId("testId");
 
         // Cause a fragment builder to be created
-        collector.activate("/test");
+        collector.activate("/test", null);
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());

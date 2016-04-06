@@ -1,11 +1,11 @@
 <div>
 
-  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="unbounduris">
+  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="unboundendpoints">
     <div class="spinner spinner-lg"></div>
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <div ng-show="unbounduris" >
+  <div ng-show="unboundendpoints" >
 
     <hawkular-subtab class="hk-align-center hk-screen-top-nav">
       <div class="hk-nav-tabs-container">
@@ -43,7 +43,7 @@
                     <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
                   </select>
                   <span class="input-group-btn">
-                    <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selecteduris.length == 0" ng-click="updateBusinessTxn()" value="Update" />
+                    <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selectedendpoints.length == 0" ng-click="updateBusinessTxn()" value="Update" />
                   </span>
                 </div>
               </div>
@@ -62,15 +62,15 @@
 
         <div class="panel panel-default">
           <div class="panel-body">
-          <div ng-repeat="uriinfo in unbounduris | filter:query" >
+          <div ng-repeat="uriinfo in unboundendpoints | filter:query" >
             <label>
               <input type="checkbox" name="selectedURIs[]"
-                value="{{uriinfo.uri}}"
+                value="{{uriinfo.endpoint}}"
                 ng-checked="isSelected(uriinfo)"
                 ng-click="selectionChanged(uriinfo)"
                 ng-disabled="!newBTxnName &amp;&amp; !existingBTxnName"/>
-              <span ng-hide="!newBTxnName &amp;&amp; !existingBTxnName" style="color:black">{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</span>
-              <span ng-show="!newBTxnName &amp;&amp; !existingBTxnName" style="color:grey"><i>{{uriinfo.uri}} [ {{uriinfo.endpointType}}]</i></span>
+              <span ng-hide="!newBTxnName &amp;&amp; !existingBTxnName" style="color:black">{{uriinfo.endpoint}} : {{uriinfo.type}}</span>
+              <span ng-show="!newBTxnName &amp;&amp; !existingBTxnName" style="color:grey"><i>{{uriinfo.endpoint}} : {{uriinfo.type}}</i></span>
             </label>
           </div>
           </div>
