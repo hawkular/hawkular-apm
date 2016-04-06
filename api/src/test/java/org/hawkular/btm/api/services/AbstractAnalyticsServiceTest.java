@@ -52,7 +52,7 @@ public class AbstractAnalyticsServiceTest {
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/hello/.*$", result.get(0).getRegex());
-        assertEquals("/hello/{helloId}", result.get(0).getTemplate());
+        assertEquals("/hello/{helloId}", result.get(0).getUriTemplate());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class AbstractAnalyticsServiceTest {
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/hello/.*\\[op\\]$", result.get(0).getRegex());
-        assertEquals("/hello/{helloId}", result.get(0).getTemplate());
+        assertEquals("/hello/{helloId}", result.get(0).getUriTemplate());
     }
 
     @Test
@@ -112,8 +112,8 @@ public class AbstractAnalyticsServiceTest {
         assertTrue(op1.metaURI());
         assertEquals("^/hello/.*\\[op0\\]$", op0.getRegex());
         assertEquals("^/hello/.*\\[op1\\]$", op1.getRegex());
-        assertEquals("/hello/{helloId}", op0.getTemplate());
-        assertEquals("/hello/{helloId}", op1.getTemplate());
+        assertEquals("/hello/{helloId}", op0.getUriTemplate());
+        assertEquals("/hello/{helloId}", op1.getUriTemplate());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class AbstractAnalyticsServiceTest {
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/events/.*$", result.get(0).getRegex());
-        assertEquals("/events/{eventId}", result.get(0).getTemplate());
+        assertEquals("/events/{eventId}", result.get(0).getUriTemplate());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class AbstractAnalyticsServiceTest {
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/hello/.*/mid/.*$", result.get(0).getRegex());
-        assertEquals("/hello/{helloId}/mid/{midId}", result.get(0).getTemplate());
+        assertEquals("/hello/{helloId}/mid/{midId}", result.get(0).getUriTemplate());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class AbstractAnalyticsServiceTest {
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/.*/leaf$", result.get(0).getRegex());
-        assertEquals("/{param1}/leaf", result.get(0).getTemplate());
+        assertEquals("/{param1}/leaf", result.get(0).getUriTemplate());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class AbstractAnalyticsServiceTest {
 
         assertTrue(result.get(0).metaURI());
         assertEquals("^/.*/.*$", result.get(0).getRegex());
-        assertEquals("/{param1}/{param2}", result.get(0).getTemplate());
+        assertEquals("/{param1}/{param2}", result.get(0).getUriTemplate());
     }
 
     @Test

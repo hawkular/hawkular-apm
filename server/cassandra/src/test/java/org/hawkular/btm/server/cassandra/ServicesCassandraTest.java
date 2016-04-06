@@ -35,6 +35,7 @@ import java.util.concurrent.Executors;
 import org.apache.cassandra.service.CassandraDaemon;
 import org.hawkular.btm.api.model.analytics.Cardinality;
 import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
@@ -771,19 +772,19 @@ public class ServicesCassandraTest {
             fail("Failed to wait: " + e);
         }
 
-        java.util.List<String> uris1 = analytics.getBoundEndpoints(null, "btxn1", 100, 0);
+        java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "btxn1", 100, 0);
 
         assertNotNull(uris1);
         assertEquals(3, uris1.size());
-        assertTrue(uris1.contains("uri1"));
-        assertTrue(uris1.contains("uri2"));
-        assertTrue(uris1.contains("uri3"));
+        assertTrue(uris1.contains(new EndpointInfo("uri1")));
+        assertTrue(uris1.contains(new EndpointInfo("uri2")));
+        assertTrue(uris1.contains(new EndpointInfo("uri3")));
 
-        java.util.List<String> uris2 = analytics.getBoundEndpoints(null, "btxn2", 100, 0);
+        java.util.List<EndpointInfo> uris2 = analytics.getBoundEndpoints(null, "btxn2", 100, 0);
 
         assertNotNull(uris2);
         assertEquals(1, uris2.size());
-        assertTrue(uris2.contains("uri4"));
+        assertTrue(uris2.contains(new EndpointInfo("uri4")));
     }
 
     @Test

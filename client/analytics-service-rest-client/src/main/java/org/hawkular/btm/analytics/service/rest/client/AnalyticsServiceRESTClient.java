@@ -232,7 +232,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                                  long, long)
      */
     @Override
-    public List<String> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime) {
+    public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
+                                    long endTime) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get bound endpoints: tenantId=[" + tenantId + "] businessTransaction="
                     + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
@@ -285,7 +286,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 }
                 if (resp.toString().trim().length() > 0) {
                     try {
-                        return mapper.readValue(resp.toString(), STRING_LIST);
+                        return mapper.readValue(resp.toString(), URIINFO_LIST);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }

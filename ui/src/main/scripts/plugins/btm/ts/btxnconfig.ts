@@ -60,8 +60,9 @@ module BTM {
       $http.get('/hawkular/btm/analytics/boundendpoints/' + $scope.businessTransactionName).then(function(resp) {
         $scope.boundEndpoints = [ ];
         for (let i = 0; i < resp.data.length; i++) {
-          let regex = $scope.escapeRegExp(resp.data[i]);
-          $scope.boundEndpoints.add(regex);
+          if (resp.data[i].uriRegex !== undefined) {
+            $scope.boundEndpoints.add(resp.data[i].uriRegex);
+          }
         }
       },function(resp) {
         console.log('Failed to get bound URIs for business txn \'' + $scope.businessTransactionName + '\': ' +
@@ -224,13 +225,6 @@ module BTM {
     },function(resp) {
       console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
     });
-
-    $scope.escapeRegExp = function(str) {
-      if (str === undefined) {
-        return;
-      }
-      return '^' + str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + '$';
-    };
 
     $scope.closeMessage = function(index) {
       $scope.messages.splice(index, 1);

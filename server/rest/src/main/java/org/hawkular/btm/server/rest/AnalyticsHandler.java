@@ -150,7 +150,7 @@ public class AnalyticsHandler {
         try {
             log.tracef("Get bound endpoints: name [%s] start [%s] end [%s]", name, startTime, endTime);
 
-            java.util.List<String> endpoints = analyticsService.getBoundEndpoints(
+            java.util.List<EndpointInfo> endpoints = analyticsService.getBoundEndpoints(
                     securityProvider.getTenantId(context), name, startTime, endTime);
 
             log.tracef("Got bound endpoints: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime,

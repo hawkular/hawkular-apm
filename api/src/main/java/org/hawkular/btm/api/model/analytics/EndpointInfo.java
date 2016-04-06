@@ -37,7 +37,10 @@ public class EndpointInfo {
     private String regex;
 
     @JsonInclude(Include.NON_EMPTY)
-    private String template;
+    private String uriRegex;
+
+    @JsonInclude(Include.NON_EMPTY)
+    private String uriTemplate;
 
     /**
      * The default constructor.
@@ -46,15 +49,25 @@ public class EndpointInfo {
     }
 
     /**
+     * The default constructor.
+     *
+     * @param endpoint The endpoint
+     */
+    public EndpointInfo(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    /**
      * The copy constructor.
      *
-     * @param uriInfo The info to copy
+     * @param endpointInfo The info to copy
      */
-    public EndpointInfo(EndpointInfo uriInfo) {
-        this.endpoint = uriInfo.endpoint;
-        this.type = uriInfo.type;
-        this.regex = uriInfo.regex;
-        this.template = uriInfo.template;
+    public EndpointInfo(EndpointInfo endpointInfo) {
+        this.endpoint = endpointInfo.endpoint;
+        this.type = endpointInfo.type;
+        this.regex = endpointInfo.regex;
+        this.uriRegex = endpointInfo.uriRegex;
+        this.uriTemplate = endpointInfo.uriTemplate;
     }
 
     /**
@@ -104,17 +117,31 @@ public class EndpointInfo {
     }
 
     /**
-     * @return the template
+     * @return the uriRegex
      */
-    public String getTemplate() {
-        return template;
+    public String getUriRegex() {
+        return uriRegex;
     }
 
     /**
-     * @param template the template to set
+     * @param uriRegex the uriRegex to set
      */
-    public void setTemplate(String template) {
-        this.template = template;
+    public void setUriRegex(String uriRegex) {
+        this.uriRegex = uriRegex;
+    }
+
+    /**
+     * @return the uriTemplate
+     */
+    public String getUriTemplate() {
+        return uriTemplate;
+    }
+
+    /**
+     * @param uriTemplate the uriTemplate to set
+     */
+    public void setUriTemplate(String uriTemplate) {
+        this.uriTemplate = uriTemplate;
     }
 
     /**
@@ -128,13 +155,33 @@ public class EndpointInfo {
                 || endpoint.indexOf("/*[") != -1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public int hashCode() {
+        if (endpoint != null) {
+            return endpoint.hashCode();
+        }
+        return super.hashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean equals(Object obj) {
+        if (obj instanceof EndpointInfo && endpoint != null) {
+            return endpoint.equals(((EndpointInfo)obj).endpoint);
+        }
+        return false;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return "URIInfo [endpoint=" + endpoint + ", type=" + type + ", regex=" + regex + ", template="
-                + template + "]";
+        return "EndpointInfo [endpoint=" + endpoint + ", type=" + type + ", regex=" + regex + ", uriRegex=" + uriRegex
+                + ", uriTemplate=" + uriTemplate + "]";
     }
 
 }

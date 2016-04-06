@@ -97,8 +97,9 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      *                               java.lang.String, long, long)
      */
     @Override
-    public List<String> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime) {
-        List<String> ret = new ArrayList<String>();
+    public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
+                                    long endTime) {
+        List<EndpointInfo> ret = new ArrayList<EndpointInfo>();
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(businessTransaction)
@@ -258,47 +259,55 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      */
     protected static void initEndpointInfo(List<EndpointInfo> endpoints) {
         for (int i = 0; i < endpoints.size(); i++) {
-            EndpointInfo info = endpoints.get(i);
+            initEndpointInfo(endpoints.get(i));
+        }
+    }
 
-            info.setRegex(createRegex(info.getEndpoint(), info.metaURI()));
+    /**
+     * This method initialises the endpoint information.
+     *
+     * @param endpoint The endpoint information
+     */
+    protected static void initEndpointInfo(EndpointInfo endpoint) {
+        endpoint.setRegex(createRegex(endpoint.getEndpoint(), endpoint.metaURI()));
+        endpoint.setUriRegex(createRegex(EndpointUtil.decodeEndpointURI(endpoint.getEndpoint()), endpoint.metaURI()));
 
-            if (info.metaURI()) {
-                StringBuilder template = new StringBuilder();
+        if (endpoint.metaURI()) {
+            StringBuilder template = new StringBuilder();
 
-                String uri = EndpointUtil.decodeEndpointURI(info.getEndpoint());
+            String uri = EndpointUtil.decodeEndpointURI(endpoint.getEndpoint());
 
-                String[] parts = uri.split("/");
+            String[] parts = uri.split("/");
 
-                String part = null;
-                int paramNo = 1;
+            String part = null;
+            int paramNo = 1;
 
-                for (int j = 1; j < parts.length; j++) {
-                    template.append("/");
+            for (int j = 1; j < parts.length; j++) {
+                template.append("/");
 
-                    if (parts[j].equals("*")) {
-                        if (part == null) {
-                            template.append("{");
-                            template.append("param");
-                            template.append(paramNo++);
-                            template.append("}");
-                        } else {
-                            // Check if plural
-                            if (part.length() > 1 && part.charAt(part.length() - 1) == 's') {
-                                part = part.substring(0, part.length() - 1);
-                            }
-                            template.append("{");
-                            template.append(part);
-                            template.append("Id}");
-                        }
-                        part = null;
+                if (parts[j].equals("*")) {
+                    if (part == null) {
+                        template.append("{");
+                        template.append("param");
+                        template.append(paramNo++);
+                        template.append("}");
                     } else {
-                        part = parts[j];
+                        // Check if plural
+                        if (part.length() > 1 && part.charAt(part.length() - 1) == 's') {
+                            part = part.substring(0, part.length() - 1);
+                        }
+                        template.append("{");
                         template.append(part);
+                        template.append("Id}");
                     }
+                    part = null;
+                } else {
+                    part = parts[j];
+                    template.append(part);
                 }
-
-                info.setTemplate(template.toString());
             }
+
+            endpoint.setUriTemplate(template.toString());
         }
     }
 
@@ -390,12 +399,18 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * @param nodes The nodes
      * @param endpoints The list of endpoints
      */
-    protected void obtainEndpoints(List<Node> nodes, List<String> endpoints) {
+    protected void obtainEndpoints(List<Node> nodes, List<EndpointInfo> endpoints) {
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
 
-            if (node.getUri() != null && !endpoints.contains(node.getUri())) {
-                endpoints.add(EndpointUtil.encodeEndpoint(node.getUri(), node.getOperation()));
+            if (node.getUri() != null) {
+                EndpointInfo ei=new EndpointInfo();
+                ei.setEndpoint(EndpointUtil.encodeEndpoint(node.getUri(), node.getOperation()));
+
+                if (!endpoints.contains(ei)) {
+                    initEndpointInfo(ei);
+                    endpoints.add(ei);
+                }
             }
 
             if (node instanceof ContainerNode) {
