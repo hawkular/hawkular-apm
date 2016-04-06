@@ -17,40 +17,62 @@
           "javax.servlet.http.HttpServletResponse"
         ],
         "location": "ENTRY",
+        "binds": [{
+          "name": "req",
+          "type": "javax.servlet.http.HttpServletRequest",
+          "expression": "$2"
+        }],
         "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"Hawkularbtid\"))",
         "actions": [{
           "type": "SetName",
-          "nameExpression": "$2.getHeader(\"Hawkularbtname\")"
+          "nameExpression": "req.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$2.getHeader(\"Hawkularbtlevel\")"
+          "levelExpression": "req.getHeader(\"Hawkularbtlevel\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
-          "uriExpression": "$2.getRequestURL().toString()",
-          "idExpression": "$2.getHeader(\"Hawkularbtid\")"
+          "uriExpression": "req.getRequestURL().toString()",
+          "operationExpression": "req.getMethod()",
+          "idExpression": "req.getHeader(\"Hawkularbtid\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
           "originalType": "javax.servlet.http.HttpServletRequest",
-          "headersExpression": "$2"
+          "headersExpression": "req"
         },{
           "type": "SetDetail",
           "name": "btm_source",
           "valueExpression": "\"org.apache.cxf\""
         },{
           "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "req.getQueryString()"
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "req.getMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "req.getServerName()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "req.getServerPort()"
+        },{
+          "type": "SetDetail",
           "name": "principal",
-          "valueExpression": "$2.getRemoteUser()"
+          "valueExpression": "req.getRemoteUser()"
         },{
           "type": "SetDetail",
           "name": "remoteAddr",
-          "valueExpression": "$2.getRemoteAddr()"
+          "valueExpression": "req.getRemoteAddr()"
         },{
           "type": "SetDetail",
           "name": "remoteHost",
-          "valueExpression": "$2.getRemoteHost()"
+          "valueExpression": "req.getRemoteHost()"
         },{
           "type": "InitiateCorrelation",
           "idExpression": "\"org.apache.cxf-jetty\"+$0.hashCode()"
