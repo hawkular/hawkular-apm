@@ -182,9 +182,8 @@ module APM {
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.criteria.businessTransaction = '';
-    $scope.$watch('criteria.businessTransaction', function(newValue, oldValue) {
-      $scope.reloadData();
-    });
+    $scope.$watch('criteria', $scope.reloadData, true);
+    $scope.$watch('config', $scope.reloadData, true);
 
     $scope.toggleStacked = function() {
       $scope.chartStacked = !$scope.chartStacked;
