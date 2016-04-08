@@ -1,5 +1,10 @@
-<div class="hk-sidebar">
+<div class="hk-sidebar" ng-class="{ 'hk-sidebar-collapsed': hideSidebar }">
   <div>
+    <div class="pull-right" ng-click="hideSidebar = !hideSidebar">
+      <button class="btn btn-link hk-sidebar-toggle">
+        <i class="fa" ng-class="hideSidebar ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+      </button>
+    </div>
     <div class="hk-filter-v-block">
       <div class="popover-markup">
         <h4>Filter by</h4>
@@ -30,7 +35,7 @@
     </div>
   </div>
 </div>
-<div class="hk-content-sidebar">
+<div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
   <div class="card-pf">
     <div class="card-pf-body">
 
@@ -107,7 +112,7 @@
         </div>
       </form>
 
-      <div id="nodesareachart" class="chart-card" pf-c3-chart config="apmChartConfig"></div>
+      <div id="nodesareachart" class="chart-card" pf-c3-chart config="apmChartConfig" get-chart-callback="getAreaChart"></div>
 
     </div>
   </div>

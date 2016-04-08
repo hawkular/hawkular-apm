@@ -41,3 +41,22 @@ th {
 .hk-sidebar {
     margin-top: 45px;
 }
+
+.hk-sidebar-collapsed {
+    margin-left: -18em;
+}
+
+.hk-sidebar-toggle {
+    margin-top: -3em;
+
+    i {
+        margin-right: -1.6em;
+    }
+ }
+
+ .hk-content-sidebar-expanded {
+    @media (min-width: @screen-sm-min) {
+        margin-left: 2em !important;
+        width: calc(100% - 2em) !important;
+    }
+}
