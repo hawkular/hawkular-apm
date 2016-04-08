@@ -21,7 +21,7 @@ module APM {
   declare let c3: any;
 
   export let APMController = _module.controller('APM.APMController', ['$scope', '$routeParams', '$http', '$location',
-    '$interval', ($scope, $routeParams, $http, $location, $interval) => {
+    '$interval', '$timeout', ($scope, $routeParams, $http, $location, $interval, $timeout) => {
 
     $scope.criteria = {
       businessTransaction: undefined,
@@ -184,6 +184,20 @@ module APM {
     $scope.criteria.businessTransaction = '';
     $scope.$watch('criteria', $scope.reloadData, true);
     $scope.$watch('config', $scope.reloadData, true);
+
+    // watch for sidebar changes, to redraw the area chart
+    $scope.hideSidebar = false;
+    $scope.$watch('hideSidebar', function() {
+      $timeout(function() {
+        if ($scope.areaChart) {
+          $scope.areaChart.flush();
+        }
+      });
+    });
+
+    $scope.getAreaChart = function(theChart) {
+      $scope.areaChart = theChart;
+    };
 
     $scope.toggleStacked = function() {
       $scope.chartStacked = !$scope.chartStacked;
