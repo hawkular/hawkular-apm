@@ -58,7 +58,7 @@
           ]
         }]
       },{
-        "ruleName": "Javax JMS Consumer End",
+        "ruleName": "Javax JMS Consumer Sync End",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -73,6 +73,18 @@
           "uriExpression": "$1.getJMSDestination()"
         },{
           "type": "AssertComplete"
+        }]
+      },{
+        "ruleName": "Javax JMS Consumer Async Initial Thread End",
+        "interfaceName": "^javax.jms.MessageListener",
+        "methodName": "onMessage",
+        "parameterTypes": [
+          "javax.jms.Message"
+        ],
+        "location": "EXIT",
+        "condition": "isInstanceOf($1.getJMSReplyTo(),javax.jms.TemporaryQueue.class) && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && isActive()",
+        "actions": [{
+          "type": "Unlink"
         }]
       },{
         "ruleName": "Javax JMS Consumer End After TmpQ Reply TextMessage",

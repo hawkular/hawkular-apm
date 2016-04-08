@@ -70,8 +70,11 @@ public class FragmentManager {
             builders.set(builder);
 
             int currentCount = threadCounter.incrementAndGet();
+            int builderCount = builder.incrementThreadCount();
+
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Associate Thread with FragmentBuilder(1): current thread count=" + currentCount);
+                log.finest("Associate Thread with FragmentBuilder(1): Total Thread Count = " + currentCount
+                        + " : Fragment Thread Count = " + builderCount);
                 synchronized (threadNames) {
                     threadNames.add(Thread.currentThread().getName());
                 }
@@ -91,8 +94,10 @@ public class FragmentManager {
 
         if (currentBuilder == null && builder != null) {
             int currentCount = threadCounter.incrementAndGet();
+            int builderCount = builder.incrementThreadCount();
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Associate Thread with FragmentBuilder(2): current thread count=" + currentCount);
+                log.finest("Associate Thread with FragmentBuilder(2): Total Thread Count = " + currentCount
+                        + " : Fragment Thread Count = " + builderCount);
                 synchronized (threadNames) {
                     threadNames.add(Thread.currentThread().getName());
                 }
@@ -100,10 +105,17 @@ public class FragmentManager {
         } else if (currentBuilder != null && builder == null) {
             int currentCount = threadCounter.decrementAndGet();
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Disassociate Thread from FragmentBuilder(2): current thread count=" + currentCount);
+                log.finest("Disassociate Thread from FragmentBuilder(2): Total Thread Count = " + currentCount);
                 synchronized (threadNames) {
                     threadNames.remove(Thread.currentThread().getName());
                 }
+            }
+        } else if (currentBuilder != builder) {
+            int oldCount = currentBuilder.decrementThreadCount();
+            int newCount = builder.incrementThreadCount();
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("WARNING: Overwriting thread's fragment builder: old=[" + currentBuilder
+                        + " count=" + oldCount + "] now=[" + builder + " count=" + newCount + "]");
             }
         }
 
@@ -121,6 +133,10 @@ public class FragmentManager {
             synchronized (threadNames) {
                 threadNames.remove(Thread.currentThread().getName());
             }
+        }
+        FragmentBuilder currentBuilder = builders.get();
+        if (currentBuilder != null) {
+            currentBuilder.decrementThreadCount();
         }
         builders.remove();
     }

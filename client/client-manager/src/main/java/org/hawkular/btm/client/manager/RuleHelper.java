@@ -356,7 +356,7 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.SessionManager#initiateLink(java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#initiateCorrelation(java.lang.String)
      */
     @Override
     public void initiateCorrelation(String id) {
@@ -367,7 +367,7 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.SessionManager#isLinkActive(java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#isCorrelated(java.lang.String)
      */
     @Override
     public boolean isCorrelated(String id) {
@@ -375,7 +375,7 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.SessionManager#joinLink(java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#correlate(java.lang.String)
      */
     @Override
     public void correlate(String id) {
@@ -386,14 +386,15 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.client.api.SessionManager#completeLink(java.lang.String)
+     * @see org.hawkular.btm.client.api.SessionManager#completeCorrelation(java.lang.String, boolean)
      */
     @Override
-    public void completeCorrelation(String id) {
+    public void completeCorrelation(String id, boolean allowSpawn) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Complete correlation location=[" + getRuleName() + "] id=[" + id + "]");
+            log.finest("Complete correlation location=[" + getRuleName() + "] id=[" + id + "] "
+                    + " allowSpawn=" + allowSpawn);
         }
-        collector().session().completeCorrelation(id);
+        collector().session().completeCorrelation(id, allowSpawn);
     }
 
     /* (non-Javadoc)

@@ -31,6 +31,9 @@ public class CompleteCorrelation extends SessionAction {
     @JsonInclude
     private String idExpression;
 
+    @JsonInclude
+    private boolean allowSpawn;
+
     /**
      * @return the idExpression
      */
@@ -43,6 +46,20 @@ public class CompleteCorrelation extends SessionAction {
      */
     public void setIdExpression(String idExpression) {
         this.idExpression = idExpression;
+    }
+
+    /**
+     * @return the allowSpawn
+     */
+    public boolean isAllowSpawn() {
+        return allowSpawn;
+    }
+
+    /**
+     * @param allowSpawn the allowSpawn to set
+     */
+    public void setAllowSpawn(boolean allowSpawn) {
+        this.allowSpawn = allowSpawn;
     }
 
  }
