@@ -31,7 +31,8 @@
         "condition": "isCorrelated(\"rx.java-async-start-\"+hashCode($0))",
         "actions": [{
           "type": "CompleteCorrelation",
-          "idExpression": "\"rx.java-async-start-\"+hashCode($0)"
+          "idExpression": "\"rx.java-async-start-\"+hashCode($0)",
+          "allowSpawn": true
         },{
           "type": "InitiateCorrelation",
           "idExpression": "\"rx.java-async-end-\"+hashCode($0)"

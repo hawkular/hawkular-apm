@@ -18,6 +18,7 @@ package org.hawkular.btm.client.collector;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -29,6 +30,7 @@ import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
 import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
 import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
@@ -773,8 +775,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                processValues(builder.getBusinessTransaction(), builder.getCurrentNode(),
+                Node node = builder.getCurrentNode();
+                if (node != null) {
+                    processValues(builder.getBusinessTransaction(), node,
                         Direction.Out, headers, values);
+                }
             } else if (log.isLoggable(Level.FINEST)) {
                 log.finest("processOut: No fragment builder available to process the out data");
             }
@@ -1148,6 +1153,15 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /**
+     * This method initialises the supplied node.
+     *
+     * @param node The node
+     */
+    protected void initNode(Node node) {
+        node.setBaseTime(System.nanoTime());
+    }
+
+    /**
      * This method pushes a new node into the business transaction fragment.
      *
      * @param location The instrumentation location
@@ -1159,7 +1173,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         // Check if any in content should be processed for the current node
         processInContent(location, builder, -1);
 
-        node.setBaseTime(System.nanoTime());
+        initNode(node);
+
         builder.pushNode(node);
     }
 
@@ -1305,6 +1320,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                             log.finest("Record business transaction: " + btxn);
                         }
 
+                        // Check if first top level node is an internal consumer
+                        // and if so move subsequent top level nodes within its scope
+                        if (btxn.getNodes().size() > 1
+                                && btxn.getNodes().get(0).getClass() == Consumer.class
+                                && ((Consumer)btxn.getNodes().get(0)).getEndpointType() == null) {
+                            Consumer consumer=(Consumer)btxn.getNodes().get(0);
+                            for (int i=1; btxn.getNodes().size() > 1; ) {
+                                consumer.getNodes().add(btxn.getNodes().get(1));
+                                btxn.getNodes().remove(1);
+                            }
+                        }
+
                         reporter.report(btxn);
                     }
                 }
@@ -1313,12 +1340,10 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             fragmentManager.clear();
 
             // Remove uncompleted correlation ids
-            // NOTE: Synchronization should not be required as ids should be
-            // unique to the session
-            List<String> ids = builder.getUncompletedCorrelationIds();
+            Map<String,Node> ids = builder.getUncompletedCorrelationIdsNodeMap();
 
-            for (int i = 0; i < ids.size(); i++) {
-                correlations.remove(ids.get(i));
+            for (String id : ids.keySet()) {
+                correlations.remove(id);
             }
 
             diagnostics();
@@ -1515,7 +1540,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                builder.getUncompletedCorrelationIds().add(id);
+                // Record the correlation id against the node in which it was initiated
+                // TODO: HWKBTM-402 May also need to record current position in node's child list,
+                // so that internal Producer link is created in correct place??
+                // Would only be an issue if other subsequent (non-internal-link) activities
+                // occurred under the same node and therefore may be out of order if a
+                // 'spawn' internal link was later to be created
+                builder.getUncompletedCorrelationIdsNodeMap().put(id, builder.getCurrentNode());
                 correlations.put(id, builder);
             }
         } catch (Throwable t) {
@@ -1560,27 +1591,109 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.client.SessionManager#completeCorrelation(java.lang.String)
+     * @see org.hawkular.btm.api.client.SessionManager#completeCorrelation(java.lang.String, boolean)
      */
     @Override
-    public void completeCorrelation(String id) {
+    public void completeCorrelation(String id, boolean allowSpawn) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Complete correlation: id=" + id);
+            log.finest("Complete correlation: id=" + id + " allowSpawn=" + allowSpawn);
         }
 
         try {
             FragmentBuilder builder = correlations.get(id);
 
             if (builder != null) {
-                builder.getUncompletedCorrelationIds().remove(id);
+                Node node = builder.getUncompletedCorrelationIdsNodeMap().remove(id);
                 correlations.remove(id);
-                fragmentManager.setFragmentBuilder(builder);
+
+                // Check if thread is already associated with correlated fragment builder
+                if (fragmentManager.hasFragmentBuilder()) {
+                    FragmentBuilder existing=fragmentManager.getFragmentBuilder();
+
+                    // If the same, then nothing needs to be done
+                    if (existing == builder) {
+                        return;
+                    }
+                }
+
+                if (builder.getThreadCount() >= 1 && allowSpawn) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Starting separate thread for asynchronous path: count="
+                            + builder.getThreadCount() + " parent node=" + node);
+                    }
+
+                    // Clear the current association between the thread and fragment
+                    fragmentManager.setFragmentBuilder(null);
+
+                    // Cause a new fragment to be created for this thread
+                    FragmentBuilder spawnedBuilder = fragmentManager.getFragmentBuilder();
+
+                    spawnFragment(builder, node, spawnedBuilder);
+                } else {
+                    fragmentManager.setFragmentBuilder(builder);
+                }
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "completeCorrelation failed", t);
             }
         }
+    }
+
+    /**
+     * This method creates a new linked fragment to handle some asynchronous
+     * activities.
+     */
+    protected void spawnFragment(FragmentBuilder parentBuilder, Node node, FragmentBuilder spawnedBuilder) {
+        BusinessTransaction btxn = parentBuilder.getBusinessTransaction();
+        String id = UUID.randomUUID().toString();
+        String location = null;
+        String uri = null;
+        String operation = null;
+        String type = null; // Set to null to indicate internal
+
+        if (!btxn.getNodes().isEmpty()) {
+            Node rootNode = btxn.getNodes().get(0);
+            uri = rootNode.getUri();
+            operation = rootNode.getOperation();
+        }
+
+        // Create Producer node to represent the internal connection to the spawned fragment
+        Producer producer = new Producer();
+        producer.setEndpointType(type);
+        producer.setUri(uri);
+        producer.setOperation(operation);
+        producer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
+
+        if (node != null && node.containerNode()) {
+            initNode(producer);
+            ((ContainerNode)node).getNodes().add(producer);
+        } else {
+            push(location, parentBuilder, producer);
+            pop(location, parentBuilder, Producer.class, uri);
+        }
+
+        // Transfer relevant details to the spawned business transaction and builder
+        BusinessTransaction spawnedBTxn = spawnedBuilder.getBusinessTransaction();
+        spawnedBTxn.setName(btxn.getName());
+        spawnedBTxn.setPrincipal(btxn.getPrincipal());
+
+        spawnedBuilder.setLevel(parentBuilder.getLevel());
+
+        // Create Consumer node to represent other end of internal spawn link
+        Consumer consumer = new Consumer();
+        consumer.setEndpointType(type);
+        consumer.setUri(uri);
+        consumer.setOperation(operation);
+        consumer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
+
+        push(location, spawnedBuilder, consumer);
+
+        // Pop immediately as easier than attempting to determine end of spawned scope and
+        // removing it from the stack then.
+        // TODO:  Could look at moving subsequent top level nodes under this Consumer
+        // at the point when the fragment is recorded
+        pop(location, spawnedBuilder, Consumer.class, uri);
     }
 
     /* (non-Javadoc)

@@ -47,6 +47,10 @@ public class CompleteCorrelationTransformer implements InstrumentActionTransform
 
         builder.append(completeAction.getIdExpression());
 
+        builder.append(",");
+
+        builder.append(completeAction.isAllowSpawn());
+
         builder.append(")");
 
         return builder.toString();

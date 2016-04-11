@@ -164,6 +164,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
             Consumer consumer = (Consumer) item.getNodes().get(0);
             List<CorrelationIdentifier> cids = consumer.getCorrelationIds(Scope.Interaction);
             if (!cids.isEmpty()) {
+                String lastId=null;
+
                 for (int i = 0; ret == null && i < cids.size(); i++) {
                     String id = cids.get(i).getValue();
                     ProducerInfo pi = producerInfoCache.get(tenantId, id);
@@ -209,15 +211,18 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
 
                         // Build outbound information
                         initialiseOutbound(consumer.getNodes(), item.getNodes().get(0).getBaseTime(), ret);
+                    } else {
+                        lastId = id;
                     }
                 }
                 if (ret == null) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Producer information not available");
+                        log.finest("Producer information not available [last id checked = " + lastId + "]");
                     }
 
                     // Need to retry, as the producer information is not currently available
-                    throw new RuntimeException("Producer information not available");
+                    throw new RuntimeException("Producer information not available [last id checked = "
+                                            + lastId + "]");
                 }
             }
         }

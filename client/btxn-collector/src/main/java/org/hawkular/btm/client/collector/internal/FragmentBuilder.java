@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -58,7 +59,7 @@ public class FragmentBuilder {
 
     private List<Node> ignoredNodes = new ArrayList<Node>();
 
-    private List<String> uncompletedCorrelationIds = new ArrayList<String>();
+    private Map<String,Node> uncompletedCorrelationIdsNodeMap = new HashMap<String,Node>();
 
     private boolean suppress = false;
 
@@ -71,6 +72,8 @@ public class FragmentBuilder {
     private ByteArrayOutputStream inStream = null;
     private int outHashCode = 0;
     private ByteArrayOutputStream outStream = null;
+
+    private AtomicInteger threadCount = new AtomicInteger();
 
     static {
         try {
@@ -384,8 +387,8 @@ public class FragmentBuilder {
      *
      * @return The uncompleted correlation ids
      */
-    public List<String> getUncompletedCorrelationIds() {
-        return uncompletedCorrelationIds;
+    public Map<String,Node> getUncompletedCorrelationIdsNodeMap() {
+        return uncompletedCorrelationIdsNodeMap;
     }
 
     /**
@@ -528,6 +531,31 @@ public class FragmentBuilder {
     }
 
     /**
+     * @return The thread count
+     */
+    public int getThreadCount() {
+        return threadCount.get();
+    }
+
+    /**
+     * Increment the thread count.
+     *
+     * @return The incremented thread count
+     */
+    protected int incrementThreadCount() {
+        return threadCount.incrementAndGet();
+    }
+
+    /**
+     * Decrement the thread count.
+     *
+     * @return The decremented thread count
+     */
+    protected int decrementThreadCount() {
+        return threadCount.decrementAndGet();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -538,7 +566,7 @@ public class FragmentBuilder {
         info.append("] complete=");
         info.append(isComplete());
         info.append(" unlinkedIds=");
-        info.append(getUncompletedCorrelationIds());
+        info.append(getUncompletedCorrelationIdsNodeMap());
         info.append(" stack=\r\n");
 
         synchronized (nodeStack) {

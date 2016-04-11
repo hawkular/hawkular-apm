@@ -127,8 +127,9 @@ public interface SessionManager {
      * associated with the supplied id.
      *
      * @param id The id associated with the target thread of execution
+     * @param allowSpawn Determine if completing correlation can spawn fragment if required
      */
-    void completeCorrelation(String id);
+    void completeCorrelation(String id, boolean allowSpawn);
 
     /**
      * Unlink the current "linked" thread of execution from the target thread.

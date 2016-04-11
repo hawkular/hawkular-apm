@@ -53,6 +53,10 @@ import org.junit.Test;
 public class DefaultBusinessTransactionCollectorTest {
 
     /**  */
+    private static final String BTXN_PRINCIPAL = "BTxnPrincipal";
+    /**  */
+    private static final String BTXN_NAME = "BTxnName";
+    /**  */
     private static final String TEST_TENANT = "TestTenant";
     /**  */
     private static final String TYPE = "TestType";
@@ -551,19 +555,19 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.initiateCorrelation("TestLink");
 
-        assertFalse(fragmentBuilder.getUncompletedCorrelationIds().isEmpty());
+        assertFalse(fragmentBuilder.getUncompletedCorrelationIdsNodeMap().isEmpty());
 
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                collector.completeCorrelation("TestLink");
+                collector.completeCorrelation("TestLink", true);
 
                 FragmentBuilder other = collector.getFragmentManager().getFragmentBuilder();
 
                 assertEquals("Builders should be the same", fragmentBuilder, other);
 
                 // Check link is no marked as unresolved
-                assertTrue(other.getUncompletedCorrelationIds().isEmpty());
+                assertTrue(other.getUncompletedCorrelationIdsNodeMap().isEmpty());
             }
         });
     }
@@ -945,6 +949,108 @@ public class DefaultBusinessTransactionCollectorTest {
         assertTrue(producerOuter.getCorrelationIds().get(0).getValue().equals("testprodid2"));
 
         collector.getFragmentManager().clear();
+    }
+
+    @Test
+    public void testSpawnFragmentUsingAddChild() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        FragmentBuilder parent = new FragmentBuilder();
+        FragmentBuilder spawned = new FragmentBuilder();
+
+        BusinessTransaction parentBTxn = parent.getBusinessTransaction();
+        BusinessTransaction spawnedBTxn = spawned.getBusinessTransaction();
+
+        parentBTxn.setName(BTXN_NAME);
+        parentBTxn.setPrincipal(BTXN_PRINCIPAL);
+
+        // Create top level consumer in parent
+        Consumer parentConsumer = new Consumer();
+        parentConsumer.setUri(URI);
+        parentConsumer.setOperation(OP);
+
+        collector.push(null, parent, parentConsumer);
+
+        collector.spawnFragment(parent, parentConsumer, spawned);
+
+        // Check that parent consumer has Producer as child
+        assertEquals(1, parentConsumer.getNodes().size());
+        assertTrue(parentConsumer.getNodes().get(0) instanceof Producer);
+
+        Producer internalProducer=(Producer)parentConsumer.getNodes().get(0);
+        assertEquals(URI, internalProducer.getUri());
+        assertEquals(OP, internalProducer.getOperation());
+
+        // Check that spawned fragment has Consumer as top level node
+        assertEquals(1, spawnedBTxn.getNodes().size());
+        assertTrue(spawnedBTxn.getNodes().get(0) instanceof Consumer);
+
+        Consumer internalConsumer=(Consumer)spawnedBTxn.getNodes().get(0);
+        assertEquals(URI, internalConsumer.getUri());
+        assertEquals(OP, internalConsumer.getOperation());
+
+        // Check that internal producer and consumer share common interaction id
+        List<CorrelationIdentifier> ipids = internalProducer.getCorrelationIds(Scope.Interaction);
+        List<CorrelationIdentifier> icids = internalConsumer.getCorrelationIds(Scope.Interaction);
+
+        assertEquals(1, ipids.size());
+        assertEquals(1, icids.size());
+        assertEquals(ipids.get(0), icids.get(0));
+
+        // Check business transaction details transferred
+        assertEquals(BTXN_NAME, spawnedBTxn.getName());
+        assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
+    }
+
+    @Test
+    public void testSpawnFragmentUsingPush() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        FragmentBuilder parent = new FragmentBuilder();
+        FragmentBuilder spawned = new FragmentBuilder();
+
+        BusinessTransaction parentBTxn = parent.getBusinessTransaction();
+        BusinessTransaction spawnedBTxn = spawned.getBusinessTransaction();
+
+        parentBTxn.setName(BTXN_NAME);
+        parentBTxn.setPrincipal(BTXN_PRINCIPAL);
+
+        // Create top level consumer in parent
+        Consumer parentConsumer = new Consumer();
+        parentConsumer.setUri(URI);
+        parentConsumer.setOperation(OP);
+
+        collector.push(null, parent, parentConsumer);
+
+        collector.spawnFragment(parent, null, spawned);
+
+        // Check that parent consumer has Producer as child
+        assertEquals(1, parentConsumer.getNodes().size());
+        assertTrue(parentConsumer.getNodes().get(0) instanceof Producer);
+
+        Producer internalProducer=(Producer)parentConsumer.getNodes().get(0);
+        assertEquals(URI, internalProducer.getUri());
+        assertEquals(OP, internalProducer.getOperation());
+
+        // Check that spawned fragment has Consumer as top level node
+        assertEquals(1, spawnedBTxn.getNodes().size());
+        assertTrue(spawnedBTxn.getNodes().get(0) instanceof Consumer);
+
+        Consumer internalConsumer=(Consumer)spawnedBTxn.getNodes().get(0);
+        assertEquals(URI, internalConsumer.getUri());
+        assertEquals(OP, internalConsumer.getOperation());
+
+        // Check that internal producer and consumer share common interaction id
+        List<CorrelationIdentifier> ipids = internalProducer.getCorrelationIds(Scope.Interaction);
+        List<CorrelationIdentifier> icids = internalConsumer.getCorrelationIds(Scope.Interaction);
+
+        assertEquals(1, ipids.size());
+        assertEquals(1, icids.size());
+        assertEquals(ipids.get(0), icids.get(0));
+
+        // Check business transaction details transferred
+        assertEquals(BTXN_NAME, spawnedBTxn.getName());
+        assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
     }
 
     public static class TestBTxnService implements BusinessTransactionService, BusinessTransactionPublisher {
