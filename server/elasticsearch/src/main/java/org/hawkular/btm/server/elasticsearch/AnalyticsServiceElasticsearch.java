@@ -38,6 +38,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -772,6 +773,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+            // Only want external communications
+            query = query.mustNot(QueryBuilders.matchQuery("internal", "true"));
 
             StatsBuilder latencyBuilder = AggregationBuilders
                     .stats("latency")

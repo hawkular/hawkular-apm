@@ -48,6 +48,8 @@ public class CommunicationDetails implements Externalizable {
 
     private boolean multiConsumer = false;
 
+    private boolean internal = false;
+
     private long timestamp = 0;
 
     private long latency = 0;
@@ -144,6 +146,20 @@ public class CommunicationDetails implements Externalizable {
      */
     public void setMultiConsumer(boolean multiConsumer) {
         this.multiConsumer = multiConsumer;
+    }
+
+    /**
+     * @return the internal
+     */
+    public boolean isInternal() {
+        return internal;
+    }
+
+    /**
+     * @param internal the internal to set
+     */
+    public void setInternal(boolean internal) {
+        this.internal = internal;
     }
 
     /**
@@ -355,21 +371,6 @@ public class CommunicationDetails implements Externalizable {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source="
-                + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", timestamp=" + timestamp
-                + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
-                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
-                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
-                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
-                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
-                + ", properties=" + properties + ", outbound=" + outbound + "]";
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -379,6 +380,7 @@ public class CommunicationDetails implements Externalizable {
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + (int) (consumerDuration ^ (consumerDuration >>> 32));
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (internal ? 1231 : 1237);
         result = prime * result + (int) (latency ^ (latency >>> 32));
         result = prime * result + (multiConsumer ? 1231 : 1237);
         result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
@@ -421,6 +423,8 @@ public class CommunicationDetails implements Externalizable {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
+            return false;
+        if (internal != other.internal)
             return false;
         if (latency != other.latency)
             return false;
@@ -488,6 +492,21 @@ public class CommunicationDetails implements Externalizable {
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source="
+                + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", timestamp=" + timestamp
+                + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
+                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
+                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
+                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
+                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
+                + ", properties=" + properties + ", outbound=" + outbound + ", internal=" + internal + "]";
+    }
+
+    /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
     @SuppressWarnings("unchecked")
@@ -500,6 +519,7 @@ public class CommunicationDetails implements Externalizable {
         source = ois.readUTF();
         target = ois.readUTF();
         multiConsumer = ois.readBoolean();
+        internal = ois.readBoolean();
         timestamp = ois.readLong();
         latency = ois.readLong();
         consumerDuration = ois.readLong();
@@ -531,6 +551,7 @@ public class CommunicationDetails implements Externalizable {
         oos.writeUTF(source);
         oos.writeUTF(target);
         oos.writeBoolean(multiConsumer);
+        oos.writeBoolean(internal);
         oos.writeLong(timestamp);
         oos.writeLong(latency);
         oos.writeLong(consumerDuration);
