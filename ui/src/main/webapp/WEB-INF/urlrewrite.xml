@@ -43,5 +43,13 @@
     <from>/hawkular-ui/btm</from>
     <to>/</to>
   </rule>
+  <rule match-type="wildcard">
+    <from>/hawkular-ui/e2e/**</from>
+    <to>/</to>
+  </rule>
+  <rule match-type="wildcard">
+    <from>/hawkular-ui/e2e</from>
+    <to>/</to>
+  </rule>
 </urlrewrite>
 
