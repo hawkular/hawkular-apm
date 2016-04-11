@@ -1,0 +1,44 @@
+<div class="hk-sidebar" ng-class="{ 'hk-sidebar-collapsed': hideSidebar }">
+  <div>
+    <div class="pull-right" ng-click="hideSidebar = !hideSidebar">
+      <button class="btn btn-link hk-sidebar-toggle">
+        <i class="fa" ng-class="hideSidebar ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+      </button>
+    </div>
+    <div class="hk-filter-v-block">
+      <div class="popover-markup">
+        <h4>Filter by</h4>
+      </div>
+    </div>
+    <div class="hk-filter-v-block">
+      <label class="hk-label-heading">Text</label>
+      <input type="text" class="form-control" placeholder="Contains text" ng-model="search"/>
+    </div>
+    <div class="hk-filter-v-block">
+      <button class="btn-link" ng-click="showSearchBtxn = !showSearchBtxn"><i class="fa" ng-class="showSearchBtxn ? 'fa-plus-square' : 'fa-minus-square'"></i> Business Transaction </button>
+      <div collapse="showSearchBtxn">
+      <div class="radio">
+        <label><input type="radio" name="btxn" ng-model="criteria.businessTransaction" value="" checked> All </label>
+      </div>
+      <div class="radio" ng-repeat="btxn in businessTransactions">
+        <label><input type="radio" name="btxn" ng-model="criteria.businessTransaction" value="{{btxn}}"> {{btxn}} </label>
+      </div>
+      </div>
+    </div>
+
+    <div class="hk-filter-v-block">
+      <label><button class="btn-link" ng-click="showSearchHost = !showSearchHost"><i class="fa" ng-class="showSearchHost ? 'fa-plus-square' : 'fa-minus-square'"></i> Host Name </button></label>
+      <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
+         ng-model="criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
+         placeholder="Enter a host name" typeahead-editable="false"
+         typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
+    </div>
+  </div>
+</div>
+<div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
+  <div class="card-pf">
+    <div class="graph" style="height: 500px;" ng-init="drawGraph()">
+      <svg><g/></svg>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+/*
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import "../../../libs/patternfly/less/lib/bootstrap/variables.less";
+@import "../../../libs/patternfly/less/lib/bootstrap/mixins.less";
+@import "../../../libs/patternfly/less/variables.less";
+
+
+// Variables
+
+@danger-bg:                                                         rgba(204,0,0,0.07);
+
+/* Error message handling */
+
+label.error {color: red}
+
+/* Styling for e2e table */
+
+.sort-icon {
+    font-size: 9px;
+    margin-left: 5px;
+}
+
+th {
+    cursor:pointer;
+}
+
+.hk-sidebar {
+    margin-top: 45px;
+}
+
+.hk-sidebar-collapsed {
+    margin-left: -18em;
+}
+
+.hk-sidebar-toggle {
+    margin-top: -3em;
+
+    i {
+        margin-right: -1.6em;
+    }
+ }
+
+ .hk-content-sidebar-expanded {
+    @media (min-width: @screen-sm-min) {
+        margin-left: 2em !important;
+        width: calc(100% - 2em) !important;
+    }
+}
+
+/* Diagram styles */
+
+.graph {
+    width: 100%;
+    height: 100%;
+
+    svg {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+        text {
+            font-weight: 300;
+            font-size: 14px;
+        }
+    }
+    .node {
+        rect {
+            stroke-width: 1.5px;
+            stroke: #bbb;
+            fill: #666;
+        }
+    }
+    .status {
+        height: 100%;
+        width: 15px;
+        display: block;
+        float: left;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        margin-right: 4px;
+    }
+
+    .success .status {
+        background-color: #7f7;
+    }
+    .warn .status {
+        background-color: #ffed68;
+    }
+    .danger .status {
+        background-color: #f77;
+    }
+    .warn .stats {
+        color: #f77;
+    }
+    .warn {
+        -webkit-animation-name: flash;
+        animation-name: flash;
+    }
+    .node-count {
+        margin-right: 2px;
+    }
+    .node-count, .name {
+        margin-top: 4px;
+    }
+    .name {
+        display: inline-block;
+        font-size: 1.3em;
+    }
+    .stats {
+        display: block;
+        float: left;
+        width: 130px;
+        height: 20px;
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    .node g div {
+        width: 200px;
+        height: 40px;
+        color: #fff;
+    }
+    .node g div span.node-count {
+        display: inline-block;
+        width: 20px;
+    }
+    .edgeLabel {
+        text {
+            width: 50px;
+            fill: #999;
+        }
+        .label {
+            color: #999;
+        }
+    }
+    .edgePath path {
+        stroke: #999;
+        stroke-width: 1.5px;
+        fill: #999;
+    }
+}
