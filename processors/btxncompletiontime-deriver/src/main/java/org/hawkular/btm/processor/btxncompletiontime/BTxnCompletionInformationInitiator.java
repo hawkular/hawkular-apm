@@ -65,6 +65,7 @@ public class BTxnCompletionInformationInitiator extends
                 ct.setOperation(n.getOperation());
                 ct.setBusinessTransaction(item.getName());
                 ct.setDuration(item.calculateDuration());
+                ct.setPrincipal(item.getPrincipal());
                 ct.setFault(n.getFault());
                 ct.setProperties(item.getProperties());
                 ct.setTimestamp(item.getStartTime());

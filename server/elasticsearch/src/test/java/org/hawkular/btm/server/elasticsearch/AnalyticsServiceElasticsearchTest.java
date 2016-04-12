@@ -34,6 +34,7 @@ import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
@@ -497,6 +498,88 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testPropertyInfoForPrincipal() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(1000);
+        btxn1.getProperties().put("prop1", "value1");
+        btxn1.getProperties().put("prop2", "value2");
+        btxn1.setPrincipal("p1");
+        btxns.add(btxn1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setName("btxn1");
+        btxn2.setStartTime(2000);
+        btxn2.getProperties().put("prop3", "value3");
+        btxn2.getProperties().put("prop2", "value2");
+        btxn2.setPrincipal("p2");
+        btxns.add(btxn2);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        Criteria criteria=new Criteria()
+            .setBusinessTransaction("btxn1")
+            .setPrincipal("p1")
+            .setStartTime(100)
+            .setEndTime(0);
+
+        java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
+
+        assertNotNull(pis);
+        assertEquals(2, pis.size());
+        assertTrue(pis.get(0).getName().equals("prop1"));
+        assertTrue(pis.get(1).getName().equals("prop2"));
+    }
+
+    @Test
+    public void testPrincipalInfo() {
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(1000);
+        btxn1.setPrincipal("p1");
+        btxns.add(btxn1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setName("btxn1");
+        btxn2.setStartTime(2000);
+        btxns.add(btxn2);
+
+        try {
+            bts.storeBusinessTransactions(null, btxns);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        Criteria criteria=new Criteria()
+            .setBusinessTransaction("btxn1")
+            .setStartTime(100)
+            .setEndTime(0);
+
+        java.util.List<PrincipalInfo> pis = analytics.getPrincipalInfo(null, criteria);
+
+        assertNotNull(pis);
+        assertEquals(1, pis.size());
+        assertTrue(pis.get(0).getId().equals("p1"));
+        assertEquals(1, pis.get(0).getCount());
+    }
+
+    @Test
     public void testGetCompletionCount() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
@@ -591,6 +674,47 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault1", true));
+        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+
+        assertEquals(2, analytics.getCompletionCount(null, criteria));
+    }
+
+    @Test
+    public void testGetCompletionCountForPrincipal() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        ct1.setPrincipal("p1");
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        ct2.setPrincipal("p2");
+        ct2.setFault("TestFault1");
+        cts.add(ct2);
+
+        CompletionTime ct3 = new CompletionTime();
+        ct3.setBusinessTransaction("testapp");
+        ct3.setTimestamp(2000);
+        ct3.setPrincipal("p1");
+        ct3.setFault("TestFault2");
+        cts.add(ct3);
+
+        try {
+            analytics.storeBTxnCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setPrincipal("p1");
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(2, analytics.getCompletionCount(null, criteria));
@@ -868,6 +992,62 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCompletionTimeseriesStatisticsForPrincipal() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setPrincipal("p1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.setPrincipal("p1");
+        ct1_2.setFault("fault1");
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(1700);
+        ct2.setDuration(500);
+        ct2.setPrincipal("p2");
+        cts.add(ct2);
+
+        try {
+            analytics.storeBTxnCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
+
+        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+
+        assertEquals(2, stats.get(0).getCount());
+
+        assertTrue(stats.get(0).getMin() == 100);
+        assertTrue(stats.get(0).getAverage() == 200);
+        assertTrue(stats.get(0).getMax() == 300);
+
+        assertEquals(1, stats.get(0).getFaultCount());
+    }
+
+    @Test
     public void testGetCompletionPropertyDetails() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
@@ -1019,6 +1199,50 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCompletionPropertyDetailsForPrincipal() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().put("prop1", "value1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.setPrincipal("p2");
+        ct1_2.getProperties().put("prop1", "value2");
+        cts.add(ct1_2);
+
+        try {
+            analytics.storeBTxnCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
+
+        List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
+                "prop1");
+
+        assertNotNull(cards1);
+        assertEquals(1, cards1.size());
+
+        assertEquals("value1", cards1.get(0).getValue());
+        assertEquals(1, cards1.get(0).getCount());
+
+    }
+
+    @Test
     public void testGetCompletionFaultDetails() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
@@ -1113,6 +1337,54 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCompletionFaultDetailsForPrincipal() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setFault("fault1");
+        ct1_1.setPrincipal("p1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.setFault("fault2");
+        ct1_2.setPrincipal("p2");
+        cts.add(ct1_2);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setDuration(500);
+        cts.add(ct2);
+
+        try {
+            analytics.storeBTxnCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setBusinessTransaction("testapp").setPrincipal("p2").setStartTime(1000).setEndTime(10000);
+
+        List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
+
+        assertNotNull(cards1);
+        assertEquals(1, cards1.size());
+
+        assertEquals("fault2", cards1.get(0).getValue());
+        assertEquals(1, cards1.get(0).getCount());
+    }
+
+    @Test
     public void testGetNodeTimeseriesStatistics() {
         List<NodeDetails> nds = new ArrayList<NodeDetails>();
 
@@ -1179,6 +1451,75 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(stats.get(0).getComponentTypes().get("EJB").getCount() == 1);
         assertTrue(stats.get(1).getComponentTypes().get("Database").getDuration() == 500);
         assertTrue(stats.get(1).getComponentTypes().get("Database").getCount() == 1);
+    }
+
+    @Test
+    public void testGetNodeTimeseriesStatisticsPrincipalFilter() {
+        List<NodeDetails> nds = new ArrayList<NodeDetails>();
+
+        NodeDetails ct1_1 = new NodeDetails();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setActual(100);
+        ct1_1.setComponentType("Database");
+        ct1_1.setPrincipal("p1");
+        nds.add(ct1_1);
+
+        NodeDetails ct1_2 = new NodeDetails();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setActual(300);
+        ct1_2.setComponentType("Database");
+        ct1_2.setPrincipal("p1");
+        nds.add(ct1_2);
+
+        NodeDetails ct1_3 = new NodeDetails();
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1700);
+        ct1_3.setActual(150);
+        ct1_3.setComponentType("EJB");
+        ct1_3.setPrincipal("p1");
+        nds.add(ct1_3);
+
+        NodeDetails ct2 = new NodeDetails();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2100);
+        ct2.setActual(500);
+        ct2.setComponentType("Database");
+        ct2.setPrincipal("p2");
+        nds.add(ct2);
+
+        try {
+            analytics.storeNodeDetails(null, nds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+        criteria.setPrincipal("p1");
+
+        List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+
+        assertEquals(2, stats.get(0).getComponentTypes().size());
+
+        assertTrue(stats.get(0).getComponentTypes().containsKey("Database"));
+        assertTrue(stats.get(0).getComponentTypes().containsKey("EJB"));
+
+        assertTrue(stats.get(0).getComponentTypes().get("Database").getDuration() == 200);
+        assertTrue(stats.get(0).getComponentTypes().get("Database").getCount() == 2);
+        assertTrue(stats.get(0).getComponentTypes().get("EJB").getDuration() == 150);
+        assertTrue(stats.get(0).getComponentTypes().get("EJB").getCount() == 1);
     }
 
     @Test
@@ -1436,6 +1777,101 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
+
+        Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        NodeSummaryStatistics dbstat = null;
+        NodeSummaryStatistics consumerstat = null;
+
+        for (NodeSummaryStatistics nss : stats) {
+            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+                dbstat = nss;
+            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
+                consumerstat = nss;
+            }
+        }
+
+        assertTrue(dbstat.getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
+        assertNull(dbstat.getOperation());
+        assertEquals(1, dbstat.getCount());
+        assertTrue(dbstat.getActual() == 100.0);
+        assertTrue(dbstat.getElapsed() == 200.0);
+        assertTrue(consumerstat.getComponentType().equalsIgnoreCase("Consumer"));
+        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
+        assertNull(consumerstat.getOperation());
+        assertEquals(1, consumerstat.getCount());
+        assertTrue(consumerstat.getActual() == 100.0);
+        assertTrue(consumerstat.getElapsed() == 200.0);
+    }
+
+    @Test
+    public void testGetNodeSummaryStatisticsWithPrincipalFilter() {
+        List<NodeDetails> nds = new ArrayList<NodeDetails>();
+
+        NodeDetails ct1_0 = new NodeDetails();
+        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setTimestamp(1500);
+        ct1_0.setActual(100);
+        ct1_0.setElapsed(200);
+        ct1_0.setType(NodeType.Consumer);
+        ct1_0.setUri("hello");
+        ct1_0.setHostName("hostA");
+        ct1_0.setPrincipal("p1");
+        nds.add(ct1_0);
+
+        NodeDetails ct1_1 = new NodeDetails();
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setActual(100);
+        ct1_1.setElapsed(200);
+        ct1_1.setType(NodeType.Component);
+        ct1_1.setComponentType("Database");
+        ct1_1.setUri("jdbc");
+        ct1_1.setHostName("hostA");
+        ct1_1.setPrincipal("p1");
+        nds.add(ct1_1);
+
+        NodeDetails ct1_2 = new NodeDetails();
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setActual(300);
+        ct1_2.setElapsed(600);
+        ct1_2.setType(NodeType.Component);
+        ct1_2.setComponentType("Database");
+        ct1_2.setUri("jdbc");
+        ct1_2.setHostName("hostB");
+        ct1_2.setPrincipal("p2");
+        nds.add(ct1_2);
+
+        NodeDetails ct1_3 = new NodeDetails();
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1700);
+        ct1_3.setActual(150);
+        ct1_3.setElapsed(300);
+        ct1_3.setType(NodeType.Component);
+        ct1_3.setComponentType("EJB");
+        ct1_3.setUri("BookingService");
+        ct1_3.setOperation("createBooking");
+        ct1_3.setHostName("hostB");
+        ct1_3.setPrincipal("p2");
+        nds.add(ct1_3);
+
+        try {
+            analytics.storeNodeDetails(null, nds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(1000).setEndTime(10000).setPrincipal("p1");
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
@@ -2053,6 +2489,186 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
         assertEquals(2, in1.getOutbound().get("out1.2[op1.2]").getCount());
         assertEquals(2, in2.getOutbound().get("out2.1[op2.1]").getCount());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticForPrincipal() {
+        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setUri("in1");
+        ct1_1.setOperation("op1");
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setPrincipal("p1");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setUri("out1.1");
+        ct1_2.setOperation("op1.1");
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.setPrincipal("p1");
+        cts.add(ct1_2);
+
+        CompletionTime ct1_3 = new CompletionTime();
+        ct1_3.setUri("out1.2");
+        ct1_3.setOperation("op1.2");
+        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setTimestamp(1600);
+        ct1_3.setDuration(200);
+        ct1_3.setPrincipal("p1");
+        cts.add(ct1_3);
+
+        CompletionTime ct2_1 = new CompletionTime();
+        ct2_1.setUri("in2");
+        ct2_1.setOperation("op2");
+        ct2_1.setBusinessTransaction("testapp");
+        ct2_1.setTimestamp(1600);
+        ct2_1.setDuration(500);
+        ct2_1.setPrincipal("p2");
+        cts.add(ct2_1);
+
+        CompletionTime ct2_2 = new CompletionTime();
+        ct2_2.setUri("out2.1");
+        ct2_2.setOperation("op2.1");
+        ct2_2.setBusinessTransaction("testapp");
+        ct2_2.setTimestamp(1700);
+        ct2_2.setDuration(400);
+        ct2_2.setPrincipal("p2");
+        cts.add(ct2_2);
+
+        CompletionTime ct2_3 = new CompletionTime();
+        ct2_3.setUri("in2");
+        ct2_3.setOperation("op2");
+        ct2_3.setBusinessTransaction("testapp");
+        ct2_3.setTimestamp(1700);
+        ct2_3.setDuration(600);
+        ct2_3.setPrincipal("p2");
+        cts.add(ct2_3);
+
+        try {
+            analytics.storeFragmentCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        CommunicationDetails cd1 = new CommunicationDetails();
+        cd1.setId("cd1");
+        cd1.setBusinessTransaction("testapp");
+        cd1.setTimestamp(1500);
+        cd1.setLatency(100);
+        cd1.setSource("in1[op1]");
+        cd1.setTarget("out1.1[op1.1]");
+        cd1.setPrincipal("p1");
+        cds.add(cd1);
+
+        CommunicationDetails cd2 = new CommunicationDetails();
+        cd2.setId("cd2");
+        cd2.setBusinessTransaction("testapp");
+        cd2.setTimestamp(1500);
+        cd2.setLatency(200);
+        cd2.setSource("in1[op1]");
+        cd2.setTarget("out1.2[op1.2]");
+        cd2.setPrincipal("p1");
+        cds.add(cd2);
+
+        CommunicationDetails cd3 = new CommunicationDetails();
+        cd3.setId("cd3");
+        cd3.setBusinessTransaction("testapp");
+        cd3.setTimestamp(1500);
+        cd3.setLatency(300);
+        cd3.setSource("in2[op2]");
+        cd3.setTarget("out2.1[op2.1]");
+        cd3.setPrincipal("p2");
+        cds.add(cd3);
+
+        CommunicationDetails cd4 = new CommunicationDetails();
+        cd4.setId("cd4");
+        cd4.setBusinessTransaction("testapp");
+        cd4.setTimestamp(1600);
+        cd4.setLatency(300);
+        cd4.setSource("in1[op1]");
+        cd4.setTarget("out1.2[op1.2]");
+        cd4.setPrincipal("p1");
+        cds.add(cd4);
+
+        CommunicationDetails cd5 = new CommunicationDetails();
+        cd5.setId("cd5");
+        cd5.setBusinessTransaction("testapp");
+        cd5.setTimestamp(1600);
+        cd5.setLatency(500);
+        cd5.setSource("in2[op2]");
+        cd5.setTarget("out2.1[op2.1]");
+        cd5.setPrincipal("p2");
+        cds.add(cd5);
+
+        try {
+            analytics.storeCommunicationDetails(null, cds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+        criteria.setPrincipal("p1");
+
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+
+        assertNotNull(stats);
+        assertEquals(3, stats.size());
+
+        CommunicationSummaryStatistics in1 = null;
+        CommunicationSummaryStatistics out1_1 = null;
+        CommunicationSummaryStatistics out1_2 = null;
+
+        for (CommunicationSummaryStatistics css : stats) {
+            if (css.getId().equals("in1[op1]")) {
+                in1 = css;
+            } else if (css.getId().equals("out1.1[op1.1]")) {
+                out1_1 = css;
+            } else if (css.getId().equals("out1.2[op1.2]")) {
+                out1_2 = css;
+            } else {
+                fail("Unexpected id: " + css.getId());
+            }
+        }
+
+        assertNotNull(in1);
+        assertNotNull(out1_1);
+        assertNotNull(out1_2);
+
+        assertEquals(1, in1.getCount());
+        assertEquals(1, out1_1.getCount());
+        assertEquals(1, out1_2.getCount());
+
+        assertEquals(2, in1.getOutbound().size());
+        assertEquals(0, out1_1.getOutbound().size());
+        assertEquals(0, out1_2.getOutbound().size());
+
+        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
+        assertTrue(in1.getOutbound().containsKey("out1.2[op1.2]"));
+
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
+        assertTrue(200 == in1.getOutbound().get("out1.2[op1.2]").getMinimumLatency());
+        assertTrue(250 == in1.getOutbound().get("out1.2[op1.2]").getAverageLatency());
+        assertTrue(300 == in1.getOutbound().get("out1.2[op1.2]").getMaximumLatency());
+
+        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
+        assertEquals(2, in1.getOutbound().get("out1.2[op1.2]").getCount());
     }
 
     @Test

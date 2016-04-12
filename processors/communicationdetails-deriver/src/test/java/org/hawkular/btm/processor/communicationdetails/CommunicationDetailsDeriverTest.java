@@ -246,6 +246,7 @@ public class CommunicationDetailsDeriverTest {
         btxn1.setId("btxn1");
         btxn1.setHostName("host1");
         btxn1.setHostAddress("addr1");
+        btxn1.setPrincipal("p1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -280,6 +281,7 @@ public class CommunicationDetailsDeriverTest {
         btxn2.setId("btxn2");
         btxn2.setHostName("host2");
         btxn2.setHostAddress("addr2");
+        btxn2.setPrincipal("p1");
         btxn2.getProperties().put("prop1", "value1");
 
         Consumer c2 = new Consumer();
@@ -321,6 +323,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("btxn2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
+        assertEquals("p1", details.getPrincipal());
 
         long timestamp = btxn1.getStartTime() + TimeUnit.MILLISECONDS.convert(p1.getBaseTime() -
                 c1.getBaseTime(), TimeUnit.NANOSECONDS);
@@ -428,6 +431,7 @@ public class CommunicationDetailsDeriverTest {
         btxn1.setId("btxn1");
         btxn1.setHostName("host1");
         btxn1.setHostAddress("addr1");
+        btxn1.setPrincipal("p1");
 
         Producer p1 = new Producer();
         p1.setUri("TheURI");
@@ -450,6 +454,7 @@ public class CommunicationDetailsDeriverTest {
         btxn2.setId("btxn2");
         btxn2.setHostName("host2");
         btxn2.setHostAddress("addr2");
+        btxn2.setPrincipal("p1");
         btxn2.getProperties().put("prop1", "value1");
 
         Consumer c2 = new Consumer();
@@ -488,6 +493,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("btxn2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
+        assertEquals("p1", details.getPrincipal());
     }
 
 }

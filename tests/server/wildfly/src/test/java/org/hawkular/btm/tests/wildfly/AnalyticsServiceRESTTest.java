@@ -37,6 +37,7 @@ import org.hawkular.btm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
+import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
@@ -238,6 +239,52 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(pis);
         assertEquals(1, pis.size());
         assertTrue(pis.get(0).getName().equals("prop1"));
+    }
+
+    @Test
+    public void testGetPrincipalInfo() {
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("btxn1");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        btxn1.setPrincipal("p1");
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new Criteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        Criteria criteria=new Criteria()
+            .setBusinessTransaction("btxn1")
+            .setStartTime(0)
+            .setEndTime(0);
+
+        List<PrincipalInfo> pis = analytics.getPrincipalInfo(null, criteria);
+
+        assertNotNull(pis);
+        assertEquals(1, pis.size());
+        assertTrue(pis.get(0).getId().equals("p1"));
+        assertEquals(1, pis.get(0).getCount());
     }
 
     @Test

@@ -68,6 +68,9 @@ public class NodeDetails {
     @JsonInclude(Include.NON_NULL)
     private String hostName;
 
+    @JsonInclude(Include.NON_NULL)
+    private String principal;
+
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> properties = new HashMap<String, String>();
 
@@ -232,6 +235,20 @@ public class NodeDetails {
     }
 
     /**
+     * @return the principal
+     */
+    public String getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     */
+    public void setPrincipal(String principal) {
+        this.principal = principal;
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -290,6 +307,7 @@ public class NodeDetails {
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
+        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -353,6 +371,11 @@ public class NodeDetails {
                 return false;
         } else if (!operation.equals(other.operation))
             return false;
+        if (principal == null) {
+            if (other.principal != null)
+                return false;
+        } else if (!principal.equals(other.principal))
+            return false;
         if (properties == null) {
             if (other.properties != null)
                 return false;
@@ -378,8 +401,8 @@ public class NodeDetails {
         return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
                 + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual
                 + ", componentType=" + componentType + ", operation=" + operation + ", fault=" + fault + ", hostName="
-                + hostName + ", properties=" + properties + ", details=" + details + ", correlationIds="
-                + correlationIds + "]";
+                + hostName + ", principal=" + principal + ", properties=" + properties + ", details=" + details
+                + ", correlationIds=" + correlationIds + "]";
     }
 
 }

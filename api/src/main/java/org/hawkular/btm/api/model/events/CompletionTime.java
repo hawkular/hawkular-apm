@@ -47,6 +47,9 @@ public class CompletionTime {
     @JsonInclude
     private long duration = 0;
 
+    @JsonInclude
+    private String principal;
+
     @JsonInclude(Include.NON_NULL)
     private String fault;
 
@@ -140,6 +143,20 @@ public class CompletionTime {
     }
 
     /**
+     * @return the principal
+     */
+    public String getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     */
+    public void setPrincipal(String principal) {
+        this.principal = principal;
+    }
+
+    /**
      * @return the fault
      */
     public String getFault() {
@@ -179,6 +196,7 @@ public class CompletionTime {
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
+        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
@@ -219,6 +237,11 @@ public class CompletionTime {
                 return false;
         } else if (!operation.equals(other.operation))
             return false;
+        if (principal == null) {
+            if (other.principal != null)
+                return false;
+        } else if (!principal.equals(other.principal))
+            return false;
         if (properties == null) {
             if (other.properties != null)
                 return false;
@@ -240,8 +263,8 @@ public class CompletionTime {
     @Override
     public String toString() {
         return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", businessTransaction="
-                + businessTransaction + ", timestamp=" + timestamp + ", duration=" + duration + ", fault=" + fault
-                + ", properties=" + properties + "]";
+                + businessTransaction + ", timestamp=" + timestamp + ", duration=" + duration + ", principal="
+                + principal + ", fault=" + fault + ", properties=" + properties + "]";
     }
 
 }

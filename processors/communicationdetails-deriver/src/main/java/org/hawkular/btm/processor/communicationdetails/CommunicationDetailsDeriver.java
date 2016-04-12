@@ -201,6 +201,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setTargetHostName(item.getHostName());
                         ret.setTargetHostAddress(item.getHostAddress());
                         ret.setTargetFragmentDuration(item.calculateDuration());
+                        ret.setPrincipal(item.getPrincipal());
 
                         // HWKBTM-349 Deal with timestamp and offset. Currently
                         // just copying timestamp as-is from producer fragment

@@ -69,6 +69,10 @@ public class ElasticsearchUtil {
             query = query.must(QueryBuilders.matchQuery("hostName", criteria.getHostName()));
         }
 
+        if (criteria.getPrincipal() != null && criteria.getPrincipal().trim().length() > 0) {
+            query = query.must(QueryBuilders.matchQuery("principal", criteria.getPrincipal()));
+        }
+
         if (!criteria.getCorrelationIds().isEmpty()) {
             for (CorrelationIdentifier id : criteria.getCorrelationIds()) {
                 query.must(QueryBuilders.termQuery("value", id.getValue()));
