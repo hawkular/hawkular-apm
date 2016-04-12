@@ -37,8 +37,18 @@
 </div>
 <div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
   <div class="card-pf">
-    <div class="graph" style="height: 500px;" ng-init="drawGraph()">
-      <svg><g/></svg>
+    <div class="card-pf-body">
+      <form class="form-inline">
+        <div class="form-group">
+          <label class="control-label" for="rootnode">Root Node </label>
+          <select class="form-control" id="rootnode" ng-options="option for option in topLevel"
+            ng-model="rootNode" ng-change="filterByTopLevel(rootNode, true)"></select>
+        </div>
+      </form>
+      <hr/>
+      <div class="graph" style="height: 500px;" ng-init="drawGraph()">
+        <svg><g/></svg>
+      </div>
     </div>
   </div>
 </div>
