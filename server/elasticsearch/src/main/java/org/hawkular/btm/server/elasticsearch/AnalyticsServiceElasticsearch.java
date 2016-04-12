@@ -64,6 +64,7 @@ import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
@@ -130,6 +131,68 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     protected List<BusinessTransaction> getFragments(String tenantId, Criteria criteria) {
         return BusinessTransactionServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getPrincipalInfo(java.lang.String,
+     *                          org.hawkular.btm.api.services.Criteria)
+     */
+    @Override
+    public List<PrincipalInfo> getPrincipalInfo(String tenantId, Criteria criteria) {
+        String index = client.getIndex(tenantId);
+
+        List<PrincipalInfo> ret = new ArrayList<PrincipalInfo>();
+
+        try {
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
+            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "name");
+
+            TermsBuilder cardinalityBuilder = AggregationBuilders
+                    .terms("cardinality")
+                    .field("principal")
+                    .order(Order.aggregation("_count", false))
+                    .size(criteria.getMaxResponseSize());
+
+            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+                    .setTypes(BusinessTransactionServiceElasticsearch.BUSINESS_TRANSACTION_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .addAggregation(cardinalityBuilder)
+                    .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                    .setSize(criteria.getMaxResponseSize())
+                    .setQuery(query);
+
+            SearchResponse response = request.execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            Terms terms = response.getAggregations().get("cardinality");
+
+            for (Terms.Bucket bucket : terms.getBuckets()) {
+                PrincipalInfo pi = new PrincipalInfo();
+                pi.setId(bucket.getKey());
+                pi.setCount(bucket.getDocCount());
+                ret.add(pi);
+            }
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no business transactions have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to get principal details");
+            }
+        }
+
+        Collections.sort(ret, new Comparator<PrincipalInfo>() {
+            @Override
+            public int compare(PrincipalInfo arg0, PrincipalInfo arg1) {
+                return arg0.getId().compareTo(arg1.getId());
+            }
+        });
+
+        return ret;
     }
 
     /* (non-Javadoc)

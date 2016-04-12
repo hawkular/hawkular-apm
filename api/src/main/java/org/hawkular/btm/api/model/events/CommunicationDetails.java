@@ -74,6 +74,8 @@ public class CommunicationDetails implements Externalizable {
 
     private long targetFragmentDuration;
 
+    private String principal;
+
     private Map<String, String> properties = new HashMap<String, String>();
 
     private List<Outbound> outbound = new ArrayList<Outbound>();
@@ -343,6 +345,20 @@ public class CommunicationDetails implements Externalizable {
     }
 
     /**
+     * @return the principal
+     */
+    public String getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     */
+    public void setPrincipal(String principal) {
+        this.principal = principal;
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -371,6 +387,22 @@ public class CommunicationDetails implements Externalizable {
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source="
+                + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal=" + internal
+                + ", timestamp=" + timestamp + ", latency=" + latency + ", consumerDuration=" + consumerDuration
+                + ", producerDuration=" + producerDuration + ", timestampOffset=" + timestampOffset
+                + ", sourceFragmentId=" + sourceFragmentId + ", sourceHostName=" + sourceHostName
+                + ", sourceHostAddress=" + sourceHostAddress + ", targetFragmentId=" + targetFragmentId
+                + ", targetHostName=" + targetHostName + ", targetHostAddress=" + targetHostAddress
+                + ", targetFragmentDuration=" + targetFragmentDuration + ", principal=" + principal + ", properties="
+                + properties + ", outbound=" + outbound + "]";
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -384,6 +416,7 @@ public class CommunicationDetails implements Externalizable {
         result = prime * result + (int) (latency ^ (latency >>> 32));
         result = prime * result + (multiConsumer ? 1231 : 1237);
         result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
+        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + (int) (producerDuration ^ (producerDuration >>> 32));
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + ((source == null) ? 0 : source.hashCode());
@@ -434,6 +467,11 @@ public class CommunicationDetails implements Externalizable {
             if (other.outbound != null)
                 return false;
         } else if (!outbound.equals(other.outbound))
+            return false;
+        if (principal == null) {
+            if (other.principal != null)
+                return false;
+        } else if (!principal.equals(other.principal))
             return false;
         if (producerDuration != other.producerDuration)
             return false;
@@ -492,21 +530,6 @@ public class CommunicationDetails implements Externalizable {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source="
-                + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", timestamp=" + timestamp
-                + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
-                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
-                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
-                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
-                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
-                + ", properties=" + properties + ", outbound=" + outbound + ", internal=" + internal + "]";
-    }
-
-    /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
     @SuppressWarnings("unchecked")
@@ -531,6 +554,8 @@ public class CommunicationDetails implements Externalizable {
         targetFragmentId = ois.readUTF();
         targetHostName = ois.readUTF();
         targetHostAddress = ois.readUTF();
+        targetFragmentDuration = ois.readLong();
+        principal = ois.readUTF();
         properties = (Map<String, String>) ois.readObject();    // TODO: Serialise properly
 
         int size = ois.readInt();
@@ -563,6 +588,8 @@ public class CommunicationDetails implements Externalizable {
         oos.writeUTF(targetFragmentId);
         oos.writeUTF(targetHostName);
         oos.writeUTF(targetHostAddress);
+        oos.writeLong(targetFragmentDuration);
+        oos.writeUTF(principal);
         oos.writeObject(properties);    // TODO: Serialise properly
 
         oos.writeInt(outbound.size());

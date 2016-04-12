@@ -122,6 +122,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
                 nd.setHostName(btxn.getHostName());
             }
 
+            if (btxn.getPrincipal() != null && btxn.getPrincipal().trim().length() > 0) {
+                nd.setPrincipal(btxn.getPrincipal());
+            }
+
             nd.setProperties(btxn.getProperties());
             nd.setTimestamp(btxn.getStartTime() + diffms);
             nd.setType(n.getType());

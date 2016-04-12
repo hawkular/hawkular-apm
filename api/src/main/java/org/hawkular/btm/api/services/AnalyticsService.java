@@ -26,6 +26,7 @@ import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
@@ -71,6 +72,16 @@ public interface AnalyticsService {
      * @return The list of property info
      */
     List<PropertyInfo> getPropertyInfo(String tenantId, Criteria criteria);
+
+    /**
+     * This method returns the principals associated with the specified
+     * criteria.
+     *
+     * @param tenantId The optional tenant id
+     * @param criteria The criteria
+     * @return The list of principal info
+     */
+    List<PrincipalInfo> getPrincipalInfo(String tenantId, Criteria criteria);
 
     /**
      * This method returns the number of completed transactions, of the specified named

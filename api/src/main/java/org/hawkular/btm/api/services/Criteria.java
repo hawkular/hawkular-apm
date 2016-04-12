@@ -43,6 +43,7 @@ public class Criteria {
     private String hostName;
     private long upperBound;
     private long lowerBound;
+    private String principal;
 
     /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
@@ -229,6 +230,22 @@ public class Criteria {
     }
 
     /**
+     * @return the principal
+     */
+    public String getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     * @return The criteria
+     */
+    public Criteria setPrincipal(String principal) {
+        this.principal = principal;
+        return this;
+    }
+
+    /**
      * @return the faults
      */
     public Set<FaultCriteria> getFaults() {
@@ -350,6 +367,10 @@ public class Criteria {
             ret.put("faults", buf.toString());
         }
 
+        if (principal != null) {
+            ret.put("principal", principal);
+        }
+
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Criteria parameters [" + ret + "]");
         }
@@ -365,7 +386,8 @@ public class Criteria {
         return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
                 + businessTransaction + ", properties=" + properties + ", correlationIds=" + correlationIds
                 + ", faults=" + faults + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound="
-                + lowerBound + ", timeout=" + timeout + ", maxResponseSize=" + maxResponseSize + "]";
+                + lowerBound + ", principal=" + principal + ", timeout=" + timeout + ", maxResponseSize="
+                + maxResponseSize + "]";
     }
 
     /**

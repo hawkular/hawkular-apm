@@ -56,6 +56,7 @@ public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, 
             notification.setTimestamp(item.getStartTime());
             notification.setHostAddress(item.getHostAddress());
             notification.setHostName(item.getHostName());
+            notification.setPrincipal(item.getPrincipal());
 
             findIssues(item.getNodes(), notification);
 

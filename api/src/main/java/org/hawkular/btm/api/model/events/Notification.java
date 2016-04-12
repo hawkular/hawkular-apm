@@ -46,6 +46,9 @@ public class Notification {
     @JsonInclude(Include.NON_EMPTY)
     private String hostAddress;
 
+    @JsonInclude(Include.NON_EMPTY)
+    private String principal;
+
     @JsonInclude
     private List<Issue> issues = new ArrayList<Issue>();
 
@@ -120,6 +123,20 @@ public class Notification {
     }
 
     /**
+     * @return the principal
+     */
+    public String getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     */
+    public void setPrincipal(String principal) {
+        this.principal = principal;
+    }
+
+    /**
      * @return the issues
      */
     public List<Issue> getIssues() {
@@ -139,7 +156,8 @@ public class Notification {
     @Override
     public String toString() {
         return "Notification [id=" + id + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp
-                + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", issues=" + issues + "]";
+                + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", principal=" + principal + ", issues="
+                + issues + "]";
     }
 
 }

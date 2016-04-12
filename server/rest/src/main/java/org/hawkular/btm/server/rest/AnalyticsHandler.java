@@ -48,6 +48,7 @@ import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.Criteria;
@@ -191,6 +192,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -202,6 +207,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -264,6 +271,106 @@ public class AnalyticsHandler {
     }
 
     @GET
+    @Path("principals")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get principal information",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getPrincipalInfo(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "business transaction name") @QueryParam("businessTransaction")
+            String businessTransaction,
+            @ApiParam(required = false,
+            value = "business transactions after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "business transactions before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+            @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
+                            value = "business transactions with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
+
+        try {
+            Criteria criteria = new Criteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
+
+            log.tracef("Get principal info for criteria [%s]", criteria);
+
+            java.util.List<PrincipalInfo> pis = analyticsService.getPrincipalInfo(
+                    securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Got principal info for criteria [%s] = [%s]", criteria, pis);
+
+            response.resume(Response.status(Response.Status.OK).entity(pis).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("principals")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get principal information",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getPrincipalInfo(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+            value = "query criteria") Criteria criteria) {
+
+        try {
+            log.tracef("Get principal info for criteria [POST] [%s]", criteria);
+
+            java.util.List<PrincipalInfo> pis = analyticsService.getPrincipalInfo(
+                    securityProvider.getTenantId(context), criteria);
+
+            log.tracef("Got principal info for criteria [POST] [%s] = [%s]", criteria, pis);
+
+            response.resume(Response.status(Response.Status.OK).entity(pis).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
     @Path("completion/count")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -285,6 +392,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -296,6 +407,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -343,6 +456,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -354,6 +471,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -401,6 +520,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -412,6 +535,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -458,6 +583,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -472,6 +601,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -562,6 +693,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -573,6 +708,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -658,6 +795,10 @@ public class AnalyticsHandler {
                     value = "business transactions before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -671,6 +812,8 @@ public class AnalyticsHandler {
             criteria.setBusinessTransaction(businessTransaction);
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -796,6 +939,8 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -809,6 +954,7 @@ public class AnalyticsHandler {
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -923,6 +1069,8 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
@@ -933,6 +1081,7 @@ public class AnalyticsHandler {
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -1041,6 +1190,8 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
@@ -1051,6 +1202,7 @@ public class AnalyticsHandler {
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -1164,6 +1316,8 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
@@ -1174,6 +1328,7 @@ public class AnalyticsHandler {
             criteria.setStartTime(startTime);
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 

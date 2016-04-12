@@ -39,6 +39,7 @@ import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
+import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
@@ -175,6 +176,16 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
         return CassandraServiceUtil.exclude(ct.getProperties(), ct.getFault(), criteria) ||
                 (criteria.getLowerBound() > 0 && ct.getDuration() < criteria.getLowerBound()) ||
                 (criteria.getUpperBound() > 0 && ct.getDuration() > criteria.getUpperBound());
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.AnalyticsService#getPrincipalInfo(java.lang.String,
+     *                      org.hawkular.btm.api.services.Criteria)
+     */
+    @Override
+    public List<PrincipalInfo> getPrincipalInfo(String tenantId, Criteria criteria) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /* (non-Javadoc)
