@@ -1484,10 +1484,12 @@ public class AnalyticsServiceRESTTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
+        c1.setEndpointType("endpoint");
         c1.setDuration(1200000);
 
         Producer p1 = new Producer();
         p1.setUri("testuri");
+        p1.setEndpointType("endpoint");
         p1.setDuration(1000000);
         p1.addInteractionId("interaction1");
         c1.getNodes().add(p1);
@@ -1501,6 +1503,7 @@ public class AnalyticsServiceRESTTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
+        c2.setEndpointType("endpoint");
         c2.setDuration(500000);
         c2.addInteractionId("interaction1");
         btxn2.getNodes().add(c2);
@@ -1577,10 +1580,12 @@ public class AnalyticsServiceRESTTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
+        c1.setEndpointType("endpoint");
         c1.setDuration(1200000);
 
         Producer p1 = new Producer();
         p1.setUri("testuri");
+        p1.setEndpointType("endpoint");
         p1.setDuration(1000000);
         p1.addInteractionId("interaction1");
         c1.getNodes().add(p1);
@@ -1594,6 +1599,7 @@ public class AnalyticsServiceRESTTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
+        c2.setEndpointType("endpoint");
         c2.setDuration(500000);
         c2.addInteractionId("interaction1");
         btxn2.getNodes().add(c2);

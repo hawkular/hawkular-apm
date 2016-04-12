@@ -192,6 +192,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         ret.setConsumerDuration(consumer.getDuration());
 
                         ret.setMultiConsumer(pi.isMultipleConsumers());
+                        ret.setInternal(consumer.getEndpointType() == null);
                         ret.setProperties(item.getProperties());
                         ret.setSourceFragmentId(pi.getFragmentId());
                         ret.setSourceHostName(pi.getHostName());
