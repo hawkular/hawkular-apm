@@ -19,9 +19,9 @@
 /// <reference path="dagreD3Globals.ts"/>
 /// <reference path="dagreD3Directive.ts"/>
 module DagreD3 {
-  _module.directive('dagreD3', () => {
-    return new DagreD3.DagreD3Directive();
-  });
+  _module.directive('dagreD3', ['$compile', ($compile) => {
+    return new DagreD3.DagreD3Directive($compile);
+  }]);
 
   hawtioPluginLoader.addModule(pluginName);
 }

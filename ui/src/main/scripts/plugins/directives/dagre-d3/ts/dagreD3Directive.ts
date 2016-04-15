@@ -28,14 +28,14 @@ module DagreD3 {
     //private render = new dagreD3.render();
     public link: (scope, elm, attrs, ctrl) => any;
 
-    constructor() {
+    constructor(public $compile) {
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
-        return this.doLink(scope, elm, attrs, ctrl);
+        return this.doLink(scope, elm, attrs, ctrl, $compile);
       };
     }
 
-    private doLink(scope, elm, attrs, ctrl): void {
+    private doLink(scope, elm, attrs, ctrl, $compile): void {
 
       // Set up zoom support
       let svg = d3.select('svg'),
@@ -64,11 +64,13 @@ module DagreD3 {
 
         _.each(scope[attrs.nodes], (d) => {
           let className = d.averageDuration < 500 ? 'success' : 'danger';
-          let html = '<div>';
+          let nodeTooltip = '<strong>Duration</strong> (avg/min/max) <br>' + d.averageDuration;
+          nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
+          let html = '<div tooltip-append-to-body="true" tooltip-html-unsafe="' + nodeTooltip + '">';
           html += '<span class="status"></span>';
           html += '<span class="node-count pull-right">' + d.count + '</span>';
           html += '<span class="name">' + d.id + '</span>';
-          html += '<span class="stats"><span class="duration">' + d.averageDuration + '</span></span>';
+          html += '<span class="stats"><span class="duration">Avg. Duration ' + d.averageDuration + 'ms</span></span>';
           html += '</div>';
           g.setNode(d.id, {
             labelType: 'html',
@@ -80,15 +82,21 @@ module DagreD3 {
           });
           if (!angular.equals({}, d.outbound)) {
             let nd: any = Object.keys(d.outbound);
+            let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + d.outbound[nd].averageLatency;
+            linkTooltip += ' / ' + d.outbound[nd].minimumLatency + ' / ' + d.outbound[nd].maximumLatency;
+            let linkHtml = '<span tooltip-append-to-body="true" tooltip-placement="bottom" tooltip-html-unsafe="';
+            linkHtml += linkTooltip + '">' + d.outbound[nd].count + '</span>';
             g.setEdge(d.id, Object.keys(d.outbound)[0], {
-              label: d.outbound[nd].count,
+              labelType: 'html',
+              label: linkHtml,
               class: '',
               width: 40
             });
           }
         });
 
-        inner.call(render, g);
+        let res = inner.call(render, g);
+        $compile(res[0])(scope);
 
         // code for supporting node drag (adapted from http://jsfiddle.net/egfx43hs/11/)
 
