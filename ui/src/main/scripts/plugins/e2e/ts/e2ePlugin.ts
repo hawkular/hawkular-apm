@@ -19,7 +19,7 @@
 /// <reference path="e2eGlobals.ts"/>
 module E2E {
 
-  export var _module = angular.module(E2E.pluginName, ['ui.bootstrap','hawkularbtm-templates']);
+  export var _module = angular.module(E2E.pluginName, ['ui.bootstrap', 'patternfly.select']);
 
   let tab = undefined;
 

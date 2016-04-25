@@ -38,11 +38,16 @@
 <div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
   <div class="card-pf">
     <div class="card-pf-body">
-      <form class="form-inline">
-        <div class="form-group">
-          <label class="control-label" for="rootnode">Root Node </label>
-          <select class="form-control" id="rootnode" ng-options="option for option in topLevel"
-            ng-model="rootNode" ng-change="filterByTopLevel(rootNode, true)"></select>
+      <form class="form-horizontal form-inline row">
+        <div class="form-group col-md-4">
+          <label class="control-label col-md-4" for="rootnode">Root Node </label>
+          <div class="col-md-8">
+            <select pf-select class="form-control" id="rootnode" ng-options="option for option in topLevel"
+              ng-model="rootNode" ng-change="filterByTopLevel(rootNode, true)">
+              <option value="" disabled>Select a Node</option>
+            </select>
+          </div>
+        </div>
         </div>
       </form>
       <hr/>
