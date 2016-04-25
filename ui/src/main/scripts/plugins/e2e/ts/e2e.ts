@@ -115,6 +115,11 @@ module E2E {
       doFilter(nodeId, true);
     };
 
+    $scope.resetZoom = function() {
+      // we just re-draw it..
+      $scope.filterByTopLevel($scope.rootNode, true);
+    };
+
     $scope.findTopLevels();
 
   }]);

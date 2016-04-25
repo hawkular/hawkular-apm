@@ -226,7 +226,7 @@ module DagreD3 {
         }
       }
 
-      scope.$watch('rootNode', function(value) {
+      scope.$watchCollection('[rootNode, filteredNodes]', function(value) {
         draw(false);
       });
 
