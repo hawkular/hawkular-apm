@@ -80,11 +80,6 @@
       <artifactId>swagger-core</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>io.swagger</groupId>
-      <artifactId>swagger-jaxrs</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
