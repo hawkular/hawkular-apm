@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>36</version>
+    <version>42</version>
   </parent>
 
   <groupId>org.hawkular.btm</groupId>
@@ -108,7 +108,6 @@
     <version.com.fasterxml.jackson.core>2.4.1</version.com.fasterxml.jackson.core>
     <version.com.jayway.jsonpath>2.0.0</version.com.jayway.jsonpath>
     <version.commons-io>2.1</version.commons-io>
-    <version.io.swagger>1.5.0</version.io.swagger>
     <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.io.vertx>3.0.0</version.io.vertx>
     <version.javaee.spec>7.0</version.javaee.spec>
@@ -121,7 +120,7 @@
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
-    <version.org.hawkular.accounts>2.0.22.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.accounts>2.0.26.Final</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.4</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
@@ -513,23 +512,6 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${version.org.apache.lucene}</version>
-      </dependency>
-
-      <!-- REST Doc dependencies -->
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-annotations</artifactId>
-        <version>${version.io.swagger}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-core</artifactId>
-        <version>${version.io.swagger}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-jaxrs</artifactId>
-        <version>${version.io.swagger}</version>
       </dependency>
 
       <!-- Test dependencies -->
