@@ -40,6 +40,28 @@ public class CommunicationSummaryStatistics {
     private Map<String, ConnectionStatistics> outbound = new HashMap<String, ConnectionStatistics>();
 
     /**
+     * The default constructor.
+     */
+    public CommunicationSummaryStatistics() {
+    }
+
+    /**
+     * The copy constructor.
+     *
+     * @param node The node to copy
+     */
+    public CommunicationSummaryStatistics(CommunicationSummaryStatistics node) {
+        this.id = node.id;
+        this.minimumDuration = node.minimumDuration;
+        this.averageDuration = node.averageDuration;
+        this.maximumDuration = node.maximumDuration;
+        this.count = node.count;
+        for (String id : node.getOutbound().keySet()) {
+            this.outbound.put(id, new ConnectionStatistics(node.getOutbound().get(id)));
+        }
+    }
+
+    /**
      * @return the id
      */
     public String getId() {
@@ -149,6 +171,29 @@ public class CommunicationSummaryStatistics {
 
         private long count;
 
+        private CommunicationSummaryStatistics node;
+
+        /**
+         * The default constructor.
+         */
+        public ConnectionStatistics() {
+        }
+
+        /**
+         * The copy constructor.
+         *
+         * @param cs The object to copy
+         */
+        public ConnectionStatistics(ConnectionStatistics cs) {
+            this.minimumLatency = cs.minimumLatency;
+            this.averageLatency = cs.averageLatency;
+            this.maximumLatency = cs.maximumLatency;
+            this.count = cs.count;
+            if (cs.node != null) {
+                this.node = new CommunicationSummaryStatistics(cs.node);
+            }
+        }
+
         /**
          * @return the minimumLatency
          */
@@ -205,13 +250,27 @@ public class CommunicationSummaryStatistics {
             this.count = count;
         }
 
+        /**
+         * @return the node
+         */
+        public CommunicationSummaryStatistics getNode() {
+            return node;
+        }
+
+        /**
+         * @param node the node to set
+         */
+        public void setNode(CommunicationSummaryStatistics node) {
+            this.node = node;
+        }
+
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
         @Override
         public String toString() {
             return "ConnectionStatistics [minimumLatency=" + minimumLatency + ", averageLatency=" + averageLatency
-                    + ", maximumLatency=" + maximumLatency + ", count=" + count + "]";
+                    + ", maximumLatency=" + maximumLatency + ", count=" + count + ", node=" + node + "]";
         }
 
     }

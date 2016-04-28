@@ -1523,7 +1523,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCommunicationSummaryStatistics() {
+    public void testGetCommunicationSummaryStatisticsFlat() {
         BusinessTransaction btxn1 = new BusinessTransaction();
         btxn1.setId("1");
         btxn1.setName("testapp");
@@ -1582,7 +1582,8 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
 
-        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                                    criteria, false);
 
         assertNotNull(stats);
         assertEquals(2, stats.size());
@@ -1616,6 +1617,99 @@ public class AnalyticsServiceRESTTest {
         assertEquals(0, second.getOutbound().size());
 
         assertEquals(first.getOutbound().keySet().iterator().next(), second.getId());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticsTree() {
+        BusinessTransaction btxn1 = new BusinessTransaction();
+        btxn1.setId("1");
+        btxn1.setName("testapp");
+        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c1 = new Consumer();
+        c1.setUri("originuri");
+        c1.setEndpointType("endpoint");
+        c1.setDuration(1200000);
+
+        Producer p1 = new Producer();
+        p1.setUri("testuri");
+        p1.setEndpointType("endpoint");
+        p1.setDuration(1000000);
+        p1.addInteractionId("interaction1");
+        c1.getNodes().add(p1);
+
+        btxn1.getNodes().add(c1);
+
+        BusinessTransaction btxn2 = new BusinessTransaction();
+        btxn2.setId("2");
+        btxn2.setName("testapp");
+        btxn2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
+
+        Consumer c2 = new Consumer();
+        c2.setUri("testuri");
+        c2.setEndpointType("endpoint");
+        c2.setDuration(500000);
+        c2.addInteractionId("interaction1");
+        btxn2.getNodes().add(c2);
+
+        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        btxns.add(btxn1);
+        btxns.add(btxn2);
+
+        try {
+            service.publish(null, btxns);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored business transaction
+        List<BusinessTransaction> result = service.query(null, new Criteria());
+
+        assertEquals(2, result.size());
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(0).setEndTime(0);
+
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                                    criteria, true);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        CommunicationSummaryStatistics first = stats.iterator().next();
+
+        assertNotNull(first);
+
+        assertEquals(1, first.getOutbound().size());
+
+        assertTrue(first.getOutbound().containsKey("testuri"));
+        assertNotNull(first.getOutbound().get("testuri").getNode());
+
+        CommunicationSummaryStatistics second = first.getOutbound().get("testuri").getNode();
+
+        assertEquals(0, second.getOutbound().size());
+
+        assertEquals(first.getOutbound().keySet().iterator().next(), second.getId());
+        assertEquals("originuri", first.getId());
+        assertEquals("testuri", second.getId());
     }
 
     @Test

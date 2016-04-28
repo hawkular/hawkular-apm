@@ -1165,21 +1165,28 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
-     *                          org.hawkular.btm.api.services.Criteria)
+     *                          org.hawkular.btm.api.services.Criteria, boolean)
      */
     @Override
     public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
-            Criteria criteria) {
+            Criteria criteria, boolean tree) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get communication summary statistics: tenantId=[" + tenantId + "] criteria="
-                    + criteria);
+                    + criteria + " as tree? " + tree);
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(baseUrl)
                 .append("analytics/communication/summary");
 
-        buildQueryString(builder, criteria);
+        if (buildQueryString(builder, criteria)) {
+            builder.append('&');
+        } else {
+            builder.append('?');
+        }
+
+        builder.append("tree=");
+        builder.append(tree);
 
         try {
             URL url = new URL(builder.toString());
