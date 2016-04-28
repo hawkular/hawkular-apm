@@ -187,13 +187,17 @@ public interface AnalyticsService {
 
     /**
      * This method returns the communication summary statistics, for the specified criteria, that were
-     * executed during the time range.
+     * executed during the time range. The representation can either be returned as flat list of
+     * nodes, each node optionally defning the links that connect them to other nodes, or as pre-built
+     * trees.
      *
      * @param tenantId The tenant id
      * @param criteria The criteria
+     * @param asTree Whether to build the nodes and links in a tree
      * @return The communication summary statistics
      */
-    Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId, Criteria criteria);
+    Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
+                                Criteria criteria, boolean asTree);
 
     /**
      * This method stores the supplied list of node details.

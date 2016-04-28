@@ -1194,7 +1194,9 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "business transactions with these properties, defined as a comma "
                                     + "separated list of name|value "
-                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                            value = "tree") @QueryParam("tree") boolean tree) {
 
         try {
             Criteria criteria = new Criteria();
@@ -1206,8 +1208,8 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
-            log.tracef("Get business transaction communication summary statistics for criteria [%s]",
-                    criteria);
+            log.tracef("Get business transaction communication summary statistics for criteria [%s] as tree [%s]",
+                    criteria, tree);
 
             long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1218,7 +1220,8 @@ public class AnalyticsHandler {
 
             Collection<CommunicationSummaryStatistics> stats = analyticsService.getCommunicationSummaryStatistics(
                     securityProvider.getTenantId(context),
-                    criteria);
+                    criteria,
+                    tree);
 
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfLog.finest("Performance: query communication summary (criteria hash=" + criteria.hashCode()
@@ -1226,8 +1229,8 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction communication summary statistics for criteria [%s] = %s", criteria,
-                    stats);
+            log.tracef("Got business transaction communication summary statistics for criteria [%s] as tree [%s] = %s",
+                    criteria, tree, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -1255,11 +1258,13 @@ public class AnalyticsHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
-                    value = "query criteria") Criteria criteria) {
+                    value = "query criteria") Criteria criteria,
+            @ApiParam(required = false,
+                    value = "tree") @QueryParam("tree") boolean tree) {
 
         try {
-            log.tracef("Get business transaction communication summary statistics for criteria [%s]",
-                    criteria);
+            log.tracef("Get business transaction communication summary statistics for criteria [%s] as tree [%s]",
+                    criteria, tree);
 
             long perfStartTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1269,8 +1274,7 @@ public class AnalyticsHandler {
             }
 
             Collection<CommunicationSummaryStatistics> stats = analyticsService.getCommunicationSummaryStatistics(
-                    securityProvider.getTenantId(context),
-                    criteria);
+                    securityProvider.getTenantId(context), criteria, tree);
 
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfLog.finest("Performance: query communication summary (criteria hash=" + criteria.hashCode()
@@ -1278,8 +1282,8 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction communication summary statistics for criteria [%s] = %s", criteria,
-                    stats);
+            log.tracef("Got business transaction communication summary statistics for criteria [%s] as tree [%s] = %s",
+                    criteria, tree, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());

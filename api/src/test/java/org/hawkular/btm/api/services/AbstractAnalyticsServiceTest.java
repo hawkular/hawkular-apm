@@ -18,13 +18,18 @@ package org.hawkular.btm.api.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.utils.EndpointUtil;
 import org.junit.Test;
@@ -81,7 +86,7 @@ public class AbstractAnalyticsServiceTest {
         List<EndpointInfo> uris = new ArrayList<EndpointInfo>();
 
         for (int i = 0; i < 30; i++) {
-            uris.add(new EndpointInfo().setEndpoint(EndpointUtil.encodeEndpoint("/hello/" + i, "op" + (i%2)))
+            uris.add(new EndpointInfo().setEndpoint(EndpointUtil.encodeEndpoint("/hello/" + i, "op" + (i % 2)))
                     .setType("http"));
         }
 
@@ -90,8 +95,8 @@ public class AbstractAnalyticsServiceTest {
         assertNotNull(result);
         assertEquals(2, result.size());
 
-        EndpointInfo op0=null;
-        EndpointInfo op1=null;
+        EndpointInfo op0 = null;
+        EndpointInfo op1 = null;
 
         for (EndpointInfo ei : result) {
             if (ei.getEndpoint().endsWith("[op0]")) {
@@ -99,7 +104,7 @@ public class AbstractAnalyticsServiceTest {
             } else if (ei.getEndpoint().endsWith("[op1]")) {
                 op1 = ei;
             } else {
-                fail("Unknown endpoint: "+ei);
+                fail("Unknown endpoint: " + ei);
             }
         }
 
@@ -260,5 +265,83 @@ public class AbstractAnalyticsServiceTest {
         assertFalse(result.get(0).metaURI());
 
         assertNotNull(result.get(0).getRegex());
+    }
+
+    @Test
+    public void testGetRootCommunicationSummaryNodes() {
+        Map<String, CommunicationSummaryStatistics> nodeMap = new HashMap<String, CommunicationSummaryStatistics>();
+
+        CommunicationSummaryStatistics css1 = new CommunicationSummaryStatistics();
+        css1.setId("css1");
+        nodeMap.put(css1.getId(), css1);
+
+        CommunicationSummaryStatistics.ConnectionStatistics con1 =
+                new CommunicationSummaryStatistics.ConnectionStatistics();
+        css1.getOutbound().put("css2", con1);
+
+        CommunicationSummaryStatistics css2 = new CommunicationSummaryStatistics();
+        css2.setId("css2");
+        nodeMap.put(css2.getId(), css2);
+
+        CommunicationSummaryStatistics css3 = new CommunicationSummaryStatistics();
+        css3.setId("css3");
+        nodeMap.put(css3.getId(), css3);
+
+        Collection<CommunicationSummaryStatistics> result =
+                AbstractAnalyticsService.getRootCommunicationSummaryNodes(nodeMap);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        for (CommunicationSummaryStatistics css : result) {
+            assertNotEquals("css2", css.getId());
+        }
+    }
+
+    @Test
+    public void testBuildCommunicationSummaryTree() {
+        List<CommunicationSummaryStatistics> nodes = new ArrayList<CommunicationSummaryStatistics>();
+
+        CommunicationSummaryStatistics css1 = new CommunicationSummaryStatistics();
+        css1.setId("css1");
+        nodes.add(css1);
+
+        CommunicationSummaryStatistics.ConnectionStatistics con1 =
+                new CommunicationSummaryStatistics.ConnectionStatistics();
+        css1.getOutbound().put("css2", con1);
+
+        CommunicationSummaryStatistics css2 = new CommunicationSummaryStatistics();
+        css2.setId("css2");
+        nodes.add(css2);
+
+        CommunicationSummaryStatistics css3 = new CommunicationSummaryStatistics();
+        css3.setId("css3");
+        nodes.add(css3);
+
+        Collection<CommunicationSummaryStatistics> result =
+                AbstractAnalyticsService.buildCommunicationSummaryTree(nodes);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        CommunicationSummaryStatistics css1a = null;
+        CommunicationSummaryStatistics css3a = null;
+
+        for (CommunicationSummaryStatistics css : result) {
+            if (css.getId().equals("css1")) {
+                css1a = css;
+            } else if (css.getId().equals("css3")) {
+                css3a = css;
+            } else {
+                fail("Unexpected id: " + css.getId());
+            }
+        }
+
+        assertEquals(1, css1a.getOutbound().size());
+        assertTrue(css1a.getOutbound().containsKey("css2"));
+        assertTrue(css3a.getOutbound().isEmpty());
+
+        assertNotNull(css1a.getOutbound().get("css2").getNode());
+        assertEquals("css2", css1a.getOutbound().get("css2").getNode().getId());
     }
 }

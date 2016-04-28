@@ -2018,7 +2018,8 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
-        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                            criteria, false);
 
         assertNotNull(stats);
         assertEquals(5, stats.size());
@@ -2208,7 +2209,8 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
-        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                                criteria, false);
 
         assertNotNull(stats);
         assertEquals(5, stats.size());
@@ -2416,7 +2418,8 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
-        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                                criteria, false);
 
         assertNotNull(stats);
         assertEquals(5, stats.size());
@@ -2624,7 +2627,8 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setStartTime(1000).setEndTime(10000);
         criteria.setPrincipal("p1");
 
-        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null, criteria);
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                                    criteria, false);
 
         assertNotNull(stats);
         assertEquals(3, stats.size());

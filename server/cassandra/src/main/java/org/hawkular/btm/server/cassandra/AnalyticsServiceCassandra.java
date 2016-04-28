@@ -749,12 +749,10 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
         return nd.getType() + ":" + nd.getComponentType() + ":" + nd.getUri() + ":" + nd.getOperation();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
-     *                          org.hawkular.btm.api.services.Criteria)
+    /**
+     * {@inheritDoc}
      */
-    @Override
-    public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
+    protected Collection<CommunicationSummaryStatistics> doGetCommunicationSummaryStatistics(String tenantId,
             Criteria criteria) {
 
         // TODO HWKBTM-324
