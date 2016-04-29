@@ -1340,9 +1340,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             fragmentManager.clear();
 
             // Remove uncompleted correlation ids
-            Map<String,Node> ids = builder.getUncompletedCorrelationIdsNodeMap();
-
-            for (String id : ids.keySet()) {
+            for (String id : builder.getUncompletedCorrelationIds()) {
                 correlations.remove(id);
             }
 
@@ -1540,9 +1538,16 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
+                Node currentNode = builder.getCurrentNode();
+                int pos = -1;
+
+                if (currentNode != null && currentNode.containerNode()) {
+                    pos = ((ContainerNode)currentNode).getNodes().size();
+                }
+
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Setup uncompleted correlation between id=" + id
-                            + " and current node=" + builder.getCurrentNode());
+                            + " and current node=" + currentNode + " pos=" + pos);
                 }
 
                 // Record the correlation id against the node in which it was initiated
@@ -1551,7 +1556,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                 // Would only be an issue if other subsequent (non-internal-link) activities
                 // occurred under the same node and therefore may be out of order if a
                 // 'spawn' internal link was later to be created
-                builder.getUncompletedCorrelationIdsNodeMap().put(id, builder.getCurrentNode());
+                builder.addUncompletedCorrelationId(id, currentNode, pos);
+
                 correlations.put(id, builder);
             }
         } catch (Throwable t) {
@@ -1608,7 +1614,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = correlations.get(id);
 
             if (builder != null) {
-                Node node = builder.getUncompletedCorrelationIdsNodeMap().remove(id);
+                int pos = builder.getUncompletedCorrelationIdPosition(id);
+                Node node = builder.removeUncompletedCorrelationId(id);
                 correlations.remove(id);
 
                 // Check if thread is already associated with correlated fragment builder
@@ -1644,7 +1651,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     // Cause a new fragment to be created for this thread
                     FragmentBuilder spawnedBuilder = fragmentManager.getFragmentBuilder();
 
-                    spawnFragment(builder, node, spawnedBuilder);
+                    spawnFragment(builder, node, pos, spawnedBuilder);
                 } else {
                     fragmentManager.setFragmentBuilder(builder);
                 }
@@ -1660,7 +1667,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * This method creates a new linked fragment to handle some asynchronous
      * activities.
      */
-    protected void spawnFragment(FragmentBuilder parentBuilder, Node node, FragmentBuilder spawnedBuilder) {
+    protected void spawnFragment(FragmentBuilder parentBuilder, Node node, int position,
+                            FragmentBuilder spawnedBuilder) {
         BusinessTransaction btxn = parentBuilder.getBusinessTransaction();
         String id = UUID.randomUUID().toString();
         String location = null;
@@ -1683,7 +1691,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
 
         if (node != null && node.containerNode()) {
             initNode(producer);
-            ((ContainerNode)node).getNodes().add(producer);
+            if (position == -1) {
+                ((ContainerNode)node).getNodes().add(producer);
+            } else {
+                ((ContainerNode)node).getNodes().add(position, producer);
+            }
         } else {
             push(location, parentBuilder, producer);
             pop(location, parentBuilder, Producer.class, uri);
