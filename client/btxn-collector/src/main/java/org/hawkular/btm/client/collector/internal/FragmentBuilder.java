@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,7 +60,7 @@ public class FragmentBuilder {
 
     private List<Node> ignoredNodes = new ArrayList<Node>();
 
-    private Map<String,Node> uncompletedCorrelationIdsNodeMap = new HashMap<String,Node>();
+    private Map<String,NodePlaceholder> uncompletedCorrelationIdsNodeMap = new HashMap<String,NodePlaceholder>();
 
     private boolean suppress = false;
 
@@ -383,12 +384,56 @@ public class FragmentBuilder {
     }
 
     /**
-     * This method returns the un-completed correlation ids list.
+     * This method associates a parent node and child position with a
+     * correlation id.
+     *
+     * @param id The correlation id
+     * @param node The parent node
+     * @param position The child node position within the parent node
+     */
+    public void addUncompletedCorrelationId(String id, Node node, int position) {
+        NodePlaceholder placeholder = new NodePlaceholder();
+        placeholder.setNode(node);
+        placeholder.setPosition(position);
+        uncompletedCorrelationIdsNodeMap.put(id, placeholder);
+    }
+
+    /**
+     * This method returns the un-completed correlation ids.
      *
      * @return The uncompleted correlation ids
      */
-    public Map<String,Node> getUncompletedCorrelationIdsNodeMap() {
-        return uncompletedCorrelationIdsNodeMap;
+    public Set<String> getUncompletedCorrelationIds() {
+        return uncompletedCorrelationIdsNodeMap.keySet();
+    }
+
+    /**
+     * This method returns the child position associated with the
+     * supplied correlation id.
+     *
+     * @param id The correlation id
+     * @return The child node position, or -1  if unknown
+     */
+    public int getUncompletedCorrelationIdPosition(String id) {
+        if (uncompletedCorrelationIdsNodeMap.containsKey(id)) {
+            return uncompletedCorrelationIdsNodeMap.get(id).getPosition();
+        }
+        return -1;
+    }
+
+    /**
+     * This method removes the uncompleted correlation id and its
+     * associated information.
+     *
+     * @param id The correlation id
+     * @return The node associated with the correlation id
+     */
+    public Node removeUncompletedCorrelationId(String id) {
+        NodePlaceholder placeholder=uncompletedCorrelationIdsNodeMap.remove(id);
+        if (placeholder != null) {
+            return placeholder.getNode();
+        }
+        return null;
     }
 
     /**
@@ -565,8 +610,8 @@ public class FragmentBuilder {
         info.append(businessTransaction);
         info.append("] complete=");
         info.append(isComplete());
-        info.append(" unlinkedIds=");
-        info.append(getUncompletedCorrelationIdsNodeMap());
+        info.append(" uncompletedCorrelationIdsNodeMap=");
+        info.append(uncompletedCorrelationIdsNodeMap);
         info.append(" stack=\r\n");
 
         synchronized (nodeStack) {
@@ -578,5 +623,52 @@ public class FragmentBuilder {
         }
 
         return (info.toString());
+    }
+
+    /**
+     * This class provides information about a placeholder for
+     * adding a child node to an existing parent.
+     */
+    public static class NodePlaceholder {
+
+        private Node node;
+        private int position = -1;
+
+        /**
+         * @return the node
+         */
+        public Node getNode() {
+            return node;
+        }
+
+        /**
+         * @param node the node to set
+         */
+        public void setNode(Node node) {
+            this.node = node;
+        }
+
+        /**
+         * @return the position
+         */
+        public int getPosition() {
+            return position;
+        }
+
+        /**
+         * @param position the position to set
+         */
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "NodePlaceholder [node=" + node + ", position=" + position + "]";
+        }
+
     }
 }

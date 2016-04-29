@@ -555,7 +555,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.initiateCorrelation("TestLink");
 
-        assertFalse(fragmentBuilder.getUncompletedCorrelationIdsNodeMap().isEmpty());
+        assertFalse(fragmentBuilder.getUncompletedCorrelationIds().isEmpty());
 
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
@@ -567,7 +567,7 @@ public class DefaultBusinessTransactionCollectorTest {
                 assertEquals("Builders should be the same", fragmentBuilder, other);
 
                 // Check link is no marked as unresolved
-                assertTrue(other.getUncompletedCorrelationIdsNodeMap().isEmpty());
+                assertTrue(other.getUncompletedCorrelationIds().isEmpty());
             }
         });
     }
@@ -971,13 +971,71 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.push(null, parent, parentConsumer);
 
-        collector.spawnFragment(parent, parentConsumer, spawned);
+        collector.spawnFragment(parent, parentConsumer, -1, spawned);
 
         // Check that parent consumer has Producer as child
         assertEquals(1, parentConsumer.getNodes().size());
         assertTrue(parentConsumer.getNodes().get(0) instanceof Producer);
 
         Producer internalProducer=(Producer)parentConsumer.getNodes().get(0);
+        assertEquals(URI, internalProducer.getUri());
+        assertEquals(OP, internalProducer.getOperation());
+
+        // Check that spawned fragment has Consumer as top level node
+        assertEquals(1, spawnedBTxn.getNodes().size());
+        assertTrue(spawnedBTxn.getNodes().get(0) instanceof Consumer);
+
+        Consumer internalConsumer=(Consumer)spawnedBTxn.getNodes().get(0);
+        assertEquals(URI, internalConsumer.getUri());
+        assertEquals(OP, internalConsumer.getOperation());
+
+        // Check that internal producer and consumer share common interaction id
+        List<CorrelationIdentifier> ipids = internalProducer.getCorrelationIds(Scope.Interaction);
+        List<CorrelationIdentifier> icids = internalConsumer.getCorrelationIds(Scope.Interaction);
+
+        assertEquals(1, ipids.size());
+        assertEquals(1, icids.size());
+        assertEquals(ipids.get(0), icids.get(0));
+
+        // Check business transaction details transferred
+        assertEquals(BTXN_NAME, spawnedBTxn.getName());
+        assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
+    }
+
+    @Test
+    public void testSpawnFragmentUsingInsertChild() {
+        DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+
+        FragmentBuilder parent = new FragmentBuilder();
+        FragmentBuilder spawned = new FragmentBuilder();
+
+        BusinessTransaction parentBTxn = parent.getBusinessTransaction();
+        BusinessTransaction spawnedBTxn = spawned.getBusinessTransaction();
+
+        parentBTxn.setName(BTXN_NAME);
+        parentBTxn.setPrincipal(BTXN_PRINCIPAL);
+
+        // Create top level consumer in parent
+        Consumer parentConsumer = new Consumer();
+        parentConsumer.setUri(URI);
+        parentConsumer.setOperation(OP);
+
+        // Add existing children
+        Component comp1 = new Component();
+        parentConsumer.getNodes().add(comp1);
+
+        Component comp2 = new Component();
+        parentConsumer.getNodes().add(comp2);
+
+        collector.push(null, parent, parentConsumer);
+
+        collector.spawnFragment(parent, parentConsumer, 1, spawned);
+
+        // Check that parent consumer has Producer as child
+        assertEquals(3, parentConsumer.getNodes().size());
+        assertTrue(parentConsumer.getNodes().get(1) instanceof Producer);
+
+        Producer internalProducer=(Producer)parentConsumer.getNodes().get(1);
         assertEquals(URI, internalProducer.getUri());
         assertEquals(OP, internalProducer.getOperation());
 
@@ -1022,7 +1080,7 @@ public class DefaultBusinessTransactionCollectorTest {
 
         collector.push(null, parent, parentConsumer);
 
-        collector.spawnFragment(parent, null, spawned);
+        collector.spawnFragment(parent, null, -1, spawned);
 
         // Check that parent consumer has Producer as child
         assertEquals(1, parentConsumer.getNodes().size());
