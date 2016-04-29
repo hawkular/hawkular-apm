@@ -33,7 +33,8 @@
         "condition": "isCorrelated(\"io.netty-async-\"+hashCode($0))",
         "actions": [{
           "type": "CompleteCorrelation",
-          "idExpression": "\"io.netty-async-\"+hashCode($0)"
+          "idExpression": "\"io.netty-async-\"+hashCode($0)",
+          "allowSpawn": true
         }]
       }]
     }

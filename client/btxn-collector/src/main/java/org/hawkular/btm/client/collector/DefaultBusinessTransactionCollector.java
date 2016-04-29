@@ -1540,6 +1540,11 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Setup uncompleted correlation between id=" + id
+                            + " and current node=" + builder.getCurrentNode());
+                }
+
                 // Record the correlation id against the node in which it was initiated
                 // TODO: HWKBTM-402 May also need to record current position in node's child list,
                 // so that internal Producer link is created in correct place??
@@ -1616,7 +1621,18 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
                     }
                 }
 
-                if (builder.getThreadCount() >= 1 && allowSpawn) {
+                // If spawning is allowed on completion of a correlation, then automatically
+                // create the separate fragment. Previously tried to be clever and only do
+                // it if thread count was greater than 1, but this lead to problems with the
+                // activities being recorded in the potentially concurrent thread not being
+                // anchored to the correct parent node - this is because the work was being
+                // done in an async thread that may have been triggered after the spawning
+                // thread had completed, resulting in a thread count of 1 (i.e. so not spawn
+                // represented), but the stack had been changed due to the parent activities
+                // being completed. So for consistency now just spawn a separate btxn fragment
+                // where the performed activities may be started asynchronously at some
+                // point in the future.
+                if (allowSpawn) {
                     if (log.isLoggable(Level.FINEST)) {
                         log.finest("Starting separate thread for asynchronous path: count="
                             + builder.getThreadCount() + " parent node=" + node);
