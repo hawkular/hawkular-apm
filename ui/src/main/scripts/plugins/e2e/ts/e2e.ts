@@ -23,63 +23,6 @@ module E2E {
   export let E2EController = _module.controller('E2E.E2EController', ['$scope', '$routeParams', '$http', '$location',
     '$interval', '$timeout', ($scope, $routeParams, $http, $location, $interval, $timeout) => {
 
-    // some sample data while we don't have an actual endpoint
-    $scope.sampleData =
-    [
-    {
-      'averageDuration': 342,
-      'count': 1,
-      'id': '/items[POST]',
-      'maximumDuration': 342,
-      'minimumDuration': 342,
-      'outbound': {}
-    },
-    {
-      'averageDuration': 375,
-      'count': 2,
-      'id': '/search[GET]',
-      'maximumDuration': 734,
-      'minimumDuration': 17,
-      'outbound': {}
-    },
-    {
-      'averageDuration': 2296,
-      'count': 2,
-      'id': '/book[GET]',
-      'maximumDuration': 3527,
-      'minimumDuration': 1065,
-      'outbound': {
-        '/book/14293[GET]': {
-          'averageLatency': 130,
-          'count': 2,
-          'maximumLatency': 256,
-          'minimumLatency': 4
-        }
-      }
-    },
-    {
-      'averageDuration': 275,
-      'count': 2,
-      'id': '/book/14293[GET]',
-      'maximumDuration': 548,
-      'minimumDuration': 2,
-      'outbound': {}
-    },
-    {
-      'averageDuration': 2979,
-      'count': 2,
-      'id': '/items[GET]',
-      'maximumDuration': 4203,
-      'minimumDuration': 1755,
-      'outbound': {
-        '/book[GET]': {
-          'averageLatency': 121,
-          'count': 1,
-          'maximumLatency': 121,
-          'minimumLatency': 121
-        }
-      }
-    }
     $scope.timeSpans = [
       {time: '-60000',       text: '1 Minute'},
       {time: '-600000',      text: '10 Minutes'},
@@ -99,12 +42,29 @@ module E2E {
     $scope.criteria = {
       startTime: $scope.timeSpans[9].time
     };
+
+    $scope.reload = function() {
+      let countPromise = $http.get('/hawkular/btm/analytics/communication/summary?startTime=' +
+        $scope.criteria.startTime);
+      countPromise.then(function(resp) {
+        $scope.e2eData = resp.data;
+        $scope.findTopLevels();
+      }, function(resp) {
+        console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
+      });
+    };
+
+    $scope.reload();
+
+    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
+
     // get top level nodes
     $scope.findTopLevels = function() {
       $scope.topLevel = [];
       $scope.outbounds = [];
       $scope.reverseInbounds = [];
-      _.each($scope.sampleData, (node) => {
+      _.each($scope.e2eData, (node) => {
         $scope.topLevel.push(node.id);
         let outbounds = Object.keys(node.outbound);
         $scope.outbounds = _.union($scope.outbounds, outbounds);
@@ -114,7 +74,7 @@ module E2E {
 
     let doFilter = function(nodeId, clear) {
       if (clear) {
-        $scope.allNodes = angular.copy($scope.sampleData);
+        $scope.allNodes = angular.copy($scope.e2eData);
         $scope.filteredNodes = [];
       }
       let filtered = _.remove($scope.allNodes, (node: any) => {
@@ -136,8 +96,6 @@ module E2E {
       // we just re-draw it..
       $scope.filterByTopLevel($scope.rootNode, true);
     };
-
-    $scope.findTopLevels();
 
   }]);
 
