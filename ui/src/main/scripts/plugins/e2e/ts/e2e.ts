@@ -80,8 +80,25 @@ module E2E {
         }
       }
     }
+    $scope.timeSpans = [
+      {time: '-60000',       text: '1 Minute'},
+      {time: '-600000',      text: '10 Minutes'},
+      {time: '-1800000',     text: '30 Minutes'},
+      {time: '-3600000',     text: '1 Hour'},
+      {time: '-14400000',    text: '4 Hours'},
+      {time: '-28800000',    text: '8 Hours'},
+      {time: '-43200000',    text: '12 Hours'},
+      {time: '-86400000',    text: 'Day'},
+      {time: '-604800000',   text: 'Week'},
+      {time: '-2419200000',  text: 'Month'},
+      {time: '-15768000000', text: '6 Months'},
+      {time: '-31536000000', text: 'Year'},
+      {time: '1',            text: 'All'}
     ];
 
+    $scope.criteria = {
+      startTime: $scope.timeSpans[9].time
+    };
     // get top level nodes
     $scope.findTopLevels = function() {
       $scope.topLevel = [];
