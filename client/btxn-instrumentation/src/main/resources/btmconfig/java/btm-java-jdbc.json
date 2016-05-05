@@ -4,12 +4,16 @@
       "description": "Java JDBC instrumentation",
       "rules": [{
         "ruleName": "Java JDBC Query Component Start",
+        "notes": [
+          "HWKBTM-413 - added no compile due to IllegalAccessError in oracle jdbc driver"
+        ],
         "interfaceName": "^java.sql.Statement",
         "methodName": "executeQuery",
         "parameterTypes": [
           "*"
         ],
         "location": "ENTRY",
+        "compile": false,
         "condition": "isActive()",
         "actions": [{
           "type": "InstrumentComponent",
