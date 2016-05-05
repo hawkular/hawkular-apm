@@ -63,6 +63,11 @@ public class BTxnCompletionInformationInitiator extends
                 ct.setId(item.getId());
                 ct.setUri(n.getUri());
                 ct.setOperation(n.getOperation());
+
+                if (n.getClass() == Consumer.class) {
+                    ct.setEndpointType(((Consumer)n).getEndpointType());
+                }
+
                 ct.setBusinessTransaction(item.getName());
                 ct.setDuration(item.calculateDuration());
                 ct.setPrincipal(item.getPrincipal());

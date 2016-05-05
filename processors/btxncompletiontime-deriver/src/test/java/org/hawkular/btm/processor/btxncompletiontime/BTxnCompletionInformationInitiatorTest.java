@@ -17,6 +17,7 @@
 package org.hawkular.btm.processor.btxncompletiontime;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -73,6 +74,7 @@ public class BTxnCompletionInformationInitiatorTest {
         c.setBaseTime(1);
         c.setDuration(200000000);
         c.setFault("myFault");
+        c.setEndpointType("HTTP");
 
         btxn.getNodes().add(c);
 
@@ -91,6 +93,8 @@ public class BTxnCompletionInformationInitiatorTest {
 
         assertEquals(btxn.getId(), ci.getCompletionTime().getId());
         assertEquals(btxn.getName(), ci.getCompletionTime().getBusinessTransaction());
+        assertEquals(c.getEndpointType(), ci.getCompletionTime().getEndpointType());
+        assertFalse(ci.getCompletionTime().isInternal());
         assertEquals(btxn.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(c.getUri(), ci.getCompletionTime().getUri());
         assertEquals(200, ci.getCompletionTime().getDuration());

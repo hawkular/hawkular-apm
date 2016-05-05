@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
@@ -55,6 +56,13 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
             ct.setId(item.getId());
             ct.setUri(n.getUri());
             ct.setOperation(n.getOperation());
+
+            if (n.getClass() == Consumer.class) {
+                ct.setEndpointType(((Consumer)n).getEndpointType());
+                ct.setInternal(((Consumer)n).getEndpointType() == null
+                        || ((Consumer)n).getEndpointType().trim().length() == 0);
+            }
+
             ct.setBusinessTransaction(item.getName());
             ct.setDuration(item.calculateDuration());
             ct.setPrincipal(item.getPrincipal());
