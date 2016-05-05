@@ -119,6 +119,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                     pi.setHostName(btxn.getHostName());
                     pi.setHostAddress(btxn.getHostAddress());
                     pi.setMultipleConsumers(producer.multipleConsumers());
+                    pi.getProperties().putAll(btxn.getProperties());
 
                     // TODO: HWKBTM-348: Should be configurable based on the wait interval plus
                     // some margin of error - primarily for cases where a job scheduler
@@ -193,7 +194,11 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
 
                         ret.setMultiConsumer(pi.isMultipleConsumers());
                         ret.setInternal(consumer.getEndpointType() == null);
-                        ret.setProperties(item.getProperties());
+
+                        // Merge properties from consumer and producer
+                        ret.getProperties().putAll(item.getProperties());
+                        ret.getProperties().putAll(pi.getProperties());
+
                         ret.setSourceFragmentId(pi.getFragmentId());
                         ret.setSourceHostName(pi.getHostName());
                         ret.setSourceHostAddress(pi.getHostAddress());

@@ -20,6 +20,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents information cached about a producer, to enable it to be
@@ -44,6 +46,8 @@ public class ProducerInfo implements Externalizable {
     private String hostAddress;
 
     private boolean multipleConsumers = false;
+
+    private Map<String, String> properties = new HashMap<String, String>();
 
     /**
      * @return the sourceUri
@@ -157,9 +161,24 @@ public class ProducerInfo implements Externalizable {
         this.multipleConsumers = multipleConsumers;
     }
 
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
     /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
@@ -172,6 +191,7 @@ public class ProducerInfo implements Externalizable {
         hostName = ois.readUTF();
         hostAddress = ois.readUTF();
         multipleConsumers = ois.readBoolean();
+        properties = (Map<String, String>) ois.readObject();    // TODO: Serialise properly
     }
 
     /* (non-Javadoc)
@@ -189,6 +209,7 @@ public class ProducerInfo implements Externalizable {
         oos.writeUTF(hostName);
         oos.writeUTF(hostAddress);
         oos.writeBoolean(multipleConsumers);
+        oos.writeObject(properties);    // TODO: Serialise properly
     }
 
 }
