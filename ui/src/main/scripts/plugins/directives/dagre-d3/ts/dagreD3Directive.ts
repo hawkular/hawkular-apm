@@ -240,6 +240,12 @@ module DagreD3 {
         }
       });
 
+      scope.$watch('e2eData', function(value) {
+        if (value) {
+          draw(true);
+        }
+      });
+
     }
   }
 }

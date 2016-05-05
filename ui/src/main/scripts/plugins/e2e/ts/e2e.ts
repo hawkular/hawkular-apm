@@ -40,7 +40,7 @@ module E2E {
     ];
 
     $scope.criteria = {
-      startTime: $scope.timeSpans[9].time
+      startTime: $scope.timeSpans[3].time
     };
 
     $scope.reload = function() {
@@ -49,6 +49,8 @@ module E2E {
       countPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.findTopLevels();
+        $scope.rootNode = $scope.rootNode || _.first($scope.topLevel);
+        $scope.filterByTopLevel($scope.rootNode, true);
       }, function(resp) {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
       });
@@ -89,7 +91,9 @@ module E2E {
     };
 
     $scope.filterByTopLevel = function(nodeId, clear) {
-      doFilter(nodeId, true);
+      if (nodeId) {
+        doFilter(nodeId, true);
+      }
     };
 
     $scope.resetZoom = function() {
