@@ -344,4 +344,76 @@ public class AbstractAnalyticsServiceTest {
         assertNotNull(css1a.getOutbound().get("css2").getNode());
         assertEquals("css2", css1a.getOutbound().get("css2").getNode().getId());
     }
+
+    @Test
+    public void testHasMetricsNo() {
+        List<CommunicationSummaryStatistics> nodes = new ArrayList<CommunicationSummaryStatistics>();
+
+        CommunicationSummaryStatistics css1 = new CommunicationSummaryStatistics();
+        css1.setId("css1");
+        nodes.add(css1);
+
+        CommunicationSummaryStatistics.ConnectionStatistics con1 =
+                new CommunicationSummaryStatistics.ConnectionStatistics();
+        css1.getOutbound().put("css2", con1);
+
+        CommunicationSummaryStatistics css2 = new CommunicationSummaryStatistics();
+        css2.setId("css2");
+        con1.setNode(css2);
+
+        CommunicationSummaryStatistics css3 = new CommunicationSummaryStatistics();
+        css3.setId("css3");
+        nodes.add(css3);
+
+        assertFalse(AbstractAnalyticsService.hasMetrics(css1));
+    }
+
+    @Test
+    public void testHasMetricsYesChildNode() {
+        List<CommunicationSummaryStatistics> nodes = new ArrayList<CommunicationSummaryStatistics>();
+
+        CommunicationSummaryStatistics css1 = new CommunicationSummaryStatistics();
+        css1.setId("css1");
+        nodes.add(css1);
+
+        CommunicationSummaryStatistics.ConnectionStatistics con1 =
+                new CommunicationSummaryStatistics.ConnectionStatistics();
+        css1.getOutbound().put("css2", con1);
+
+        CommunicationSummaryStatistics css2 = new CommunicationSummaryStatistics();
+        css2.setId("css2");
+        css2.setCount(1);
+        con1.setNode(css2);
+
+        CommunicationSummaryStatistics css3 = new CommunicationSummaryStatistics();
+        css3.setId("css3");
+        nodes.add(css3);
+
+        assertTrue(AbstractAnalyticsService.hasMetrics(css1));
+    }
+
+    @Test
+    public void testHasMetricsYesChildLink() {
+        List<CommunicationSummaryStatistics> nodes = new ArrayList<CommunicationSummaryStatistics>();
+
+        CommunicationSummaryStatistics css1 = new CommunicationSummaryStatistics();
+        css1.setId("css1");
+        nodes.add(css1);
+
+        CommunicationSummaryStatistics.ConnectionStatistics con1 =
+                new CommunicationSummaryStatistics.ConnectionStatistics();
+        con1.setCount(1);
+        css1.getOutbound().put("css2", con1);
+
+        CommunicationSummaryStatistics css2 = new CommunicationSummaryStatistics();
+        css2.setId("css2");
+        con1.setNode(css2);
+
+        CommunicationSummaryStatistics css3 = new CommunicationSummaryStatistics();
+        css3.setId("css3");
+        nodes.add(css3);
+
+        assertTrue(AbstractAnalyticsService.hasMetrics(css1));
+    }
+
 }

@@ -832,6 +832,27 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         Map<String, CommunicationSummaryStatistics> stats = new HashMap<String, CommunicationSummaryStatistics>();
 
+        if (!criteria.transactionWide()) {
+            Criteria txnWideCriteria = criteria.deriveTransactionWide();
+            buildCommunicationSummaryStatistics(stats, index, txnWideCriteria, false);
+        }
+
+        buildCommunicationSummaryStatistics(stats, index, criteria, true);
+
+        return stats.values();
+    }
+
+    /**
+     * This method builds a map of communication summary stats related to the supplied
+     * criteria.
+     *
+     * @param stats The map of communication summary stats
+     * @param index The index
+     * @param criteria The criteria
+     * @param addMetrics Whether to add metrics on the nodes/links
+     */
+    protected void buildCommunicationSummaryStatistics(Map<String, CommunicationSummaryStatistics> stats,
+                            String index, Criteria criteria, boolean addMetrics) {
         try {
             RefreshRequestBuilder refreshRequestBuilder =
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
@@ -876,22 +897,37 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             for (Terms.Bucket sourceBucket : sources.getBuckets()) {
                 Terms targets = sourceBucket.getAggregations().get("target");
 
-                CommunicationSummaryStatistics css = new CommunicationSummaryStatistics();
-                css.setId(sourceBucket.getKey());
-                css.setCount(sourceBucket.getDocCount());
+                String id = sourceBucket.getKey();
 
-                stats.put(css.getId(), css);
+                CommunicationSummaryStatistics css = stats.get(id);
+
+                if (css == null) {
+                    css = new CommunicationSummaryStatistics();
+                    css.setId(sourceBucket.getKey());
+                    stats.put(css.getId(), css);
+                }
+
+                if (addMetrics) {
+                    css.setCount(sourceBucket.getDocCount());
+                }
 
                 for (Terms.Bucket targetBucket : targets.getBuckets()) {
                     Stats latency = targetBucket.getAggregations().get("latency");
 
-                    ConnectionStatistics con = new ConnectionStatistics();
-                    con.setMinimumLatency((long)latency.getMin());
-                    con.setAverageLatency((long)latency.getAvg());
-                    con.setMaximumLatency((long)latency.getMax());
-                    con.setCount(targetBucket.getDocCount());
+                    String linkId = targetBucket.getKey();
+                    ConnectionStatistics con = css.getOutbound().get(linkId);
 
-                    css.getOutbound().put(targetBucket.getKey(), con);
+                    if (con == null) {
+                        con = new ConnectionStatistics();
+                        css.getOutbound().put(linkId, con);
+                    }
+
+                    if (addMetrics) {
+                        con.setMinimumLatency((long)latency.getMin());
+                        con.setAverageLatency((long)latency.getAvg());
+                        con.setMaximumLatency((long)latency.getMax());
+                        con.setCount(targetBucket.getDocCount());
+                    }
                 }
             }
 
@@ -948,10 +984,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                         stats.put(id, css);
                     }
 
-                    css.setMinimumDuration((long)duration.getMin());
-                    css.setAverageDuration((long)duration.getAvg());
-                    css.setMaximumDuration((long)duration.getMax());
-                    css.setCount(operationBucket.getDocCount());
+                    if (addMetrics) {
+                        css.setMinimumDuration((long)duration.getMin());
+                        css.setAverageDuration((long)duration.getAvg());
+                        css.setMaximumDuration((long)duration.getMax());
+                        css.setCount(operationBucket.getDocCount());
+                    }
                 }
 
                 Missing missingOp = urisBucket.getAggregations().get("missingOperation");
@@ -967,10 +1005,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                         stats.put(id, css);
                     }
 
-                    css.setMinimumDuration((long)duration.getMin());
-                    css.setAverageDuration((long)duration.getAvg());
-                    css.setMaximumDuration((long)duration.getMax());
-                    css.setCount(missingOp.getDocCount());
+                    if (addMetrics) {
+                        css.setMinimumDuration((long)duration.getMin());
+                        css.setAverageDuration((long)duration.getAvg());
+                        css.setMaximumDuration((long)duration.getMax());
+                        css.setCount(missingOp.getDocCount());
+                    }
                 }
             }
 
@@ -981,8 +1021,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 msgLog.tracef("No index found, so unable to get communication summary stats");
             }
         }
-
-        return stats.values();
     }
 
     /* (non-Javadoc)

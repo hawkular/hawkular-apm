@@ -326,9 +326,44 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
 
         if (asTree) {
             ret = buildCommunicationSummaryTree(ret);
+
+            if (!criteria.transactionWide()) {
+                // Scan the trees to see whether node specific queries are relevant
+                Iterator<CommunicationSummaryStatistics> iter=ret.iterator();
+                while (iter.hasNext()) {
+                    CommunicationSummaryStatistics css=iter.next();
+                    if (!hasMetrics(css)) {
+                        iter.remove();
+                    }
+                }
+            }
         }
 
         return ret;
+    }
+
+    /**
+     * This method determines whether the communication summary statistics have defined
+     * metrics.
+     *
+     * @param css The communication summary structure
+     * @return Whether they include metrics
+     */
+    protected static boolean hasMetrics(CommunicationSummaryStatistics css) {
+        if (css.getCount() > 0) {
+            return true;
+        }
+        for (ConnectionStatistics cs : css.getOutbound().values()) {
+            if (cs.getCount() > 0) {
+                return true;
+            }
+            if (cs.getNode() != null) {
+                if (hasMetrics(cs.getNode())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

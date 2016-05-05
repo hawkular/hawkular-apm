@@ -378,6 +378,30 @@ public class Criteria {
         return ret;
     }
 
+    /**
+     * This method determines if the specified criteria are relevant to all fragments within
+     * an end to end transaction.
+     *
+     * @return Whether the criteria would apply to all fragments in a transaction
+     */
+    public boolean transactionWide() {
+        return !(properties.size() > 0 || correlationIds.size() > 0 || faults.size() > 0 || hostName != null);
+    }
+
+    /**
+     * This method returns the transaction wide version of the current criteria.
+     *
+     * @return The transaction wide version
+     */
+    public Criteria deriveTransactionWide() {
+        Criteria ret = new Criteria();
+        ret.setStartTime(startTime);
+        ret.setEndTime(endTime);
+        ret.setBusinessTransaction(businessTransaction);
+        ret.setPrincipal(principal);
+        return ret;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
