@@ -27,7 +27,7 @@ module E2E {
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
     tab = builder.create()
       .id(E2E.pluginName)
-      .title(() => 'End-to-End View')
+      .title(() => 'Distributed Tracing')
       .href(() => '/hawkular-ui/e2e')
       .build();
     //builder.configureRouting($routeProvider, tab);

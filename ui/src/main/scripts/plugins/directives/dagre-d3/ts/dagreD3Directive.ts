@@ -48,6 +48,11 @@ module DagreD3 {
       let render = new dagreD3.render();
       let g = new dagreD3.graphlib.Graph();
 
+      function clear() {
+        let svg = d3.select('svg > g');
+        svg.selectAll('*').remove();
+      }
+
       function draw(isUpdate) {
         g = new dagreD3.graphlib.Graph();
         zoom.scale(1);
@@ -81,16 +86,17 @@ module DagreD3 {
             class: className
           });
           if (!angular.equals({}, d.outbound)) {
-            let nd: any = Object.keys(d.outbound);
-            let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + d.outbound[nd].averageLatency;
-            linkTooltip += ' / ' + d.outbound[nd].minimumLatency + ' / ' + d.outbound[nd].maximumLatency;
-            let linkHtml = '<span tooltip-append-to-body="true" tooltip-placement="bottom" tooltip-html-unsafe="';
-            linkHtml += linkTooltip + '">' + d.outbound[nd].count + '</span>';
-            g.setEdge(d.id, Object.keys(d.outbound)[0], {
-              labelType: 'html',
-              label: linkHtml,
-              class: '',
-              width: 40
+            _.each(Object.keys(d.outbound), (nd: any) => {
+              let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + d.outbound[nd].averageLatency;
+              linkTooltip += ' / ' + d.outbound[nd].minimumLatency + ' / ' + d.outbound[nd].maximumLatency;
+              let linkHtml = '<span tooltip-append-to-body="true" tooltip-placement="bottom" tooltip-html-unsafe="';
+              linkHtml += linkTooltip + '">' + d.outbound[nd].count + '</span>';
+              g.setEdge(d.id, nd, {
+                labelType: 'html',
+                label: linkHtml,
+                class: '',
+                width: 40
+              });
             });
           }
         });
@@ -227,7 +233,17 @@ module DagreD3 {
       }
 
       scope.$watchCollection('[rootNode, filteredNodes]', function(value) {
-        draw(false);
+        if (value[0] && value[1].length) {
+          draw(false);
+        } else {
+          clear();
+        }
+      });
+
+      scope.$watch('e2eData', function(value) {
+        if (value) {
+          draw(true);
+        }
       });
 
     }
