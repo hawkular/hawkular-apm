@@ -39,6 +39,9 @@ public class CompletionTime {
     private String operation;
 
     @JsonInclude
+    private String endpointType;
+
+    @JsonInclude
     private String businessTransaction;
 
     @JsonInclude
@@ -55,6 +58,9 @@ public class CompletionTime {
 
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> properties = new HashMap<String, String>();
+
+    @JsonInclude
+    private boolean internal = false;
 
     /**
      * @return the id
@@ -96,6 +102,20 @@ public class CompletionTime {
      */
     public void setOperation(String operation) {
         this.operation = operation;
+    }
+
+    /**
+     * @return the endpointType
+     */
+    public String getEndpointType() {
+        return endpointType;
+    }
+
+    /**
+     * @param endpointType the endpointType to set
+     */
+    public void setEndpointType(String endpointType) {
+        this.endpointType = endpointType;
     }
 
     /**
@@ -184,6 +204,20 @@ public class CompletionTime {
         this.properties = properties;
     }
 
+    /**
+     * @return the internal
+     */
+    public boolean isInternal() {
+        return internal;
+    }
+
+    /**
+     * @param internal the internal to set
+     */
+    public void setInternal(boolean internal) {
+        this.internal = internal;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -193,8 +227,10 @@ public class CompletionTime {
         int result = 1;
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + ((endpointType == null) ? 0 : endpointType.hashCode());
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (internal ? 1231 : 1237);
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
@@ -222,6 +258,11 @@ public class CompletionTime {
             return false;
         if (duration != other.duration)
             return false;
+        if (endpointType == null) {
+            if (other.endpointType != null)
+                return false;
+        } else if (!endpointType.equals(other.endpointType))
+            return false;
         if (fault == null) {
             if (other.fault != null)
                 return false;
@@ -231,6 +272,8 @@ public class CompletionTime {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
+            return false;
+        if (internal != other.internal)
             return false;
         if (operation == null) {
             if (other.operation != null)
@@ -262,9 +305,10 @@ public class CompletionTime {
      */
     @Override
     public String toString() {
-        return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", businessTransaction="
-                + businessTransaction + ", timestamp=" + timestamp + ", duration=" + duration + ", principal="
-                + principal + ", fault=" + fault + ", properties=" + properties + "]";
+        return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", endpointType="
+                + endpointType + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp
+                + ", duration=" + duration + ", principal=" + principal + ", fault=" + fault + ", properties="
+                + properties + ", internal=" + internal + "]";
     }
 
 }
