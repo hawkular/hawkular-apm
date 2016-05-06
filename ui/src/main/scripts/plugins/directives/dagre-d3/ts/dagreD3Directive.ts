@@ -54,18 +54,20 @@ module DagreD3 {
       }
 
       function draw(isUpdate) {
-        g = new dagreD3.graphlib.Graph();
-        zoom.scale(1);
-        zoom.translate([0, 0]);
-        inner.attr('transform', '');
-        g.setGraph({
-          nodesep: 10,
-          ranksep: 50,
-          // Left-to-right layout
-          rankdir: 'LR',
-          marginx: 20,
-          marginy: 20
-        });
+        if (!isUpdate) {
+          g = new dagreD3.graphlib.Graph();
+          zoom.scale(1);
+          zoom.translate([0, 0]);
+          inner.attr('transform', '');
+          g.setGraph({
+            nodesep: 10,
+            ranksep: 50,
+            // Left-to-right layout
+            rankdir: 'LR',
+            marginx: 20,
+            marginy: 20
+          });
+        }
 
         _.each(scope[attrs.nodes], (d) => {
           let className = d.averageDuration < 500 ? 'success' : 'danger';
@@ -101,139 +103,147 @@ module DagreD3 {
           }
         });
 
+        // we store the current transform, remove it so d3 draws it properly, and then re-apply it
+        let curTransform = inner.attr('transform');
+        inner.attr('transform', '');
+
         let res = inner.call(render, g);
         $compile(res[0])(scope);
 
-        // code for supporting node drag (adapted from http://jsfiddle.net/egfx43hs/11/)
+        inner.attr('transform', curTransform);
 
-        let safeId = function(id) {
-          return id.replace(/[\[|&;$%@"<>()+,/\]]/g, '_');
-        };
+        if (attrs.nodeDrag) {
+          // code for supporting node drag (adapted from http://jsfiddle.net/egfx43hs/11/)
 
-        //give IDs to each of the nodes so that they can be accessed
-        svg.selectAll('g.node rect').attr('id', (d) => {
-          return 'node' + safeId(d);
-        });
-        svg.selectAll('g.edgePath path').attr('id', (e) => {
-          return safeId(e.v) + '-' + safeId(e.w);
-        });
-        svg.selectAll('g.edgeLabel g').attr('id', (e) => {
-          return 'label_' + safeId(e.v) + '-' + safeId(e.w);
-        });
-
-        g.nodes().forEach((v) => {
-          let node = g.node(v);
-          node.customId = 'node' + safeId(v);
-        });
-        g.edges().forEach((e) => {
-          let edge = g.edge(e.v, e.w);
-          edge.customId = safeId(e.v) + '-' + safeId(e.w);
-        });
-
-        let nodeDrag = d3.behavior.drag().on('dragstart', dragstart).on('drag', dragmove);
-
-        let edgeDrag = d3.behavior.drag()
-          .on('dragstart', dragstart)
-          .on('drag', (d) => {
-            translateEdge(g.edge(d.v, d.w), d3.event.dx, d3.event.dy);
-            $('#' + g.edge(d.v, d.w).customId).attr('d', calcPoints(d));
-          });
-
-        nodeDrag.call(svg.selectAll('g.node'));
-        edgeDrag.call(svg.selectAll('g.edgePath'));
-
-        function dragstart(d) {
-          d3.event.sourceEvent.stopPropagation();
-        }
-
-        function dragmove(d) {
-          let node = d3.select(this),
-            selectedNode = g.node(d);
-          let prevX = selectedNode.x,
-            prevY = selectedNode.y;
-
-          selectedNode.x += d3.event.dx;
-          selectedNode.y += d3.event.dy;
-          node.attr('transform', 'translate(' + selectedNode.x + ',' + selectedNode.y + ')');
-
-          let dx = selectedNode.x - prevX,
-            dy = selectedNode.y - prevY;
-
-          g.edges().forEach((e) => {
-            if (e.v === d || e.w === d) {
-              let edge = g.edge(e.v, e.w);
-              translateEdge(g.edge(e.v, e.w), dx, dy);
-              $('#' + edge.customId).attr('d', calcPoints(e));
-              let label = $('#label_' + edge.customId);
-              let xforms = label.attr('transform');
-              let parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms);
-              let X = parseInt(parts[1], 10) + dx, Y = parseInt(parts[2], 10) + dy;
-              label.attr('transform', 'translate(' + X + ',' + Y + ')');
-            }
-          });
-        }
-
-        function translateEdge(e, dx, dy) {
-          e.points.forEach((p) => {
-            p.x = p.x + dx;
-            p.y = p.y + dy;
-          });
-        }
-
-        // taken from dagre-d3 source code (not the exact same)
-        function calcPoints(e) {
-          let edge = g.edge(e.v, e.w),
-            tail = g.node(e.v),
-            head = g.node(e.w);
-          let points = edge.points.slice(1, edge.points.length - 1);
-          edge.points.slice(1, edge.points.length - 1);
-          points.unshift(intersectRect(tail, points[0]));
-          points.push(intersectRect(head, points[points.length - 1]));
-          return d3.svg.line()
-            .x((d) => {
-              return d.x;
-            })
-            .y((d) => {
-              return d.y;
-            })
-            .interpolate('linear')
-            (points);
-        }
-
-        // taken from dagre-d3 source code (not the exact same)
-        function intersectRect(node, point) {
-          let x = node.x;
-          let y = node.y;
-          let dx = point.x - x;
-          let dy = point.y - y;
-          let w = parseInt($('#' + node.customId).attr('width'), 10) / 2;
-          let h = parseInt($('#' + node.customId).attr('height'), 10) / 2;
-          let sx = 0,
-            sy = 0;
-          if (Math.abs(dy) * w > Math.abs(dx) * h) {
-            // Intersection is top or bottom of rect.
-            if (dy < 0) {
-              h = -h;
-            }
-            sx = dy === 0 ? 0 : h * dx / dy;
-            sy = h;
-          } else {
-            // Intersection is left or right of rect.
-            if (dx < 0) {
-              w = -w;
-            }
-            sx = w;
-            sy = dx === 0 ? 0 : w * dy / dx;
-          }
-          return {
-            x: x + sx,
-            y: y + sy
+          let safeId = function(id) {
+            return id.replace(/[\[|&;$%@"<>()+,/\]]/g, '_');
           };
+
+          //give IDs to each of the nodes so that they can be accessed
+          svg.selectAll('g.node rect').attr('id', (d) => {
+            return 'node' + safeId(d);
+          });
+          svg.selectAll('g.edgePath path').attr('id', (e) => {
+            return safeId(e.v) + '-' + safeId(e.w);
+          });
+          svg.selectAll('g.edgeLabel g').attr('id', (e) => {
+            return 'label_' + safeId(e.v) + '-' + safeId(e.w);
+          });
+
+          g.nodes().forEach((v) => {
+            let node = g.node(v);
+            node.customId = 'node' + safeId(v);
+          });
+          g.edges().forEach((e) => {
+            let edge = g.edge(e.v, e.w);
+            edge.customId = safeId(e.v) + '-' + safeId(e.w);
+          });
+
+          let nodeDrag = d3.behavior.drag().on('dragstart', dragstart).on('drag', dragmove);
+
+          let edgeDrag = d3.behavior.drag()
+            .on('dragstart', dragstart)
+            .on('drag', (d) => {
+              translateEdge(g.edge(d.v, d.w), d3.event.dx, d3.event.dy);
+              $('#' + g.edge(d.v, d.w).customId).attr('d', calcPoints(d));
+            });
+
+          nodeDrag.call(svg.selectAll('g.node'));
+          edgeDrag.call(svg.selectAll('g.edgePath'));
+
+          function dragstart(d) {
+            d3.event.sourceEvent.stopPropagation();
+          }
+
+          function dragmove(d) {
+            let node = d3.select(this),
+              selectedNode = g.node(d);
+            let prevX = selectedNode.x,
+              prevY = selectedNode.y;
+
+            selectedNode.x += d3.event.dx;
+            selectedNode.y += d3.event.dy;
+            node.attr('transform', 'translate(' + selectedNode.x + ',' + selectedNode.y + ')');
+
+            let dx = selectedNode.x - prevX,
+              dy = selectedNode.y - prevY;
+
+            g.edges().forEach((e) => {
+              if (e.v === d || e.w === d) {
+                let edge = g.edge(e.v, e.w);
+                translateEdge(g.edge(e.v, e.w), dx, dy);
+                $('#' + edge.customId).attr('d', calcPoints(e));
+                let label = $('#label_' + edge.customId);
+                let xforms = label.attr('transform');
+                let parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms);
+                let X = parseInt(parts[1], 10) + dx, Y = parseInt(parts[2], 10) + dy;
+                label.attr('transform', 'translate(' + X + ',' + Y + ')');
+              }
+            });
+          }
+
+          function translateEdge(e, dx, dy) {
+            e.points.forEach((p) => {
+              p.x = p.x + dx;
+              p.y = p.y + dy;
+            });
+          }
+
+          // taken from dagre-d3 source code (not the exact same)
+          function calcPoints(e) {
+            let edge = g.edge(e.v, e.w),
+              tail = g.node(e.v),
+              head = g.node(e.w);
+            let points = edge.points.slice(1, edge.points.length - 1);
+            edge.points.slice(1, edge.points.length - 1);
+            points.unshift(intersectRect(tail, points[0]));
+            points.push(intersectRect(head, points[points.length - 1]));
+            return d3.svg.line()
+              .x((d) => {
+                return d.x;
+              })
+              .y((d) => {
+                return d.y;
+              })
+              .interpolate('linear')
+              (points);
+          }
+
+          // taken from dagre-d3 source code (not the exact same)
+          function intersectRect(node, point) {
+            let x = node.x;
+            let y = node.y;
+            let dx = point.x - x;
+            let dy = point.y - y;
+            let w = parseInt($('#' + node.customId).attr('width'), 10) / 2;
+            let h = parseInt($('#' + node.customId).attr('height'), 10) / 2;
+            let sx = 0,
+              sy = 0;
+            if (Math.abs(dy) * w > Math.abs(dx) * h) {
+              // Intersection is top or bottom of rect.
+              if (dy < 0) {
+                h = -h;
+              }
+              sx = dy === 0 ? 0 : h * dx / dy;
+              sy = h;
+            } else {
+              // Intersection is left or right of rect.
+              if (dx < 0) {
+                w = -w;
+              }
+              sx = w;
+              sy = dx === 0 ? 0 : w * dy / dx;
+            }
+            return {
+              x: x + sx,
+              y: y + sy
+            };
+          }
         }
       }
 
-      scope.$watchCollection('[rootNode, filteredNodes]', function(value) {
-        if (value[0] && value[1].length) {
+      scope.$watch('rootNode', function(value) {
+        if (value) {
           draw(false);
         } else {
           clear();
