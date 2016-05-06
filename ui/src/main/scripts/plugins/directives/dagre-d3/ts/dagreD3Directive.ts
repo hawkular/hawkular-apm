@@ -69,11 +69,16 @@ module DagreD3 {
           });
         }
 
+        // force removing existing tooltips, otherwise they'll get sticky
+        angular.element('.graph-tooltip').remove();
+
         _.each(scope[attrs.nodes], (d) => {
           let className = d.averageDuration < 500 ? 'success' : 'danger';
-          let nodeTooltip = '<strong>Duration</strong> (avg/min/max) <br>' + d.averageDuration;
+          let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
+            d.averageDuration;
           nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
-          let html = '<div tooltip-append-to-body="true" tooltip-html-unsafe="' + nodeTooltip + '">';
+          let html = '<div tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
+            'tooltip-html-unsafe="' + nodeTooltip + '">';
           html += '<span class="status"></span>';
           html += '<span class="node-count pull-right">' + d.count + '</span>';
           html += '<span class="name">' + d.id + '</span>';
@@ -91,7 +96,8 @@ module DagreD3 {
             _.each(Object.keys(d.outbound), (nd: any) => {
               let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + d.outbound[nd].averageLatency;
               linkTooltip += ' / ' + d.outbound[nd].minimumLatency + ' / ' + d.outbound[nd].maximumLatency;
-              let linkHtml = '<span tooltip-append-to-body="true" tooltip-placement="bottom" tooltip-html-unsafe="';
+              let linkHtml = '<span tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
+                'tooltip-placement="bottom" tooltip-html-unsafe="';
               linkHtml += linkTooltip + '">' + d.outbound[nd].count + '</span>';
               g.setEdge(d.id, nd, {
                 labelType: 'html',
