@@ -108,11 +108,21 @@ public class AbstractConfigurationServiceTest {
         }
 
         /* (non-Javadoc)
-         * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransaction(java.lang.String,
+         * @see org.hawkular.btm.api.services.ConfigurationService#setBusinessTransaction(java.lang.String,
          *                  java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
          */
         @Override
-        public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+        public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+                throws Exception {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
+         */
+        @Override
+        public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
                 throws Exception {
             // TODO Auto-generated method stub
             return null;

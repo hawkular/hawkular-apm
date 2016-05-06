@@ -47,11 +47,11 @@ public class ConfigurationServiceInMemory extends AbstractConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransaction(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#setBusinessTransaction(java.lang.String,
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+    public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
         return null;
     }
 

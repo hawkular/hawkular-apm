@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,7 +93,7 @@ public class ConfigurationServiceRESTTest {
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
         try {
-            service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
         } catch (Exception e1) {
             fail("Failed to add btxnconfig1: " + e1);
         }
@@ -117,7 +118,7 @@ public class ConfigurationServiceRESTTest {
         btxnconfig2.setDescription(DESCRIPTION2);
 
         try {
-            service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig2);
+            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig2);
         } catch (Exception e1) {
             fail("Failed to update btxnconfig1: " + e1);
         }
@@ -177,8 +178,8 @@ public class ConfigurationServiceRESTTest {
         btxnconfig2.getFilter().getInclusions().add("myfilter");
 
         try {
-            service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
-            service.updateBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
+            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+            service.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
         } catch (Exception e1) {
             fail("Failed to add btxnconfigs: " + e1);
         }
@@ -241,7 +242,7 @@ public class ConfigurationServiceRESTTest {
         long midtime = 0;
 
         try {
-            service.updateBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
 
             synchronized (this) {
                 wait(1000);
@@ -253,7 +254,7 @@ public class ConfigurationServiceRESTTest {
                 wait(1000);
             }
 
-            service.updateBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
+            service.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
         } catch (Exception e1) {
             fail("Failed to add btxnconfigs: " + e1);
         }
@@ -293,6 +294,84 @@ public class ConfigurationServiceRESTTest {
         assertEquals(1, btcs2.size());
 
         assertTrue(btcs2.containsKey(BTXNCONFIG2));
+
+        // Remove the config
+        try {
+            service.removeBusinessTransaction(null, BTXNCONFIG1);
+            service.removeBusinessTransaction(null, BTXNCONFIG2);
+        } catch (Exception e1) {
+            fail("Failed to remove btxnconfigs: " + e1);
+        }
+
+        // Need to make sure change applied, for cases where non-transactional
+        // config repo (e.g. elasticsearch) is used.
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
+        assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
+    }
+
+    @Test
+    public void testSetBusinessTxnConfigurations() {
+        // Check config not already defined
+        assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
+        assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
+
+        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        btxnconfig1.setDescription(DESCRIPTION1);
+        btxnconfig1.setFilter(new Filter());
+        btxnconfig1.getFilter().getInclusions().add("myfilter");
+
+        BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
+        btxnconfig2.setDescription(DESCRIPTION2);
+        btxnconfig2.setFilter(new Filter());
+        btxnconfig2.getFilter().getInclusions().add("myfilter");
+
+        Map<String,BusinessTxnConfig> configs = new HashMap<String,BusinessTxnConfig>();
+        configs.put(BTXNCONFIG1, btxnconfig1);
+        configs.put(BTXNCONFIG2, btxnconfig2);
+
+        long midtime = 0;
+
+        try {
+            service.setBusinessTransactions(null, configs);
+        } catch (Exception e1) {
+            fail("Failed to add btxnconfigs: " + e1);
+        }
+
+        // Need to make sure change applied, for cases where non-transactional
+        // config repo (e.g. elasticsearch) is used.
+        try {
+            synchronized (this) {
+                wait(3000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Get the btxn names
+        List<BusinessTxnSummary> btns = service.getBusinessTransactionSummaries(null);
+
+        assertNotNull(btns);
+        assertEquals(2, btns.size());
+
+        assertEquals(BTXNCONFIG1, btns.get(0).getName());
+        assertEquals(BTXNCONFIG2, btns.get(1).getName());
+
+        // Get all the btxn configs
+        Map<String, BusinessTxnConfig> btcs = service.getBusinessTransactions(null, 0);
+
+        assertNotNull(btcs);
+        assertEquals(2, btcs.size());
+
+        assertTrue(btcs.containsKey(BTXNCONFIG1));
+        assertTrue(btcs.containsKey(BTXNCONFIG2));
 
         // Remove the config
         try {

@@ -248,10 +248,45 @@ public class ConfigurationHandler {
             log.tracef("About to set business transaction configuration for name [%s] config=[%s]", name,
                     config);
 
-            List<ConfigMessage> messages = configService.updateBusinessTransaction(
+            List<ConfigMessage> messages = configService.setBusinessTransaction(
                     securityProvider.getTenantId(context), name, config);
 
             log.tracef("Updated business transaction configuration for name [%s] messages=[%s]", name, messages);
+
+            response.resume(Response.status(Response.Status.OK).entity(messages)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).build());
+        }
+    }
+
+    @POST
+    @Path("businesstxn/full")
+    @Consumes(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Add or update the business transaction configurations",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void setBusinessTxnConfigurations(
+            @Context SecurityContext context,
+            @Suspended final AsyncResponse response,
+            Map<String, BusinessTxnConfig> btxnConfigs) {
+
+        try {
+            log.tracef("About to set business transaction configurations=[%s]",
+                    btxnConfigs);
+
+            List<ConfigMessage> messages = configService.setBusinessTransactions(
+                        securityProvider.getTenantId(context), btxnConfigs);
+
+            log.tracef("Updated business transaction configurations : messages=[%s]", messages);
 
             response.resume(Response.status(Response.Status.OK).entity(messages)
                     .build());

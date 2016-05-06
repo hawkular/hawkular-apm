@@ -272,8 +272,15 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
                     throws Exception {
+                return null;
+            }
+
+            @Override
+            public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+                    throws Exception {
+                // TODO Auto-generated method stub
                 return null;
             }
 
@@ -348,7 +355,13 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+                    throws Exception {
+                return null;
+            }
+
+            @Override
+            public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
                     throws Exception {
                 return null;
             }

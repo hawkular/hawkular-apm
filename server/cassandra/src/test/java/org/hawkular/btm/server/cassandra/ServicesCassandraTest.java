@@ -468,7 +468,7 @@ public class ServicesCassandraTest {
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -497,7 +497,7 @@ public class ServicesCassandraTest {
         btc2.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc2", btc2);
+            cfgs.setBusinessTransaction(null, "btc2", btc2);
         } catch (Exception e) {
             fail("Failed to update btc2: " + e);
         }
@@ -534,7 +534,7 @@ public class ServicesCassandraTest {
 
         try {
             // Updating invalid config
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -573,7 +573,7 @@ public class ServicesCassandraTest {
 
         try {
             // Updating valid config
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -591,7 +591,7 @@ public class ServicesCassandraTest {
 
         try {
             // Updating with invalid config
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -630,7 +630,7 @@ public class ServicesCassandraTest {
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -692,7 +692,7 @@ public class ServicesCassandraTest {
         btc1.setDescription("btc1");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
