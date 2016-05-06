@@ -37,6 +37,8 @@ public class CommunicationSummaryStatistics {
 
     private long count;
 
+    private int severity = 0;
+
     private Map<String, ConnectionStatistics> outbound = new HashMap<String, ConnectionStatistics>();
 
     /**
@@ -56,6 +58,7 @@ public class CommunicationSummaryStatistics {
         this.averageDuration = node.averageDuration;
         this.maximumDuration = node.maximumDuration;
         this.count = node.count;
+        this.severity = node.severity;
         for (String id : node.getOutbound().keySet()) {
             this.outbound.put(id, new ConnectionStatistics(node.getOutbound().get(id)));
         }
@@ -132,6 +135,20 @@ public class CommunicationSummaryStatistics {
     }
 
     /**
+     * @return the severity
+     */
+    public int getSeverity() {
+        return severity;
+    }
+
+    /**
+     * @param severity the severity to set
+     */
+    public void setSeverity(int severity) {
+        this.severity = severity;
+    }
+
+    /**
      * @return the outbound
      */
     public Map<String, ConnectionStatistics> getOutbound() {
@@ -152,7 +169,7 @@ public class CommunicationSummaryStatistics {
     public String toString() {
         return "CommunicationSummaryStatistics [id=" + id + ", minimumDuration=" + minimumDuration
                 + ", averageDuration=" + averageDuration + ", maximumDuration=" + maximumDuration + ", count=" + count
-                + ", outbound=" + outbound + "]";
+                + ", severity=" + severity + ", outbound=" + outbound + "]";
     }
 
     /**
@@ -170,6 +187,8 @@ public class CommunicationSummaryStatistics {
         private long maximumLatency;
 
         private long count;
+
+        private int severity = 0;
 
         private CommunicationSummaryStatistics node;
 
@@ -189,6 +208,7 @@ public class CommunicationSummaryStatistics {
             this.averageLatency = cs.averageLatency;
             this.maximumLatency = cs.maximumLatency;
             this.count = cs.count;
+            this.severity = cs.severity;
             if (cs.node != null) {
                 this.node = new CommunicationSummaryStatistics(cs.node);
             }
@@ -251,6 +271,20 @@ public class CommunicationSummaryStatistics {
         }
 
         /**
+         * @return the severity
+         */
+        public int getSeverity() {
+            return severity;
+        }
+
+        /**
+         * @param severity the severity to set
+         */
+        public void setSeverity(int severity) {
+            this.severity = severity;
+        }
+
+        /**
          * @return the node
          */
         public CommunicationSummaryStatistics getNode() {
@@ -270,7 +304,8 @@ public class CommunicationSummaryStatistics {
         @Override
         public String toString() {
             return "ConnectionStatistics [minimumLatency=" + minimumLatency + ", averageLatency=" + averageLatency
-                    + ", maximumLatency=" + maximumLatency + ", count=" + count + ", node=" + node + "]";
+                    + ", maximumLatency=" + maximumLatency + ", count=" + count + ", severity=" + severity + ", node="
+                    + node + "]";
         }
 
     }

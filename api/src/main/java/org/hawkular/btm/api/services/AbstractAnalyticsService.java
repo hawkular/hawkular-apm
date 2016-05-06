@@ -40,6 +40,8 @@ import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.services.internal.CommunicationSeverityAnalyser;
+import org.hawkular.btm.api.services.internal.CommunicationSummaryTreeBuilder;
 import org.hawkular.btm.api.utils.EndpointUtil;
 
 /**
@@ -53,6 +55,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
 
     @Inject
     private ConfigurationService configService;
+
+    private CommunicationSeverityAnalyser communicationSeverityAnalyser = new CommunicationSeverityAnalyser();
 
     /**
      * This method gets the configuration service.
@@ -325,7 +329,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                                         criteria);
 
         if (asTree) {
-            ret = buildCommunicationSummaryTree(ret);
+            ret = CommunicationSummaryTreeBuilder.buildCommunicationSummaryTree(ret);
 
             if (!criteria.transactionWide()) {
                 // Scan the trees to see whether node specific queries are relevant
@@ -337,6 +341,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                     }
                 }
             }
+
+            communicationSeverityAnalyser.evaluateCommunicationSummarySeverity(ret);
         }
 
         return ret;
@@ -375,85 +381,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      */
     protected abstract Collection<CommunicationSummaryStatistics> doGetCommunicationSummaryStatistics(String tenantId,
             Criteria criteria);
-
-    /**
-     * This method returns the supplied list of flat nodes as a set of tree structures with related nodes.
-     *
-     * @param nodes The collection of nodes represented as a flat list
-     * @return The nodes returns as a collection of independent tree structures
-     */
-    protected static Collection<CommunicationSummaryStatistics> buildCommunicationSummaryTree(
-                            Collection<CommunicationSummaryStatistics> nodes) {
-        Map<String, CommunicationSummaryStatistics> nodeMap = new HashMap<String, CommunicationSummaryStatistics>();
-
-        // Create a map of nodes
-        for (CommunicationSummaryStatistics css : nodes) {
-            nodeMap.put(css.getId(), css);
-        }
-
-        Collection<CommunicationSummaryStatistics> rootNodes = getRootCommunicationSummaryNodes(nodeMap);
-
-        if (rootNodes != null) {
-            List<CommunicationSummaryStatistics> ret = new ArrayList<CommunicationSummaryStatistics>();
-            for (CommunicationSummaryStatistics css : rootNodes) {
-                CommunicationSummaryStatistics rootNode = new CommunicationSummaryStatistics(css);
-                List<String> usedIds = new ArrayList<String>();
-                usedIds.add(rootNode.getId());
-                initCommunicationSummaryTreeNode(rootNode, nodeMap, usedIds);
-                ret.add(rootNode);
-            }
-            return ret;
-        }
-
-        return null;
-    }
-
-    /**
-     * This method recursively builds the communication summary tree, using the supplied node map,
-     * taking copies of each node to ensure the original list is not modified as some of the nodes
-     * may be shared between multiple trees. If a node is add to the tree, its id will be added to the
-     * 'used' list, to ensure that repetitions are only handled by a link (not including the sub-tree
-     * multiple times).
-     *
-     * @param node The current node
-     * @param nodeMap The map of possible nodes
-     * @param usedIds The list of node ids already included in the tree
-     */
-    protected static void initCommunicationSummaryTreeNode(CommunicationSummaryStatistics node,
-            Map<String, CommunicationSummaryStatistics> nodeMap, List<String> usedIds) {
-        for (String id : node.getOutbound().keySet()) {
-            if (!usedIds.contains(id)) {
-                CommunicationSummaryStatistics copy=new CommunicationSummaryStatistics(nodeMap.get(id));
-                ConnectionStatistics cs=node.getOutbound().get(id);
-                cs.setNode(copy);
-                usedIds.add(id);
-
-                // Recusively process the added tree node
-                initCommunicationSummaryTreeNode(copy, nodeMap, usedIds);
-            }
-        }
-    }
-
-    /**
-     * This method returns the subset of supplied nodes that are root nodes.
-     *
-     * @param nodeMap The map of all nodes
-     * @return The list of root nodes
-     */
-    protected static Collection<CommunicationSummaryStatistics> getRootCommunicationSummaryNodes(
-            Map<String, CommunicationSummaryStatistics> nodeMap) {
-        Map<String, CommunicationSummaryStatistics> nodeMapCopy =
-                        new HashMap<String, CommunicationSummaryStatistics>(nodeMap);
-
-        for (CommunicationSummaryStatistics css : nodeMap.values()) {
-            for (String linkId : css.getOutbound().keySet()) {
-                // Remove linked node from copy map
-                nodeMapCopy.remove(linkId);
-            }
-        }
-
-        return nodeMapCopy.values();
-    }
 
     /**
      * This method obtains the unbound endpoints from a list of business
