@@ -209,13 +209,13 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.btm.api.services.ConfigurationService#updateBusinessTransaction(java.lang.String,
+     * @see org.hawkular.btm.api.services.ConfigurationService#setBusinessTransaction(java.lang.String,
      *              java.lang.String, org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig)
      */
     @Override
-    public List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+    public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Update busioess transaction configuration: tenantId=[" + tenantId + "] name=[" + name
+            log.finest("Set busioess transaction configuration: tenantId=[" + tenantId + "] name=[" + name
                     + "] config=[" + config + "]");
         }
 
@@ -265,7 +265,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
             if (connection.getResponseCode() == 200) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Update business transaction [" + name + "] configuration: status=["
+                    log.finest("Set business transaction [" + name + "] configuration: status=["
                             + connection.getResponseCode() + "]:"
                             + connection.getResponseMessage());
                 }
@@ -280,12 +280,94 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                     }
                 }
             } else {
-                log.severe("Failed to update business transaction [" + name + "] configuration: status=["
+                log.severe("Failed to set business transaction [" + name + "] configuration: status=["
                         + connection.getResponseCode() + "]:"
                         + connection.getResponseMessage());
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to update business transaction  [" + name + "] configuration", e);
+            log.log(Level.SEVERE, "Failed to set business transaction  [" + name + "] configuration", e);
+        }
+
+        return Collections.emptyList();
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
+     */
+    @Override
+    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+            throws Exception {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set busioess transaction configurations: tenantId=[" + tenantId
+                    + "] configs=[" + configs + "]");
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(baseUrl)
+                .append("config/businesstxn/full");
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.OutputStream os = connection.getOutputStream();
+
+            os.write(mapper.writeValueAsBytes(configs));
+
+            os.flush();
+            os.close();
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Set business transaction configurations: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (resp.toString().trim().length() > 0) {
+                    try {
+                        return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                log.severe("Failed to set business transaction configurations: status=["
+                        + connection.getResponseCode() + "]:"
+                        + connection.getResponseMessage());
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to set business transaction configurations", e);
         }
 
         return Collections.emptyList();

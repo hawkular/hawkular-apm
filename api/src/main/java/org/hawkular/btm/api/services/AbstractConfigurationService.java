@@ -18,6 +18,7 @@ package org.hawkular.btm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.api.internal.actions.ProcessorActionHandler;
 import org.hawkular.btm.api.internal.actions.ProcessorActionHandlerFactory;
@@ -79,6 +80,21 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
                     }
                 }
             }
+        }
+
+        return messages;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
+     */
+    @Override
+    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+            throws Exception {
+        List<ConfigMessage> messages = new ArrayList<ConfigMessage>();
+
+        for (String name : configs.keySet()) {
+            messages.addAll(setBusinessTransaction(tenantId, name, configs.get(name)));
         }
 
         return messages;

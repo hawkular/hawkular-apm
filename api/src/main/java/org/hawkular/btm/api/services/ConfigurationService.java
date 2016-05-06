@@ -56,7 +56,20 @@ public interface ConfigurationService {
      * @throws Exception Failed to perform update
      * @return The list of messages resulting from validation of the saved config
      */
-    List<ConfigMessage> updateBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+    List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            throws Exception;
+
+    /**
+     * This method adds (if does not exist) or updates (if exists) the business transaction
+     * configurations. If validation errors occur, then the failed configurations will be held in a
+     * staging area until fixed.
+     *
+     * @param tenantId The optional tenant id
+     * @param configs The configurations
+     * @throws Exception Failed to perform operation
+     * @return The list of messages resulting from validation of the saved configs
+     */
+    List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String,BusinessTxnConfig> configs)
             throws Exception;
 
     /**

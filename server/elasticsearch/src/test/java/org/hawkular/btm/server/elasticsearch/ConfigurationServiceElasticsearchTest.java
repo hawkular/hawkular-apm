@@ -81,7 +81,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -110,7 +110,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc2.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc2", btc2);
+            cfgs.setBusinessTransaction(null, "btc2", btc2);
         } catch (Exception e) {
             fail("Failed to update btc2: " + e);
         }
@@ -147,7 +147,7 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating invalid config
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -186,7 +186,7 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating valid config
-            List<ConfigMessage> messages=cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            List<ConfigMessage> messages=cfgs.setBusinessTransaction(null, "btc1", btc1);
             assertNotNull(messages);
             assertEquals(1, messages.size());
             assertEquals(Severity.Info, messages.get(0).getSeverity());
@@ -207,7 +207,7 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating with invalid config
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -244,7 +244,7 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating with valid config
-            List<ConfigMessage> messages=cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            List<ConfigMessage> messages=cfgs.setBusinessTransaction(null, "btc1", btc1);
             assertNotNull(messages);
             assertEquals(1, messages.size());
             assertEquals(Severity.Info, messages.get(0).getSeverity());
@@ -274,7 +274,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
@@ -333,7 +333,7 @@ public class ConfigurationServiceElasticsearchTest {
         btc1.setDescription("btc1");
 
         try {
-            cfgs.updateBusinessTransaction(null, "btc1", btc1);
+            cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
