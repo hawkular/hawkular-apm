@@ -54,6 +54,8 @@ module E2E {
     let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
+    $rootScope.$watch('sbFilter.criteria', $scope.reload, true);
+
     // get top level nodes
     $scope.findTopLevels = function() {
       $scope.topLevel = [];

@@ -10,17 +10,17 @@
         <h4>Filter by</h4>
       </div>
     </div>
-    <div class="hk-filter-v-block">
+    <div class="hk-filter-v-block" ng-if="fsb.showTime">
       <label class="hk-label-heading" for="timeSpanField">Time Span</label>
       <select pf-select class="form-control" id="timeSpanField" ng-options="t.time as t.text for t in timeSpans"
         ng-model="$root.sbFilter.criteria.startTime" ng-change="reload()">
       </select>
     </div>
-    <div class="hk-filter-v-block">
+    <div class="hk-filter-v-block" ng-if="fsb.showText">
       <label class="hk-label-heading">Text</label>
       <input type="text" class="form-control" placeholder="Contains text" ng-model="$root.sbFilter.search"/>
     </div>
-    <div class="hk-filter-v-block">
+    <div class="hk-filter-v-block" ng-if="fsb.showBtxns">
       <button class="btn-link" ng-click="showSearchBtxn = !showSearchBtxn"><i class="fa" ng-class="showSearchBtxn ? 'fa-plus-square' : 'fa-minus-square'"></i> Business Transaction </button>
       <div collapse="showSearchBtxn">
       <div class="radio">
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="hk-filter-v-block">
+    <div class="hk-filter-v-block" ng-if="fsb.showHosts">
       <label><button class="btn-link" ng-click="showSearchHost = !showSearchHost"><i class="fa" ng-class="showSearchHost ? 'fa-plus-square' : 'fa-minus-square'"></i> Host Name </button></label>
       <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
          ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"

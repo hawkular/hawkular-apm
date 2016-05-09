@@ -57,7 +57,19 @@ module FilterSidebar {
       $rootScope.sbFilter = $rootScope.sbFilter || {};
       $rootScope.sbFilter.criteria = $rootScope.sbFilter.criteria || defaultCriteria;
 
+      // necessary to ensure 'this' is this object <sigh>
+      this.link = (scope, elm, attrs, ctrl) => {
+        return this.doLink(scope, elm, attrs, ctrl, $compile, $rootScope);
+      };
     }
 
+    private doLink(scope, elm, attrs, ctrl, $compile, $rootScope): void {
+      scope.fsb = {
+        showTime: !attrs.hasOwnProperty('noTime'),
+        showText: !attrs.hasOwnProperty('noText'),
+        showBtxns: !attrs.hasOwnProperty('noBtxns'),
+        showHosts: !attrs.hasOwnProperty('noHosts')
+      };
+    }
   }
 }
