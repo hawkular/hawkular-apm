@@ -20,16 +20,8 @@ module APM {
 
   declare let c3: any;
 
-  export let APMController = _module.controller('APM.APMController', ['$scope', '$routeParams', '$http', '$location',
-    '$interval', '$timeout', ($scope, $routeParams, $http, $location, $interval, $timeout) => {
-
-    $scope.criteria = {
-      businessTransaction: undefined,
-      hostName: $routeParams.hostName,
-      properties: [],
-      startTime: '-3600000',
-      endTime: '0'
-    };
+  export let APMController = _module.controller('APM.APMController', ['$scope', '$rootScope', '$routeParams', '$http',
+    '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $interval, $timeout) => {
 
     $scope.config = {
       interval: '60000',
@@ -45,8 +37,6 @@ module APM {
     $scope.timestamps = ['timestamp'];
 
     $scope.lists = {};
-
-    $scope.businessTransactions = [];
 
     $scope.apmChartConfig = {
       data: {
@@ -85,7 +75,7 @@ module APM {
     $scope.reloadData = function() {
 
       $http.post('/hawkular/btm/analytics/node/statistics?interval=' +
-        $scope.config.interval, $scope.criteria).then(function(resp) {
+        $scope.config.interval, $rootScope.sbFilter.criteria).then(function(resp) {
 
         // get all component keys
         let components = {};
@@ -132,7 +122,7 @@ module APM {
         console.log('Failed to get node timeseries statistics: ' + JSON.stringify(resp));
       });
 
-      $http.post('/hawkular/btm/analytics/node/summary', $scope.criteria).then(function(resp) {
+      $http.post('/hawkular/btm/analytics/node/summary', $rootScope.sbFilter.criteria).then(function(resp) {
         $scope.summaries = resp.data;
 
         $scope.max = 0;
@@ -147,20 +137,13 @@ module APM {
       });
 
       $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
-        $scope.businessTransactions.length = 0;
-
-        for (let i = 0; i < resp.data.length; i++) {
-          $scope.businessTransactions.add(resp.data[i].name);
-        }
+        $scope.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
       },function(resp) {
         console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
       });
 
       $http.get('/hawkular/btm/analytics/hostnames').then(function(resp) {
-        $scope.hostNames = [ ];
-        for (let i = 0; i < resp.data.length; i++) {
-          $scope.hostNames.add(resp.data[i]);
-        }
+        $scope.hostNames = resp.data || [];
       },function(resp) {
         console.log('Failed to get host names: ' + JSON.stringify(resp));
       });
@@ -175,14 +158,13 @@ module APM {
     $scope.reloadData();
 
     let refreshPromise = $interval(() => {
-      if ($scope.criteria.endTime === '0') {
+      if ($rootScope.sbFilter.criteria.endTime === '0') {
         $scope.reloadData();
       }
     }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
-    $scope.criteria.businessTransaction = '';
-    $scope.$watch('criteria', $scope.reloadData, true);
+    $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
     $scope.$watch('config', $scope.reloadData, true);
 
     // watch for sidebar changes, to redraw the area chart
@@ -206,7 +188,7 @@ module APM {
     };
 
     $scope.pauseLiveData = function() {
-      $scope.criteria.endTime = $scope.criteria.endTime === '0' ? ('' + +new Date()) : '0';
+      $rootScope.sbFilter.criteria.endTime = $rootScope.sbFilter.criteria.endTime === '0' ? ('' + +new Date()) : '0';
       $scope.reloadData();
     };
 

@@ -20,32 +20,12 @@ module E2E {
 
   declare let dagreD3: any;
 
-  export let E2EController = _module.controller('E2E.E2EController', ['$scope', '$routeParams', '$http', '$location',
-    '$interval', '$timeout', ($scope, $routeParams, $http, $location, $interval, $timeout) => {
-
-    $scope.timeSpans = [
-      {time: '-60000',       text: '1 Minute'},
-      {time: '-600000',      text: '10 Minutes'},
-      {time: '-1800000',     text: '30 Minutes'},
-      {time: '-3600000',     text: '1 Hour'},
-      {time: '-14400000',    text: '4 Hours'},
-      {time: '-28800000',    text: '8 Hours'},
-      {time: '-43200000',    text: '12 Hours'},
-      {time: '-86400000',    text: 'Day'},
-      {time: '-604800000',   text: 'Week'},
-      {time: '-2419200000',  text: 'Month'},
-      {time: '-15768000000', text: '6 Months'},
-      {time: '-31536000000', text: 'Year'},
-      {time: '1',            text: 'All'}
-    ];
-
-    $scope.criteria = {
-      startTime: $scope.timeSpans[3].time
-    };
+  export let E2EController = _module.controller('E2E.E2EController', ['$scope', '$rootScope', '$routeParams', '$http',
+    '$location', '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $location, $interval, $timeout) => {
 
     $scope.reload = function() {
-      let countPromise = $http.get('/hawkular/btm/analytics/communication/summary?startTime=' +
-        $scope.criteria.startTime);
+      let countPromise = $http.post('/hawkular/btm/analytics/communication/summary?startTime=' +
+        ($rootScope.sbFilter ? $rootScope.sbFilter.criteria.startTime : 0), $rootScope.sbFilter.criteria);
       countPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.findTopLevels();
@@ -54,6 +34,19 @@ module E2E {
       }, function(resp) {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
       });
+
+      $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
+        $scope.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
+      },function(resp) {
+        console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
+      });
+
+      $http.get('/hawkular/btm/analytics/hostnames').then(function(resp) {
+        $scope.hostNames = resp.data || [];
+      },function(resp) {
+        console.log('Failed to get host names: ' + JSON.stringify(resp));
+      });
+
     };
 
     $scope.reload();
