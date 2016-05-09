@@ -46,7 +46,7 @@ public class BusinessTxnConfig {
     @JsonInclude(Include.NON_NULL)
     private long lastUpdated;
 
-    @JsonInclude
+    @JsonInclude(Include.NON_DEFAULT)
     private boolean deleted = false;
 
     /**
