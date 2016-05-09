@@ -163,11 +163,17 @@ public class BusinessTransactionServiceElasticsearch implements BusinessTransact
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("Query business transactions with criteria[%s] is: %s", criteria, ret);
             }
-        } catch (org.elasticsearch.indices.IndexMissingException t) {
+        } catch (org.elasticsearch.indices.IndexMissingException ime) {
             // Ignore, as means that no business transactions have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to retrieve business transactions");
+            }
+        } catch (org.elasticsearch.action.search.SearchPhaseExecutionException spee) {
+            // Ignore, as occurs when mapping not established (i.e. empty
+            // repository) and performing query with a sort order
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("Failed to get fragments", spee);
             }
         }
 
