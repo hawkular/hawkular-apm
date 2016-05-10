@@ -99,29 +99,12 @@ th {
         margin-right: 4px;
     }
 
-    .success .status {
-        background-color: #7f7;
-    }
-    .warn .status {
-        background-color: #ffed68;
-    }
-    .danger .status {
-        background-color: #f77;
-    }
-    .warn .stats {
-        color: #f77;
-    }
-    .warn {
-        -webkit-animation-name: flash;
-        animation-name: flash;
-    }
     .node-count {
-        margin-right: 2px;
-    }
-    .node-count, .name {
-        margin-top: 4px;
+        direction: rtl;
+        margin-right: -15px;
     }
     .name {
+        margin-top: 4px;
         display: inline-block;
         font-size: 1.3em;
     }
@@ -156,5 +139,43 @@ th {
         stroke: #999;
         stroke-width: 1.5px;
         fill: #999;
+    }
+
+    .empty-edge {
+        opacity: 0.3 !important;
+    }
+
+    .severity-0 .status {
+        background-color: #7f7;
+    }
+    .severity-1 .status {
+        background-color: #33af26;
+    }
+    .severity-2 .status {
+        background-color: #ffed68;
+    }
+    .severity-3 .status {
+        background-color: #ffac68;
+    }
+    .severity-4 .status {
+        background-color: #f77;
+    }
+    .severity-5 .status {
+        background-color: #ff2c2c;
+    }
+    .empty-node {
+        opacity: 0.5 !important;
+        .status {
+            display: none !important;
+        }
+        span.node-count {
+            display: none !important;
+        }
+        .stats {
+            display: none !important;
+        }
+        .name {
+            margin-top: 0.9em
+        }
     }
 }

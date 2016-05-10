@@ -73,16 +73,17 @@ module DagreD3 {
         angular.element('.graph-tooltip').remove();
 
         _.each(scope[attrs.nodes], (d) => {
-          let className = d.averageDuration < 500 ? 'success' : 'danger';
           let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
             d.averageDuration;
           nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
-          let html = '<div tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
-            'tooltip-html-unsafe="' + nodeTooltip + '">';
+          let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
+            'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
           html += '<span class="status"></span>';
-          html += '<span class="node-count pull-right">' + d.count + '</span>';
           html += '<span class="name">' + d.id + '</span>';
-          html += '<span class="stats"><span class="duration">Avg. Duration ' + d.averageDuration + 'ms</span></span>';
+          html += '<span class="stats">';
+          html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' + d.averageDuration + 'ms</span>';
+          html += '  <span class="node-count pull-right">' + d.count + '<i class="fa fa-clone"></i></span>';
+          html += '</span>';
           html += '</div>';
           g.setNode(d.id, {
             labelType: 'html',
@@ -90,19 +91,20 @@ module DagreD3 {
             rx: 5,
             ry: 5,
             padding: 0,
-            class: className
+            class: 'severity-' + d.severity + (d.count ? '' : ' empty-node')
           });
           if (!angular.equals({}, d.outbound)) {
             _.each(Object.keys(d.outbound), (nd: any) => {
-              let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + d.outbound[nd].averageLatency;
-              linkTooltip += ' / ' + d.outbound[nd].minimumLatency + ' / ' + d.outbound[nd].maximumLatency;
-              let linkHtml = '<span tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
-                'tooltip-placement="bottom" tooltip-html-unsafe="';
-              linkHtml += linkTooltip + '">' + d.outbound[nd].count + '</span>';
+              let edge = d.outbound[nd];
+              let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + edge.averageLatency;
+              linkTooltip += ' / ' + edge.minimumLatency + ' / ' + edge.maximumLatency;
+              let linkHtml = '<span' + (edge.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
+                'tooltip-placement="bottom" tooltip-html-unsafe="' + linkTooltip + '"') : '') +
+                '>' + edge.count + '</span>';
               g.setEdge(d.id, nd, {
                 labelType: 'html',
-                label: linkHtml,
-                class: '',
+                label: edge.count ? linkHtml : '',
+                class: 'severity-' + edge.severity + (edge.count ? '' : ' empty-edge'),
                 width: 40
               });
             });
