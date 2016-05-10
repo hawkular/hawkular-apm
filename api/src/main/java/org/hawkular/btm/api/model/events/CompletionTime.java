@@ -56,6 +56,9 @@ public class CompletionTime {
     @JsonInclude(Include.NON_NULL)
     private String fault;
 
+    @JsonInclude(Include.NON_NULL)
+    private String hostName;
+
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> properties = new HashMap<String, String>();
 
@@ -191,6 +194,23 @@ public class CompletionTime {
     }
 
     /**
+     * This method sets the hostname, where the completion time is associated
+     * with a fragment.
+     *
+     * @return the hostName
+     */
+    public String getHostName() {
+        return hostName;
+    }
+
+    /**
+     * @param hostName the hostName to set
+     */
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -219,96 +239,14 @@ public class CompletionTime {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
-        result = prime * result + (int) (duration ^ (duration >>> 32));
-        result = prime * result + ((endpointType == null) ? 0 : endpointType.hashCode());
-        result = prime * result + ((fault == null) ? 0 : fault.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + (internal ? 1231 : 1237);
-        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
-        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
-        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
-        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
-        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompletionTime other = (CompletionTime) obj;
-        if (businessTransaction == null) {
-            if (other.businessTransaction != null)
-                return false;
-        } else if (!businessTransaction.equals(other.businessTransaction))
-            return false;
-        if (duration != other.duration)
-            return false;
-        if (endpointType == null) {
-            if (other.endpointType != null)
-                return false;
-        } else if (!endpointType.equals(other.endpointType))
-            return false;
-        if (fault == null) {
-            if (other.fault != null)
-                return false;
-        } else if (!fault.equals(other.fault))
-            return false;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (internal != other.internal)
-            return false;
-        if (operation == null) {
-            if (other.operation != null)
-                return false;
-        } else if (!operation.equals(other.operation))
-            return false;
-        if (principal == null) {
-            if (other.principal != null)
-                return false;
-        } else if (!principal.equals(other.principal))
-            return false;
-        if (properties == null) {
-            if (other.properties != null)
-                return false;
-        } else if (!properties.equals(other.properties))
-            return false;
-        if (timestamp != other.timestamp)
-            return false;
-        if (uri == null) {
-            if (other.uri != null)
-                return false;
-        } else if (!uri.equals(other.uri))
-            return false;
-        return true;
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", endpointType="
                 + endpointType + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp
-                + ", duration=" + duration + ", principal=" + principal + ", fault=" + fault + ", properties="
-                + properties + ", internal=" + internal + "]";
+                + ", duration=" + duration + ", principal=" + principal + ", fault=" + fault + ", hostName="
+                + hostName + ", properties=" + properties + ", internal=" + internal + "]";
     }
 
 }
