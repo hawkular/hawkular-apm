@@ -2689,6 +2689,103 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCommunicationSummaryStatisticForHost() {
+        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setUri("in1");
+        ct1_1.setOperation("op1");
+        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+        ct1_1.setHostName("hostA");
+        cts.add(ct1_1);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setUri("out1.1");
+        ct1_2.setOperation("op1.1");
+        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+        ct1_2.setHostName("hostB");
+        cts.add(ct1_2);
+
+        try {
+            analytics.storeFragmentCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        CommunicationDetails cd1 = new CommunicationDetails();
+        cd1.setId("cd1");
+        cd1.setBusinessTransaction("testapp");
+        cd1.setTimestamp(1500);
+        cd1.setLatency(100);
+        cd1.setSource("in1[op1]");
+        cd1.setTarget("out1.1[op1.1]");
+        cd1.setSourceHostName("hostA");
+        cd1.setTargetHostName("hostB");
+        cds.add(cd1);
+
+        try {
+            analytics.storeCommunicationDetails(null, cds);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+        criteria.setHostName("hostA");
+
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                                    criteria, false);
+
+        assertNotNull(stats);
+        assertEquals(2, stats.size());
+
+        CommunicationSummaryStatistics in1 = null;
+        CommunicationSummaryStatistics out1_1 = null;
+
+        for (CommunicationSummaryStatistics css : stats) {
+            if (css.getId().equals("in1[op1]")) {
+                in1 = css;
+            } else if (css.getId().equals("out1.1[op1.1]")) {
+                out1_1 = css;
+            } else {
+                fail("Unexpected id: " + css.getId());
+            }
+        }
+
+        assertNotNull(in1);
+        assertNotNull(out1_1);
+
+        assertEquals(1, in1.getCount());
+        assertEquals(0, out1_1.getCount());
+
+        assertEquals(1, in1.getOutbound().size());
+        assertEquals(0, out1_1.getOutbound().size());
+
+        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
+
+        /* TODO: Currently not including connections
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
+        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
+
+        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
+        */
+    }
+
+    @Test
     public void testHostNames() {
         List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
 
