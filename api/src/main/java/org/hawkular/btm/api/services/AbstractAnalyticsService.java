@@ -328,6 +328,8 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         Collection<CommunicationSummaryStatistics> ret = doGetCommunicationSummaryStatistics(tenantId,
                                         criteria);
 
+        communicationSeverityAnalyser.evaluateCommunicationSummarySeverity(ret);
+
         if (asTree) {
             ret = CommunicationSummaryTreeBuilder.buildCommunicationSummaryTree(ret);
 
@@ -341,8 +343,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                     }
                 }
             }
-
-            communicationSeverityAnalyser.evaluateCommunicationSummarySeverity(ret);
         }
 
         return ret;

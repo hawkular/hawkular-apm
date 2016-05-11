@@ -16,10 +16,13 @@
  */
 package org.hawkular.btm.api.services.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
-import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 
 /**
  * The class analyses the communication summary to determine the severity values
@@ -37,39 +40,31 @@ public class CommunicationSeverityAnalyser {
 
     /**
      * This method evaluates the severity of nodes/links within a supplied set of
-     * communication summary stats trees.
+     * communication summary stats.
      *
-     * @param rootNodes The root nodes for the communication summary trees
+     * @param nodes The nodes for the communication summary stats
      */
-    public void evaluateCommunicationSummarySeverity(Collection<CommunicationSummaryStatistics> rootNodes) {
+    public void evaluateCommunicationSummarySeverity(Collection<CommunicationSummaryStatistics> nodes) {
         long max = 0;
+        Map<String, CommunicationSummaryStatistics> nodeMap = new HashMap<String, CommunicationSummaryStatistics>();
 
-        for (CommunicationSummaryStatistics css : rootNodes) {
-            long cssMax = maxAverageDuration(css);
-            if (cssMax > max) {
-                max = cssMax;
+        for (CommunicationSummaryStatistics css : nodes) {
+            // Calculate maximum average duration over the list of nodes
+            if (css.getAverageDuration() > max) {
+                max = css.getAverageDuration();
             }
+            nodeMap.put(css.getId(), css);
         }
 
-        for (CommunicationSummaryStatistics css : rootNodes) {
-            deriveSeverity(css, max);
+        for (CommunicationSummaryStatistics css : nodes) {
+            deriveSeverity(css, max, nodeMap);
         }
     }
 
-    protected static long maxAverageDuration(CommunicationSummaryStatistics css) {
-        long max = css.getAverageDuration();
-        for (ConnectionStatistics cs : css.getOutbound().values()) {
-            if (cs.getNode() != null) {
-                long nodeMax = maxAverageDuration(cs.getNode());
-                if (nodeMax > max) {
-                    max = nodeMax;
-                }
-            }
-        }
-        return max;
-    }
+    protected static void deriveSeverity(CommunicationSummaryStatistics css, long max,
+            Map<String, CommunicationSummaryStatistics> nodeMap) {
+        max = findParentsMaxAvgDuration(css, max, nodeMap);
 
-    protected static void deriveSeverity(CommunicationSummaryStatistics css, long max) {
         int relative = (int) (css.getAverageDuration() * 10.0 / max);
 
         if (relative >= 10) {
@@ -83,11 +78,33 @@ public class CommunicationSeverityAnalyser {
                 css.setSeverity(MAX_SEVERITY);
             }
         }
-        for (ConnectionStatistics cs : css.getOutbound().values()) {
-            if (cs.getNode() != null) {
-                deriveSeverity(cs.getNode(), css.getAverageDuration());
-            }
-        }
     }
 
+    protected static long findParentsMaxAvgDuration(CommunicationSummaryStatistics css, long max,
+            Map<String, CommunicationSummaryStatistics> nodeMap) {
+        long parentMax = max;
+        List<CommunicationSummaryStatistics> parents = new ArrayList<CommunicationSummaryStatistics>();
+        for (CommunicationSummaryStatistics parent : nodeMap.values()) {
+            if (!parent.getId().equals(css.getId())) {
+                for (String id : parent.getOutbound().keySet()) {
+                    if (id.equals(css.getId())) {
+                        parents.add(parent);
+                    }
+                }
+            }
+        }
+
+        if (!parents.isEmpty()) {
+            if (parents.size() == 1) {
+                parentMax = parents.get(0).getAverageDuration();
+            } else {
+                for (CommunicationSummaryStatistics parent : parents) {
+                    parentMax += parent.getAverageDuration();
+                }
+                parentMax /= parents.size();
+            }
+        }
+
+        return parentMax;
+    }
 }
