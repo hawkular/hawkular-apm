@@ -53,6 +53,46 @@ module DagreD3 {
         svg.selectAll('*').remove();
       }
 
+      function drawNode(d) {
+        let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
+          d.averageDuration;
+        nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
+        let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
+          'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
+        html += '<span class="status"></span>';
+        html += '<span class="name">' + d.id + '</span>';
+        html += '<span class="stats">';
+        html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' + d.averageDuration + 'ms</span>';
+        html += '  <span class="node-count pull-right">' + d.count + '<i class="fa fa-clone"></i></span>';
+        html += '</span>';
+        html += '</div>';
+        g.setNode(d.id, {
+          labelType: 'html',
+          label: html,
+          rx: 5,
+          ry: 5,
+          padding: 0,
+          class: 'severity-' + d.severity + (d.count ? '' : ' empty-node')
+        });
+        if (!angular.equals({}, d.outbound)) {
+          _.each(Object.keys(d.outbound), (nd: any) => {
+            drawNode(d.outbound[nd].node);
+            let edge = d.outbound[nd];
+            let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + edge.averageLatency;
+            linkTooltip += ' / ' + edge.minimumLatency + ' / ' + edge.maximumLatency;
+            let linkHtml = '<span' + (edge.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
+              'tooltip-placement="bottom" tooltip-html-unsafe="' + linkTooltip + '"') : '') +
+              '>' + edge.count + '</span>';
+            g.setEdge(d.id, nd, {
+              labelType: 'html',
+              label: edge.count ? linkHtml : '',
+              class: 'severity-' + edge.severity + (edge.count ? '' : ' empty-edge'),
+              width: 40
+            });
+          });
+        }
+      }
+
       function draw(isUpdate) {
         if (!isUpdate) {
           g = new dagreD3.graphlib.Graph();
@@ -73,42 +113,7 @@ module DagreD3 {
         angular.element('.graph-tooltip').remove();
 
         _.each(scope[attrs.nodes], (d) => {
-          let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
-            d.averageDuration;
-          nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
-          let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
-            'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
-          html += '<span class="status"></span>';
-          html += '<span class="name">' + d.id + '</span>';
-          html += '<span class="stats">';
-          html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' + d.averageDuration + 'ms</span>';
-          html += '  <span class="node-count pull-right">' + d.count + '<i class="fa fa-clone"></i></span>';
-          html += '</span>';
-          html += '</div>';
-          g.setNode(d.id, {
-            labelType: 'html',
-            label: html,
-            rx: 5,
-            ry: 5,
-            padding: 0,
-            class: 'severity-' + d.severity + (d.count ? '' : ' empty-node')
-          });
-          if (!angular.equals({}, d.outbound)) {
-            _.each(Object.keys(d.outbound), (nd: any) => {
-              let edge = d.outbound[nd];
-              let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + edge.averageLatency;
-              linkTooltip += ' / ' + edge.minimumLatency + ' / ' + edge.maximumLatency;
-              let linkHtml = '<span' + (edge.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
-                'tooltip-placement="bottom" tooltip-html-unsafe="' + linkTooltip + '"') : '') +
-                '>' + edge.count + '</span>';
-              g.setEdge(d.id, nd, {
-                labelType: 'html',
-                label: edge.count ? linkHtml : '',
-                class: 'severity-' + edge.severity + (edge.count ? '' : ' empty-edge'),
-                width: 40
-              });
-            });
-          }
+          drawNode(d);
         });
 
         // we store the current transform, remove it so d3 draws it properly, and then re-apply it
