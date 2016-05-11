@@ -30,6 +30,7 @@ module APM {
       .id(APM.pluginName)
       .title(() => 'Application Performance')
       .href(() => '/hawkular-ui/apm')
+      .rank(30)
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
