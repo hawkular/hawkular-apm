@@ -41,7 +41,7 @@ public class CommunicationSeverityAnalyserTest {
     @Test
     public void testDeriveSeverityMin() {
         CommunicationSummaryStatistics css = new CommunicationSummaryStatistics();
-        css.setAverageDuration(300);
+        css.setAverageDuration(100);
 
         long max = 1000;
 
@@ -71,7 +71,7 @@ public class CommunicationSeverityAnalyserTest {
 
         CommunicationSeverityAnalyser.deriveSeverity(css, max);
 
-        assertEquals(3, css.getSeverity());
+        assertEquals(4, css.getSeverity());
     }
 
     @Test
@@ -83,7 +83,19 @@ public class CommunicationSeverityAnalyserTest {
 
         CommunicationSeverityAnalyser.deriveSeverity(css, max);
 
-        assertEquals(2, css.getSeverity());
+        assertEquals(3, css.getSeverity());
     }
 
+
+    @Test
+    public void testDeriveSeverityMid3() {
+        CommunicationSummaryStatistics css = new CommunicationSummaryStatistics();
+        css.setAverageDuration(597);
+
+        long max = 1789;
+
+        CommunicationSeverityAnalyser.deriveSeverity(css, max);
+
+        assertEquals(2, css.getSeverity());
+    }
 }

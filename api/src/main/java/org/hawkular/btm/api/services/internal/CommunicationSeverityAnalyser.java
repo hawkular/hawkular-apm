@@ -74,18 +74,18 @@ public class CommunicationSeverityAnalyser {
 
         if (relative >= 10) {
             css.setSeverity(MAX_SEVERITY);
-        } else if (relative <= 3) {
+        } else if (relative <= 1) {
             css.setSeverity(0);
         } else {
-            relative -= 3;
-            css.setSeverity(((int) (relative * 0.7)) + 1);
+            relative -= 1;
+            css.setSeverity(((int) (relative * 0.5)) + 1);
             if (css.getSeverity() > MAX_SEVERITY) {
                 css.setSeverity(MAX_SEVERITY);
             }
         }
         for (ConnectionStatistics cs : css.getOutbound().values()) {
             if (cs.getNode() != null) {
-                deriveSeverity(cs.getNode(), max);
+                deriveSeverity(cs.getNode(), css.getAverageDuration());
             }
         }
     }
