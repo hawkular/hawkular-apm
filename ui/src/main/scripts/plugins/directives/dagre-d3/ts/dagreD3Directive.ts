@@ -255,17 +255,19 @@ module DagreD3 {
         }
       }
 
-      scope.$watch('rootNode', function(value) {
-        if (value) {
+      scope.$watch('rootNode', (value) => {
+        if (value && value.length) {
           draw(false);
         } else {
           clear();
         }
       });
 
-      scope.$watch('e2eData', function(value) {
-        if (value) {
+      scope.$watch(attrs.nodes, (value) => {
+        if (value && value.length) {
           draw(true);
+        } else {
+          clear();
         }
       });
 
