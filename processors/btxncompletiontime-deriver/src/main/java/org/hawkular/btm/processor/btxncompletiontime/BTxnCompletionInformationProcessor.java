@@ -113,6 +113,13 @@ public class BTxnCompletionInformationProcessor extends
                             item.getCompletionTime().setDuration(durationWithTargetFragment);
                         }
 
+                        // Merge properties
+                        // HWKBTM-430 - does not currently take into account duplicate properties with
+                        // different values
+                        if (!cd.getProperties().isEmpty()) {
+                            item.getCompletionTime().getProperties().putAll(cd.getProperties());
+                        }
+
                         // Add any outbound comms from target
                         for (int j = 0; j < cd.getOutbound().size(); j++) {
                             CommunicationDetails.Outbound ob = cd.getOutbound().get(j);

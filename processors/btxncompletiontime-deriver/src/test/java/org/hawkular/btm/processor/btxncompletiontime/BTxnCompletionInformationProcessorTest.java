@@ -109,6 +109,7 @@ public class BTxnCompletionInformationProcessorTest {
         cd1.setId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
+        cd1.getProperties().put("prop2", "value2");
 
         cds.add(cd1);
 
@@ -118,6 +119,7 @@ public class BTxnCompletionInformationProcessorTest {
 
         CompletionTime ct = new CompletionTime();
         ct.setDuration(157);        // Current duration to date
+        ct.getProperties().put("prop1", "value1");
         info.setCompletionTime(ct);
 
         BTxnCompletionInformation.Communication c1 = new BTxnCompletionInformation.Communication();
@@ -141,6 +143,9 @@ public class BTxnCompletionInformationProcessorTest {
         assertEquals(0, result.getCommunications().size());
 
         assertEquals(111 + 40 + 370, info.getCompletionTime().getDuration());
+        assertEquals(2, result.getCompletionTime().getProperties().size());
+        assertTrue(result.getCompletionTime().getProperties().containsKey("prop1"));
+        assertTrue(result.getCompletionTime().getProperties().containsKey("prop2"));
     }
 
     @Test
