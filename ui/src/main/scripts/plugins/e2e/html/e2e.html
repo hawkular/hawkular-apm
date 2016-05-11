@@ -8,7 +8,7 @@
           <div class="col-md-9">
             <select pf-select="{noneSelectedText: 'No Nodes Available' }" class="form-control" id="rootnode"
               ng-options="option for option in topLevel" ng-disabled="topLevel.length === 0" ng-model="rootNode"
-              ng-change="filterByTopLevel(rootNode, true)">
+              ng-change="filterByTopLevel(rootNode)">
               <option value="" ng-if="topLevel.length" disabled>Select a Node</option>
             </select>
           </div>

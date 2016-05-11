@@ -24,9 +24,9 @@ module E2E {
     '$location', '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $location, $interval, $timeout) => {
 
     $scope.reload = function() {
-      let countPromise = $http.post('/hawkular/btm/analytics/communication/summary?startTime=' +
+      let commPromise = $http.post('/hawkular/btm/analytics/communication/summary?tree=true&startTime=' +
         ($rootScope.sbFilter ? $rootScope.sbFilter.criteria.startTime : 0), $rootScope.sbFilter.criteria);
-      countPromise.then(function(resp) {
+      commPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.findTopLevels();
         $scope.rootNode = $scope.rootNode || _.first($scope.topLevel);
@@ -59,35 +59,17 @@ module E2E {
     // get top level nodes
     $scope.findTopLevels = function() {
       $scope.topLevel = [];
-      $scope.outbounds = [];
-      $scope.reverseInbounds = [];
       _.each($scope.e2eData, (node) => {
         $scope.topLevel.push(node.id);
-        let outbounds = Object.keys(node.outbound);
-        $scope.outbounds = _.union($scope.outbounds, outbounds);
-      });
-      $scope.topLevel = _.xor($scope.topLevel, $scope.outbounds);
-    };
-
-    let doFilter = function(nodeId, clear) {
-      if (clear) {
-        $scope.allNodes = angular.copy($scope.e2eData);
-        $scope.filteredNodes = [];
-      }
-      let filtered = _.remove($scope.allNodes, (node: any) => {
-        return node.id === nodeId;
-      });
-      $scope.filteredNodes.push(filtered[0]);
-      _.each(filtered, (node: any) => {
-        _.each(Object.keys(node.outbound), (outbound) => {
-          doFilter(outbound, false);
-        });
       });
     };
 
-    $scope.filterByTopLevel = function(nodeId, clear) {
+    $scope.filterByTopLevel = function(nodeId) {
       if (nodeId) {
-        doFilter(nodeId, true);
+        let branch = _.find($scope.e2eData, (node: any) => {
+          return node.id === nodeId;
+        });
+        $scope.filteredNodes = branch ? [branch] : [];
       }
     };
 
