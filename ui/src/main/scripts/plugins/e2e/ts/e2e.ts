@@ -51,7 +51,7 @@ module E2E {
 
     $scope.reload();
 
-    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    let refreshPromise = $interval(() => { $scope.reload(); }, 1000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $rootScope.$watch('sbFilter.criteria', $scope.reload, true);
@@ -74,8 +74,12 @@ module E2E {
     };
 
     $scope.resetZoom = function() {
-      // we just re-draw it..
-      $scope.filterByTopLevel($scope.rootNode, true);
+      // we just re-draw it, by re-selecting root node
+      let oldRootNode = $scope.rootNode;
+      $scope.rootNode = '';
+      $timeout(() => {
+        $scope.rootNode = oldRootNode;
+      });
     };
 
   }]);
