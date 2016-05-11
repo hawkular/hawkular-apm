@@ -29,6 +29,7 @@ module E2E {
       .id(E2E.pluginName)
       .title(() => 'Distributed Tracing')
       .href(() => '/hawkular-ui/e2e')
+      .rank(10)
       .build();
     //builder.configureRouting($routeProvider, tab);
     //$locationProvider.html5Mode(true);
