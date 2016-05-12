@@ -1799,6 +1799,68 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#setState(java.lang.Object, java.lang.String, java.lang.Object, boolean)
+     */
+    @Override
+    public void setState(Object context, String name, Object value, boolean session) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set state: context=" + context + " name=" + name + " value="
+                    + value + " session=" + session);
+        }
+
+        if (session) {
+            try {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                if (builder != null) {
+                    builder.setState(context, name, value);
+                }
+            } catch (Throwable t) {
+                if (log.isLoggable(warningLogLevel)) {
+                    log.log(warningLogLevel, "setState failed", t);
+                }
+            }
+        } else {
+            throw new UnsupportedOperationException("Only session state supported currently");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#getState(java.lang.Object, java.lang.String, boolean)
+     */
+    @Override
+    public Object getState(Object context, String name, boolean session) {
+        Object ret = null;
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get state: context=" + context + " name=" + name + " session=" + session);
+        }
+
+        if (session) {
+            try {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                if (builder != null) {
+                    ret = builder.getState(context, name);
+                }
+            } catch (Throwable t) {
+                if (log.isLoggable(warningLogLevel)) {
+                    log.log(warningLogLevel, "getState failed", t);
+                }
+            }
+        } else {
+            throw new UnsupportedOperationException("Only session state supported currently");
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get state: context=" + context + " name=" + name + " session="
+                    + session + " value is: " + ret);
+        }
+
+        return ret;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.btm.api.client.BusinessTransactionCollector#session()
      */
     @Override

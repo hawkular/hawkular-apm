@@ -155,4 +155,26 @@ public interface SessionManager {
      */
     void assertComplete();
 
+    /**
+     * This method stores state information associated with the name and optional
+     * context.
+     *
+     * @param context The optional context
+     * @param name The name
+     * @param value The value
+     * @param session Whether related to session
+     */
+    void setState(Object context, String name, Object value, boolean session);
+
+    /**
+     * This method returns the state associated with the name and optional
+     * context.
+     *
+     * @param context The optional context
+     * @param name The name
+     * @param session Whether related to session
+     * @return The state, or null if not found
+     */
+    Object getState(Object context, String name, boolean session);
+
 }

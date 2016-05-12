@@ -62,6 +62,8 @@ public class FragmentBuilder {
 
     private Map<String,NodePlaceholder> uncompletedCorrelationIdsNodeMap = new HashMap<String,NodePlaceholder>();
 
+    private Map<String,StateInformation> stateInformation = new HashMap<String,StateInformation>();
+
     private boolean suppress = false;
 
     private static String hostName;
@@ -576,6 +578,39 @@ public class FragmentBuilder {
     }
 
     /**
+     * This method stores state information associated with the name and optional
+     * context.
+     *
+     * @param context The optional context
+     * @param name The name
+     * @param value The value
+     */
+    public void setState(Object context, String name, Object value) {
+        StateInformation si = stateInformation.get(name);
+        if (si == null) {
+            si = new StateInformation();
+            stateInformation.put(name, si);
+        }
+        si.set(context, value);
+    }
+
+    /**
+     * This method returns the state associated with the name and optional
+     * context.
+     *
+     * @param context The optional context
+     * @param name The name
+     * @return The state, or null if not found
+     */
+    public Object getState(Object context, String name) {
+        StateInformation si = stateInformation.get(name);
+        if (si == null) {
+            return null;
+        }
+        return si.get(context);
+    }
+
+    /**
      * @return The thread count
      */
     public int getThreadCount() {
@@ -670,5 +705,58 @@ public class FragmentBuilder {
             return "NodePlaceholder [node=" + node + ", position=" + position + "]";
         }
 
+    }
+
+    /**
+     * This class provides management of context to value state.
+     *
+     * @author gbrown
+     */
+    public static class StateInformation {
+
+        private Object noContextValue = null;
+        private Map<Object,Object> contextToValueMap = new HashMap<Object,Object>();
+
+        /**
+         * This method sets the value associated with an optional context.
+         *
+         * @param context The optional context
+         * @param value The value
+         */
+        public void set(Object context, Object value) {
+            if (context == null) {
+                noContextValue = value;
+            } else {
+                contextToValueMap.put(context, value);
+            }
+        }
+
+        /**
+         * This method retrieves the value associated with an optional
+         * context.
+         *
+         * @param context The optional context
+         * @return The value, or null if not found
+         */
+        public Object get(Object context) {
+            if (context == null) {
+                return noContextValue;
+            }
+            return contextToValueMap.get(context);
+        }
+
+        /**
+         * This method removes the value associated with the supplied
+         * optional context.
+         *
+         * @param context The optional context
+         */
+        public void remove(Object context) {
+            if (context == null) {
+                noContextValue = null;
+            } else {
+                contextToValueMap.remove(context);
+            }
+        }
     }
 }

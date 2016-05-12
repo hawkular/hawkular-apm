@@ -32,15 +32,15 @@ import io.swagger.annotations.ApiModel;
     @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class),
     @Type(value = ProcessContent.class), @Type(value = SetDetail.class),
     @Type(value = SetFault.class), @Type(value = SetName.class), @Type(value = SetLevel.class),
-    @Type(value = SetProperty.class), @Type(value = InitiateCorrelation.class),
+    @Type(value = SetProperty.class), @Type(value = SetState.class), @Type(value = InitiateCorrelation.class),
     @Type(value = CompleteCorrelation.class), @Type(value = Correlate.class),
     @Type(value = Unlink.class), @Type(value = AssertComplete.class), @Type(value = Suppress.class),
     @Type(value = ProcessHeaders.class), @Type(value = SetPrincipal.class), @Type(value = IgnoreNode.class) })
 @ApiModel(subTypes = { InstrumentComponent.class, InstrumentConsumer.class,
         InstrumentProducer.class, FreeFormAction.class, ProcessContent.class,
-        SetDetail.class, SetFault.class, SetName.class, SetLevel.class, SetProperty.class, InitiateCorrelation.class,
-        CompleteCorrelation.class, Correlate.class, Unlink.class, AssertComplete.class, Suppress.class,
-        ProcessHeaders.class, SetPrincipal.class, IgnoreNode.class },
+        SetDetail.class, SetFault.class, SetName.class, SetLevel.class, SetProperty.class, SetState.class,
+        InitiateCorrelation.class, CompleteCorrelation.class, Correlate.class, Unlink.class,
+        AssertComplete.class, Suppress.class, ProcessHeaders.class, SetPrincipal.class, IgnoreNode.class },
         discriminator = "type")
 public abstract class InstrumentAction {
 
