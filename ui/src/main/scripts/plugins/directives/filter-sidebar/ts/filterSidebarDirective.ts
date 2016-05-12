@@ -50,6 +50,7 @@ module FilterSidebar {
         businessTransaction: '',
         hostName: '',
         properties: [],
+        faults: [],
         startTime: $rootScope.timeSpans[3].time,
         endTime: '0'
       };
@@ -68,7 +69,9 @@ module FilterSidebar {
         showTime: !attrs.hasOwnProperty('noTime'),
         showText: !attrs.hasOwnProperty('noText'),
         showBtxns: !attrs.hasOwnProperty('noBtxns'),
-        showHosts: !attrs.hasOwnProperty('noHosts')
+        showHosts: !attrs.hasOwnProperty('noHosts'),
+        showProps: !attrs.hasOwnProperty('noProps'),
+        showFaults: !attrs.hasOwnProperty('noFaults')
       };
     }
   }

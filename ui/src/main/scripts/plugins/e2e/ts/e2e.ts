@@ -47,6 +47,18 @@ module E2E {
         console.log('Failed to get host names: ' + JSON.stringify(resp));
       });
 
+      $http.post('/hawkular/btm/analytics/properties', $rootScope.sbFilter.criteria).then((resp) => {
+        $scope.properties = resp.data || [];
+      }, (error) => {
+          console.log('Failed to get properties: ' + JSON.stringify(error));
+      });
+
+      $http.post('/hawkular/btm/analytics/completion/faults', $rootScope.sbFilter.criteria).then((resp) => {
+        $scope.faults = resp.data || [];
+      }, (error) => {
+          console.log('Failed to get faults: ' + JSON.stringify(error));
+      });
+
     };
 
     $scope.reload();
@@ -62,6 +74,39 @@ module E2E {
       _.each($scope.e2eData, (node) => {
         $scope.topLevel.push(node.id);
       });
+    };
+
+    $scope.getPropertyValues = function(property) {
+      $scope.propertyValues = [];
+      if (property) {
+        let propVal = $http.post('/hawkular/btm/analytics/completion/property/' + property.name,
+          $rootScope.sbFilter.criteria);
+        propVal.then((resp) => {
+          $scope.propertyValues = resp.data;
+        });
+      }
+    };
+
+    $scope.addPropertyToFilter = function(pName, pValue, excluded) {
+      let newProp = {name: pName, value: pValue, excluded: excluded};
+      $rootScope.sbFilter.criteria.properties.push(newProp);
+      delete $scope.selPropValue;
+    };
+
+    $scope.remPropertyFromFilter = function(property) {
+      $rootScope.sbFilter.criteria.properties.splice($rootScope.sbFilter.criteria.properties.indexOf(property), 1);
+    };
+
+    $scope.addFaultToFilter = function(fault, excluded) {
+      $rootScope.sbFilter.criteria.faults.push({value: fault, excluded: excluded});
+    };
+
+    $scope.remFaultFromFilter = function(fault) {
+      $rootScope.sbFilter.criteria.faults.splice($rootScope.sbFilter.criteria.faults.indexOf(fault), 1);
+    };
+
+    $scope.toggleExcludeInclude = function(propOrFault) {
+      propOrFault.excluded = !propOrFault.excluded;
     };
 
     $scope.filterByTopLevel = function(nodeId) {
