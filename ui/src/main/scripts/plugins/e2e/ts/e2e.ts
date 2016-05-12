@@ -24,8 +24,8 @@ module E2E {
     '$location', '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $location, $interval, $timeout) => {
 
     $scope.reload = function() {
-      let commPromise = $http.post('/hawkular/btm/analytics/communication/summary?tree=true&startTime=' +
-        ($rootScope.sbFilter ? $rootScope.sbFilter.criteria.startTime : 0), $rootScope.sbFilter.criteria);
+      let commPromise = $http.post('/hawkular/btm/analytics/communication/summary?tree=true',
+                                   $rootScope.sbFilter.criteria);
       commPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.findTopLevels();
@@ -41,7 +41,7 @@ module E2E {
         console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/hostnames').then(function(resp) {
+      $http.post('/hawkular/btm/analytics/hostnames', $rootScope.sbFilter.criteria).then(function(resp) {
         $scope.hostNames = resp.data || [];
       },function(resp) {
         console.log('Failed to get host names: ' + JSON.stringify(resp));
