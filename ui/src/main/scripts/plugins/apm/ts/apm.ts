@@ -142,7 +142,7 @@ module APM {
         console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/hostnames').then(function(resp) {
+      $http.post('/hawkular/btm/analytics/hostnames', $rootScope.sbFilter.criteria).then(function(resp) {
         $scope.hostNames = resp.data || [];
       },function(resp) {
         console.log('Failed to get host names: ' + JSON.stringify(resp));
