@@ -23,5 +23,15 @@ module FilterSidebar {
     return new FilterSidebar.FilterSidebarDirective($compile, $rootScope);
   }]);
 
+  // from http://stackoverflow.com/a/23882699
+  _module.filter('groupBy', function($parse) {
+    return _.memoize(function(items, field) {
+      let getter = $parse(field);
+      return _.groupBy(items, function(item) {
+        return getter(item);
+      });
+    });
+  });
+
   hawtioPluginLoader.addModule(pluginName);
 }
