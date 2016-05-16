@@ -175,15 +175,26 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
-     * This method attempts to return a SQL statement.
+     * This method attempts to return a SQL statement. If an
+     * expression is supplied, and is string, it will be used.
+     * Otherwise the method will attempt to derive an expression
+     * from the supplied object.
      *
      * @param obj The object
+     * @param expr The optional expression to use
      * @return The SQL statement
      */
-    public String formatSQL(Object obj) {
+    public String formatSQL(Object obj, Object expr) {
         String sql = null;
 
-        if (obj != null) {
+        // Check whether an SQL statement has been provided
+        if (expr instanceof String) {
+            sql = (String)expr;
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("SQL retrieved from state = "+sql);
+            }
+        } else if (obj != null) {
             sql = toString(obj);
 
             if (sql != null) {
@@ -191,6 +202,10 @@ public class RuleHelper extends Helper implements SessionManager {
                     sql = sql.replaceFirst("prep[0-9]*: ", "");
                 }
                 sql = sql.replaceAll("X'.*'", BINARY_SQL_MARKER);
+            }
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("SQL derived from context = "+sql);
             }
         }
 
@@ -661,5 +676,38 @@ public class RuleHelper extends Helper implements SessionManager {
      */
     public InputStream createOutInputStream(InputStream is) {
         return new InstrumentedInputStream(collector(), Direction.Out, is);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#setState(java.lang.Object, java.lang.String,
+     *                          java.lang.Object, boolean)
+     */
+    @Override
+    public void setState(Object context, String name, Object value, boolean session) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set state location=[" + getRuleName() + "] context=[" + context + "] name=[" + name +
+                    "] value=[" + value + "] session=[" + session + "]");
+        }
+        collector().session().setState(context, name, value, session);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.client.api.SessionManager#getState(java.lang.Object, java.lang.String, boolean)
+     */
+    @Override
+    public Object getState(Object context, String name, boolean session) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get state location=[" + getRuleName() + "] context=[" + context +
+                    "] name=[" + name + "] session=[" + session + "]");
+        }
+
+        Object ret = collector().session().getState(context, name, session);
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Returning state location=[" + getRuleName() + "] context=[" + context +
+                    "] name=[" + name + "] session=[" + session + "] state=" + ret);
+        }
+
+        return ret;
     }
 }

@@ -94,7 +94,7 @@ public class RuleHelperTest {
                 + "as id1_5_0_, performanc0_.date as date2_5_0_, performanc0_.show_id as show_id3_5_0_ from "
                 + "Performance performanc0_ where performanc0_.show_id=? order by performanc0_.date {1: 1}";
 
-        String result = helper.formatSQL(pretext + sql);
+        String result = helper.formatSQL(pretext + sql, null);
 
         assertEquals(sql, result);
     }
@@ -107,7 +107,7 @@ public class RuleHelperTest {
         String sql = "select mediaitem0_.id as id1_4_0_, mediaitem0_.mediaType as mediaTyp2_4_0_, mediaitem0_.url "
                 + "as url3_4_0_ from MediaItem mediaitem0_ where mediaitem0_.id=? {1: 22}";
 
-        String result = helper.formatSQL(pretext + sql);
+        String result = helper.formatSQL(pretext + sql, null);
 
         assertEquals(sql, result);
     }
@@ -128,9 +128,22 @@ public class RuleHelperTest {
         String pre = pretext + binary + posttext;
         String expected = pretext + RuleHelper.BINARY_SQL_MARKER + posttext;
 
-        String result = helper.formatSQL(pre);
+        String result = helper.formatSQL(pre, null);
 
         assertEquals(expected, result);
+    }
+
+    @Test
+    public void testFormatSQLWithSupplidExpression() {
+        RuleHelper helper = new RuleHelper(null);
+
+        String expr = "theExpression";
+
+        String context = "theContext";
+
+        String result = helper.formatSQL(context, expr);
+
+        assertEquals(expr, result);
     }
 
     public class TestObject1 {
