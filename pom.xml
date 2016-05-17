@@ -65,8 +65,8 @@
     <module>client/btxn-instrumentation</module>
     <module>client/btxn-publisher-rest-client</module>
     <module>client/btxn-service-rest-client</module>
-    <module>client/client-manager</module>
     <module>client/config-service-rest-client</module>
+    <module>client/instrumenter</module>
     <module>processors/communicationdetails-deriver</module>
     <module>processors/btxncompletiontime-deriver</module>
     <module>processors/fragmentcompletiontime-deriver</module>
@@ -121,7 +121,7 @@
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
     <version.org.hawkular.accounts>2.0.26.Final</version.org.hawkular.accounts>
-    <version.org.jboss.byteman>3.0.4</version.org.jboss.byteman>
+    <version.org.jboss.byteman>3.0.5</version.org.jboss.byteman>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
     <version.org.tuckey>4.0.3</version.org.tuckey>
@@ -175,7 +175,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-client-manager</artifactId>
+        <artifactId>hawkular-btm-instrumenter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -581,7 +581,6 @@
     <profile>
       <id>tests</id>
       <modules>
-        <module>tests/client</module>
         <module>tests/common</module>
         <module>tests/instrumentation</module>
         <module>tests/container/standalone</module>

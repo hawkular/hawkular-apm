@@ -62,6 +62,18 @@ public class JSONTest {
     }
 
     @Test
+    public void testEvaluateNavigation() {
+        String show = "The Lion King";
+        String json = "{ \"performance\": { \"name\": \"" + show + "\" }}";
+        String expression = "$.performance.name";
+
+        String result = JSON.evaluate(expression, json.getBytes());
+
+        assertNotNull(result);
+        assertEquals(show, result);
+    }
+
+    @Test
     public void testPredicateString() {
         String json = "{ \"enabled\": \"true\" }";
         String expr = "$.enabled";

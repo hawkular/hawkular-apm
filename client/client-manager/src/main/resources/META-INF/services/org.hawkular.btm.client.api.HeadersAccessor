@@ -1,6 +1,0 @@
-org.hawkular.btm.client.manager.headers.ApacheHttpclientHeadersAccessor
-org.hawkular.btm.client.manager.headers.IterableMapEntryHeadersAccessor
-org.hawkular.btm.client.manager.headers.JavaxJmsHeadersAccessor
-org.hawkular.btm.client.manager.headers.JavaxServletHeadersAccessor
-org.hawkular.btm.client.manager.headers.JbossResteasyHeadersAccessor
-org.hawkular.btm.client.manager.headers.JbossSwitchyardHeadersAccessor

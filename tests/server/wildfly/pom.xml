@@ -76,7 +76,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-manager</artifactId>
+      <artifactId>hawkular-btm-instrumenter</artifactId>
       <scope>test</scope>
     </dependency>
 
