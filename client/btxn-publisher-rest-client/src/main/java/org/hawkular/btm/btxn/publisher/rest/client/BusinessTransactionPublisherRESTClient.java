@@ -47,13 +47,13 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
 
     private String authorization = null;
 
-    private String baseUrl;
+    private String uri;
 
     {
-        baseUrl = System.getProperty("hawkular-btm.base-uri");
+        uri = System.getProperty("hawkular-btm.uri");
 
-        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) != '/') {
-            baseUrl = baseUrl + '/';
+        if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+            uri = uri + '/';
         }
     }
 
@@ -92,17 +92,17 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
     }
 
     /**
-     * @return the baseUrl
+     * @return the uri
      */
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getUri() {
+        return uri;
     }
 
     /**
-     * @param baseUrl the baseUrl to set
+     * @param uri the uri to set
      */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /* (non-Javadoc)
@@ -119,7 +119,7 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
     @Override
     public void publish(String tenantId, List<BusinessTransaction> btxns) throws Exception {
 
-        URL url = new URL(baseUrl + "fragments");
+        URL url = new URL(uri + "fragments");
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Publish btxns [tenant=" + tenantId + "][url=" + url + "]: " + btxns);
@@ -189,6 +189,15 @@ public class BusinessTransactionPublisherRESTClient implements BusinessTransacti
         if (authorization != null) {
             connection.setRequestProperty("Authorization", authorization);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.BusinessTransactionPublisher#isEnabled()
+     */
+    @Override
+    public boolean isEnabled() {
+        // Check URI is specified and starts with http, so either http: or https:
+        return uri != null && uri.startsWith("http");
     }
 
 }

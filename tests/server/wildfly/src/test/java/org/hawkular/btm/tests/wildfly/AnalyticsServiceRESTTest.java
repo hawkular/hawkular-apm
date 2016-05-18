@@ -464,7 +464,7 @@ public class AnalyticsServiceRESTTest {
         List<CompletionTimeseriesStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/completion/statistics?interval=1000");
+            URL url = new URL(service.getUri() + "analytics/completion/statistics?interval=1000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -602,7 +602,7 @@ public class AnalyticsServiceRESTTest {
         List<Cardinality> cards = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/completion/property/prop1");
+            URL url = new URL(service.getUri() + "analytics/completion/property/prop1");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -740,7 +740,7 @@ public class AnalyticsServiceRESTTest {
         List<Cardinality> cards = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/completion/faults");
+            URL url = new URL(service.getUri() + "analytics/completion/faults");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -892,7 +892,7 @@ public class AnalyticsServiceRESTTest {
         List<CompletionTimeseriesStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/node/statistics?interval=1000");
+            URL url = new URL(service.getUri() + "analytics/node/statistics?interval=1000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1055,7 +1055,7 @@ public class AnalyticsServiceRESTTest {
         List<CompletionTimeseriesStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/node/statistics?interval=1000");
+            URL url = new URL(service.getUri() + "analytics/node/statistics?interval=1000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1105,7 +1105,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(1, stats.size());
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/node/statistics?interval=1000");
+            URL url = new URL(service.getUri() + "analytics/node/statistics?interval=1000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1257,7 +1257,7 @@ public class AnalyticsServiceRESTTest {
         List<CompletionTimeseriesStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/node/summary");
+            URL url = new URL(service.getUri() + "analytics/node/summary");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1416,7 +1416,7 @@ public class AnalyticsServiceRESTTest {
         List<CompletionTimeseriesStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/node/summary");
+            URL url = new URL(service.getUri() + "analytics/node/summary");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1469,7 +1469,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(2, stats.size());
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/node/summary");
+            URL url = new URL(service.getUri() + "analytics/node/summary");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1773,7 +1773,7 @@ public class AnalyticsServiceRESTTest {
         List<CommunicationSummaryStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/communication/summary");
+            URL url = new URL(service.getUri() + "analytics/communication/summary");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -1931,7 +1931,7 @@ public class AnalyticsServiceRESTTest {
         List<String> hosts = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "analytics/hostnames");
+            URL url = new URL(service.getUri() + "analytics/hostnames");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");

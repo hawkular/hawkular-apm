@@ -40,4 +40,12 @@ public class BusinessTransactionPublisherJMS extends AbstractPublisherJMS<Busine
         return DESTINATION;
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.btm.api.services.BusinessTransactionPublisher#isEnabled()
+     */
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

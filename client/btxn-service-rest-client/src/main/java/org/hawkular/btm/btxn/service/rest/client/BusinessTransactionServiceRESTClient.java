@@ -61,7 +61,7 @@ implements BusinessTransactionService, BusinessTransactionPublisher {
         }
 
         try {
-            URL url = new URL(getBaseUrl() + "fragments/" + id);
+            URL url = new URL(getUri() + "fragments/" + id);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -176,7 +176,7 @@ implements BusinessTransactionService, BusinessTransactionPublisher {
     protected String getQueryURL(Criteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
-        StringBuilder builder = new StringBuilder().append(getBaseUrl()).append("fragments");
+        StringBuilder builder = new StringBuilder().append(getUri()).append("fragments");
 
         if (!queryParams.isEmpty()) {
             builder.append('?');
@@ -217,7 +217,7 @@ implements BusinessTransactionService, BusinessTransactionPublisher {
         }
 
         try {
-            URL url = new URL(new StringBuilder().append(getBaseUrl()).append("fragments").toString());
+            URL url = new URL(new StringBuilder().append(getUri()).append("fragments").toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("DELETE");

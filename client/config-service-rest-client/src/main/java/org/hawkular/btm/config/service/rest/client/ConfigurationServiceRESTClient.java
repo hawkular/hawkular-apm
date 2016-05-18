@@ -66,13 +66,13 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     private String authorization = null;
 
-    private String baseUrl;
+    private String uri;
 
     {
-        baseUrl = System.getProperty("hawkular-btm.base-uri");
+        uri = System.getProperty("hawkular-btm.uri");
 
-        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) != '/') {
-            baseUrl = baseUrl + '/';
+        if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+            uri = uri + '/';
         }
     }
 
@@ -111,17 +111,27 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     }
 
     /**
-     * @return the baseUrl
+     * @return the uri
      */
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getUri() {
+        return uri;
     }
 
     /**
-     * @param baseUrl the baseUrl to set
+     * @param uri the uri to set
      */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * This method determines if the configuration service is enabled.
+     *
+     * @return Whether enabled
+     */
+    public boolean isEnabled() {
+        // Enabled if URI specified and is http: or https:
+        return uri != null && uri.startsWith("http");
     }
 
     /* (non-Javadoc)
@@ -140,7 +150,14 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             return ConfigurationLoader.getConfiguration();
         }
 
-        StringBuilder builder = new StringBuilder().append(baseUrl).append("config/collector");
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder().append(uri).append("config/collector");
 
         if (host != null) {
             builder.append("?host=");
@@ -220,7 +237,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("config/businesstxn/full/")
                 .append(name);
 
@@ -303,7 +320,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("config/businesstxn/full");
 
         try {
@@ -383,8 +400,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             log.finest("Validate busioess transaction configuration: config=[" + config + "]");
         }
 
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return null;
+        }
+
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("config/businesstxn/validate");
 
         try {
@@ -465,8 +489,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                     + name + "]");
         }
 
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return null;
+        }
+
         StringBuilder builder = new StringBuilder()
-            .append(baseUrl)
+            .append(uri)
             .append("config/businesstxn/full/")
             .append(name);
 
@@ -536,8 +567,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             log.finest("Get business transaction summaries: tenantId=[" + tenantId + "]");
         }
 
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return null;
+        }
+
         StringBuilder builder = new StringBuilder()
-            .append(baseUrl)
+            .append(uri)
             .append("config/businesstxn/summary");
 
         try {
@@ -607,8 +645,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                     + "] updated=[" + updated + "]");
         }
 
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return null;
+        }
+
         StringBuilder builder = new StringBuilder()
-            .append(baseUrl)
+            .append(uri)
             .append("config/businesstxn/full?updated=")
             .append(updated);
 
@@ -680,8 +725,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                     + name + "]]");
         }
 
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return;
+        }
+
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("config/businesstxn/full/")
                 .append(name);
 
@@ -744,8 +796,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             log.finest("Clear business transaction configurations: tenantId=[" + tenantId + "]");
         }
 
+        if (!isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Configuration Service is not enabled");
+            }
+            return;
+        }
+
         try {
-            URL url = new URL(new StringBuilder().append(getBaseUrl()).append("config").toString());
+            URL url = new URL(new StringBuilder().append(getUri()).append("config").toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("DELETE");

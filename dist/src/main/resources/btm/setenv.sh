@@ -27,7 +27,7 @@ export BTM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export BTM_AGENT_JAR_PATH=$BTM_HOME/hawkular-btm-agent-rest.jar
 
 export JAVA_OPTS="-javaagent:$BTM_AGENT_JAR_PATH \
-    -Dhawkular-btm.base-uri=http://localhost:8180/hawkular/btm \
+    -Dhawkular-btm.uri=http://localhost:8180/hawkular/btm \
     -Dhawkular-btm.config.refresh=10 \
     -Dhawkular-btm.username=jdoe \
     -Dhawkular-btm.password=password"

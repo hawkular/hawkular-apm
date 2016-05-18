@@ -37,8 +37,8 @@ import org.junit.Test;
  */
 public class ClientJavaMainTest {
 
-    private static String baseUrl = System.getProperty("hawkular-btm.testapp.base-uri");
-    private static String testBTxnServerBaseUrl = System.getProperty("hawkular-btm.base-uri");
+    private static String baseUrl = System.getProperty("hawkular-btm.testapp.uri");
+    private static String testBTxnServerBaseUrl = System.getProperty("hawkular-btm.uri");
 
     /**  */
     private static final String TEST_PASSWORD = "password";

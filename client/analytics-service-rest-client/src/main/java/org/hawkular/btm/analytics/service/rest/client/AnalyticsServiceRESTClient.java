@@ -101,7 +101,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     private String baseUrl;
 
     {
-        baseUrl = System.getProperty("hawkular-btm.base-uri");
+        baseUrl = System.getProperty("hawkular-btm.uri");
 
         if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) != '/') {
             baseUrl = baseUrl + '/';

@@ -26,4 +26,11 @@ import org.hawkular.btm.api.model.btxn.BusinessTransaction;
  */
 public interface BusinessTransactionPublisher extends Publisher<BusinessTransaction> {
 
+    /**
+     * This method indicates whether this publisher is enabled.
+     *
+     * @return Whether the publisher is enabled
+     */
+    boolean isEnabled();
+
 }
