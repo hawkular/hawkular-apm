@@ -74,6 +74,20 @@ module APM {
 
     $scope.reloadData = function() {
 
+      if ($rootScope.sbFilter.timeSpan < 0) { // using preset
+        $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
+        $rootScope.sbFilter.criteria.endTime = '0';
+      } else {
+        if ($rootScope.sbFilter.customStartTime) {
+          $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
+        } else {
+          $rootScope.sbFilter.criteria.startTime = '-3600000';
+        }
+        if ($rootScope.sbFilter.customEndTime) {
+          $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
+        }
+      }
+
       $http.post('/hawkular/btm/analytics/node/statistics?interval=' +
         $scope.config.interval, $rootScope.sbFilter.criteria).then(function(resp) {
 
@@ -160,6 +174,19 @@ module APM {
           console.log('Failed to get faults: ' + JSON.stringify(error));
       });
     };
+
+    $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
+    $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
+      if (newValue === '') {
+        $rootScope.sbFilter.customStartTime =
+          $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
+        $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
+      }
+      $scope.reloadData();
+    });
+
+    $rootScope.$watch('sbFilter.customStartTime', $scope.reloadData);
+    $rootScope.$watch('sbFilter.customEndTime', $scope.reloadData);
 
     $scope.redrawAreaChart = function() {
       $scope.apmChartConfig.data.columns = $scope.nodeComponents;

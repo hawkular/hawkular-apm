@@ -24,6 +24,19 @@ module E2E {
     '$location', '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $location, $interval, $timeout) => {
 
     $scope.reload = function() {
+      if ($rootScope.sbFilter.timeSpan < 0) { // using custom
+        $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
+      } else {
+        if ($rootScope.sbFilter.customStartTime) {
+          $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
+        } else {
+          $rootScope.sbFilter.criteria.startTime = '-3600000';
+        }
+        if ($rootScope.sbFilter.customEndTime) {
+          $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
+        }
+      }
+
       let commPromise = $http.post('/hawkular/btm/analytics/communication/summary?tree=true',
                                    $rootScope.sbFilter.criteria);
       commPromise.then(function(resp) {
@@ -60,6 +73,19 @@ module E2E {
       });
 
     };
+
+    $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
+    $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
+      if (newValue === '') {
+        $rootScope.sbFilter.customStartTime =
+          $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
+        $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
+      }
+      $scope.reload();
+    });
+
+    $rootScope.$watch('sbFilter.customStartTime', $scope.reload);
+    $rootScope.$watch('sbFilter.customEndTime', $scope.reload);
 
     $scope.reload();
 
