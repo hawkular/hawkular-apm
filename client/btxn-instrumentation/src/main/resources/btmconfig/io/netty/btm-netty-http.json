@@ -7,7 +7,7 @@
         "notes": [
           "TODO: ProcessContents"
         ],
-        "className": "^io.netty.handler.codec.http.HttpClientCodec$Encoder",
+        "className": "io.netty.handler.codec.http.HttpClientCodec$Encoder",
         "methodName": "encode",
         "parameterTypes": [
           "*"

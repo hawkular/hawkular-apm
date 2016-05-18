@@ -33,4 +33,4 @@ export JAVA_OPTS="-javaagent:$BTM_AGENT_JAR_PATH \
     -Dhawkular-btm.password=password"
 
 # Wildfly specific
-export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api"
+export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api"
