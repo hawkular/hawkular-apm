@@ -78,7 +78,7 @@ public class ClientCamelCXFTest extends ClientTestBase {
         }
 
         try {
-            URL url = new URL(System.getProperty("test.base-uri")
+            URL url = new URL(System.getProperty("test.uri")
                     + "/camel-example-cxftomcat/webservices/incident");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 

@@ -693,6 +693,8 @@ public class DefaultBusinessTransactionCollectorTest {
     @Test
     public void testNamedOnInitialNode() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -721,6 +723,8 @@ public class DefaultBusinessTransactionCollectorTest {
     @Test
     public void testNamedOnSubsequentNodeInitialFragment() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -753,6 +757,8 @@ public class DefaultBusinessTransactionCollectorTest {
     @Test
     public void testNamedOnSubsequentNodeInitialFragmentWithOp() {
         DefaultBusinessTransactionCollector collector = new DefaultBusinessTransactionCollector();
+        TestBTxnService btxnService = new TestBTxnService();
+        collector.setBusinessTransactionPublisher(btxnService);
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -1203,6 +1209,14 @@ public class DefaultBusinessTransactionCollectorTest {
         @Override
         public int getInitialRetryCount() {
             return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see org.hawkular.btm.api.services.BusinessTransactionPublisher#isEnabled()
+         */
+        @Override
+        public boolean isEnabled() {
+            return true;
         }
 
     }

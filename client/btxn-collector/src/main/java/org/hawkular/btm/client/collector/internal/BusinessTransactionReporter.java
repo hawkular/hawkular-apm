@@ -66,6 +66,8 @@ public class BusinessTransactionReporter {
     private final ReentrantLock lock=new ReentrantLock();
     private List<BusinessTransaction> businessTxns = new ArrayList<BusinessTransaction>();
 
+    private boolean enabled = false;
+
     {
         CompletableFuture<BusinessTransactionPublisher> bts =
                 ServiceResolver.getSingletonService(BusinessTransactionPublisher.class);
@@ -93,6 +95,13 @@ public class BusinessTransactionReporter {
      */
     public void setBusinessTransactionPublisher(BusinessTransactionPublisher btp) {
         this.businessTransactionPublisher = btp;
+
+        // Check whether publisher is enabled
+        if (btp != null) {
+            enabled = btp.isEnabled();
+        } else {
+            enabled = false;
+        }
     }
 
     /**
@@ -148,6 +157,13 @@ public class BusinessTransactionReporter {
                 }
             }
         }, batchTime, batchTime, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * @return the enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**

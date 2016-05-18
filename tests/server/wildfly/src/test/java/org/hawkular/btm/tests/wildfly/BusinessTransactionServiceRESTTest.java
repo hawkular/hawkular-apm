@@ -501,7 +501,7 @@ public class BusinessTransactionServiceRESTTest {
         List<BusinessTransaction> result = null;
 
         try {
-            URL url = new URL(service.getBaseUrl() + "fragments/query");
+            URL url = new URL(service.getUri() + "fragments/query");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");

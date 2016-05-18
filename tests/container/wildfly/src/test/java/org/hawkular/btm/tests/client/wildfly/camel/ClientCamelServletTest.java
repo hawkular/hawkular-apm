@@ -59,7 +59,7 @@ public class ClientCamelServletTest extends ClientTestBase {
         }
 
         try {
-            URL url = new URL(System.getProperty("test.base-uri")
+            URL url = new URL(System.getProperty("test.uri")
                     + "/camel-example-servlet-rest-tomcat/rest" + "/user/123");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 

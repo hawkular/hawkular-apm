@@ -38,12 +38,12 @@
 
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
-    <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}</hawkular.base-uri>
+    <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
     <hawkular-btm.path>/hawkular/btm</hawkular-btm.path>
-    <hawkular-btm.base-uri>${hawkular.base-uri}${hawkular-btm.path}</hawkular-btm.base-uri>
+    <hawkular-btm.uri>${hawkular.uri}${hawkular-btm.path}</hawkular-btm.uri>
     <hawkular-btm.testapp.host>127.0.0.1</hawkular-btm.testapp.host>
     <hawkular-btm.testapp.port>8180</hawkular-btm.testapp.port>
-    <hawkular-btm.testapp.base-uri>http://${hawkular-btm.testapp.host}:${hawkular-btm.testapp.port}</hawkular-btm.testapp.base-uri>
+    <hawkular-btm.testapp.uri>http://${hawkular-btm.testapp.host}:${hawkular-btm.testapp.port}</hawkular-btm.testapp.uri>
   </properties>
 
   <dependencies>
@@ -124,8 +124,8 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <hawkular-btm.base-uri>${hawkular-btm.base-uri}</hawkular-btm.base-uri>
-            <hawkular-btm.testapp.base-uri>${hawkular-btm.testapp.base-uri}</hawkular-btm.testapp.base-uri>
+            <hawkular-btm.uri>${hawkular-btm.uri}</hawkular-btm.uri>
+            <hawkular-btm.testapp.uri>${hawkular-btm.testapp.uri}</hawkular-btm.testapp.uri>
           </systemPropertyVariables>
         </configuration>
         <executions>
@@ -188,7 +188,7 @@
                   </classpath>
                   <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar" />
                   <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json" />
-                  <jvmarg value="-Dhawkular-btm.base-uri=${hawkular-btm.base-uri}" />
+                  <jvmarg value="-Dhawkular-btm.uri=${hawkular-btm.uri}" />
                   <jvmarg value="-Dhawkular-btm.testapp.host=${hawkular-btm.testapp.host}" />
                   <jvmarg value="-Dhawkular-btm.testapp.port=${hawkular-btm.testapp.port}" />
                   <jvmarg value="-Dhawkular-btm.log.level=INFO" />

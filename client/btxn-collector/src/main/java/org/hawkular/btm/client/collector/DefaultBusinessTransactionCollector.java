@@ -174,14 +174,14 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     /**
      * @return the businessTransactionPublisher
      */
-    public BusinessTransactionPublisher getBusinessTransactionPublisher() {
+    protected BusinessTransactionPublisher getBusinessTransactionPublisher() {
         return reporter.getBusinessTransactionPublisher();
     }
 
     /**
      * @param businessTransactionPublisher the businessTransactionPublisher to set
      */
-    public void setBusinessTransactionPublisher(BusinessTransactionPublisher businessTransactionPublisher) {
+    protected void setBusinessTransactionPublisher(BusinessTransactionPublisher businessTransactionPublisher) {
         reporter.setBusinessTransactionPublisher(businessTransactionPublisher);
     }
 
@@ -1361,6 +1361,13 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      */
     @Override
     public boolean activate(String uri, String operation, String id) {
+        if (!reporter.isEnabled()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Reporter is disabled, so cannot activate");
+            }
+            return false;
+        }
+
         // If id is set, then fragment must be tracked
         if (id != null) {
             if (log.isLoggable(Level.FINEST)) {

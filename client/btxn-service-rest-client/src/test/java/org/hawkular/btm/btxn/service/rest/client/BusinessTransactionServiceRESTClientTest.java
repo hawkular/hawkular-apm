@@ -46,7 +46,7 @@ public class BusinessTransactionServiceRESTClientTest {
     @Test
     public void testGetQueryURL() {
         BusinessTransactionServiceRESTClient client=new BusinessTransactionServiceRESTClient();
-        client.setBaseUrl("base/");
+        client.setUri("base/");
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
 
