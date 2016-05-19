@@ -11,11 +11,36 @@
       </div>
     </div>
 
-    <div class="hk-filter-v-block" ng-if="fsb.showTime">
+    <div class="hk-filter-v-block" ng-show="fsb.showTime">
       <label class="hk-label-heading" for="timeSpanField">Time Span</label>
       <select pf-select class="form-control" id="timeSpanField" ng-options="t.time as t.text for t in timeSpans"
-        ng-model="$root.sbFilter.criteria.startTime" ng-change="reload()">
+        ng-model="$root.sbFilter.timeSpan" ng-change="reload()">
       </select>
+
+      <div ng-show="$root.sbFilter.timeSpan === ''">
+        <hr style="margin: 5px">
+
+        <div>
+          <div class="input-group input-group-sm date" options="startDTOptions"
+            datetime-picker on-change="changeStart()" ng-model="$root.sbFilter.customStartTime">
+            <span class="input-group-addon">From</span>
+            <input type="text" class="form-control" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+        <div>
+          <div class="input-group input-group-sm date" options="endDTOptions"
+            datetime-picker ng-model="$root.sbFilter.customEndTime">
+            <span class="input-group-addon" style="width: 40px;">To</span>
+            <input type="text" class="form-control" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="hk-filter-v-block" ng-if="fsb.showBtxns">

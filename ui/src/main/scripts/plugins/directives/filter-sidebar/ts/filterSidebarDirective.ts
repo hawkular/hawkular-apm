@@ -31,6 +31,7 @@ module FilterSidebar {
     constructor(public $compile, public $rootScope) {
 
       $rootScope.timeSpans = [
+        {time: '',             text: 'Custom...'},
         {time: '-60000',       text: '1 Minute'},
         {time: '-600000',      text: '10 Minutes'},
         {time: '-1800000',     text: '30 Minutes'},
@@ -51,7 +52,7 @@ module FilterSidebar {
         hostName: '',
         properties: [],
         faults: [],
-        startTime: $rootScope.timeSpans[3].time,
+        startTime: $rootScope.timeSpans[4].time,
         endTime: '0'
       };
 

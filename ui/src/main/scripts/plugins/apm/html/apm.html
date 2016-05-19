@@ -50,7 +50,7 @@
           <span class="hk-input-text">{{ (sbFilter.criteria.endTime !== '0' ? sbFilter.criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</span>
         </div>
         <div class="pull-right">
-          <button class="btn" ng-class="sbFilter.criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-click="pauseLiveData()">
+          <button class="btn" ng-class="sbFilter.criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-disabled="sbFilter.timeSpan === ''" ng-click="pauseLiveData()">
             <i class="glyphicon" ng-class="sbFilter.criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
             <span ng-show="sbFilter.criteria.endTime === '0'">Pause Live Data</span>
             <span ng-hide="sbFilter.criteria.endTime === '0'">Resume Live Data</span>
