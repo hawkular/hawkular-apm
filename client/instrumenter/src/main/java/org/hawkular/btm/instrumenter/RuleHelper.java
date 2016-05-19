@@ -21,8 +21,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -66,22 +64,7 @@ public class RuleHelper extends Helper implements SessionManager {
         faultDescriptors = ServiceResolver.getServices(FaultDescriptor.class);
 
         // Obtain collector
-        CompletableFuture<BusinessTransactionCollector> colFuture =
-                ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
-
-        colFuture.whenComplete(new BiConsumer<BusinessTransactionCollector, Throwable>() {
-
-            @Override
-            public void accept(BusinessTransactionCollector c, Throwable t) {
-                if (c != null) {
-                    collector = c;
-                } else if (t != null) {
-                    System.err.println("Failed to locate Business Transaction Collector: " + t);
-                    t.printStackTrace();
-                }
-            }
-        });
-
+        collector = ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
     }
 
     /**

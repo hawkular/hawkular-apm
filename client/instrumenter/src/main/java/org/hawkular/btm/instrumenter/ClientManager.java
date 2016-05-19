@@ -21,8 +21,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -57,61 +55,39 @@ public class ClientManager {
      */
     public static void initialize(Retransformer trans) {
         // NOTE: Using stdout/err as jul had a side effect initializing jboss logging
-        log.info("BTM: Initializing Client Manager");
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Initializing Client Manager");
+        }
 
         transformer = trans;
 
         // Obtain collector
-        CompletableFuture<BusinessTransactionCollector> colFuture =
-                ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
+        collector = ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
 
-        colFuture.whenComplete(new BiConsumer<BusinessTransactionCollector, Throwable>() {
-
-            @Override
-            public void accept(BusinessTransactionCollector c, Throwable t) {
-                log.info("BTM: Initialising Business Transaction Collector: " + c + " exception=" + t);
-
-                if (c != null) {
-                    collector = c;
-                } else if (t != null) {
-                    System.err.println("Failed to locate Business Transaction Collector: " + t);
-                    t.printStackTrace();
-                }
-            }
-        });
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Business Transaction Collector: " + collector);
+        }
 
         // Obtain the configuration service
-        CompletableFuture<ConfigurationService> asFuture =
-                ServiceResolver.getSingletonService(ConfigurationService.class);
+        configService = ServiceResolver.getSingletonService(ConfigurationService.class);
 
-        asFuture.whenComplete(new BiConsumer<ConfigurationService, Throwable>() {
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Configuration Service: " + configService);
+        }
 
-            @Override
-            public void accept(ConfigurationService cs, Throwable t) {
-                log.info("BTM: Initialising Configuration Service: " + cs + " exception=" + t);
+        // Read configuration
+        CollectorConfiguration config = configService.getCollector(null, null, null);
 
-                configService = cs;
-
-                if (configService == null) {
-                    System.err.println("Unable to locate Configuration Service: " + t);
-                    if (t != null) {
-                        t.printStackTrace();
-                    }
-                } else {
-                    // Read configuration
-                    CollectorConfiguration config = configService.getCollector(null, null, null);
-
-                    if (config != null) {
-                        try {
-                            updateInstrumentation(config);
-                        } catch (Exception e) {
-                            System.err.println("Failed to update instrumentation rules: " + e);
-                            e.printStackTrace();
-                        }
-                    }
-                }
+        if (config != null) {
+            try {
+                updateInstrumentation(config);
+            } catch (Exception e) {
+                System.err.println("Failed to update instrumentation rules: " + e);
+                e.printStackTrace();
             }
-        });
+        } else {
+            log.severe("Unable to configure BTM");
+        }
     }
 
     /**
