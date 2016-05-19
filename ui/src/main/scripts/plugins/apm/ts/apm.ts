@@ -76,7 +76,6 @@ module APM {
 
       if ($rootScope.sbFilter.timeSpan < 0) { // using preset
         $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
-        $rootScope.sbFilter.criteria.endTime = '0';
       } else {
         if ($rootScope.sbFilter.customStartTime) {
           $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
@@ -177,11 +176,14 @@ module APM {
 
     $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
     $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
-      if (newValue === '') {
+      if (newValue === '') { // setting a custom time
         $rootScope.sbFilter.customStartTime =
           $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
         $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
+      } else if (oldValue === '') { // returnig from custom
+        $rootScope.sbFilter.criteria.endTime = '0';
       }
+
       $scope.reloadData();
     });
 
