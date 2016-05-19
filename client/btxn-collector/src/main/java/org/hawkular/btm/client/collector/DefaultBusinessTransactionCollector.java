@@ -19,11 +19,9 @@ package org.hawkular.btm.client.collector;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -83,20 +81,8 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
     }
 
     {
-        // Obtain the admin service
-        CompletableFuture<ConfigurationService> asFuture =
-                ServiceResolver.getSingletonService(ConfigurationService.class);
-
-        asFuture.whenComplete(new BiConsumer<ConfigurationService, Throwable>() {
-
-            @Override
-            public void accept(ConfigurationService cs, Throwable t) {
-                if (t != null) {
-                    log.log(Level.SEVERE, "Failed to obtain configuration service", t);
-                }
-                setConfigurationService(cs);
-            }
-        });
+        // Obtain the configuration service
+        setConfigurationService(ServiceResolver.getSingletonService(ConfigurationService.class));
     }
 
     /**
@@ -105,10 +91,14 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
      * @param cs The configuration service
      */
     public void setConfigurationService(ConfigurationService cs) {
-        CollectorConfiguration config = cs.getCollector(null, null, null);
-
         if (log.isLoggable(Level.FINER)) {
             log.finer("Set configuration service = " + cs);
+        }
+
+        CollectorConfiguration config = null;
+
+        if (cs != null) {
+            config = cs.getCollector(null, null, null);
         }
 
         if (config != null) {

@@ -33,8 +33,8 @@ public class ServiceResolverTest {
 
     @Test
     public void testSingletonService() {
-        TestService s1 = ServiceResolver.getSingletonService(TestService.class).getNow(null);
-        TestService s2 = ServiceResolver.getSingletonService(TestService.class).getNow(null);
+        TestService s1 = ServiceResolver.getSingletonService(TestService.class);
+        TestService s2 = ServiceResolver.getSingletonService(TestService.class);
 
         assertNotNull(s1);
         assertNotNull(s2);
@@ -51,7 +51,7 @@ public class ServiceResolverTest {
 
     @Test
     public void testNoImplementation() {
-        Map<?, ?> s1 = ServiceResolver.getSingletonService(Map.class).getNow(null);
+        Map<?, ?> s1 = ServiceResolver.getSingletonService(Map.class);
 
         assertNull(s1);
     }

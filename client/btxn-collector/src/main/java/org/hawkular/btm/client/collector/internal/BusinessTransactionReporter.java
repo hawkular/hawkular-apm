@@ -18,12 +18,10 @@ package org.hawkular.btm.client.collector.internal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BiConsumer;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
@@ -69,23 +67,7 @@ public class BusinessTransactionReporter {
     private boolean enabled = false;
 
     {
-        CompletableFuture<BusinessTransactionPublisher> bts =
-                ServiceResolver.getSingletonService(BusinessTransactionPublisher.class);
-
-        bts.whenCompleteAsync(new BiConsumer<BusinessTransactionPublisher, Throwable>() {
-            @Override
-            public void accept(BusinessTransactionPublisher arg0, Throwable arg1) {
-                if (businessTransactionPublisher == null) {
-                    setBusinessTransactionPublisher(arg0);
-
-                    if (arg1 != null) {
-                        log.severe("Failed to locate Business Transaction Publisher: " + arg1);
-                    } else {
-                        log.info("Initialised Business Transaction Publisher: " + arg0 + " in this=" + this);
-                    }
-                }
-            }
-        });
+        setBusinessTransactionPublisher(ServiceResolver.getSingletonService(BusinessTransactionPublisher.class));
     }
 
     /**
