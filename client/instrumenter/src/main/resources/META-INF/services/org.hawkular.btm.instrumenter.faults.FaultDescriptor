@@ -1,0 +1,2 @@
+org.hawkular.btm.instrumenter.faults.ThrowableFaultDescriptor
+org.hawkular.btm.instrumenter.faults.SOAPFaultDescriptor

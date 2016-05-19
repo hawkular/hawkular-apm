@@ -1,5 +1,5 @@
-Agent-Class: org.hawkular.btm.client.manager.BTMAgent
+Agent-Class: org.hawkular.btm.instrumenter.BTMAgent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true
-Premain-Class: org.hawkular.btm.client.manager.BTMAgent
+Premain-Class: org.hawkular.btm.instrumenter.BTMAgent
 Boot-Class-Path: ./hawkular-btm-agent-rest.jar

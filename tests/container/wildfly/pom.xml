@@ -70,7 +70,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-manager</artifactId>
+      <artifactId>hawkular-btm-instrumenter</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -311,7 +311,7 @@
         <configuration>
           <jboss-home>${hawkular.home}</jboss-home>
           <javaOpts>
-            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
+            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api</javaOpt>
           </javaOpts>
         </configuration>
         <executions>
@@ -337,7 +337,7 @@
                 <javaOpt>-Dhawkular-btm.uri=${hawkular-btm.uri}</javaOpt>
                 <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>
                 <javaOpt>-Dhawkular-btm.password=password</javaOpt>
-                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.client.manager,org.hawkular.btm.client.api</javaOpt>
+                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api</javaOpt>
                 <javaOpt>-Dhawkular-btm.log.level=INFO</javaOpt>
               </javaOpts>
               <startup-timeout>180</startup-timeout>

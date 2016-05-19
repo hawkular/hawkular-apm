@@ -1,0 +1,6 @@
+org.hawkular.btm.instrumenter.headers.ApacheHttpclientHeadersAccessor
+org.hawkular.btm.instrumenter.headers.IterableMapEntryHeadersAccessor
+org.hawkular.btm.instrumenter.headers.JavaxJmsHeadersAccessor
+org.hawkular.btm.instrumenter.headers.JavaxServletHeadersAccessor
+org.hawkular.btm.instrumenter.headers.JbossResteasyHeadersAccessor
+org.hawkular.btm.instrumenter.headers.JbossSwitchyardHeadersAccessor
