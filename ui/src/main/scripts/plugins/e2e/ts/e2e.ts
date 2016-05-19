@@ -24,18 +24,8 @@ module E2E {
     '$location', '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $location, $interval, $timeout) => {
 
     $scope.reload = function() {
-      if ($rootScope.sbFilter.timeSpan < 0) { // using custom
-        $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
-      } else {
-        if ($rootScope.sbFilter.customStartTime) {
-          $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
-        } else {
-          $rootScope.sbFilter.criteria.startTime = '-3600000';
-        }
-        if ($rootScope.sbFilter.customEndTime) {
-          $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
-        }
-      }
+
+      $rootScope.updateCriteriaTimeSpan();
 
       let commPromise = $http.post('/hawkular/btm/analytics/communication/summary?tree=true',
                                    $rootScope.sbFilter.criteria);
@@ -48,46 +38,12 @@ module E2E {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
-        $scope.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
-      },function(resp) {
-        console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
-      });
-
-      $http.post('/hawkular/btm/analytics/hostnames', $rootScope.sbFilter.criteria).then(function(resp) {
-        $scope.hostNames = resp.data || [];
-      },function(resp) {
-        console.log('Failed to get host names: ' + JSON.stringify(resp));
-      });
-
-      $http.post('/hawkular/btm/analytics/properties', $rootScope.sbFilter.criteria).then((resp) => {
-        $scope.properties = resp.data || [];
-      }, (error) => {
-          console.log('Failed to get properties: ' + JSON.stringify(error));
-      });
-
-      $http.post('/hawkular/btm/analytics/completion/faults', $rootScope.sbFilter.criteria).then((resp) => {
-        $scope.faults = resp.data || [];
-      }, (error) => {
-          console.log('Failed to get faults: ' + JSON.stringify(error));
-      });
-
+      // this informs the sidebar directive, so it'll update it's data as well
+      $scope.$broadcast('dataUpdated');
     };
-
-    $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
-    $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
-      if (newValue === '') {
-        $rootScope.sbFilter.customStartTime =
-          $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
-        $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
-      }
-      $scope.reload();
-    });
 
     $rootScope.$watch('sbFilter.customStartTime', $scope.reload);
     $rootScope.$watch('sbFilter.customEndTime', $scope.reload);
-
-    $scope.reload();
 
     let refreshPromise = $interval(() => { $scope.reload(); }, 1000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
@@ -100,17 +56,6 @@ module E2E {
       _.each($scope.e2eData, (node) => {
         $scope.topLevel.push(node.id);
       });
-    };
-
-    $scope.getPropertyValues = function(property) {
-      $scope.propertyValues = [];
-      if (property) {
-        let propVal = $http.post('/hawkular/btm/analytics/completion/property/' + property.name,
-          $rootScope.sbFilter.criteria);
-        propVal.then((resp) => {
-          $scope.propertyValues = resp.data;
-        });
-      }
     };
 
     $scope.addPropertyToFilter = function(pName, pValue, excluded) {

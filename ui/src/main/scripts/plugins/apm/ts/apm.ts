@@ -73,19 +73,7 @@ module APM {
     $scope.chartStacked = true;
 
     $scope.reloadData = function() {
-
-      if ($rootScope.sbFilter.timeSpan < 0) { // using preset
-        $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
-      } else {
-        if ($rootScope.sbFilter.customStartTime) {
-          $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
-        } else {
-          $rootScope.sbFilter.criteria.startTime = '-3600000';
-        }
-        if ($rootScope.sbFilter.customEndTime) {
-          $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
-        }
-      }
+      $rootScope.updateCriteriaTimeSpan();
 
       $http.post('/hawkular/btm/analytics/node/statistics?interval=' +
         $scope.config.interval, $rootScope.sbFilter.criteria).then(function(resp) {
@@ -149,43 +137,9 @@ module APM {
         console.log('Failed to get node summary statistics: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
-        $scope.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
-      },function(resp) {
-        console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
-      });
-
-      $http.post('/hawkular/btm/analytics/hostnames', $rootScope.sbFilter.criteria).then(function(resp) {
-        $scope.hostNames = resp.data || [];
-      },function(resp) {
-        console.log('Failed to get host names: ' + JSON.stringify(resp));
-      });
-
-      $http.post('/hawkular/btm/analytics/properties', $rootScope.sbFilter.criteria).then((resp) => {
-        $scope.properties = resp.data || [];
-      }, (error) => {
-          console.log('Failed to get properties: ' + JSON.stringify(error));
-      });
-
-      $http.post('/hawkular/btm/analytics/completion/faults', $rootScope.sbFilter.criteria).then((resp) => {
-        $scope.faults = resp.data || [];
-      }, (error) => {
-          console.log('Failed to get faults: ' + JSON.stringify(error));
-      });
+      // this informs the sidebar directive, so it'll update it's data as well
+      $scope.$broadcast('dataUpdated');
     };
-
-    $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
-    $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
-      if (newValue === '') { // setting a custom time
-        $rootScope.sbFilter.customStartTime =
-          $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
-        $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
-      } else if (oldValue === '') { // returnig from custom
-        $rootScope.sbFilter.criteria.endTime = '0';
-      }
-
-      $scope.reloadData();
-    });
 
     $rootScope.$watch('sbFilter.customStartTime', $scope.reloadData);
     $rootScope.$watch('sbFilter.customEndTime', $scope.reloadData);
@@ -195,8 +149,6 @@ module APM {
       $scope.apmChartConfig.data.groups = [$scope.componentsGroups || []];
       $scope.apmChartConfig.data.keys.value = $scope.components || [];
     };
-
-    $scope.reloadData();
 
     let refreshPromise = $interval(() => {
       if ($rootScope.sbFilter.criteria.endTime === '0') {
@@ -252,17 +204,6 @@ module APM {
     $scope.sort = function(keyname){
       $scope.sortKey = keyname;   //set the sortKey to the param passed
       $scope.reverse = !$scope.reverse; //if true make it false and vice versa
-    };
-
-    $scope.getPropertyValues = function(property) {
-      $scope.propertyValues = [];
-      if (property) {
-        let propVal = $http.post('/hawkular/btm/analytics/completion/property/' + property.name,
-          $rootScope.sbFilter.criteria);
-        propVal.then((resp) => {
-          $scope.propertyValues = resp.data;
-        });
-      }
     };
 
     $scope.addPropertyToFilter = function(pName, pValue, excluded) {

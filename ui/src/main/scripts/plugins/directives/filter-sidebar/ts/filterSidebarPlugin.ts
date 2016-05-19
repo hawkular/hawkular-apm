@@ -19,8 +19,8 @@
 /// <reference path="filterSidebarGlobals.ts"/>
 /// <reference path="filterSidebarDirective.ts"/>
 module FilterSidebar {
-  _module.directive('filterSidebar', ['$compile', '$rootScope', ($compile, $rootScope) => {
-    return new FilterSidebar.FilterSidebarDirective($compile, $rootScope);
+  _module.directive('filterSidebar', ['$compile', '$rootScope', '$http', ($compile, $rootScope, $http) => {
+    return new FilterSidebar.FilterSidebarDirective($compile, $rootScope, $http);
   }]);
 
   // from http://stackoverflow.com/a/23882699

@@ -28,7 +28,7 @@ module FilterSidebar {
 
     public link: (scope, elm, attrs, ctrl) => any;
 
-    constructor(public $compile, public $rootScope) {
+    constructor(public $compile, public $rootScope, public $http) {
 
       $rootScope.timeSpans = [
         {time: '',             text: 'Custom...'},
@@ -58,14 +58,15 @@ module FilterSidebar {
 
       $rootScope.sbFilter = $rootScope.sbFilter || {};
       $rootScope.sbFilter.criteria = $rootScope.sbFilter.criteria || defaultCriteria;
+      $rootScope.sbFilter.data = $rootScope.sbFilter.data || {};
 
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
-        return this.doLink(scope, elm, attrs, ctrl, $compile, $rootScope);
+        return this.doLink(scope, elm, attrs, ctrl, $compile, $rootScope, $http);
       };
     }
 
-    private doLink(scope, elm, attrs, ctrl, $compile, $rootScope): void {
+    private doLink(scope, elm, attrs, ctrl, $compile, $rootScope, $http): void {
       scope.fsb = {
         showTime: !attrs.hasOwnProperty('noTime'),
         showText: !attrs.hasOwnProperty('noText'),
@@ -74,6 +75,87 @@ module FilterSidebar {
         showProps: !attrs.hasOwnProperty('noProps'),
         showFaults: !attrs.hasOwnProperty('noFaults')
       };
+
+      scope.$on('dataUpdated', () => {
+        this.updateSidebarData(scope);
+      });
+
+      if (scope.fsb.showTime) {
+        $rootScope.updateCriteriaTimeSpan = function() {
+          if ($rootScope.sbFilter.timeSpan < 0) { // using preset
+            $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
+          } else {
+            if ($rootScope.sbFilter.customStartTime) {
+              $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
+            } else {
+              $rootScope.sbFilter.criteria.startTime = '-3600000';
+            }
+            if ($rootScope.sbFilter.customEndTime) {
+              $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
+            }
+          }
+        };
+
+        $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
+        $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
+          if (newValue === '') { // setting a custom time
+            $rootScope.sbFilter.customStartTime =
+              $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
+            $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
+          } else if (oldValue === '') { // returning from custom
+            $rootScope.sbFilter.criteria.endTime = '0';
+          }
+          $rootScope.updateCriteriaTimeSpan();
+        });
+      }
+
+      if (scope.fsb.showProps) {
+        scope.$watch('selPropName', (newValue, oldValue) => {
+          if (newValue && newValue !== oldValue) {
+            scope.propertyValues = [];
+            let propVal = this.$http.post('/hawkular/btm/analytics/completion/property/' + newValue.name,
+              this.$rootScope.sbFilter.criteria);
+            propVal.then((resp) => {
+              scope.propertyValues = resp.data;
+            });
+          }
+        });
+      }
     }
+
+    private updateSidebarData(scope) {
+      if (scope.fsb.showBtxns) {
+        this.$http.get('/hawkular/btm/config/businesstxn/summary').then((resp) => {
+          this.$rootScope.sbFilter.data.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
+        }, (error) => {
+          console.log('Failed to get business txn summaries: ' + JSON.stringify(error));
+        });
+      }
+
+      if (scope.fsb.showHosts) {
+        this.$http.post('/hawkular/btm/analytics/hostnames', this.$rootScope.sbFilter.criteria).then((resp) => {
+          this.$rootScope.sbFilter.data.hostNames = resp.data || [];
+        }, (error) => {
+          console.log('Failed to get host names: ' + JSON.stringify(error));
+        });
+      }
+
+      if (scope.fsb.showProps) {
+        this.$http.post('/hawkular/btm/analytics/properties', this.$rootScope.sbFilter.criteria).then((resp) => {
+          this.$rootScope.sbFilter.data.properties = resp.data || [];
+        }, (error) => {
+            console.log('Failed to get properties: ' + JSON.stringify(error));
+        });
+      }
+
+      if (scope.fsb.showFaults) {
+        this.$http.post('/hawkular/btm/analytics/completion/faults', this.$rootScope.sbFilter.criteria).then((resp) => {
+          this.$rootScope.sbFilter.data.faults = resp.data || [];
+        }, (error) => {
+            console.log('Failed to get faults: ' + JSON.stringify(error));
+        });
+      }
+    }
+
   }
 }
