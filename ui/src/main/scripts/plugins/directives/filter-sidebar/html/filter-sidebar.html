@@ -49,7 +49,7 @@
       <div class="radio">
         <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.businessTransaction" value="" checked> All </label>
       </div>
-      <div class="radio" ng-repeat="btxn in businessTransactions">
+      <div class="radio" ng-repeat="btxn in $root.sbFilter.data.businessTransactions">
         <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.businessTransaction" value="{{btxn}}"> {{btxn}} </label>
       </div>
       </div>
@@ -75,7 +75,7 @@
       <div class="sb-prop-input">
         <div class="input-group">
           <span class="input-group-addon">Name</span>
-          <select class="form-control" ng-options="p.name for p in properties track by p.name" ng-model="selPropName"
+          <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
             ng-change="getPropertyValues(selPropName)"></select>
         </div>
         <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
@@ -122,7 +122,7 @@
 
       <div class="radio" style="margin-left: 0px;">
         <div class="input-group">
-          <select class="form-control" ng-options="f.value for f in faults track by f.value" ng-model="selFault"></select>
+          <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
           <div class="input-group-btn">
             <button type="button" class="btn btn-default" ng-disabled="!selFault"
               ng-click="addFaultToFilter(selFault.value, false)">
@@ -147,7 +147,7 @@
       <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
          ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
          placeholder="Enter a host name" typeahead-editable="false"
-         typeahead="hostName for hostName in hostNames | filter:$viewValue | limitTo:12" />
+         typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" />
     </div>
   </div>
 </div>
