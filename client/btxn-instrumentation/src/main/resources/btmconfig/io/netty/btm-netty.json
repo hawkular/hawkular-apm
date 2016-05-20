@@ -12,7 +12,6 @@
         "parameterTypes": [
           "*"
         ],
-        "compile": false,
         "condition": "isActive()",
         "location": "ENTRY",
         "actions": [{
@@ -28,7 +27,6 @@
         "parameterTypes": [
           "*"
         ],
-        "compile": false,
         "location": "ENTRY",
         "condition": "isCorrelated(\"io.netty-async-\"+hashCode($0))",
         "actions": [{
