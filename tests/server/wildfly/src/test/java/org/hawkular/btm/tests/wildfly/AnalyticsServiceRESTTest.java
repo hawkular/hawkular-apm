@@ -800,6 +800,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -854,6 +855,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -953,6 +955,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -1017,6 +1020,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -1166,6 +1170,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -1219,6 +1224,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -1318,6 +1324,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();
@@ -1380,6 +1387,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
         btxn1.getNodes().add(c1);
 
         Component comp1 = new Component();

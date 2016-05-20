@@ -24,10 +24,12 @@ import java.util.logging.Logger;
 
 import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.btxn.Component;
+import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.btxn.ContainerNode;
 import org.hawkular.btm.api.model.btxn.InteractionNode;
 import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.btxn.NodeType;
+import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
@@ -90,51 +92,67 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
             List<Node> nodes, List<NodeDetails> rts) {
         for (int i = 0; i < nodes.size(); i++) {
             Node n = nodes.get(i);
-            long diffns = n.getBaseTime() - baseTime;
-            long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
 
-            NodeDetails nd = new NodeDetails();
-            nd.setId(btxn.getId() + "-" + rts.size());
-            nd.setBusinessTransaction(btxn.getName());
-            nd.setCorrelationIds(n.getCorrelationIds());
-            nd.setDetails(n.getDetails());
-            nd.setElapsed(n.getDuration());
+            // If consumer or producer, check that endpoint type has been set,
+            // otherwise indicates internal communication between spawned
+            // fragments, which should not be recorded as nodes, as they will
+            // distort derived statistics. See HWKBTM-434.
+            boolean ignoreNode = false;
+            boolean ignoreChildNodes = false;
+            if (n.getClass() == Consumer.class && ((Consumer)n).getEndpointType() == null) {
+                ignoreNode = true;
+            } else if (n.getClass() == Producer.class && ((Producer)n).getEndpointType() == null) {
+                ignoreNode = true;
+                ignoreChildNodes = true;
+            }
 
-            long childElapsed = 0;
-            if (n.containerNode()) {
-                for (int j = 0; j < ((ContainerNode) n).getNodes().size(); j++) {
-                    childElapsed += ((ContainerNode) n).getNodes().get(j).getDuration();
+            if (!ignoreNode) {
+                long diffns = n.getBaseTime() - baseTime;
+                long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
+
+                NodeDetails nd = new NodeDetails();
+                nd.setId(btxn.getId() + "-" + rts.size());
+                nd.setBusinessTransaction(btxn.getName());
+                nd.setCorrelationIds(n.getCorrelationIds());
+                nd.setDetails(n.getDetails());
+                nd.setElapsed(n.getDuration());
+
+                long childElapsed = 0;
+                if (n.containerNode()) {
+                    for (int j = 0; j < ((ContainerNode) n).getNodes().size(); j++) {
+                        childElapsed += ((ContainerNode) n).getNodes().get(j).getDuration();
+                    }
                 }
+                nd.setActual(n.getDuration()-childElapsed);
+
+                if (n.getType() == NodeType.Component) {
+                    nd.setComponentType(((Component) n).getComponentType());
+                } else {
+                    nd.setComponentType(n.getType().name());
+                }
+
+                if (n.getFault() != null && n.getFault().trim().length() > 0) {
+                    nd.setFault(n.getFault());
+                }
+
+                if (btxn.getHostName() != null && btxn.getHostName().trim().length() > 0) {
+                    nd.setHostName(btxn.getHostName());
+                }
+
+                if (btxn.getPrincipal() != null && btxn.getPrincipal().trim().length() > 0) {
+                    nd.setPrincipal(btxn.getPrincipal());
+                }
+
+                nd.setProperties(btxn.getProperties());
+                nd.setTimestamp(btxn.getStartTime() + diffms);
+                nd.setType(n.getType());
+                nd.setUri(n.getUri());
+                nd.setOperation(n.getOperation());
+
+                rts.add(nd);
             }
-            nd.setActual(n.getDuration()-childElapsed);
 
-            if (n.getType() == NodeType.Component) {
-                nd.setComponentType(((Component) n).getComponentType());
-            } else {
-                nd.setComponentType(n.getType().name());
-            }
-
-            if (n.getFault() != null && n.getFault().trim().length() > 0) {
-                nd.setFault(n.getFault());
-            }
-
-            if (btxn.getHostName() != null && btxn.getHostName().trim().length() > 0) {
-                nd.setHostName(btxn.getHostName());
-            }
-
-            if (btxn.getPrincipal() != null && btxn.getPrincipal().trim().length() > 0) {
-                nd.setPrincipal(btxn.getPrincipal());
-            }
-
-            nd.setProperties(btxn.getProperties());
-            nd.setTimestamp(btxn.getStartTime() + diffms);
-            nd.setType(n.getType());
-            nd.setUri(n.getUri());
-            nd.setOperation(n.getOperation());
-
-            rts.add(nd);
-
-            if (n.interactionNode()) {
+            if (!ignoreChildNodes && n.interactionNode()) {
                 deriveNodeDetails(btxn, baseTime, ((InteractionNode) n).getNodes(), rts);
             }
         }
