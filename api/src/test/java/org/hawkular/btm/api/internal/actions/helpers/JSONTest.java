@@ -74,6 +74,26 @@ public class JSONTest {
     }
 
     @Test
+    public void testEvaluateFunctionLength() {
+        String expected = "2";
+        String json = "{\"id\":1,\"tickets\":[{\"id\":1,\"seat\":{\"rowNumber\":1,\"number\":2,"
+                + "\"section\":{\"id\":1,\"name\":\"A\",\"description\":\"Premier platinum reserve\","
+                + "\"numberOfRows\":20,\"rowCapacity\":100,\"capacity\":2000}},\"ticketCategory\":"
+                + "{\"id\":1,\"description\":\"Adult\"},\"price\":219.5},{\"id\":2,\"seat\":"
+                + "{\"rowNumber\":1,\"number\":1,\"section\":{\"id\":1,\"name\":\"A\",\"description\":"
+                + "\"Premier platinum reserve\",\"numberOfRows\":20,\"rowCapacity\":100,\"capacity\":2000}},"
+                + "\"ticketCategory\":{\"id\":1,\"description\":\"Adult\"},\"price\":219.5}],\"performance\":"
+                + "{\"id\":1,\"date\":1442858400000},\"cancellationCode\":\"abc\",\"createdOn\":1463756307069,"
+                + "\"contactEmail\":\"gbrown@redhat.com\",\"totalTicketPrice\":439.0}";
+        String expression = "$.tickets.length()";
+
+        String result = JSON.evaluate(expression, json.getBytes());
+
+        assertNotNull(result);
+        assertEquals(expected, result);
+    }
+
+    @Test
     public void testPredicateString() {
         String json = "{ \"enabled\": \"true\" }";
         String expr = "$.enabled";
