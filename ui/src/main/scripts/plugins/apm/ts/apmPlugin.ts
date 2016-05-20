@@ -38,8 +38,9 @@ module APM {
       when('/hawkular-ui/apm', {
         templateUrl: 'plugins/apm/html/apm.html',
         controller: 'APM.APMController'
-      });
-  }]);
+      }).
+      when('/', { redirectTo: '/hawkular-ui/apm' });
+    }]);
 
   _module.run(function(editableOptions) {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
