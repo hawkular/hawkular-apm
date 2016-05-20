@@ -228,5 +228,14 @@ module APM {
       propOrFault.excluded = !propOrFault.excluded;
     };
 
+    $scope.startDTOptions = {
+      format: 'DD-MM-YYYY HH:mm:ss'
+    };
+
+    $scope.endDTOptions = {
+      format: 'DD-MM-YYYY HH:mm:ss',
+      useCurrent: false
+    };
+
   }]);
 }
