@@ -24,12 +24,17 @@ module FilterSidebar {
   }]);
 
   // from http://stackoverflow.com/a/23882699
-  _module.filter('groupBy', function($parse) {
-    return _.memoize(function(items, field) {
+  _module.filter('groupBy', ($parse) => {
+    return _.memoize((items, field) => {
       let getter = $parse(field);
-      return _.groupBy(items, function(item) {
+      return _.groupBy(items, (item) => {
         return getter(item);
       });
+    },
+    (items) => { // Specific hasher function for filter properties objects
+      return _.reduce(items, (hash, obj: any) => {
+        return hash + (obj.name + obj.value + obj.excluded);
+      }, '');
     });
   });
 

@@ -30,7 +30,7 @@ module BTM {
       .id(BTM.pluginName)
       .title(() => 'Business Transactions')
       .href(() => '/hawkular-ui/btm')
-      .rank(20)
+      .rank(10)
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
