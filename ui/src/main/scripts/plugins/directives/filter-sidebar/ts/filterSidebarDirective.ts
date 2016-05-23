@@ -60,6 +60,16 @@ module FilterSidebar {
       $rootScope.sbFilter.criteria = $rootScope.sbFilter.criteria || defaultCriteria;
       $rootScope.sbFilter.data = $rootScope.sbFilter.data || {};
 
+      // FIXME: this should not go into rootScope
+      $rootScope.startDTOptions = {
+        format: 'DD-MM-YYYY HH:mm:ss'
+      };
+
+      $rootScope.endDTOptions = {
+        format: 'DD-MM-YYYY HH:mm:ss',
+        useCurrent: false
+      };
+
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
         return this.doLink(scope, elm, attrs, ctrl, $compile, $rootScope, $http);
@@ -96,7 +106,8 @@ module FilterSidebar {
           }
         };
 
-        $rootScope.sbFilter.timeSpan = $rootScope.sbFilter.timeSpan || '-3600000';
+        $rootScope.sbFilter.timeSpan = angular.isUndefined($rootScope.sbFilter.timeSpan) ?
+          '-3600000' : $rootScope.sbFilter.timeSpan;
         $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
           if (newValue === '') { // setting a custom time
             $rootScope.sbFilter.customStartTime =

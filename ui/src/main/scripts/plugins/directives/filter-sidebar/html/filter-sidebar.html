@@ -22,7 +22,7 @@
 
         <div>
           <div class="input-group input-group-sm date" options="startDTOptions"
-            datetime-picker on-change="changeStart()" link-max="$root.sbFilter.customEndTime" ng-model="$root.sbFilter.customStartTime">
+            datetime-picker max-date="$root.sbFilter.customEndTime" ng-model="$root.sbFilter.customStartTime">
             <span class="input-group-addon">From</span>
             <input type="text" class="form-control" />
             <span class="input-group-addon">
@@ -32,7 +32,7 @@
         </div>
         <div>
           <div class="input-group input-group-sm date" options="endDTOptions"
-            datetime-picker on-change="changeEnd()" link-min="$root.sbFilter.customStartTime" ng-model="$root.sbFilter.customEndTime">
+            datetime-picker min-date="$root.sbFilter.customStartTime" ng-model="$root.sbFilter.customEndTime">
             <span class="input-group-addon" style="width: 40px;">To</span>
             <input type="text" class="form-control" />
             <span class="input-group-addon">

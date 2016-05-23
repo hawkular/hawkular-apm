@@ -30,8 +30,8 @@ module DatetimePicker {
       options: '=',
       onChange: '&',
       onClick: '&',
-      linkMin: '@',
-      linkMax: '@'
+      minDate: '@',
+      maxDate: '@'
     };
 
     public link: (scope, elm, attrs, ctrl) => any;
@@ -45,13 +45,13 @@ module DatetimePicker {
 
     private doLink(scope, elm, attrs, ctrl, $timeout): void {
 
-      scope.$watch(scope.linkMin, (newValue, oldValue) => {
+      scope.$watch(scope.minDate, (newValue, oldValue) => {
         if (newValue) {
           elm.data('DateTimePicker').minDate(newValue);
         }
       });
 
-      scope.$watch(scope.linkMax, (newValue, oldValue) => {
+      scope.$watch(scope.maxDate, (newValue, oldValue) => {
         if (newValue) {
           elm.data('DateTimePicker').maxDate(newValue);
         }
