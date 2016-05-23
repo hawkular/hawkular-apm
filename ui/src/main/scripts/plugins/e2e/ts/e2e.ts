@@ -45,7 +45,7 @@ module E2E {
     $rootScope.$watch('sbFilter.customStartTime', $scope.reload);
     $rootScope.$watch('sbFilter.customEndTime', $scope.reload);
 
-    let refreshPromise = $interval(() => { $scope.reload(); }, 1000);
+    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $rootScope.$watch('sbFilter.criteria', $scope.reload, true);
