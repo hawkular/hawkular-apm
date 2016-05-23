@@ -186,7 +186,9 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                         if (diff > 0) {
                             ret.setLatency(diff / 2);
                         } else if (diff < 0) {
-                            log.warning("Negative latency for consumer = " + consumer);
+                            if (log.isLoggable(Level.FINEST)) {
+                                log.finest("WARNING: Negative latency for consumer = " + consumer);
+                            }
                         }
 
                         ret.setProducerDuration(pi.getDuration());
@@ -224,7 +226,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                 }
                 if (ret == null) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Producer information not available [last id checked = " + lastId + "]");
+                        log.finest("WARNING: Producer information not available [last id checked = " + lastId + "]");
                     }
 
                     // Need to retry, as the producer information is not currently available
