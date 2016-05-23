@@ -14,7 +14,7 @@
     <div class="hk-filter-v-block" ng-show="fsb.showTime">
       <label class="hk-label-heading" for="timeSpanField">Time Span</label>
       <select pf-select class="form-control" id="timeSpanField" ng-options="t.time as t.text for t in timeSpans"
-        ng-model="$root.sbFilter.timeSpan" ng-change="reload()">
+        ng-model="$root.sbFilter.timeSpan">
       </select>
 
       <div ng-show="$root.sbFilter.timeSpan === ''">

@@ -109,10 +109,9 @@ module FilterSidebar {
         $rootScope.sbFilter.timeSpan = angular.isUndefined($rootScope.sbFilter.timeSpan) ?
           '-3600000' : $rootScope.sbFilter.timeSpan;
         $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
-          if (newValue === '') { // setting a custom time
-            $rootScope.sbFilter.customStartTime =
-              $rootScope.sbFilter.customStartTime || new Date(+new Date() + parseInt(oldValue, 10));
-            $rootScope.sbFilter.customEndTime = $rootScope.sbFilter.customEndTime || new Date();
+          if (oldValue !== '' && newValue === '') { // setting a custom time
+            $rootScope.sbFilter.customStartTime = new Date(+new Date() + parseInt(oldValue, 10));
+            $rootScope.sbFilter.customEndTime = new Date();
           } else if (oldValue === '') { // returning from custom
             $rootScope.sbFilter.criteria.endTime = '0';
           }
