@@ -62,11 +62,11 @@ module FilterSidebar {
 
       // FIXME: this should not go into rootScope
       $rootScope.startDTOptions = {
-        format: 'DD-MM-YYYY HH:mm:ss'
+        //format: 'DD-MM-YYYY HH:mm:ss'
       };
 
       $rootScope.endDTOptions = {
-        format: 'DD-MM-YYYY HH:mm:ss',
+        //format: 'DD-MM-YYYY HH:mm:ss',
         useCurrent: false
       };
 
