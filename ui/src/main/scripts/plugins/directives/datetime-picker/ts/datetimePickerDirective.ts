@@ -29,7 +29,9 @@ module DatetimePicker {
     public scope = {
       options: '=',
       onChange: '&',
-      onClick: '&'
+      onClick: '&',
+      minDate: '@',
+      maxDate: '@'
     };
 
     public link: (scope, elm, attrs, ctrl) => any;
@@ -42,7 +44,20 @@ module DatetimePicker {
     }
 
     private doLink(scope, elm, attrs, ctrl, $timeout): void {
-      elm.on('dp.change', () => {
+
+      scope.$watch(scope.minDate, (newValue, oldValue) => {
+        if (newValue) {
+          elm.data('DateTimePicker').minDate(newValue);
+        }
+      });
+
+      scope.$watch(scope.maxDate, (newValue, oldValue) => {
+        if (newValue) {
+          elm.data('DateTimePicker').maxDate(newValue);
+        }
+      });
+
+      elm.on('dp.change', (e) => {
         $timeout(() => {
           let dtp = elm.data('DateTimePicker');
           ctrl.$setViewValue(dtp.date());
@@ -50,8 +65,8 @@ module DatetimePicker {
         });
       });
 
-      elm.on('click', () => {
-        scope.onClick();
+      elm.on('click', (e) => {
+        scope.onClick(e);
       });
 
       ctrl.$render = () => {
@@ -65,7 +80,7 @@ module DatetimePicker {
         }
       };
 
-      elm.datetimepicker(scope.$eval(attrs.options));
+      elm.datetimepicker(scope.options);
     }
 
   }
