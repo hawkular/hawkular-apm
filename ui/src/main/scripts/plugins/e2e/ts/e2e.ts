@@ -32,7 +32,7 @@ module E2E {
       commPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.findTopLevels();
-        $scope.rootNode = $scope.rootNode || _.first($scope.topLevel);
+        $scope.rootNode = _.indexOf($scope.topLevel, $scope.rootNode) > -1 ? $scope.rootNode : _.first($scope.topLevel);
         $scope.filterByTopLevel($scope.rootNode, true);
       }, function(resp) {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));

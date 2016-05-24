@@ -48,12 +48,21 @@ module DagreD3 {
       let render = new dagreD3.render();
       let g = new dagreD3.graphlib.Graph();
 
+      let prevNodes = [];
+      let currNodes = [];
+
       function clear() {
         let svg = d3.select('svg > g');
         svg.selectAll('*').remove();
       }
 
       function drawNode(d) {
+        // remove from the list of prevNodes, which will be used to remove old nodes. Add to current nodes.
+        let prevIdx = prevNodes.indexOf(d.id);
+        if (prevIdx > -1) {
+          prevNodes.splice(prevIdx, 1);
+        }
+        currNodes.push(d.id);
         let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
           d.averageDuration;
         nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
@@ -107,6 +116,9 @@ module DagreD3 {
             marginx: 20,
             marginy: 20
           });
+        } else {
+          prevNodes = angular.copy(currNodes);
+          currNodes = [];
         }
 
         // force removing existing tooltips, otherwise they'll get sticky
@@ -114,6 +126,11 @@ module DagreD3 {
 
         _.each(scope[attrs.nodes], (d) => {
           drawNode(d);
+        });
+
+        // remove nodes which were present and aren't anymore...
+        _.each(prevNodes, (nodeId) => {
+          g.removeNode(nodeId);
         });
 
         // we store the current transform, remove it so d3 draws it properly, and then re-apply it
