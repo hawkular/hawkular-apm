@@ -267,7 +267,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         analytics.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
                 return null;
             }
 
@@ -350,7 +350,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         analytics.setConfigurationService(new ConfigurationService() {
             @Override
-            public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+            public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
                 return null;
             }
 

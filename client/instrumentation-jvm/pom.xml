@@ -27,7 +27,7 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
-  <name>Hawkular BTM::Client::BTxn Instrumentation</name>
+  <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
+  <name>Hawkular BTM::Client::Instrumentation JVM</name>
 
 </project>

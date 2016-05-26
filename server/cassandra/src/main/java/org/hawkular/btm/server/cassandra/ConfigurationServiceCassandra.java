@@ -118,11 +118,11 @@ public class ConfigurationServiceCassandra extends AbstractConfigurationService 
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.ConfigurationService#getCollector(java.lang.String,
-     *                  java.lang.String, java.lang.String)
+     *                  java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-        CollectorConfiguration config = ConfigurationLoader.getConfiguration();
+    public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
+        CollectorConfiguration config = ConfigurationLoader.getConfiguration(type);
 
         ResultSet results = client.getSession().execute(new BoundStatement(getBusinessTxnConfigs).bind(
                 CassandraServiceUtil.tenant(tenantId)));

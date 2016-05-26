@@ -48,7 +48,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+      <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
     </dependency>
 
     <dependency>

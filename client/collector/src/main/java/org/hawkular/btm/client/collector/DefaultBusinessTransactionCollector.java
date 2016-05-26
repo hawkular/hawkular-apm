@@ -98,7 +98,7 @@ public class DefaultBusinessTransactionCollector implements BusinessTransactionC
         CollectorConfiguration config = null;
 
         if (cs != null) {
-            config = cs.getCollector(null, null, null);
+            config = cs.getCollector(null, null, null, null);
         }
 
         if (config != null) {

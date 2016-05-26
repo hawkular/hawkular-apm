@@ -44,6 +44,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ConfigurationLoader {
 
+    /**  */
+    private static final String DEFAULT_TYPE = "jvm";
+
     /** The system property that optional contains the location of the BTM configuration */
     public static final String HAWKULAR_BTM_CONFIG = "hawkular-btm.config";
 
@@ -57,20 +60,28 @@ public class ConfigurationLoader {
     /**
      * This method returns the collector configuration.
      *
+     * @param type The type, or null if default (jvm)
      * @return The collection configuration
      */
-    public static CollectorConfiguration getConfiguration() {
-        return loadConfig(System.getProperty(HAWKULAR_BTM_CONFIG, DEFAULT_URI));
+    public static CollectorConfiguration getConfiguration(String type) {
+        return loadConfig(System.getProperty(HAWKULAR_BTM_CONFIG, DEFAULT_URI), type);
     }
 
     /**
      * This method loads the configuration from the supplied URI.
      *
      * @param uri The URI
+     * @param type The type, or null if default (jvm)
      * @return The configuration
      */
-    protected static CollectorConfiguration loadConfig(String uri) {
+    protected static CollectorConfiguration loadConfig(String uri, String type) {
         final CollectorConfiguration config = new CollectorConfiguration();
+
+        if (type == null) {
+            type = DEFAULT_TYPE;
+        }
+
+        uri += java.io.File.separator + type;
 
         File f = new File(uri);
 
@@ -90,7 +101,7 @@ public class ConfigurationLoader {
             }
         }
 
-        String[] uriParts = uri.split("/");
+        String[] uriParts = uri.split(java.io.File.separator);
         int startIndex = 0;
 
         // Remove any file prefix

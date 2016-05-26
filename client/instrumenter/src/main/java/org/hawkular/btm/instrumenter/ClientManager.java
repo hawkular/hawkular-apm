@@ -76,7 +76,7 @@ public class ClientManager {
         }
 
         // Read configuration
-        CollectorConfiguration config = configService.getCollector(null, null, null);
+        CollectorConfiguration config = configService.getCollector(null, null, null, null);
 
         if (config != null) {
             try {

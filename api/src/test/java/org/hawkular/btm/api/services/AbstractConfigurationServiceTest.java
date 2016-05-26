@@ -99,10 +99,10 @@ public class AbstractConfigurationServiceTest {
 
         /* (non-Javadoc)
          * @see org.hawkular.btm.api.services.ConfigurationService#getCollector(java.lang.String,
-         *                      java.lang.String, java.lang.String)
+         *                      java.lang.String, java.lang.String, java.lang.String)
          */
         @Override
-        public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+        public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
             // TODO Auto-generated method stub
             return null;
         }

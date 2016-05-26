@@ -39,11 +39,12 @@ public interface ConfigurationService {
      * included in the collector configuration.
      *
      * @param tenantId The optional tenant id
+     * @param type The client type, or null if default (jvm)
      * @param host The optional host name
      * @param server The optional server name
      * @return The collector configuration
      */
-    CollectorConfiguration getCollector(String tenantId, String host, String server);
+    CollectorConfiguration getCollector(String tenantId, String type, String host, String server);
 
     /**
      * This method adds (if does not exist) or updates (if exists) a business transaction

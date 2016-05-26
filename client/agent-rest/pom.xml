@@ -43,7 +43,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-collector</artifactId>
+      <artifactId>hawkular-btm-collector</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>

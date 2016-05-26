@@ -136,18 +136,27 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.ConfigurationService#getCollector(java.lang.String,
-     *                                  java.lang.String, java.lang.String)
+     *                                  java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+    public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get collector configuration: tenantId=[" + tenantId + "] host=[" + host
+            log.finest("Get collector configuration: tenantId=[" + tenantId + "] type=[" + type + "] host=[" + host
                     + "] server=[" + server + "]");
         }
 
         // Check if BTM configuration provided locally
         if (System.getProperty(ConfigurationLoader.HAWKULAR_BTM_CONFIG) != null) {
-            return ConfigurationLoader.getConfiguration();
+            CollectorConfiguration ret = ConfigurationLoader.getConfiguration(type);
+            if (log.isLoggable(Level.FINEST)) {
+                try {
+                    log.finest("Collector configuration [local] = " + (ret == null ? null :
+                                    mapper.writeValueAsString(ret)));
+                } catch (Throwable t) {
+                    log.finest("Collector configuration [local]: failed to serialize as json: "+t);
+                }
+            }
+            return ret;
         }
 
         if (!isEnabled()) {
@@ -172,6 +181,16 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             }
             builder.append("server=");
             builder.append(server);
+        }
+
+        if (type != null) {
+            if (host == null && server == null) {
+                builder.append('?');
+            } else {
+                builder.append('&');
+            }
+            builder.append("type=");
+            builder.append(type);
         }
 
         try {
@@ -208,7 +227,12 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
             if (connection.getResponseCode() == 200) {
                 try {
-                    return mapper.readValue(resp.toString(), CollectorConfiguration.class);
+                    CollectorConfiguration ret = mapper.readValue(resp.toString(), CollectorConfiguration.class);
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Collector configuration [remote] = " + (ret == null ? null :
+                                        mapper.writeValueAsString(ret)));
+                    }
+                    return ret;
                 } catch (Throwable t) {
                     log.log(Level.SEVERE, "Failed to deserialize", t);
                 }

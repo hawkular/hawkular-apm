@@ -39,7 +39,7 @@ public class ConfigurationLoaderTest {
     public void testLoadConfigFromClasspath() {
         System.setProperty("hawkular-btm.config", "cpconfig");
 
-        CollectorConfiguration cc = ConfigurationLoader.getConfiguration();
+        CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 
         assertNotNull(cc);
         assertNotNull(cc.getBusinessTransactions());
@@ -52,7 +52,7 @@ public class ConfigurationLoaderTest {
     public void testLoadConfigFromRelativePath() {
         System.setProperty("hawkular-btm.config", "src/relconfig");
 
-        CollectorConfiguration cc = ConfigurationLoader.getConfiguration();
+        CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 
         assertNotNull(cc);
 
@@ -69,7 +69,7 @@ public class ConfigurationLoaderTest {
                 java.io.File.separator+"src"+java.io.File.separator+"absconfig";
         System.setProperty("hawkular-btm.config", path);
 
-        CollectorConfiguration cc = ConfigurationLoader.getConfiguration();
+        CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 
         assertNotNull(cc);
 
