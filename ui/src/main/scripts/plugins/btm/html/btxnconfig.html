@@ -159,26 +159,24 @@
                     <option value="Literal">Literal</option>
                     <option value="XML">XML</option>
                     <option value="JSON">JSON</option>
-                    <option value="Text">Text</option>
-                    <option value="FreeForm">Free Form</option>
                   </select>
                 </div>
               </div>
 
-              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON'">
                 <label class="col-sm-3" for="predicateSource" >Source: </label>
                 <div class="col-sm-6">
-                  <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'" class="form-control">
+                  <select name="predicateSource" ng-model="processor.predicate.source" ng-change="setDirty()" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON'" class="form-control">
                     <option value="Content">Content</option>
                     <option value="Header">Header</option>
                   </select>
                 </div>
               </div>
 
-              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'">
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON'">
                 <label class="col-sm-3" for="predicateKey">Key: </label>
                 <div class="col-sm-6">
-                  <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON' || processor.predicate.type === 'Text'"/>
+                  <input type="text" name="predicateKey" ng-model="processor.predicate.key" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'XML' || processor.predicate.type === 'JSON'"/>
                 </div>
               </div>
 
@@ -196,10 +194,10 @@
                 </div>
               </div>
 
-              <div class="form-group clearfix" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'">
+              <div class="form-group clearfix" ng-show="processor.predicate.type === 'Literal'">
                 <label class="col-sm-3" for="predicateValue" >Value:</label>
                 <div class="col-sm-6">
-                  <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'FreeForm' || action.expression.type === 'Literal'"/>
+                  <input type="text" name="predicateValue" ng-model="processor.predicate.value" ng-change="setDirty()" class="form-control" ng-show="processor.predicate.type === 'Literal'"/>
                 </div>
               </div>
             </form>
@@ -239,26 +237,24 @@
                         <option value="Literal">Literal</option>
                         <option value="XML">XML</option>
                         <option value="JSON">JSON</option>
-                        <option value="Text">Text</option>
-                        <option value="FreeForm">Free Form</option>
                       </select>
                     </div>
                   </div>
 
-                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON'">
                     <label for="actionPredicateSource" class="col-sm-3" >Predicate Source: </label>
                     <div class="col-sm-6">
-                      <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' ||action.predicate.type === 'JSON' || action.predicate.type === 'Text'" class="form-control">
+                      <select name="actionPredicateSource" ng-model="action.predicate.source" ng-change="setDirty()" ng-show="action.predicate.type === 'XML' ||action.predicate.type === 'JSON'" class="form-control">
                         <option value="Content">Content</option>
                         <option value="Header">Header</option>
                       </select>
                     </div>
                   </div>
 
-                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'">
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON'">
                     <label for="actionPredicateKey" class="col-sm-3" >Predicate Key: </label>
                     <div class="col-sm-6">
-                      <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()"  ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON' || action.predicate.type === 'Text'" class="form-control"/>
+                      <input type="text" name="actionPredicateKey" ng-model="action.predicate.key" ng-change="setDirty()"  ng-show="action.predicate.type === 'XML' || action.predicate.type === 'JSON'" class="form-control"/>
                     </div>
                   </div>
 
@@ -276,10 +272,10 @@
                     </div>
                   </div>
 
-                  <div class="form-group clearfix" ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'">
+                  <div class="form-group clearfix" ng-show="action.predicate.type === 'Literal'">
                     <label for="actionPredicate" class="col-sm-3" >Predicate Value:</label>
                     <div class="col-sm-6">
-                      <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()"  ng-show="action.predicate.type === 'FreeForm' || action.predicate.type === 'Literal'" class="form-control"/>
+                      <input type="text" name="actionPredicate" ng-model="action.predicate.value" ng-change="setDirty()"  ng-show="action.predicate.type === 'Literal'" class="form-control"/>
                     </div>
                   </div>
 
@@ -328,7 +324,6 @@
                         <option value="XML">XML</option>
                         <option value="JSON">JSON</option>
                         <option value="Text">Text</option>
-                        <option value="FreeForm">Free Form</option>
                       </select>
                     </div>
                   </div>
@@ -365,10 +360,10 @@
                     </div>
                   </div>
 
-                  <div class="form-group clearfix" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'">
+                  <div class="form-group clearfix" ng-show="action.expression.type === 'Literal'">
                     <label for="actionValue" class="col-sm-3" >Value:</label>
                     <div class="col-sm-6">
-                      <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" ng-show="action.expression.type === 'FreeForm' || action.expression.type === 'Literal'" class="form-control"/>
+                      <input type="text" name="actionValue" ng-model="action.expression.value" ng-change="setDirty()" ng-show="action.expression.type === 'Literal'" class="form-control"/>
                     </div>
                   </div>
 
