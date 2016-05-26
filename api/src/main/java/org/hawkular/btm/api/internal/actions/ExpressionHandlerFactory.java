@@ -23,7 +23,6 @@ import java.util.Map;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.btxn.Expression;
-import org.hawkular.btm.api.model.config.btxn.FreeFormExpression;
 import org.hawkular.btm.api.model.config.btxn.JSONExpression;
 import org.hawkular.btm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.btm.api.model.config.btxn.TextExpression;
@@ -47,7 +46,6 @@ public class ExpressionHandlerFactory {
         handlers.put(XMLExpression.class, XMLExpressionHandler.class);
         handlers.put(TextExpression.class, TextExpressionHandler.class);
         handlers.put(LiteralExpression.class, LiteralExpressionHandler.class);
-        handlers.put(FreeFormExpression.class, FreeFormExpressionHandler.class);
     }
 
     /**
