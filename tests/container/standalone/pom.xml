@@ -187,7 +187,7 @@
                     <pathelement path="${runtime_classpath}" />
                   </classpath>
                   <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar" />
-                  <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}/hawkular-btm-config.json" />
+                  <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}" />
                   <jvmarg value="-Dhawkular-btm.uri=${hawkular-btm.uri}" />
                   <jvmarg value="-Dhawkular-btm.testapp.host=${hawkular-btm.testapp.host}" />
                   <jvmarg value="-Dhawkular-btm.testapp.port=${hawkular-btm.testapp.port}" />

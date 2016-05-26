@@ -89,17 +89,20 @@ public class ConfigurationHandler {
             @Context SecurityContext context,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
+            value = "optional type") @QueryParam("type") String type,
+            @ApiParam(required = false,
             value = "optional host name") @QueryParam("host") String host,
             @ApiParam(required = false,
             value = "optional server name") @QueryParam("server") String server) {
 
         try {
-            log.tracef("Get collector configuration for host [%s] server [%s]", host, server);
+            log.tracef("Get collector configuration for type [%s] host [%s] server [%s]", type, host, server);
 
             CollectorConfiguration config = configService.getCollector(
-                    securityProvider.getTenantId(context), host, server);
+                    securityProvider.getTenantId(context), type, host, server);
 
-            log.tracef("Got collector configuration for host [%s] server [%s] config=[%s]", host, server, config);
+            log.tracef("Got collector configuration for type [%s] host [%s] server [%s] config=[%s]",
+                            type, host, server, config);
 
             response.resume(Response.status(Response.Status.OK).entity(config).type(APPLICATION_JSON_TYPE)
                     .build());

@@ -1230,7 +1230,7 @@ public class DefaultBusinessTransactionCollectorTest {
         }
 
         @Override
-        public CollectorConfiguration getCollector(String tenantId, String host, String server) {
+        public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
             return config;
         }
 

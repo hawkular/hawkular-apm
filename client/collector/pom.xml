@@ -27,9 +27,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-btxn-collector</artifactId>
+  <artifactId>hawkular-btm-collector</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular BTM::Client::BTxn Collector</name>
+  <name>Hawkular BTM::Client::Collector</name>
 
   <dependencies>
 

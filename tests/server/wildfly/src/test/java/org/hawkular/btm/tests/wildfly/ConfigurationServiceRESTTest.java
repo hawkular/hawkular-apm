@@ -71,7 +71,7 @@ public class ConfigurationServiceRESTTest {
     @Test
     public void testGetCollectorConfiguration() {
         try {
-            CollectorConfiguration cc = service.getCollector(null, null, null);
+            CollectorConfiguration cc = service.getCollector(null, null, null, null);
 
             assertNotNull(cc);
 
@@ -195,7 +195,7 @@ public class ConfigurationServiceRESTTest {
         }
 
         // Get the collector configuration
-        CollectorConfiguration cc = service.getCollector(null, null, null);
+        CollectorConfiguration cc = service.getCollector(null, null, null, null);
 
         assertNotNull(cc);
         assertNotNull(cc.getBusinessTransactions().get(BTXNCONFIG1));

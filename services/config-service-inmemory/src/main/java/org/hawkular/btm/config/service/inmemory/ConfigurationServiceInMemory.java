@@ -39,11 +39,11 @@ public class ConfigurationServiceInMemory extends AbstractConfigurationService {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AdminService#getCollector(java.lang.String,
-     *                          java.lang.String, java.lang.String)
+     *                          java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public CollectorConfiguration getCollector(String tenantId, String host, String server) {
-        return ConfigurationLoader.getConfiguration();
+    public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
+        return ConfigurationLoader.getConfiguration(type);
     }
 
     /* (non-Javadoc)

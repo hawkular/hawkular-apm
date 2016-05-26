@@ -61,8 +61,8 @@
     <module>client/agent-rest</module>
     <module>client/analytics-service-rest-client</module>
     <module>client/api</module>
-    <module>client/btxn-collector</module>
-    <module>client/btxn-instrumentation</module>
+    <module>client/collector</module>
+    <module>client/instrumentation-jvm</module>
     <module>client/btxn-publisher-rest-client</module>
     <module>client/btxn-service-rest-client</module>
     <module>client/config-service-rest-client</module>
@@ -155,12 +155,12 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-collector</artifactId>
+        <artifactId>hawkular-btm-collector</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+        <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

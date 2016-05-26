@@ -53,7 +53,7 @@
     <server.config>standalone.xml</server.config>
 
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.build.directory}/btmconfig</hawkular-btm.instrumentation>
+    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
   </properties>
 
   <dependencies>
@@ -90,7 +90,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+      <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -204,10 +204,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-btxn-instrumentation</artifactId>
+                  <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}</outputDirectory>
+              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -263,7 +263,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
+              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/test/resources/instrumentation</directory>
@@ -333,7 +333,7 @@
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm-for-dev.json</javaOpt>
                 <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar</javaOpt>
-                <javaOpt>-Dhawkular-btm.config=${hawkular-btm.instrumentation}</javaOpt>
+                <javaOpt>-Dhawkular-btm.config=${hawkular-btm.instrumentation}/btmconfig</javaOpt>
                 <javaOpt>-Dhawkular-btm.uri=${hawkular-btm.uri}</javaOpt>
                 <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>
                 <javaOpt>-Dhawkular-btm.password=password</javaOpt>

@@ -228,7 +228,7 @@ public class TestBTMServer {
                         log.info("Config request received: " + exchange);
 
                         if (exchange.getRequestMethod() == Methods.GET) {
-                            CollectorConfiguration config=ConfigurationLoader.getConfiguration();
+                            CollectorConfiguration config=ConfigurationLoader.getConfiguration(null);
 
                             if (testConfig != null) {
                                 config.merge(testConfig, true);
