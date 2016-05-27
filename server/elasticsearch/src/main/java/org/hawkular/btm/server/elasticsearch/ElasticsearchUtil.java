@@ -21,7 +21,7 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.api.services.Criteria.FaultCriteria;
 import org.hawkular.btm.api.services.Criteria.PropertyCriteria;
@@ -111,15 +111,14 @@ public class ElasticsearchUtil {
     }
 
     /**
-     * This method returns a filter associated with the supplied business transaction
-     * criteria.
+     * This method returns a filter associated with the supplied criteria.
      *
-     * @param criteria The business transaction criteria
+     * @param criteria The criteria
      * @return The filter, or null if not relevant
      */
     public static FilterBuilder buildFilter(Criteria criteria) {
         if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().length() == 0) {
-            return FilterBuilders.missingFilter("name");
+            return FilterBuilders.missingFilter("businessTransaction");
         }
         return null;
     }

@@ -177,7 +177,7 @@
         "location": "ENTRY",
         "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null,$2.getProperty(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "$2.getProperty(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",

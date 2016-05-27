@@ -18,7 +18,7 @@ package org.hawkular.btm.api.model.config.instrumentation;
 
 /**
  * This type represents the session action for suppressing any
- * further child nodes associated with the current business transaction
+ * further child nodes associated with the current trace
  * fragment node for this thread.
  *
  * @author gbrown

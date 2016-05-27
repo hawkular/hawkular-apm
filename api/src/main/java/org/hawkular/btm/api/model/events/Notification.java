@@ -19,7 +19,7 @@ package org.hawkular.btm.api.model.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.Issue;
+import org.hawkular.btm.api.model.trace.Issue;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

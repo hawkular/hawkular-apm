@@ -18,10 +18,10 @@ package org.hawkular.btm.api.internal.actions;
 
 import java.util.Map;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 
 /**
  * This handler is associated with the SetFaultDescription action.
@@ -41,14 +41,14 @@ public class SetFaultDescriptionActionHandler extends ExpressionBasedActionHandl
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.collector.internal.actions.ProcessorActionHandler#process(
-     *      org.hawkular.btm.api.model.btxn.BusinessTransaction, org.hawkular.btm.api.model.btxn.Node,
+     *      org.hawkular.btm.api.model.trace.Trace, org.hawkular.btm.api.model.trace.Node,
      *      org.hawkular.btm.api.model.config.Direction, java.util.Map, java.lang.Object[])
      */
     @Override
-    public boolean process(BusinessTransaction btxn, Node node, Direction direction, Map<String, ?> headers,
+    public boolean process(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {
-        if (super.process(btxn, node, direction, headers, values)) {
-            String value = getValue(btxn, node, direction, headers, values);
+        if (super.process(trace, node, direction, headers, values)) {
+            String value = getValue(trace, node, direction, headers, values);
             if (value != null) {
                 node.setFaultDescription(value);
                 return true;

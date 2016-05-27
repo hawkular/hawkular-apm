@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * This is the top level configuration object used to define how information should
- * be collected from a business transaction execution environment.
+ * be collected from a trace execution environment.
  *
  * @author gbrown
  */

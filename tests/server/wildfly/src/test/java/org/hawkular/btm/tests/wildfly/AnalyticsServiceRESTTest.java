@@ -39,12 +39,12 @@ import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.Criteria;
-import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.hawkular.btm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -92,7 +92,7 @@ public class AnalyticsServiceRESTTest {
 
     private static AnalyticsServiceRESTClient analytics;
 
-    private static BusinessTransactionServiceRESTClient service;
+    private static TraceServiceRESTClient service;
 
     @BeforeClass
     public static void initClass() {
@@ -100,7 +100,7 @@ public class AnalyticsServiceRESTTest {
         analytics.setUsername(TEST_USERNAME);
         analytics.setPassword(TEST_PASSWORD);
 
-        service = new BusinessTransactionServiceRESTClient();
+        service = new TraceServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
     }
@@ -113,18 +113,18 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetUnboundEndpoints() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -138,14 +138,14 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        // Retrieve stored business transaction
+        // Retrieve stored trace
         List<EndpointInfo> endpoints = analytics.getUnboundEndpoints(null, 0, 0, true);
 
         assertNotNull(endpoints);
@@ -155,19 +155,19 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetBoundEndpoints() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -181,15 +181,15 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
-        // Retrieve stored business transaction Endpoints
-        List<EndpointInfo> endpoints = analytics.getBoundEndpoints(null, "btxn1", 0, 0);
+        // Retrieve stored trace Endpoints
+        List<EndpointInfo> endpoints = analytics.getBoundEndpoints(null, "trace1", 0, 0);
 
         assertNotNull(endpoints);
         assertEquals(1, endpoints.size());
@@ -198,17 +198,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetPropertyInfo() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("prop1", "value1");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("prop1", "value1");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -222,15 +222,15 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("btxn1")
+            .setBusinessTransaction("trace1")
             .setStartTime(0)
             .setEndTime(0);
 
@@ -243,17 +243,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetPrincipalInfo() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setPrincipal("p1");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setPrincipal("p1");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -267,15 +267,15 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("btxn1")
+            .setBusinessTransaction("trace1")
             .setStartTime(0)
             .setEndTime(0);
 
@@ -289,19 +289,19 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionCount() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -315,8 +315,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -334,20 +334,20 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionFaultCount() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setFault("Failed");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -361,8 +361,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -380,20 +380,20 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionTimeseriesStatistics() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -407,8 +407,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -426,20 +426,20 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionTimeseriesStatisticsPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -453,8 +453,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -516,22 +516,22 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionPropertyDetails() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("prop1", "value1");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("prop1", "value1");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -545,8 +545,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -563,22 +563,22 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionPropertyDetailsPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("prop1", "value1");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("prop1", "value1");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -592,8 +592,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -654,22 +654,22 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionFaultDetails() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setFault("fault1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -683,8 +683,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -701,22 +701,22 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionFaultDetailsPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setFault("fault1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -730,8 +730,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -792,16 +792,16 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatistics() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -810,11 +810,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -828,8 +828,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -847,16 +847,16 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatisticsPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -865,11 +865,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -883,8 +883,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -946,17 +946,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatisticsHostName() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setHostName("hostA");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -965,11 +965,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -983,8 +983,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1011,17 +1011,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeTimeseriesStatisticsPOSTHostName() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setHostName("hostA");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -1030,11 +1030,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1048,8 +1048,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1162,16 +1162,16 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatistics() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -1180,11 +1180,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1198,8 +1198,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1216,16 +1216,16 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatisticsPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -1234,11 +1234,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1252,8 +1252,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1315,17 +1315,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatisticsHostName() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setHostName("hostA");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -1334,11 +1334,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1352,8 +1352,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1378,17 +1378,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetNodeSummaryStatisticsPOSTHostName() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setHostName("hostA");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setComponentType("Database");
@@ -1397,11 +1397,11 @@ public class AnalyticsServiceRESTTest {
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1415,8 +1415,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1532,10 +1532,10 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsFlat() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
@@ -1549,26 +1549,26 @@ public class AnalyticsServiceRESTTest {
         p1.addInteractionId("interaction1");
         c1.getNodes().add(p1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("2");
-        btxn2.setName("testapp");
-        btxn2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction("testapp");
+        trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
         c2.setDuration(500000);
         c2.addInteractionId("interaction1");
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
-        btxns.add(btxn2);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+        traces.add(trace2);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1582,8 +1582,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -1629,10 +1629,10 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsTree() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
@@ -1646,26 +1646,26 @@ public class AnalyticsServiceRESTTest {
         p1.addInteractionId("interaction1");
         c1.getNodes().add(p1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("2");
-        btxn2.setName("testapp");
-        btxn2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction("testapp");
+        trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
         c2.setDuration(500000);
         c2.addInteractionId("interaction1");
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
-        btxns.add(btxn2);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+        traces.add(trace2);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1679,8 +1679,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -1722,10 +1722,10 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
@@ -1739,26 +1739,26 @@ public class AnalyticsServiceRESTTest {
         p1.addInteractionId("interaction1");
         c1.getNodes().add(p1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("2");
-        btxn2.setName("testapp");
-        btxn2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction("testapp");
+        trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
         c2.setDuration(500000);
         c2.addInteractionId("interaction1");
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
-        btxns.add(btxn2);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+        traces.add(trace2);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1772,8 +1772,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -1863,17 +1863,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetHostNames() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setHostName("hostA");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setHostName("hostA");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1887,8 +1887,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1906,17 +1906,17 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetHostNamesPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.setHostName("hostA");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.setHostName("hostA");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -1930,8 +1930,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -2005,10 +2005,10 @@ public class AnalyticsServiceRESTTest {
 
         long baseTime=System.currentTimeMillis() - 4000;
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setName("testapp");
-        btxn1.setStartTime(baseTime); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(baseTime); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri2");
@@ -2022,12 +2022,12 @@ public class AnalyticsServiceRESTTest {
         p1.addInteractionId("interaction2");
         c1.getNodes().add(p1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("2");
-        btxn2.setName("testapp");
-        btxn2.setStartTime(baseTime + 1000); // Within last hour
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction("testapp");
+        trace2.setStartTime(baseTime + 1000); // Within last hour
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
@@ -2040,14 +2040,14 @@ public class AnalyticsServiceRESTTest {
         comp2.setBaseTime(1);
         c2.getNodes().add(comp2);
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
-        btxns.add(btxn2);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+        traces.add(trace2);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -2061,11 +2061,11 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to wait");
         }
 
-        assertEquals(1000, btxn1.calculateDuration());
-        assertEquals(1500, btxn2.calculateDuration());
+        assertEquals(1000, trace1.calculateDuration());
+        assertEquals(1500, trace2.calculateDuration());
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(2, result.size());
 

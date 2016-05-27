@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
+      <artifactId>hawkular-btm-trace-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -158,7 +158,7 @@
               <target>
                 <property name="runtime_classpath" refid="maven.runtime.classpath" />
                 <echo message="runtime classpath: ${runtime_classpath}" />
-                <java classname="org.hawkular.btm.tests.server.TestBTMServer" fork="true" spawn="true">
+                <java classname="org.hawkular.btm.tests.server.TestTraceServer" fork="true" spawn="true">
                   <classpath>
                     <pathelement path="${project.build.outputDirectory}" />
                     <pathelement path="${runtime_classpath}" />
@@ -166,7 +166,7 @@
                   <jvmarg value="-Dhawkular-btm.test.server.host=${hawkular.host}" />
                   <jvmarg value="-Dhawkular-btm.test.server.port=${hawkular.port}" />
                   <jvmarg value="-Dhawkular-btm.test.server.shutdown=30000" />
-                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-btxn-service-logging.properties" />
+                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-trace-service-logging.properties" />
                 </java>
               </target>
             </configuration>

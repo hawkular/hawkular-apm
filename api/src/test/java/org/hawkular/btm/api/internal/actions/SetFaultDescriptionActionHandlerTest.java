@@ -19,10 +19,10 @@ package org.hawkular.btm.api.internal.actions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.btm.api.model.config.btxn.SetFaultDescriptionAction;
+import org.hawkular.btm.api.model.trace.Consumer;
 import org.junit.Test;
 
 /**

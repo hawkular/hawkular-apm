@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * This class represents information related to a principal associated with
- * business transaction fragments.
+ * trace fragments.
  *
  * @author gbrown
  */

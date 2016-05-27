@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
 import org.junit.Test;
 
 /**

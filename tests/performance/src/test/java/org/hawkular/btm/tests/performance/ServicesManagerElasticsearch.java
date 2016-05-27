@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.tests.performance;
 
-import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.elasticsearch.AnalyticsServiceElasticsearch;
 import org.hawkular.btm.server.elasticsearch.BusinessTransactionServiceElasticsearch;
 import org.hawkular.btm.server.elasticsearch.ConfigurationServiceElasticsearch;
@@ -78,7 +76,7 @@ public class ServicesManagerElasticsearch implements ServicesManager {
      * @see org.hawkular.btm.tests.performance.ServicesManager#getBusinessTransactionService()
      */
     @Override
-    public BusinessTransactionService getBusinessTransactionService() {
+    public BusinessTransactionService getTraceService() {
         return businessTransactionService;
     }
 

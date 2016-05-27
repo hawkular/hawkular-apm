@@ -19,7 +19,7 @@ package org.hawkular.btm.api.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.trace.Consumer;
 import org.junit.Test;
 
 /**

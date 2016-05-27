@@ -18,14 +18,14 @@ package org.hawkular.btm.api.internal.actions;
 
 import java.util.Map;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.DataExpression;
 import org.hawkular.btm.api.model.config.btxn.DataSource;
 import org.hawkular.btm.api.model.config.btxn.Expression;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 
 /**
  * This class provides the JSON expression handler implementation.
@@ -80,14 +80,14 @@ public abstract class DataExpressionHandler extends ExpressionHandler {
      * This method returns the data value associated with the requested data
      * source and key..
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The node
      * @param direction The direction
      * @param headers The optional headers
      * @param values The values
      * @return The required data value
      */
-    protected Object getDataValue(BusinessTransaction btxn, Node node, Direction direction, Map<String, ?> headers,
+    protected Object getDataValue(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {
         if (source == DataSource.Content) {
             return values[index];

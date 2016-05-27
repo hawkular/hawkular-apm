@@ -4,7 +4,7 @@
         "index.number_of_replicas": 1
     },
     "mappings": {
-        "businesstransaction": {
+        "trace": {
             "dynamic_templates": [{
                 "notanalyzed": {
                       "match": "*",
@@ -23,7 +23,7 @@
                 "format": "yyyy/MM/dd HH:mm:ss"
             },
             "properties": {
-                "name": {
+                "businessTransaction": {
                     "type": "string",
                     "index": "not_analyzed"
                 },

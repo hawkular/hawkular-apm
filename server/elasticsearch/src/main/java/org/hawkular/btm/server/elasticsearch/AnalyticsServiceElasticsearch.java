@@ -65,10 +65,10 @@ import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PrincipalInfo;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.api.utils.EndpointUtil;
@@ -128,8 +128,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *                  org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    protected List<BusinessTransaction> getFragments(String tenantId, Criteria criteria) {
-        return BusinessTransactionServiceElasticsearch.internalQuery(client,
+    protected List<Trace> getFragments(String tenantId, Criteria criteria) {
+        return TraceServiceElasticsearch.internalQuery(client,
                 tenantId, criteria);
     }
 
@@ -148,7 +148,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "name");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
 
             TermsBuilder cardinalityBuilder = AggregationBuilders
                     .terms("cardinality")
@@ -157,7 +157,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .size(criteria.getMaxResponseSize());
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BusinessTransactionServiceElasticsearch.BUSINESS_TRANSACTION_TYPE)
+                    .setTypes(TraceServiceElasticsearch.TRACE_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -178,7 +178,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 ret.add(pi);
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get principal details");
@@ -229,7 +229,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 return response.getHits().getTotalHits();
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get completion count");
@@ -276,7 +276,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 return response.getHits().getTotalHits();
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get completion faultcount");
@@ -331,7 +331,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 percentiles.addPercentile((int) entry.getPercent(), (long)entry.getValue());
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get completion percentiles");
@@ -408,7 +408,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 stats.add(s);
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get completion timeseries stats");
@@ -467,7 +467,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 ret.add(card);
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get completion fault details");
@@ -534,7 +534,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 ret.add(card);
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get completion property details");
@@ -631,7 +631,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 numOfNodes += bucket.getDocCount();
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get node timeseries stats");
@@ -809,7 +809,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 }
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get node summary stats");
@@ -1015,7 +1015,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             }
 
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get communication summary stats");
@@ -1195,10 +1195,10 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getElasticsearchClient().admin().indices().prepareRefresh(index);
             client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "name");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BusinessTransactionServiceElasticsearch.BUSINESS_TRANSACTION_TYPE)
+                    .setTypes(TraceServiceElasticsearch.TRACE_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
@@ -1209,12 +1209,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 msgLog.warnQueryTimedOut();
             }
 
-            List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+            List<Trace> btxns = new ArrayList<Trace>();
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
                     btxns.add(mapper.readValue(searchHitFields.getSourceAsString(),
-                            BusinessTransaction.class));
+                            Trace.class));
                 } catch (Exception e) {
                     msgLog.errorFailedToParse(e);
                 }
@@ -1222,15 +1222,15 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
             // Process the fragments to identify host names
             for (int i = 0; i < btxns.size(); i++) {
-                BusinessTransaction btxn = btxns.get(i);
+                Trace trace = btxns.get(i);
 
-                if (btxn.getHostName() != null && btxn.getHostName().trim().length() != 0
-                        && !ret.contains(btxn.getHostName())) {
-                    ret.add(btxn.getHostName());
+                if (trace.getHostName() != null && trace.getHostName().trim().length() != 0
+                        && !ret.contains(trace.getHostName())) {
+                    ret.add(trace.getHostName());
                 }
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transactions have
+            // Ignore, as means that no traces have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
                 msgLog.tracef("No index found, so unable to get host names");

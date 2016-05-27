@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.tests.performance;
 
-import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BusinessTransactionService;
 
 /**
  * @author gbrown
@@ -30,7 +28,7 @@ public interface ServicesManager {
 
     AnalyticsService getAnalyticsService();
 
-    BusinessTransactionService getBusinessTransactionService();
+    TraceService getTraceService();
 
     void clear() throws Exception;
 

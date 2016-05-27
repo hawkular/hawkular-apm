@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,29 +64,29 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
 
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
+        // Check stored traces (including 1 for the test client)
+        assertEquals(1, getTestTraceServer().getTraces().size());
 
-        BusinessTransaction btxn = getTestBTMServer().getBusinessTransactions().get(0);
+        Trace trace = getTestTraceServer().getTraces().get(0);
 
         List<Consumer> consumers = new ArrayList<Consumer>();
-        findNodes(btxn.getNodes(), Consumer.class, consumers);
+        findNodes(trace.getNodes(), Consumer.class, consumers);
 
         assertTrue("Should be no consumers", consumers.isEmpty());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(btxn.getNodes(), Producer.class, producers);
+        findNodes(trace.getNodes(), Producer.class, producers);
 
         assertTrue("Should be no producers", producers.isEmpty());
     }

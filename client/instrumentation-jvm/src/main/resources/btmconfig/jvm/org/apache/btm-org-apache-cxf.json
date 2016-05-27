@@ -24,7 +24,7 @@
         }],
         "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "req.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",

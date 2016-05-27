@@ -22,7 +22,7 @@ import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.server.api.services.FragmentCompletionTimePublisher;
 
 /**
- * This class represents the business transaction fragment completion time JMS publisher.
+ * This class represents the trace fragment completion time JMS publisher.
  *
  * @author gbrown
  */

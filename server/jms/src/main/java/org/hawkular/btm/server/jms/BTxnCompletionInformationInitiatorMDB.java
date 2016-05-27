@@ -26,7 +26,7 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionInformation;
 import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionInformationInitiator;
 import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionInformationPublisher;
@@ -36,12 +36,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_BTxnCompletionInformationInitiator",
+@MessageDriven(name = "Trace_BTxnCompletionInformationInitiator",
         messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
                 @ActivationConfigProperty(propertyName = "clientID",
                             propertyValue = "BTxnCompletionInformationInitiator"),
@@ -51,10 +51,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
 public class BTxnCompletionInformationInitiatorMDB
-                extends ProcessorMDB<BusinessTransaction, BTxnCompletionInformation> {
+                extends ProcessorMDB<Trace, BTxnCompletionInformation> {
 
     @Inject
-    private BusinessTransactionPublisherJMS businessTransactionPublisher;
+    private TracePublisherJMS tracePublisher;
 
     @Inject
     private BTxnCompletionInformationPublisher btxnCompletionInformationPublisher;
@@ -62,9 +62,9 @@ public class BTxnCompletionInformationInitiatorMDB
     @PostConstruct
     public void init() {
         setProcessor(new BTxnCompletionInformationInitiator());
-        setRetryPublisher(businessTransactionPublisher);
+        setRetryPublisher(tracePublisher);
         setPublisher(btxnCompletionInformationPublisher);
-        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        setTypeReference(new TypeReference<java.util.List<Trace>>() {
         });
     }
 

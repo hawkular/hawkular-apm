@@ -34,12 +34,12 @@ import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.internal.CommunicationSeverityAnalyser;
 import org.hawkular.btm.api.services.internal.CommunicationSummaryTreeBuilder;
 import org.hawkular.btm.api.utils.EndpointUtil;
@@ -77,13 +77,13 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     }
 
     /**
-     * This method returns the list of business transactions for the supplied criteria.
+     * This method returns the list of traces for the supplied criteria.
      *
      * @param tenantId The tenant
      * @param criteria The criteria
      * @return The list of fragments
      */
-    protected abstract List<BusinessTransaction> getFragments(String tenantId, Criteria criteria);
+    protected abstract List<Trace> getFragments(String tenantId, Criteria criteria);
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.services.AnalyticsService#getUnboundEndpoints(java.lang.String,
@@ -94,7 +94,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime).setEndTime(endTime);
 
-        List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
+        List<Trace> fragments = getFragments(tenantId, criteria);
 
         return (doGetUnboundEndpoints(tenantId, fragments, compress));
     }
@@ -113,11 +113,11 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         .setStartTime(startTime)
         .setEndTime(endTime);
 
-        List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
+        List<Trace> fragments = getFragments(tenantId, criteria);
 
         for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
-            obtainEndpoints(btxn.getNodes(), ret);
+            Trace trace = fragments.get(i);
+            obtainEndpoints(trace.getNodes(), ret);
         }
 
         return ret;
@@ -132,13 +132,13 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
         List<String> propertyNames = new ArrayList<String>();
 
-        List<BusinessTransaction> fragments = getFragments(tenantId, criteria);
+        List<Trace> fragments = getFragments(tenantId, criteria);
 
-        // Process the fragments to identify which URIs are no used in any business transaction
+        // Process the fragments to identify which URIs are no used in any trace
         for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
+            Trace trace = fragments.get(i);
 
-            for (String property : btxn.getProperties().keySet()) {
+            for (String property : trace.getProperties().keySet()) {
                 if (!propertyNames.contains(property)) {
                     propertyNames.add(property);
                     PropertyInfo pi = new PropertyInfo();
@@ -392,19 +392,19 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * @return The list of unbound endpoints
      */
     protected List<EndpointInfo> doGetUnboundEndpoints(String tenantId,
-            List<BusinessTransaction> fragments, boolean compress) {
+            List<Trace> fragments, boolean compress) {
         List<EndpointInfo> ret = new ArrayList<EndpointInfo>();
         Map<String, EndpointInfo> map = new HashMap<String, EndpointInfo>();
 
-        // Process the fragments to identify which endpoints are not used in any business transaction
+        // Process the fragments to identify which endpoints are not used in any trace
         for (int i = 0; i < fragments.size(); i++) {
-            BusinessTransaction btxn = fragments.get(i);
+            Trace trace = fragments.get(i);
 
-            if (btxn.initialFragment() && !btxn.getNodes().isEmpty() && btxn.getName() == null) {
+            if (trace.initialFragment() && !trace.getNodes().isEmpty() && trace.getBusinessTransaction() == null) {
 
                 // Check if top level node is Consumer
-                if (btxn.getNodes().get(0) instanceof Consumer) {
-                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
+                if (trace.getNodes().get(0) instanceof Consumer) {
+                    Consumer consumer = (Consumer) trace.getNodes().get(0);
                     String endpoint = EndpointUtil.encodeEndpoint(consumer.getUri(),
                                         consumer.getOperation());
 
@@ -419,7 +419,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                         map.put(endpoint, info);
                     }
                 } else {
-                    obtainProducerEndpoints(btxn.getNodes(), ret, map);
+                    obtainProducerEndpoints(trace.getNodes(), ret, map);
                 }
             }
         }

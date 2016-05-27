@@ -19,13 +19,13 @@ package org.hawkular.btm.api.internal.actions;
 import java.util.Map;
 
 import org.hawkular.btm.api.internal.actions.helpers.XML;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.Expression;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
 import org.hawkular.btm.api.model.config.btxn.XMLExpression;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 
 /**
  * This class provides the XML expression handler implementation.
@@ -55,28 +55,28 @@ public class XMLExpressionHandler extends DataExpressionHandler {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.internal.actions.ExpressionHandler#predicate(
-     *              org.hawkular.btm.api.model.btxn.BusinessTransaction,
-     *              org.hawkular.btm.api.model.btxn.Node, org.hawkular.btm.api.model.config.Direction,
+     *              org.hawkular.btm.api.model.trace.Trace,
+     *              org.hawkular.btm.api.model.trace.Node, org.hawkular.btm.api.model.config.Direction,
      *              java.util.Map, java.lang.Object[])
      */
     @Override
-    public boolean test(BusinessTransaction btxn, Node node, Direction direction, Map<String, ?> headers,
+    public boolean test(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {
         return XML.predicate(((XMLExpression) getExpression()).getXpath(),
-                getDataValue(btxn, node, direction, headers, values));
+                getDataValue(trace, node, direction, headers, values));
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.api.internal.actions.ExpressionHandler#test(
-     *              org.hawkular.btm.api.model.btxn.BusinessTransaction,
-     *              org.hawkular.btm.api.model.btxn.Node, org.hawkular.btm.api.model.config.Direction,
+     *              org.hawkular.btm.api.model.trace.Trace,
+     *              org.hawkular.btm.api.model.trace.Node, org.hawkular.btm.api.model.config.Direction,
      *              java.util.Map, java.lang.Object[])
      */
     @Override
-    public String evaluate(BusinessTransaction btxn, Node node, Direction direction, Map<String, ?> headers,
+    public String evaluate(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {
         return XML.evaluate(((XMLExpression) getExpression()).getXpath(),
-                getDataValue(btxn, node, direction, headers, values));
+                getDataValue(trace, node, direction, headers, values));
     }
 
 }

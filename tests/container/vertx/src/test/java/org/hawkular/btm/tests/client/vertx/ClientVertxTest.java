@@ -23,12 +23,12 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
@@ -126,28 +126,28 @@ public class ClientVertxTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for test client)
-        assertEquals(4, getTestBTMServer().getBusinessTransactions().size());
+        assertEquals(4, getTestTraceServer().getTraces().size());
 
         Consumer consumerREST = null;
         Consumer consumerServiceA = null;
         Consumer consumerServiceB = null;
         Producer producerREST = null;
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            if (!btxn.getNodes().isEmpty()) {
-                if (btxn.getNodes().get(0).getClass() == Producer.class) {
-                    producerREST = (Producer) btxn.getNodes().get(0);
-                } else if (btxn.getNodes().get(0).getClass() == Consumer.class) {
-                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
+            if (!trace.getNodes().isEmpty()) {
+                if (trace.getNodes().get(0).getClass() == Producer.class) {
+                    producerREST = (Producer) trace.getNodes().get(0);
+                } else if (trace.getNodes().get(0).getClass() == Consumer.class) {
+                    Consumer consumer = (Consumer) trace.getNodes().get(0);
                     if (consumer.getUri().equals("serviceA")) {
                         consumerServiceA = consumer;
                     } else if (consumer.getUri().equals("serviceB")) {
@@ -160,7 +160,7 @@ public class ClientVertxTest extends ClientTestBase {
 
             // Check btxn name is set
             assertEquals("Business transaction name should be 'testvertx-end-to-end'",
-                                "testvertx-end-to-end", btxn.getName());
+                                "testvertx-end-to-end", trace.getBusinessTransaction());
         }
 
         assertNotNull("consumerREST null", consumerREST);

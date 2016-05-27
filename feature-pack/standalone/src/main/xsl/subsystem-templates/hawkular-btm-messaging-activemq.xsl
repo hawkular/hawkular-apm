@@ -27,8 +27,8 @@
        way of saying of xPath's 2.0 prefix-less selector //*:config/*:supplement[@name='default']  -->
   <xsl:template match="/*[local-name()='config']/*[local-name()='subsystem']/*[local-name()='server']/*[local-name()='connection-factory' and @name='InVmConnectionFactory']">
     <xsl:element name="jms-topic" namespace="{namespace-uri()}">
-      <xsl:attribute name="name">BusinessTransactions</xsl:attribute>
-      <xsl:attribute name="entries">java:/BusinessTransactions</xsl:attribute>
+      <xsl:attribute name="name">Traces</xsl:attribute>
+      <xsl:attribute name="entries">java:/Traces</xsl:attribute>
     </xsl:element>
     <xsl:element name="jms-topic" namespace="{namespace-uri()}">
       <xsl:attribute name="name">CommunicationDetails</xsl:attribute>

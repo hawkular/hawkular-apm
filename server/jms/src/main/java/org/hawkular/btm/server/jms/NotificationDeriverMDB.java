@@ -26,8 +26,8 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.Notification;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.processor.notification.NotificationDeriver;
 import org.hawkular.btm.server.api.services.NotificationPublisher;
 
@@ -36,21 +36,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_NotificationDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "Trace_NotificationDeriver", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "NotificationDeriver"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NotificationDeriver")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class NotificationDeriverMDB extends ProcessorMDB<BusinessTransaction, Notification> {
+public class NotificationDeriverMDB extends ProcessorMDB<Trace, Notification> {
 
     @Inject
-    private BusinessTransactionPublisherJMS businessTransactionPublisher;
+    private TracePublisherJMS tracePublisher;
 
     @Inject
     private NotificationPublisher notificationPublisher;
@@ -58,9 +58,9 @@ public class NotificationDeriverMDB extends ProcessorMDB<BusinessTransaction, No
     @PostConstruct
     public void init() {
         setProcessor(new NotificationDeriver());
-        setRetryPublisher(businessTransactionPublisher);
+        setRetryPublisher(tracePublisher);
         setPublisher(notificationPublisher);
-        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        setTypeReference(new TypeReference<java.util.List<Trace>>() {
         });
     }
 }

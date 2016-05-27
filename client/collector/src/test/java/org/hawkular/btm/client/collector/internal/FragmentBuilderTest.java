@@ -21,9 +21,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Node;
 import org.junit.Test;
 
 /**
@@ -35,11 +35,11 @@ public class FragmentBuilderTest {
     public void testInitialBusinessTxn() {
         FragmentBuilder builder = new FragmentBuilder();
 
-        assertNotNull("Business transaction should not be null", builder.getBusinessTransaction());
+        assertNotNull("Trace should not be null", builder.getTrace());
 
-        assertNotNull("Business transaction id should not be null", builder.getBusinessTransaction().getId());
+        assertNotNull("Trace id should not be null", builder.getTrace().getId());
 
-        assertTrue("Business transaction should have no nodes", builder.getBusinessTransaction().getNodes().isEmpty());
+        assertTrue("Trace should have no nodes", builder.getTrace().getNodes().isEmpty());
     }
 
     @Test
@@ -50,11 +50,11 @@ public class FragmentBuilderTest {
 
         builder.pushNode(consumer);
 
-        assertFalse("Business transaction should not be complete", builder.isComplete());
+        assertFalse("Trace should not be complete", builder.isComplete());
 
-        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
         assertEquals(1, builder.getNodeStack().size());
     }
@@ -69,13 +69,13 @@ public class FragmentBuilderTest {
 
         Node result = builder.popNode(Consumer.class, null);
 
-        assertTrue("Business transaction should be complete", builder.isComplete());
+        assertTrue("Trace should be complete", builder.isComplete());
 
         assertEquals("Popped node not same", consumer, result);
 
-        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
         assertEquals(0, builder.getNodeStack().size());
 
@@ -113,11 +113,11 @@ public class FragmentBuilderTest {
 
         builder.pushNode(service);
 
-        assertFalse("Business transaction should not be complete", builder.isComplete());
+        assertFalse("Trace should not be complete", builder.isComplete());
 
-        assertTrue("BTxn should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Trace should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
         assertTrue("Consumer should have one node", consumer.getNodes().size() == 1);
 
@@ -152,11 +152,11 @@ public class FragmentBuilderTest {
 
         assertEquals("Popped consumer incorrect", poppedConsumer, consumer);
 
-        assertTrue("Business transaction should be complete", builder.isComplete());
+        assertTrue("Trace should be complete", builder.isComplete());
 
-        assertTrue("BTxn should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Trace should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
         assertTrue("Consumer should have two child nodes", consumer.getNodes().size() == 2);
 
@@ -176,11 +176,11 @@ public class FragmentBuilderTest {
 
         builder.popNode(Consumer.class, null);
 
-        assertFalse("Business transaction should NOT be complete", builder.isComplete());
+        assertFalse("Trace should NOT be complete", builder.isComplete());
 
-        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
         Node retained = builder.retrieveNode("testId");
 
@@ -190,7 +190,7 @@ public class FragmentBuilderTest {
 
         builder.releaseNode("testId");
 
-        assertTrue("Business transaction should now be complete after release", builder.isComplete());
+        assertTrue("Trace should now be complete after release", builder.isComplete());
     }
 
     @Test
@@ -214,13 +214,13 @@ public class FragmentBuilderTest {
 
         assertFalse("Should no longer be suppressed", builder.isSuppressed());
 
-        assertTrue("Business transaction should be complete", builder.isComplete());
+        assertTrue("Trace should be complete", builder.isComplete());
 
-        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
-        assertTrue("Should have zero child nodes", ((Consumer) builder.getBusinessTransaction().getNodes().get(0))
+        assertTrue("Should have zero child nodes", ((Consumer) builder.getTrace().getNodes().get(0))
                 .getNodes().size() == 0);
     }
 
@@ -250,13 +250,13 @@ public class FragmentBuilderTest {
 
         assertFalse("Should no longer be suppressed", builder.isSuppressed());
 
-        assertTrue("Business transaction should be complete", builder.isComplete());
+        assertTrue("Trace should be complete", builder.isComplete());
 
-        assertTrue("Should have one node", builder.getBusinessTransaction().getNodes().size() == 1);
+        assertTrue("Should have one node", builder.getTrace().getNodes().size() == 1);
 
-        assertEquals("Node incorrect", builder.getBusinessTransaction().getNodes().get(0), consumer);
+        assertEquals("Node incorrect", builder.getTrace().getNodes().get(0), consumer);
 
-        assertTrue("Should have zero child nodes", ((Consumer) builder.getBusinessTransaction().getNodes().get(0))
+        assertTrue("Should have zero child nodes", ((Consumer) builder.getTrace().getNodes().get(0))
                 .getNodes().size() == 0);
     }
 
@@ -338,13 +338,13 @@ public class FragmentBuilderTest {
 
         assertTrue(builder.isComplete());
 
-        assertNotNull(builder.getBusinessTransaction());
+        assertNotNull(builder.getTrace());
 
-        assertEquals(1, builder.getBusinessTransaction().getNodes().size());
+        assertEquals(1, builder.getTrace().getNodes().size());
 
-        assertEquals(Consumer.class, builder.getBusinessTransaction().getNodes().get(0).getClass());
+        assertEquals(Consumer.class, builder.getTrace().getNodes().get(0).getClass());
 
-        assertEquals(1, ((Consumer) builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
+        assertEquals(1, ((Consumer) builder.getTrace().getNodes().get(0)).getNodes().size());
     }
 
     @Test
@@ -367,13 +367,13 @@ public class FragmentBuilderTest {
 
         assertTrue(builder.isComplete());
 
-        assertNotNull(builder.getBusinessTransaction());
+        assertNotNull(builder.getTrace());
 
-        assertEquals(1, builder.getBusinessTransaction().getNodes().size());
+        assertEquals(1, builder.getTrace().getNodes().size());
 
-        assertEquals(Consumer.class, builder.getBusinessTransaction().getNodes().get(0).getClass());
+        assertEquals(Consumer.class, builder.getTrace().getNodes().get(0).getClass());
 
-        assertEquals(0, ((Consumer) builder.getBusinessTransaction().getNodes().get(0)).getNodes().size());
+        assertEquals(0, ((Consumer) builder.getTrace().getNodes().get(0)).getNodes().size());
     }
 
     @Test

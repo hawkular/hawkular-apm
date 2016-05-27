@@ -16,7 +16,7 @@
  */
 package org.hawkular.btm.api.model.config.btxn;
 
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

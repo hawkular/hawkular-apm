@@ -30,15 +30,15 @@ import org.hawkular.btm.api.internal.actions.ProcessorActionHandlerFactory;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.Severity;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Issue;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.ProcessorIssue;
+import org.hawkular.btm.api.model.trace.Trace;
 
 /**
  * This class manages the processors.
@@ -114,33 +114,33 @@ public class ProcessorManager {
     }
 
     /**
-     * This method determines whether the business transaction, for the supplied node
+     * This method determines whether the trace, for the supplied node
      * and in/out direction, will process available information.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The current node
      * @param direction The direction
      * @return Whether processing instructions have been defined
      */
-    public boolean isProcessed(BusinessTransaction btxn, Node node, Direction direction) {
+    public boolean isProcessed(Trace trace, Node node, Direction direction) {
         boolean ret = false;
 
-        if (btxn.getName() != null) {
+        if (trace.getBusinessTransaction() != null) {
             List<ProcessorWrapper> procs = null;
 
             synchronized (processors) {
-                procs = processors.get(btxn.getName());
+                procs = processors.get(trace.getBusinessTransaction());
             }
 
             if (procs != null) {
                 for (int i = 0; !ret && i < procs.size(); i++) {
-                    ret = procs.get(i).isProcessed(btxn, node, direction);
+                    ret = procs.get(i).isProcessed(trace, node, direction);
                 }
             }
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: isProcessed btxn=" + btxn + " node=" + node
+            log.finest("ProcessManager: isProcessed trace=" + trace + " node=" + node
                     + " direction=" + direction + "? " + ret);
         }
 
@@ -148,34 +148,34 @@ public class ProcessorManager {
     }
 
     /**
-     * This method determines whether the business transaction, for the supplied node
+     * This method determines whether the trace, for the supplied node
      * and in/out direction, will process content information.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The current node
      * @param direction The direction
      * @return Whether content processing instructions have been defined
      */
-    public boolean isContentProcessed(BusinessTransaction btxn, Node node, Direction direction) {
+    public boolean isContentProcessed(Trace trace, Node node, Direction direction) {
         boolean ret = false;
 
-        if (btxn.getName() != null) {
+        if (trace.getBusinessTransaction() != null) {
             List<ProcessorWrapper> procs = null;
 
             synchronized (processors) {
-                procs = processors.get(btxn.getName());
+                procs = processors.get(trace.getBusinessTransaction());
             }
 
             if (procs != null) {
                 for (int i = 0; !ret && i < procs.size(); i++) {
-                    ret = procs.get(i).isProcessed(btxn, node, direction)
+                    ret = procs.get(i).isProcessed(trace, node, direction)
                             && procs.get(i).usesContent();
                 }
             }
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: isContentProcessed btxn=" + btxn + " node=" + node
+            log.finest("ProcessManager: isContentProcessed trace=" + trace + " node=" + node
                     + " direction=" + direction + "? " + ret);
         }
 
@@ -184,37 +184,37 @@ public class ProcessorManager {
 
     /**
      * This method processes the supplied information against the configured processor
-     * details for the business transaction.
+     * details for the trace.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The node being processed
      * @param direction The direction
      * @param headers The headers
      * @param values The values
      */
-    public void process(BusinessTransaction btxn, Node node, Direction direction,
+    public void process(Trace trace, Node node, Direction direction,
             Map<String, ?> headers, Object... values) {
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("ProcessManager: process btxn=" + btxn + " node=" + node
+            log.finest("ProcessManager: process trace=" + trace + " node=" + node
                     + " direction=" + direction + " headers=" + headers + " values=" + values
                     + " : available processors=" + processors);
         }
 
-        if (btxn.getName() != null) {
+        if (trace.getBusinessTransaction() != null) {
             List<ProcessorWrapper> procs = null;
 
             synchronized (processors) {
-                procs = processors.get(btxn.getName());
+                procs = processors.get(trace.getBusinessTransaction());
             }
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager: btxn name=" + btxn.getName() + " processors=" + procs);
+                log.finest("ProcessManager: trace name=" + trace.getBusinessTransaction() + " processors=" + procs);
             }
 
             if (procs != null) {
                 for (int i = 0; i < procs.size(); i++) {
-                    procs.get(i).process(btxn, node, direction, headers, values);
+                    procs.get(i).process(trace, node, direction, headers, values);
                 }
             }
         }
@@ -352,12 +352,12 @@ public class ProcessorManager {
          * This method checks that this processor matches the supplied business txn
          * name and node details.
          *
-         * @param btxn The business transaction
+         * @param trace The trace
          * @param node The node
          * @param direction The direction
          * @return Whether the supplied details would be processed by this processor
          */
-        public boolean isProcessed(BusinessTransaction btxn, Node node, Direction direction) {
+        public boolean isProcessed(Trace trace, Node node, Direction direction) {
             boolean ret = false;
 
             if (processor.getNodeType() == node.getType()
@@ -372,7 +372,7 @@ public class ProcessorManager {
             }
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager/Processor: isProcessed btxn=" + btxn + " node=" + node
+                log.finest("ProcessManager/Processor: isProcessed trace=" + trace + " node=" + node
                         + " direction=" + direction + "? " + ret);
             }
 
@@ -383,17 +383,17 @@ public class ProcessorManager {
          * This method processes the supplied information to extract the relevant
          * details.
          *
-         * @param btxn The business transaction
+         * @param trace The trace
          * @param node The node
          * @param direction The direction
          * @param headers The optional headers
          * @param values The values
          */
-        public void process(BusinessTransaction btxn, Node node, Direction direction,
+        public void process(Trace trace, Node node, Direction direction,
                 Map<String, ?> headers, Object[] values) {
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager/Processor: process btxn=" + btxn + " node=" + node
+                log.finest("ProcessManager/Processor: process trace=" + trace + " node=" + node
                         + " direction=" + direction + " headers=" + headers + " values=" + values);
 
                 if (values != null) {
@@ -440,7 +440,7 @@ public class ProcessorManager {
 
                 if (predicateHandler != null) {
                     try {
-                        if (!predicateHandler.test(btxn, node, direction, headers, values)) {
+                        if (!predicateHandler.test(trace, node, direction, headers, values)) {
                             if (log.isLoggable(Level.FINEST)) {
                                 log.finest("ProcessManager/Processor: process - predicate returned false");
                             }
@@ -458,7 +458,7 @@ public class ProcessorManager {
                 }
 
                 for (int i = 0; i < actions.size(); i++) {
-                    actions.get(i).process(btxn, node, direction, headers, values);
+                    actions.get(i).process(trace, node, direction, headers, values);
                 }
             }
         }
@@ -515,17 +515,17 @@ public class ProcessorManager {
          * This method processes the supplied information to extract the relevant
          * details.
          *
-         * @param btxn The business transaction
+         * @param trace The trace
          * @param node The node
          * @param direction The direction
          * @param headers The optional headers
          * @param values The values
          */
-        public void process(BusinessTransaction btxn, Node node, Direction direction,
+        public void process(Trace trace, Node node, Direction direction,
                 Map<String, ?> headers, Object[] values) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("ProcessManager/Processor/Action[" + handler.getAction()
-                        + "]: process btxn=" + btxn + " node=" + node
+                        + "]: process trace=" + trace + " node=" + node
                         + " direction=" + direction + " headers=" + headers + " values=" + values);
 
                 if (values != null) {
@@ -559,7 +559,7 @@ public class ProcessorManager {
             }
 
             try {
-                handler.process(btxn, node, direction, headers, values);
+                handler.process(trace, node, direction, headers, values);
             } catch (Throwable t) {
                 ProcessorIssue pi = new ProcessorIssue();
                 pi.setProcessor(processorDescription);

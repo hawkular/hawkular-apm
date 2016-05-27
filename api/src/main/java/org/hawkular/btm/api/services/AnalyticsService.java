@@ -85,7 +85,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the number of completed transactions, of the specified named
-     * business transaction, that were executed during the time range. The business
+     * trace, that were executed during the time range. The business
      * transaction name must be specified as part of the criteria.
      *
      * @param tenantId The tenant id
@@ -96,7 +96,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the number of completed transactions, of the specified named
-     * business transaction, that were executed during the time range and returned
+     * trace, that were executed during the time range and returned
      * a fault. The business transaction name must be specified as part of the criteria.
      *
      * @param tenantId The tenant id

@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.Expression;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Issue;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 
 /**
  * This abstract class provides the base implementation for expression handlers.
@@ -104,28 +104,28 @@ public abstract class ExpressionHandler {
      * This method evaluates the supplied information against this
      * expression representing a predicate.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The node
      * @param direction The direction
      * @param headers The optional headers
      * @param values The values
      * @return The predicate result
      */
-    public abstract boolean test(BusinessTransaction btxn, Node node, Direction direction,
+    public abstract boolean test(Trace trace, Node node, Direction direction,
             Map<String, ?> headers, Object[] values);
 
     /**
      * This method evaluates the supplied information against this
      * expression.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The node
      * @param direction The direction
      * @param headers The optional headers
      * @param values The values
      * @return The evaluated result
      */
-    public abstract String evaluate(BusinessTransaction btxn, Node node, Direction direction,
+    public abstract String evaluate(Trace trace, Node node, Direction direction,
             Map<String, ?> headers, Object[] values);
 
 }

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * This type represents the action for setting the principal associated
- * with the business transaction.
+ * with the trace.
  *
  * @author gbrown
  */

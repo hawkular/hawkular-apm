@@ -16,10 +16,10 @@
  */
 package org.hawkular.btm.client.api;
 
-import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.trace.Node;
 
 /**
- * This interface represents the business transaction collector's
+ * This interface represents the trace collector's
  * session manager.
  *
  * @author gbrown
@@ -29,14 +29,14 @@ public interface SessionManager {
     /**
      * This method is a guard condition for Consumer based instrumentation
      * rules, used to determine whether the invoker should be permitted to
-     * create and record a Consumer as part of a business transaction fragment.
+     * create and record a Consumer as part of a trace fragment.
      * If the fragment is not currently active, then the id will be check
      * first, and if defined then the function will return true, allowing
      * the Consumer node to be created. If the id is null, then the URI and
      * optional operation will be checked against any filters that have been
      * configured. If the URI and operation passes, then the instrumentation
      * rule will be permitted to proceed and create the Consumer node in the
-     * business transaction fragment.
+     * trace fragment.
      *
      * @param uri The URI
      * @param operation The optional operation
@@ -48,11 +48,11 @@ public interface SessionManager {
     /**
      * This method is a guard condition for instrumentation rules, used
      * to determine whether the invoker should be permitted to create
-     * and record a node as part of a business transaction fragment. If
+     * and record a node as part of a trace fragment. If
      * the fragment is not currently active, then the URI and optional
      * operation will be checked against any filters that have been configured.
      * If it passes, then the instrumentation rule will be permitted to
-     * proceed and create the appropriate node in the business transaction fragment.
+     * proceed and create the appropriate node in the trace fragment.
      *
      * @param uri The URI
      * @param operation The optional operation
@@ -81,7 +81,7 @@ public interface SessionManager {
     /**
      * This method indicates that the identified node, for this thread of execution, should
      * be released. IMPORTANT: It is important that any previously retained node is released
-     * before the business transaction fragment can be considered complete and therefore
+     * before the trace fragment can be considered complete and therefore
      * reported.
      *
      * @param id The identifier used to identify the node
@@ -150,7 +150,7 @@ public interface SessionManager {
 
     /**
      * This method asserts that the current thread of execution is complete. It has no
-     * impact on business transaction reporting, but is used as a sanity check to ensure
+     * impact on trace reporting, but is used as a sanity check to ensure
      * the collection is working correctly.
      */
     void assertComplete();

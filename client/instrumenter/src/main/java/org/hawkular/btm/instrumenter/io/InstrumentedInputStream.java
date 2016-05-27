@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.hawkular.btm.api.model.config.Direction;
-import org.hawkular.btm.client.api.BusinessTransactionCollector;
+import org.hawkular.btm.client.api.TraceCollector;
 
 /**
  * This class provides an instrumented proxy for an input stream.
@@ -29,7 +29,7 @@ import org.hawkular.btm.client.api.BusinessTransactionCollector;
  */
 public class InstrumentedInputStream extends InputStream {
 
-    private BusinessTransactionCollector collector;
+    private TraceCollector collector;
     private Direction direction;
     private InputStream is;
 
@@ -40,7 +40,7 @@ public class InstrumentedInputStream extends InputStream {
      * @param direction The direction
      * @param is The original input stream
      */
-    public InstrumentedInputStream(BusinessTransactionCollector collector, Direction direction, InputStream is) {
+    public InstrumentedInputStream(TraceCollector collector, Direction direction, InputStream is) {
         this.collector = collector;
         this.direction = direction;
         this.is = is;

@@ -12,7 +12,7 @@
         "location": "ENTRY",
         "condition": "$1.replyAddress() == null && !isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),null,$1.headers().get(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "$1.headers().get(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",
@@ -59,7 +59,7 @@
         "location": "ENTRY",
         "condition": "$1.replyAddress() != null && activate($1.address(),null,$1.headers().get(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "$1.headers().get(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",

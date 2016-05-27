@@ -21,7 +21,7 @@ CREATE KEYSPACE IF NOT EXISTS hawkular_btm WITH replication = {'class': 'SimpleS
 
 -- #
 
-CREATE TABLE IF NOT EXISTS hawkular_btm.businesstransactions (
+CREATE TABLE IF NOT EXISTS hawkular_btm.traces (
     tenantId text,
     datetime timestamp,
     id text,
@@ -35,23 +35,23 @@ CREATE TABLE IF NOT EXISTS hawkular_btm.businesstransactions (
 
 -- #
 
-CREATE INDEX IF NOT EXISTS ON hawkular_btm.businesstransactions (id);
+CREATE INDEX IF NOT EXISTS ON hawkular_btm.traces (id);
 
 -- #
 
-CREATE INDEX IF NOT EXISTS ON hawkular_btm.businesstransactions (businessTransaction);
+CREATE INDEX IF NOT EXISTS ON hawkular_btm.traces (businessTransaction);
 
 -- #
 
-CREATE INDEX IF NOT EXISTS ON hawkular_btm.businesstransactions (properties);
+CREATE INDEX IF NOT EXISTS ON hawkular_btm.traces (properties);
 
 -- #
 
-CREATE INDEX IF NOT EXISTS ON hawkular_btm.businesstransactions (correlationIds);
+CREATE INDEX IF NOT EXISTS ON hawkular_btm.traces (correlationIds);
 
 -- #
 
-CREATE INDEX IF NOT EXISTS ON hawkular_btm.businesstransactions (hostName);
+CREATE INDEX IF NOT EXISTS ON hawkular_btm.traces (hostName);
 
 -- #
 

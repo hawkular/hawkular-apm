@@ -20,19 +20,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.hawkular.btm.api.model.config.Direction;
-import org.hawkular.btm.client.api.BusinessTransactionCollector;
+import org.hawkular.btm.client.api.TraceCollector;
 
 /**
  * @author gbrown
  */
 public class InstrumentedOutputStream extends OutputStream {
 
-    private BusinessTransactionCollector collector;
+    private TraceCollector collector;
     private Direction direction;
     private OutputStream os;
     private String initiateLinkId;
 
-    public InstrumentedOutputStream(BusinessTransactionCollector collector, Direction direction,
+    public InstrumentedOutputStream(TraceCollector collector, Direction direction,
                         OutputStream os, String initiateLinkId) {
         this.collector = collector;
         this.direction = direction;

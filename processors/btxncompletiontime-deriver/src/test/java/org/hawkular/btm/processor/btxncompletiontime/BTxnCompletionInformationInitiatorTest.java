@@ -22,10 +22,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -35,12 +35,12 @@ public class BTxnCompletionInformationInitiatorTest {
 
     @Test
     public void testProcessSingleEmptyBtxn() {
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
 
         BTxnCompletionInformationInitiator initiator = new BTxnCompletionInformationInitiator();
 
         try {
-            assertNull(initiator.processSingle(null, btxn));
+            assertNull(initiator.processSingle(null, trace));
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -48,15 +48,15 @@ public class BTxnCompletionInformationInitiatorTest {
 
     @Test
     public void testProcessSingleConsumerWithInteractionId() {
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer c = new Consumer();
         c.addInteractionId("myId");
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         BTxnCompletionInformationInitiator initiator = new BTxnCompletionInformationInitiator();
 
         try {
-            assertNull(initiator.processSingle(null, btxn));
+            assertNull(initiator.processSingle(null, trace));
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -64,10 +64,10 @@ public class BTxnCompletionInformationInitiatorTest {
 
     @Test
     public void testProcessSingleConsumerWithNoInteractionIdNoProducers() {
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("btxnId");
-        btxn.setName("btxnName");
-        btxn.setStartTime(100);
+        Trace trace = new Trace();
+        trace.setId("traceId");
+        trace.setBusinessTransaction("traceName");
+        trace.setStartTime(100);
 
         Consumer c = new Consumer();
         c.setUri("uri");
@@ -76,14 +76,14 @@ public class BTxnCompletionInformationInitiatorTest {
         c.setFault("myFault");
         c.setEndpointType("HTTP");
 
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         BTxnCompletionInformationInitiator initiator = new BTxnCompletionInformationInitiator();
 
         BTxnCompletionInformation ci = null;
 
         try {
-            ci = initiator.processSingle(null, btxn);
+            ci = initiator.processSingle(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -91,11 +91,11 @@ public class BTxnCompletionInformationInitiatorTest {
         assertNotNull(ci);
         assertEquals(0, ci.getCommunications().size());
 
-        assertEquals(btxn.getId(), ci.getCompletionTime().getId());
-        assertEquals(btxn.getName(), ci.getCompletionTime().getBusinessTransaction());
+        assertEquals(trace.getId(), ci.getCompletionTime().getId());
+        assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
         assertEquals(c.getEndpointType(), ci.getCompletionTime().getEndpointType());
         assertFalse(ci.getCompletionTime().isInternal());
-        assertEquals(btxn.getStartTime(), ci.getCompletionTime().getTimestamp());
+        assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(c.getUri(), ci.getCompletionTime().getUri());
         assertEquals(200, ci.getCompletionTime().getDuration());
         assertEquals(c.getFault(), ci.getCompletionTime().getFault());
@@ -103,10 +103,10 @@ public class BTxnCompletionInformationInitiatorTest {
 
     @Test
     public void testProcessSingleComponentNoProducers() {
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("btxnId");
-        btxn.setName("btxnName");
-        btxn.setStartTime(100);
+        Trace trace = new Trace();
+        trace.setId("traceId");
+        trace.setBusinessTransaction("traceName");
+        trace.setStartTime(100);
 
         Component c = new Component();
         c.setUri("uri");
@@ -114,14 +114,14 @@ public class BTxnCompletionInformationInitiatorTest {
         c.setDuration(200000000);
         c.setFault("myFault");
 
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         BTxnCompletionInformationInitiator initiator = new BTxnCompletionInformationInitiator();
 
         BTxnCompletionInformation ci = null;
 
         try {
-            ci = initiator.processSingle(null, btxn);
+            ci = initiator.processSingle(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -129,9 +129,9 @@ public class BTxnCompletionInformationInitiatorTest {
         assertNotNull(ci);
         assertEquals(0, ci.getCommunications().size());
 
-        assertEquals(btxn.getId(), ci.getCompletionTime().getId());
-        assertEquals(btxn.getName(), ci.getCompletionTime().getBusinessTransaction());
-        assertEquals(btxn.getStartTime(), ci.getCompletionTime().getTimestamp());
+        assertEquals(trace.getId(), ci.getCompletionTime().getId());
+        assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
+        assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(c.getUri(), ci.getCompletionTime().getUri());
         assertEquals(200, ci.getCompletionTime().getDuration());
         assertEquals(c.getFault(), ci.getCompletionTime().getFault());
@@ -139,15 +139,15 @@ public class BTxnCompletionInformationInitiatorTest {
 
     @Test
     public void testProcessSingleConsumerWithNoInteractionIdWithProducers() {
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("btxnId");
-        btxn.setName("btxnName");
-        btxn.setStartTime(100);
+        Trace trace = new Trace();
+        trace.setId("traceId");
+        trace.setBusinessTransaction("traceName");
+        trace.setStartTime(100);
 
         Consumer c = new Consumer();
         c.setUri("uri");
 
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         Producer p1 = new Producer();
         p1.setUri("p1");
@@ -164,7 +164,7 @@ public class BTxnCompletionInformationInitiatorTest {
         BTxnCompletionInformation ci = null;
 
         try {
-            ci = initiator.processSingle(null, btxn);
+            ci = initiator.processSingle(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

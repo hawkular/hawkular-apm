@@ -39,18 +39,18 @@ import org.hawkular.btm.api.model.analytics.EndpointInfo;
 import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.model.btxn.NodeType;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.NodeType;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.api.services.Criteria.FaultCriteria;
 import org.junit.After;
@@ -71,7 +71,7 @@ public class ServicesCassandraTest {
 
     private ConfigurationServiceCassandra cfgs;
 
-    private BusinessTransactionServiceCassandra bts;
+    private TraceServiceCassandra bts;
 
     private AnalyticsServiceCassandra analytics;
 
@@ -116,11 +116,11 @@ public class ServicesCassandraTest {
         }
 
         // BusinessTransactionService related
-        bts = new BusinessTransactionServiceCassandra();
+        bts = new TraceServiceCassandra();
         bts.setClient(client);
         bts.init();
 
-        client.getSession().execute("TRUNCATE hawkular_btm.businesstransactions;");
+        client.getSession().execute("TRUNCATE hawkular_btm.traces;");
 
         // ConfigurationService related
         cfgs = new ConfigurationServiceCassandra();
@@ -148,27 +148,27 @@ public class ServicesCassandraTest {
 
     @Test
     public void testQueryBTxnName() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setName("btxn2");
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setBusinessTransaction("trace2");
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
-        BusinessTransaction btxn3 = new BusinessTransaction();
-        btxn3.setId("id3");
-        btxn3.setStartTime(3000);
-        btxns.add(btxn3);
+        Trace trace3 = new Trace();
+        trace3.setId("id3");
+        trace3.setStartTime(3000);
+        traces.add(trace3);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -180,39 +180,39 @@ public class ServicesCassandraTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.setBusinessTransaction("btxn1");
+        criteria.setBusinessTransaction("trace1");
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
         assertEquals("id1", result1.get(0).getId());
-        assertEquals("btxn1", result1.get(0).getName());
+        assertEquals("trace1", result1.get(0).getBusinessTransaction());
     }
 
     @Test
     public void testQueryNoBTxnName() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setName("btxn2");
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setBusinessTransaction("trace2");
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
-        BusinessTransaction btxn3 = new BusinessTransaction();
-        btxn3.setId("id3");
-        btxn3.setStartTime(3000);
-        btxns.add(btxn3);
+        Trace trace3 = new Trace();
+        trace3.setId("id3");
+        trace3.setStartTime(3000);
+        traces.add(trace3);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -225,38 +225,38 @@ public class ServicesCassandraTest {
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("");
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
         assertEquals("id3", result1.get(0).getId());
-        assertNull(result1.get(0).getName());
+        assertNull(result1.get(0).getBusinessTransaction());
     }
 
     @Test
     public void testQuerySinglePropertyAndValueIncluded() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop2", "value2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop2", "value2");
+        traces.add(trace2);
 
-        BusinessTransaction btxn3 = new BusinessTransaction();
-        btxn3.setId("id3");
-        btxn3.setStartTime(3000);
-        btxn3.getProperties().put("prop1", "value3");
-        btxns.add(btxn3);
+        Trace trace3 = new Trace();
+        trace3.setId("id3");
+        trace3.setStartTime(3000);
+        trace3.getProperties().put("prop1", "value3");
+        traces.add(trace3);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -269,7 +269,7 @@ public class ServicesCassandraTest {
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", false);
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -278,28 +278,28 @@ public class ServicesCassandraTest {
 
     @Test
     public void testQuerySinglePropertyAndValueExcluded() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop2", "value2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop2", "value2");
+        traces.add(trace2);
 
-        BusinessTransaction btxn3 = new BusinessTransaction();
-        btxn3.setId("id3");
-        btxn3.setStartTime(3000);
-        btxn3.getProperties().put("prop1", "value3");
-        btxns.add(btxn3);
+        Trace trace3 = new Trace();
+        trace3.setId("id3");
+        trace3.setStartTime(3000);
+        trace3.getProperties().put("prop1", "value3");
+        traces.add(trace3);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -312,7 +312,7 @@ public class ServicesCassandraTest {
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", true);
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(2, result1.size());
@@ -322,35 +322,35 @@ public class ServicesCassandraTest {
 
     @Test
     public void testQuerySinglePropertyAndMultiValueIncluded() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop2", "value2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop2", "value2");
+        traces.add(trace2);
 
-        BusinessTransaction btxn3 = new BusinessTransaction();
-        btxn3.setId("id3");
-        btxn3.setStartTime(3000);
-        btxn3.getProperties().put("prop3", "value3");
-        btxns.add(btxn3);
+        Trace trace3 = new Trace();
+        trace3.setId("id3");
+        trace3.setStartTime(3000);
+        trace3.getProperties().put("prop3", "value3");
+        traces.add(trace3);
 
-        BusinessTransaction btxn4 = new BusinessTransaction();
-        btxn4.setId("id4");
-        btxn4.setStartTime(4000);
-        btxn4.getProperties().put("prop1", "value1");
-        btxn4.getProperties().put("prop3", "value3");
-        btxns.add(btxn4);
+        Trace trace4 = new Trace();
+        trace4.setId("id4");
+        trace4.setStartTime(4000);
+        trace4.getProperties().put("prop1", "value1");
+        trace4.getProperties().put("prop3", "value3");
+        traces.add(trace4);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -364,7 +364,7 @@ public class ServicesCassandraTest {
         criteria.addProperty("prop1", "value1", false);
         criteria.addProperty("prop3", "value3", false);
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -373,28 +373,28 @@ public class ServicesCassandraTest {
 
     @Test
     public void testQuerySinglePropertyAndMultiValueExcluded() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop2", "value2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop2", "value2");
+        traces.add(trace2);
 
-        BusinessTransaction btxn3 = new BusinessTransaction();
-        btxn3.setId("id3");
-        btxn3.setStartTime(3000);
-        btxn3.getProperties().put("prop1", "value3");
-        btxns.add(btxn3);
+        Trace trace3 = new Trace();
+        trace3.setId("id3");
+        trace3.setStartTime(3000);
+        trace3.getProperties().put("prop1", "value3");
+        traces.add(trace3);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -408,7 +408,7 @@ public class ServicesCassandraTest {
         criteria.addProperty("prop1", "value1", true);
         criteria.addProperty("prop1", "value3", true);
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -417,28 +417,28 @@ public class ServicesCassandraTest {
 
     @Test
     public void testQueryCorrelationId() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.addGlobalId("gid1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.addGlobalId("gid2");
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -451,7 +451,7 @@ public class ServicesCassandraTest {
         criteria.setStartTime(100);
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "gid1"));
 
-        List<BusinessTransaction> result1 = bts.query(null, criteria);
+        List<Trace> result1 = bts.query(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -727,17 +727,17 @@ public class ServicesCassandraTest {
 
     @Test
     public void testBoundURIs() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component t1 = new Component();
         t1.setUri("uri2");
@@ -751,19 +751,19 @@ public class ServicesCassandraTest {
         p1.setUri("uri2");
         c1.getNodes().add(p1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setName("btxn2");
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setBusinessTransaction("trace2");
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri4");
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -772,7 +772,7 @@ public class ServicesCassandraTest {
             fail("Failed to wait: " + e);
         }
 
-        java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "btxn1", 100, 0);
+        java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "trace1", 100, 0);
 
         assertNotNull(uris1);
         assertEquals(3, uris1.size());
@@ -780,7 +780,7 @@ public class ServicesCassandraTest {
         assertTrue(uris1.contains(new EndpointInfo("uri2")));
         assertTrue(uris1.contains(new EndpointInfo("uri3")));
 
-        java.util.List<EndpointInfo> uris2 = analytics.getBoundEndpoints(null, "btxn2", 100, 0);
+        java.util.List<EndpointInfo> uris2 = analytics.getBoundEndpoints(null, "trace2", 100, 0);
 
         assertNotNull(uris2);
         assertEquals(1, uris2.size());
@@ -789,26 +789,26 @@ public class ServicesCassandraTest {
 
     @Test
     public void testPropertyInfo() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("id1");
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxn1.getProperties().put("prop2", "value2");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().put("prop2", "value2");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setId("id2");
-        btxn2.setName("btxn1");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop3", "value3");
-        btxn2.getProperties().put("prop2", "value2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setId("id2");
+        trace2.setBusinessTransaction("trace1");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop3", "value3");
+        trace2.getProperties().put("prop2", "value2");
+        traces.add(trace2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -818,7 +818,7 @@ public class ServicesCassandraTest {
         }
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("btxn1")
+            .setBusinessTransaction("trace1")
             .setStartTime(100)
             .setEndTime(0);
 
