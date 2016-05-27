@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Producer;
 
 /**
  * This class represents utility functions to help calculate completion time for

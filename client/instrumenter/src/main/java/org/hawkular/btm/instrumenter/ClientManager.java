@@ -28,7 +28,7 @@ import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.instrumentation.Instrumentation;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.ServiceResolver;
-import org.hawkular.btm.client.api.BusinessTransactionCollector;
+import org.hawkular.btm.client.api.TraceCollector;
 import org.hawkular.btm.instrumenter.config.RuleTransformer;
 import org.jboss.byteman.agent.Retransformer;
 
@@ -45,7 +45,7 @@ public class ClientManager {
 
     private static RuleTransformer ruleTransformer = new RuleTransformer();
 
-    private static BusinessTransactionCollector collector;
+    private static TraceCollector collector;
     private static ConfigurationService configService;
 
     /**
@@ -62,7 +62,7 @@ public class ClientManager {
         transformer = trans;
 
         // Obtain collector
-        collector = ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
+        collector = ServiceResolver.getSingletonService(TraceCollector.class);
 
         if (log.isLoggable(Level.FINER)) {
             log.finer("Business Transaction Collector: " + collector);

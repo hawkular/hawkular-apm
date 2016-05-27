@@ -23,14 +23,14 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.utils.EndpointUtil;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
@@ -39,7 +39,7 @@ import org.hawkular.btm.server.api.task.AbstractProcessor;
  *
  * @author gbrown
  */
-public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTransaction, CommunicationDetails> {
+public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, CommunicationDetails> {
 
     /**  */
     protected static final String CLIENT_PREFIX = "[client]";
@@ -67,30 +67,30 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#initialise(java.util.List)
      */
     @Override
-    public void initialise(String tenantId, List<BusinessTransaction> items) {
-        // This method initialises the deriver with a list of business transaction fragments
+    public void initialise(String tenantId, List<Trace> items) {
+        // This method initialises the deriver with a list of trace fragments
         // that will need to be referenced when correlating a consumer with a producer
         for (int i = 0; i < items.size(); i++) {
             Origin originUri = new Origin();
 
             // Need to check for Producer nodes
-            BusinessTransaction btxn = items.get(i);
-            for (int j = 0; j < btxn.getNodes().size(); j++) {
-                Node node = btxn.getNodes().get(j);
-                initialiseNode(tenantId, btxn, originUri, node);
+            Trace trace = items.get(i);
+            for (int j = 0; j < trace.getNodes().size(); j++) {
+                Node node = trace.getNodes().get(j);
+                initialiseNode(tenantId, trace, originUri, node);
             }
         }
     }
 
     /**
-     * This method initialises an individual node within a business transaction.
+     * This method initialises an individual node within a trace.
      *
      * @param tenantId The tenant id
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param origin The origin node information
      * @param node The node
      */
-    protected void initialiseNode(String tenantId, BusinessTransaction btxn, Origin origin, Node node) {
+    protected void initialiseNode(String tenantId, Trace trace, Origin origin, Node node) {
         if (node.getClass() == Producer.class) {
             // Check for interaction correlation ids
             Producer producer = (Producer) node;
@@ -103,9 +103,9 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
             }
 
             // Calculate the timestamp for the producer
-            long diffns = producer.getBaseTime() - btxn.getNodes().get(0).getBaseTime();
+            long diffns = producer.getBaseTime() - trace.getNodes().get(0).getBaseTime();
             long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
-            long timestamp = btxn.getStartTime() + diffms;
+            long timestamp = trace.getStartTime() + diffms;
 
             List<CorrelationIdentifier> cids = producer.getCorrelationIds(Scope.Interaction);
             if (!cids.isEmpty()) {
@@ -115,11 +115,11 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                     pi.setSourceOperation(origin.getOperation());
                     pi.setTimestamp(timestamp);
                     pi.setDuration(producer.getDuration());
-                    pi.setFragmentId(btxn.getId());
-                    pi.setHostName(btxn.getHostName());
-                    pi.setHostAddress(btxn.getHostAddress());
+                    pi.setFragmentId(trace.getId());
+                    pi.setHostName(trace.getHostName());
+                    pi.setHostAddress(trace.getHostAddress());
                     pi.setMultipleConsumers(producer.multipleConsumers());
-                    pi.getProperties().putAll(btxn.getProperties());
+                    pi.getProperties().putAll(trace.getProperties());
 
                     // TODO: HWKBTM-348: Should be configurable based on the wait interval plus
                     // some margin of error - primarily for cases where a job scheduler
@@ -134,7 +134,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                 origin.setOperation(node.getOperation());
             }
             for (int j = 0; j < ((ContainerNode) node).getNodes().size(); j++) {
-                initialiseNode(tenantId, btxn, origin,
+                initialiseNode(tenantId, trace, origin,
                         ((ContainerNode) node).getNodes().get(j));
             }
         }
@@ -152,14 +152,14 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CommunicationDetails processSingle(String tenantId, BusinessTransaction item) throws Exception {
+    public CommunicationDetails processSingle(String tenantId, Trace item) throws Exception {
         CommunicationDetails ret = null;
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Derive communication details for business transaction fragment: " + item);
+            log.finest("Derive communication details for trace fragment: " + item);
         }
 
-        // Check if business transaction has a Consumer top level node with an
+        // Check if trace has a Consumer top level node with an
         // interaction based correlation id
         if (item.getNodes().size() == 1 && item.getNodes().get(0).getClass() == Consumer.class) {
             Consumer consumer = (Consumer) item.getNodes().get(0);
@@ -173,7 +173,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
                     if (pi != null) {
                         ret = new CommunicationDetails();
                         ret.setId(id);
-                        ret.setBusinessTransaction(item.getName());
+                        ret.setBusinessTransaction(item.getBusinessTransaction());
 
                         ret.setSource(EndpointUtil.encodeEndpoint(pi.getSourceUri(),
                                 pi.getSourceOperation()));
@@ -281,7 +281,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<CommunicationDetails> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
+    public List<CommunicationDetails> processMultiple(String tenantId, Trace item) throws Exception {
         return null;
     }
 
@@ -289,7 +289,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<BusinessTrans
      * @see org.hawkular.btm.server.api.task.Processor#cleanup(java.util.List)
      */
     @Override
-    public void cleanup(String tenantId, List<BusinessTransaction> items) {
+    public void cleanup(String tenantId, List<Trace> items) {
     }
 
     /**

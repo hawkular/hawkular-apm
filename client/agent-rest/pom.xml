@@ -47,7 +47,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-publisher-rest-client</artifactId>
+      <artifactId>hawkular-btm-trace-publisher-rest-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.btm</groupId>

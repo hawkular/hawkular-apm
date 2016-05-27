@@ -16,7 +16,7 @@
  */
 package org.hawkular.btm.api.utils;
 
-import org.hawkular.btm.api.model.btxn.Node;
+import org.hawkular.btm.api.model.trace.Node;
 
 /**
  * This class provides node utility functions.

@@ -22,11 +22,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.hawkular.btm.api.model.Severity;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.events.Notification;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.ProcessorIssue;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -38,12 +38,12 @@ public class NotificationDeriverTest {
     public void testDeriveNotificationWithRecuriveScanForIssues() {
         NotificationDeriver deriver = new NotificationDeriver();
 
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("myid");
-        btxn.setName("mybtxn");
-        btxn.setStartTime(1000);
-        btxn.setHostAddress("myhostaddr");
-        btxn.setHostName("myhostname");
+        Trace trace = new Trace();
+        trace.setId("myid");
+        trace.setBusinessTransaction("mytrace");
+        trace.setStartTime(1000);
+        trace.setHostAddress("myhostaddr");
+        trace.setHostName("myhostname");
 
         ProcessorIssue issue1 = new ProcessorIssue();
         issue1.setAction("a1");
@@ -65,7 +65,7 @@ public class NotificationDeriverTest {
 
         Consumer c = new Consumer();
         c.getIssues().add(issue1);
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         Component comp = new Component();
         comp.getIssues().add(issue2);
@@ -74,18 +74,18 @@ public class NotificationDeriverTest {
 
         Notification notification = null;
         try {
-            notification = deriver.processSingle(null, btxn);
+            notification = deriver.processSingle(null, trace);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Failed to process notifications: " + e);
         }
 
         assertNotNull(notification);
-        assertEquals(btxn.getId(), notification.getId());
-        assertEquals(btxn.getName(), notification.getBusinessTransaction());
-        assertEquals(btxn.getStartTime(), notification.getTimestamp());
-        assertEquals(btxn.getHostAddress(), notification.getHostAddress());
-        assertEquals(btxn.getHostName(), notification.getHostName());
+        assertEquals(trace.getId(), notification.getId());
+        assertEquals(trace.getBusinessTransaction(), notification.getBusinessTransaction());
+        assertEquals(trace.getStartTime(), notification.getTimestamp());
+        assertEquals(trace.getHostAddress(), notification.getHostAddress());
+        assertEquals(trace.getHostName(), notification.getHostName());
 
         assertEquals(3, notification.getIssues().size());
 
@@ -98,22 +98,22 @@ public class NotificationDeriverTest {
     public void testDeriveNotificationNoIssues() {
         NotificationDeriver deriver = new NotificationDeriver();
 
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("myid");
-        btxn.setName("mybtxn");
-        btxn.setStartTime(1000);
-        btxn.setHostAddress("myhostaddr");
-        btxn.setHostName("myhostname");
+        Trace trace = new Trace();
+        trace.setId("myid");
+        trace.setBusinessTransaction("mytrace");
+        trace.setStartTime(1000);
+        trace.setHostAddress("myhostaddr");
+        trace.setHostName("myhostname");
 
         Consumer c = new Consumer();
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         Component comp = new Component();
         c.getNodes().add(comp);
 
         Notification notification = null;
         try {
-            notification = deriver.processSingle(null, btxn);
+            notification = deriver.processSingle(null, trace);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Failed to process notifications: " + e);

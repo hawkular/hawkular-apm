@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -42,7 +42,7 @@ import org.junit.Test;
 public class CommunicationDetailsDeriverTest {
 
     /**  */
-    private static final String BTXN_NAME = "btxnName";
+    private static final String BTXN_NAME = "traceName";
 
     @Test
     public void testInitialise() {
@@ -51,12 +51,12 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(System.currentTimeMillis());
+        Trace trace1 = new Trace();
+        trace1.setStartTime(System.currentTimeMillis());
 
-        btxns.add(btxn1);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setBaseTime(System.nanoTime());
@@ -66,7 +66,7 @@ public class CommunicationDetailsDeriverTest {
         cid1.setValue("cid1");
         c1.getCorrelationIds().add(cid1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setBaseTime(System.nanoTime());
@@ -78,7 +78,7 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p1);
 
-        deriver.initialise(null, btxns);
+        deriver.initialise(null, traces);
 
         assertNotNull(deriver.getProducerInfoCache().get(null, "pid1"));
         assertNull(deriver.getProducerInfoCache().get(null, "cid1"));
@@ -91,15 +91,15 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(System.currentTimeMillis());
+        Trace trace1 = new Trace();
+        trace1.setStartTime(System.currentTimeMillis());
 
-        btxns.add(btxn1);
+        traces.add(trace1);
 
         Component c1 = new Component();
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setUri("p1");
@@ -123,7 +123,7 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p2);
 
-        deriver.initialise(null, btxns);
+        deriver.initialise(null, traces);
 
         ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
         ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
@@ -146,16 +146,16 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(System.currentTimeMillis());
+        Trace trace1 = new Trace();
+        trace1.setStartTime(System.currentTimeMillis());
 
-        btxns.add(btxn1);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("consumerURI");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setUri("p1");
@@ -179,7 +179,7 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p2);
 
-        deriver.initialise(null, btxns);
+        deriver.initialise(null, traces);
 
         ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
         ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
@@ -198,10 +198,10 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
 
@@ -210,7 +210,7 @@ public class CommunicationDetailsDeriverTest {
         cid1.setValue("cid1");
         c1.getCorrelationIds().add(cid1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
 
@@ -222,7 +222,7 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p1);
 
         try {
-            deriver.processSingle(null, btxn1);
+            deriver.processSingle(null, trace1);
             fail("Should have thrown exception");
         } catch (Exception e) {
         }
@@ -235,19 +235,19 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns1 = new ArrayList<BusinessTransaction>();
+        List<Trace> traces1 = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000000);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000000);
 
-        btxns1.add(btxn1);
+        traces1.add(trace1);
 
-        btxn1.setName(BTXN_NAME);
-        btxn1.setId("btxn1");
-        btxn1.setHostName("host1");
-        btxn1.setHostAddress("addr1");
-        btxn1.setPrincipal("p1");
-        btxn1.getProperties().put("prop1", "value1");
+        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setId("trace1");
+        trace1.setHostName("host1");
+        trace1.setHostAddress("addr1");
+        trace1.setPrincipal("p1");
+        trace1.getProperties().put("prop1", "value1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -258,7 +258,7 @@ public class CommunicationDetailsDeriverTest {
         cid1.setValue("cid1");
         c1.getCorrelationIds().add(cid1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setBaseTime(1000000);
@@ -271,19 +271,19 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p1);
 
-        List<BusinessTransaction> btxns2 = new ArrayList<BusinessTransaction>();
+        List<Trace> traces2 = new ArrayList<Trace>();
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000000);
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000000);
 
-        btxns2.add(btxn2);
+        traces2.add(trace2);
 
-        btxn2.setName(BTXN_NAME);
-        btxn2.setId("btxn2");
-        btxn2.setHostName("host2");
-        btxn2.setHostAddress("addr2");
-        btxn2.setPrincipal("p1");
-        btxn2.getProperties().put("prop2", "value2");
+        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setId("trace2");
+        trace2.setHostName("host2");
+        trace2.setHostAddress("addr2");
+        trace2.setPrincipal("p1");
+        trace2.getProperties().put("prop2", "value2");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
@@ -294,13 +294,13 @@ public class CommunicationDetailsDeriverTest {
         cid2.setValue("pid1");
         c2.getCorrelationIds().add(cid2);
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         CommunicationDetails details = null;
         try {
-            deriver.initialise(null, btxns1);
-            deriver.initialise(null, btxns2);
-            details = deriver.processSingle(null, btxn2);
+            deriver.initialise(null, traces1);
+            deriver.initialise(null, traces2);
+            details = deriver.processSingle(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -319,15 +319,15 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(400 == details.getLatency());
         assertTrue(details.getProperties().containsKey("prop1"));
         assertTrue(details.getProperties().containsKey("prop2"));
-        assertEquals("btxn1", details.getSourceFragmentId());
+        assertEquals("trace1", details.getSourceFragmentId());
         assertEquals("host1", details.getSourceHostName());
         assertEquals("addr1", details.getSourceHostAddress());
-        assertEquals("btxn2", details.getTargetFragmentId());
+        assertEquals("trace2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
         assertEquals("p1", details.getPrincipal());
 
-        long timestamp = btxn1.getStartTime() + TimeUnit.MILLISECONDS.convert(p1.getBaseTime() -
+        long timestamp = trace1.getStartTime() + TimeUnit.MILLISECONDS.convert(p1.getBaseTime() -
                 c1.getBaseTime(), TimeUnit.NANOSECONDS);
         assertEquals(timestamp, details.getTimestamp());
 
@@ -341,17 +341,17 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns1 = new ArrayList<BusinessTransaction>();
+        List<Trace> traces1 = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000000);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000000);
 
-        btxns1.add(btxn1);
+        traces1.add(trace1);
 
-        btxn1.setName(BTXN_NAME);
-        btxn1.setId("btxn1");
-        btxn1.setHostName("host1");
-        btxn1.setHostAddress("addr1");
+        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setId("trace1");
+        trace1.setHostName("host1");
+        trace1.setHostAddress("addr1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -362,7 +362,7 @@ public class CommunicationDetailsDeriverTest {
         cid1.setValue("cid1");
         c1.getCorrelationIds().add(cid1);
 
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setBaseTime(1000000);
@@ -376,18 +376,18 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p1);
 
-        List<BusinessTransaction> btxns2 = new ArrayList<BusinessTransaction>();
+        List<Trace> traces2 = new ArrayList<Trace>();
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000000);
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000000);
 
-        btxns2.add(btxn2);
+        traces2.add(trace2);
 
-        btxn2.setName(BTXN_NAME);
-        btxn2.setId("btxn2");
-        btxn2.setHostName("host2");
-        btxn2.setHostAddress("addr2");
-        btxn2.getProperties().put("prop1", "value1");
+        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setId("trace2");
+        trace2.setHostName("host2");
+        trace2.setHostAddress("addr2");
+        trace2.getProperties().put("prop1", "value1");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
@@ -399,13 +399,13 @@ public class CommunicationDetailsDeriverTest {
         cid2.setValue("pid1");
         c2.getCorrelationIds().add(cid2);
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         CommunicationDetails details = null;
         try {
-            deriver.initialise(null, btxns1);
-            deriver.initialise(null, btxns2);
-            details = deriver.processSingle(null, btxn2);
+            deriver.initialise(null, traces1);
+            deriver.initialise(null, traces2);
+            details = deriver.processSingle(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -422,18 +422,18 @@ public class CommunicationDetailsDeriverTest {
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
 
-        List<BusinessTransaction> btxns1 = new ArrayList<BusinessTransaction>();
+        List<Trace> traces1 = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(System.currentTimeMillis());
+        Trace trace1 = new Trace();
+        trace1.setStartTime(System.currentTimeMillis());
 
-        btxns1.add(btxn1);
+        traces1.add(trace1);
 
-        btxn1.setName(BTXN_NAME);
-        btxn1.setId("btxn1");
-        btxn1.setHostName("host1");
-        btxn1.setHostAddress("addr1");
-        btxn1.setPrincipal("p1");
+        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setId("trace1");
+        trace1.setHostName("host1");
+        trace1.setHostAddress("addr1");
+        trace1.setPrincipal("p1");
 
         Producer p1 = new Producer();
         p1.setUri("TheURI");
@@ -445,19 +445,19 @@ public class CommunicationDetailsDeriverTest {
         pid1.setValue("pid1");
         p1.getCorrelationIds().add(pid1);
 
-        btxn1.getNodes().add(p1);
+        trace1.getNodes().add(p1);
 
-        List<BusinessTransaction> btxns2 = new ArrayList<BusinessTransaction>();
+        List<Trace> traces2 = new ArrayList<Trace>();
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxns2.add(btxn2);
+        Trace trace2 = new Trace();
+        traces2.add(trace2);
 
-        btxn2.setName(BTXN_NAME);
-        btxn2.setId("btxn2");
-        btxn2.setHostName("host2");
-        btxn2.setHostAddress("addr2");
-        btxn2.setPrincipal("p1");
-        btxn2.getProperties().put("prop1", "value1");
+        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setId("trace2");
+        trace2.setHostName("host2");
+        trace2.setHostAddress("addr2");
+        trace2.setPrincipal("p1");
+        trace2.getProperties().put("prop1", "value1");
 
         Consumer c2 = new Consumer();
         c2.setUri("TheURI");
@@ -468,13 +468,13 @@ public class CommunicationDetailsDeriverTest {
         cid2.setValue("pid1");
         c2.getCorrelationIds().add(cid2);
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         CommunicationDetails details = null;
         try {
-            deriver.initialise(null, btxns1);
-            deriver.initialise(null, btxns2);
-            details = deriver.processSingle(null, btxn2);
+            deriver.initialise(null, traces1);
+            deriver.initialise(null, traces2);
+            details = deriver.processSingle(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -489,10 +489,10 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(p1.getDuration() == details.getProducerDuration());
         assertTrue(400 == details.getLatency());
         assertTrue(details.getProperties().containsKey("prop1"));
-        assertEquals("btxn1", details.getSourceFragmentId());
+        assertEquals("trace1", details.getSourceFragmentId());
         assertEquals("host1", details.getSourceHostName());
         assertEquals("addr1", details.getSourceHostAddress());
-        assertEquals("btxn2", details.getTargetFragmentId());
+        assertEquals("trace2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
         assertEquals("p1", details.getPrincipal());

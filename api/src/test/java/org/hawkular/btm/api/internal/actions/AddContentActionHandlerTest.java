@@ -21,11 +21,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.AddContentAction;
 import org.hawkular.btm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.btm.api.model.config.btxn.Processor;
+import org.hawkular.btm.api.model.trace.Consumer;
 import org.junit.Test;
 
 /**

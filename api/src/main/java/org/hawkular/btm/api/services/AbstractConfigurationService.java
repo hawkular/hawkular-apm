@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.hawkular.btm.api.internal.actions.ProcessorActionHandler;
 import org.hawkular.btm.api.internal.actions.ProcessorActionHandlerFactory;
-import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Issue;
+import org.hawkular.btm.api.model.trace.ProcessorIssue;
 
 /**
  * This class provides the abstract base class for the Configuration Service.

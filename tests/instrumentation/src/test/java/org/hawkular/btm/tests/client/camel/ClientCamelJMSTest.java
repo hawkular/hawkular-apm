@@ -34,10 +34,10 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsComponent;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -91,34 +91,34 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        // Check stored business transactions - one btxn represents the test sender
-        assertEquals(3, getTestBTMServer().getBusinessTransactions().size());
+        // Check stored traces - one btxn represents the test sender
+        assertEquals(3, getTestTraceServer().getTraces().size());
 
         Consumer queueConsumer = null;
         Consumer topicConsumer = null;
         Component testComponent = null;
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            if (!btxn.getNodes().isEmpty()) {
-                if (btxn.getNodes().get(0).getClass() == Consumer.class) {
-                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
+            if (!trace.getNodes().isEmpty()) {
+                if (trace.getNodes().get(0).getClass() == Consumer.class) {
+                    Consumer consumer = (Consumer) trace.getNodes().get(0);
 
                     if (consumer.getUri().equals("queue://inboundq")) {
                         queueConsumer = consumer;
                     } else if (consumer.getUri().equals("topic://outboundt")) {
                         topicConsumer = consumer;
                     }
-                } else if (btxn.getNodes().get(0).getClass() == Component.class) {
-                    testComponent = (Component) btxn.getNodes().get(0);
+                } else if (trace.getNodes().get(0).getClass() == Component.class) {
+                    testComponent = (Component) trace.getNodes().get(0);
                 }
             }
         }
@@ -193,34 +193,34 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        // Check stored business transactions - one btxn represents the test sender
-        assertEquals(3, getTestBTMServer().getBusinessTransactions().size());
+        // Check stored traces - one btxn represents the test sender
+        assertEquals(3, getTestTraceServer().getTraces().size());
 
         Consumer queueConsumer = null;
         Consumer topicConsumer = null;
         Component testComponent = null;
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            if (!btxn.getNodes().isEmpty()) {
-                if (btxn.getNodes().get(0).getClass() == Consumer.class) {
-                    Consumer consumer = (Consumer) btxn.getNodes().get(0);
+            if (!trace.getNodes().isEmpty()) {
+                if (trace.getNodes().get(0).getClass() == Consumer.class) {
+                    Consumer consumer = (Consumer) trace.getNodes().get(0);
 
                     if (consumer.getUri().equals("queue://inboundq")) {
                         queueConsumer = consumer;
                     } else if (consumer.getUri().equals("topic://outboundt")) {
                         topicConsumer = consumer;
                     }
-                } else if (btxn.getNodes().get(0).getClass() == Component.class) {
-                    testComponent = (Component) btxn.getNodes().get(0);
+                } else if (trace.getNodes().get(0).getClass() == Component.class) {
+                    testComponent = (Component) trace.getNodes().get(0);
                 }
             }
         }

@@ -29,9 +29,9 @@ import java.util.List;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -128,26 +128,26 @@ public class ClientCamelVmSedaTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(4, getTestBTMServer().getBusinessTransactions().size());
+        // Check stored traces (including 1 for the test client)
+        assertEquals(4, getTestTraceServer().getTraces().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;
         Consumer createOrder = null;
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            if (!btxn.getNodes().isEmpty()
-                    && btxn.getNodes().get(0).getClass() == Consumer.class) {
-                Consumer consumer = (Consumer) btxn.getNodes().get(0);
+            if (!trace.getNodes().isEmpty()
+                    && trace.getNodes().get(0).getClass() == Consumer.class) {
+                Consumer consumer = (Consumer) trace.getNodes().get(0);
 
                 if (consumer.getUri().equals("seda://checkStock")) {
                     checkStock = consumer;

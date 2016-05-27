@@ -65,7 +65,7 @@
 
     <dependency>
       <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-btxn-service-rest-client</artifactId>
+      <artifactId>hawkular-btm-trace-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

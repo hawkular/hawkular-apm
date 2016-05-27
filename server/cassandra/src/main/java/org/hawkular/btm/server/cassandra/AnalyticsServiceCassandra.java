@@ -40,14 +40,14 @@ import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.btm.api.model.analytics.Percentiles;
 import org.hawkular.btm.api.model.analytics.PrincipalInfo;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.NodeType;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.AbstractAnalyticsService;
-import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.services.TraceService;
 import org.hawkular.btm.server.cassandra.log.MsgLogger;
 
 import com.datastax.driver.core.BatchStatement;
@@ -83,7 +83,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
     private CassandraClient client;
 
     @Inject
-    private BusinessTransactionService businessTransactionService;
+    private TraceService businessTransactionService;
 
     @PostConstruct
     public void init() {
@@ -125,20 +125,20 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
     }
 
     /**
-     * This method gets the business transaction service.
+     * This method gets the trace service.
      *
-     * @return The business transaction service
+     * @return The trace service
      */
-    public BusinessTransactionService getBusinessTransactionService() {
+    public TraceService getBusinessTransactionService() {
         return this.businessTransactionService;
     }
 
     /**
-     * This method sets the business transaction service.
+     * This method sets the trace service.
      *
-     * @param bts The business transaction service
+     * @param bts The trace service
      */
-    public void setBusinessTransactionService(BusinessTransactionService bts) {
+    public void setBusinessTransactionService(TraceService bts) {
         this.businessTransactionService = bts;
     }
 
@@ -147,7 +147,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                  org.hawkular.btm.api.services.Criteria)
      */
     @Override
-    protected List<BusinessTransaction> getFragments(String tenantId, Criteria criteria) {
+    protected List<Trace> getFragments(String tenantId, Criteria criteria) {
         return businessTransactionService.query(tenantId, criteria);
     }
 
@@ -857,7 +857,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
     public List<String> getHostNames(String tenantId, Criteria criteria) {
         List<String> ret = new ArrayList<String>();
 
-        StringBuilder statement = new StringBuilder("SELECT hostName FROM hawkular_btm.businesstransactions");
+        StringBuilder statement = new StringBuilder("SELECT hostName FROM hawkular_btm.traces");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
         statement.append(";");
 

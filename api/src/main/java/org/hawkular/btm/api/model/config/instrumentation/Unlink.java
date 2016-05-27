@@ -18,7 +18,7 @@ package org.hawkular.btm.api.model.config.instrumentation;
 
 /**
  * This type represents the session action for disassociating the
- * recorded thread of execution (business transaction fragment)
+ * recorded thread of execution (trace fragment)
  * from the current thread.
  *
  * @author gbrown

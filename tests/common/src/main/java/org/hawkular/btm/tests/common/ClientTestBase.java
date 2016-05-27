@@ -21,12 +21,12 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.Producer;
-import org.hawkular.btm.tests.server.TestBTMServer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.tests.server.TestTraceServer;
 import org.junit.After;
 import org.junit.Before;
 
@@ -35,7 +35,7 @@ import org.junit.Before;
  */
 public abstract class ClientTestBase {
 
-    private TestBTMServer testBTMServer = new TestBTMServer();
+    private TestTraceServer testBTMServer = new TestTraceServer();
 
     public int getPort() {
         return 8080;
@@ -74,14 +74,14 @@ public abstract class ClientTestBase {
     /**
      * @return the testBTMServer
      */
-    public TestBTMServer getTestBTMServer() {
+    public TestTraceServer getTestTraceServer() {
         return testBTMServer;
     }
 
     /**
      * @param testBTMServer the testBTMServer to set
      */
-    public void setTestBTMServer(TestBTMServer testBTMServer) {
+    public void setTestBTMServer(TestTraceServer testBTMServer) {
         this.testBTMServer = testBTMServer;
     }
 

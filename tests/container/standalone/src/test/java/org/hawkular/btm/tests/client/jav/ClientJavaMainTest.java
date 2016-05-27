@@ -24,10 +24,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.Criteria;
-import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.hawkular.btm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -101,37 +101,37 @@ public class ClientJavaMainTest {
             fail("Failed to wait");
         }
 
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        TraceServiceRESTClient service = new TraceServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
 
         // Retrieve stored business transaction
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime);
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertNotNull(result);
         assertEquals("Only expecting 1 business txn", 1, result.size());
 
-        BusinessTransaction btxn = result.get(0);
+        Trace trace = result.get(0);
 
         // Should be one top level Component node with another single Component node contained
-        assertEquals("Expecting single top level node", 1, btxn.getNodes().size());
+        assertEquals("Expecting single top level node", 1, trace.getNodes().size());
 
-        assertEquals("Expecting top node to be Component", Component.class, btxn.getNodes().get(0).getClass());
+        assertEquals("Expecting top node to be Component", Component.class, trace.getNodes().get(0).getClass());
         assertEquals("Top level node operation incorrect", "testOp",
-                ((Component) btxn.getNodes().get(0)).getOperation());
+                ((Component) trace.getNodes().get(0)).getOperation());
         assertEquals("Top level node service type incorrect", "TopLevelService",
-                ((Component) btxn.getNodes().get(0)).getUri());
+                ((Component) trace.getNodes().get(0)).getUri());
 
-        assertEquals("Expecting single child node", 1, ((Component) btxn.getNodes().get(0)).getNodes().size());
+        assertEquals("Expecting single child node", 1, ((Component) trace.getNodes().get(0)).getNodes().size());
 
         assertEquals("Expecting single child node to be Service", Component.class,
-                ((Component) btxn.getNodes().get(0)).getNodes().get(0).getClass());
+                ((Component) trace.getNodes().get(0)).getNodes().get(0).getClass());
         assertEquals("Inner node operation incorrect", "join",
-                ((Component) ((Component) btxn.getNodes().get(0)).getNodes().get(0)).getOperation());
+                ((Component) ((Component) trace.getNodes().get(0)).getNodes().get(0)).getOperation());
         assertEquals("Inner node service type incorrect", "InnerService",
-                ((Component) ((Component) btxn.getNodes().get(0)).getNodes().get(0)).getUri());
+                ((Component) ((Component) trace.getNodes().get(0)).getNodes().get(0)).getUri());
     }
 
     @AfterClass

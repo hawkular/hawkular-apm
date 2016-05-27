@@ -22,10 +22,10 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -43,11 +43,11 @@ public class NodeDetailsDeriverTest {
     public void testProcessMultipleNotInternalConsumer() {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
 
         Consumer consumer = new Consumer();
         consumer.setUri(INTERNAL_URI);
-        btxn.getNodes().add(consumer);
+        trace.getNodes().add(consumer);
 
         Producer producer = new Producer();
         producer.setEndpointType("HTTP");
@@ -57,7 +57,7 @@ public class NodeDetailsDeriverTest {
         List<NodeDetails> details = null;
 
         try {
-            details = deriver.processMultiple(null, btxn);
+            details = deriver.processMultiple(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -72,12 +72,12 @@ public class NodeDetailsDeriverTest {
     public void testProcessMultipleNotInternalProducer() {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
 
         Consumer consumer = new Consumer();
         consumer.setEndpointType("HTTP");
         consumer.setUri(TEST_URI);
-        btxn.getNodes().add(consumer);
+        trace.getNodes().add(consumer);
 
         Producer producer = new Producer();
         producer.setUri(INTERNAL_URI);
@@ -86,7 +86,7 @@ public class NodeDetailsDeriverTest {
         List<NodeDetails> details = null;
 
         try {
-            details = deriver.processMultiple(null, btxn);
+            details = deriver.processMultiple(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

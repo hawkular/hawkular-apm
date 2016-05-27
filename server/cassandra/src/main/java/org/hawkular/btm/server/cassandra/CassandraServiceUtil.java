@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.api.services.Criteria.FaultCriteria;
 import org.hawkular.btm.api.services.Criteria.PropertyCriteria;

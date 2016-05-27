@@ -22,10 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.InteractionNode;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.InteractionNode;
+import org.hawkular.btm.api.model.trace.Producer;
 import org.hawkular.btm.processor.btxncompletiontime.BTxnCompletionInformation.Communication;
 import org.junit.Test;
 

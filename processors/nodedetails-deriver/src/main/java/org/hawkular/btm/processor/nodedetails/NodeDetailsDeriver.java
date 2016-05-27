@@ -22,15 +22,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.InteractionNode;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.NodeType;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.InteractionNode;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.NodeType;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
 /**
@@ -38,7 +38,7 @@ import org.hawkular.btm.server.api.task.AbstractProcessor;
  *
  * @author gbrown
  */
-public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, NodeDetails> {
+public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
 
     private static final Logger log = Logger.getLogger(NodeDetailsDeriver.class.getName());
 
@@ -54,7 +54,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public NodeDetails processSingle(String tenantId, BusinessTransaction item) throws Exception {
+    public NodeDetails processSingle(String tenantId, Trace item) throws Exception {
         return null;
     }
 
@@ -62,7 +62,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<NodeDetails> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
+    public List<NodeDetails> processMultiple(String tenantId, Trace item) throws Exception {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
         long baseTime = 0;
@@ -83,12 +83,12 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
      * This method recursively derives the node details metrics for the supplied
      * nodes.
      *
-     * @param btxn The business transaction
-     * @param baseTime The base time, in nanoseconds, for the business transaction
+     * @param trace The trace
+     * @param baseTime The base time, in nanoseconds, for the trace
      * @param nodes The nodes
      * @param rts The list of node details
      */
-    protected void deriveNodeDetails(BusinessTransaction btxn, long baseTime,
+    protected void deriveNodeDetails(Trace trace, long baseTime,
             List<Node> nodes, List<NodeDetails> rts) {
         for (int i = 0; i < nodes.size(); i++) {
             Node n = nodes.get(i);
@@ -111,8 +111,8 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
                 long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
 
                 NodeDetails nd = new NodeDetails();
-                nd.setId(btxn.getId() + "-" + rts.size());
-                nd.setBusinessTransaction(btxn.getName());
+                nd.setId(trace.getId() + "-" + rts.size());
+                nd.setBusinessTransaction(trace.getBusinessTransaction());
                 nd.setCorrelationIds(n.getCorrelationIds());
                 nd.setDetails(n.getDetails());
                 nd.setElapsed(n.getDuration());
@@ -135,16 +135,16 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
                     nd.setFault(n.getFault());
                 }
 
-                if (btxn.getHostName() != null && btxn.getHostName().trim().length() > 0) {
-                    nd.setHostName(btxn.getHostName());
+                if (trace.getHostName() != null && trace.getHostName().trim().length() > 0) {
+                    nd.setHostName(trace.getHostName());
                 }
 
-                if (btxn.getPrincipal() != null && btxn.getPrincipal().trim().length() > 0) {
-                    nd.setPrincipal(btxn.getPrincipal());
+                if (trace.getPrincipal() != null && trace.getPrincipal().trim().length() > 0) {
+                    nd.setPrincipal(trace.getPrincipal());
                 }
 
-                nd.setProperties(btxn.getProperties());
-                nd.setTimestamp(btxn.getStartTime() + diffms);
+                nd.setProperties(trace.getProperties());
+                nd.setTimestamp(trace.getStartTime() + diffms);
                 nd.setType(n.getType());
                 nd.setUri(n.getUri());
                 nd.setOperation(n.getOperation());
@@ -153,7 +153,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<BusinessTransaction, N
             }
 
             if (!ignoreChildNodes && n.interactionNode()) {
-                deriveNodeDetails(btxn, baseTime, ((InteractionNode) n).getNodes(), rts);
+                deriveNodeDetails(trace, baseTime, ((InteractionNode) n).getNodes(), rts);
             }
         }
     }

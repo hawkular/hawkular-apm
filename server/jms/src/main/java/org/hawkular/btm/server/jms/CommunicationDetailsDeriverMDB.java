@@ -26,8 +26,8 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.processor.communicationdetails.CommunicationDetailsDeriver;
 import org.hawkular.btm.server.api.services.CommunicationDetailsPublisher;
 
@@ -36,22 +36,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_CommunicationDetailsDeriver",
+@MessageDriven(name = "Trace_CommunicationDetailsDeriver",
         messageListenerInterface = MessageListener.class,
 activationConfig =
 {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+    @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
     @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
     @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsDeriver"),
     @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsDeriver")
 })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class CommunicationDetailsDeriverMDB extends ProcessorMDB<BusinessTransaction, CommunicationDetails> {
+public class CommunicationDetailsDeriverMDB extends ProcessorMDB<Trace, CommunicationDetails> {
 
     @Inject
-    private BusinessTransactionPublisherJMS businessTransactionPublisher;
+    private TracePublisherJMS tracePublisher;
 
     @Inject
     private CommunicationDetailsPublisher communicationDetailsPublisher;
@@ -62,9 +62,9 @@ public class CommunicationDetailsDeriverMDB extends ProcessorMDB<BusinessTransac
     @PostConstruct
     public void init() {
         setProcessor(communicationDetailsDeriver);
-        setRetryPublisher(businessTransactionPublisher);
+        setRetryPublisher(tracePublisher);
         setPublisher(communicationDetailsPublisher);
-        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        setTypeReference(new TypeReference<java.util.List<Trace>>() {
         });
     }
 

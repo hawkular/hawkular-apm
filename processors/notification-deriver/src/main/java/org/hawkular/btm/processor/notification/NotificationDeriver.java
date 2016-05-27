@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.events.Notification;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
 /**
@@ -31,7 +31,7 @@ import org.hawkular.btm.server.api.task.AbstractProcessor;
  *
  * @author gbrown
  */
-public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, Notification> {
+public class NotificationDeriver extends AbstractProcessor<Trace, Notification> {
 
     private static final Logger log = Logger.getLogger(NotificationDeriver.class.getName());
 
@@ -47,12 +47,12 @@ public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, 
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public Notification processSingle(String tenantId, BusinessTransaction item) throws Exception {
+    public Notification processSingle(String tenantId, Trace item) throws Exception {
         // Check if named txn and has nodes
-        if (item.getName() != null && item.getName().trim().length() > 0 && !item.getNodes().isEmpty()) {
+        if (item.getBusinessTransaction() != null && item.getBusinessTransaction().trim().length() > 0 && !item.getNodes().isEmpty()) {
             Notification notification = new Notification();
             notification.setId(item.getId());
-            notification.setBusinessTransaction(item.getName());
+            notification.setBusinessTransaction(item.getBusinessTransaction());
             notification.setTimestamp(item.getStartTime());
             notification.setHostAddress(item.getHostAddress());
             notification.setHostName(item.getHostName());
@@ -95,7 +95,7 @@ public class NotificationDeriver extends AbstractProcessor<BusinessTransaction, 
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<Notification> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
+    public List<Notification> processMultiple(String tenantId, Trace item) throws Exception {
         return null;
     }
 }

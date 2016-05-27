@@ -35,8 +35,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
@@ -286,22 +286,22 @@ public class JavaNetHttpTest extends ClientTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
 
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getTestBTMServer().getBusinessTransactions().size());
+        // Check stored traces (including 1 for the test client)
+        assertEquals(1, getTestTraceServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

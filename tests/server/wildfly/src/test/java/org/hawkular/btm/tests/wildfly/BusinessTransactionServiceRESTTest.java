@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.Criteria;
-import org.hawkular.btm.btxn.service.rest.client.BusinessTransactionServiceRESTClient;
+import org.hawkular.btm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,17 +51,17 @@ public class BusinessTransactionServiceRESTTest {
     /**  */
     private static final String TEST_USERNAME = "jdoe";
 
-    private static final TypeReference<java.util.List<BusinessTransaction>> BUSINESS_TXN_LIST =
-            new TypeReference<java.util.List<BusinessTransaction>>() {
+    private static final TypeReference<java.util.List<Trace>> TRACE_LIST =
+            new TypeReference<java.util.List<Trace>>() {
             };
 
-    private static BusinessTransactionServiceRESTClient service;
+    private static TraceServiceRESTClient service;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeClass
     public static void initClass() {
-        service = new BusinessTransactionServiceRESTClient();
+        service = new TraceServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
     }
@@ -73,14 +73,14 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndRetrieveById() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -94,8 +94,8 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Retrieve stored business transaction
-        BusinessTransaction result = service.get(null, "1");
+        // Retrieve stored trace
+        Trace result = service.get(null, "1");
 
         assertNotNull(result);
         assertEquals("1", result.getId());
@@ -103,15 +103,15 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryAll() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -125,8 +125,8 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
-        List<BusinessTransaction> result = service.query(null, new Criteria());
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -135,18 +135,18 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryStartTimeInclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxn1.setId("1");
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        trace1.setId("1");
 
         Consumer c1 = new Consumer();
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -160,11 +160,11 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -173,18 +173,18 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryStartTimeExclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxn1.setId("1");
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        trace1.setId("1");
 
         Consumer c1 = new Consumer();
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -198,29 +198,29 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setStartTime(1100);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void testStoreAndQueryEndTimeInclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxn1.setId("1");
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        trace1.setId("1");
 
         Consumer c1 = new Consumer();
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -234,11 +234,11 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setEndTime(2000);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -247,18 +247,18 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryEndTimeExclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1200);
-        btxn1.setId("1");
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1200);
+        trace1.setId("1");
 
         Consumer c1 = new Consumer();
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -272,27 +272,27 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setEndTime(1100);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void testStoreAndQueryPropertiesInclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("hello", "world");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("hello", "world");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -306,11 +306,11 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", false);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -319,16 +319,16 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryPropertiesNotFound() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("hello", "world");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("hello", "world");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -342,27 +342,27 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "fred", false);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void testStoreAndQueryPropertiesExclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("hello", "world");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("hello", "world");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -376,20 +376,20 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", true);
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void testStoreAndQueryCorrelationsInclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Global);
@@ -397,13 +397,13 @@ public class BusinessTransactionServiceRESTTest {
 
         Consumer c1 = new Consumer();
         c1.getCorrelationIds().add(cid);
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -417,11 +417,11 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "myid"));
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -430,9 +430,9 @@ public class BusinessTransactionServiceRESTTest {
 
     @Test
     public void testStoreAndQueryCorrelationsExclude() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Global);
@@ -440,13 +440,13 @@ public class BusinessTransactionServiceRESTTest {
 
         Consumer c1 = new Consumer();
         c1.getCorrelationIds().add(cid);
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -460,27 +460,27 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "notmyid"));
 
-        List<BusinessTransaction> result = service.query(null, criteria);
+        List<Trace> result = service.query(null, criteria);
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void testQueryPOST() {
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setId("1");
-        btxn1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        btxn1.getProperties().put("hello", "world");
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        trace1.getProperties().put("hello", "world");
 
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
-        btxns.add(btxn1);
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
 
         try {
-            service.publish(null, btxns);
+            service.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -494,11 +494,11 @@ public class BusinessTransactionServiceRESTTest {
             fail("Failed to wait");
         }
 
-        // Query stored business transaction
+        // Query stored trace
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", false);
 
-        List<BusinessTransaction> result = null;
+        List<Trace> result = null;
 
         try {
             URL url = new URL(service.getUri() + "fragments/query");
@@ -541,10 +541,10 @@ public class BusinessTransactionServiceRESTTest {
             is.close();
 
             if (connection.getResponseCode() == 200) {
-                result = mapper.readValue(builder.toString(), BUSINESS_TXN_LIST);
+                result = mapper.readValue(builder.toString(), TRACE_LIST);
             }
         } catch (Exception e) {
-            fail("Failed to send 'query' business transaction request: " + e);
+            fail("Failed to send 'query' trace request: " + e);
         }
 
         assertEquals(1, result.size());

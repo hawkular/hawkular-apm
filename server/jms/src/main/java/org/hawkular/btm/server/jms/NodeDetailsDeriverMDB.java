@@ -26,8 +26,8 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.processor.nodedetails.NodeDetailsDeriver;
 import org.hawkular.btm.server.api.services.NodeDetailsPublisher;
 
@@ -36,21 +36,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "BusinessTransaction_NodeDetailsDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "Trace_NodeDetailsDeriver", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "BusinessTransactions"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "NodeDetailsDeriver"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NodeDetailsDeriver")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class NodeDetailsDeriverMDB extends ProcessorMDB<BusinessTransaction, NodeDetails> {
+public class NodeDetailsDeriverMDB extends ProcessorMDB<Trace, NodeDetails> {
 
     @Inject
-    private BusinessTransactionPublisherJMS businessTransactionPublisher;
+    private TracePublisherJMS tracePublisher;
 
     @Inject
     private NodeDetailsPublisher nodeDetailsPublisher;
@@ -58,9 +58,9 @@ public class NodeDetailsDeriverMDB extends ProcessorMDB<BusinessTransaction, Nod
     @PostConstruct
     public void init() {
         setProcessor(new NodeDetailsDeriver());
-        setRetryPublisher(businessTransactionPublisher);
+        setRetryPublisher(tracePublisher);
         setPublisher(nodeDetailsPublisher);
-        setTypeReference(new TypeReference<java.util.List<BusinessTransaction>>() {
+        setTypeReference(new TypeReference<java.util.List<Trace>>() {
         });
     }
 

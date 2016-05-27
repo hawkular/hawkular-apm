@@ -29,7 +29,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * This class represents communication details derived from two correlated business transaction
+ * This class represents communication details derived from two correlated trace
  * fragments.
  *
  * @author gbrown
@@ -601,7 +601,7 @@ public class CommunicationDetails implements Externalizable {
     /**
      * This class represents the outbound connectivity information associated with
      * the target fragment id. This can be used to build a complete end to end communication
-     * map for the business transaction id.
+     * map for the trace id.
      *
      * @author gbrown
      */

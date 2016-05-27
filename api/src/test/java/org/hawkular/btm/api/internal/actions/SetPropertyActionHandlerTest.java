@@ -21,12 +21,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.SetPropertyAction;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -52,13 +52,13 @@ public class SetPropertyActionHandlerTest {
 
         Consumer node = new Consumer();
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
 
-        handler.process(btxn, node, Direction.In, null, null);
+        handler.process(trace, node, Direction.In, null, null);
 
-        assertEquals(1, btxn.getProperties().size());
-        assertTrue(btxn.getProperties().containsKey(TEST_NAME_1));
-        assertEquals(TEST_VALUE_1, btxn.getProperties().get(TEST_NAME_1));
+        assertEquals(1, trace.getProperties().size());
+        assertTrue(trace.getProperties().containsKey(TEST_NAME_1));
+        assertEquals(TEST_VALUE_1, trace.getProperties().get(TEST_NAME_1));
 
         assertNull(handler.getIssues());
     }

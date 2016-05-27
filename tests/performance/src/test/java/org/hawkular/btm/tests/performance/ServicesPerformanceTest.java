@@ -22,11 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
-import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
-import org.hawkular.btm.api.model.btxn.NodeType;
-import org.hawkular.btm.api.model.events.NodeDetails;
-import org.hawkular.btm.api.services.Criteria;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

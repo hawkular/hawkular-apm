@@ -123,7 +123,7 @@ public class FragmentManager {
     }
 
     /**
-     * This method clears the business transaction fragment builder for the
+     * This method clears the trace fragment builder for the
      * current thread of execution.
      */
     public void clear() {

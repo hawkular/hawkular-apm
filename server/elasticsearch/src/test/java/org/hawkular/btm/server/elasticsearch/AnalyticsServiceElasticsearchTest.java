@@ -36,11 +36,6 @@ import org.hawkular.btm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.btm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.btm.api.model.analytics.PrincipalInfo;
 import org.hawkular.btm.api.model.analytics.PropertyInfo;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.NodeType;
-import org.hawkular.btm.api.model.btxn.Producer;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
@@ -49,6 +44,11 @@ import org.hawkular.btm.api.model.config.btxn.Filter;
 import org.hawkular.btm.api.model.events.CommunicationDetails;
 import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.NodeType;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.Criteria;
 import org.hawkular.btm.api.services.Criteria.FaultCriteria;
@@ -62,7 +62,7 @@ import org.junit.Test;
  */
 public class AnalyticsServiceElasticsearchTest {
 
-    private BusinessTransactionServiceElasticsearch bts;
+    private TraceServiceElasticsearch bts;
 
     private AnalyticsServiceElasticsearch analytics;
 
@@ -82,7 +82,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to initialise Elasticsearch client: " + e);
         }
         analytics = new AnalyticsServiceElasticsearch();
-        bts = new BusinessTransactionServiceElasticsearch();
+        bts = new TraceServiceElasticsearch();
         analytics.setElasticsearchClient(client);
         bts.setElasticsearchClient(client);
     }
@@ -95,15 +95,15 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testAllDistinctUnboundEndpointsConsumer() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component t1 = new Component();
         t1.setUri("uri2");
@@ -117,17 +117,17 @@ public class AnalyticsServiceElasticsearchTest {
         p1.setUri("uri4");
         c1.getNodes().add(p1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri5");
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -147,15 +147,15 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testAllDistinctUnboundEndpointsProducer() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Component c1 = new Component();
         c1.setUri("uri1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component t1 = new Component();
         t1.setUri("uri2");
@@ -174,7 +174,7 @@ public class AnalyticsServiceElasticsearchTest {
         t2.getNodes().add(p2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -194,15 +194,15 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testAllDuplicationUnboundEndpoints() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Component c1 = new Component();
         c1.setUri("uri1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component t1 = new Component();
         t1.setUri("uri2");
@@ -216,17 +216,17 @@ public class AnalyticsServiceElasticsearchTest {
         p1.setUri("uri3");
         c1.getNodes().add(p1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri3");
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -245,18 +245,18 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testUnboundEndpointsExcludeBTxnConfig() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -328,18 +328,18 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testUnboundEndpointsExcludeBTxnConfigRegex() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("{myns}ns");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -410,16 +410,16 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testBoundEndpoints() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
-        btxn1.getNodes().add(c1);
+        trace1.getNodes().add(c1);
 
         Component t1 = new Component();
         t1.setUri("uri2");
@@ -433,18 +433,18 @@ public class AnalyticsServiceElasticsearchTest {
         p1.setUri("uri2");
         c1.getNodes().add(p1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setName("btxn2");
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setBusinessTransaction("trace2");
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri4");
 
-        btxn2.getNodes().add(c2);
+        trace2.getNodes().add(c2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -453,7 +453,7 @@ public class AnalyticsServiceElasticsearchTest {
             fail("Failed to wait");
         }
 
-        java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "btxn1", 100, 0);
+        java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "trace1", 100, 0);
 
         assertNotNull(uris1);
         assertEquals(3, uris1.size());
@@ -461,7 +461,7 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(uris1.contains(new EndpointInfo("uri2")));
         assertTrue(uris1.contains(new EndpointInfo("uri3")));
 
-        java.util.List<EndpointInfo> uris2 = analytics.getBoundEndpoints(null, "btxn2", 100, 0);
+        java.util.List<EndpointInfo> uris2 = analytics.getBoundEndpoints(null, "trace2", 100, 0);
 
         assertNotNull(uris2);
         assertEquals(1, uris2.size());
@@ -470,24 +470,24 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testPropertyInfo() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxn1.getProperties().put("prop2", "value2");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().put("prop2", "value2");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setName("btxn1");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop3", "value3");
-        btxn2.getProperties().put("prop2", "value2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setBusinessTransaction("trace1");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop3", "value3");
+        trace2.getProperties().put("prop2", "value2");
+        traces.add(trace2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -497,7 +497,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("btxn1")
+            .setBusinessTransaction("trace1")
             .setStartTime(100)
             .setEndTime(0);
 
@@ -512,26 +512,26 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testPropertyInfoForPrincipal() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxn1.getProperties().put("prop1", "value1");
-        btxn1.getProperties().put("prop2", "value2");
-        btxn1.setPrincipal("p1");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().put("prop2", "value2");
+        trace1.setPrincipal("p1");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setName("btxn1");
-        btxn2.setStartTime(2000);
-        btxn2.getProperties().put("prop3", "value3");
-        btxn2.getProperties().put("prop2", "value2");
-        btxn2.setPrincipal("p2");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setBusinessTransaction("trace1");
+        trace2.setStartTime(2000);
+        trace2.getProperties().put("prop3", "value3");
+        trace2.getProperties().put("prop2", "value2");
+        trace2.setPrincipal("p2");
+        traces.add(trace2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -541,7 +541,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("btxn1")
+            .setBusinessTransaction("trace1")
             .setPrincipal("p1")
             .setStartTime(100)
             .setEndTime(0);
@@ -556,21 +556,21 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testPrincipalInfo() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setName("btxn1");
-        btxn1.setStartTime(1000);
-        btxn1.setPrincipal("p1");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(1000);
+        trace1.setPrincipal("p1");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setName("btxn1");
-        btxn2.setStartTime(2000);
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setBusinessTransaction("trace1");
+        trace2.setStartTime(2000);
+        traces.add(trace2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -580,7 +580,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("btxn1")
+            .setBusinessTransaction("trace1")
             .setStartTime(100)
             .setEndTime(0);
 
@@ -2787,20 +2787,20 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testHostNames() {
-        List<BusinessTransaction> btxns = new ArrayList<BusinessTransaction>();
+        List<Trace> traces = new ArrayList<Trace>();
 
-        BusinessTransaction btxn1 = new BusinessTransaction();
-        btxn1.setStartTime(1000);
-        btxn1.setHostName("hostA");
-        btxns.add(btxn1);
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000);
+        trace1.setHostName("hostA");
+        traces.add(trace1);
 
-        BusinessTransaction btxn2 = new BusinessTransaction();
-        btxn2.setStartTime(2000);
-        btxn2.setHostName("hostB");
-        btxns.add(btxn2);
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000);
+        trace2.setHostName("hostB");
+        traces.add(trace2);
 
         try {
-            bts.storeBusinessTransactions(null, btxns);
+            bts.storeTraces(null, traces);
 
             synchronized (this) {
                 wait(1000);

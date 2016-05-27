@@ -22,11 +22,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.EvaluateURIAction;
 import org.hawkular.btm.api.model.config.btxn.Processor;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.utils.NodeUtil;
 import org.junit.Test;
 
@@ -70,17 +70,17 @@ public class EvaluateURIActionHandlerTest {
 
         EvaluateURIActionHandler handler = new EvaluateURIActionHandler(action);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer consumer = new Consumer();
         consumer.setUri("/my/fred/and/5");
 
-        assertTrue(handler.process(btxn, consumer, Direction.In, null, null));
+        assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         assertEquals(action.getTemplate(), consumer.getUri());
-        assertTrue(btxn.getProperties().containsKey("name"));
-        assertTrue(btxn.getProperties().containsKey("num"));
-        assertEquals("fred", btxn.getProperties().get("name"));
-        assertEquals("5", btxn.getProperties().get("num"));
+        assertTrue(trace.getProperties().containsKey("name"));
+        assertTrue(trace.getProperties().containsKey("num"));
+        assertEquals("fred", trace.getProperties().get("name"));
+        assertEquals("5", trace.getProperties().get("num"));
 
         assertNull(handler.getIssues());
     }
@@ -92,21 +92,21 @@ public class EvaluateURIActionHandlerTest {
 
         EvaluateURIActionHandler handler = new EvaluateURIActionHandler(action);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer consumer = new Consumer();
         consumer.setUri("/my/uri");
         consumer.getDetails().put("http_query", "num=5&another=value&name=hello%20world");
 
-        assertTrue(handler.process(btxn, consumer, Direction.In, null, null));
+        assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         assertFalse(NodeUtil.isURIRewritten(consumer));
 
-        assertTrue(btxn.getProperties().containsKey("name"));
-        assertTrue(btxn.getProperties().containsKey("num"));
-        assertEquals("hello world", btxn.getProperties().get("name"));
-        assertEquals("5", btxn.getProperties().get("num"));
+        assertTrue(trace.getProperties().containsKey("name"));
+        assertTrue(trace.getProperties().containsKey("num"));
+        assertEquals("hello world", trace.getProperties().get("name"));
+        assertEquals("5", trace.getProperties().get("num"));
 
-        assertFalse(btxn.getProperties().containsKey("another"));
+        assertFalse(trace.getProperties().containsKey("another"));
 
         assertNull(handler.getIssues());
     }
@@ -118,24 +118,24 @@ public class EvaluateURIActionHandlerTest {
 
         EvaluateURIActionHandler handler = new EvaluateURIActionHandler(action);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer consumer = new Consumer();
         consumer.setUri("/my/test%20param/uri");
         consumer.getDetails().put("http_query", "num=5&another=value&name=hello%20world");
 
-        assertTrue(handler.process(btxn, consumer, Direction.In, null, null));
+        assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         // URI should now only be path part of template
         assertEquals("/my/{pathParam}/uri", consumer.getUri());
 
-        assertTrue(btxn.getProperties().containsKey("pathParam"));
-        assertTrue(btxn.getProperties().containsKey("name"));
-        assertTrue(btxn.getProperties().containsKey("num"));
-        assertEquals("test param", btxn.getProperties().get("pathParam"));
-        assertEquals("hello world", btxn.getProperties().get("name"));
-        assertEquals("5", btxn.getProperties().get("num"));
+        assertTrue(trace.getProperties().containsKey("pathParam"));
+        assertTrue(trace.getProperties().containsKey("name"));
+        assertTrue(trace.getProperties().containsKey("num"));
+        assertEquals("test param", trace.getProperties().get("pathParam"));
+        assertEquals("hello world", trace.getProperties().get("name"));
+        assertEquals("5", trace.getProperties().get("num"));
 
-        assertFalse(btxn.getProperties().containsKey("another"));
+        assertFalse(trace.getProperties().containsKey("another"));
 
         assertNull(handler.getIssues());
     }

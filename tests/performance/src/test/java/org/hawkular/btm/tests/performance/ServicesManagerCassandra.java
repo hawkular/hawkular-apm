@@ -16,8 +16,6 @@
  */
 package org.hawkular.btm.tests.performance;
 
-import org.hawkular.btm.api.services.AnalyticsService;
-import org.hawkular.btm.api.services.BusinessTransactionService;
 import org.hawkular.btm.server.cassandra.AnalyticsServiceCassandra;
 import org.hawkular.btm.server.cassandra.BusinessTransactionServiceCassandra;
 import org.hawkular.btm.server.cassandra.CassandraClient;
@@ -77,7 +75,7 @@ public class ServicesManagerCassandra implements ServicesManager {
      * @see org.hawkular.btm.tests.performance.ServicesManager#getBusinessTransactionService()
      */
     @Override
-    public BusinessTransactionService getBusinessTransactionService() {
+    public BusinessTransactionService getTraceService() {
         return businessTransactionService;
     }
 

@@ -25,8 +25,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
@@ -118,7 +118,7 @@ public class ClientCamelCXFTest extends ClientTestBase {
             fail("Failed to get cxf response: " + e);
         }
 
-        // Need to wait for business transaction fragment to be reported to server
+        // Need to wait for trace fragment to be reported to server
         try {
             synchronized (this) {
                 wait(3000);
@@ -127,14 +127,14 @@ public class ClientCamelCXFTest extends ClientTestBase {
             fail("Failed to wait");
         }
 
-        // Check if business transaction fragments have been reported
-        List<BusinessTransaction> btxns = getTestBTMServer().getBusinessTransactions();
+        // Check if trace fragments have been reported
+        List<Trace> btxns = getTestTraceServer().getTraces();
 
-        for (BusinessTransaction btxn : btxns) {
+        for (Trace trace : btxns) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }

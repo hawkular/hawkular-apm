@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
 /**
@@ -34,7 +34,7 @@ import org.hawkular.btm.server.api.task.AbstractProcessor;
  * @author gbrown
  */
 public class BTxnCompletionInformationInitiator extends
-                    AbstractProcessor<BusinessTransaction, BTxnCompletionInformation> {
+                    AbstractProcessor<Trace, BTxnCompletionInformation> {
 
     private static final Logger log = Logger.getLogger(BTxnCompletionInformationInitiator.class.getName());
 
@@ -51,7 +51,7 @@ public class BTxnCompletionInformationInitiator extends
      */
     @Override
     public BTxnCompletionInformation processSingle(String tenantId,
-                            BusinessTransaction item) throws Exception {
+                            Trace item) throws Exception {
         // Check whether the business transaction fragment is an initial fragment
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -68,7 +68,7 @@ public class BTxnCompletionInformationInitiator extends
                     ct.setEndpointType(((Consumer)n).getEndpointType());
                 }
 
-                ct.setBusinessTransaction(item.getName());
+                ct.setBusinessTransaction(item.getBusinessTransaction());
                 ct.setDuration(item.calculateDuration());
                 ct.setPrincipal(item.getPrincipal());
                 ct.setFault(n.getFault());
@@ -101,7 +101,7 @@ public class BTxnCompletionInformationInitiator extends
      */
     @Override
     public List<BTxnCompletionInformation> processMultiple(String tenantId,
-                                BusinessTransaction item) throws Exception {
+                                Trace item) throws Exception {
         return null;
     }
 }

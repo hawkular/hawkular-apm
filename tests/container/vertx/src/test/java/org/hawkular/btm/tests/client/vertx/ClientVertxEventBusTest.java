@@ -19,9 +19,9 @@ package org.hawkular.btm.tests.client.vertx;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.Test;
 
@@ -153,26 +153,26 @@ public class ClientVertxEventBusTest extends ClientTestBase {
 
     protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
-        assertEquals(2, getTestBTMServer().getBusinessTransactions().size());
+        assertEquals(2, getTestTraceServer().getTraces().size());
 
         Consumer consumer = null;
         Producer producer = null;
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            if (!btxn.getNodes().isEmpty()) {
-                if (btxn.getNodes().get(0).getClass() == Producer.class) {
-                    producer = (Producer) btxn.getNodes().get(0);
-                } else if (btxn.getNodes().get(0).getClass() == Consumer.class) {
-                    consumer = (Consumer) btxn.getNodes().get(0);
+            if (!trace.getNodes().isEmpty()) {
+                if (trace.getNodes().get(0).getClass() == Producer.class) {
+                    producer = (Producer) trace.getNodes().get(0);
+                } else if (trace.getNodes().get(0).getClass() == Consumer.class) {
+                    consumer = (Consumer) trace.getNodes().get(0);
                 }
             }
         }

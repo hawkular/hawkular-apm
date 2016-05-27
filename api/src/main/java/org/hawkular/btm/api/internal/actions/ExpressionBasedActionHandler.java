@@ -22,14 +22,14 @@ import java.util.Map;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.Severity;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.ExpressionBasedAction;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Issue;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.ProcessorIssue;
+import org.hawkular.btm.api.model.trace.Trace;
 
 /**
  * @author gbrown
@@ -115,17 +115,17 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
      * This method returns the value, associated with the expression, for the
      * supplied data.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The node
      * @param direction The direction
      * @param headers The optional headers
      * @param values The values
      * @return The result of the expression
      */
-    protected String getValue(BusinessTransaction btxn, Node node, Direction direction,
+    protected String getValue(Trace trace, Node node, Direction direction,
             Map<String, ?> headers, Object[] values) {
         if (expression != null) {
-            return expression.evaluate(btxn, node, direction, headers, values);
+            return expression.evaluate(trace, node, direction, headers, values);
         }
 
         return null;

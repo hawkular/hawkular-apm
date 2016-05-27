@@ -23,9 +23,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
 import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -35,10 +35,10 @@ public class FragmentCompletionTimeDeriverTest {
 
     @Test
     public void testProcessSingle() {
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("btxnId");
-        btxn.setName("btxnName");
-        btxn.setStartTime(100);
+        Trace trace = new Trace();
+        trace.setId("btxnId");
+        trace.setBusinessTransaction("btxnName");
+        trace.setStartTime(100);
 
         Consumer c = new Consumer();
         c.setUri("uri");
@@ -47,25 +47,25 @@ public class FragmentCompletionTimeDeriverTest {
         c.setFault("myFault");
         c.setEndpointType("HTTP");
 
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         FragmentCompletionTimeDeriver deriver = new FragmentCompletionTimeDeriver();
 
         CompletionTime ct = null;
 
         try {
-            ct = deriver.processSingle(null, btxn);
+            ct = deriver.processSingle(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
 
         assertNotNull(ct);
 
-        assertEquals(btxn.getId(), ct.getId());
-        assertEquals(btxn.getName(), ct.getBusinessTransaction());
+        assertEquals(trace.getId(), ct.getId());
+        assertEquals(trace.getBusinessTransaction(), ct.getBusinessTransaction());
         assertEquals(c.getEndpointType(), ct.getEndpointType());
         assertFalse(ct.isInternal());
-        assertEquals(btxn.getStartTime(), ct.getTimestamp());
+        assertEquals(trace.getStartTime(), ct.getTimestamp());
         assertEquals(c.getUri(), ct.getUri());
         assertEquals(200, ct.getDuration());
         assertEquals(c.getFault(), ct.getFault());
@@ -73,24 +73,24 @@ public class FragmentCompletionTimeDeriverTest {
 
     @Test
     public void testProcessSingleConsumerInternal() {
-        BusinessTransaction btxn = new BusinessTransaction();
-        btxn.setId("btxnId");
-        btxn.setName("btxnName");
-        btxn.setStartTime(100);
+        Trace trace = new Trace();
+        trace.setId("btxnId");
+        trace.setBusinessTransaction("btxnName");
+        trace.setStartTime(100);
 
         Consumer c = new Consumer();
         c.setUri("uri");
         c.setBaseTime(1);
         c.setDuration(200000000);
 
-        btxn.getNodes().add(c);
+        trace.getNodes().add(c);
 
         FragmentCompletionTimeDeriver deriver = new FragmentCompletionTimeDeriver();
 
         CompletionTime ct = null;
 
         try {
-            ct = deriver.processSingle(null, btxn);
+            ct = deriver.processSingle(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

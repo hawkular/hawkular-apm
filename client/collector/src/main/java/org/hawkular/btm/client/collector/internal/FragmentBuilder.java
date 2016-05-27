@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.ContainerNode;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.ReportingLevel;
+import org.hawkular.btm.api.model.trace.ContainerNode;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.utils.NodeUtil;
 
 /**
- * This class represents the builder for a business transaction fragment. NOTE: This
+ * This class represents the builder for a trace fragment. NOTE: This
  * class is not thread safe as the sequence of events within a thread of execution
  * should be in sequence, and therefore should not result in any concurrent conflicts.
  *
@@ -48,7 +48,7 @@ public class FragmentBuilder {
 
     private static final Logger log = Logger.getLogger(FragmentBuilder.class.getName());
 
-    private BusinessTransaction businessTransaction;
+    private Trace trace;
 
     private Stack<Node> nodeStack = new Stack<Node>();
 
@@ -93,7 +93,7 @@ public class FragmentBuilder {
     }
 
     {
-        businessTransaction = new BusinessTransaction()
+        trace = new Trace()
                 .setId(UUID.randomUUID().toString())
                 .setStartTime(System.currentTimeMillis())
                 .setHostName(hostName)
@@ -140,10 +140,10 @@ public class FragmentBuilder {
     }
 
     /**
-     * @return the businessTransaction
+     * @return the trace
      */
-    public BusinessTransaction getBusinessTransaction() {
-        return businessTransaction;
+    public Trace getTrace() {
+        return trace;
     }
 
     /**
@@ -219,7 +219,7 @@ public class FragmentBuilder {
     }
 
     /**
-     * This method pushes a new node into the business transaction
+     * This method pushes a new node into the trace
      * fragment hierarchy.
      *
      * @param node The new node
@@ -242,15 +242,15 @@ public class FragmentBuilder {
 
             if (nodeStack.isEmpty()) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Pushing top level node: " + node + " for txn: " + businessTransaction);
+                    log.finest("Pushing top level node: " + node + " for txn: " + trace);
                 }
-                businessTransaction.getNodes().add(node);
+                trace.getNodes().add(node);
             } else {
                 Node parent = nodeStack.peek();
 
                 if (parent instanceof ContainerNode) {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Add node: " + node + " to parent: " + parent + " in txn: " + businessTransaction);
+                        log.finest("Add node: " + node + " to parent: " + parent + " in txn: " + trace);
                     }
                     ((ContainerNode) parent).getNodes().add(node);
                 } else {
@@ -262,7 +262,7 @@ public class FragmentBuilder {
     }
 
     /**
-     * This method pops the latest node from the business transaction
+     * This method pops the latest node from the trace
      * fragment hierarchy.
      *
      * @param cls The type of node to pop
@@ -642,7 +642,7 @@ public class FragmentBuilder {
     public String toString() {
         StringBuilder info = new StringBuilder();
         info.append("Fragment builder: current btxn=[");
-        info.append(businessTransaction);
+        info.append(trace);
         info.append("] complete=");
         info.append(isComplete());
         info.append(" uncompletedCorrelationIdsNodeMap=");

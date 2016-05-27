@@ -12,7 +12,7 @@
         "location": "EXIT",
         "condition": "activate($0.path(),$0.method(),$0.getHeader(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "$0.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",

@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
 
 /**
  * This class represents the base query criteria.
@@ -331,7 +331,7 @@ public class Criteria {
             ret.put("hostName", hostName);
         }
 
-        // Only relevant for business transaction fragments
+        // Only relevant for trace fragments
         if (!getCorrelationIds().isEmpty()) {
             boolean first = true;
             StringBuilder buf = new StringBuilder();

@@ -24,12 +24,12 @@ import java.util.Map;
 
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.trace.Node;
 import org.hawkular.btm.api.services.ServiceResolver;
-import org.hawkular.btm.client.api.BusinessTransactionCollector;
 import org.hawkular.btm.client.api.HeadersAccessor;
 import org.hawkular.btm.client.api.SessionManager;
+import org.hawkular.btm.client.api.TraceCollector;
 import org.hawkular.btm.instrumenter.faults.FaultDescriptor;
 import org.hawkular.btm.instrumenter.io.InstrumentedInputStream;
 import org.hawkular.btm.instrumenter.io.InstrumentedOutputStream;
@@ -52,7 +52,7 @@ public class RuleHelper extends Helper implements SessionManager {
 
     private static List<FaultDescriptor> faultDescriptors;
 
-    private static BusinessTransactionCollector collector;
+    private static TraceCollector collector;
 
     static {
         List<HeadersAccessor> accessors = ServiceResolver.getServices(HeadersAccessor.class);
@@ -64,7 +64,7 @@ public class RuleHelper extends Helper implements SessionManager {
         faultDescriptors = ServiceResolver.getServices(FaultDescriptor.class);
 
         // Obtain collector
-        collector = ServiceResolver.getSingletonService(BusinessTransactionCollector.class);
+        collector = ServiceResolver.getSingletonService(TraceCollector.class);
     }
 
     /**
@@ -84,11 +84,11 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
-     * This method returns the business transaction collector.
+     * This method returns the trace collector.
      *
-     * @return The business transaction collector
+     * @return The trace collector
      */
-    public BusinessTransactionCollector collector() {
+    public TraceCollector collector() {
         return collector;
     }
 
@@ -467,7 +467,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * @return The business transaction name
      */
     public String getBusinessTransactionName() {
-        return collector().getName();
+        return collector().getBusinessTransaction();
     }
 
     /**

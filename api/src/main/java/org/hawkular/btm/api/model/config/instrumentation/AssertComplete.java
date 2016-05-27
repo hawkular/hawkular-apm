@@ -19,7 +19,7 @@ package org.hawkular.btm.api.model.config.instrumentation;
 
 /**
  * This type represents the session action for asserting that
- * the business transaction fragment for the current thread
+ * the trace fragment for the current thread
  * is complete.
  *
  * @author gbrown

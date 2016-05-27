@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Node;
 import org.hawkular.btm.api.model.events.CompletionTime;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.server.api.task.AbstractProcessor;
 
 /**
@@ -31,7 +31,7 @@ import org.hawkular.btm.server.api.task.AbstractProcessor;
  *
  * @author gbrown
  */
-public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTransaction, CompletionTime> {
+public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, CompletionTime> {
 
     private static final Logger log = Logger.getLogger(FragmentCompletionTimeDeriver.class.getName());
 
@@ -47,7 +47,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
      * @see org.hawkular.btm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CompletionTime processSingle(String tenantId, BusinessTransaction item) throws Exception {
+    public CompletionTime processSingle(String tenantId, Trace item) throws Exception {
         // Check fragment has top level node
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -63,7 +63,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
                         || ((Consumer)n).getEndpointType().trim().length() == 0);
             }
 
-            ct.setBusinessTransaction(item.getName());
+            ct.setBusinessTransaction(item.getBusinessTransaction());
             ct.setDuration(item.calculateDuration());
             ct.setPrincipal(item.getPrincipal());
             ct.setFault(n.getFault());
@@ -83,7 +83,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<BusinessTra
      * @see org.hawkular.btm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<CompletionTime> processMultiple(String tenantId, BusinessTransaction item) throws Exception {
+    public List<CompletionTime> processMultiple(String tenantId, Trace item) throws Exception {
         return null;
     }
 }

@@ -27,14 +27,14 @@ import java.util.StringTokenizer;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.Severity;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Issue;
-import org.hawkular.btm.api.model.btxn.Node;
-import org.hawkular.btm.api.model.btxn.ProcessorIssue;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.EvaluateURIAction;
 import org.hawkular.btm.api.model.config.btxn.Processor;
 import org.hawkular.btm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.btm.api.model.trace.Issue;
+import org.hawkular.btm.api.model.trace.Node;
+import org.hawkular.btm.api.model.trace.ProcessorIssue;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.utils.NodeUtil;
 
 /**
@@ -112,13 +112,13 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
 
     /* (non-Javadoc)
      * @see org.hawkular.btm.client.collector.internal.actions.ProcessorActionHandler#process(
-     *      org.hawkular.btm.api.model.btxn.BusinessTransaction, org.hawkular.btm.api.model.btxn.Node,
+     *      org.hawkular.btm.api.model.trace.Trace, org.hawkular.btm.api.model.trace.Node,
      *      org.hawkular.btm.api.model.config.Direction, java.util.Map, java.lang.Object[])
      */
     @Override
-    public boolean process(BusinessTransaction btxn, Node node, Direction direction, Map<String, ?> headers,
+    public boolean process(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {
-        if (super.process(btxn, node, direction, headers, values)) {
+        if (super.process(trace, node, direction, headers, values)) {
             if (node.getUri() != null && pathTemplate != null) {
                 StringTokenizer uriTokens = new StringTokenizer(node.getUri(), "/");
                 StringTokenizer templateTokens =
@@ -153,14 +153,14 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                     boolean processed = false;
 
                     if (props != null) {
-                        btxn.getProperties().putAll(props);
+                        trace.getProperties().putAll(props);
                         NodeUtil.rewriteURI(node, pathTemplate);
                         processed = true;
                     }
 
                     // If query parameter template defined, then process
                     if (!queryParameters.isEmpty()) {
-                        if (processQueryParameters(btxn, node)) {
+                        if (processQueryParameters(trace, node)) {
                             processed = true;
                         }
                     }
@@ -175,13 +175,13 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
 
     /**
      * This method processes the query parameters associated with the supplied node to extract
-     * templated named values as properties on the business transaction.
+     * templated named values as properties on the trace.
      *
-     * @param btxn The business transaction
+     * @param trace The trace
      * @param node The node
      * @return Whether query parameters were processed
      */
-    protected boolean processQueryParameters(BusinessTransaction btxn, Node node) {
+    protected boolean processQueryParameters(Trace trace, Node node) {
         boolean ret = false;
 
         // Translate query string into a map
@@ -194,7 +194,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                 if (namevalue.length == 2) {
                     if (queryParameters.contains(namevalue[0])) {
                         try {
-                            btxn.getProperties().put(namevalue[0], URLDecoder.decode(namevalue[1], "UTF-8"));
+                            trace.getProperties().put(namevalue[0], URLDecoder.decode(namevalue[1], "UTF-8"));
                             ret = true;
                         } catch (UnsupportedEncodingException e) {
                             if (log.isLoggable(Level.FINEST)) {

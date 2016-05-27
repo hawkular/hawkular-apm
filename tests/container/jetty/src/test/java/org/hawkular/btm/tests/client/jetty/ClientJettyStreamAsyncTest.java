@@ -40,9 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Producer;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Producer;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.tests.common.ClientTestBase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -220,11 +220,11 @@ public class ClientJettyStreamAsyncTest extends ClientTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (BusinessTransaction btxn : getTestBTMServer().getBusinessTransactions()) {
+        for (Trace trace : getTestTraceServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(btxn));
+                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -232,11 +232,11 @@ public class ClientJettyStreamAsyncTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(2, getTestBTMServer().getBusinessTransactions().size());
+        assertEquals(2, getTestTraceServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Producer.class, producers);
-        findNodes(getTestBTMServer().getBusinessTransactions().get(1).getNodes(), Producer.class, producers);
+        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -254,8 +254,8 @@ public class ClientJettyStreamAsyncTest extends ClientTestBase {
                 testProducer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         List<Consumer> consumers = new ArrayList<Consumer>();
-        findNodes(getTestBTMServer().getBusinessTransactions().get(0).getNodes(), Consumer.class, consumers);
-        findNodes(getTestBTMServer().getBusinessTransactions().get(1).getNodes(), Consumer.class, consumers);
+        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Consumer.class, consumers);
+        findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Consumer.class, consumers);
 
         assertEquals("Expecting 1 consumers", 1, consumers.size());
 

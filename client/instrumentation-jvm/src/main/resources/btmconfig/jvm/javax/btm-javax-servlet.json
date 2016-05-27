@@ -22,7 +22,7 @@
         }],
         "condition": "!isActive() && activate(uri.getPath(),req.getMethod(),req.getHeader(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "req.getHeader(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",

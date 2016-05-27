@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * This class represents information related to endpoints associated with
- * unbound business transaction fragments.
+ * unbound trace fragments.
  *
  * @author gbrown
  */

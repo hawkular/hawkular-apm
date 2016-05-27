@@ -15,7 +15,7 @@
         "location": "ENTRY",
         "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),null,$1.getStringProperty(\"Hawkularbtid\"))",
         "actions": [{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "$1.getStringProperty(\"Hawkularbtname\")"
         },{
           "type": "SetLevel",

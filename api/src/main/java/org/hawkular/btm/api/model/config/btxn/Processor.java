@@ -19,8 +19,8 @@ package org.hawkular.btm.api.model.config.btxn;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.config.Direction;
+import org.hawkular.btm.api.model.trace.NodeType;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 /**
  * This class represents a processor, used to extract information from the instrumented
  * location, to derive properties, correlation ids and contents to be stored in the
- * business transaction fragment/nodes.
+ * trace fragment/nodes.
  *
  * @author gbrown
  */

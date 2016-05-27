@@ -36,7 +36,7 @@
           "type": "FreeFormAction",
           "action": "headers.removeAll(\"Hawkularbtid\")"
         },{
-          "type": "SetName",
+          "type": "SetBusinessTransaction",
           "nameExpression": "btname"
         },{
           "type": "SetLevel",

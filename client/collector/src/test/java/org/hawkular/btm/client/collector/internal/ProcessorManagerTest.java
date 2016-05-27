@@ -24,14 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hawkular.btm.api.model.btxn.BusinessTransaction;
-import org.hawkular.btm.api.model.btxn.Component;
-import org.hawkular.btm.api.model.btxn.Consumer;
-import org.hawkular.btm.api.model.btxn.Content;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier;
-import org.hawkular.btm.api.model.btxn.CorrelationIdentifier.Scope;
-import org.hawkular.btm.api.model.btxn.Message;
-import org.hawkular.btm.api.model.btxn.NodeType;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.config.Direction;
 import org.hawkular.btm.api.model.config.btxn.AddContentAction;
@@ -45,6 +37,14 @@ import org.hawkular.btm.api.model.config.btxn.SetFaultAction;
 import org.hawkular.btm.api.model.config.btxn.SetFaultDescriptionAction;
 import org.hawkular.btm.api.model.config.btxn.SetPropertyAction;
 import org.hawkular.btm.api.model.config.btxn.TextExpression;
+import org.hawkular.btm.api.model.trace.Component;
+import org.hawkular.btm.api.model.trace.Consumer;
+import org.hawkular.btm.api.model.trace.Content;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.btm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.btm.api.model.trace.Message;
+import org.hawkular.btm.api.model.trace.NodeType;
+import org.hawkular.btm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -75,12 +75,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -113,12 +113,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -151,12 +151,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -185,12 +185,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.Out, null, "first", "second");
+        pm.process(trace, service, Direction.Out, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -219,12 +219,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -254,13 +254,13 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
         service.setUri("should include this");
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -290,13 +290,13 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
         service.setUri("should exclude this");
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -325,12 +325,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -358,12 +358,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getFault());
     }
@@ -391,12 +391,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getFaultDescription());
     }
@@ -425,14 +425,14 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", btxn.getProperties().get("test"));
+        assertEquals("second", trace.getProperties().get("test"));
     }
 
     @Test
@@ -460,15 +460,15 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals(1, service.getIn().getContent().size());
 
@@ -504,15 +504,15 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals(1, service.getCorrelationIds().size());
 
@@ -545,17 +545,17 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, btxn.getProperties().size());
+        assertEquals(0, trace.getProperties().size());
     }
 
     @Test
@@ -582,19 +582,19 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
         service.setFault("NotSameFault");
 
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, btxn.getProperties().size());
+        assertEquals(0, trace.getProperties().size());
     }
 
     @Test
@@ -621,20 +621,20 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
         service.setFault("MyFault");
 
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(1, btxn.getProperties().size());
-        assertTrue(btxn.getProperties().containsKey("result"));
+        assertEquals(1, trace.getProperties().size());
+        assertTrue(trace.getProperties().containsKey("result"));
     }
 
     @Test
@@ -661,14 +661,14 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, btxn.getProperties().size());
+        assertEquals(0, trace.getProperties().size());
     }
 
     @Test
@@ -695,16 +695,16 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
         service.setOperation("NotSameOperation");
 
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, btxn.getProperties().size());
+        assertEquals(0, trace.getProperties().size());
     }
 
     @Test
@@ -731,17 +731,17 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
         service.setOperation("MyOp");
 
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(1, btxn.getProperties().size());
-        assertTrue(btxn.getProperties().containsKey("result"));
+        assertEquals(1, trace.getProperties().size());
+        assertTrue(trace.getProperties().containsKey("result"));
     }
 
     @Test
@@ -768,14 +768,14 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
         service.setOperation("MyOp");
 
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        assertTrue(pm.isProcessed(btxn, service, Direction.In));
+        assertTrue(pm.isProcessed(trace, service, Direction.In));
     }
 
     @Test
@@ -803,13 +803,13 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
         service.setUri("should exclude this");
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        assertFalse(pm.isProcessed(btxn, service, Direction.In));
+        assertFalse(pm.isProcessed(trace, service, Direction.In));
     }
 
     @Test
@@ -835,16 +835,16 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
 
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        assertFalse(pm.isContentProcessed(btxn, service, Direction.In));
+        assertFalse(pm.isContentProcessed(trace, service, Direction.In));
     }
 
     @Test
@@ -872,15 +872,15 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        assertTrue(pm.isContentProcessed(btxn, service, Direction.In));
+        assertTrue(pm.isContentProcessed(trace, service, Direction.In));
     }
 
     @Test
@@ -907,15 +907,15 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Consumer service = new Consumer();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
 
-        assertTrue(pm.isContentProcessed(btxn, service, Direction.In));
+        assertTrue(pm.isContentProcessed(trace, service, Direction.In));
     }
 
     @Test
@@ -941,12 +941,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null);
+        pm.process(trace, service, Direction.In, null);
 
         assertEquals("hello", service.getDetails().get("test"));
     }
@@ -976,12 +976,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null);
+        pm.process(trace, service, Direction.In, null);
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -1010,14 +1010,14 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("hello", "world");
-        pm.process(btxn, service, Direction.In, headers);
+        pm.process(trace, service, Direction.In, headers);
 
         assertTrue(service.getDetails().containsKey("test"));
     }
@@ -1046,12 +1046,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null);
+        pm.process(trace, service, Direction.In, null);
 
         assertFalse(service.getDetails().containsKey("test"));
     }
@@ -1080,12 +1080,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "hello");
+        pm.process(trace, service, Direction.In, null, "hello");
 
         assertTrue(service.getDetails().containsKey("test"));
     }
@@ -1118,12 +1118,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getDetails().get("test"));
     }
@@ -1156,12 +1156,12 @@ public class ProcessorManagerTest {
 
         ProcessorManager pm = new ProcessorManager(cc);
 
-        BusinessTransaction btxn = new BusinessTransaction();
+        Trace trace = new Trace();
         Component service = new Component();
-        btxn.getNodes().add(service);
-        btxn.setName("testapp");
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
 
-        pm.process(btxn, service, Direction.In, null, "first", "second");
+        pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertFalse(service.getDetails().containsKey("test"));
     }

@@ -17,7 +17,7 @@
 package org.hawkular.btm.api.model.config;
 
 /**
- * This enumerated type defines the reporting levels for business transaction
+ * This enumerated type defines the reporting levels for trace
  * instance information.
  *
  * @author gbrown
@@ -30,7 +30,7 @@ public enum ReportingLevel {
 
     /* Don't report any instances of this business txn, but unlike the
      * 'Ignore' level, this may only be a temporary situation, and the
-     * business transaction is of interest */
+     * trace is of interest */
     None,
 
     /* Report all information related to instances of this business txn */
