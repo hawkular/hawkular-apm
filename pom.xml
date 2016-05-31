@@ -62,11 +62,11 @@
     <module>client/analytics-service-rest-client</module>
     <module>client/api</module>
     <module>client/collector</module>
+    <module>client/config-service-rest-client</module>
     <module>client/instrumentation-jvm</module>
+    <module>client/instrumenter</module>
     <module>client/trace-publisher-rest-client</module>
     <module>client/trace-service-rest-client</module>
-    <module>client/config-service-rest-client</module>
-    <module>client/instrumenter</module>
     <module>processors/communicationdetails-deriver</module>
     <module>processors/btxncompletiontime-deriver</module>
     <module>processors/fragmentcompletiontime-deriver</module>
@@ -82,6 +82,7 @@
     <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>services/config-service-inmemory</module>
+    <module>tools/instrumenter</module>
     <module>ui</module>
     <module>feature-pack/integrated</module>
     <module>feature-pack/standalone</module>
@@ -122,6 +123,7 @@
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
     <version.org.hawkular.accounts>2.0.26.Final</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.6</version.org.jboss.byteman>
+    <version.org.jboss.shrinkwrap.resolvers>2.2.2</version.org.jboss.shrinkwrap.resolvers>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
     <version.org.tuckey>4.0.3</version.org.tuckey>
@@ -176,6 +178,11 @@
       <dependency>
         <groupId>org.hawkular.btm</groupId>
         <artifactId>hawkular-btm-instrumenter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.btm</groupId>
+        <artifactId>hawkular-btm-tools-instrumenter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -345,6 +352,13 @@
         <groupId>org.jboss.byteman</groupId>
         <artifactId>byteman</artifactId>
         <version>${version.org.jboss.byteman}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.resolver</groupId>
+        <artifactId>shrinkwrap-resolver-depchain</artifactId>
+        <version>${version.org.jboss.shrinkwrap.resolvers}</version>
+        <type>pom</type>
       </dependency>
 
       <dependency>
@@ -585,26 +599,17 @@
         <module>tests/instrumentation</module>
         <module>tests/container/standalone</module>
         <module>tests/container/jetty</module>
+        <module>tests/container/vertx</module>
+        <module>tests/container/wildfly</module>
         <module>tests/server/wildfly</module>
         <module>tests/server/mock</module>
+        <module>tests/tools/instrumenter</module>
       </modules>
     </profile>
     <profile>
       <id>performance</id>
       <modules>
         <module>tests/performance</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>vertx</id>
-      <modules>
-        <module>tests/container/vertx</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wildfly</id>
-      <modules>
-        <module>tests/container/wildfly</module>
       </modules>
     </profile>
     <profile>
