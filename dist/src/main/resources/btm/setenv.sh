@@ -22,15 +22,16 @@
 
 # Environment script for setting up the JAVA_OPTS property for client instrumentation
 
-export BTM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export HAWKULAR_APM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-export BTM_AGENT_JAR_PATH=$BTM_HOME/hawkular-btm-agent-rest.jar
+export HAWKULAR_APM_AGENT_JAR_PATH=$HAWKULAR_APM_HOME/hawkular-btm-agent-rest.jar
 
-export JAVA_OPTS="-javaagent:$BTM_AGENT_JAR_PATH \
-    -Dhawkular-btm.uri=http://localhost:8180/hawkular/btm \
-    -Dhawkular-btm.config.refresh=10 \
-    -Dhawkular-btm.username=jdoe \
-    -Dhawkular-btm.password=password"
+export HAWKULAR_APM_URI=http://localhost:8180/hawkular/btm
+export HAWKULAR_APM_USERNAME=jdoe
+export HAWKULAR_APM_PASSWORD=password
+export HAWKULAR_APM_CONFIG_REFRESH=10
+
+export JAVA_OPTS="-javaagent:$HAWKULAR_APM_AGENT_JAR_PATH"
 
 # Wildfly specific
 export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api"

@@ -34,13 +34,13 @@
 
   <properties>
     <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.configuration>${project.basedir}/src/main/configuration</hawkular-btm.configuration>
+    <HAWKULAR_APM_CONFIGuration>${project.basedir}/src/main/configuration</HAWKULAR_APM_CONFIGuration>
 
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
     <hawkular-btm.path>/hawkular/btm</hawkular-btm.path>
-    <hawkular-btm.uri>${hawkular.uri}${hawkular-btm.path}</hawkular-btm.uri>
+    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-btm.path}</HAWKULAR_APM_URI>
     <hawkular-btm.testapp.host>127.0.0.1</hawkular-btm.testapp.host>
     <hawkular-btm.testapp.port>8180</hawkular-btm.testapp.port>
     <hawkular-btm.testapp.uri>http://${hawkular-btm.testapp.host}:${hawkular-btm.testapp.port}</hawkular-btm.testapp.uri>
@@ -124,7 +124,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <hawkular-btm.uri>${hawkular-btm.uri}</hawkular-btm.uri>
+            <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
             <hawkular-btm.testapp.uri>${hawkular-btm.testapp.uri}</hawkular-btm.testapp.uri>
           </systemPropertyVariables>
         </configuration>
@@ -166,7 +166,7 @@
                   <jvmarg value="-Dhawkular-btm.test.server.host=${hawkular.host}" />
                   <jvmarg value="-Dhawkular-btm.test.server.port=${hawkular.port}" />
                   <jvmarg value="-Dhawkular-btm.test.server.shutdown=30000" />
-                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-trace-service-logging.properties" />
+                  <jvmarg value="-Djava.util.logging.config.file=${HAWKULAR_APM_CONFIGuration}/test-trace-service-logging.properties" />
                 </java>
               </target>
             </configuration>
@@ -187,13 +187,13 @@
                     <pathelement path="${runtime_classpath}" />
                   </classpath>
                   <jvmarg value="-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar" />
-                  <jvmarg value="-Dhawkular-btm.config=${hawkular-btm.configuration}" />
-                  <jvmarg value="-Dhawkular-btm.uri=${hawkular-btm.uri}" />
+                  <jvmarg value="-DHAWKULAR_APM_CONFIG=${HAWKULAR_APM_CONFIGuration}" />
+                  <jvmarg value="-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}" />
                   <jvmarg value="-Dhawkular-btm.testapp.host=${hawkular-btm.testapp.host}" />
                   <jvmarg value="-Dhawkular-btm.testapp.port=${hawkular-btm.testapp.port}" />
-                  <jvmarg value="-Dhawkular-btm.log.level=INFO" />
+                  <jvmarg value="-DHAWKULAR_APM_LOG_LEVEL=INFO" />
                   <jvmarg value="-Dhawkular-btm.log.jul=true" />
-                  <jvmarg value="-Djava.util.logging.config.file=${hawkular-btm.configuration}/test-app-logging.properties" />
+                  <jvmarg value="-Djava.util.logging.config.file=${HAWKULAR_APM_CONFIGuration}/test-app-logging.properties" />
                 </java>
               </target>
             </configuration>

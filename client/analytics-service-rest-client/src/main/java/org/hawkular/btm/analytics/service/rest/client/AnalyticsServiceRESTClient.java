@@ -39,6 +39,7 @@ import org.hawkular.btm.api.model.events.CompletionTime;
 import org.hawkular.btm.api.model.events.NodeDetails;
 import org.hawkular.btm.api.services.AnalyticsService;
 import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,18 +94,18 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
-    private String username = System.getProperty("hawkular-btm.username");
-    private String password = System.getProperty("hawkular-btm.password");
+    private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
+    private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
 
     private String authorization = null;
 
-    private String baseUrl;
+    private String uri;
 
     {
-        baseUrl = System.getProperty("hawkular-btm.uri");
+        uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
-        if (baseUrl != null && baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) != '/') {
-            baseUrl = baseUrl + '/';
+        if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+            uri = uri + '/';
         }
     }
 
@@ -146,14 +147,14 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @return the baseUrl
      */
     public String getBaseUrl() {
-        return baseUrl;
+        return uri;
     }
 
     /**
      * @param baseUrl the baseUrl to set
      */
     public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+        this.uri = baseUrl;
     }
 
     /* (non-Javadoc)
@@ -167,7 +168,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/unboundendpoints?startTime=")
                 .append(startTime)
                 .append("&endTime=")
@@ -245,7 +246,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/boundendpoints/")
                 .append(businessTransaction)
                 .append("?startTime=")
@@ -321,7 +322,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/properties");
 
         buildQueryString(builder, criteria);
@@ -394,7 +395,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/principals");
 
         buildQueryString(builder, criteria);
@@ -468,7 +469,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/completion/count");
 
         buildQueryString(builder, criteria);
@@ -541,7 +542,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/completion/faultcount");
 
         buildQueryString(builder, criteria);
@@ -615,7 +616,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/completion/percentiles");
 
         buildQueryString(builder, criteria);
@@ -691,7 +692,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/completion/statistics");
 
         buildQueryString(builder, criteria);
@@ -768,7 +769,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/completion/faults");
 
         buildQueryString(builder, criteria);
@@ -843,7 +844,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/completion/property/")
                 .append(property);
 
@@ -946,7 +947,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/alerts/count/")
                 .append(name);
 
@@ -1020,7 +1021,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/node/statistics");
 
         if (buildQueryString(builder, criteria)) {
@@ -1101,7 +1102,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/node/summary");
 
         buildQueryString(builder, criteria);
@@ -1176,7 +1177,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/communication/summary");
 
         if (buildQueryString(builder, criteria)) {
@@ -1314,7 +1315,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(baseUrl)
+                .append(uri)
                 .append("analytics/hostnames");
 
         buildQueryString(builder, criteria);

@@ -111,7 +111,7 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testTenantIdSystemProperty() {
-        System.setProperty("hawkular-btm.tenantId", TEST_TENANT);
+        System.setProperty("HAWKULAR_APM_TENANTID", TEST_TENANT);
 
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestBTxnService traceService = new TestBTxnService();
@@ -133,7 +133,7 @@ public class DefaultTraceCollectorTest {
         }
 
         // Clear property
-        System.getProperties().remove("hawkular-btm.tenantId");
+        System.getProperties().remove("HAWKULAR_APM_TENANTID");
 
         assertNotNull("TenantId should not be null", traceService.getTenantId());
 

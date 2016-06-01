@@ -149,11 +149,11 @@
           <threadCountClasses>1</threadCountClasses>
           <argLine>
               -javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar
-              -Dhawkular-btm.config=${hawkular-btm.instrumentation}/btmconfig
-              -Dhawkular-btm.uri=http://localhost:8180/hawkular/btm
-              -Dhawkular-btm.username=jdoe
-              -Dhawkular-btm.password=password
-              -Dhawkular-btm.log.level=INFO
+              -DHAWKULAR_APM_CONFIG=${hawkular-btm.instrumentation}/btmconfig
+              -DHAWKULAR_APM_URI=http://localhost:8180/hawkular/btm
+              -DHAWKULAR_APM_USERNAME=jdoe
+              -DHAWKULAR_APM_PASSWORD=password
+              -DHAWKULAR_APM_LOG_LEVEL=INFO
           </argLine>
         </configuration>
         <executions>

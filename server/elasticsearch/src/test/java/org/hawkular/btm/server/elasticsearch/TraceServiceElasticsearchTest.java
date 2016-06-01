@@ -46,7 +46,7 @@ public class TraceServiceElasticsearchTest {
 
     @BeforeClass
     public static void initClass() {
-        System.setProperty("hawkular-btm.data.dir", "target");
+        System.setProperty("HAWKULAR_APM_DATA_DIR", "target");
     }
 
     @Before

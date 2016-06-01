@@ -64,7 +64,7 @@ public class FilterManager {
         }
 
         onlyNamedTransactions = new Boolean(config.getProperty(
-                "hawkular-btm.collector.onlynamed", Boolean.FALSE.toString()));
+                "HAWKULAR_APM_COLLECTOR_ONLYNAMED", Boolean.FALSE.toString()));
     }
 
     /**
