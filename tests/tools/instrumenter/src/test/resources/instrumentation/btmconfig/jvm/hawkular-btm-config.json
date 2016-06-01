@@ -1,0 +1,20 @@
+{
+  "instrumentation": {
+    "echoApp": {
+      "description": "Test instrumentation",
+      "rules": [{
+        "ruleName": "Trace echo exit",
+        "className": "org.hawkular.btm.tests.tools.instrumenter.EchoApp",
+        "methodName": "echo",
+        "location": "EXIT",
+        "parameterTypes": [
+           "java.lang.String"
+        ],
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$! = \"world\""
+        }]
+      }]
+    }
+  }
+}
