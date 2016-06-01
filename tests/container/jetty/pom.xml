@@ -41,7 +41,7 @@
     <hawkular.port>8080</hawkular.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
     <hawkular-btm.path>/hawkular/btm</hawkular-btm.path>
-    <hawkular-btm.uri>${hawkular.uri}${hawkular-btm.path}</hawkular-btm.uri>
+    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-btm.path}</HAWKULAR_APM_URI>
     <hawkular-btm.testapp.host>127.0.0.1</hawkular-btm.testapp.host>
     <hawkular-btm.testapp.port>8180</hawkular-btm.testapp.port>
     <hawkular-btm.testapp.uri>http://${hawkular-btm.testapp.host}:${hawkular-btm.testapp.port}</hawkular-btm.testapp.uri>
@@ -149,16 +149,16 @@
           <threadCountClasses>1</threadCountClasses>
           <argLine>
               -javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar
-              -Dhawkular-btm.config=${hawkular-btm.instrumentation}/btmconfig
-              -Dhawkular-btm.uri=http://localhost:8080/hawkular/btm
-              -Dhawkular-btm.username=jdoe
-              -Dhawkular-btm.password=password
+              -DHAWKULAR_APM_CONFIG=${hawkular-btm.instrumentation}/btmconfig
+              -DHAWKULAR_APM_URI=http://localhost:8080/hawkular/btm
+              -DHAWKULAR_APM_USERNAME=jdoe
+              -DHAWKULAR_APM_PASSWORD=password
               -Djava.util.logging.config.file=${hawkular-btm.logging}
               -Dhawkular-btm.test.mode=true
-              -Dhawkular-btm.log.level=INFO
+              -DHAWKULAR_APM_LOG_LEVEL=INFO
           </argLine>
           <systemPropertyVariables>
-            <hawkular-btm.uri>${hawkular-btm.uri}</hawkular-btm.uri>
+            <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
             <hawkular-btm.testapp.uri>${hawkular-btm.testapp.uri}</hawkular-btm.testapp.uri>
           </systemPropertyVariables>
         </configuration>

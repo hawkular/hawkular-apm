@@ -25,6 +25,7 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.TracePublisher;
+import org.hawkular.btm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,15 +43,15 @@ public class TracePublisherRESTClient implements TracePublisher {
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
-    private String username = System.getProperty("hawkular-btm.username");
-    private String password = System.getProperty("hawkular-btm.password");
+    private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
+    private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
 
     private String authorization = null;
 
     private String uri;
 
     {
-        uri = System.getProperty("hawkular-btm.uri");
+        uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
         if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';

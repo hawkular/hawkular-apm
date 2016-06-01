@@ -16,6 +16,8 @@
  */
 package org.hawkular.btm.api.logging;
 
+import org.hawkular.btm.api.utils.PropertyUtil;
+
 /**
  * This is a simple client side logger, to avoid using the Java util logging and JBoss logging managers.
  * If JUL is used in the javaagent, and then wildfly starts up, it complains as it cannot initialise the
@@ -25,9 +27,9 @@ package org.hawkular.btm.api.logging;
  */
 public class Logger {
 
-    private static Level level = Level.valueOf(System.getProperty("hawkular-btm.log.level", Level.INFO.name()));
+    private static Level level = Level.valueOf(PropertyUtil.getProperty("HAWKULAR_APM_LOG_LEVEL", Level.INFO.name()));
 
-    private static boolean logToJUL = Boolean.getBoolean("hawkular-btm.log.jul");
+    private static boolean logToJUL = Boolean.getBoolean("HAWKULAR_APM_LOG_JUL");
 
     private static java.util.logging.Logger logger = null;
 

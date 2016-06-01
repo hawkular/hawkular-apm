@@ -29,17 +29,17 @@ public interface TraceCollector {
     /**
      * The maximum number of traces to batch before sending to the server.
      */
-    String BATCH_SIZE = "hawkular-btm.collector.batchsize";
+    String BATCH_SIZE = "HAWKULAR_APM_COLLECTOR_BATCHSIZE";
 
     /**
      * The maximum time (in milliseconds) before sending a batch of traces to the server.
      */
-    String BATCH_TIME = "hawkular-btm.collector.batchtime";
+    String BATCH_TIME = "HAWKULAR_APM_COLLECTOR_BATCHTIME";
 
     /**
      * The thread pool size for reporting a batch of traces to the server.
      */
-    String BATCH_THREADS = "hawkular-btm.collector.batchthreads";
+    String BATCH_THREADS = "HAWKULAR_APM_COLLECTOR_BATCHTHREADS";
 
     /**
      * This method sets the name of the trace.

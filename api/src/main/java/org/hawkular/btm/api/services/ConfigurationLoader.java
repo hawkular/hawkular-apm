@@ -33,6 +33,7 @@ import java.util.List;
 import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,7 +49,7 @@ public class ConfigurationLoader {
     private static final String DEFAULT_TYPE = "jvm";
 
     /** The system property that optional contains the location of the BTM configuration */
-    public static final String HAWKULAR_BTM_CONFIG = "hawkular-btm.config";
+    public static final String HAWKULAR_BTM_CONFIG = "HAWKULAR_APM_CONFIG";
 
     /**  */
     private static final String DEFAULT_URI = "btmconfig";
@@ -64,7 +65,7 @@ public class ConfigurationLoader {
      * @return The collection configuration
      */
     public static CollectorConfiguration getConfiguration(String type) {
-        return loadConfig(System.getProperty(HAWKULAR_BTM_CONFIG, DEFAULT_URI), type);
+        return loadConfig(PropertyUtil.getProperty(HAWKULAR_BTM_CONFIG, DEFAULT_URI), type);
     }
 
     /**

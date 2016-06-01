@@ -31,6 +31,7 @@ import org.hawkular.btm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.btm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.btm.api.services.ConfigurationLoader;
 import org.hawkular.btm.api.services.ConfigurationService;
+import org.hawkular.btm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,15 +62,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
     private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
 
-    private String username = System.getProperty("hawkular-btm.username");
-    private String password = System.getProperty("hawkular-btm.password");
+    private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
+    private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
 
     private String authorization = null;
 
     private String uri;
 
     {
-        uri = System.getProperty("hawkular-btm.uri");
+        uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
         if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';
@@ -146,7 +147,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         // Check if BTM configuration provided locally
-        if (System.getProperty(ConfigurationLoader.HAWKULAR_BTM_CONFIG) != null) {
+        if (PropertyUtil.getProperty(ConfigurationLoader.HAWKULAR_BTM_CONFIG) != null) {
             CollectorConfiguration ret = ConfigurationLoader.getConfiguration(type);
             if (log.isLoggable(Level.FINEST)) {
                 try {

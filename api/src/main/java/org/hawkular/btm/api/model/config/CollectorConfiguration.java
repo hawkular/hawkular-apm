@@ -23,6 +23,7 @@ import org.hawkular.btm.api.logging.Logger;
 import org.hawkular.btm.api.logging.Logger.Level;
 import org.hawkular.btm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.btm.api.model.config.instrumentation.Instrumentation;
+import org.hawkular.btm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -69,12 +70,14 @@ public class CollectorConfiguration {
      * @return The property value, or if not found then the default
      */
     public String getProperty(String name, String def) {
-        String ret=def;
+        String ret=PropertyUtil.getProperty(name, null);
 
-        if (System.getProperties().containsKey(name)) {
-            ret = System.getProperty(name);
-        } else if (getProperties().containsKey(name)) {
-            ret = getProperties().get(name);
+        if (ret == null) {
+            if (getProperties().containsKey(name)) {
+                ret = getProperties().get(name);
+            } else {
+                ret = def;
+            }
         }
 
         if (log.isLoggable(Level.FINEST)) {

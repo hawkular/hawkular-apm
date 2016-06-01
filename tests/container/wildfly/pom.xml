@@ -39,7 +39,7 @@
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
     <test.uri>http://${hawkular.host}:${test.port}</test.uri>
     <hawkular-btm.path>/hawkular/btm/</hawkular-btm.path>
-    <hawkular-btm.uri>${hawkular.uri}${hawkular-btm.path}</hawkular-btm.uri>
+    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-btm.path}</HAWKULAR_APM_URI>
     <!-- IMPORTANT: The port must be the port offset + 8080. -->
     <wildfly.port.offset>1897</wildfly.port.offset>
     <!-- IMPORTANT: The management port must be the port offset + 9990. -->
@@ -281,7 +281,7 @@
             <hawkular.host>${hawkular.host}</hawkular.host>
             <hawkular.port>${hawkular.port}</hawkular.port>
             <hawkular.uri>${hawkular.uri}</hawkular.uri>
-            <hawkular-btm.uri>${hawkular-btm.uri}</hawkular-btm.uri>
+            <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
             <test.uri>${test.uri}</test.uri>
           </systemPropertyVariables>
         </configuration>
@@ -333,12 +333,12 @@
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm-for-dev.json</javaOpt>
                 <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar</javaOpt>
-                <javaOpt>-Dhawkular-btm.config=${hawkular-btm.instrumentation}/btmconfig</javaOpt>
-                <javaOpt>-Dhawkular-btm.uri=${hawkular-btm.uri}</javaOpt>
-                <javaOpt>-Dhawkular-btm.username=jdoe</javaOpt>
-                <javaOpt>-Dhawkular-btm.password=password</javaOpt>
+                <javaOpt>-DHAWKULAR_APM_CONFIG=${hawkular-btm.instrumentation}/btmconfig</javaOpt>
+                <javaOpt>-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}</javaOpt>
+                <javaOpt>-DHAWKULAR_APM_USERNAME=jdoe</javaOpt>
+                <javaOpt>-DHAWKULAR_APM_PASSWORD=password</javaOpt>
                 <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api</javaOpt>
-                <javaOpt>-Dhawkular-btm.log.level=INFO</javaOpt>
+                <javaOpt>-DHAWKULAR_APM_LOG_LEVEL=INFO</javaOpt>
               </javaOpts>
               <startup-timeout>180</startup-timeout>
             </configuration>

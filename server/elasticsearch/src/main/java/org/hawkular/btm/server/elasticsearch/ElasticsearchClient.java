@@ -39,6 +39,7 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.hawkular.btm.api.utils.PropertyUtil;
 
 /**
  * This class represents the ElasticSearch client.
@@ -52,12 +53,12 @@ public class ElasticsearchClient {
     /**
      * Default Elasticsearch hosts configuration.
      */
-    public static final String ELASTICSEARCH_HOSTS = "hawkular-btm.elasticsearch.hosts";
+    public static final String ELASTICSEARCH_HOSTS = "HAWKULAR_APM_ELASTICSEARCH_HOSTS";
 
     /**
      * Default Elasticsearch cluster configuration.
      */
-    public static final String ELASTICSEARCH_CLUSTER = "hawkular-btm.elasticsearch.cluster";
+    public static final String ELASTICSEARCH_CLUSTER = "HAWKULAR_APM_ELASTICSEARCH_CLUSTER";
 
     /**
      * Settings for the index this store is related to.
@@ -96,12 +97,12 @@ public class ElasticsearchClient {
      * Default constructor.
      */
     public ElasticsearchClient() {
-        if (!System.getProperties().containsKey("hawkular-btm.data.dir")) {
-            System.setProperty("hawkular-btm.data.dir", System.getProperty("jboss.server.data.dir"));
+        if (PropertyUtil.getProperty("HAWKULAR_APM_DATA_DIR") == null) {
+            System.setProperty("HAWKULAR_APM_DATA_DIR", System.getProperty("jboss.server.data.dir"));
         }
 
-        hosts = System.getProperty(ELASTICSEARCH_HOSTS, ELASTICSEARCH_HOSTS_DEFAULT);
-        cluster = System.getProperty(ELASTICSEARCH_CLUSTER, ELASTICSEARCH_CLUSTER_DEFAULT);
+        hosts = PropertyUtil.getProperty(ELASTICSEARCH_HOSTS, ELASTICSEARCH_HOSTS_DEFAULT);
+        cluster = PropertyUtil.getProperty(ELASTICSEARCH_CLUSTER, ELASTICSEARCH_CLUSTER_DEFAULT);
     }
 
     /**
@@ -299,11 +300,11 @@ public class ElasticsearchClient {
      */
     private void determineHostsAsProperty() {
         if (hosts.startsWith("${") && hosts.endsWith("}")) {
-            String _hostsProperty = hosts.substring(2, hosts.length() - 1);
-            hosts = System.getProperty(_hostsProperty);
+            String hostsProperty = hosts.substring(2, hosts.length() - 1);
+            hosts = PropertyUtil.getProperty(hostsProperty);
             if (hosts == null) {
                 throw new IllegalArgumentException("Could not find property '"
-                        + _hostsProperty + "'");
+                        + hostsProperty + "'");
             }
         }
 

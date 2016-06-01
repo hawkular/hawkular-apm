@@ -29,6 +29,7 @@ import org.hawkular.btm.api.model.config.CollectorConfiguration;
 import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.api.services.TracePublisher;
+import org.hawkular.btm.api.utils.PropertyUtil;
 import org.hawkular.btm.client.api.TraceCollector;
 
 /**
@@ -43,7 +44,7 @@ public class TraceReporter {
     private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
 
     /**  */
-    private static final String HAWKULAR_BTM_TENANT_ID = "hawkular-btm.tenantId";
+    private static final String HAWKULAR_BTM_TENANT_ID = "HAWKULAR_APM_TENANTID";
 
     private static final Logger log = Logger.getLogger(TraceReporter.class.getName());
 
@@ -58,7 +59,7 @@ public class TraceReporter {
     private int batchSize = DEFAULT_BATCH_SIZE;
     private int batchTime = DEFAULT_BATCH_TIME;
 
-    private String tenantId = System.getProperty(HAWKULAR_BTM_TENANT_ID);
+    private String tenantId = PropertyUtil.getProperty(HAWKULAR_BTM_TENANT_ID);
 
     private ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_BATCH_THREAD_POOL_SIZE);
     private final ReentrantLock lock=new ReentrantLock();

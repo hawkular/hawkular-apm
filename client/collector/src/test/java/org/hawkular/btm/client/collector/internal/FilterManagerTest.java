@@ -130,7 +130,7 @@ public class FilterManagerTest {
     @Test
     public void testBusinessTransactionExcludedByDefault() {
         CollectorConfiguration config = new CollectorConfiguration();
-        config.getProperties().put("hawkular-btm.collector.onlynamed", "true");
+        config.getProperties().put("HAWKULAR_APM_COLLECTOR_ONLYNAMED", "true");
         BusinessTxnConfig btc2 = new BusinessTxnConfig();
         config.getBusinessTransactions().put("btc2", btc2);
 

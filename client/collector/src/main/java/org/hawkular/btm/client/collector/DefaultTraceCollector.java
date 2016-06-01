@@ -44,6 +44,7 @@ import org.hawkular.btm.api.services.ConfigurationService;
 import org.hawkular.btm.api.services.ServiceResolver;
 import org.hawkular.btm.api.services.TracePublisher;
 import org.hawkular.btm.api.utils.EndpointUtil;
+import org.hawkular.btm.api.utils.PropertyUtil;
 import org.hawkular.btm.client.api.SessionManager;
 import org.hawkular.btm.client.api.TraceCollector;
 import org.hawkular.btm.client.collector.internal.FilterManager;
@@ -115,7 +116,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             }
 
             // Check if should check for updates
-            Integer refresh = Integer.getInteger("hawkular-btm.config.refresh");
+            Integer refresh = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_CONFIG_REFRESH);
 
             if (log.isLoggable(Level.FINER)) {
                 log.finer("Configuration refresh cycle (in seconds) = " + refresh);

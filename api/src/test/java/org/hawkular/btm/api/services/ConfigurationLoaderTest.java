@@ -32,12 +32,12 @@ public class ConfigurationLoaderTest {
 
     @After
     public void endTest() {
-        System.setProperty("hawkular-btm.config", "");
+        System.setProperty("HAWKULAR_APM_CONFIG", "");
     }
 
     @Test
     public void testLoadConfigFromClasspath() {
-        System.setProperty("hawkular-btm.config", "cpconfig");
+        System.setProperty("HAWKULAR_APM_CONFIG", "cpconfig");
 
         CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 
@@ -50,7 +50,7 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void testLoadConfigFromRelativePath() {
-        System.setProperty("hawkular-btm.config", "src/relconfig");
+        System.setProperty("HAWKULAR_APM_CONFIG", "src/relconfig");
 
         CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 
@@ -67,7 +67,7 @@ public class ConfigurationLoaderTest {
     public void testLoadConfigFromAbsolutePath() {
         String path=Paths.get("").toFile().getAbsolutePath()+
                 java.io.File.separator+"src"+java.io.File.separator+"absconfig";
-        System.setProperty("hawkular-btm.config", path);
+        System.setProperty("HAWKULAR_APM_CONFIG", path);
 
         CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 

@@ -27,6 +27,7 @@ import java.util.List;
 import org.hawkular.btm.api.model.trace.Component;
 import org.hawkular.btm.api.model.trace.Trace;
 import org.hawkular.btm.api.services.Criteria;
+import org.hawkular.btm.api.utils.PropertyUtil;
 import org.hawkular.btm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -38,7 +39,7 @@ import org.junit.Test;
 public class ClientJavaMainTest {
 
     private static String baseUrl = System.getProperty("hawkular-btm.testapp.uri");
-    private static String testBTxnServerBaseUrl = System.getProperty("hawkular-btm.uri");
+    private static String testBTxnServerBaseUrl = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
     /**  */
     private static final String TEST_PASSWORD = "password";
