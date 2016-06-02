@@ -22,25 +22,28 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.hawkular.btm.api.model.config.CollectorConfiguration;
+import org.hawkular.btm.api.model.trace.Trace;
+import org.hawkular.btm.tests.common.ClientTestBase;
 import org.hawkular.btm.tools.instrumenter.InstrumenterUtil;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author gbrown
  */
-public class EchoAppTest {
+public class EchoAppTest extends ClientTestBase {
 
     /**  */
     private static final String HELLO = "hello";
 
-    /**  */
-    private static final String WORLD = "world";
-
     @Test
     public void testEcho() {
-        System.setProperty("org.jboss.byteman.verbose", "");
+        //System.setProperty("org.jboss.byteman.verbose", "");
+        //System.setProperty("HAWKULAR_APM_LOG_LEVEL", "FINEST");
+        System.setProperty("HAWKULAR_APM_URI", "http://localhost:8080/hawkular/btm");
 
         java.io.File f = new java.io.File("src/test/resources/instrumentation/btmconfig/jvm/hawkular-btm-config.json");
 
@@ -73,7 +76,28 @@ public class EchoAppTest {
 
         String result = app.echo(HELLO);
 
-        assertEquals(WORLD, result);
+        assertEquals(HELLO, result);
+
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait for traces to store");
+        }
+
+        for (Trace trace : getTestTraceServer().getTraces()) {
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // Check stored business transactions (including 1 for the test client)
+        assertEquals(1, getTestTraceServer().getTraces().size());
     }
 
 }
