@@ -3,6 +3,21 @@
     "echoApp": {
       "description": "Test instrumentation",
       "rules": [{
+        "ruleName": "Trace echo entry",
+        "className": "org.hawkular.btm.tests.tools.instrumenter.EchoApp",
+        "methodName": "echo",
+        "location": "ENTRY",
+        "parameterTypes": [
+           "java.lang.String"
+        ],
+        "condition": "activate(\"MyUri\",\"MyOp\")",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "\"TestCall\"",
+          "uriExpression": "\"MyUri\""
+        }]
+      },{
         "ruleName": "Trace echo exit",
         "className": "org.hawkular.btm.tests.tools.instrumenter.EchoApp",
         "methodName": "echo",
@@ -10,9 +25,11 @@
         "parameterTypes": [
            "java.lang.String"
         ],
+        "condition": "isActive()",
         "actions": [{
-          "type": "FreeFormAction",
-          "action": "$! = \"world\""
+          "type": "InstrumentConsumer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"TestCall\""
         }]
       }]
     }

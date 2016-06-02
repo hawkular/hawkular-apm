@@ -55,6 +55,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-tests-common</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

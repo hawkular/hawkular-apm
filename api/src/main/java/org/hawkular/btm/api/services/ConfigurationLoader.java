@@ -94,7 +94,11 @@ public class ConfigurationLoader {
             } else {
                 try {
                     URL url = Thread.currentThread().getContextClassLoader().getResource(uri);
-                    uri = url.getPath();
+                    if (url != null) {
+                        uri = url.getPath();
+                    } else {
+                        log.severe("Failed to get absolute path for uri '" + uri + "'");
+                    }
                 } catch (Exception e) {
                     log.log(Level.SEVERE, "Failed to get absolute path for uri '" + uri + "'", e);
                     uri = null;
@@ -102,49 +106,51 @@ public class ConfigurationLoader {
             }
         }
 
-        String[] uriParts = uri.split(java.io.File.separator);
-        int startIndex = 0;
+        if (uri != null) {
+            String[] uriParts = uri.split(java.io.File.separator);
+            int startIndex = 0;
 
-        // Remove any file prefix
-        if (uriParts[0].equals("file:")) {
-            startIndex++;
-        }
+            // Remove any file prefix
+            if (uriParts[0].equals("file:")) {
+                startIndex++;
+            }
 
-        try {
-            Path path = getPath(startIndex, uriParts);
+            try {
+                Path path = getPath(startIndex, uriParts);
 
-            Files.walkFileTree(path, new FileVisitor<Path>() {
+                Files.walkFileTree(path, new FileVisitor<Path>() {
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                    if (path.toString().endsWith(".json")) {
-                        String json = new String(Files.readAllBytes(path));
-                        CollectorConfiguration childConfig = mapper.readValue(json, CollectorConfiguration.class);
-                        if (childConfig != null) {
-                            config.merge(childConfig, false);
-                        }
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
+                        return FileVisitResult.CONTINUE;
                     }
-                    return FileVisitResult.CONTINUE;
-                }
 
-                @Override
-                public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+                        return FileVisitResult.CONTINUE;
+                    }
 
-            });
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to load configuration", e);
+                    @Override
+                    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+                        if (path.toString().endsWith(".json")) {
+                            String json = new String(Files.readAllBytes(path));
+                            CollectorConfiguration childConfig = mapper.readValue(json, CollectorConfiguration.class);
+                            if (childConfig != null) {
+                                config.merge(childConfig, false);
+                            }
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                });
+            } catch (Throwable e) {
+                log.log(Level.SEVERE, "Failed to load configuration", e);
+            }
         }
 
         return config;
@@ -160,7 +166,7 @@ public class ConfigurationLoader {
      */
     protected static Path getPath(int startindex, String[] uriParts) {
         Path ret = Paths.get("/");
-        List<FileSystem> toClose=new ArrayList<FileSystem>();
+        List<FileSystem> toClose = new ArrayList<FileSystem>();
 
         try {
             for (int i = startindex; i < uriParts.length; i++) {
@@ -177,7 +183,7 @@ public class ConfigurationLoader {
 
                         ret = jarfs.getRootDirectories().iterator().next();
                     } catch (IOException e) {
-                        log.log(Level.SEVERE, "Failed to access archive '"+name+"'", e);
+                        log.log(Level.SEVERE, "Failed to access archive '" + name + "'", e);
                     }
                 }
             }
@@ -186,7 +192,7 @@ public class ConfigurationLoader {
                 try {
                     fs.close();
                 } catch (IOException e) {
-                    log.log(Level.SEVERE, "Failed to close file system '"+fs+"'", e);
+                    log.log(Level.SEVERE, "Failed to close file system '" + fs + "'", e);
                 }
             }
         }
