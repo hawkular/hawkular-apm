@@ -21,25 +21,25 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-server-rest</artifactId>
+  <artifactId>hawkular-apm-server-rest</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular BTM::Server::REST</name>
+  <name>Hawkular APM::Server::REST</name>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-api</artifactId>
     </dependency>
 
     <dependency>
@@ -134,13 +134,13 @@
               <apiSources>
                 <apiSource>
                   <springmvc>false</springmvc>
-                  <locations>org.hawkular.btm.server.rest</locations>
+                  <locations>org.hawkular.apm.server.rest</locations>
                   <schemes>http,https</schemes>
-                  <basePath>/hawkular/btm</basePath>
+                  <basePath>/hawkular/apm</basePath>
                   <info>
-                    <title>Hawkular Business Transaction Management</title>
+                    <title>Hawkular Application Performance Management</title>
                     <version>v1</version>
-                    <description>The REST API for the Hawkular Business Transaction Management server</description>
+                    <description>The REST API for the Hawkular Application Performance Management server</description>
                     <license>
                       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
                       <name>Apache 2.0</name>
@@ -148,7 +148,7 @@
                   </info>
                   <!-- templatePath>${project.build.directory}/dependency/hawkular-documentation/asciidoc.mustache</templatePath -->
                   <templatePath>${project.basedir}/src/main/templates/asciidoc.mustache</templatePath>
-                  <outputPath>${project.build.directory}/generated/rest-btm.adoc</outputPath>
+                  <outputPath>${project.build.directory}/generated/rest-apm.adoc</outputPath>
                   <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
                 </apiSource>
               </apiSources>

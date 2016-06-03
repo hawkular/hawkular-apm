@@ -1,0 +1,290 @@
+{
+  "instrumentation": {
+    "io.vertx.core.http": {
+      "description": "Vertx HTTP instrumentation",
+      "rules": [{
+        "ruleName": "Vertx HTTP Consumer Start",
+        "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "EXIT",
+        "condition": "activate($0.path(),$0.method(),$0.getHeader(\"Hawkularbtid\"))",
+        "actions": [{
+          "type": "SetBusinessTransaction",
+          "nameExpression": "$0.getHeader(\"Hawkularbtname\")"
+        },{
+          "type": "SetLevel",
+          "levelExpression": "$0.getHeader(\"Hawkularbtlevel\")"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$0.method()",
+          "uriExpression": "$0.path()",
+          "idExpression": "$0.getHeader(\"Hawkularbtid\")"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"io.vertx.core.http\""
+        },{
+          "type": "SetDetail",
+          "name": "remoteAddr",
+          "valueExpression": "$0.remoteAddress()"
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$0.method()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$0.query()"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Consumer Start Values",
+        "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
+        "methodName": "handleData",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "$1.getBytes()"
+          ]
+        }]
+      },{
+        "ruleName": "Vertx HTTP Consumer End",
+        "interfaceName": "^io.vertx.core.http.HttpServerResponse",
+        "methodName": "end",
+        "parameterTypes": [
+          "io.vertx.core.buffer.Buffer"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "Out",
+          "valueExpressions": [
+            "$1.getBytes()"
+          ]
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        },{
+          "type": "AssertComplete"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Start 1",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "end",
+        "parameterTypes": [
+          "io.vertx.core.buffer.Buffer"
+         ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        },{
+          "name": "uri",
+          "type": "java.net.URI",
+          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
+        }],
+        "condition": "activate(uri.getPath(),$0.method())",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$0.method()",
+          "uriExpression": "uri.getPath()",
+          "idExpression": "id"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
+        },{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "$1.getBytes()"
+          ]
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"io.vertx.core.http\""
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$0.method()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.host"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.port"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "uri.getQuery()"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkularbtid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkularbtname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkularbtlevel\",getLevel())"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Start 2",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "end",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        },{
+          "name": "uri",
+          "type": "java.net.URI",
+          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
+        }],
+        "condition": "activate(uri.getPath(),$0.method())",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$0.method()",
+          "uriExpression": "uri.getPath()",
+          "idExpression": "id"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "io.vertx.core.MultiMap",
+          "headersExpression": "$0.headers()"
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"io.vertx.core.http\""
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$0.method()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "$0.host"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$0.port"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "uri.getQuery()"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkularbtid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkularbtname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.putHeader(\"Hawkularbtlevel\",getLevel())"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Establish Out Link",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "handleResponse",
+        "parameterTypes": [
+          "io.vertx.core.http.impl.HttpClientResponseImpl"
+        ],
+        "location": "ENTRY",
+        "condition": "isCorrelated(\"io.vertx.core.http-\"+$0.hashCode())",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"io.vertx.core.http-\"+$0.hashCode()"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Async Request Thread Complete",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "write",
+        "parameterTypes": [
+          "io.netty.buffer.ByteBuf",
+          "boolean"
+         ],
+        "location": "EXIT",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "Unlink"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Init Out Buffer",
+        "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
+        "methodName": "handleResponse",
+        "parameterTypes": [
+          "io.vertx.core.http.impl.HttpClientResponseImpl"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && isOutContentProcessed()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "initOutBuffer($1)"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Write Out Buffer",
+        "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
+        "methodName": "handleChunk",
+        "parameterTypes": [
+          "io.vertx.core.buffer.Buffer"
+         ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "appendOutBuffer($0, $1.getBytes(), 0, $1.length(), false)"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Producer Record Buffer And End Out",
+        "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
+        "methodName": "handleEnd",
+        "parameterTypes": [
+          "*"
+         ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "recordOutBuffer($0)"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        },{
+          "type": "Unlink"
+        }]
+      }]
+    }
+  }
+}

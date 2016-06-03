@@ -1,0 +1,146 @@
+{
+  "instrumentation": {
+    "org.apache.http.client": {
+      "description": "Apache HttpClient instrumentation",
+      "rules": [{
+        "ruleName": "Apache HttpClient Producer Start",
+        "className": "^org.apache.http.impl.client.CloseableHttpClient",
+        "methodName": "doExecute",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        },{
+          "name": "uri",
+          "type": "java.net.URI",
+          "expression": "new java.net.URI($2.getRequestLine().getUri())"
+        }],
+        "condition": "activate(uri.getPath(),$2.getRequestLine().getMethod())",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "operationExpression": "$2.getRequestLine().getMethod()",
+          "uriExpression": "uri.getPath()",
+          "idExpression": "id"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "org.apache.http.HttpMessage",
+          "headersExpression": "$2"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.apache.http.client\""
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$2.getRequestLine().getMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "uri.getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "uri.getHost()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "uri.getPort()"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setHeader(\"Hawkularbtid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setHeader(\"Hawkularbtname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setHeader(\"Hawkularbtlevel\",getLevel())"
+        }]
+      },{
+        "ruleName": "Apache HttpClient Producer Write Request",
+        "className": "^org.apache.http.impl.client.CloseableHttpClient",
+        "methodName": "doExecute",
+        "parameterTypes": [
+          "*"
+        ],
+        "binds": [{
+          "name": "req",
+          "type": "org.apache.http.client.methods.HttpEntityEnclosingRequestBase",
+          "expression": "cast($2,org.apache.http.client.methods.HttpEntityEnclosingRequestBase.class)"
+        }],
+        "location": "ENTRY",
+        "condition": "isActive() && isInContentProcessed() && req != null",
+        "actions": [{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "org.apache.http.util.EntityUtils.toString(req.getEntity())"
+          ]
+        }]
+      },{
+        "ruleName": "Apache HttpClient Producer Check Fault",
+        "className": "^org.apache.http.message.BasicHttpResponse",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.apache.http.StatusLine",
+          "org.apache.http.ReasonPhraseCatalog",
+          "java.util.Locale"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && $1.getStatusCode() >= 400",
+        "actions": [{
+          "type": "SetFault",
+          "nameExpression": "$1.getStatusCode()",
+          "descriptionExpression": "$1.getReasonPhrase()"
+        }]
+      },{
+        "ruleName": "Apache HttpClient Producer Check Fault Or No Content End",
+        "className": "^org.apache.http.message.BasicHttpResponse",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.apache.http.StatusLine",
+          "org.apache.http.ReasonPhraseCatalog",
+          "java.util.Locale"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && ($1.getStatusCode() >= 400 || !isOutContentProcessed())",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      },{
+        "ruleName": "Apache HttpClient Producer Write Response",
+        "className": "^org.apache.http.entity.BasicHttpEntity",
+        "methodName": "getContent",
+        "parameterTypes": [
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && isOutContentProcessed()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$! = createOutInputStream($!)"
+        }]
+      },{
+        "ruleName": "Apache HttpClient Producer Write Close",
+        "className": "^org.apache.http.impl.io.ContentLengthInputStream",
+        "methodName": "close",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && isOutContentProcessed()",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      }]
+    }
+  }
+}

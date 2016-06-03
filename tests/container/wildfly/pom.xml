@@ -21,16 +21,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tests-containers-wildfly</artifactId>
+  <artifactId>hawkular-apm-tests-containers-wildfly</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Containers::Wildfly</name>
+  <name>Hawkular APM::Tests::Containers::Wildfly</name>
 
   <properties>
     <hawkular.host>127.0.0.1</hawkular.host>
@@ -38,8 +38,8 @@
     <test.port>8080</test.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
     <test.uri>http://${hawkular.host}:${test.port}</test.uri>
-    <hawkular-btm.path>/hawkular/btm/</hawkular-btm.path>
-    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-btm.path}</HAWKULAR_APM_URI>
+    <hawkular-apm.path>/hawkular/apm/</hawkular-apm.path>
+    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-apm.path}</HAWKULAR_APM_URI>
     <!-- IMPORTANT: The port must be the port offset + 8080. -->
     <wildfly.port.offset>1897</wildfly.port.offset>
     <!-- IMPORTANT: The management port must be the port offset + 9990. -->
@@ -52,45 +52,45 @@
 
     <server.config>standalone.xml</server.config>
 
-    <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
+    <hawkular-apm.lib>${project.build.directory}/lib</hawkular-apm.lib>
+    <hawkular-apm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-apm.instrumentation>
   </properties>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-trace-service-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-trace-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-instrumenter</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-instrumenter</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-tests-common</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-tests-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-tests-server-mock</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-tests-server-mock</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-agent-rest</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-agent-rest</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -168,7 +168,7 @@
         <configuration>
           <excludes combine.children="append">
             <exclude>**/*.data</exclude>
-            <exclude>**/*.btm</exclude>
+            <exclude>**/*.apm</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -185,11 +185,11 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-agent-rest</artifactId>
+                  <groupId>org.hawkular.apm</groupId>
+                  <artifactId>hawkular-apm-agent-rest</artifactId>
                   <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-agent-rest.jar</destFileName>
+                  <outputDirectory>${hawkular-apm.lib}</outputDirectory>
+                  <destFileName>hawkular-apm-agent-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -203,11 +203,11 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
+                  <groupId>org.hawkular.apm</groupId>
+                  <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
+              <outputDirectory>${hawkular-apm.instrumentation}</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -225,7 +225,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>update-hawkular-btm</id>
+            <id>update-hawkular-apm</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>copy</goal>
@@ -263,7 +263,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
+              <outputDirectory>${hawkular-apm.instrumentation}</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/test/resources/instrumentation</directory>
@@ -311,7 +311,7 @@
         <configuration>
           <jboss-home>${hawkular.home}</jboss-home>
           <javaOpts>
-            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api</javaOpt>
+            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api</javaOpt>
           </javaOpts>
         </configuration>
         <executions>
@@ -332,12 +332,12 @@
                 <javaOpt>-Xdebug</javaOpt>
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm-for-dev.json</javaOpt>
-                <javaOpt>-javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar</javaOpt>
-                <javaOpt>-DHAWKULAR_APM_CONFIG=${hawkular-btm.instrumentation}/btmconfig</javaOpt>
+                <javaOpt>-javaagent:${hawkular-apm.lib}/hawkular-apm-agent-rest.jar</javaOpt>
+                <javaOpt>-DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_USERNAME=jdoe</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_PASSWORD=password</javaOpt>
-                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.btm.instrumenter,org.hawkular.btm.client.api</javaOpt>
+                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_LOG_LEVEL=INFO</javaOpt>
               </javaOpts>
               <startup-timeout>180</startup-timeout>

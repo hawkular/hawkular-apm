@@ -1,0 +1,102 @@
+{
+  "instrumentation": {
+    "org.restlet": {
+      "description": "Restlet instrumentation",
+      "rules": [{
+        "ruleName": "Restlet Async Consumer Start",
+        "notes": [
+          "TODO: Should this rule extract the HTTP method and pass to activate method as well as InstrumentConsumer?"
+        ],
+        "className": "org.restlet.Server",
+        "methodName": "handle",
+        "parameterTypes": [
+          "org.restlet.Request",
+          "org.restlet.Response"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "headers",
+          "type": "org.restlet.util.Series",
+          "expression": "$1.getAttributes().get(\"org.restlet.http.headers\")"
+        },{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Hawkularbtid\")"
+        },{
+          "name": "btname",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Hawkularbtname\")"
+        },{
+          "name": "btlevel",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Hawkularbtlevel\")"
+        }],
+        "condition": "activate($1.getResourceRef().getPath(),null,id)",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "headers.removeAll(\"Hawkularbtid\")"
+        },{
+          "type": "SetBusinessTransaction",
+          "nameExpression": "btname"
+        },{
+          "type": "SetLevel",
+          "levelExpression": "btlevel"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getResourceRef().getPath()",
+          "operationExpression": "$1.getMethod().getName()",
+          "idExpression": "id"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "headersExpression": "headers.getValuesMap()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.restlet\""
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "$1.getResourceRef().getQuery()"
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "$1.getMethod().getName()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "$1.getResourceRef().getHostPort()"
+        }]
+      },{
+        "ruleName": "Restlet Async Consumer End",
+        "className": "org.restlet.Server",
+        "methodName": "handle",
+        "parameterTypes": [
+           "org.restlet.Request",
+           "org.restlet.Response"
+        ],
+        "location": "EXIT",
+        "binds": [{
+          "name": "headers",
+          "type": "org.restlet.util.Series",
+          "expression": "$2.getAttributes().get(\"org.restlet.http.headers\")"
+        }],
+        "condition": "isActive()",
+        "actions": [{
+          "type": "ProcessHeaders",
+          "direction": "Out",
+          "headersExpression": "headers.getValuesMap()"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "$1.getResourceRef().getPath()"
+        },{
+          "type": "AssertComplete"
+        }]
+      }]
+    }
+  }
+}

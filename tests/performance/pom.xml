@@ -21,34 +21,34 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.7.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tests-performance</artifactId>
+  <artifactId>hawkular-apm-tests-performance</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Performance</name>
+  <name>Hawkular APM::Tests::Performance</name>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-cassandra</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-cassandra</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-elasticsearch</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-elasticsearch</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -115,8 +115,8 @@
           <threadCountClasses>1</threadCountClasses>
           <classpathDependencyScopeExclude>compile</classpathDependencyScopeExclude>
           <systemPropertyVariables>
-            <hawkular-btm.data.dir>${project.build.directory}/data</hawkular-btm.data.dir>
-            <hawkular-btm.elasticsearch.hosts>localhost:9300</hawkular-btm.elasticsearch.hosts>
+            <hawkular-apm.data.dir>${project.build.directory}/data</hawkular-apm.data.dir>
+            <hawkular-apm.elasticsearch.hosts>localhost:9300</hawkular-apm.elasticsearch.hosts>
           </systemPropertyVariables>
         </configuration>
         <executions>

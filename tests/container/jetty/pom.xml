@@ -21,57 +21,57 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tests-containers-jetty</artifactId>
+  <artifactId>hawkular-apm-tests-containers-jetty</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Containers::Jetty</name>
+  <name>Hawkular APM::Tests::Containers::Jetty</name>
 
   <properties>
-    <hawkular-btm.lib>${project.build.directory}/lib</hawkular-btm.lib>
-    <hawkular-btm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-btm.instrumentation>
-    <hawkular-btm.logging>${project.basedir}/src/test/configuration/logging.propertiesn</hawkular-btm.logging>
+    <hawkular-apm.lib>${project.build.directory}/lib</hawkular-apm.lib>
+    <hawkular-apm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-apm.instrumentation>
+    <hawkular-apm.logging>${project.basedir}/src/test/configuration/logging.propertiesn</hawkular-apm.logging>
 
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
-    <hawkular-btm.path>/hawkular/btm</hawkular-btm.path>
-    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-btm.path}</HAWKULAR_APM_URI>
-    <hawkular-btm.testapp.host>127.0.0.1</hawkular-btm.testapp.host>
-    <hawkular-btm.testapp.port>8180</hawkular-btm.testapp.port>
-    <hawkular-btm.testapp.uri>http://${hawkular-btm.testapp.host}:${hawkular-btm.testapp.port}</hawkular-btm.testapp.uri>
+    <hawkular-apm.path>/hawkular/apm</hawkular-apm.path>
+    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-apm.path}</HAWKULAR_APM_URI>
+    <hawkular-apm.testapp.host>127.0.0.1</hawkular-apm.testapp.host>
+    <hawkular-apm.testapp.port>8180</hawkular-apm.testapp.port>
+    <hawkular-apm.testapp.uri>http://${hawkular-apm.testapp.host}:${hawkular-apm.testapp.port}</hawkular-apm.testapp.uri>
   </properties>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-agent-rest</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-agent-rest</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-trace-service-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-trace-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-tests-common</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-tests-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-tests-server-mock</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-tests-server-mock</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -114,11 +114,11 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-agent-rest</artifactId>
+                  <groupId>org.hawkular.apm</groupId>
+                  <artifactId>hawkular-apm-agent-rest</artifactId>
                   <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular-btm.lib}</outputDirectory>
-                  <destFileName>hawkular-btm-agent-rest.jar</destFileName>
+                  <outputDirectory>${hawkular-apm.lib}</outputDirectory>
+                  <destFileName>hawkular-apm-agent-rest.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -132,11 +132,11 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.hawkular.btm</groupId>
-                  <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
+                  <groupId>org.hawkular.apm</groupId>
+                  <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${hawkular-btm.instrumentation}</outputDirectory>
+              <outputDirectory>${hawkular-apm.instrumentation}</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -148,18 +148,18 @@
           <threadCount>1</threadCount>
           <threadCountClasses>1</threadCountClasses>
           <argLine>
-              -javaagent:${hawkular-btm.lib}/hawkular-btm-agent-rest.jar
-              -DHAWKULAR_APM_CONFIG=${hawkular-btm.instrumentation}/btmconfig
-              -DHAWKULAR_APM_URI=http://localhost:8080/hawkular/btm
+              -javaagent:${hawkular-apm.lib}/hawkular-apm-agent-rest.jar
+              -DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig
+              -DHAWKULAR_APM_URI=http://localhost:8080/hawkular/apm
               -DHAWKULAR_APM_USERNAME=jdoe
               -DHAWKULAR_APM_PASSWORD=password
-              -Djava.util.logging.config.file=${hawkular-btm.logging}
-              -Dhawkular-btm.test.mode=true
+              -Djava.util.logging.config.file=${hawkular-apm.logging}
+              -Dhawkular-apm.test.mode=true
               -DHAWKULAR_APM_LOG_LEVEL=INFO
           </argLine>
           <systemPropertyVariables>
             <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
-            <hawkular-btm.testapp.uri>${hawkular-btm.testapp.uri}</hawkular-btm.testapp.uri>
+            <hawkular-apm.testapp.uri>${hawkular-apm.testapp.uri}</hawkular-apm.testapp.uri>
           </systemPropertyVariables>
         </configuration>
         <executions>

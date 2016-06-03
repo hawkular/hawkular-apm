@@ -1,0 +1,168 @@
+/*
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.hawkular.apm.server.rest;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
+import org.junit.Test;
+
+/**
+ * @author gbrown
+ */
+public class RESTServiceUtilTest {
+
+    @Test
+    public void testDecodePropertiesSingle() {
+        String encoded = "hello|world";
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+
+        RESTServiceUtil.decodeProperties(properties, encoded);
+
+        assertTrue("Properties should have 1 entry", properties.size() == 1);
+
+        PropertyCriteria pc = properties.iterator().next();
+
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertFalse(pc.isExcluded());
+    }
+
+    @Test
+    public void testDecodePropertiesSingleExclusion() {
+        String encoded = "-hello|world";
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+
+        RESTServiceUtil.decodeProperties(properties, encoded);
+
+        assertTrue("Properties should have 1 entry", properties.size() == 1);
+
+        PropertyCriteria pc = properties.iterator().next();
+
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertTrue(pc.isExcluded());
+    }
+
+    @Test
+    public void testDecodePropertiesSingleWithSpaces() {
+        String encoded = "hello | world ";
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+
+        RESTServiceUtil.decodeProperties(properties, encoded);
+
+        PropertyCriteria pc = properties.iterator().next();
+
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertFalse(pc.isExcluded());
+    }
+
+    @Test
+    public void testDecodePropertiesMultiple() {
+        String encoded = "hello|world,fred|bloggs";
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+
+        RESTServiceUtil.decodeProperties(properties, encoded);
+
+        assertTrue("Properties should have 2 entries", properties.size() == 2);
+
+        Iterator<PropertyCriteria> iter = properties.iterator();
+        PropertyCriteria pc1 = iter.next();
+        PropertyCriteria pc2 = iter.next();
+
+        if (pc1.getName().equals("hello")) {
+            assertEquals("hello", pc1.getName());
+            assertEquals("world", pc1.getValue());
+            assertFalse(pc1.isExcluded());
+
+            assertEquals("fred", pc2.getName());
+            assertEquals("bloggs", pc2.getValue());
+            assertFalse(pc2.isExcluded());
+        } else {
+            assertEquals("hello", pc2.getName());
+            assertEquals("world", pc2.getValue());
+            assertFalse(pc2.isExcluded());
+
+            assertEquals("fred", pc1.getName());
+            assertEquals("bloggs", pc1.getValue());
+            assertFalse(pc1.isExcluded());
+        }
+    }
+
+    @Test
+    public void testDecodeCorrelationIdsSingle() {
+        String encoded = "Global|world";
+        Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
+
+        RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
+
+        assertTrue("Correlation identifiers should have 1 entry", correlations.size() == 1);
+
+        CorrelationIdentifier cid = new CorrelationIdentifier();
+        cid.setScope(Scope.Global);
+        cid.setValue("world");
+
+        assertTrue(correlations.contains(cid));
+    }
+
+    @Test
+    public void testDecodeCorrelationIdsSingleWithSpaces() {
+        String encoded = " Local | world ";
+        Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
+
+        RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
+
+        assertTrue("Correlation identifiers should have 1 entry", correlations.size() == 1);
+
+        CorrelationIdentifier cid = new CorrelationIdentifier();
+        cid.setScope(Scope.Local);
+        cid.setValue("world");
+
+        assertTrue(correlations.contains(cid));
+    }
+
+    @Test
+    public void testDecodeCorrelationIdsMultiple() {
+        String encoded = "Global|world,Interaction|hello";
+        Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
+
+        RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
+
+        assertTrue("Correlation identifiers should have 2 entry", correlations.size() == 2);
+
+        CorrelationIdentifier cid1 = new CorrelationIdentifier();
+        cid1.setScope(Scope.Global);
+        cid1.setValue("world");
+
+        CorrelationIdentifier cid2 = new CorrelationIdentifier();
+        cid2.setScope(Scope.Interaction);
+        cid2.setValue("hello");
+
+        assertTrue(correlations.contains(cid1));
+        assertTrue(correlations.contains(cid2));
+    }
+
+}

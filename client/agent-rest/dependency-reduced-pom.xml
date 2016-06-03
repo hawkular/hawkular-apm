@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>hawkular-btm</artifactId>
-    <groupId>org.hawkular.btm</groupId>
+    <artifactId>hawkular-apm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>hawkular-btm-agent-rest</artifactId>
-  <name>Hawkular BTM::Client::Agent REST</name>
+  <artifactId>hawkular-apm-agent-rest</artifactId>
+  <name>Hawkular APM::Client::Agent REST</name>
   <build>
     <plugins>
       <plugin>
@@ -44,23 +44,23 @@
               <relocations>
                 <relocation>
                   <pattern>com.jayway</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.com.jayway</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.com.jayway</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>net.minidev</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.net.minidev</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.net.minidev</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.mvel2</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.org.mvel2</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.org.mvel2</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objectweb</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.org.objectweb</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.org.objectweb</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.slf4j</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.org.slf4j</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.org.slf4j</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>

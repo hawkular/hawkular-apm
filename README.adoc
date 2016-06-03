@@ -1,17 +1,16 @@
-= hawkular-btm
+= hawkular-apm
 :source-language: java
 
 ifdef::env-github[]
-[link=https://travis-ci.org/hawkular/hawkular-btm]
-image::https://travis-ci.org/hawkular/hawkular-btm.svg?branch=master[Build Status,70,18]
+[link=https://travis-ci.org/hawkular/hawkular-apm]
+image::https://travis-ci.org/hawkular/hawkular-apm.svg?branch=master[Build Status,70,18]
 endif::[]
 
 [.lead]
-*Hawkular BTM* is the Business Transaction Management (BTM) and Application Performance
-Management (APM) module for Hawkular.
+*Hawkular APM* is the Application Performance Management (APM) module for Hawkular.
 
-The project will provide the capabilities to monitor the flow of a business transaction
-instance across servers, tiers, on-premises and in the cloud. It will also enable detailed
+The project will provide the capabilities to monitor the flow of invocations
+across servers, tiers, on-premises and in the cloud. It will also enable detailed
 performance analysis to be performed of the individual components that make up an
 application.
 
@@ -20,19 +19,13 @@ application.
 To build the project, run:
 
 ```shell
-mvn clean install [ -Ptests,vertx,wildfly ]
+mvn clean install [ -Ptests ]
 ```
 
-The optional 'tests' profile will automatically run integration tests within a WildFly instance
-configured with Hawkular Bus and BTM.
+The optional 'tests' profile will automatically run integration tests.
 
-The optional 'vertx' profile provides integration tests running in a vertx environment.
-
-The optional 'wildfly' profile provides integration tests against the Hawkular BTM REST APIs
-running in a WildFly server.
-
-The distribution (a preconfigured version of WildFly with all necessary Hawkular components) can be
-found here: _dist/target/hawkular-btm-dist-<version>.zip_.
+The distribution (a preconfigured version of WildFly with APM installed) can be
+found here: _dist/target/hawkular-app-dist-<version>.zip_.
 
 
 == Documentation
@@ -62,10 +55,10 @@ This folder contains the processor implementations that derive higher level info
 business transaction fragments reported by execution environments.
 | server |
 This folder contains the modules related to the server.
-| services |
-This folder contains the services provided by BTM.
 | tests |
 This folder contains the integration tests.
+| tools |
+This folder contains the tools for working for APM.
 | ui |
 The angularjs based user interface.
 |=======================
@@ -73,7 +66,7 @@ The angularjs based user interface.
 
 == License
 
-Hawkular-BTM is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document
+Hawkular-APM is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document
 
 ----
    Copyright 2015-2016 Red Hat, Inc.

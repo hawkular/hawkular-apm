@@ -21,41 +21,41 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-agent-rest</artifactId>
+  <artifactId>hawkular-apm-agent-rest</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular BTM::Client::Agent REST</name>
+  <name>Hawkular APM::Client::Agent REST</name>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-client-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-client-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-collector</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-collector</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-trace-publisher-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-instrumenter</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-instrumenter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-config-service-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-config-service-rest-client</artifactId>
     </dependency>
 
     <dependency>
@@ -145,31 +145,31 @@
             </goals>
             <configuration>
               <relocations>
-                <!-- HWKBTM-284
+                <!-- HWKAPM-284
                 <relocation>
                   <pattern>com.fasterxml</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.com.fasterxml</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.com.fasterxml</shadedPattern>
                 </relocation>
                 -->
                 <relocation>
                   <pattern>com.jayway</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.com.jayway</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.com.jayway</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>net.minidev</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.net.minidev</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.net.minidev</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.mvel2</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.org.mvel2</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.org.mvel2</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objectweb</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.org.objectweb</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.org.objectweb</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.slf4j</pattern>
-                  <shadedPattern>org.hawkular.btm.shaded.org.slf4j</shadedPattern>
+                  <shadedPattern>org.hawkular.apm.shaded.org.slf4j</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>

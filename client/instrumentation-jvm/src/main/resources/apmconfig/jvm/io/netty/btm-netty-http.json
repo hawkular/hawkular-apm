@@ -1,0 +1,127 @@
+{
+  "instrumentation": {
+    "io.netty.http": {
+      "description": "Netty HTTP instrumentation",
+      "rules": [{
+        "ruleName": "Netty HTTP Producer Start",
+        "notes": [
+          "TODO: ProcessContents"
+        ],
+        "className": "io.netty.handler.codec.http.HttpClientCodec$Encoder",
+        "methodName": "encode",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "req",
+          "type": "io.netty.handler.codec.http.DefaultHttpRequest",
+          "expression": "$2"
+        },{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "condition": "isInstanceOf($2,io.netty.handler.codec.http.DefaultHttpRequest.class) && activate((new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPath(),req.getMethod().name())",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPath()",
+          "operationExpression": "req.getMethod().name()",
+          "idExpression": "id"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "java.lang.Iterable<Map.Entry>",
+          "headersExpression": "req.headers()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"io.netty.http\""
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "req.getMethod().name()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getHost()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPort()"
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getQuery()"
+        },{
+          "type": "FreeFormAction",
+          "action": "req.headers().add(\"Hawkularbtid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "req.headers().add(\"Hawkularbtname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "req.headers().add(\"Hawkularbtlevel\",getLevel())"
+        }]
+      },{
+        "ruleName": "Netty HTTP Producer End",
+        "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
+        "notes": [
+          "TODO: Store contents of byte buffer if data is required (HWKBTM-373). For now",
+          "just using detection of DefaultHttpResponse in the list as the end of the producer ",
+          "but when content is of interest, will need to delay the end of the producer until ",
+          "the data has been read."
+        ],
+        "methodName": "decode",
+        "parameterTypes": [
+          "*"
+        ],
+        "binds": [{
+          "name": "list",
+          "type": "java.util.List",
+          "expression": "$3"
+        }],
+        "location": "ENTRY",
+        "condition": "isActive() && list.size() > 0 && isInstanceOf(list.get(0),io.netty.handler.codec.http.DefaultHttpResponse.class)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      },{
+        "ruleName": "Netty HTTP Producer End",
+        "notes": [
+          "TODO: Store contents of byte buffer if data is required (HWKBTM-373)"
+        ],
+        "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
+        "methodName": "decode",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && isInstanceOf($2,io.netty.buffer.EmptyByteBuf.class)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        }]
+      },{
+        "ruleName": "Netty HTTP Producer End",
+        "notes": [
+          "TODO: Store contents of byte buffer if data is required (HWKBTM-373)"
+        ],
+        "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
+        "methodName": "decode",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && isInstanceOf($2,io.netty.buffer.ByteBuf.class)",
+        "actions": [
+        ]
+      }]
+    }
+  }
+}

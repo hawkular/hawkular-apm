@@ -1,4 +1,4 @@
-= Hawkular BTM UI
+= Hawkular APM UI
 
 == Developing the UI
 
@@ -11,7 +11,7 @@ bower install
 
 Note: See https://docs.npmjs.com/getting-started/installing-node[installing npm] for instructions on how to install *npm*, and http://bower.io/#install-bower[installing bower] if *bower* is not on your system.
 
-Before being able to start up the UI, you will need to start up the _Hawkular BTM server_, to provide the backend REST services. Once this is done, run the following command (from the *ui/src/main/scripts* folder) to build and start up a test web server:
+Before being able to start up the UI, you will need to start up the _Hawkular APM server_, to provide the backend REST services. Once this is done, run the following command (from the *ui/src/main/scripts* folder) to build and start up a test web server:
 
 ----
 gulp

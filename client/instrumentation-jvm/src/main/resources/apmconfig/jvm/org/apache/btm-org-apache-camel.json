@@ -1,0 +1,369 @@
+{
+  "instrumentation": {
+    "org.apache.camel": {
+      "description": "Apache Camel instrumentation",
+      "rules": [{
+        "ruleName": "Apache Camel Exchange Constructor Correlation",
+        "className": "org.apache.camel.impl.DefaultExchange",
+        "methodName": "<init>",
+        "parameterTypes": [
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "!isActive() && isCorrelated(\"org.apache.camel-component\"+$1.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$1.getExchangeId()"
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"org.apache.camel-component\"+$0.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Component Pre Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeCreated",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class) && !isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Component Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeCreated",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null)",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "In",
+          "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.apache.camel\""
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Component Pre End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "!isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId()) && $2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class)",
+        "actions": [{
+          "type": "CompleteCorrelation",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Component End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && $2.getFromEndpoint() != null && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.direct.DirectEndpoint.class)",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Out",
+          "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Component Pre Start",
+        "notes": [
+          "If the exchange has an active correlation, but the thread is not currently active, then correlate the thread to the session"
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSending",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint"
+        ],
+        "location": "ENTRY",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && !isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Component Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSending",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint"
+        ],
+        "location": "ENTRY",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && activate($3.getEndpointUri(),null)",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "In",
+          "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.apache.camel\""
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Component Pre End",
+        "notes": [
+          "If the exchange has an active correlation, but the thread is not currently active, then correlate the thread to the session"
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSent",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint",
+           "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && !isActive() && isCorrelated(\"org.apache.camel-component\"+$2.getExchangeId())",
+        "actions": [{
+          "type": "Correlate",
+          "idExpression": "\"org.apache.camel-component\"+$2.getExchangeId()"
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Component End",
+        "notes": [
+          "Unlink after handling the end of the component, as may not continue with other activities on this thread"
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSent",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint",
+           "long"
+        ],
+        "location": "ENTRY",
+        "condition": "$3 != null && !isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && !isInstanceOf($3,org.apache.camel.component.direct.DirectEndpoint.class) && isActive()",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "Out",
+          "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()"
+        },{
+          "type": "Unlink"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Consumer Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeCreated",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null,$2.getProperty(\"Hawkularbtid\"))",
+        "actions": [{
+          "type": "SetBusinessTransaction",
+          "nameExpression": "$2.getProperty(\"Hawkularbtname\")"
+        },{
+          "type": "SetLevel",
+          "levelExpression": "$2.getProperty(\"Hawkularbtlevel\")"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
+          "idExpression": "$2.getProperty(\"Hawkularbtid\")"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.apache.camel\""
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.removeProperty(\"Hawkularbtid\")"
+        }]
+      },{
+        "ruleName": "Apache Camel Inbound Consumer End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && isActive()",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Out",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
+          "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Producer Start",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSending",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "condition": "isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && activate($3.getEndpointUri(),null)",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()",
+          "idExpression": "id"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.apache.camel\""
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"Hawkularbtid\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"Hawkularbtname\",getBusinessTransactionName())"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"Hawkularbtlevel\",getLevel())"
+        }]
+      },{
+        "ruleName": "Apache Camel Outbound Producer End",
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeSent",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange",
+           "org.apache.camel.Endpoint",
+           "long"
+        ],
+        "location": "ENTRY",
+        "condition": "isInstanceOf($3,org.apache.camel.component.seda.SedaEndpoint.class) && isActive()",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
+          "uriExpression": "$3.getEndpointUri()"
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast Producer Create ID",
+        "notes": [
+          "This rule caters for internal spawning of exchanges to handle tasks in parallel.",
+          "The parent exchange has an id set, which is then copied into the child exchanges",
+          "to be picked up by the code that performs the child exchange in a different thread."
+        ],
+        "className": "org.apache.camel.processor.MulticastProcessor",
+        "methodName": "process",
+        "parameterTypes": [
+           "*"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "id",
+          "type": "java.lang.String",
+          "expression": "createUUID()"
+        }],
+        "condition": "isActive() && $0.isParallelProcessing()",
+        "actions": [{
+          "type": "InstrumentProducer",
+          "direction": "In",
+          "endpointTypeExpression": "simpleClassName($0)",
+          "idExpression": "id"
+        },{
+          "type": "FreeFormAction",
+          "action": "$1.setProperty(\"BTMMulticastId\",id)"
+        },{
+          "type": "SetDetail",
+          "name": "apm_publish",
+          "valueExpression": "\"true\""
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast Producer Clear ID",
+        "notes": [
+          "When the spawning has finished, cleanup the id so does not cause problems",
+          "in other multicast situations. Also close the producer scope."
+        ],
+        "className": "org.apache.camel.processor.MulticastProcessor",
+        "methodName": "process",
+        "parameterTypes": [
+           "*"
+        ],
+        "location": "EXIT",
+        "condition": "isActive() && $0.isParallelProcessing()",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$1.removeProperty(\"BTMMulticastId\")"
+        },{
+          "type": "InstrumentProducer",
+          "direction": "Out",
+          "endpointTypeExpression": "simpleClassName($0)"
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast",
+        "notes": [
+          "If the exchange has a multicast id, then need to track the exchange as a",
+          "spawned sub-exchange, using the id as correlation to the spawning exchange.",
+          "This association is tracked by creating a consumer."
+        ],
+        "className": "org.apache.camel.processor.MulticastProcessor",
+        "methodName": "doProcessParallel",
+        "parameterTypes": [
+           "org.apache.camel.processor.ProcessorExchangePair"
+        ],
+        "location": "ENTRY",
+        "condition": "$1.getExchange().getProperty(\"BTMMulticastId\") != null",
+        "actions": [{
+          "type": "FreeFormAction",
+          "action": "$1.getExchange().setProperty(\"BTMMulticastExchange\",$1.getExchange().getExchangeId())"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "simpleClassName($0)",
+          "idExpression": "$1.getExchange().getProperty(\"BTMMulticastId\")"
+        }]
+      },{
+        "ruleName": "Apache Camel Multicast Consumer End",
+        "notes": [
+          "As multicast sub-exchange is performed asynchronously, we need to use the 'notifyExchangeDone'",
+          "event as a trigger for signifying the end of the exchange - but only if the exchange was",
+          "created to handle a multicast sub-exchange - which is determined by the presence of the ",
+          "'BTMMulticastExchange' property having the correct id value (i.e. itself - just to validate ",
+          "has not been copied accidently)."
+        ],
+        "className": "org.apache.camel.util.EventHelper",
+        "methodName": "notifyExchangeDone",
+        "parameterTypes": [
+           "org.apache.camel.CamelContext",
+           "org.apache.camel.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "$2.getProperty(\"BTMMulticastExchange\") != null && $2.getProperty(\"BTMMulticastExchange\").equals($2.getExchangeId())",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Out"
+        }]
+      }]
+    }
+  }
+}

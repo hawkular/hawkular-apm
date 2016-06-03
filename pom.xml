@@ -26,14 +26,14 @@
     <version>42</version>
   </parent>
 
-  <groupId>org.hawkular.btm</groupId>
-  <artifactId>hawkular-btm</artifactId>
+  <groupId>org.hawkular.apm</groupId>
+  <artifactId>hawkular-apm</artifactId>
   <version>0.8.1.Final-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Hawkular BTM</name>
-  <description>Hawkular Business Transaction Management</description>
-  <url>https://github.com/hawkular/hawkular-btm</url>
+  <name>Hawkular APM</name>
+  <description>Hawkular Application Performance Management</description>
+  <url>https://github.com/hawkular/hawkular-apm</url>
   <inceptionYear>2015</inceptionYear>
   <organization>
     <name>Red Hat, Inc.</name>
@@ -89,18 +89,18 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git://github.com/hawkular/hawkular-btm.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/hawkular/hawkular-btm.git</developerConnection>
-    <url>https://github.com/hawkular/hawkular-btm</url>
+    <connection>scm:git:git://github.com/hawkular/hawkular-apm.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/hawkular/hawkular-apm.git</developerConnection>
+    <url>https://github.com/hawkular/hawkular-apm</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
-    <url>https://issues.jboss.org/browse/HWKBTM</url>
+    <url>https://issues.jboss.org/browse/HWKAPM</url>
     <system>jira</system>
   </issueManagement>
 
   <properties>
-    <hawkular-btm-db>elasticsearch</hawkular-btm-db>
+    <hawkular-apm-db>elasticsearch</hawkular-apm-db>
 
     <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
     <version.com.github.eirslett.frontend-maven-plugin>0.0.26</version.com.github.eirslett.frontend-maven-plugin>
@@ -131,164 +131,164 @@
   <dependencyManagement>
     <dependencies>
 
-      <!-- BTM API -->
+      <!-- APM API -->
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-api</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-api</artifactId>
         <version>${project.version}</version>
       </dependency>
 
-      <!-- BTM Client -->
+      <!-- APM Client -->
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-analytics-service-rest-client</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-analytics-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-client-api</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-client-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-config-service-rest-client</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-config-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-collector</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-collector</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-trace-publisher-rest-client</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-trace-service-rest-client</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-trace-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-instrumenter</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-instrumenter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-tools-instrumenter</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-tools-instrumenter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-agent-rest</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-agent-rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-config-manager-rest-client</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <!-- BTM Processors -->
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-communicationdetails-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-btxncompletiontime-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-fragmentcompletiontime-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-notification-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-nodedetails-deriver</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-config-manager-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 
-      <!-- BTM Server -->
+      <!-- APM Processors -->
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-btxncompletiontime-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-fragmentcompletiontime-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-notification-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- APM Server -->
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server</artifactId>
         <type>war</type>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-api</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-rest</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-cassandra</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-cassandra</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-elasticsearch</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-elasticsearch</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-infinispan</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-infinispan</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-jms</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-jms</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-server-security-hwkaccs</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <!-- BTM Tests -->
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-tests-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-tests-server-mock</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-security-hwkaccs</artifactId>
         <version>${project.version}</version>
       </dependency>
 
-      <!-- BTM Services -->
+      <!-- APM Tests -->
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-dist</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-tests-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-tests-server-mock</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- APM Services -->
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-dist</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
 
-      <!-- BTM UI -->
+      <!-- APM UI -->
       <dependency>
-        <groupId>org.hawkular.btm</groupId>
-        <artifactId>hawkular-btm-ui</artifactId>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-ui</artifactId>
         <type>war</type>
         <version>${project.version}</version>
       </dependency>
@@ -607,7 +607,7 @@
     <profile>
       <id>cassandra</id>
       <properties>
-        <hawkular-btm-db>cassandra</hawkular-btm-db>
+        <hawkular-apm-db>cassandra</hawkular-apm-db>
       </properties>
     </profile>
   </profiles>

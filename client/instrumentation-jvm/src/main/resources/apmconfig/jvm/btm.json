@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "hawkular-apm.collector.onlynamed": "false"
+  },
+  "businessTransactions": {
+    "apm": {
+      "description": "Configuration for the Business Transaction Management system",
+      "filter": {
+        "exclusions": [
+          "^/hawkular/apm",
+          "^/auth/"
+        ]
+      }
+    },
+    "webpages": {
+      "description": "Configuration for excluding Web pages and their resources",
+      "filter": {
+        "exclusions": [
+          "\\.html\\[GET\\]$",
+          "\\.htm\\[GET\\]$",
+          "\\.css\\[GET\\]$",
+          "\\.js\\[GET\\]$",
+          "\\.jsp\\[GET\\]$",
+          "\\.gif\\[GET\\]$",
+          "\\.bmp\\[GET\\]$",
+          "\\.jpg\\[GET\\]$",
+          "\\.tif\\[GET\\]$",
+          "\\.png\\[GET\\]$",
+          "\\.ico\\[GET\\]$",
+          "\\.ttf\\[GET\\]$",
+          "\\.otf\\[GET\\]$",
+          "\\.woff\\[GET\\]$"
+        ]
+      }
+    },
+    "xsd": {
+      "description": "Configuration for excluding xsds",
+      "filter": {
+        "exclusions": [
+          "\\.xsd\\[GET\\]$"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "instrumentation": {
+    "org.apache.cxf": {
+      "description": "Apache CXF Instrumentation",
+      "rules": [{
+        "ruleName": "Apache CXF Jetty HTTPDestination Consumer Start",
+        "notes": [
+          "This method was called one for the request, and then again for the response, but in a diff thread - so used link mechanism to ",
+          "firstly determine if call was first or second, then also to link the thread processing the response back to the original business txn session.",
+          "TODO: Should this rule extract the HTTP method? and then pass as second parameter to the activate method as well as to the InstrumentConsumer?"
+        ],
+        "className": "^org.apache.cxf.transport.http_jetty.JettyHTTPDestination",
+        "methodName": "doService",
+        "parameterTypes": [
+          "javax.servlet.ServletContext",
+          "javax.servlet.http.HttpServletRequest",
+          "javax.servlet.http.HttpServletResponse"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "req",
+          "type": "javax.servlet.http.HttpServletRequest",
+          "expression": "$2"
+        }],
+        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"Hawkularbtid\"))",
+        "actions": [{
+          "type": "SetBusinessTransaction",
+          "nameExpression": "req.getHeader(\"Hawkularbtname\")"
+        },{
+          "type": "SetLevel",
+          "levelExpression": "req.getHeader(\"Hawkularbtlevel\")"
+        },{
+          "type": "InstrumentConsumer",
+          "direction": "In",
+          "endpointTypeExpression": "\"HTTP\"",
+          "uriExpression": "req.getRequestURL().toString()",
+          "operationExpression": "req.getMethod()",
+          "idExpression": "req.getHeader(\"Hawkularbtid\")"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "javax.servlet.http.HttpServletRequest",
+          "headersExpression": "req"
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.apache.cxf\""
+        },{
+          "type": "SetDetail",
+          "name": "http_query",
+          "valueExpression": "req.getQueryString()"
+        },{
+          "type": "SetDetail",
+          "name": "http_method",
+          "valueExpression": "req.getMethod()"
+        },{
+          "type": "SetDetail",
+          "name": "http_host",
+          "valueExpression": "req.getServerName()"
+        },{
+          "type": "SetDetail",
+          "name": "http_port",
+          "valueExpression": "req.getServerPort()"
+        },{
+          "type": "SetDetail",
+          "name": "principal",
+          "valueExpression": "req.getRemoteUser()"
+        },{
+          "type": "SetDetail",
+          "name": "remoteAddr",
+          "valueExpression": "req.getRemoteAddr()"
+        },{
+          "type": "SetDetail",
+          "name": "remoteHost",
+          "valueExpression": "req.getRemoteHost()"
+        },{
+          "type": "InitiateCorrelation",
+          "idExpression": "\"org.apache.cxf-jetty\"+$0.hashCode()"
+        }]
+      }]
+    }
+  }
+}
