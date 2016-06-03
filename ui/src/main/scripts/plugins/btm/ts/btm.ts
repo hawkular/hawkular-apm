@@ -50,7 +50,7 @@ module BTM {
     };
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
+      $http.get('/hawkular/apm/config/businesstxn/summary').then(function(resp) {
 
         let allPromises = [];
         _.each(resp.data, (btxn: any) => {
@@ -68,7 +68,7 @@ module BTM {
         console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/btm/analytics/unboundendpoints').then(function(resp) {
+      $http.get('/hawkular/apm/analytics/unboundendpoints').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
         console.log('Failed to get candidate count: ' + JSON.stringify(resp));
@@ -83,7 +83,7 @@ module BTM {
     $scope.getBusinessTxnDetails = function(btxn) {
       let promises = [];
 
-      let countPromise = $http.get('/hawkular/btm/analytics/completion/count?businessTransaction=' + btxn.name);
+      let countPromise = $http.get('/hawkular/apm/analytics/completion/count?businessTransaction=' + btxn.name);
       promises.push(countPromise);
       countPromise.then(function(resp) {
         btxn.count = resp.data;
@@ -91,7 +91,7 @@ module BTM {
         console.log('Failed to get count: ' + JSON.stringify(resp));
       });
 
-      let pct95Promise = $http.get('/hawkular/btm/analytics/completion/percentiles?businessTransaction=' + btxn.name);
+      let pct95Promise = $http.get('/hawkular/apm/analytics/completion/percentiles?businessTransaction=' + btxn.name);
       promises.push(pct95Promise);
       pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
@@ -103,7 +103,7 @@ module BTM {
         console.log('Failed to get completion percentiles: ' + JSON.stringify(resp));
       });
 
-      let faultsPromise = $http.get('/hawkular/btm/analytics/completion/faultcount?businessTransaction=' + btxn.name);
+      let faultsPromise = $http.get('/hawkular/apm/analytics/completion/faultcount?businessTransaction=' + btxn.name);
       promises.push(faultsPromise);
       faultsPromise.then(function(resp) {
         btxn.faultcount = resp.data;
@@ -111,7 +111,7 @@ module BTM {
         console.log('Failed to get fault count: ' + JSON.stringify(resp));
       });
 
-      let alertsPromise = $http.get('/hawkular/btm/analytics/alerts/count/' + btxn.name);
+      let alertsPromise = $http.get('/hawkular/apm/analytics/alerts/count/' + btxn.name);
       promises.push(alertsPromise);
       alertsPromise.then(function(resp) {
         btxn.alerts = resp.data;
@@ -124,7 +124,7 @@ module BTM {
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \'' + btxn.name + '\'?')) {
-        $http.delete('/hawkular/btm/config/businesstxn/full/' + btxn.name).then(function(resp) {
+        $http.delete('/hawkular/apm/config/businesstxn/full/' + btxn.name).then(function(resp) {
           console.log('Deleted: ' + btxn.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {

@@ -1,0 +1,6 @@
+org.hawkular.apm.instrumenter.headers.ApacheHttpclientHeadersAccessor
+org.hawkular.apm.instrumenter.headers.IterableMapEntryHeadersAccessor
+org.hawkular.apm.instrumenter.headers.JavaxJmsHeadersAccessor
+org.hawkular.apm.instrumenter.headers.JavaxServletHeadersAccessor
+org.hawkular.apm.instrumenter.headers.JbossResteasyHeadersAccessor
+org.hawkular.apm.instrumenter.headers.JbossSwitchyardHeadersAccessor

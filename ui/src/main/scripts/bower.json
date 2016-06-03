@@ -1,15 +1,15 @@
 {
-  "name": "hawkularbtm",
+  "name": "hawkularapm",
   "version": "0.1.0",
   "keywords": [
     "hawtio"
   ],
   "main": [
-    "dist/hawkularbtm.js",
-    "dist/hawkularbtm.css"
+    "dist/hawkularapm.js",
+    "dist/hawkularapm.css"
   ],
   "ignore": [
-    "dist/hawkularbtm-test.js",
+    "dist/hawkularapm-test.js",
     "**/.*",
     "node_modules",
     "libs",

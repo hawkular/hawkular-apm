@@ -27,7 +27,7 @@ module E2E {
 
       $rootScope.updateCriteriaTimeSpan();
 
-      let commPromise = $http.post('/hawkular/btm/analytics/communication/summary?tree=true',
+      let commPromise = $http.post('/hawkular/apm/analytics/communication/summary?tree=true',
                                    $rootScope.sbFilter.criteria);
       commPromise.then(function(resp) {
         $scope.e2eData = resp.data;

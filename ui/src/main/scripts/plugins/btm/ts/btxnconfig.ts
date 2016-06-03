@@ -31,11 +31,11 @@ module BTM {
 
     $scope.messages = [];
 
-    $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/apm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
 
-      $http.post('/hawkular/btm/config/businesstxn/validate',$scope.businessTransaction).then(function(resp) {
+      $http.post('/hawkular/apm/config/businesstxn/validate',$scope.businessTransaction).then(function(resp) {
         $scope.messages = resp.data;
       },function(resp) {
         console.log('Failed to validate business txn \'' + $scope.businessTransactionName + '\': ' +
@@ -45,7 +45,7 @@ module BTM {
       console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
     });
 
-    $http.get('/hawkular/btm/analytics/unboundendpoints?compress=true').then(function(resp) {
+    $http.get('/hawkular/apm/analytics/unboundendpoints?compress=true').then(function(resp) {
       $scope.unboundEndpoints = [ ];
       for (let i = 0; i < resp.data.length; i++) {
         if (resp.data[i].regex !== undefined) {
@@ -57,7 +57,7 @@ module BTM {
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/boundendpoints/' + $scope.businessTransactionName).then(function(resp) {
+      $http.get('/hawkular/apm/analytics/boundendpoints/' + $scope.businessTransactionName).then(function(resp) {
         $scope.boundEndpoints = [ ];
         for (let i = 0; i < resp.data.length; i++) {
           if (resp.data[i].uriRegex !== undefined) {
@@ -203,7 +203,7 @@ module BTM {
     $scope.save = function() {
       $scope.messages = [];
 
-      $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.businessTransactionName, $scope.businessTransaction)
+      $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.businessTransactionName, $scope.businessTransaction)
         .then(function(resp) {
         $scope.messages = resp.data;
         $scope.original = angular.copy($scope.businessTransaction);
@@ -219,7 +219,7 @@ module BTM {
       });
     };
 
-    $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/apm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
     },function(resp) {

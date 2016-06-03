@@ -21,21 +21,21 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tools-instrumenter</artifactId>
+  <artifactId>hawkular-apm-tools-instrumenter</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular BTM::Tools::Instrumenter</name>
+  <name>Hawkular APM::Tools::Instrumenter</name>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-agent-rest</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-agent-rest</artifactId>
     </dependency>
 
     <dependency>
@@ -64,7 +64,7 @@
     </plugins>
   </build>
 
-  <!-- HWKBTM-459 Exclude instrumenter util test, that builds collector config from maven artifact,
+  <!-- HWKAPM-459 Exclude instrumenter util test, that builds collector config from maven artifact,
        due to failure to retrieve the artifact when running in travis. -->
   <profiles>
     <profile>
@@ -76,7 +76,7 @@
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
               <systemPropertyVariables>
-                <hawkular-btm-version>${project.version}</hawkular-btm-version>
+                <hawkular-apm-version>${project.version}</hawkular-apm-version>
               </systemPropertyVariables>
             </configuration>
             <executions>

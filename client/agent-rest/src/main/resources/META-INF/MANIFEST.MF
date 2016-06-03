@@ -1,5 +1,5 @@
-Agent-Class: org.hawkular.btm.instrumenter.BTMAgent
+Agent-Class: org.hawkular.apm.instrumenter.APMAgent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true
-Premain-Class: org.hawkular.btm.instrumenter.BTMAgent
-Boot-Class-Path: ./hawkular-btm-agent-rest.jar
+Premain-Class: org.hawkular.apm.instrumenter.APMAgent
+Boot-Class-Path: ./hawkular-apm-agent-rest.jar

@@ -26,14 +26,14 @@ module BTM {
     $scope.selectedendpoints = [ ];
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/btm/config/businesstxn/summary').then(function(resp) {
+    $http.get('/hawkular/apm/config/businesstxn/summary').then(function(resp) {
       $scope.businessTransactions = resp.data;
     },function(resp) {
       console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/btm/analytics/unboundendpoints?compress=true').then(function(resp) {
+      $http.get('/hawkular/apm/analytics/unboundendpoints?compress=true').then(function(resp) {
         $scope.unboundendpoints = resp.data;
         $scope.candidateCount = Object.keys(resp.data).length;
 
@@ -79,7 +79,7 @@ module BTM {
           });
         }
       }
-      $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
+      $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
         $location.path('/hawkular-ui/btm/config/' + $scope.newBTxnName);
       },function(resp) {
         console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
@@ -110,7 +110,7 @@ module BTM {
           });
         }
       }
-      $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
+      $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
         $location.path('/hawkular-ui/btm/config/' + $scope.newBTxnName);
       },function(resp) {
         console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
@@ -118,14 +118,14 @@ module BTM {
     };
 
     $scope.updateBusinessTxn = function() {
-      $http.get('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName).then(function(resp) {
+      $http.get('/hawkular/apm/config/businesstxn/full/' + $scope.existingBTxnName).then(function(resp) {
         let btxn = resp.data;
         for (let i = 0; i < $scope.selectedendpoints.length; i++) {
           if (btxn.filter.inclusions.indexOf($scope.selectedendpoints[i].regex) === -1) {
             btxn.filter.inclusions.push($scope.selectedendpoints[i].regex);
           }
         }
-        $http.put('/hawkular/btm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
+        $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
           console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
           $location.path('/hawkular-ui/btm/config/' + $scope.existingBTxnName);
         },function(resp) {

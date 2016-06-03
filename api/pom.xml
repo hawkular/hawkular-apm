@@ -21,15 +21,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
   </parent>
 
-  <artifactId>hawkular-btm-api</artifactId>
+  <artifactId>hawkular-apm-api</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::API</name>
+  <name>Hawkular APM::API</name>
 
   <dependencies>
 
@@ -83,8 +83,8 @@
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-instrumentation-jvm</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
       <scope>test</scope>
     </dependency>
 

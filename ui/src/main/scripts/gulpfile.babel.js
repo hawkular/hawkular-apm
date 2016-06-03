@@ -44,7 +44,7 @@ let inProgress = false;
 
 const POM_MAIN_PATH = '../../../pom.xml';
 const DIST_TARGET_PATH = '../../../dist/target/';
-const WF_CONSOLE_PATH = 'modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-btm-ui.war/dist/';
+const WF_CONSOLE_PATH = 'modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-apm-ui.war/dist/';
 
 const plugins = gulpLoadPlugins({
   rename: {
@@ -86,13 +86,13 @@ const config = {
     noExternalResolve: false
   }),
   srcPrefix: '../../src/main/scripts/',
-  serverPath: DIST_TARGET_PATH + 'hawkular-btm-ui-1.0.0-SNAPSHOT/' + WF_CONSOLE_PATH
+  serverPath: DIST_TARGET_PATH + 'hawkular-apm-ui-1.0.0-SNAPSHOT/' + WF_CONSOLE_PATH
 };
 
 gulp.task('set-server-path', (done) => {
   const parser = new xml2js.Parser();
 parser.addListener('end', (result) => {
-  config.serverPath = DIST_TARGET_PATH + 'hawkular-btm-dist-' + result.project.version + '/' + WF_CONSOLE_PATH;
+  config.serverPath = DIST_TARGET_PATH + 'hawkular-apm-dist-' + result.project.version + '/' + WF_CONSOLE_PATH;
 done();
 });
 
@@ -239,7 +239,7 @@ gulp.task('template-live', ['tsc-live', 'copy-sources'], () => {
 const gulpLess = function (done) {
   gulp.src(['plugins/**/*.less'])
     .pipe(less())
-    .pipe(concat('hawkularbtm.css'))
+    .pipe(concat('hawkularapm.css'))
     .pipe(gulp.dest(config.dist))
     .on('end', () => {
     done && done();
@@ -347,7 +347,7 @@ gulp.src(src)
 
 gulp.task('copy-kettle-js', ['build-live', 'set-server-path'], () => {
   inProgress = false;
-gulp.src(['dist/hawkularbtm.js'])
+gulp.src(['dist/hawkularapm.js'])
   .pipe(gulp.dest(config.serverPath));
 });
 
@@ -380,7 +380,7 @@ gulp.src(src)
 
 gulp.task('copy-kettle-css', ['less-live', 'set-server-path'], () => {
   inProgress = false;
-gulp.src(['dist/hawkularbtm.css'])
+gulp.src(['dist/hawkularapm.css'])
   .pipe(gulp.dest(config.serverPath));
 });
 

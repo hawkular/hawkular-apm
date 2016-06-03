@@ -1,0 +1,2 @@
+org.hawkular.apm.instrumenter.faults.ThrowableFaultDescriptor
+org.hawkular.apm.instrumenter.faults.SOAPFaultDescriptor

@@ -21,23 +21,23 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-tests-server-wildfly</artifactId>
+  <artifactId>hawkular-apm-tests-server-wildfly</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Tests::Server::Wildfly</name>
+  <name>Hawkular APM::Tests::Server::Wildfly</name>
 
   <properties>
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
-    <hawkular-btm.path>/hawkular/btm/</hawkular-btm.path>
-    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-btm.path}</HAWKULAR_APM_URI>
+    <hawkular-apm.path>/hawkular/apm/</hawkular-apm.path>
+    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-apm.path}</HAWKULAR_APM_URI>
     <!-- IMPORTANT: The port must be the port offset + 8080. -->
     <wildfly.port.offset>1897</wildfly.port.offset>
     <!-- IMPORTANT: The management port must be the port offset + 9990. -->
@@ -54,35 +54,35 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-config-service-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-config-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-trace-service-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-trace-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-analytics-service-rest-client</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-analytics-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-instrumenter</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-instrumenter</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-dist</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-dist</artifactId>
       <type>zip</type>
       <scope>test</scope>
     </dependency>
@@ -139,7 +139,7 @@
         <configuration>
           <excludes combine.children="append">
             <exclude>**/*.data</exclude>
-            <exclude>**/*.btm</exclude>
+            <exclude>**/*.apm</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -154,15 +154,15 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <includeGroupIds>org.hawkular.btm</includeGroupIds>
-              <includeArtifactIds>hawkular-btm-dist</includeArtifactIds>
+              <includeGroupIds>org.hawkular.apm</includeGroupIds>
+              <includeArtifactIds>hawkular-apm-dist</includeArtifactIds>
               <outputDirectory>
                 ${hawkular.home}
               </outputDirectory>
             </configuration>
           </execution>
           <execution>
-            <id>update-hawkular-btm</id>
+            <id>update-hawkular-apm</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>copy</goal>
@@ -237,7 +237,7 @@
                 <javaOpt>-Xdebug</javaOpt>
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
                 <javaOpt>-Dkeycloak.import=${hawkular.configuration}/hawkular-realm-for-dev.json</javaOpt>
-                <javaOpt>-Dhawkular-btm.testmode=true</javaOpt>
+                <javaOpt>-Dhawkular-apm.testmode=true</javaOpt>
               </javaOpts>
               <startup-timeout>180</startup-timeout>
             </configuration>

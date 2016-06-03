@@ -20,7 +20,7 @@
 module BTM {
 
   export let _module = angular.module(BTM.pluginName,
-    ['xeditable', 'ui.bootstrap', 'hawkularbtm-templates', 'toastr', 'patternfly.charts']);
+    ['xeditable', 'ui.bootstrap', 'hawkularapm-templates', 'toastr', 'patternfly.charts']);
 
   let tab = undefined;
 
@@ -71,7 +71,7 @@ module BTM {
         controller: 'BTM.BTxnInfoController',
         resolve: {
           btxn: function($http, $route, $location, toastr) {
-            return $http.get('/hawkular/btm/config/businesstxn/full/' +
+            return $http.get('/hawkular/apm/config/businesstxn/full/' +
               $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
                 $location.path('/hawkular-ui/btm');

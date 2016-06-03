@@ -20,7 +20,7 @@
 module APM {
 
   export var _module = angular.module(APM.pluginName,
-    ['xeditable','ui.bootstrap','angularUtils.directives.dirPagination','hawkularbtm-templates']);
+    ['xeditable','ui.bootstrap','angularUtils.directives.dirPagination','hawkularapm-templates']);
 
   let tab = undefined;
 

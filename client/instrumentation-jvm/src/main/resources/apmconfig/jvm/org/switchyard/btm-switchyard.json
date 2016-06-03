@@ -1,0 +1,160 @@
+{
+  "instrumentation": {
+    "org.switchyard": {
+      "description": "SwitchYard instrumentation",
+      "rules": [{
+        "ruleName": "SwitchYard Service Consumer Start",
+        "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive() && $1.getConsumer().getServiceMetadata().getRegistrant().isBinding()",
+        "actions": [{
+          "type": "SetDetail",
+          "name": "apm_serviceType",
+          "valueExpression": "$1.getConsumer().getName()",
+          "nodeType": "Consumer",
+          "onStack": "true"
+        },{
+          "type": "SetDetail",
+          "name": "apm_serviceOperation",
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()",
+          "nodeType": "Consumer",
+          "onStack": "true"
+        }]
+      },{
+        "ruleName": "SwitchYard Service Component Start",
+        "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "condition": "activate($1.getConsumer().getName(),$1.getContract().getConsumerOperation().getName())",
+        "actions": [{
+          "type": "InstrumentComponent",
+          "direction": "In",
+          "componentTypeExpression": "\"Service\"",
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+        },{
+          "type": "ProcessHeaders",
+          "direction": "In",
+          "originalType": "org.switchyard.Context",
+          "headersExpression": "$1.getMessage().getContext()"
+        },{
+          "type": "ProcessContent",
+          "direction": "In",
+          "valueExpressions": [
+            "$1.getMessage().getContent()"
+          ]
+        },{
+          "type": "SetDetail",
+          "name": "apm_source",
+          "valueExpression": "\"org.switchyard\""
+        },{
+          "type": "SetDetail",
+          "name": "apm_serviceType",
+          "valueExpression": "$1.getConsumer().getName()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_serviceOperation",
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()"
+        },{
+          "type": "SetDetail",
+          "name": "apm_serviceInternal",
+          "valueExpression": "\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding()"
+        }]
+      },{
+        "ruleName": "SwitchYard Service Producer Normal End",
+        "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "content",
+          "type": "java.lang.Object",
+          "expression": "$1.getMessage().getContent()"
+        }],
+        "condition": "isActive() && $1.getProvider().getServiceMetadata().getRegistrant().isBinding()",
+        "actions": [{
+          "type": "SetDetail",
+          "name": "apm_serviceType",
+          "valueExpression": "$1.getProvider().getName()",
+          "nodeType": "Producer",
+          "onStack": "false"
+        },{
+          "type": "SetDetail",
+          "name": "apm_serviceOperation",
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()",
+          "nodeType": "Producer",
+          "onStack": "false"
+        }]
+      },{
+        "ruleName": "SwitchYard Service Component Normal End",
+        "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
+        "methodName": "<init>",
+        "parameterTypes": [
+          "org.switchyard.Exchange"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "content",
+          "type": "java.lang.Object",
+          "expression": "$1.getMessage().getContent()"
+        }],
+        "condition": "isActive() && !isInstanceOf(content,java.lang.Throwable.class)",
+        "actions": [{
+          "type": "ProcessHeaders",
+          "direction": "Out",
+          "originalType": "org.switchyard.Context",
+          "headersExpression": "$1.getMessage().getContext()"
+        },{
+          "type": "ProcessContent",
+          "direction": "Out",
+          "valueExpressions": [
+            "content"
+          ]
+        },{
+          "type": "InstrumentComponent",
+          "direction": "Out",
+          "uriExpression": "$1.getConsumer().getName()",
+          "operationExpression": "$1.getContract().getConsumerOperation().getName()"
+        }]
+      },{
+        "ruleName": "SwitchYard Service Component Fault End",
+        "className": "^org.switchyard.bus.camel.CamelExchange",
+        "methodName": "sendFault",
+        "parameterTypes": [
+          "org.switchyard.Message"
+        ],
+        "location": "ENTRY",
+        "binds": [{
+          "name": "content",
+          "type": "java.lang.Object",
+          "expression": "$1.getContent()"
+        }],
+        "condition": "isActive()",
+        "actions": [{
+          "type": "SetFault",
+          "nameExpression": "faultName(content)",
+          "descriptionExpression": "faultDescription(content)"
+        },{
+          "type": "ProcessContent",
+          "direction": "Out",
+          "valueExpressions": [
+            "content"
+          ]
+        },{
+          "type": "InstrumentComponent",
+          "direction": "Out",
+          "uriExpression": "$0.getConsumer().getName()"
+        }]
+      }]
+    }
+  }
+}

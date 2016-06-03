@@ -40,7 +40,7 @@
   <xsl:template match="node()[name(.)='cache-container'][last()]">
 
     <xsl:variable name="newCacheContainer">
-      <cache-container name="btm" jndi-name="infinispan/BTM">
+      <cache-container name="apm" jndi-name="infinispan/APM">
         <local-cache name="communicationdetails"/>
         <local-cache name="producerinfo"/>
       </cache-container>

@@ -21,26 +21,26 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.hawkular.btm</groupId>
-    <artifactId>hawkular-btm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
+    <artifactId>hawkular-apm</artifactId>
     <version>0.8.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-btm-btxncompletiontime-deriver</artifactId>
+  <artifactId>hawkular-apm-btxncompletiontime-deriver</artifactId>
   <packaging>jar</packaging>
 
-  <name>Hawkular BTM::Processors::BTxnCompletionTime Deriver</name>
+  <name>Hawkular APM::Processors::BTxnCompletionTime Deriver</name>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.btm</groupId>
-      <artifactId>hawkular-btm-server-api</artifactId>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-api</artifactId>
     </dependency>
 
     <dependency>

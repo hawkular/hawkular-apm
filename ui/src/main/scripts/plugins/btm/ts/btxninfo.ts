@@ -147,7 +147,7 @@ module BTM {
     };
 
     $scope.reload = function() {
-      $http.post('/hawkular/btm/analytics/completion/statistics?interval=' + $scope.config.interval, $scope.criteria)
+      $http.post('/hawkular/apm/analytics/completion/statistics?interval=' + $scope.config.interval, $scope.criteria)
         .then(function(resp) {
         $scope.statistics = resp.data;
         $scope.updatedBounds();
@@ -159,7 +159,7 @@ module BTM {
       let faultCriteria = angular.copy($scope.criteria);
       faultCriteria.maxResponseSize = $scope.config.maxFaultValues;
 
-      $http.post('/hawkular/btm/analytics/completion/faults', faultCriteria).then(function(resp) {
+      $http.post('/hawkular/apm/analytics/completion/faults', faultCriteria).then(function(resp) {
         let removeFaultValues = angular.copy($scope.faultValues || []);
         $scope.faults = resp.data;
 
@@ -191,7 +191,7 @@ module BTM {
         console.log('Failed to get statistics: ' + JSON.stringify(resp));
       });
 
-      $http.post('/hawkular/btm/analytics/properties', $scope.criteria).then(
+      $http.post('/hawkular/apm/analytics/properties', $scope.criteria).then(
       function(resp) {
         $scope.properties = resp.data;
       },
@@ -212,7 +212,7 @@ module BTM {
       let propertyCriteria = angular.copy($scope.criteria);
       propertyCriteria.maxResponseSize = $scope.config.maxPropertyValues;
 
-      $http.post('/hawkular/btm/analytics/completion/property/' + $scope.config.selectedProperty, propertyCriteria)
+      $http.post('/hawkular/apm/analytics/completion/property/' + $scope.config.selectedProperty, propertyCriteria)
         .then(function(resp) {
         let removePropValues = angular.copy($scope.propertyValues || []);
         $scope.propertyDetails = resp.data;
