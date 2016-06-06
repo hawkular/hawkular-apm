@@ -29,9 +29,63 @@
 
   <fileSets>
     <fileSet>
-      <directory>target/${project.artifactId}-${project.version}</directory>
-      <outputDirectory/>
+      <directory>${project.build.directory}/${build.dir}</directory>
+      <outputDirectory></outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/${build.dir}</directory>
+      <outputDirectory></outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0777</fileMode>
+      <includes>
+        <include>**/*.sh</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>
-</assembly>
 
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/standalone/deployments</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.apm:hawkular-apm-server:war</include>
+        <include>org.hawkular.apm:hawkular-apm-ui:war</include>
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/standalone/data</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.apm:hawkular-apm-instrumentation-jvm</include>
+      </includes>
+      <unpack>true</unpack>
+      <fileMode>0644</fileMode>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/apm</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.apm:hawkular-apm-agent-rest:jar</include>
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+  </dependencySets>
+
+</assembly>

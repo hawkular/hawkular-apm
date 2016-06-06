@@ -18,13 +18,11 @@
 
 -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:ds="urn:jboss:domain:datasources:2.0"
-                xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
-                xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
-                version="2.0"
-                exclude-result-prefixes="xalan ds ra ejb3">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:ds="urn:jboss:domain:datasources:3.0" xmlns:ra="urn:jboss:domain:resource-adapters:3.0" xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
+  xmlns:logging="urn:jboss:domain:logging:3.0" xmlns:undertow="urn:jboss:domain:undertow:3.0" xmlns:tx="urn:jboss:domain:transactions:3.0"
+  xmlns:messaging="urn:jboss:domain:messaging-activemq:1.0"
+  version="2.0" exclude-result-prefixes="xalan ds ra ejb3 logging undertow tx messaging">
 
   <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" xalan:indent-amount="4" standalone="no"/>
   <xsl:strip-space elements="*"/>
@@ -33,6 +31,22 @@
   <xsl:template match="node()|@*">
     <xsl:copy>
       <xsl:apply-templates select="node()|@*" />
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="//messaging:subsystem/*[local-name()='server' and @name='default']">
+    <xsl:copy>
+      <xsl:attribute name="name">default</xsl:attribute>
+      <statistics enabled="true"/>
+      <xsl:apply-templates select="@*|node()"/>
+
+      <jms-topic name="Traces" entries="java:/Traces"/>
+      <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
+      <jms-topic name="BTxnCompletionTimes" entries="java:/BTxnCompletionTimes"/>
+      <jms-topic name="BTxnCompletionInformation" entries="java:/BTxnCompletionInformation"/>
+      <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
+      <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
+      <jms-topic name="Notifications" entries="java:/Notifications"/>
     </xsl:copy>
   </xsl:template>
 
