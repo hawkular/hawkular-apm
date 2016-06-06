@@ -118,12 +118,12 @@ public class TracePublisherRESTClient implements TracePublisher {
      * @see org.hawkular.apm.api.services.TracePublisher#publish(java.lang.String, java.util.List)
      */
     @Override
-    public void publish(String tenantId, List<Trace> btxns) throws Exception {
+    public void publish(String tenantId, List<Trace> traces) throws Exception {
 
-        URL url = new URL(uri + "fragments");
+        URL url = new URL(uri + "hawkular/apm/fragments");
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Publish traces [tenant=" + tenantId + "][url=" + url + "]: " + btxns);
+            log.finest("Publish traces [tenant=" + tenantId + "][url=" + url + "]: " + traces);
         }
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -141,7 +141,7 @@ public class TracePublisherRESTClient implements TracePublisher {
 
         java.io.OutputStream os = connection.getOutputStream();
 
-        os.write(mapper.writeValueAsBytes(btxns));
+        os.write(mapper.writeValueAsBytes(traces));
 
         os.flush();
         os.close();

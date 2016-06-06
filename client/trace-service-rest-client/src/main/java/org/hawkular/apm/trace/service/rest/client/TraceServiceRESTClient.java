@@ -61,7 +61,7 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
         }
 
         try {
-            URL url = new URL(getUri() + "fragments/" + id);
+            URL url = new URL(getUri() + "hawkular/apm/fragments/" + id);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -176,7 +176,7 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
     protected String getQueryURL(Criteria criteria) {
         Map<String, String> queryParams = criteria.parameters();
 
-        StringBuilder builder = new StringBuilder().append(getUri()).append("fragments");
+        StringBuilder builder = new StringBuilder().append(getUri()).append("hawkular/apm/fragments");
 
         if (!queryParams.isEmpty()) {
             builder.append('?');
@@ -217,7 +217,7 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
         }
 
         try {
-            URL url = new URL(new StringBuilder().append(getUri()).append("fragments").toString());
+            URL url = new URL(new StringBuilder().append(getUri()).append("hawkular/apm/fragments").toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("DELETE");
@@ -233,7 +233,7 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
 
             if (connection.getResponseCode() == 200) {
                 if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Business transaction fragments cleared");
+                    log.finest("Trace fragments cleared");
                 }
             } else {
                 if (log.isLoggable(Level.FINEST)) {

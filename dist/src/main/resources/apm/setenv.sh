@@ -26,7 +26,7 @@ export HAWKULAR_APM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 export HAWKULAR_APM_AGENT_JAR_PATH=$HAWKULAR_APM_HOME/hawkular-apm-agent-rest.jar
 
-export HAWKULAR_APM_URI=http://localhost:8180/hawkular/apm
+export HAWKULAR_APM_URI=http://localhost:8180
 export HAWKULAR_APM_USERNAME=jdoe
 export HAWKULAR_APM_PASSWORD=password
 export HAWKULAR_APM_CONFIG_REFRESH=10

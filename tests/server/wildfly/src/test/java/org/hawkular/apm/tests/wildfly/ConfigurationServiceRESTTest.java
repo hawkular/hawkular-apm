@@ -337,8 +337,6 @@ public class ConfigurationServiceRESTTest {
         configs.put(BTXNCONFIG1, btxnconfig1);
         configs.put(BTXNCONFIG2, btxnconfig2);
 
-        long midtime = 0;
-
         try {
             service.setBusinessTransactions(null, configs);
         } catch (Exception e1) {

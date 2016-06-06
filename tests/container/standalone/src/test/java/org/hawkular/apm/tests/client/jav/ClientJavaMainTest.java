@@ -39,7 +39,7 @@ import org.junit.Test;
 public class ClientJavaMainTest {
 
     private static String baseUrl = System.getProperty("hawkular-apm.testapp.uri");
-    private static String testBTxnServerBaseUrl = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
+    private static String testAPMServerUri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
     /**  */
     private static final String TEST_PASSWORD = "password";
@@ -167,7 +167,7 @@ public class ClientJavaMainTest {
 
         // Shutdown Test BTxn Service
         try {
-            URL url = new URL(testBTxnServerBaseUrl + "/shutdown");
+            URL url = new URL(testAPMServerUri + "/hawkular/apm/shutdown");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");

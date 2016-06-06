@@ -52,6 +52,6 @@ public class TraceServiceRESTClientTest {
 
         String url=client.getQueryURL(criteria);
 
-        assertEquals("base/fragments?startTime=100", url);
+        assertEquals("base/hawkular/apm/fragments?startTime=100", url);
     }
 }

@@ -167,7 +167,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
             return null;
         }
 
-        StringBuilder builder = new StringBuilder().append(uri).append("config/collector");
+        StringBuilder builder = new StringBuilder().append(uri).append("hawkular/apm/config/collector");
 
         if (host != null) {
             builder.append("?host=");
@@ -263,7 +263,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("config/businesstxn/full/")
+                .append("hawkular/apm/config/businesstxn/full/")
                 .append(name);
 
         try {
@@ -346,7 +346,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("config/businesstxn/full");
+                .append("hawkular/apm/config/businesstxn/full");
 
         try {
             URL url = new URL(builder.toString());
@@ -434,7 +434,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("config/businesstxn/validate");
+                .append("hawkular/apm/config/businesstxn/validate");
 
         try {
             URL url = new URL(builder.toString());
@@ -523,7 +523,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
             .append(uri)
-            .append("config/businesstxn/full/")
+            .append("hawkular/apm/config/businesstxn/full/")
             .append(name);
 
         try {
@@ -601,7 +601,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
             .append(uri)
-            .append("config/businesstxn/summary");
+            .append("hawkular/apm/config/businesstxn/summary");
 
         try {
             URL url = new URL(builder.toString());
@@ -679,7 +679,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
             .append(uri)
-            .append("config/businesstxn/full?updated=")
+            .append("hawkular/apm/config/businesstxn/full?updated=")
             .append(updated);
 
         try {
@@ -759,7 +759,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("config/businesstxn/full/")
+                .append("hawkular/apm/config/businesstxn/full/")
                 .append(name);
 
         try {
@@ -829,7 +829,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         }
 
         try {
-            URL url = new URL(new StringBuilder().append(getUri()).append("config").toString());
+            URL url = new URL(new StringBuilder().append(getUri()).append("hawkular/apm/config").toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("DELETE");

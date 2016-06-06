@@ -144,17 +144,17 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     }
 
     /**
-     * @return the baseUrl
+     * @return the uri
      */
-    public String getBaseUrl() {
+    public String getUri() {
         return uri;
     }
 
     /**
-     * @param baseUrl the baseUrl to set
+     * @param uri the uri to set
      */
-    public void setBaseUrl(String baseUrl) {
-        this.uri = baseUrl;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /* (non-Javadoc)
@@ -169,7 +169,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/unboundendpoints?startTime=")
+                .append("hawkular/apm/analytics/unboundendpoints?startTime=")
                 .append(startTime)
                 .append("&endTime=")
                 .append(endTime)
@@ -247,7 +247,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/boundendpoints/")
+                .append("hawkular/apm/analytics/boundendpoints/")
                 .append(businessTransaction)
                 .append("?startTime=")
                 .append(startTime)
@@ -323,7 +323,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/properties");
+                .append("hawkular/apm/analytics/properties");
 
         buildQueryString(builder, criteria);
 
@@ -396,7 +396,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/principals");
+                .append("hawkular/apm/analytics/principals");
 
         buildQueryString(builder, criteria);
 
@@ -470,7 +470,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/completion/count");
+                .append("hawkular/apm/analytics/completion/count");
 
         buildQueryString(builder, criteria);
 
@@ -543,7 +543,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/completion/faultcount");
+                .append("hawkular/apm/analytics/completion/faultcount");
 
         buildQueryString(builder, criteria);
 
@@ -617,7 +617,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/completion/percentiles");
+                .append("hawkular/apm/analytics/completion/percentiles");
 
         buildQueryString(builder, criteria);
 
@@ -693,7 +693,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/completion/statistics");
+                .append("hawkular/apm/analytics/completion/statistics");
 
         buildQueryString(builder, criteria);
 
@@ -770,7 +770,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/completion/faults");
+                .append("hawkular/apm/analytics/completion/faults");
 
         buildQueryString(builder, criteria);
 
@@ -845,7 +845,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/completion/property/")
+                .append("hawkular/apm/analytics/completion/property/")
                 .append(property);
 
         buildQueryString(builder, criteria);
@@ -948,7 +948,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/alerts/count/")
+                .append("hawkular/apm/analytics/alerts/count/")
                 .append(name);
 
         try {
@@ -1022,7 +1022,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/node/statistics");
+                .append("hawkular/apm/analytics/node/statistics");
 
         if (buildQueryString(builder, criteria)) {
             builder.append('&');
@@ -1103,7 +1103,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/node/summary");
+                .append("hawkular/apm/analytics/node/summary");
 
         buildQueryString(builder, criteria);
 
@@ -1178,7 +1178,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/communication/summary");
+                .append("hawkular/apm/analytics/communication/summary");
 
         if (buildQueryString(builder, criteria)) {
             builder.append('&');
@@ -1316,7 +1316,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("analytics/hostnames");
+                .append("hawkular/apm/analytics/hostnames");
 
         buildQueryString(builder, criteria);
 
@@ -1387,7 +1387,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         try {
-            URL url = new URL(new StringBuilder().append(getBaseUrl()).append("analytics").toString());
+            URL url = new URL(new StringBuilder().append(getUri()).append("hawkular/apm/analytics").toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("DELETE");
