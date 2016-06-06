@@ -53,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-server-security-hwkaccs</artifactId>
+      <artifactId>hawkular-apm-server-security-jaxrs</artifactId>
     </dependency>
 
     <dependency>
@@ -67,11 +67,6 @@
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-api</artifactId>
     </dependency>
 
     <dependency>
@@ -130,9 +125,6 @@
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
-            <manifestEntries>
-              <Dependencies>org.hawkular.commons.cassandra-driver</Dependencies>
-            </manifestEntries>
           </archive>
           <webResources>
             <resource>

@@ -4,7 +4,7 @@
   },
   "businessTransactions": {
     "apm": {
-      "description": "Configuration for the Business Transaction Management system",
+      "description": "Configuration for the Application Performance Management system",
       "filter": {
         "exclusions": [
           "^/hawkular/apm",

@@ -78,13 +78,10 @@
     <module>server/infinispan</module>
     <module>server/jms</module>
     <module>server/rest</module>
-    <module>server/security-hwkaccs</module>
     <module>server/security-jaxrs</module>
     <module>server/war</module>
     <module>tools/instrumenter</module>
     <module>ui</module>
-    <module>feature-pack/integrated</module>
-    <module>feature-pack/standalone</module>
     <module>dist</module>
   </modules>
 
@@ -120,7 +117,6 @@
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
-    <version.org.hawkular.accounts>2.0.26.Final</version.org.hawkular.accounts>
     <version.org.jboss.byteman>3.0.6</version.org.jboss.byteman>
     <version.org.jboss.shrinkwrap.resolvers>2.2.2</version.org.jboss.shrinkwrap.resolvers>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
@@ -261,7 +257,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-server-security-hwkaccs</artifactId>
+        <artifactId>hawkular-apm-server-security-jaxrs</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -295,49 +291,18 @@
 
       <!-- Other dependencies -->
       <dependency>
-        <groupId>org.hawkular.accounts</groupId>
-        <artifactId>hawkular-accounts-api</artifactId>
-        <version>${version.org.hawkular.accounts}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.accounts</groupId>
-        <artifactId>hawkular-accounts-feature-pack</artifactId>
-        <version>${version.org.hawkular.accounts}</version>
-        <type>pom</type>
-        <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.accounts</groupId>
-        <artifactId>hawkular-accounts-feature-pack</artifactId>
-        <version>${version.org.hawkular.accounts}</version>
-        <type>zip</type>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hawkular</groupId>
-        <artifactId>hawkular-dist</artifactId>
-        <version>${version.org.hawkular}</version>
-        <type>zip</type>
-      </dependency>
-
-      <dependency>
         <groupId>org.wildfly.bom</groupId>
         <artifactId>wildfly-javaee7</artifactId>
         <version>${version.org.wildfly}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-dist</artifactId>
+        <version>${version.org.wildfly}</version>
+        <type>zip</type>
       </dependency>
 
       <dependency>

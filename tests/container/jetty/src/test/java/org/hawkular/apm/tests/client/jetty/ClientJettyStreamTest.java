@@ -396,7 +396,7 @@ public class ClientJettyStreamTest extends ClientTestBase {
 
         if (getTestTraceServer().getTraces().get(0).getNodes().get(0) instanceof Consumer) {
             consumerBTxn = getTestTraceServer().getTraces().get(0);
-        } else if (getTestTraceServer().getTraces().get(0).getNodes().get(1) instanceof Consumer) {
+        } else if (getTestTraceServer().getTraces().get(1).getNodes().get(0) instanceof Consumer) {
             consumerBTxn = getTestTraceServer().getTraces().get(1);
         }
 

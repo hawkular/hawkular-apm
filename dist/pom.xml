@@ -32,10 +32,17 @@
   <description>Hawkular APM distribution.</description>
 
   <properties>
-    <dist.zip.root.dir>${project.artifactId}-${project.version}</dist.zip.root.dir>
+    <build.dir>build/wildfly-${version.org.wildfly}</build.dir>
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-dist</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
@@ -71,24 +78,23 @@
           </excludes>
         </configuration>
       </plugin>
-
+      <!-- unpack the wildfly distribution to get its configuration that we need to customize -->
       <plugin>
-        <groupId>org.wildfly.build</groupId>
-        <artifactId>wildfly-server-provisioning-maven-plugin</artifactId>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>server-provisioning</id>
+            <id>unpack-wildfly</id>
+            <phase>prepare-package</phase>
             <goals>
-              <goal>build</goal>
+              <goal>unpack-dependencies</goal>
             </goals>
-            <phase>compile</phase>
             <configuration>
-              <config-file>server-provisioning.xml</config-file>
+              <outputDirectory>${basedir}/target/build</outputDirectory>
+              <includeArtifactIds>wildfly-dist</includeArtifactIds>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
@@ -102,38 +108,54 @@
             <configuration>
               <transformationSets>
                 <transformationSet>
-                  <dir>${basedir}/target/${dist.zip.root.dir}/standalone/configuration</dir>
+                  <dir>${basedir}/target/${build.dir}/standalone/configuration</dir>
                   <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
                   <includes>
-                    <include>standalone.xml</include>
+                    <include>standalone-full.xml</include>
                   </includes>
-                  <outputDir>${basedir}/target/${dist.zip.root.dir}/standalone/configuration</outputDir>
+                  <outputDir>${basedir}/target/${build.dir}/standalone/configuration</outputDir>
+                </transformationSet>
+                <transformationSet>
+                  <dir>${basedir}/target/${build.dir}/standalone/configuration</dir>
+                  <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
+                  <includes>
+                    <include>standalone-full-ha.xml</include>
+                  </includes>
+                  <outputDir>${basedir}/target/${build.dir}/standalone/configuration</outputDir>
                 </transformationSet>
               </transformationSets>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <phase>test-compile</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <tasks>
-                <replace token="Xms64m" value="Xms256m" file="${project.build.directory}/${project.build.finalName}/bin/standalone.conf" />
-                <replace token="Xmx512m" value="Xmx2048m" file="${project.build.directory}/${project.build.finalName}/bin/standalone.conf" />
+                <copy file="${basedir}/src/main/security/application-roles.properties"
+                      todir="${basedir}/target/${build.dir}/standalone/configuration" overwrite="true" />
+                <copy file="${basedir}/src/main/security/application-users.properties"
+                      todir="${basedir}/target/${build.dir}/standalone/configuration" overwrite="true" />
+
+                <!-- Overwrite the standalone.xml with the modified standalone-full.xml, so that
+                     it becomes the new default, and the standalone-ha.xml with the modified
+                     standalone-ha-full.xml to be consistent -->
+                <move file="${basedir}/target/${build.dir}/standalone/configuration/standalone-full.xml"
+                      tofile="${basedir}/target/${build.dir}/standalone/configuration/standalone.xml" overwrite="true" />
+                <move file="${basedir}/target/${build.dir}/standalone/configuration/standalone-full-ha.xml"
+                      tofile="${basedir}/target/${build.dir}/standalone/configuration/standalone-ha.xml" overwrite="true" />
               </tasks>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -161,4 +183,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

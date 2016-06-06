@@ -97,7 +97,6 @@ module BTM {
   }]);
 
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
-    window['KeycloakConfig'] = '/keycloak.json';
     next();
   }, true);
 
