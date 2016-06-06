@@ -38,8 +38,7 @@
     <test.port>8080</test.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
     <test.uri>http://${hawkular.host}:${test.port}</test.uri>
-    <hawkular-apm.path>/hawkular/apm/</hawkular-apm.path>
-    <HAWKULAR_APM_URI>${hawkular.uri}${hawkular-apm.path}</HAWKULAR_APM_URI>
+    <HAWKULAR_APM_URI>${hawkular.uri}</HAWKULAR_APM_URI>
     <!-- IMPORTANT: The port must be the port offset + 8080. -->
     <wildfly.port.offset>1897</wildfly.port.offset>
     <!-- IMPORTANT: The management port must be the port offset + 9990. -->

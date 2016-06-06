@@ -43,7 +43,7 @@ public class EchoAppTest extends ClientTestBase {
     public void testEcho() {
         //System.setProperty("org.jboss.byteman.verbose", "");
         //System.setProperty("HAWKULAR_APM_LOG_LEVEL", "FINEST");
-        System.setProperty("HAWKULAR_APM_URI", "http://localhost:8080/hawkular/apm");
+        System.setProperty("HAWKULAR_APM_URI", "http://localhost:8080");
 
         java.io.File f = new java.io.File("src/test/resources/instrumentation/apmconfig/jvm/hawkular-apm-config.json");
 

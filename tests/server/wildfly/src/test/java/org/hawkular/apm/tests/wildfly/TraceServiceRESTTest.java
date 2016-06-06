@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author gbrown
  */
-public class BusinessTransactionServiceRESTTest {
+public class TraceServiceRESTTest {
 
     /**  */
     private static final String TEST_PASSWORD = "password";
@@ -501,7 +501,7 @@ public class BusinessTransactionServiceRESTTest {
         List<Trace> result = null;
 
         try {
-            URL url = new URL(service.getUri() + "fragments/query");
+            URL url = new URL(service.getUri() + "hawkular/apm/fragments/query");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");

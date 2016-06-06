@@ -150,7 +150,7 @@
           <argLine>
               -javaagent:${hawkular-apm.lib}/hawkular-apm-agent-rest.jar
               -DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig
-              -DHAWKULAR_APM_URI=http://localhost:8180/hawkular/apm
+              -DHAWKULAR_APM_URI=http://localhost:8180
               -DHAWKULAR_APM_USERNAME=jdoe
               -DHAWKULAR_APM_PASSWORD=password
               -DHAWKULAR_APM_LOG_LEVEL=INFO
