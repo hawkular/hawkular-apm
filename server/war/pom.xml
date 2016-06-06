@@ -53,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-server-security-jaxrs</artifactId>
+      <artifactId>hawkular-apm-server-security-jaas</artifactId>
     </dependency>
 
     <dependency>

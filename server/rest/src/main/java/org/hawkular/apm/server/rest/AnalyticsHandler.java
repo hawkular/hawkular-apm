@@ -30,6 +30,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -94,7 +95,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getUnboundEndpoints(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
             value = "optional 'start' time, default 1 hour before current time") @DefaultValue("0")
@@ -110,7 +111,7 @@ public class AnalyticsHandler {
             log.tracef("Get unbound endpoints: start [%s] end [%s]", startTime, endTime);
 
             java.util.List<EndpointInfo> endpoints = analyticsService.getUnboundEndpoints(
-                    securityProvider.getTenantId(context), startTime, endTime, compress);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), startTime, endTime, compress);
 
             log.tracef("Got unbound endpoints: start [%s] end [%s] = [%s]", startTime, endTime, endpoints);
 
@@ -137,7 +138,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getBoundEndpoints(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @PathParam("name") String name,
@@ -152,7 +153,7 @@ public class AnalyticsHandler {
             log.tracef("Get bound endpoints: name [%s] start [%s] end [%s]", name, startTime, endTime);
 
             java.util.List<EndpointInfo> endpoints = analyticsService.getBoundEndpoints(
-                    securityProvider.getTenantId(context), name, startTime, endTime);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), name, startTime, endTime);
 
             log.tracef("Got bound endpoints: name [%s] start [%s] end [%s] = [%s]", name, startTime, endTime,
                                                 endpoints);
@@ -180,7 +181,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getPropertyInfo(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @QueryParam("businessTransaction")
@@ -217,7 +218,7 @@ public class AnalyticsHandler {
             log.tracef("Get property info for criteria [%s]", criteria);
 
             java.util.List<PropertyInfo> pis = analyticsService.getPropertyInfo(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got property info for criteria [%s] = [%s]", criteria, pis);
 
@@ -244,7 +245,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getPropertyInfo(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "query criteria") Criteria criteria) {
@@ -253,7 +254,7 @@ public class AnalyticsHandler {
             log.tracef("Get property info for criteria [POST] [%s]", criteria);
 
             java.util.List<PropertyInfo> pis = analyticsService.getPropertyInfo(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got property info for criteria [POST] [%s] = [%s]", criteria, pis);
 
@@ -280,7 +281,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getPrincipalInfo(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @QueryParam("businessTransaction")
@@ -317,7 +318,7 @@ public class AnalyticsHandler {
             log.tracef("Get principal info for criteria [%s]", criteria);
 
             java.util.List<PrincipalInfo> pis = analyticsService.getPrincipalInfo(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got principal info for criteria [%s] = [%s]", criteria, pis);
 
@@ -344,7 +345,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getPrincipalInfo(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "query criteria") Criteria criteria) {
@@ -353,7 +354,7 @@ public class AnalyticsHandler {
             log.tracef("Get principal info for criteria [POST] [%s]", criteria);
 
             java.util.List<PrincipalInfo> pis = analyticsService.getPrincipalInfo(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got principal info for criteria [POST] [%s] = [%s]", criteria, pis);
 
@@ -380,7 +381,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionCount(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction")
@@ -417,7 +418,7 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction count for criteria [%s]", criteria);
 
             long count = analyticsService.getCompletionCount(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got transaction count: criteria [%s] = [%s]", criteria, count);
 
@@ -444,7 +445,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionFaultCount(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction")
@@ -481,7 +482,7 @@ public class AnalyticsHandler {
             log.tracef("Get business transaction fault count for criteria [%s]", criteria);
 
             long count = analyticsService.getCompletionFaultCount(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got transaction fault count: criteria [%s] = [%s]", criteria, count);
 
@@ -508,7 +509,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionPercentiles(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction")
@@ -544,7 +545,7 @@ public class AnalyticsHandler {
 
             log.tracef("Get business transaction completion percentiles for criteria [%s]", criteria);
 
-            Percentiles stats = analyticsService.getCompletionPercentiles(securityProvider.getTenantId(context),
+            Percentiles stats = analyticsService.getCompletionPercentiles(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
             log.tracef("Got business transaction completion percentiles for criteria [%s] = %s", criteria, stats);
@@ -572,7 +573,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionTimeseriesStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -612,7 +613,7 @@ public class AnalyticsHandler {
                     criteria, interval);
 
             List<CompletionTimeseriesStatistics> stats = analyticsService.getCompletionTimeseriesStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria, interval);
 
             log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
@@ -641,7 +642,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionTimeseriesStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
@@ -654,7 +655,7 @@ public class AnalyticsHandler {
                     criteria, interval);
 
             List<CompletionTimeseriesStatistics> stats = analyticsService.getCompletionTimeseriesStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria, interval);
 
             log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
@@ -682,7 +683,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionFaultDetails(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -719,7 +720,7 @@ public class AnalyticsHandler {
                     criteria);
 
             List<Cardinality> cards = analyticsService.getCompletionFaultDetails(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got business transaction completion fault details for criteria (GET) [%s] = %s",
                     criteria, cards);
@@ -747,7 +748,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionFaultDetails(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "query criteria") Criteria criteria) {
@@ -757,7 +758,7 @@ public class AnalyticsHandler {
                     criteria);
 
             List<Cardinality> cards = analyticsService.getCompletionFaultDetails(
-                    securityProvider.getTenantId(context), criteria);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Got business transaction completion fault details for criteria (POST) [%s] = %s",
                     criteria, cards);
@@ -784,7 +785,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionPropertyDetails(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -823,7 +824,7 @@ public class AnalyticsHandler {
                     criteria, property);
 
             List<Cardinality> cards = analyticsService.getCompletionPropertyDetails(
-                    securityProvider.getTenantId(context), criteria, property);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria, property);
 
             log.tracef("Got business transaction completion property details for criteria (GET) [%s] = %s",
                     criteria, cards);
@@ -851,7 +852,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCompletionPropertyDetails(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "property") @PathParam("property") String property,
@@ -863,7 +864,7 @@ public class AnalyticsHandler {
                     criteria, property);
 
             List<Cardinality> cards = analyticsService.getCompletionPropertyDetails(
-                    securityProvider.getTenantId(context), criteria, property);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria, property);
 
             log.tracef("Got business transaction completion property details for criteria (POST) [%s] = %s",
                     criteria, cards);
@@ -890,7 +891,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getAlertCount(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @PathParam("name") String name) {
@@ -899,7 +900,7 @@ public class AnalyticsHandler {
             log.tracef("Get alert count: name [%s]", name);
 
             int count = analyticsService.getAlertCount(
-                    securityProvider.getTenantId(context), name);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), name);
 
             log.tracef("Got alert count: name [%s] = [%s]", name, count);
 
@@ -926,7 +927,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getNodeTimeseriesStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -969,7 +970,7 @@ public class AnalyticsHandler {
             }
 
             List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria, interval);
 
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1003,7 +1004,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getNodeTimeseriesStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "aggregation time interval (in milliseconds)") @DefaultValue("60000")
@@ -1023,7 +1024,7 @@ public class AnalyticsHandler {
             }
 
             List<NodeTimeseriesStatistics> stats = analyticsService.getNodeTimeseriesStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria, interval);
 
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1056,7 +1057,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getNodeSummaryStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -1095,7 +1096,7 @@ public class AnalyticsHandler {
             }
 
             Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1129,7 +1130,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getNodeSummaryStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "query criteria") Criteria criteria) {
@@ -1145,7 +1146,7 @@ public class AnalyticsHandler {
             }
 
             Collection<NodeSummaryStatistics> stats = analyticsService.getNodeSummaryStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1177,7 +1178,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCommunicationSummaryStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -1219,7 +1220,7 @@ public class AnalyticsHandler {
             }
 
             Collection<CommunicationSummaryStatistics> stats = analyticsService.getCommunicationSummaryStatistics(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria,
                     tree);
 
@@ -1255,7 +1256,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCommunicationSummaryStatistics(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "query criteria") Criteria criteria,
@@ -1274,7 +1275,7 @@ public class AnalyticsHandler {
             }
 
             Collection<CommunicationSummaryStatistics> stats = analyticsService.getCommunicationSummaryStatistics(
-                    securityProvider.getTenantId(context), criteria, tree);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria, tree);
 
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfLog.finest("Performance: query communication summary (criteria hash=" + criteria.hashCode()
@@ -1307,7 +1308,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getHostNames(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
@@ -1346,7 +1347,7 @@ public class AnalyticsHandler {
             }
 
             List<String> hostnames = analyticsService.getHostNames(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1378,7 +1379,7 @@ public class AnalyticsHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getHostNames(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "query criteria") Criteria criteria) {
@@ -1394,7 +1395,7 @@ public class AnalyticsHandler {
             }
 
             List<String> hostnames = analyticsService.getHostNames(
-                    securityProvider.getTenantId(context),
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
             if (perfLog.isLoggable(Level.FINEST)) {
@@ -1420,12 +1421,12 @@ public class AnalyticsHandler {
     @Path("/")
     @Produces(APPLICATION_JSON)
     public void clear(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response) {
 
         try {
             if (System.getProperties().containsKey("hawkular-apm.testmode")) {
-                analyticsService.clear(securityProvider.getTenantId(context));
+                analyticsService.clear(securityProvider.validate(tenantId, context.getUserPrincipal().getName()));
 
                 response.resume(Response.status(Response.Status.OK).type(APPLICATION_JSON_TYPE)
                         .build());

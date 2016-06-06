@@ -14,25 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.api.security;
+package org.hawkular.apm.server.security.jaas;
+
+import static org.junit.Assert.*;
+
+import org.hawkular.apm.server.api.security.SecurityProviderException;
+import org.junit.Test;
 
 /**
- * This interface represents a security provider responsible for identifying the current tenant id.
- *
  * @author gbrown
  */
-public interface SecurityProvider {
+public class JAASSecurityProviderTest {
 
-    /**
-     * This method validates that the principal has access to the requested tenant.
-     * If so, then the tenant will be returned, otherwise an exception will be
-     * thrown.
-     *
-     * @param tenant The tenant
-     * @param principal The principal
-     * @return The tenant to be used
-     * @throws SecurityProviderException Principal does not have access to the tenant
-     */
-    String validate(String tenant, String principal) throws SecurityProviderException;
+    @Test
+    public void testValidateDefault() {
+        JAASSecurityProvider sp = new JAASSecurityProvider();
+
+        String result = null;
+        try {
+            result = sp.validate(null, "anyone");
+        } catch (SecurityProviderException e) {
+            fail("SecurityProviderException thrown: "+e);
+        }
+
+        assertEquals(JAASSecurityProvider.DEFAULT_TENANT, result);
+    }
 
 }

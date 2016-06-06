@@ -29,6 +29,9 @@ public class PropertyUtil {
     private static final Logger LOG = Logger.getLogger(PropertyUtil.class.getName());
 
     /**  */
+    public static final String HAWKULAR_TENANT = "HAWKULAR_TENANT";
+
+    /**  */
     public static final String HAWKULAR_APM_URI = "HAWKULAR_APM_URI";
 
     /**  */

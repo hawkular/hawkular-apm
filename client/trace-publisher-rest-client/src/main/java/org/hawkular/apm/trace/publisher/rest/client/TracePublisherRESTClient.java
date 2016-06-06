@@ -41,7 +41,7 @@ public class TracePublisherRESTClient implements TracePublisher {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final String HAWKULAR_PERSONA = "Hawkular-Persona";
+    private static final String HAWKULAR_TENANT = "Hawkular-Tenant";
 
     private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
     private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
@@ -176,8 +176,13 @@ public class TracePublisherRESTClient implements TracePublisher {
      * @param tenantId The optional tenant id
      */
     protected void addHeaders(HttpURLConnection connection, String tenantId) {
+        if (tenantId == null) {
+            // Check if default tenant provided as property
+            tenantId = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_TENANT);
+        }
+
         if (tenantId != null) {
-            connection.setRequestProperty(HAWKULAR_PERSONA, tenantId);
+            connection.setRequestProperty(HAWKULAR_TENANT, tenantId);
         }
 
         if (authorization == null && username != null) {
