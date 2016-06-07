@@ -1106,7 +1106,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         client.initTenant(tenantId);
 
         BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();

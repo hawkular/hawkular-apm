@@ -58,7 +58,7 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-btxncompletiontime-deriver</artifactId>
+      <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>

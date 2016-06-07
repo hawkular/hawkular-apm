@@ -218,14 +218,13 @@ public interface AnalyticsService {
     void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails) throws Exception;
 
     /**
-     * This method stores the supplied list of completion times for end to end business
-     * transactions.
+     * This method stores the supplied list of completion times for end to end traces.
      *
      * @param tenantId The tenant id
      * @param completionTimes The completion times
      * @throws Exception Failed to store
      */
-    void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
+    void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
 
     /**
      * This method stores the supplied list of completion times for individual fragments.

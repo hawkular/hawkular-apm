@@ -14,31 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.security.jaas;
+package org.hawkular.apm.server.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import javax.inject.Singleton;
 
-import org.hawkular.apm.server.api.security.SecurityProviderException;
-import org.junit.Test;
+import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
 
 /**
+ * This class represents the trace completion time JMS publisher.
+ *
  * @author gbrown
  */
-public class JAASSecurityProviderTest {
+@Singleton
+public class TraceCompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
+                        implements TraceCompletionTimePublisher {
 
-    @Test
-    public void testValidateDefault() {
-        JAASSecurityProvider sp = new JAASSecurityProvider();
+    private static final String DESTINATION = "java:/TraceCompletionTimes";
 
-        String result = null;
-        try {
-            result = sp.validate(null, "anyone");
-        } catch (SecurityProviderException e) {
-            fail("SecurityProviderException thrown: "+e);
-        }
-
-        assertEquals(JAASSecurityProvider.DEFAULT_TENANT, result);
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
+     */
+    @Override
+    protected String getDestinationURI() {
+        return DESTINATION;
     }
 
 }

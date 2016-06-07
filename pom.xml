@@ -68,7 +68,7 @@
     <module>client/trace-publisher-rest-client</module>
     <module>client/trace-service-rest-client</module>
     <module>processors/communicationdetails-deriver</module>
-    <module>processors/btxncompletiontime-deriver</module>
+    <module>processors/tracecompletiontime-deriver</module>
     <module>processors/fragmentcompletiontime-deriver</module>
     <module>processors/notification-deriver</module>
     <module>processors/nodedetails-deriver</module>
@@ -199,7 +199,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-btxncompletiontime-deriver</artifactId>
+        <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

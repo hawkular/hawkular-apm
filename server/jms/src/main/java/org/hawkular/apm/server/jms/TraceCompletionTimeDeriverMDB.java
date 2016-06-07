@@ -16,8 +16,6 @@
  */
 package org.hawkular.apm.server.jms;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -28,47 +26,44 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
+import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
+import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionTimeDeriver;
+import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "CommunicationDetails_Cache", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "TraceCompletionInformation_TraceCompletionTimeDeriver",
+        messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionInformation"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsCache"),
+                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceCompletionTimeDeriver"),
                 @ActivationConfigProperty(propertyName = "subscriptionName",
-                            propertyValue = "CommunicationDetailsCache")
+                            propertyValue = "TraceCompletionTimeDeriver")
         })
 @TransactionManagement(value = TransactionManagementType.CONTAINER)
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
-public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationDetails> {
+public class TraceCompletionTimeDeriverMDB extends ProcessorMDB<TraceCompletionInformation, CompletionTime> {
 
     @Inject
-    private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
+    private TraceCompletionInformationPublisherJMS traceCompletionInformationPublisher;
 
     @Inject
-    private CommunicationDetailsCache communicationDetailsCache;
+    private TraceCompletionTimePublisher traceCompletionTimePublisher;
 
     @PostConstruct
     public void init() {
-        setRetryPublisher(communicationDetailsPublisher);
-        setTypeReference(new TypeReference<java.util.List<CommunicationDetails>>() {
+        setProcessor(new TraceCompletionTimeDeriver());
+        setRetryPublisher(traceCompletionInformationPublisher);
+        setPublisher(traceCompletionTimePublisher);
+        setTypeReference(new TypeReference<java.util.List<TraceCompletionInformation>>() {
         });
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
-     */
-    @Override
-    protected void process(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
-        communicationDetailsCache.store(tenantId, items);
     }
 
 }

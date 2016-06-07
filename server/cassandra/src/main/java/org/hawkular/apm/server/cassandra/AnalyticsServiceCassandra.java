@@ -808,7 +808,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Store completion times (tenantId=" + tenantId + "):" + completionTimes);
         }

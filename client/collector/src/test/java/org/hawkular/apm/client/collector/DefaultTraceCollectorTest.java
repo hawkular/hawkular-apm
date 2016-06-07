@@ -68,7 +68,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testSetStartTimeAndDuration() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
@@ -114,7 +114,7 @@ public class DefaultTraceCollectorTest {
         System.setProperty("HAWKULAR_APM_TENANTID", TEST_TENANT);
 
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
@@ -143,7 +143,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testIncludeHeaders() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
@@ -187,7 +187,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testIncludeHeadersNotProcessedAgain() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
@@ -232,7 +232,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testIncludeHeadersSuppliedSecondCall() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
@@ -272,7 +272,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testIncludeID() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
@@ -310,7 +310,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testReportingLevelNoneByFilter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
@@ -350,7 +350,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testReportingWithOpLevelNoneByFilter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
@@ -390,7 +390,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testReportingLevelNoneBySetter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
@@ -431,7 +431,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testReportingWithOpLevelNoneBySetter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
@@ -472,7 +472,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testReportingLevelAll() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
@@ -511,7 +511,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testReportingWithOpLevelAll() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
@@ -693,7 +693,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testNamedOnInitialNode() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService cs = new TestConfigurationService();
@@ -723,7 +723,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testNamedOnSubsequentNodeInitialFragment() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService cs = new TestConfigurationService();
@@ -757,7 +757,7 @@ public class DefaultTraceCollectorTest {
     @Test
     public void testNamedOnSubsequentNodeInitialFragmentWithOp() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
-        TestBTxnService traceService = new TestBTxnService();
+        TestTraceService traceService = new TestTraceService();
         collector.setBusinessTransactionPublisher(traceService);
 
         TestConfigurationService cs = new TestConfigurationService();
@@ -1117,7 +1117,7 @@ public class DefaultTraceCollectorTest {
         assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
     }
 
-    public static class TestBTxnService implements TraceService, TracePublisher {
+    public static class TestTraceService implements TraceService, TracePublisher {
 
         private List<Trace> businessTransactions = new ArrayList<Trace>();
         private String tenantId;

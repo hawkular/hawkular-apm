@@ -14,31 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.security.jaas;
+package org.hawkular.apm.server.api.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import org.hawkular.apm.server.api.security.SecurityProviderException;
-import org.junit.Test;
+import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.api.services.Publisher;
 
 /**
+ * This interface provides the capability for publishing completion time
+ * information for end to end traces.
+ *
  * @author gbrown
  */
-public class JAASSecurityProviderTest {
-
-    @Test
-    public void testValidateDefault() {
-        JAASSecurityProvider sp = new JAASSecurityProvider();
-
-        String result = null;
-        try {
-            result = sp.validate(null, "anyone");
-        } catch (SecurityProviderException e) {
-            fail("SecurityProviderException thrown: "+e);
-        }
-
-        assertEquals(JAASSecurityProvider.DEFAULT_TENANT, result);
-    }
+public interface TraceCompletionTimePublisher extends Publisher<CompletionTime> {
 
 }
