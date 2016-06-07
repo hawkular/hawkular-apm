@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 import javax.inject.Singleton;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache;
+import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 

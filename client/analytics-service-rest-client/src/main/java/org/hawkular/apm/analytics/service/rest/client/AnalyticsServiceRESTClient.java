@@ -1295,7 +1295,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeBTxnCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
         throw new UnsupportedOperationException();
     }
 

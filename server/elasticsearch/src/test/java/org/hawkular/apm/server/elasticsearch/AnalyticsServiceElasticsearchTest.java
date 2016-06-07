@@ -607,7 +607,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -638,7 +638,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -676,7 +676,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct3);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -717,7 +717,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct3);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -749,7 +749,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -787,7 +787,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -846,7 +846,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -906,7 +906,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -968,7 +968,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1031,7 +1031,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1088,7 +1088,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1143,7 +1143,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct1_2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(2000);
@@ -1187,7 +1187,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct1_2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(2000);
@@ -1232,7 +1232,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct1_2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(2000);
@@ -1281,7 +1281,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1328,7 +1328,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);
@@ -1376,7 +1376,7 @@ public class AnalyticsServiceElasticsearchTest {
         cts.add(ct2);
 
         try {
-            analytics.storeBTxnCompletionTimes(null, cts);
+            analytics.storeTraceCompletionTimes(null, cts);
 
             synchronized (this) {
                 wait(1000);

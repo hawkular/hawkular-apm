@@ -27,9 +27,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-apm-server-jms</artifactId>
+  <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular APM::Server::JMS</name>
+
+  <name>Hawkular APM::Processors::TraceCompletionTime Deriver</name>
 
   <dependencies>
 
@@ -40,26 +41,6 @@
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-fragmentcompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-notification-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
     </dependency>
 
     <dependency>
@@ -78,24 +59,14 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
     </dependency>
 
     <dependency>
@@ -105,4 +76,5 @@
     </dependency>
 
   </dependencies>
+
 </project>
