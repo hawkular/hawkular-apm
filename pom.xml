@@ -78,7 +78,7 @@
     <module>server/infinispan</module>
     <module>server/jms</module>
     <module>server/rest</module>
-    <module>server/security-jaxrs</module>
+    <module>server/security-jaas</module>
     <module>server/war</module>
     <module>tools/instrumenter</module>
     <module>ui</module>
@@ -257,7 +257,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-server-security-jaxrs</artifactId>
+        <artifactId>hawkular-apm-server-security-jaas</artifactId>
         <version>${project.version}</version>
       </dependency>
 

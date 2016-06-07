@@ -27,22 +27,15 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-apm-server-security-jaxrs</artifactId>
+  <artifactId>hawkular-apm-server-security-jaas</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular APM::Server::Security Provider::JAX-RS</name>
+  <name>Hawkular APM::Server::Security Provider::JAAS</name>
 
   <dependencies>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-api</artifactId>
-    </dependency>
-
-    <!-- Wildfly provided -->
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

@@ -14,23 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.security.jaxrs;
-
-import javax.ws.rs.core.SecurityContext;
+package org.hawkular.apm.server.security.jaas;
 
 import org.hawkular.apm.server.api.security.SecurityProvider;
+import org.hawkular.apm.server.api.security.SecurityProviderException;
 
 /**
  * @author gbrown
  */
-public class JaxRSSecurityProvider implements SecurityProvider {
+public class JAASSecurityProvider implements SecurityProvider {
+
+    /**  */
+    protected static final String DEFAULT_TENANT = "hawkular";
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.services.SecurityProvider#getTenantId(javax.ws.rs.core.SecurityContext)
+     * @see org.hawkular.apm.server.api.security.SecurityProvider#validate(java.lang.String, java.lang.String)
      */
     @Override
-    public String getTenantId(SecurityContext context) {
-        return context.getUserPrincipal().getName();
+    public String validate(String tenant, String principal) throws SecurityProviderException {
+        return tenant == null ? DEFAULT_TENANT : tenant;
     }
 
 }

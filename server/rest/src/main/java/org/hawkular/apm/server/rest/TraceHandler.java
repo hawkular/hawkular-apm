@@ -74,7 +74,7 @@ public class TraceHandler {
     TraceService traceService;
 
     @Inject
-    TracePublisher btxnPublisher;
+    TracePublisher tracePublisher;
 
     @POST
     @ApiOperation(value = "Add a list of trace fragments")
@@ -83,13 +83,12 @@ public class TraceHandler {
             @ApiResponse(code = 500, message =
                     "Unexpected error happened while storing the trace fragments") })
     public void addTraces(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
-            @HeaderParam("tenantId") final String tenantId,
-            @ApiParam(value = "List of traces", required = true) List<Trace> btxns) {
+            @ApiParam(value = "List of traces", required = true) List<Trace> traces) {
 
         try {
-            btxnPublisher.publish(securityProvider.getTenantId(context), btxns);
+            tracePublisher.publish(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), traces);
 
             response.resume(Response.status(Response.Status.OK).build());
 
@@ -113,12 +112,12 @@ public class TraceHandler {
             @ApiResponse(code = 500, message = "Internal server error"),
             @ApiResponse(code = 404, message = "Unknown trace fragment id") })
     public void getTrace(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true, value = "id of required trace") @PathParam("id") String id) {
 
         try {
-            Trace trace = traceService.get(securityProvider.getTenantId(context), id);
+            Trace trace = traceService.get(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), id);
 
             if (trace == null) {
                 log.tracef("Trace fragment '" + id + "' not found");
@@ -147,7 +146,7 @@ public class TraceHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void queryTraces(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "trace name") @QueryParam("businessTransaction") String businessTransaction,
@@ -178,7 +177,7 @@ public class TraceHandler {
 
             log.tracef("Query trace fragments for criteria [%s]", criteria);
 
-            List<Trace> btxns = traceService.query(securityProvider.getTenantId(context), criteria);
+            List<Trace> btxns = traceService.query(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Queried trace fragments for criteria [%s] = %s", criteria, btxns);
 
@@ -205,7 +204,7 @@ public class TraceHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void queryTracesWithCriteria(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "query criteria") Criteria criteria) {
@@ -213,7 +212,7 @@ public class TraceHandler {
         try {
             log.tracef("Query trace fragments for criteria [%s]", criteria);
 
-            List<Trace> btxns = traceService.query(securityProvider.getTenantId(context), criteria);
+            List<Trace> btxns = traceService.query(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Queried trace fragments for criteria [%s] = %s", criteria, btxns);
 
@@ -234,12 +233,12 @@ public class TraceHandler {
     @Path("/")
     @Produces(APPLICATION_JSON)
     public void clear(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response) {
 
         try {
             if (System.getProperties().containsKey("hawkular-apm.testmode")) {
-                traceService.clear(securityProvider.getTenantId(context));
+                traceService.clear(securityProvider.validate(tenantId, context.getUserPrincipal().getName()));
 
                 response.resume(Response.status(Response.Status.OK).type(APPLICATION_JSON_TYPE)
                         .build());

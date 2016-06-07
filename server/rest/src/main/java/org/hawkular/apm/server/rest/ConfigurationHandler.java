@@ -30,6 +30,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -86,7 +87,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getCollectorConfiguration(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
             value = "optional type") @QueryParam("type") String type,
@@ -99,7 +100,7 @@ public class ConfigurationHandler {
             log.tracef("Get collector configuration for type [%s] host [%s] server [%s]", type, host, server);
 
             CollectorConfiguration config = configService.getCollector(
-                    securityProvider.getTenantId(context), type, host, server);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), type, host, server);
 
             log.tracef("Got collector configuration for type [%s] host [%s] server [%s] config=[%s]",
                             type, host, server, config);
@@ -127,14 +128,14 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getBusinessTxnConfigurationSummaries(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response) {
 
         try {
             log.tracef("Get business transaction summaries");
 
             List<BusinessTxnSummary> summaries = configService.getBusinessTransactionSummaries(
-                    securityProvider.getTenantId(context));
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()));
 
             // Sort the list
             Collections.sort(summaries, new Comparator<BusinessTxnSummary>() {
@@ -171,7 +172,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getBusinessTxnConfigurations(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
                     value = "updated since") @QueryParam("updated") @DefaultValue("0") long updated) {
@@ -180,7 +181,7 @@ public class ConfigurationHandler {
             log.tracef("Get business transactions, updated = [%s]", updated);
 
             Map<String, BusinessTxnConfig> btxns = configService.getBusinessTransactions(
-                    securityProvider.getTenantId(context), updated);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), updated);
 
             log.tracef("Got business transactions=[%s]", btxns);
 
@@ -206,7 +207,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void getBusinessTxnConfiguration(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @PathParam("name") String name) {
@@ -215,7 +216,7 @@ public class ConfigurationHandler {
             log.tracef("Get business transaction configuration for name [%s]", name);
 
             BusinessTxnConfig config = configService.getBusinessTransaction(
-                    securityProvider.getTenantId(context), name);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), name);
 
             log.tracef("Got business transaction configuration for name [%s] config=[%s]", name, config);
 
@@ -241,7 +242,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void setBusinessTxnConfiguration(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @PathParam("name") String name,
@@ -252,7 +253,7 @@ public class ConfigurationHandler {
                     config);
 
             List<ConfigMessage> messages = configService.setBusinessTransaction(
-                    securityProvider.getTenantId(context), name, config);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), name, config);
 
             log.tracef("Updated business transaction configuration for name [%s] messages=[%s]", name, messages);
 
@@ -278,7 +279,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void setBusinessTxnConfigurations(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             Map<String, BusinessTxnConfig> btxnConfigs) {
 
@@ -287,7 +288,7 @@ public class ConfigurationHandler {
                     btxnConfigs);
 
             List<ConfigMessage> messages = configService.setBusinessTransactions(
-                        securityProvider.getTenantId(context), btxnConfigs);
+                        securityProvider.validate(tenantId, context.getUserPrincipal().getName()), btxnConfigs);
 
             log.tracef("Updated business transaction configurations : messages=[%s]", messages);
 
@@ -311,7 +312,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void removeBusinessTxnConfiguration(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
             value = "business transaction name") @PathParam("name") String name) {
@@ -320,7 +321,7 @@ public class ConfigurationHandler {
             log.tracef("About to remove business transaction configuration for name [%s]", name);
 
             configService.removeBusinessTransaction(
-                    securityProvider.getTenantId(context), name);
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), name);
 
             response.resume(Response.status(Response.Status.OK)
                     .build());
@@ -344,7 +345,7 @@ public class ConfigurationHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public void validateBusinessTxnConfiguration(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             BusinessTxnConfig config) {
 
@@ -371,12 +372,12 @@ public class ConfigurationHandler {
     @Path("/")
     @Produces(APPLICATION_JSON)
     public void clear(
-            @Context SecurityContext context,
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response) {
 
         try {
             if (System.getProperties().containsKey("hawkular-apm.testmode")) {
-                configService.clear(securityProvider.getTenantId(context));
+                configService.clear(securityProvider.validate(tenantId, context.getUserPrincipal().getName()));
 
                 response.resume(Response.status(Response.Status.OK).type(APPLICATION_JSON_TYPE)
                         .build());

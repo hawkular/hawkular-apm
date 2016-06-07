@@ -17,22 +17,20 @@
 package org.hawkular.apm.server.api.security;
 
 /**
- * This interface represents a security provider responsible for identifying the current tenant id.
+ * This class represents a security exception.
  *
  * @author gbrown
  */
-public interface SecurityProvider {
+public class SecurityProviderException extends Exception {
 
-    /**
-     * This method validates that the principal has access to the requested tenant.
-     * If so, then the tenant will be returned, otherwise an exception will be
-     * thrown.
-     *
-     * @param tenant The tenant
-     * @param principal The principal
-     * @return The tenant to be used
-     * @throws SecurityProviderException Principal does not have access to the tenant
-     */
-    String validate(String tenant, String principal) throws SecurityProviderException;
+    /**  */
+    private static final long serialVersionUID = 1L;
 
+    public SecurityProviderException(String mesg) {
+        super(mesg);
+    }
+
+    public SecurityProviderException(String mesg, Throwable t) {
+        super(mesg, t);
+    }
 }
