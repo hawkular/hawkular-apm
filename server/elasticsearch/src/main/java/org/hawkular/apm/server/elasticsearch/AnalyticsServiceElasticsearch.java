@@ -95,7 +95,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private static final String NODE_DETAILS_TYPE = "nodedetails";
 
     /**  */
-    private static final String BTXN_COMPLETION_TIME_TYPE = "btxncompletiontime";
+    private static final String TRACE_COMPLETION_TIME_TYPE = "tracecompletiontime";
 
     /**  */
     private static final String FRAGMENT_COMPLETION_TIME_TYPE = "fragmentcompletiontime";
@@ -200,7 +200,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *                  org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, Criteria criteria) {
+    public long getTraceCompletionCount(String tenantId, Criteria criteria) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -215,7 +215,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
@@ -244,7 +244,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *              org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, Criteria criteria) {
+    public long getTraceCompletionFaultCount(String tenantId, Criteria criteria) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -261,7 +261,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             FilterBuilder filter = FilterBuilders.existsFilter("fault");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
@@ -291,7 +291,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *                  org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, Criteria criteria) {
+    public Percentiles getTraceCompletionPercentiles(String tenantId, Criteria criteria) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -312,7 +312,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .field("duration");
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(percentileAgg)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -346,7 +346,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *                  org.hawkular.apm.api.services.Criteria, long)
      */
     @Override
-    public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
+    public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
             Criteria criteria, long interval) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
@@ -379,7 +379,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .subAggregation(faultCountBuilder);
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(histogramBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -423,7 +423,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *              org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, Criteria criteria) {
+    public List<Cardinality> getTraceCompletionFaultDetails(String tenantId, Criteria criteria) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
         }
@@ -446,7 +446,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .size(criteria.getMaxResponseSize());
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -489,7 +489,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      *              org.hawkular.apm.api.services.Criteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, Criteria criteria,
+    public List<Cardinality> getTraceCompletionPropertyDetails(String tenantId, Criteria criteria,
             String property) {
         if (criteria.getBusinessTransaction() == null) {
             throw new IllegalArgumentException("Business transaction name not specified");
@@ -513,7 +513,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .size(criteria.getMaxResponseSize());
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
-                    .setTypes(BTXN_COMPLETION_TIME_TYPE)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -549,14 +549,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         });
 
         return ret;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getAlertCount(java.lang.String, java.lang.String)
-     */
-    @Override
-    public int getAlertCount(String tenantId, String name) {
-        return 0;
     }
 
     /* (non-Javadoc)
@@ -1120,7 +1112,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             }
 
             bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    BTXN_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
+                    TRACE_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();

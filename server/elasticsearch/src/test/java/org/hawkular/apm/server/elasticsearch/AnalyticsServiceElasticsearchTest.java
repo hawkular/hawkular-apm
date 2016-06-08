@@ -619,7 +619,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
-        assertEquals(2, analytics.getCompletionCount(null, criteria));
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
@@ -651,7 +651,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault", false));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
-        assertEquals(1, analytics.getCompletionCount(null, criteria));
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
@@ -689,7 +689,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault1", true));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
-        assertEquals(2, analytics.getCompletionCount(null, criteria));
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
@@ -730,7 +730,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setPrincipal("p1");
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
-        assertEquals(2, analytics.getCompletionCount(null, criteria));
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
@@ -761,7 +761,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
-        assertEquals(1, analytics.getCompletionFaultCount(null, criteria));
+        assertEquals(1, analytics.getTraceCompletionFaultCount(null, criteria));
     }
 
     @Test
@@ -799,7 +799,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -859,7 +859,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setLowerBound(200);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -919,7 +919,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setUpperBound(400);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -980,7 +980,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -1043,7 +1043,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
 
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria,
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -1100,7 +1100,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
+        List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
         assertNotNull(cards1);
@@ -1111,7 +1111,7 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals("value2", cards1.get(1).getValue());
         assertEquals(2, cards1.get(1).getCount());
 
-        List<Cardinality> cards2 = analytics.getCompletionPropertyDetails(null, criteria,
+        List<Cardinality> cards2 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop2");
 
         assertNotNull(cards2);
@@ -1156,7 +1156,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault", false));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
+        List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
         assertNotNull(cards1);
@@ -1200,7 +1200,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault", true));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
+        List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
         assertNotNull(cards1);
@@ -1244,7 +1244,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionPropertyDetails(null, criteria,
+        List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
         assertNotNull(cards1);
@@ -1293,7 +1293,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
+        List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards1);
         assertEquals(2, cards1.size());
@@ -1340,7 +1340,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
+        List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards1);
         assertEquals(1, cards1.size());
@@ -1388,7 +1388,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setPrincipal("p2").setStartTime(1000).setEndTime(10000);
 
-        List<Cardinality> cards1 = analytics.getCompletionFaultDetails(null, criteria);
+        List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards1);
         assertEquals(1, cards1.size());

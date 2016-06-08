@@ -164,7 +164,7 @@
                 }
             }
         },
-        "btxncompletiontime": {
+        "tracecompletiontime": {
             "dynamic_templates": [{
                 "notanalyzed": {
                       "match": "*",

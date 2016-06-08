@@ -43,6 +43,12 @@ public class PropertyUtil {
     /**  */
     public static final String HAWKULAR_APM_CONFIG_REFRESH = "HAWKULAR_APM_CONFIG_REFRESH";
 
+    /**  */
+    public static final String HAWKULAR_APM_LOG_LEVEL = "HAWKULAR_APM_LOG_LEVEL";
+
+    /**  */
+    public static final String HAWKULAR_APM_LOG_JUL = "HAWKULAR_APM_LOG_JUL";
+
     /**
      * This method returns the named property, first checking the system properties
      * and if not found, checking the environment.

@@ -123,7 +123,7 @@ module FilterSidebar {
         scope.$watch('selPropName', (newValue, oldValue) => {
           if (newValue && newValue !== oldValue) {
             scope.propertyValues = [];
-            let propVal = this.$http.post('/hawkular/apm/analytics/completion/property/' + newValue.name,
+            let propVal = this.$http.post('/hawkular/apm/analytics/trace/completion/property/' + newValue.name,
               this.$rootScope.sbFilter.criteria);
             propVal.then((resp) => {
               scope.propertyValues = resp.data;
@@ -159,7 +159,8 @@ module FilterSidebar {
       }
 
       if (scope.fsb.showFaults) {
-        this.$http.post('/hawkular/apm/analytics/completion/faults', this.$rootScope.sbFilter.criteria).then((resp) => {
+        this.$http.post('/hawkular/apm/analytics/trace/completion/faults',
+            this.$rootScope.sbFilter.criteria).then((resp) => {
           this.$rootScope.sbFilter.data.faults = resp.data || [];
         }, (error) => {
             console.log('Failed to get faults: ' + JSON.stringify(error));

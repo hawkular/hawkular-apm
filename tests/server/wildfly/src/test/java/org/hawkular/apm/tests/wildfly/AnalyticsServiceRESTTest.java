@@ -326,7 +326,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
-        Long count = analytics.getCompletionCount(null, criteria);
+        Long count = analytics.getTraceCompletionCount(null, criteria);
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
@@ -372,7 +372,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
-        Long count = analytics.getCompletionFaultCount(null, criteria);
+        Long count = analytics.getTraceCompletionFaultCount(null, criteria);
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
@@ -418,7 +418,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria, 1000);
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000);
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
@@ -464,7 +464,7 @@ public class AnalyticsServiceRESTTest {
         List<CompletionTimeseriesStatistics> stats = null;
 
         try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/completion/statistics?interval=1000");
+            URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/statistics?interval=1000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -555,7 +555,7 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
-        List<Cardinality> cards = analytics.getCompletionPropertyDetails(null, criteria, "prop1");
+        List<Cardinality> cards = analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1");
 
         assertNotNull(cards);
         assertEquals(1, cards.size());
@@ -602,7 +602,7 @@ public class AnalyticsServiceRESTTest {
         List<Cardinality> cards = null;
 
         try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/completion/property/prop1");
+            URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/property/prop1");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -693,7 +693,7 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
-        List<Cardinality> cards = analytics.getCompletionFaultDetails(null, criteria);
+        List<Cardinality> cards = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards);
         assertEquals(1, cards.size());
@@ -740,7 +740,7 @@ public class AnalyticsServiceRESTTest {
         List<Cardinality> cards = null;
 
         try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/completion/faults");
+            URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/faults");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -2073,7 +2073,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
 
         // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = analytics.getCompletionTimeseriesStatistics(null, criteria, 10000);
+        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 10000);
 
         assertNotNull(stats);
         assertEquals(1, stats.size());

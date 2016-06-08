@@ -462,7 +462,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                          org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, Criteria criteria) {
+    public long getTraceCompletionCount(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion count: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -470,7 +470,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("hawkular/apm/analytics/completion/count");
+                .append("hawkular/apm/analytics/trace/completion/count");
 
         buildQueryString(builder, criteria);
 
@@ -536,14 +536,14 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, Criteria criteria) {
+    public long getTraceCompletionFaultCount(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion fault count: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("hawkular/apm/analytics/completion/faultcount");
+                .append("hawkular/apm/analytics/trace/completion/faultcount");
 
         buildQueryString(builder, criteria);
 
@@ -609,7 +609,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, Criteria criteria) {
+    public Percentiles getTraceCompletionPercentiles(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion percentiles: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -617,7 +617,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("hawkular/apm/analytics/completion/percentiles");
+                .append("hawkular/apm/analytics/trace/completion/percentiles");
 
         buildQueryString(builder, criteria);
 
@@ -683,7 +683,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                  org.hawkular.apm.api.services.Criteria, long)
      */
     @Override
-    public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
+    public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
             Criteria criteria,
             long interval) {
         if (log.isLoggable(Level.FINEST)) {
@@ -693,7 +693,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("hawkular/apm/analytics/completion/statistics");
+                .append("hawkular/apm/analytics/trace/completion/statistics");
 
         buildQueryString(builder, criteria);
 
@@ -762,7 +762,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, Criteria criteria) {
+    public List<Cardinality> getTraceCompletionFaultDetails(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion fault details: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -770,7 +770,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("hawkular/apm/analytics/completion/faults");
+                .append("hawkular/apm/analytics/trace/completion/faults");
 
         buildQueryString(builder, criteria);
 
@@ -836,7 +836,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *              org.hawkular.apm.api.services.Criteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, Criteria criteria,
+    public List<Cardinality> getTraceCompletionPropertyDetails(String tenantId, Criteria criteria,
             String property) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion property details: tenantId=[" + tenantId + "] criteria="
@@ -845,7 +845,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
 
         StringBuilder builder = new StringBuilder()
                 .append(uri)
-                .append("hawkular/apm/analytics/completion/property/")
+                .append("hawkular/apm/analytics/trace/completion/property/")
                 .append(property);
 
         buildQueryString(builder, criteria);
@@ -935,77 +935,6 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getAlertCount(java.lang.String, java.lang.String)
-     */
-    @Override
-    public int getAlertCount(String tenantId, String name) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get alert count: tenantId=[" + tenantId + "] name=" + name);
-        }
-
-        StringBuilder builder = new StringBuilder()
-                .append(uri)
-                .append("hawkular/apm/analytics/alerts/count/")
-                .append(name);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (resp.toString().trim().length() > 0) {
-                    try {
-                        return Integer.parseInt(resp.toString());
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get alert count: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get alert count", e);
-        }
-
-        return 0;
     }
 
     /* (non-Javadoc)

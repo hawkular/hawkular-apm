@@ -193,7 +193,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public long getCompletionCount(String tenantId, Criteria criteria) {
+    public long getTraceCompletionCount(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder();
         boolean fullEvaluation = requiresFullEvaluation(criteria);
 
@@ -249,7 +249,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public long getCompletionFaultCount(String tenantId, Criteria criteria) {
+    public long getTraceCompletionFaultCount(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder();
         boolean fullEvaluation = requiresFullEvaluation(criteria);
 
@@ -292,7 +292,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
             nofault = results.one().getLong(0);
         }
 
-        long count = getCompletionCount(tenantId, criteria);
+        long count = getTraceCompletionCount(tenantId, criteria);
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Fault count: total count = " + count + " nofault count = " + nofault);
@@ -312,7 +312,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                          org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public Percentiles getCompletionPercentiles(String tenantId, Criteria criteria) {
+    public Percentiles getTraceCompletionPercentiles(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_apm.completiontimes");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
         statement.append(" ALLOW FILTERING;");
@@ -350,7 +350,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                  org.hawkular.apm.api.services.Criteria, long)
      */
     @Override
-    public List<CompletionTimeseriesStatistics> getCompletionTimeseriesStatistics(String tenantId,
+    public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
             Criteria criteria, long interval) {
         // Calculate the number of entries required
         long endTime = criteria.calculateEndTime();
@@ -454,7 +454,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria)
      */
     @Override
-    public List<Cardinality> getCompletionFaultDetails(String tenantId, Criteria criteria) {
+    public List<Cardinality> getTraceCompletionFaultDetails(String tenantId, Criteria criteria) {
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_apm.completiontimes");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
         statement.append(" ALLOW FILTERING;");
@@ -519,7 +519,7 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
      *                      org.hawkular.apm.api.services.Criteria, java.lang.String)
      */
     @Override
-    public List<Cardinality> getCompletionPropertyDetails(String tenantId, Criteria criteria,
+    public List<Cardinality> getTraceCompletionPropertyDetails(String tenantId, Criteria criteria,
             String property) {
         StringBuilder statement = new StringBuilder("SELECT doc FROM hawkular_apm.completiontimes");
         statement.append(CassandraServiceUtil.whereClause(tenantId, criteria));
@@ -579,15 +579,6 @@ public class AnalyticsServiceCassandra extends AbstractAnalyticsService {
         });
 
         return ret;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getAlertCount(java.lang.String, java.lang.String)
-     */
-    @Override
-    public int getAlertCount(String tenantId, String name) {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     /* (non-Javadoc)
