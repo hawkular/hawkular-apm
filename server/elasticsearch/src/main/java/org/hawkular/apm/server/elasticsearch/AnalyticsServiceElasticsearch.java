@@ -245,10 +245,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      */
     @Override
     public long getTraceCompletionFaultCount(String tenantId, Criteria criteria) {
-        if (criteria.getBusinessTransaction() == null) {
-            throw new IllegalArgumentException("Business transaction name not specified");
-        }
-
         String index = client.getIndex(tenantId);
 
         try {
@@ -292,10 +288,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      */
     @Override
     public Percentiles getTraceCompletionPercentiles(String tenantId, Criteria criteria) {
-        if (criteria.getBusinessTransaction() == null) {
-            throw new IllegalArgumentException("Business transaction name not specified");
-        }
-
         String index = client.getIndex(tenantId);
 
         Percentiles percentiles = new Percentiles();
@@ -348,10 +340,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     @Override
     public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
             Criteria criteria, long interval) {
-        if (criteria.getBusinessTransaction() == null) {
-            throw new IllegalArgumentException("Business transaction name not specified");
-        }
-
         String index = client.getIndex(tenantId);
 
         List<CompletionTimeseriesStatistics> stats = new ArrayList<CompletionTimeseriesStatistics>();
@@ -424,10 +412,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      */
     @Override
     public List<Cardinality> getTraceCompletionFaultDetails(String tenantId, Criteria criteria) {
-        if (criteria.getBusinessTransaction() == null) {
-            throw new IllegalArgumentException("Business transaction name not specified");
-        }
-
         String index = client.getIndex(tenantId);
 
         List<Cardinality> ret = new ArrayList<Cardinality>();
@@ -491,10 +475,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     @Override
     public List<Cardinality> getTraceCompletionPropertyDetails(String tenantId, Criteria criteria,
             String property) {
-        if (criteria.getBusinessTransaction() == null) {
-            throw new IllegalArgumentException("Business transaction name not specified");
-        }
-
         String index = client.getIndex(tenantId);
 
         List<Cardinality> ret = new ArrayList<Cardinality>();
