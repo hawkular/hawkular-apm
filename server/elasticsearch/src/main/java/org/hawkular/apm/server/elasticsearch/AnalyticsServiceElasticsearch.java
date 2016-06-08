@@ -165,7 +165,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -218,7 +218,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -260,7 +260,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query)
                     .setPostFilter(filter);
 
@@ -308,7 +308,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(percentileAgg)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -371,7 +371,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(histogramBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -434,7 +434,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -513,7 +513,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(nestedBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -594,7 +594,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(histogramBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -711,7 +711,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(nodesBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
@@ -874,7 +874,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(sourceBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
+                    .setSize(0)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
