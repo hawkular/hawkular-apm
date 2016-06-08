@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hawkular.apm.analytics.service.rest.client.AnalyticsServiceRESTClient;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
@@ -202,7 +203,7 @@ public class AnalyticsServiceRESTTest {
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
 
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
@@ -520,7 +521,7 @@ public class AnalyticsServiceRESTTest {
         trace1.setId("1");
         trace1.setBusinessTransaction("testapp");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -567,7 +568,7 @@ public class AnalyticsServiceRESTTest {
         trace1.setId("1");
         trace1.setBusinessTransaction("testapp");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");

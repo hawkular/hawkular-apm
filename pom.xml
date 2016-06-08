@@ -73,7 +73,6 @@
     <module>processors/notification-deriver</module>
     <module>processors/nodedetails-deriver</module>
     <module>server/api</module>
-    <module>server/cassandra</module>
     <module>server/elasticsearch</module>
     <module>server/infinispan</module>
     <module>server/jms</module>

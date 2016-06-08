@@ -114,10 +114,8 @@ public class TraceCompletionInformationProcessor extends
                         }
 
                         // Merge properties
-                        // HWKBTM-430 - does not currently take into account duplicate properties with
-                        // different values
                         if (!cd.getProperties().isEmpty()) {
-                            item.getCompletionTime().getProperties().putAll(cd.getProperties());
+                            item.getCompletionTime().getProperties().addAll(cd.getProperties());
                         }
 
                         // Add any outbound comms from target

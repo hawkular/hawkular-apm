@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
@@ -475,15 +476,15 @@ public class AnalyticsServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
-        trace1.getProperties().put("prop1", "value1");
-        trace1.getProperties().put("prop2", "value2");
+        trace1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getProperties().add(new Property("prop2", "value2"));
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace1");
         trace2.setStartTime(2000);
-        trace2.getProperties().put("prop3", "value3");
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop3", "value3"));
+        trace2.getProperties().add(new Property("prop2", "value2"));
         traces.add(trace2);
 
         try {
@@ -517,16 +518,16 @@ public class AnalyticsServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
-        trace1.getProperties().put("prop1", "value1");
-        trace1.getProperties().put("prop2", "value2");
+        trace1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getProperties().add(new Property("prop2", "value2"));
         trace1.setPrincipal("p1");
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace1");
         trace2.setStartTime(2000);
-        trace2.getProperties().put("prop3", "value3");
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop3", "value3"));
+        trace2.getProperties().add(new Property("prop2", "value2"));
         trace2.setPrincipal("p2");
         traces.add(trace2);
 
@@ -1068,23 +1069,23 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction("testapp");
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.getProperties().put("prop1", "value1");
+        ct1_1.getProperties().add(new Property("prop1", "value1"));
         cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction("testapp");
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.getProperties().put("prop1", "value2");
-        ct1_2.getProperties().put("prop2", "value3");
+        ct1_2.getProperties().add(new Property("prop1", "value2"));
+        ct1_2.getProperties().add(new Property("prop2", "value3"));
         cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction("testapp");
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        ct2.getProperties().put("prop1", "value2");
-        ct2.getProperties().put("prop2", "value4");
+        ct2.getProperties().add(new Property("prop1", "value2"));
+        ct2.getProperties().add(new Property("prop2", "value4"));
         cts.add(ct2);
 
         try {
@@ -1131,7 +1132,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction("testapp");
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.getProperties().put("prop1", "value1");
+        ct1_1.getProperties().add(new Property("prop1", "value1"));
         cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
@@ -1139,7 +1140,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setFault("TestFault");
-        ct1_2.getProperties().put("prop1", "value2");
+        ct1_2.getProperties().add(new Property("prop1", "value2"));
         cts.add(ct1_2);
 
         try {
@@ -1175,7 +1176,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction("testapp");
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.getProperties().put("prop1", "value1");
+        ct1_1.getProperties().add(new Property("prop1", "value1"));
         cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
@@ -1183,7 +1184,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setFault("TestFault");
-        ct1_2.getProperties().put("prop1", "value2");
+        ct1_2.getProperties().add(new Property("prop1", "value2"));
         cts.add(ct1_2);
 
         try {
@@ -1220,7 +1221,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setPrincipal("p1");
-        ct1_1.getProperties().put("prop1", "value1");
+        ct1_1.getProperties().add(new Property("prop1", "value1"));
         cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
@@ -1228,7 +1229,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setPrincipal("p2");
-        ct1_2.getProperties().put("prop1", "value2");
+        ct1_2.getProperties().add(new Property("prop1", "value2"));
         cts.add(ct1_2);
 
         try {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.ReportingLevel;
@@ -824,7 +825,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                 if (value == null) {
                     builder.getTrace().getProperties().remove(name);
                 } else {
-                    builder.getTrace().getProperties().put(name, value);
+                    builder.getTrace().getProperties().add(new Property(name, value));
                 }
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setProperty: No fragment builder for this thread", null);
@@ -1317,7 +1318,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                                 && trace.getNodes().get(0).getClass() == Consumer.class
                                 && ((Consumer)trace.getNodes().get(0)).getEndpointType() == null) {
                             Consumer consumer=(Consumer)trace.getNodes().get(0);
-                            for (int i=1; trace.getNodes().size() > 1; ) {
+                            while (trace.getNodes().size() > 1) {
                                 consumer.getNodes().add(trace.getNodes().get(1));
                                 trace.getNodes().remove(1);
                             }

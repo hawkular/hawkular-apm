@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -160,19 +161,19 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop2", "value2"));
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().put("prop1", "value3");
+        trace3.getProperties().add(new Property("prop1", "value3"));
         traces.add(trace3);
 
         try {
@@ -203,19 +204,19 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop2", "value2"));
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().put("prop1", "value3");
+        trace3.getProperties().add(new Property("prop1", "value3"));
         traces.add(trace3);
 
         try {
@@ -247,26 +248,26 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop2", "value2"));
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().put("prop3", "value3");
+        trace3.getProperties().add(new Property("prop3", "value3"));
         traces.add(trace3);
 
         Trace trace4 = new Trace();
         trace4.setId("id4");
         trace4.setStartTime(4000);
-        trace4.getProperties().put("prop1", "value1");
-        trace4.getProperties().put("prop3", "value3");
+        trace4.getProperties().add(new Property("prop1", "value1"));
+        trace4.getProperties().add(new Property("prop3", "value3"));
         traces.add(trace4);
 
         try {
@@ -298,19 +299,19 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop2", "value2"));
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().put("prop1", "value3");
+        trace3.getProperties().add(new Property("prop1", "value3"));
         traces.add(trace3);
 
         try {

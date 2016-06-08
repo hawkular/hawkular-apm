@@ -42,11 +42,15 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram.Bucket;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
 import org.elasticsearch.search.aggregations.bucket.missing.Missing;
 import org.elasticsearch.search.aggregations.bucket.missing.MissingBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
@@ -201,10 +205,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      */
     @Override
     public long getTraceCompletionCount(String tenantId, Criteria criteria) {
-        if (criteria.getBusinessTransaction() == null) {
-            throw new IllegalArgumentException("Business transaction name not specified");
-        }
-
         String index = client.getIndex(tenantId);
 
         try {
@@ -506,16 +506,32 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
+            BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.matchQuery("properties.name", property));
+
+            query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
+
             TermsBuilder cardinalityBuilder = AggregationBuilders
                     .terms("cardinality")
-                    .field("properties." + property)
+                    .field("properties.text")
                     .order(Order.aggregation("_count", false))
                     .size(criteria.getMaxResponseSize());
+
+            FilterAggregationBuilder filterAggBuilder = AggregationBuilders
+                    .filter("nestedfilter")
+                    .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("properties.name", property))))
+                    .subAggregation(cardinalityBuilder);
+
+            NestedBuilder nestedBuilder = AggregationBuilders
+                    .nested("nested")
+                    .path("properties")
+                    .subAggregation(filterAggBuilder);
 
             SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .addAggregation(cardinalityBuilder)
+                    .addAggregation(nestedBuilder)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
                     .setQuery(query);
@@ -525,7 +541,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 msgLog.warnQueryTimedOut();
             }
 
-            Terms terms = response.getAggregations().get("cardinality");
+            Nested nested = response.getAggregations().get("nested");
+            InternalFilter filteredAgg = nested.getAggregations().get("nestedfilter");
+            Terms terms = filteredAgg.getAggregations().get("cardinality");
 
             for (Terms.Bucket bucket : terms.getBuckets()) {
                 Cardinality card = new Cardinality();

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
@@ -247,7 +248,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
         trace1.setPrincipal("p1");
-        trace1.getProperties().put("prop1", "value1");
+        trace1.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -283,7 +284,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
-        trace2.getProperties().put("prop2", "value2");
+        trace2.getProperties().add(new Property("prop2", "value2"));
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
@@ -317,8 +318,8 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
         assertTrue(400 == details.getLatency());
-        assertTrue(details.getProperties().containsKey("prop1"));
-        assertTrue(details.getProperties().containsKey("prop2"));
+        assertTrue(details.hasProperty("prop1"));
+        assertTrue(details.hasProperty("prop2"));
         assertEquals("trace1", details.getSourceFragmentId());
         assertEquals("host1", details.getSourceHostName());
         assertEquals("addr1", details.getSourceHostAddress());
@@ -387,7 +388,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.setId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
-        trace2.getProperties().put("prop1", "value1");
+        trace2.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
@@ -457,7 +458,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
-        trace2.getProperties().put("prop1", "value1");
+        trace2.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c2 = new Consumer();
         c2.setUri("TheURI");
@@ -488,7 +489,7 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
         assertTrue(400 == details.getLatency());
-        assertTrue(details.getProperties().containsKey("prop1"));
+        assertTrue(details.hasProperty("prop1"));
         assertEquals("trace1", details.getSourceFragmentId());
         assertEquals("host1", details.getSourceHostName());
         assertEquals("addr1", details.getSourceHostAddress());

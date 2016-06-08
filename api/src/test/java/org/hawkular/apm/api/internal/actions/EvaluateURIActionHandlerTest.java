@@ -77,10 +77,10 @@ public class EvaluateURIActionHandlerTest {
         assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         assertEquals(action.getTemplate(), consumer.getUri());
-        assertTrue(trace.getProperties().containsKey("name"));
-        assertTrue(trace.getProperties().containsKey("num"));
-        assertEquals("fred", trace.getProperties().get("name"));
-        assertEquals("5", trace.getProperties().get("num"));
+        assertTrue(trace.hasProperty("name"));
+        assertTrue(trace.hasProperty("num"));
+        assertEquals("fred", trace.getProperties("name").iterator().next().getText());
+        assertEquals("5", trace.getProperties("num").iterator().next().getText());
 
         assertNull(handler.getIssues());
     }
@@ -101,12 +101,12 @@ public class EvaluateURIActionHandlerTest {
 
         assertFalse(NodeUtil.isURIRewritten(consumer));
 
-        assertTrue(trace.getProperties().containsKey("name"));
-        assertTrue(trace.getProperties().containsKey("num"));
-        assertEquals("hello world", trace.getProperties().get("name"));
-        assertEquals("5", trace.getProperties().get("num"));
+        assertTrue(trace.hasProperty("name"));
+        assertTrue(trace.hasProperty("num"));
+        assertEquals("hello world", trace.getProperties("name").iterator().next().getText());
+        assertEquals("5", trace.getProperties("num").iterator().next().getText());
 
-        assertFalse(trace.getProperties().containsKey("another"));
+        assertFalse(trace.hasProperty("another"));
 
         assertNull(handler.getIssues());
     }
@@ -128,14 +128,14 @@ public class EvaluateURIActionHandlerTest {
         // URI should now only be path part of template
         assertEquals("/my/{pathParam}/uri", consumer.getUri());
 
-        assertTrue(trace.getProperties().containsKey("pathParam"));
-        assertTrue(trace.getProperties().containsKey("name"));
-        assertTrue(trace.getProperties().containsKey("num"));
-        assertEquals("test param", trace.getProperties().get("pathParam"));
-        assertEquals("hello world", trace.getProperties().get("name"));
-        assertEquals("5", trace.getProperties().get("num"));
+        assertTrue(trace.hasProperty("pathParam"));
+        assertTrue(trace.hasProperty("name"));
+        assertTrue(trace.hasProperty("num"));
+        assertEquals("test param", trace.getProperties("pathParam").iterator().next().getText());
+        assertEquals("hello world", trace.getProperties("name").iterator().next().getText());
+        assertEquals("5", trace.getProperties("num").iterator().next().getText());
 
-        assertFalse(trace.getProperties().containsKey("another"));
+        assertFalse(trace.hasProperty("another"));
 
         assertNull(handler.getIssues());
     }

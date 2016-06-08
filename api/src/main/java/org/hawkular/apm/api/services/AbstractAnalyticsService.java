@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
@@ -138,11 +139,11 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         for (int i = 0; i < fragments.size(); i++) {
             Trace trace = fragments.get(i);
 
-            for (String property : trace.getProperties().keySet()) {
-                if (!propertyNames.contains(property)) {
-                    propertyNames.add(property);
+            for (Property property : trace.getProperties()) {
+                if (!propertyNames.contains(property.getName())) {
+                    propertyNames.add(property.getName());
                     PropertyInfo pi = new PropertyInfo();
-                    pi.setName(property);
+                    pi.setName(property.getName());
                     ret.add(pi);
                 }
             }

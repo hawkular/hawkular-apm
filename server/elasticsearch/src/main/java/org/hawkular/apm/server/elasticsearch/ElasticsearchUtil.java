@@ -57,10 +57,13 @@ public class ElasticsearchUtil {
 
         if (!criteria.getProperties().isEmpty()) {
             for (PropertyCriteria pc : criteria.getProperties()) {
+                BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
+                        .must(QueryBuilders.matchQuery("properties.text", pc.getValue()));
                 if (pc.isExcluded()) {
-                    query = query.mustNot(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                    query = query.mustNot(QueryBuilders.nestedQuery("properties", nestedQuery));
                 } else {
-                    query = query.must(QueryBuilders.matchQuery("properties." + pc.getName(), pc.getValue()));
+                    query = query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
                 }
             }
         }
