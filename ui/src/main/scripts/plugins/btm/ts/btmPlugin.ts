@@ -52,7 +52,7 @@ module BTM {
         controller: 'BTM.BTxnConfigController',
         resolve: {
           btxn: function($http, $route, $location, toastr) {
-            return $http.get('/hawkular/btm/config/businesstxn/full/' +
+            return $http.get('/hawkular/apm/config/businesstxn/full/' +
               $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
                 $location.path('/hawkular-ui/btm');

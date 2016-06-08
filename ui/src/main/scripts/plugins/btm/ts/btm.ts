@@ -83,7 +83,7 @@ module BTM {
     $scope.getBusinessTxnDetails = function(btxn) {
       let promises = [];
 
-      let countPromise = $http.get('/hawkular/apm/analytics/completion/count?businessTransaction=' + btxn.name);
+      let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?businessTransaction=' + btxn.name);
       promises.push(countPromise);
       countPromise.then(function(resp) {
         btxn.count = resp.data;
@@ -91,7 +91,8 @@ module BTM {
         console.log('Failed to get count: ' + JSON.stringify(resp));
       });
 
-      let pct95Promise = $http.get('/hawkular/apm/analytics/completion/percentiles?businessTransaction=' + btxn.name);
+      let pct95Promise =
+        $http.get('/hawkular/apm/analytics/trace/completion/percentiles?businessTransaction=' + btxn.name);
       promises.push(pct95Promise);
       pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
@@ -103,20 +104,13 @@ module BTM {
         console.log('Failed to get completion percentiles: ' + JSON.stringify(resp));
       });
 
-      let faultsPromise = $http.get('/hawkular/apm/analytics/completion/faultcount?businessTransaction=' + btxn.name);
+      let faultsPromise =
+        $http.get('/hawkular/apm/analytics/trace/completion/faultcount?businessTransaction=' + btxn.name);
       promises.push(faultsPromise);
       faultsPromise.then(function(resp) {
         btxn.faultcount = resp.data;
       },function(resp) {
         console.log('Failed to get fault count: ' + JSON.stringify(resp));
-      });
-
-      let alertsPromise = $http.get('/hawkular/apm/analytics/alerts/count/' + btxn.name);
-      promises.push(alertsPromise);
-      alertsPromise.then(function(resp) {
-        btxn.alerts = resp.data;
-      },function(resp) {
-        console.log('Failed to get alerts count: ' + JSON.stringify(resp));
       });
 
       return promises;

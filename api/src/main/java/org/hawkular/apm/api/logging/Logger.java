@@ -27,9 +27,9 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  */
 public class Logger {
 
-    private static Level level = Level.valueOf(PropertyUtil.getProperty("HAWKULAR_APM_LOG_LEVEL", Level.INFO.name()));
+    private static Level level = Level.valueOf(PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_LOG_LEVEL, Level.INFO.name()));
 
-    private static boolean logToJUL = Boolean.getBoolean("HAWKULAR_APM_LOG_JUL");
+    private static boolean logToJUL = Boolean.getBoolean(PropertyUtil.HAWKULAR_APM_LOG_JUL);
 
     private static java.util.logging.Logger logger = null;
 

@@ -187,17 +187,17 @@ public class AnalyticsHandler {
             value = "business transaction name") @QueryParam("businessTransaction")
             String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -287,17 +287,17 @@ public class AnalyticsHandler {
             value = "business transaction name") @QueryParam("businessTransaction")
             String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -372,32 +372,32 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("completion/count")
+    @Path("trace/completion/count")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion count",
+            value = "Get the trace completion count",
             response = Long.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionCount(
+    public void getTraceCompletionCount(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction")
             String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -415,12 +415,12 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction count for criteria [%s]", criteria);
+            log.tracef("Get trace completion count for criteria [%s]", criteria);
 
-            long count = analyticsService.getCompletionCount(
+            long count = analyticsService.getTraceCompletionCount(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
-            log.tracef("Got transaction count: criteria [%s] = [%s]", criteria, count);
+            log.tracef("Got trace completion count: criteria [%s] = [%s]", criteria, count);
 
             response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -436,32 +436,32 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("completion/faultcount")
+    @Path("trace/completion/faultcount")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the number of business transaction instances that returned a fault",
+            value = "Get the number of trace instances that returned a fault",
             response = Long.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionFaultCount(
+    public void getTraceCompletionFaultCount(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction")
             String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -479,12 +479,12 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction fault count for criteria [%s]", criteria);
+            log.tracef("Get trace fault count for criteria [%s]", criteria);
 
-            long count = analyticsService.getCompletionFaultCount(
+            long count = analyticsService.getTraceCompletionFaultCount(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
-            log.tracef("Got transaction fault count: criteria [%s] = [%s]", criteria, count);
+            log.tracef("Got trace fault count: criteria [%s] = [%s]", criteria, count);
 
             response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -500,32 +500,32 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("completion/percentiles")
+    @Path("trace/completion/percentiles")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion percentiles associated with criteria",
+            value = "Get the trace completion percentiles associated with criteria",
             response = Percentiles.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionPercentiles(
+    public void getTraceCompletionPercentiles(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction")
             String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -543,12 +543,12 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction completion percentiles for criteria [%s]", criteria);
+            log.tracef("Get trace completion percentiles for criteria [%s]", criteria);
 
-            Percentiles stats = analyticsService.getCompletionPercentiles(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
+            Percentiles stats = analyticsService.getTraceCompletionPercentiles(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
-            log.tracef("Got business transaction completion percentiles for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got trace completion percentiles for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -564,31 +564,31 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("completion/statistics")
+    @Path("trace/completion/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion timeseries statistics associated with criteria",
+            value = "Get the trace completion timeseries statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionTimeseriesStatistics(
+    public void getTraceCompletionTimeseriesStatistics(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -609,14 +609,14 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction completion timeseries statistics for criteria [%s] interval [%s]",
+            log.tracef("Get trace completion timeseries statistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
-            List<CompletionTimeseriesStatistics> stats = analyticsService.getCompletionTimeseriesStatistics(
+            List<CompletionTimeseriesStatistics> stats = analyticsService.getTraceCompletionTimeseriesStatistics(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria, interval);
 
-            log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
+            log.tracef("Got trace completion timeseries statistics for criteria [%s] = %s",
                     criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
@@ -633,15 +633,15 @@ public class AnalyticsHandler {
     }
 
     @POST
-    @Path("completion/statistics")
+    @Path("trace/completion/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion timeseries statistics associated with criteria",
+            value = "Get the trace completion timeseries statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionTimeseriesStatistics(
+    public void getTraceCompletionTimeseriesStatistics(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
@@ -651,14 +651,14 @@ public class AnalyticsHandler {
                     value = "query criteria") Criteria criteria) {
 
         try {
-            log.tracef("Get business transaction completion timeseries statistics for criteria [%s] interval [%s]",
+            log.tracef("Get trace completion timeseries statistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
-            List<CompletionTimeseriesStatistics> stats = analyticsService.getCompletionTimeseriesStatistics(
+            List<CompletionTimeseriesStatistics> stats = analyticsService.getTraceCompletionTimeseriesStatistics(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria, interval);
 
-            log.tracef("Got business transaction completion timeseries statistics for criteria [%s] = %s",
+            log.tracef("Got trace completion timeseries statistics for criteria [%s] = %s",
                     criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
@@ -674,31 +674,31 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("completion/faults")
+    @Path("trace/completion/faults")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion fault details associated with criteria",
+            value = "Get the trace completion fault details associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionFaultDetails(
+    public void getTraceCompletionFaultDetails(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -716,13 +716,13 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction completion fault details for criteria (GET) [%s]",
+            log.tracef("Get trace completion fault details for criteria (GET) [%s]",
                     criteria);
 
-            List<Cardinality> cards = analyticsService.getCompletionFaultDetails(
+            List<Cardinality> cards = analyticsService.getTraceCompletionFaultDetails(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
-            log.tracef("Got business transaction completion fault details for criteria (GET) [%s] = %s",
+            log.tracef("Got trace completion fault details for criteria (GET) [%s] = %s",
                     criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
@@ -739,28 +739,28 @@ public class AnalyticsHandler {
     }
 
     @POST
-    @Path("completion/faults")
+    @Path("trace/completion/faults")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion fault details associated with criteria",
+            value = "Get the trace completion fault details associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionFaultDetails(
+    public void getTraceCompletionFaultDetails(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "query criteria") Criteria criteria) {
 
         try {
-            log.tracef("Get business transaction completion fault details for criteria (POST) [%s]",
+            log.tracef("Get trace completion fault details for criteria (POST) [%s]",
                     criteria);
 
-            List<Cardinality> cards = analyticsService.getCompletionFaultDetails(
+            List<Cardinality> cards = analyticsService.getTraceCompletionFaultDetails(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
-            log.tracef("Got business transaction completion fault details for criteria (POST) [%s] = %s",
+            log.tracef("Got trace completion fault details for criteria (POST) [%s] = %s",
                     criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
@@ -776,31 +776,31 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("completion/property/{property}")
+    @Path("trace/completion/property/{property}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion property details associated with criteria",
+            value = "Get the trace completion property details associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionPropertyDetails(
+    public void getTraceCompletionPropertyDetails(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -820,13 +820,13 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
-            log.tracef("Get business transaction completion property details for criteria (GET) [%s] property [%s]",
+            log.tracef("Get trace completion property details for criteria (GET) [%s] property [%s]",
                     criteria, property);
 
-            List<Cardinality> cards = analyticsService.getCompletionPropertyDetails(
+            List<Cardinality> cards = analyticsService.getTraceCompletionPropertyDetails(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria, property);
 
-            log.tracef("Got business transaction completion property details for criteria (GET) [%s] = %s",
+            log.tracef("Got trace completion property details for criteria (GET) [%s] = %s",
                     criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
@@ -843,15 +843,15 @@ public class AnalyticsHandler {
     }
 
     @POST
-    @Path("completion/property/{property}")
+    @Path("trace/completion/property/{property}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction completion property details associated with criteria",
+            value = "Get the trace completion property details associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void getCompletionPropertyDetails(
+    public void getTraceCompletionPropertyDetails(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
@@ -860,13 +860,13 @@ public class AnalyticsHandler {
                     value = "query criteria") Criteria criteria) {
 
         try {
-            log.tracef("Get business transaction completion property details for criteria (POST) [%s] property [%s]",
+            log.tracef("Get trace completion property details for criteria (POST) [%s] property [%s]",
                     criteria, property);
 
-            List<Cardinality> cards = analyticsService.getCompletionPropertyDetails(
+            List<Cardinality> cards = analyticsService.getTraceCompletionPropertyDetails(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria, property);
 
-            log.tracef("Got business transaction completion property details for criteria (POST) [%s] = %s",
+            log.tracef("Got trace completion property details for criteria (POST) [%s] = %s",
                     criteria, cards);
 
             response.resume(Response.status(Response.Status.OK).entity(cards).type(APPLICATION_JSON_TYPE)
@@ -882,46 +882,10 @@ public class AnalyticsHandler {
     }
 
     @GET
-    @Path("alerts/count/{name}")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Get the business transaction alert count",
-            response = Integer.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 500, message = "Internal server error") })
-    public void getAlertCount(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response,
-            @ApiParam(required = true,
-            value = "business transaction name") @PathParam("name") String name) {
-
-        try {
-            log.tracef("Get alert count: name [%s]", name);
-
-            int count = analyticsService.getAlertCount(
-                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), name);
-
-            log.tracef("Got alert count: name [%s] = [%s]", name, count);
-
-            response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
-                    .build());
-
-        } catch (Throwable e) {
-            log.debug(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
-
-    }
-
-    @GET
     @Path("node/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction node timeseries statistics associated with criteria",
+            value = "Get the trace node timeseries statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -932,17 +896,17 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -959,7 +923,7 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
-            log.tracef("Get business transaction node timeseriesstatistics for criteria [%s] interval [%s]",
+            log.tracef("Get trace node timeseriesstatistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
             long perfStartTime = 0;
@@ -979,7 +943,7 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got trace node timeseries statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -998,7 +962,7 @@ public class AnalyticsHandler {
     @Path("node/statistics")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction node timeseries statistics associated with criteria",
+            value = "Get the trace node timeseries statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -1013,7 +977,7 @@ public class AnalyticsHandler {
                     value = "query criteria") Criteria criteria) {
 
         try {
-            log.tracef("Get business transaction node timeseries statistics for criteria [%s] interval [%s]",
+            log.tracef("Get trace node timeseries statistics for criteria [%s] interval [%s]",
                     criteria, interval);
 
             long perfStartTime = 0;
@@ -1033,7 +997,7 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction node timeseries statistics for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got trace node timeseries statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -1051,7 +1015,7 @@ public class AnalyticsHandler {
     @Path("node/summary")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction node summary statistics associated with criteria",
+            value = "Get the trace node summary statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -1062,17 +1026,17 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
 
@@ -1086,7 +1050,7 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
-            log.tracef("Get business transaction node summary statistics for criteria [%s]",
+            log.tracef("Get trace node summary statistics for criteria [%s]",
                     criteria);
 
             long perfStartTime = 0;
@@ -1105,7 +1069,7 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got trace node summary statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -1124,7 +1088,7 @@ public class AnalyticsHandler {
     @Path("node/summary")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction node summary statistics associated with criteria",
+            value = "Get the trace node summary statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -1136,7 +1100,7 @@ public class AnalyticsHandler {
                     value = "query criteria") Criteria criteria) {
 
         try {
-            log.tracef("Get business transaction node summary statistics for criteria [%s]",
+            log.tracef("Get trace node summary statistics for criteria [%s]",
                     criteria);
 
             long perfStartTime = 0;
@@ -1154,7 +1118,7 @@ public class AnalyticsHandler {
                         + (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction node summary statistics for criteria [%s] = %s", criteria, stats);
+            log.tracef("Got trace node summary statistics for criteria [%s] = %s", criteria, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
                     .build());
@@ -1172,7 +1136,7 @@ public class AnalyticsHandler {
     @Path("communication/summary")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction communication summary statistics associated with criteria",
+            value = "Get the trace communication summary statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -1183,17 +1147,17 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
             @ApiParam(required = false,
@@ -1209,7 +1173,7 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
-            log.tracef("Get business transaction communication summary statistics for criteria [%s] as tree [%s]",
+            log.tracef("Get trace communication summary statistics for criteria [%s] as tree [%s]",
                     criteria, tree);
 
             long perfStartTime = 0;
@@ -1230,7 +1194,7 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction communication summary statistics for criteria [%s] as tree [%s] = %s",
+            log.tracef("Got trace communication summary statistics for criteria [%s] as tree [%s] = %s",
                     criteria, tree, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
@@ -1250,7 +1214,7 @@ public class AnalyticsHandler {
     @Path("communication/summary")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get the business transaction communication summary statistics associated with criteria",
+            value = "Get the trace communication summary statistics associated with criteria",
             response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
@@ -1264,7 +1228,7 @@ public class AnalyticsHandler {
                     value = "tree") @QueryParam("tree") boolean tree) {
 
         try {
-            log.tracef("Get business transaction communication summary statistics for criteria [%s] as tree [%s]",
+            log.tracef("Get trace communication summary statistics for criteria [%s] as tree [%s]",
                     criteria, tree);
 
             long perfStartTime = 0;
@@ -1283,7 +1247,7 @@ public class AnalyticsHandler {
                         (System.currentTimeMillis() - perfStartTime) + "ms");
             }
 
-            log.tracef("Got business transaction communication summary statistics for criteria [%s] as tree [%s] = %s",
+            log.tracef("Got trace communication summary statistics for criteria [%s] as tree [%s] = %s",
                     criteria, tree, stats);
 
             response.resume(Response.status(Response.Status.OK).entity(stats).type(APPLICATION_JSON_TYPE)
@@ -1313,17 +1277,17 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                     value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
             @ApiParam(required = false,
-            value = "business transactions after this time,"
+            value = "traces after this time,"
                     + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
             @ApiParam(required = false,
-                    value = "business transactions before this time, "
+                    value = "traces before this time, "
                             + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
             @ApiParam(required = false,
                             value = "host name") @QueryParam("hostName") String hostName,
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
-                            value = "business transactions with these properties, defined as a comma "
+                            value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
 
