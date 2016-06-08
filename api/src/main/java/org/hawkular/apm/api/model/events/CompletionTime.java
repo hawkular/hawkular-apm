@@ -16,8 +16,10 @@
  */
 package org.hawkular.apm.api.model.events;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hawkular.apm.api.model.Property;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -60,7 +62,7 @@ public class CompletionTime {
     private String hostName;
 
     @JsonInclude(Include.NON_EMPTY)
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Set<Property> properties = new HashSet<Property>();
 
     @JsonInclude
     private boolean internal = false;
@@ -213,15 +215,48 @@ public class CompletionTime {
     /**
      * @return the properties
      */
-    public Map<String, String> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * This method determines whether there is atleast one
+     * property with the supplied name.
+     *
+     * @param name The property name
+     * @return Whether a property of the supplied name is defined
+     */
+    public boolean hasProperty(String name) {
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the set of properties having the
+     * supplied property name.
+     *
+     * @param name The property name
+     * @return The set of properties with the supplied name
+     */
+    public Set<Property> getProperties(String name) {
+        Set<Property> ret = new HashSet<Property>();
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                ret.add(property);
+            }
+        }
+        return ret;
     }
 
     /**

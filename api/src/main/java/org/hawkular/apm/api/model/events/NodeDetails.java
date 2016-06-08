@@ -18,9 +18,12 @@ package org.hawkular.apm.api.model.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.NodeType;
 
@@ -72,7 +75,7 @@ public class NodeDetails {
     private String principal;
 
     @JsonInclude(Include.NON_EMPTY)
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Set<Property> properties = new HashSet<Property>();
 
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> details = new HashMap<String, String>();
@@ -251,15 +254,48 @@ public class NodeDetails {
     /**
      * @return the properties
      */
-    public Map<String, String> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * This method determines whether there is atleast one
+     * property with the supplied name.
+     *
+     * @param name The property name
+     * @return Whether a property of the supplied name is defined
+     */
+    public boolean hasProperty(String name) {
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the set of properties having the
+     * supplied property name.
+     *
+     * @param name The property name
+     * @return The set of properties with the supplied name
+     */
+    public Set<Property> getProperties(String name) {
+        Set<Property> ret = new HashSet<Property>();
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                ret.add(property);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -399,9 +435,9 @@ public class NodeDetails {
     @Override
     public String toString() {
         return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
-                + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual
-                + ", componentType=" + componentType + ", operation=" + operation + ", fault=" + fault + ", hostName="
-                + hostName + ", principal=" + principal + ", properties=" + properties + ", details=" + details
+                + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType="
+                + componentType + ", operation=" + operation + ", fault=" + fault + ", hostName=" + hostName
+                + ", principal=" + principal + ", properties=" + properties + ", details=" + details
                 + ", correlationIds=" + correlationIds + "]";
     }
 

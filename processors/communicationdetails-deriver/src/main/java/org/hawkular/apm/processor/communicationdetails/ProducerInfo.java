@@ -20,8 +20,10 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hawkular.apm.api.model.Property;
 
 /**
  * This class represents information cached about a producer, to enable it to be
@@ -47,7 +49,7 @@ public class ProducerInfo implements Externalizable {
 
     private boolean multipleConsumers = false;
 
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Set<Property> properties = new HashSet<Property>();
 
     /**
      * @return the sourceUri
@@ -164,21 +166,53 @@ public class ProducerInfo implements Externalizable {
     /**
      * @return the properties
      */
-    public Map<String, String> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * This method determines whether there is atleast one
+     * property with the supplied name.
+     *
+     * @param name The property name
+     * @return Whether a property of the supplied name is defined
+     */
+    public boolean hasProperty(String name) {
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the set of properties having the
+     * supplied property name.
+     *
+     * @param name The property name
+     * @return The set of properties with the supplied name
+     */
+    public Set<Property> getProperties(String name) {
+        Set<Property> ret = new HashSet<Property>();
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                ret.add(property);
+            }
+        }
+        return ret;
     }
 
     /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
@@ -191,7 +225,11 @@ public class ProducerInfo implements Externalizable {
         hostName = ois.readUTF();
         hostAddress = ois.readUTF();
         multipleConsumers = ois.readBoolean();
-        properties = (Map<String, String>) ois.readObject();    // TODO: Serialise properly
+
+        int size = ois.readInt();
+        for (int i = 0; i < size; i++) {
+            properties.add((Property) ois.readObject());
+        }
     }
 
     /* (non-Javadoc)
@@ -209,7 +247,11 @@ public class ProducerInfo implements Externalizable {
         oos.writeUTF(hostName);
         oos.writeUTF(hostAddress);
         oos.writeBoolean(multipleConsumers);
-        oos.writeObject(properties);    // TODO: Serialise properly
+
+        oos.writeInt(properties.size());
+        for (Property property : properties) {
+            oos.writeObject(property);
+        }
     }
 
 }

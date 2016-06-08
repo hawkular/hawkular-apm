@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -286,7 +287,7 @@ public class TraceServiceRESTTest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("hello", "world");
+        trace1.getProperties().add(new Property("hello", "world"));
 
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
@@ -322,7 +323,7 @@ public class TraceServiceRESTTest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("hello", "world");
+        trace1.getProperties().add(new Property("hello", "world"));
 
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
@@ -356,7 +357,7 @@ public class TraceServiceRESTTest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("hello", "world");
+        trace1.getProperties().add(new Property("hello", "world"));
 
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
@@ -474,7 +475,7 @@ public class TraceServiceRESTTest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().put("hello", "world");
+        trace1.getProperties().add(new Property("hello", "world"));
 
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);

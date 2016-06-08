@@ -119,7 +119,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                     pi.setHostName(trace.getHostName());
                     pi.setHostAddress(trace.getHostAddress());
                     pi.setMultipleConsumers(producer.multipleConsumers());
-                    pi.getProperties().putAll(trace.getProperties());
+                    pi.getProperties().addAll(trace.getProperties());
 
                     // TODO: HWKBTM-348: Should be configurable based on the wait interval plus
                     // some margin of error - primarily for cases where a job scheduler
@@ -198,8 +198,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setInternal(consumer.getEndpointType() == null);
 
                         // Merge properties from consumer and producer
-                        ret.getProperties().putAll(item.getProperties());
-                        ret.getProperties().putAll(pi.getProperties());
+                        ret.getProperties().addAll(item.getProperties());
+                        ret.getProperties().addAll(pi.getProperties());
 
                         ret.setSourceFragmentId(pi.getFragmentId());
                         ret.setSourceHostName(pi.getHostName());

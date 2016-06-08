@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.junit.Test;
 
@@ -151,8 +152,8 @@ public class TraceTest {
         // Business transaction
         Trace trace = new Trace();
 
-        trace.getProperties().put(TEST_PROP1, TEST_VALUE1);
-        trace.getProperties().put(TEST_PROP2, TEST_VALUE2);
+        trace.getProperties().add(new Property(TEST_PROP1, TEST_VALUE1));
+        trace.getProperties().add(new Property(TEST_PROP2, TEST_VALUE2));
 
         // Top level (consumer) node
         Consumer c1 = new Consumer();

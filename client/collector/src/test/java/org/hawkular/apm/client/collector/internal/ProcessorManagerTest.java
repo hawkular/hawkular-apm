@@ -432,7 +432,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", trace.getProperties().get("test"));
+        assertEquals("second", trace.getProperties("test").iterator().next().getText());
     }
 
     @Test
@@ -634,7 +634,7 @@ public class ProcessorManagerTest {
         pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals(1, trace.getProperties().size());
-        assertTrue(trace.getProperties().containsKey("result"));
+        assertTrue(trace.hasProperty("result"));
     }
 
     @Test
@@ -741,7 +741,7 @@ public class ProcessorManagerTest {
         pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals(1, trace.getProperties().size());
-        assertTrue(trace.getProperties().containsKey("result"));
+        assertTrue(trace.hasProperty("result"));
     }
 
     @Test

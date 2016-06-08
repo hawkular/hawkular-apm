@@ -19,6 +19,7 @@ package org.hawkular.apm.api.internal.actions;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.btxn.Processor;
@@ -85,7 +86,7 @@ public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
         if (super.process(trace, node, direction, headers, values)) {
             String value = getValue(trace, node, direction, headers, values);
             if (value != null && ((SetPropertyAction) getAction()).getName() != null) {
-                trace.getProperties().put(((SetPropertyAction) getAction()).getName(), value);
+                trace.getProperties().add(new Property(((SetPropertyAction) getAction()).getName(), value));
                 return true;
             }
         }

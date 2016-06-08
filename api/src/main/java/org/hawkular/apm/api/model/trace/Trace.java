@@ -17,13 +17,12 @@
 package org.hawkular.apm.api.model.trace;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -63,7 +62,7 @@ public class Trace {
     private List<Node> nodes = new ArrayList<Node>();
 
     @JsonInclude(Include.NON_EMPTY)
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Set<Property> properties = new HashSet<Property>();
 
     public Trace() {
     }
@@ -186,17 +185,49 @@ public class Trace {
      *
      * @return the properties
      */
-    public Map<String, String> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
-     * @return The trace
      */
-    public Trace setProperties(Map<String, String> properties) {
+    public Trace setProperties(Set<Property> properties) {
         this.properties = properties;
         return this;
+    }
+
+    /**
+     * This method determines whether there is atleast one
+     * property with the supplied name.
+     *
+     * @param name The property name
+     * @return Whether a property of the supplied name is defined
+     */
+    public boolean hasProperty(String name) {
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the set of properties having the
+     * supplied property name.
+     *
+     * @param name The property name
+     * @return The set of properties with the supplied name
+     */
+    public Set<Property> getProperties(String name) {
+        Set<Property> ret = new HashSet<Property>();
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                ret.add(property);
+            }
+        }
+        return ret;
     }
 
     /**

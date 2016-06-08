@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.btxncompletiontime;
+package org.hawkular.apm.processor.tracecompletiontime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,9 +26,7 @@ import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.InteractionNode;
 import org.hawkular.apm.api.model.trace.Producer;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation.Communication;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationUtil;
 import org.junit.Test;
 
 /**

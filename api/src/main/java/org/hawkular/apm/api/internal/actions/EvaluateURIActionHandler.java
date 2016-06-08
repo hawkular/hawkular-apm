@@ -19,13 +19,15 @@ package org.hawkular.apm.api.internal.actions;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.btxn.EvaluateURIAction;
@@ -125,7 +127,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                         new StringTokenizer(pathTemplate, "/");
 
                 if (uriTokens.countTokens() == templateTokens.countTokens()) {
-                    Map<String, String> props = null;
+                    Set<Property> props = null;
                     while (uriTokens.hasMoreTokens()) {
                         String uriToken = uriTokens.nextToken();
                         String templateToken = templateTokens.nextToken();
@@ -133,10 +135,10 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                         if (templateToken.charAt(0) == '{' && templateToken.charAt(templateToken.length() - 1) == '}') {
                             String name = templateToken.substring(1, templateToken.length() - 1);
                             if (props == null) {
-                                props = new HashMap<String, String>();
+                                props = new HashSet<Property>();
                             }
                             try {
-                                props.put(name, URLDecoder.decode(uriToken, "UTF-8"));
+                                props.add(new Property(name, URLDecoder.decode(uriToken, "UTF-8")));
                             } catch (UnsupportedEncodingException e) {
                                 if (log.isLoggable(Level.FINEST)) {
                                     log.finest("Failed to decode value '" + uriToken + "': " + e);
@@ -153,7 +155,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                     boolean processed = false;
 
                     if (props != null) {
-                        trace.getProperties().putAll(props);
+                        trace.getProperties().addAll(props);
                         NodeUtil.rewriteURI(node, pathTemplate);
                         processed = true;
                     }
@@ -194,7 +196,8 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                 if (namevalue.length == 2) {
                     if (queryParameters.contains(namevalue[0])) {
                         try {
-                            trace.getProperties().put(namevalue[0], URLDecoder.decode(namevalue[1], "UTF-8"));
+                            trace.getProperties().add(new Property(namevalue[0],
+                                    URLDecoder.decode(namevalue[1], "UTF-8")));
                             ret = true;
                         } catch (UnsupportedEncodingException e) {
                             if (log.isLoggable(Level.FINEST)) {

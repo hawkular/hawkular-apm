@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
+import org.hawkular.apm.api.model.Property;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -76,7 +77,7 @@ public class CommunicationDetails implements Externalizable {
 
     private String principal;
 
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Set<Property> properties = new HashSet<Property>();
 
     private List<Outbound> outbound = new ArrayList<Outbound>();
 
@@ -361,15 +362,48 @@ public class CommunicationDetails implements Externalizable {
     /**
      * @return the properties
      */
-    public Map<String, String> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * This method determines whether there is atleast one
+     * property with the supplied name.
+     *
+     * @param name The property name
+     * @return Whether a property of the supplied name is defined
+     */
+    public boolean hasProperty(String name) {
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the set of properties having the
+     * supplied property name.
+     *
+     * @param name The property name
+     * @return The set of properties with the supplied name
+     */
+    public Set<Property> getProperties(String name) {
+        Set<Property> ret = new HashSet<Property>();
+        for (Property property : this.properties) {
+            if (property.getName().equals(name)) {
+                ret.add(property);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -391,15 +425,14 @@ public class CommunicationDetails implements Externalizable {
      */
     @Override
     public String toString() {
-        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source="
-                + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal=" + internal
-                + ", timestamp=" + timestamp + ", latency=" + latency + ", consumerDuration=" + consumerDuration
-                + ", producerDuration=" + producerDuration + ", timestampOffset=" + timestampOffset
-                + ", sourceFragmentId=" + sourceFragmentId + ", sourceHostName=" + sourceHostName
-                + ", sourceHostAddress=" + sourceHostAddress + ", targetFragmentId=" + targetFragmentId
-                + ", targetHostName=" + targetHostName + ", targetHostAddress=" + targetHostAddress
-                + ", targetFragmentDuration=" + targetFragmentDuration + ", principal=" + principal + ", properties="
-                + properties + ", outbound=" + outbound + "]";
+        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source=" + source
+                + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal=" + internal + ", timestamp="
+                + timestamp + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
+                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
+                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
+                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
+                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
+                + ", principal=" + principal + ", properties=" + properties + ", outbound=" + outbound + "]";
     }
 
     /* (non-Javadoc)
@@ -532,7 +565,6 @@ public class CommunicationDetails implements Externalizable {
     /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Version
@@ -556,9 +588,13 @@ public class CommunicationDetails implements Externalizable {
         targetHostAddress = ois.readUTF();
         targetFragmentDuration = ois.readLong();
         principal = ois.readUTF();
-        properties = (Map<String, String>) ois.readObject();    // TODO: Serialise properly
 
         int size = ois.readInt();
+        for (int i = 0; i < size; i++) {
+            properties.add((Property) ois.readObject());
+        }
+
+        size = ois.readInt();
         for (int i = 0; i < size; i++) {
             outbound.add((Outbound) ois.readObject());
         }
@@ -590,7 +626,11 @@ public class CommunicationDetails implements Externalizable {
         oos.writeUTF(targetHostAddress);
         oos.writeLong(targetFragmentDuration);
         oos.writeUTF(principal);
-        oos.writeObject(properties);    // TODO: Serialise properly
+
+        oos.writeInt(properties.size());
+        for (Property property : properties) {
+            oos.writeObject(property);
+        }
 
         oos.writeInt(outbound.size());
         for (int i = 0; i < outbound.size(); i++) {

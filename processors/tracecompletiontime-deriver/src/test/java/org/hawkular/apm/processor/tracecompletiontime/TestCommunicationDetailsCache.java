@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.btxncompletiontime;
+package org.hawkular.apm.processor.tracecompletiontime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 
 /**
  * @author gbrown

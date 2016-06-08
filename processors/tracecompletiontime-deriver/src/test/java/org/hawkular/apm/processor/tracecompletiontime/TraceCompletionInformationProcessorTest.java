@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.btxncompletiontime;
+package org.hawkular.apm.processor.tracecompletiontime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,10 +25,9 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationProcessor;
 import org.junit.Test;
 
 /**
@@ -111,7 +110,9 @@ public class TraceCompletionInformationProcessorTest {
         cd1.setId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
-        cd1.getProperties().put("prop2", "value2");
+        cd1.getProperties().add(new Property("prop1", "value0"));
+        cd1.getProperties().add(new Property("prop2", "value2"));
+        cd1.getProperties().add(new Property("prop3", "value3"));
 
         cds.add(cd1);
 
@@ -121,7 +122,8 @@ public class TraceCompletionInformationProcessorTest {
 
         CompletionTime ct = new CompletionTime();
         ct.setDuration(157);        // Current duration to date
-        ct.getProperties().put("prop1", "value1");
+        ct.getProperties().add(new Property("prop1", "value1"));
+        ct.getProperties().add(new Property("prop3", "value3"));
         info.setCompletionTime(ct);
 
         TraceCompletionInformation.Communication c1 = new TraceCompletionInformation.Communication();
@@ -145,9 +147,13 @@ public class TraceCompletionInformationProcessorTest {
         assertEquals(0, result.getCommunications().size());
 
         assertEquals(111 + 40 + 370, info.getCompletionTime().getDuration());
-        assertEquals(2, result.getCompletionTime().getProperties().size());
-        assertTrue(result.getCompletionTime().getProperties().containsKey("prop1"));
-        assertTrue(result.getCompletionTime().getProperties().containsKey("prop2"));
+        assertEquals(4, result.getCompletionTime().getProperties().size());
+        assertTrue(result.getCompletionTime().hasProperty("prop1"));
+        assertTrue(result.getCompletionTime().hasProperty("prop2"));
+        assertTrue(result.getCompletionTime().hasProperty("prop3"));
+        assertEquals(2, result.getCompletionTime().getProperties("prop1").size());
+        assertEquals(1, result.getCompletionTime().getProperties("prop2").size());
+        assertEquals(1, result.getCompletionTime().getProperties("prop3").size());
     }
 
     @Test
