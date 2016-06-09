@@ -31,6 +31,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -188,7 +189,7 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.addProperty("prop1", "value1", false);
+        criteria.addProperty("prop1", "value1", null);
 
         List<Trace> result1 = ts.query(null, criteria);
 
@@ -231,7 +232,7 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.addProperty("prop1", "value1", true);
+        criteria.addProperty("prop1", "value1", Operator.HASNOT);
 
         List<Trace> result1 = ts.query(null, criteria);
 
@@ -282,8 +283,8 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.addProperty("prop1", "value1", false);
-        criteria.addProperty("prop3", "value3", false);
+        criteria.addProperty("prop1", "value1", null);
+        criteria.addProperty("prop3", "value3", null);
 
         List<Trace> result1 = ts.query(null, criteria);
 
@@ -326,8 +327,8 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.addProperty("prop1", "value1", true);
-        criteria.addProperty("prop1", "value3", true);
+        criteria.addProperty("prop1", "value1", Operator.HASNOT);
+        criteria.addProperty("prop1", "value3", Operator.HASNOT);
 
         List<Trace> result1 = ts.query(null, criteria);
 

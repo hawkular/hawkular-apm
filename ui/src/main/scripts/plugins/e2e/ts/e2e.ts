@@ -58,8 +58,8 @@ module E2E {
       });
     };
 
-    $scope.addPropertyToFilter = function(pName, pValue, excluded) {
-      let newProp = {name: pName, value: pValue, excluded: excluded};
+    $scope.addPropertyToFilter = function(pName, pValue, operator) {
+      let newProp = {name: pName, value: pValue, operator: operator};
       $rootScope.sbFilter.criteria.properties.push(newProp);
       delete $scope.selPropValue;
     };
@@ -68,8 +68,8 @@ module E2E {
       $rootScope.sbFilter.criteria.properties.splice($rootScope.sbFilter.criteria.properties.indexOf(property), 1);
     };
 
-    $scope.addFaultToFilter = function(fault, excluded) {
-      $rootScope.sbFilter.criteria.faults.push({value: fault, excluded: excluded});
+    $scope.addFaultToFilter = function(fault, operator) {
+      $rootScope.sbFilter.criteria.faults.push({value: fault, operator: operator});
     };
 
     $scope.remFaultFromFilter = function(fault) {
@@ -77,7 +77,11 @@ module E2E {
     };
 
     $scope.toggleExcludeInclude = function(propOrFault) {
-      propOrFault.excluded = !propOrFault.excluded;
+      if (propOrFault.operator === undefined || propOrFault.operator === 'HAS') {
+        propOrFault.operator = 'HASNOT';
+      } else if (propOrFault.operator === 'HASNOT') {
+        propOrFault.operator = 'HAS';
+      }
     };
 
     $scope.filterByTopLevel = function(nodeId) {

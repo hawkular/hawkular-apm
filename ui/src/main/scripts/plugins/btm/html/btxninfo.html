@@ -16,7 +16,7 @@
 
           <div class="form-group" >
             <span ng-repeat="fault in criteria.faults">
-              <span ng-show="!fault.excluded">
+              <span ng-show="fault.operator === undefined || fault.operator === 'HAS'">
                 <a class="btn btn-success" ng-click="toggleExclusion(fault)">
                   <i>fault</i>: {{fault.value}}
                   <a class="btn btn-default" ng-click="removeFault(fault)">
@@ -24,7 +24,7 @@
                   </a>
                 </a>
               </span>
-              <span ng-show="fault.excluded">
+              <span ng-show="fault.operator === 'HASNOT'">
                 <a class="btn btn-danger" ng-click="toggleExclusion(fault)">
                   <i>fault</i>: {{fault.value}}
                   <a class="btn btn-default" ng-click="removeFault(fault)">
@@ -36,7 +36,7 @@
             </span>
 
             <span ng-repeat="property in criteria.properties">
-              <span ng-show="!property.excluded">
+              <span ng-show="property.operator === undefined || property.operator === 'HAS'">
                 <a class="btn btn-success" ng-click="toggleExclusion(property)">
                   <i>{{property.name}}</i>: {{property.value}}
                   <a class="btn btn-default" ng-click="removeProperty(property)">
@@ -44,7 +44,7 @@
                   </a>
                 </a>
               </span>
-              <span ng-show="property.excluded">
+              <span ng-show="property.operator === 'HASNOT'">
                 <a class="btn btn-danger" ng-click="toggleExclusion(property)">
                   <i>{{property.name}}</i>: {{property.value}}
                   <a class="btn btn-default" ng-click="removeProperty(property)">

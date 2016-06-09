@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.services.Criteria.FaultCriteria;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
 import org.jboss.logging.Logger;
 
@@ -47,19 +48,18 @@ public class RESTServiceUtil {
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
                 String[] parts = token.split("[|]");
-                if (parts.length == 2) {
+                if (parts.length >= 2) {
                     String name = parts[0].trim();
                     String value = parts[1].trim();
-                    boolean excluded = false;
+                    Operator op = Operator.HAS;
 
-                    if (name.length() > 0 && name.charAt(0) == '-') {
-                        name = name.substring(1);
-                        excluded = true;
+                    if (parts.length > 2) {
+                        op = Operator.valueOf(parts[2].trim());
                     }
 
-                    log.tracef("Extracted property name [%s] value [%s] excluded [%s]", name, value, excluded);
+                    log.tracef("Extracted property name [%s] value [%s] operator [%s]", name, value, op);
 
-                    properties.add(new PropertyCriteria(name, value, excluded));
+                    properties.add(new PropertyCriteria(name, value, op));
                 }
             }
         }
@@ -104,16 +104,19 @@ public class RESTServiceUtil {
             StringTokenizer st = new StringTokenizer(encoded, ",");
             while (st.hasMoreTokens()) {
                 String fault = st.nextToken();
-                boolean excluded = false;
+                String[] parts = fault.split("[|]");
+                if (parts.length >= 1) {
+                    String value = parts[0].trim();
+                    Operator op = Operator.HAS;
 
-                if (fault.length() > 0 && fault.charAt(0) == '-') {
-                    fault = fault.substring(1);
-                    excluded = true;
+                    if (parts.length > 1) {
+                        op = Operator.valueOf(parts[1].trim());
+                    }
+
+                    log.tracef("Extracted fault value [%s] operator [%s]", value, op);
+
+                    faults.add(new FaultCriteria(value, op));
                 }
-
-                log.tracef("Extracted fault [%s] excluded [%s]", fault, excluded);
-
-                faults.add(new FaultCriteria(fault, excluded));
             }
         }
     }

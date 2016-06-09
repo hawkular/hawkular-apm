@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.hawkular.apm.analytics.service.rest.client.AnalyticsServiceRESTClient;
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
@@ -45,6 +46,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -331,6 +333,75 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(count);
         assertEquals(1, count.longValue());
+    }
+
+    @Test
+    public void testGetCompletionCountWithPropertyFilter() {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        trace1.getNodes().add(c1);
+        trace1.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
+        trace1.getProperties().add(new Property("prop2", "hello"));
+
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+
+        try {
+            service.publish(null, traces);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        // Get transaction count
+        assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
+                .setBusinessTransaction("testapp")
+                .setStartTime(0)
+                .setEndTime(0)
+                .addProperty("prop1", "1", Operator.GT)));
+
+        assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
+                .setBusinessTransaction("testapp")
+                .setStartTime(0)
+                .setEndTime(0)
+                .addProperty("prop1", "3", Operator.LT)));
+
+        assertEquals(0, analytics.getTraceCompletionCount(null, new Criteria()
+                .setBusinessTransaction("testapp")
+                .setStartTime(0)
+                .setEndTime(0)
+                .addProperty("prop1", "2.4", Operator.LT)));
+
+        assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
+                .setBusinessTransaction("testapp")
+                .setStartTime(0)
+                .setEndTime(0)
+                .addProperty("prop2", "hello", Operator.HAS)));
+
+        assertEquals(0, analytics.getTraceCompletionCount(null, new Criteria()
+                .setBusinessTransaction("testapp")
+                .setStartTime(0)
+                .setEndTime(0)
+                .addProperty("prop2", "hello", Operator.HASNOT)));
     }
 
     @Test

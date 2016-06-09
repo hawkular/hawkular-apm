@@ -268,7 +268,11 @@ module BTM {
     };
 
     $scope.toggleExclusion = function(element) {
-      element.excluded = !element.excluded;
+      if (element.operator === undefined || element.operator === 'HAS') {
+        element.operator = 'HASNOT';
+      } else if (element.operator === 'HASNOT') {
+        element.operator = 'HAS';
+      }
       $scope.reload();
     };
 

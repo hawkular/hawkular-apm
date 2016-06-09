@@ -33,7 +33,7 @@ module FilterSidebar {
     },
     (items) => { // Specific hasher function for filter properties objects
       return _.reduce(items, (hash, obj: any) => {
-        return hash + (obj.name + obj.value + obj.excluded);
+        return hash + (obj.name + obj.value + obj.operator);
       }, '');
     });
   });

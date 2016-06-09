@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.junit.Test;
 
 /**
@@ -66,7 +67,21 @@ public class CriteriaTest {
     @Test
     public void testGetQueryParametersSingleProperties() {
         Criteria criteria = new Criteria();
-        criteria.addProperty("prop1", "value1", false);
+        criteria.addProperty("prop1", "value1", Operator.HAS);
+
+        Map<String, String> queryParameters = criteria.parameters();
+
+        assertNotNull(queryParameters);
+
+        assertTrue(queryParameters.containsKey("properties"));
+
+        assertEquals("prop1|value1", queryParameters.get("properties"));
+    }
+
+    @Test
+    public void testGetQueryParametersSinglePropertiesDefault() {
+        Criteria criteria = new Criteria();
+        criteria.addProperty("prop1", "value1", null);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -80,7 +95,7 @@ public class CriteriaTest {
     @Test
     public void testGetQueryParametersSinglePropertiesExcluded() {
         Criteria criteria = new Criteria();
-        criteria.addProperty("prop1", "value1", true);
+        criteria.addProperty("prop1", "value1", Operator.HASNOT);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -88,14 +103,14 @@ public class CriteriaTest {
 
         assertTrue(queryParameters.containsKey("properties"));
 
-        assertEquals("-prop1|value1", queryParameters.get("properties"));
+        assertEquals("prop1|value1|HASNOT", queryParameters.get("properties"));
     }
 
     @Test
     public void testGetQueryParametersMultipleProperties() {
         Criteria criteria = new Criteria();
-        criteria.addProperty("prop1", "value1", false);
-        criteria.addProperty("prop2", "value2", false);
+        criteria.addProperty("prop1", "value1", Operator.HAS);
+        criteria.addProperty("prop2", "value2", Operator.HAS);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -110,8 +125,8 @@ public class CriteriaTest {
     @Test
     public void testGetQueryParametersMultiplePropertiesExcluded() {
         Criteria criteria = new Criteria();
-        criteria.addProperty("prop1", "value1", true);
-        criteria.addProperty("prop2", "value2", true);
+        criteria.addProperty("prop1", "value1", Operator.HASNOT);
+        criteria.addProperty("prop2", "value2", Operator.HASNOT);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -119,15 +134,15 @@ public class CriteriaTest {
 
         assertTrue(queryParameters.containsKey("properties"));
 
-        assertTrue(queryParameters.get("properties").equals("-prop1|value1,-prop2|value2")
-                || queryParameters.get("properties").equals("-prop2|value2,-prop1|value1"));
+        assertTrue(queryParameters.get("properties").equals("prop1|value1|HASNOT,prop2|value2|HASNOT")
+                || queryParameters.get("properties").equals("prop2|value2|HASNOT,prop1|value1|HASNOT"));
     }
 
     @Test
     public void testGetQueryParametersMultipleSameNameProperties() {
         Criteria criteria = new Criteria();
-        criteria.addProperty("prop1", "value1", false);
-        criteria.addProperty("prop1", "value2", false);
+        criteria.addProperty("prop1", "value1", Operator.HAS);
+        criteria.addProperty("prop1", "value2", Operator.HAS);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -142,8 +157,8 @@ public class CriteriaTest {
     @Test
     public void testGetQueryParametersMultipleSameNamePropertiesExcluded() {
         Criteria criteria = new Criteria();
-        criteria.addProperty("prop1", "value1", true);
-        criteria.addProperty("prop1", "value2", true);
+        criteria.addProperty("prop1", "value1", Operator.HASNOT);
+        criteria.addProperty("prop1", "value2", Operator.HASNOT);
 
         Map<String, String> queryParameters = criteria.parameters();
 
@@ -151,8 +166,8 @@ public class CriteriaTest {
 
         assertTrue(queryParameters.containsKey("properties"));
 
-        assertTrue(queryParameters.get("properties").equals("-prop1|value1,-prop1|value2")
-                || queryParameters.get("properties").equals("-prop1|value2,-prop1|value1"));
+        assertTrue(queryParameters.get("properties").equals("prop1|value1|HASNOT,prop1|value2|HASNOT")
+                || queryParameters.get("properties").equals("prop1|value2|HASNOT,prop1|value1|HASNOT"));
     }
 
     @Test

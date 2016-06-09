@@ -34,6 +34,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -309,7 +310,7 @@ public class TraceServiceRESTTest {
 
         // Query stored trace
         Criteria criteria = new Criteria();
-        criteria.addProperty("hello", "world", false);
+        criteria.addProperty("hello", "world", null);
 
         List<Trace> result = service.query(null, criteria);
 
@@ -345,7 +346,7 @@ public class TraceServiceRESTTest {
 
         // Query stored trace
         Criteria criteria = new Criteria();
-        criteria.addProperty("hello", "fred", false);
+        criteria.addProperty("hello", "fred", null);
 
         List<Trace> result = service.query(null, criteria);
 
@@ -379,7 +380,7 @@ public class TraceServiceRESTTest {
 
         // Query stored trace
         Criteria criteria = new Criteria();
-        criteria.addProperty("hello", "world", true);
+        criteria.addProperty("hello", "world", Operator.HASNOT);
 
         List<Trace> result = service.query(null, criteria);
 
@@ -497,7 +498,7 @@ public class TraceServiceRESTTest {
 
         // Query stored trace
         Criteria criteria = new Criteria();
-        criteria.addProperty("hello", "world", false);
+        criteria.addProperty("hello", "world", null);
 
         List<Trace> result = null;
 

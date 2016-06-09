@@ -61,6 +61,19 @@ public class Property implements Externalizable {
     }
 
     /**
+     * The constructor.
+     *
+     * @param name The name
+     * @param value The value
+     * @param type The type
+     */
+    public Property(String name, String value, PropertyType type) {
+        this.name = name;
+        this.value = value;
+        this.type = type;
+    }
+
+    /**
      * @return the name
      */
     public String getName() {

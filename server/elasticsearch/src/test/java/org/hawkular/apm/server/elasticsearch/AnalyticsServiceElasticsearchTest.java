@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
@@ -53,6 +54,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.FaultCriteria;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -478,6 +480,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace1.setStartTime(1000);
         trace1.getProperties().add(new Property("prop1", "value1"));
         trace1.getProperties().add(new Property("prop2", "value2"));
+        trace1.setPrincipal("p1");
         traces.add(trace1);
 
         Trace trace2 = new Trace();
@@ -485,6 +488,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace2.setStartTime(2000);
         trace2.getProperties().add(new Property("prop3", "value3"));
         trace2.getProperties().add(new Property("prop2", "value2"));
+        trace2.setPrincipal("p2");
         traces.add(trace2);
 
         try {
@@ -509,45 +513,14 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(pis.get(0).getName().equals("prop1"));
         assertTrue(pis.get(1).getName().equals("prop2"));
         assertTrue(pis.get(2).getName().equals("prop3"));
-    }
 
-    @Test
-    public void testPropertyInfoForPrincipal() {
-        List<Trace> traces = new ArrayList<Trace>();
-
-        Trace trace1 = new Trace();
-        trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(1000);
-        trace1.getProperties().add(new Property("prop1", "value1"));
-        trace1.getProperties().add(new Property("prop2", "value2"));
-        trace1.setPrincipal("p1");
-        traces.add(trace1);
-
-        Trace trace2 = new Trace();
-        trace2.setBusinessTransaction("trace1");
-        trace2.setStartTime(2000);
-        trace2.getProperties().add(new Property("prop3", "value3"));
-        trace2.getProperties().add(new Property("prop2", "value2"));
-        trace2.setPrincipal("p2");
-        traces.add(trace2);
-
-        try {
-            bts.storeTraces(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        Criteria criteria=new Criteria()
+        criteria=new Criteria()
             .setBusinessTransaction("trace1")
             .setPrincipal("p1")
             .setStartTime(100)
             .setEndTime(0);
 
-        java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
+        pis = analytics.getPropertyInfo(null, criteria);
 
         assertNotNull(pis);
         assertEquals(2, pis.size());
@@ -649,7 +622,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault", false));
+        criteria.getFaults().add(new FaultCriteria("TestFault", null));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
@@ -687,7 +660,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault1", true));
+        criteria.getFaults().add(new FaultCriteria("TestFault1", Operator.HASNOT));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
@@ -730,6 +703,72 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setPrincipal("p1");
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
+    }
+
+    @Test
+    public void testGetCompletionCountForPropertyNum() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setTimestamp(1000);
+        ct1.getProperties().add(new Property("num", "1.5", PropertyType.Number));
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setTimestamp(2000);
+        ct2.getProperties().add(new Property("num", "2.0", PropertyType.Number));
+        cts.add(ct2);
+
+        CompletionTime ct3 = new CompletionTime();
+        ct3.setTimestamp(2000);
+        ct3.getProperties().add(new Property("num", "3.7", PropertyType.Number));
+        cts.add(ct3);
+
+        try {
+            analytics.storeTraceCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.addProperty("num", "2", Operator.GTE);
+        criteria.setStartTime(100).setEndTime(0);
+
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
+
+        criteria = new Criteria();
+        criteria.addProperty("num", "2", Operator.GT);
+        criteria.setStartTime(100).setEndTime(0);
+
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+
+        criteria = new Criteria();
+        criteria.addProperty("num", "2", Operator.LTE);
+        criteria.setStartTime(100).setEndTime(0);
+
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
+
+        criteria = new Criteria();
+        criteria.addProperty("num", "2", Operator.LT);
+        criteria.setStartTime(100).setEndTime(0);
+
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+
+        criteria = new Criteria();
+        criteria.addProperty("num", "2.0", Operator.EQ);
+        criteria.setStartTime(100).setEndTime(0);
+
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+
+        criteria = new Criteria();
+        criteria.addProperty("num", "2.0", Operator.NE);
+        criteria.setStartTime(100).setEndTime(0);
 
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
@@ -1154,7 +1193,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault", false));
+        criteria.getFaults().add(new FaultCriteria("TestFault", null));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
@@ -1198,7 +1237,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault", true));
+        criteria.getFaults().add(new FaultCriteria("TestFault", Operator.HASNOT));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
         List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,

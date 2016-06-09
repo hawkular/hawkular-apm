@@ -163,10 +163,12 @@ public class Criteria {
      *
      * @param name The property name
      * @param value The property value
-     * @param excluded Whether the specific property name/value should be excluded
+     * @param operator The property operator
+     * @return The criteria
      */
-    public void addProperty(String name, String value, boolean excluded) {
-        properties.add(new PropertyCriteria(name, value, excluded));
+    public Criteria addProperty(String name, String value, Operator operator) {
+        properties.add(new PropertyCriteria(name, value, operator));
+        return this;
     }
 
     /**
@@ -415,6 +417,38 @@ public class Criteria {
     }
 
     /**
+     * The enum for the comparison operators. The operators are specific
+     * to the property type (e.g. Text, Number)
+     */
+    public static enum Operator {
+
+        /* Text value - matching property/fault operator */
+        HAS,
+
+        /* Text value - no matching property/fault operator */
+        HASNOT,
+
+        /* Number value - property equality operator */
+        EQ,
+
+        /* Number value - property inequality operator */
+        NE,
+
+        /* Number value - property greater-than operator */
+        GT,
+
+        /* Number value - property greater-than-or-equal operator */
+        GTE,
+
+        /* Number value - property less-than operator */
+        LT,
+
+        /* Number value - property less-than-or-equal operator */
+        LTE
+
+    }
+
+    /**
      * This class represents the property criteria.
      */
     public static class PropertyCriteria {
@@ -422,7 +456,7 @@ public class Criteria {
         private String name;
         private String value;
 
-        private boolean excluded = false;
+        private Operator operator = Operator.HAS;
 
         /**
          * This is the default constructor.
@@ -435,12 +469,12 @@ public class Criteria {
          *
          * @param name The name
          * @param value The value
-         * @param excluded Whether excluded
+         * @param operator The comparison operator
          */
-        public PropertyCriteria(String name, String value, boolean excluded) {
+        public PropertyCriteria(String name, String value, Operator operator) {
             this.name = name;
             this.value = value;
-            this.excluded = excluded;
+            this.setOperator(operator);
         }
 
         /**
@@ -472,17 +506,20 @@ public class Criteria {
         }
 
         /**
-         * @return the excluded
+         * @return the operator
          */
-        public boolean isExcluded() {
-            return excluded;
+        public Operator getOperator() {
+            return operator;
         }
 
         /**
-         * @param excluded the excluded to set
+         * @param operator the operator to set
          */
-        public void setExcluded(boolean excluded) {
-            this.excluded = excluded;
+        public void setOperator(Operator operator) {
+            if (operator == null) {
+                operator = Operator.HAS;
+            }
+            this.operator = operator;
         }
 
         /**
@@ -493,12 +530,13 @@ public class Criteria {
          */
         public String encoded() {
             StringBuilder buf = new StringBuilder();
-            if (isExcluded()) {
-                buf.append('-');
-            }
             buf.append(getName());
             buf.append('|');
             buf.append(getValue());
+            if (getOperator() != Operator.HAS) {
+                buf.append('|');
+                buf.append(getOperator());
+            }
             return buf.toString();
         }
 
@@ -507,8 +545,9 @@ public class Criteria {
          */
         @Override
         public String toString() {
-            return "PropertyCriteria [name=" + name + ", value=" + value + ", excluded=" + excluded + "]";
+            return "PropertyCriteria [name=" + name + ", value=" + value + ", operator=" + operator + "]";
         }
+
     }
 
     /**
@@ -518,7 +557,7 @@ public class Criteria {
 
         private String value;
 
-        private boolean excluded = false;
+        private Operator operator = Operator.HAS;
 
         /**
          * This is the default constructor.
@@ -530,11 +569,11 @@ public class Criteria {
          * This constructor initialises the fields.
          *
          * @param value The value
-         * @param excluded Whether excluded
+         * @param operator The comparison operator
          */
-        public FaultCriteria(String value, boolean excluded) {
+        public FaultCriteria(String value, Operator operator) {
             this.value = value;
-            this.excluded = excluded;
+            setOperator(operator);
         }
 
         /**
@@ -552,17 +591,20 @@ public class Criteria {
         }
 
         /**
-         * @return the excluded
+         * @return the operator
          */
-        public boolean isExcluded() {
-            return excluded;
+        public Operator getOperator() {
+            return operator;
         }
 
         /**
-         * @param excluded the excluded to set
+         * @param operator the operator to set
          */
-        public void setExcluded(boolean excluded) {
-            this.excluded = excluded;
+        public void setOperator(Operator operator) {
+            if (operator == null) {
+                operator = Operator.HAS;
+            }
+            this.operator = operator;
         }
 
         /**
@@ -573,10 +615,11 @@ public class Criteria {
          */
         public String encoded() {
             StringBuilder buf = new StringBuilder();
-            if (isExcluded()) {
-                buf.append('-');
-            }
             buf.append(getValue());
+            if (getOperator() != Operator.HAS) {
+                buf.append('|');
+                buf.append(getOperator());
+            }
             return buf.toString();
         }
 
@@ -585,7 +628,7 @@ public class Criteria {
          */
         @Override
         public String toString() {
-            return "FaultCriteria [value=" + value + ", excluded=" + excluded + "]";
+            return "FaultCriteria [value=" + value + ", operator=" + operator + "]";
         }
     }
 }

@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.api.model.config.btxn;
 
+import org.hawkular.apm.api.model.PropertyType;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -28,6 +30,9 @@ public class SetPropertyAction extends ExpressionBasedAction {
 
     @JsonInclude(Include.NON_NULL)
     private String name;
+
+    @JsonInclude(Include.NON_DEFAULT)
+    private PropertyType type = PropertyType.Text;
 
     /**
      * @return the name
@@ -43,13 +48,27 @@ public class SetPropertyAction extends ExpressionBasedAction {
         this.name = name;
     }
 
+    /**
+     * @return the type
+     */
+    public PropertyType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(PropertyType type) {
+        this.type = type;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return "SetPropertyAction [name=" + name + ", getExpression()=" + getExpression() + ", getDescription()="
-                + getDescription() + ", getPredicate()=" + getPredicate() + "]";
+        return "SetPropertyAction [name=" + name + ", type=" + type + ", getExpression()=" + getExpression()
+                + ", getDescription()=" + getDescription() + ", getPredicate()=" + getPredicate() + "]";
     }
 
 }
