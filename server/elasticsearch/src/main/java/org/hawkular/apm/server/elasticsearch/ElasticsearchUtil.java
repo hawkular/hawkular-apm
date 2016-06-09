@@ -59,7 +59,7 @@ public class ElasticsearchUtil {
             for (PropertyCriteria pc : criteria.getProperties()) {
                 BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
                         .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
-                        .must(QueryBuilders.matchQuery("properties.text", pc.getValue()));
+                        .must(QueryBuilders.matchQuery("properties.value", pc.getValue()));
                 if (pc.isExcluded()) {
                     query = query.mustNot(QueryBuilders.nestedQuery("properties", nestedQuery));
                 } else {

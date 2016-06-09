@@ -493,7 +493,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
             TermsBuilder cardinalityBuilder = AggregationBuilders
                     .terms("cardinality")
-                    .field("properties.text")
+                    .field("properties.value")
                     .order(Order.aggregation("_count", false))
                     .size(criteria.getMaxResponseSize());
 
