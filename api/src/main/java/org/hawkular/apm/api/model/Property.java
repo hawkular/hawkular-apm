@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * This class represents a property.
  *
@@ -28,9 +31,17 @@ import java.io.ObjectOutput;
  */
 public class Property implements Externalizable {
 
+    @JsonInclude(Include.NON_NULL)
     private String name;
 
-    private String text;
+    @JsonInclude(Include.NON_NULL)
+    private String value;
+
+    @JsonInclude(Include.NON_DEFAULT)
+    private PropertyType type = PropertyType.Text;
+
+    @JsonInclude(Include.NON_NULL)
+    private Double number;
 
     /**
      * The default constructor.
@@ -42,11 +53,11 @@ public class Property implements Externalizable {
      * The constructor.
      *
      * @param name The name
-     * @param text The text
+     * @param value The value
      */
-    public Property(String name, String text) {
+    public Property(String name, String value) {
         this.name = name;
-        this.text = text;
+        this.value = value;
     }
 
     /**
@@ -64,17 +75,60 @@ public class Property implements Externalizable {
     }
 
     /**
-     * @return the text
+     * @return the value
      */
-    public String getText() {
-        return text;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * @param text the text to set
+     * @param value the value to set
      */
-    public void setText(String text) {
-        this.text = text;
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * @return the type
+     */
+    public PropertyType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(PropertyType type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the number
+     */
+    public Double getNumber() {
+        if (number == null && value != null && type == PropertyType.Number) {
+            try {
+                return Double.valueOf(value);
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
+        return number;
+    }
+
+    /**
+     * @param number the number to set
+     */
+    public void setNumber(Double number) {
+        this.number = number;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Property [name=" + name + ", value=" + value + ", type=" + type + ", number=" + number + "]";
     }
 
     /* (non-Javadoc)
@@ -85,7 +139,8 @@ public class Property implements Externalizable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((text == null) ? 0 : text.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
 
@@ -106,20 +161,14 @@ public class Property implements Externalizable {
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (text == null) {
-            if (other.text != null)
+        if (type != other.type)
+            return false;
+        if (value == null) {
+            if (other.value != null)
                 return false;
-        } else if (!text.equals(other.text))
+        } else if (!value.equals(other.value))
             return false;
         return true;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Property [name=" + name + ", text=" + text + "]";
     }
 
     /* (non-Javadoc)
@@ -130,7 +179,9 @@ public class Property implements Externalizable {
         ois.readInt(); // Read version
 
         name = ois.readUTF();
-        text = ois.readUTF();
+        value = ois.readUTF();
+        type = PropertyType.values()[ois.readInt()];
+        number = ois.readDouble();
     }
 
     /* (non-Javadoc)
@@ -141,7 +192,9 @@ public class Property implements Externalizable {
         oos.writeInt(1); // Write version
 
         oos.writeUTF(name);
-        oos.writeUTF(text);
+        oos.writeUTF(value);
+        oos.writeInt(type.ordinal());
+        oos.writeDouble(number);
     }
 
 }

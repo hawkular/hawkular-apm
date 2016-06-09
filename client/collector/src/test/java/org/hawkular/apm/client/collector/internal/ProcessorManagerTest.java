@@ -432,7 +432,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", trace.getProperties("test").iterator().next().getText());
+        assertEquals("second", trace.getProperties("test").iterator().next().getValue());
     }
 
     @Test

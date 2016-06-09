@@ -17,25 +17,20 @@
 package org.hawkular.apm.api.model;
 
 /**
- * This enumerated value represents a severity.
+ * This enumerated value represents a property type.
  *
  * @author gbrown
  */
-public enum Severity {
+public enum PropertyType {
 
     /**
-     * This represents an error.
+     * This represents a text value.
      */
-    Error,
+    Text,
 
     /**
-     * This represents a warning.
+     * This represents a numeric value.
      */
-    Warning,
-
-    /**
-     * This represents information.
-     */
-    Info
+    Number
 
 }

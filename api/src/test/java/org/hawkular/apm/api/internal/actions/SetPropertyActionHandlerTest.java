@@ -58,7 +58,7 @@ public class SetPropertyActionHandlerTest {
 
         assertEquals(1, trace.getProperties().size());
         assertTrue(trace.hasProperty(TEST_NAME_1));
-        assertEquals(TEST_VALUE_1, trace.getProperties(TEST_NAME_1).iterator().next().getText());
+        assertEquals(TEST_VALUE_1, trace.getProperties(TEST_NAME_1).iterator().next().getValue());
 
         assertNull(handler.getIssues());
     }

@@ -79,8 +79,8 @@ public class EvaluateURIActionHandlerTest {
         assertEquals(action.getTemplate(), consumer.getUri());
         assertTrue(trace.hasProperty("name"));
         assertTrue(trace.hasProperty("num"));
-        assertEquals("fred", trace.getProperties("name").iterator().next().getText());
-        assertEquals("5", trace.getProperties("num").iterator().next().getText());
+        assertEquals("fred", trace.getProperties("name").iterator().next().getValue());
+        assertEquals("5", trace.getProperties("num").iterator().next().getValue());
 
         assertNull(handler.getIssues());
     }
@@ -103,8 +103,8 @@ public class EvaluateURIActionHandlerTest {
 
         assertTrue(trace.hasProperty("name"));
         assertTrue(trace.hasProperty("num"));
-        assertEquals("hello world", trace.getProperties("name").iterator().next().getText());
-        assertEquals("5", trace.getProperties("num").iterator().next().getText());
+        assertEquals("hello world", trace.getProperties("name").iterator().next().getValue());
+        assertEquals("5", trace.getProperties("num").iterator().next().getValue());
 
         assertFalse(trace.hasProperty("another"));
 
@@ -131,9 +131,9 @@ public class EvaluateURIActionHandlerTest {
         assertTrue(trace.hasProperty("pathParam"));
         assertTrue(trace.hasProperty("name"));
         assertTrue(trace.hasProperty("num"));
-        assertEquals("test param", trace.getProperties("pathParam").iterator().next().getText());
-        assertEquals("hello world", trace.getProperties("name").iterator().next().getText());
-        assertEquals("5", trace.getProperties("num").iterator().next().getText());
+        assertEquals("test param", trace.getProperties("pathParam").iterator().next().getValue());
+        assertEquals("hello world", trace.getProperties("name").iterator().next().getValue());
+        assertEquals("5", trace.getProperties("num").iterator().next().getValue());
 
         assertFalse(trace.hasProperty("another"));
 
