@@ -4,6 +4,7 @@
       "description": "Vertx EventBus instrumentation",
       "rules": [{
         "ruleName": "Vertx EventBus Consumer Sync Start",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
         "methodName": "handle",
         "parameterTypes": [
@@ -35,6 +36,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Sync End",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
         "methodName": "handle",
         "parameterTypes": [
@@ -51,6 +53,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async Start",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
         "methodName": "handle",
         "parameterTypes": [
@@ -85,6 +88,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Consumer Async End",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl",
         "methodName": "sendReply",
         "parameterTypes": [
@@ -104,6 +108,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync Start",
+        "ruleType": "JVM",
         "interfaceName": "^io.vertx.core.eventbus.EventBus",
         "methodName": "send",
         "parameterTypes": [
@@ -146,6 +151,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync End",
+        "ruleType": "JVM",
         "interfaceName": "^io.vertx.core.eventbus.EventBus",
         "methodName": "send",
         "parameterTypes": [
@@ -163,6 +169,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus PubSub Producer Sync Start",
+        "ruleType": "JVM",
         "interfaceName": "^io.vertx.core.eventbus.EventBus",
         "methodName": "publish",
         "parameterTypes": [
@@ -208,6 +215,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus PubSub Producer Sync End",
+        "ruleType": "JVM",
         "interfaceName": "^io.vertx.core.eventbus.EventBus",
         "methodName": "publish",
         "parameterTypes": [
@@ -224,6 +232,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Producer Async Start",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.MessageImpl",
         "methodName": "setReplyAddress",
         "parameterTypes": [
@@ -266,6 +275,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Producer Async End",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
         "methodName": "handle",
         "parameterTypes": [
@@ -283,6 +293,7 @@
         }]
       },{
         "ruleName": "Vertx EventBus Producer/Consumer Async Handler Thread Complete",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.eventbus.impl.EventBusImpl$HandlerRegistration",
         "methodName": "handle",
         "parameterTypes": [

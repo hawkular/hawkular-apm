@@ -4,6 +4,7 @@
       "description": "Test instrumentation",
       "rules": [{
         "ruleName": "Trace testOp entry",
+        "ruleType": "JVM",
         "className": "org.hawkular.apm.tests.client.jav.TopLevelService",
         "methodName": "testOp",
         "location": "ENTRY",
@@ -24,6 +25,7 @@
         }]
       },{
         "ruleName": "Trace testOp exit",
+        "ruleType": "JVM",
         "className": "org.hawkular.apm.tests.client.jav.TopLevelService",
         "methodName": "testOp",
         "location": "EXIT",
@@ -46,6 +48,7 @@
         }]
       },{
         "ruleName": "Trace join entry",
+        "ruleType": "JVM",
         "className": "org.hawkular.apm.tests.client.jav.InnerService",
         "methodName": "join",
         "parameterTypes": [
@@ -66,6 +69,7 @@
         }]
       },{
         "ruleName": "Trace join exit",
+        "ruleType": "JVM",
         "className": "org.hawkular.apm.tests.client.jav.InnerService",
         "methodName": "join",
         "parameterTypes": [

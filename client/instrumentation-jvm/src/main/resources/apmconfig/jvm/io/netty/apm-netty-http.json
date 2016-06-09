@@ -4,6 +4,7 @@
       "description": "Netty HTTP instrumentation",
       "rules": [{
         "ruleName": "Netty HTTP Producer Start",
+        "ruleType": "JVM",
         "notes": [
           "TODO: ProcessContents"
         ],
@@ -67,13 +68,14 @@
         }]
       },{
         "ruleName": "Netty HTTP Producer End",
-        "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
+        "ruleType": "JVM",
         "notes": [
           "TODO: Store contents of byte buffer if data is required (HWKBTM-373). For now",
           "just using detection of DefaultHttpResponse in the list as the end of the producer ",
           "but when content is of interest, will need to delay the end of the producer until ",
           "the data has been read."
         ],
+        "className": "^io.netty.handler.codec.http.HttpClientCodec$Decoder",
         "methodName": "decode",
         "parameterTypes": [
           "*"
@@ -92,6 +94,7 @@
         }]
       },{
         "ruleName": "Netty HTTP Producer End",
+        "ruleType": "JVM",
         "notes": [
           "TODO: Store contents of byte buffer if data is required (HWKBTM-373)"
         ],
@@ -109,6 +112,7 @@
         }]
       },{
         "ruleName": "Netty HTTP Producer End",
+        "ruleType": "JVM",
         "notes": [
           "TODO: Store contents of byte buffer if data is required (HWKBTM-373)"
         ],

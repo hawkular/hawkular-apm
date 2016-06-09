@@ -4,6 +4,7 @@
       "description": "Javax Servlet instrumentation",
       "rules": [{
         "ruleName": "Javax Servlet Consumer Start",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
         "parameterTypes": [
@@ -73,6 +74,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer End Sync Fault",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
         "parameterTypes": [
@@ -92,6 +94,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer End Sync",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.Servlet",
         "methodName": "service",
         "parameterTypes": [
@@ -115,6 +118,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer End Async Unlink",
+        "ruleType": "JVM",
         "notes": [
           "This rule is required to ensure that when an async thread is initiated, ",
           "that this thread is unlinked from the business txn fragment, so that subsequent ",
@@ -139,6 +143,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer GetInputStream Complete Async Link",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.ServletRequest",
         "methodName": "getInputStream",
         "parameterTypes": [
@@ -151,6 +156,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer GetMethod Complete Async Link",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.http.HttpServletRequest",
         "methodName": "getMethod",
         "parameterTypes": [
@@ -163,6 +169,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Init",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.ServletRequest",
         "methodName": "getInputStream",
         "parameterTypes": [
@@ -175,6 +182,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer GetReader Complete Link",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.ServletRequest",
         "methodName": "getReader",
         "parameterTypes": [
@@ -187,6 +195,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Init on Read 1",
+        "ruleType": "JVM",
         "notes": [
           "Required to work around issue where getting caches the input stream so may not get retrieved to initiate buffer"
         ],
@@ -203,6 +212,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Init on Read 2",
+        "ruleType": "JVM",
         "notes": [
           "Required to work around issue where getting caches the input stream so may not get retrieved to initiate buffer"
         ],
@@ -221,6 +231,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Append 1",
+        "ruleType": "JVM",
         "className": "^javax.servlet.ServletInputStream",
         "methodName": "read",
         "parameterTypes": [
@@ -233,6 +244,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Append 2",
+        "ruleType": "JVM",
         "className": "^javax.servlet.ServletInputStream",
         "methodName": "read",
         "parameterTypes": [
@@ -247,6 +259,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer InputStream Record",
+        "ruleType": "JVM",
         "className": "^javax.servlet.ServletInputStream",
         "methodName": "close",
         "parameterTypes": [
@@ -258,6 +271,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Init",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.ServletResponse",
         "methodName": "getOutputStream",
         "parameterTypes": [
@@ -270,6 +284,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Append 1",
+        "ruleType": "JVM",
         "className": "^javax.servlet.ServletOutputStream",
         "methodName": "write",
         "parameterTypes": [
@@ -282,6 +297,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Append 2",
+        "ruleType": "JVM",
         "className": "^javax.servlet.ServletOutputStream",
         "methodName": "write",
         "parameterTypes": [
@@ -296,6 +312,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer OutputStream Record",
+        "ruleType": "JVM",
         "className": "^javax.servlet.ServletOutputStream",
         "methodName": "close",
         "parameterTypes": [
@@ -307,6 +324,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer BufferedWriter Init",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.ServletResponse",
         "methodName": "getWriter",
         "parameterTypes": [
@@ -319,6 +337,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer Start Async",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.http.HttpServletRequest",
         "methodName": "startAsync",
         "parameterTypes": [
@@ -332,6 +351,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer Async Context Get Requests",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.AsyncContext",
         "methodName": "getRequest",
         "parameterTypes": [
@@ -344,6 +364,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer Complete Async Context Fault",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.AsyncContext",
         "methodName": "complete",
         "parameterTypes": [
@@ -361,6 +382,7 @@
         }]
       },{
         "ruleName": "Javax Servlet Consumer Complete Async Context",
+        "ruleType": "JVM",
         "interfaceName": "^javax.servlet.AsyncContext",
         "methodName": "complete",
         "parameterTypes": [

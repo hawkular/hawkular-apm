@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.instrumentation.Instrumentation;
-import org.hawkular.apm.instrumenter.config.RuleTransformer;
+import org.hawkular.apm.instrumenter.rules.RuleTransformer;
 import org.jboss.byteman.agent.Transformer;
 import org.jboss.byteman.check.RuleCheck;
 import org.jboss.byteman.modules.NonModuleSystem;

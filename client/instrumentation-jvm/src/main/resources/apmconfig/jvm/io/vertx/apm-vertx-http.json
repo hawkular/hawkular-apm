@@ -4,6 +4,7 @@
       "description": "Vertx HTTP instrumentation",
       "rules": [{
         "ruleName": "Vertx HTTP Consumer Start",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
         "methodName": "<init>",
         "parameterTypes": [
@@ -48,6 +49,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Consumer Start Values",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpServerRequestImpl",
         "methodName": "handleData",
         "parameterTypes": [
@@ -64,6 +66,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Consumer End",
+        "ruleType": "JVM",
         "interfaceName": "^io.vertx.core.http.HttpServerResponse",
         "methodName": "end",
         "parameterTypes": [
@@ -86,6 +89,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Start 1",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "end",
         "parameterTypes": [
@@ -155,6 +159,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Start 2",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "end",
         "parameterTypes": [
@@ -217,6 +222,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Establish Out Link",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "handleResponse",
         "parameterTypes": [
@@ -230,6 +236,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Async Request Thread Complete",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "write",
         "parameterTypes": [
@@ -243,6 +250,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Init Out Buffer",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
         "methodName": "handleResponse",
         "parameterTypes": [
@@ -256,6 +264,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Write Out Buffer",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
         "methodName": "handleChunk",
         "parameterTypes": [
@@ -268,6 +277,7 @@
         }]
       },{
         "ruleName": "Vertx HTTP Producer Record Buffer And End Out",
+        "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientResponseImpl",
         "methodName": "handleEnd",
         "parameterTypes": [

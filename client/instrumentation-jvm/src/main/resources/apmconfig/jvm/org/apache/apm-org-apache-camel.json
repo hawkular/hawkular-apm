@@ -4,6 +4,7 @@
       "description": "Apache Camel instrumentation",
       "rules": [{
         "ruleName": "Apache Camel Exchange Constructor Correlation",
+        "ruleType": "JVM",
         "className": "org.apache.camel.impl.DefaultExchange",
         "methodName": "<init>",
         "parameterTypes": [
@@ -20,6 +21,7 @@
         }]
       },{
         "ruleName": "Apache Camel Inbound Component Pre Start",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeCreated",
         "parameterTypes": [
@@ -34,6 +36,7 @@
         }]
       },{
         "ruleName": "Apache Camel Inbound Component Start",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeCreated",
         "parameterTypes": [
@@ -57,6 +60,7 @@
         }]
       },{
         "ruleName": "Apache Camel Inbound Component Pre End",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeDone",
         "parameterTypes": [
@@ -71,6 +75,7 @@
         }]
       },{
         "ruleName": "Apache Camel Inbound Component End",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeDone",
         "parameterTypes": [
@@ -87,6 +92,7 @@
         }]
       },{
         "ruleName": "Apache Camel Outbound Component Pre Start",
+        "ruleType": "JVM",
         "notes": [
           "If the exchange has an active correlation, but the thread is not currently active, then correlate the thread to the session"
         ],
@@ -105,6 +111,7 @@
         }]
       },{
         "ruleName": "Apache Camel Outbound Component Start",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSending",
         "parameterTypes": [
@@ -126,6 +133,7 @@
         }]
       },{
         "ruleName": "Apache Camel Outbound Component Pre End",
+        "ruleType": "JVM",
         "notes": [
           "If the exchange has an active correlation, but the thread is not currently active, then correlate the thread to the session"
         ],
@@ -145,6 +153,7 @@
         }]
       },{
         "ruleName": "Apache Camel Outbound Component End",
+        "ruleType": "JVM",
         "notes": [
           "Unlink after handling the end of the component, as may not continue with other activities on this thread"
         ],
@@ -168,6 +177,7 @@
         }]
       },{
         "ruleName": "Apache Camel Inbound Consumer Start",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeCreated",
         "parameterTypes": [
@@ -198,6 +208,7 @@
         }]
       },{
         "ruleName": "Apache Camel Inbound Consumer End",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeDone",
         "parameterTypes": [
@@ -214,6 +225,7 @@
         }]
       },{
         "ruleName": "Apache Camel Outbound Producer Start",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSending",
         "parameterTypes": [
@@ -250,6 +262,7 @@
         }]
       },{
         "ruleName": "Apache Camel Outbound Producer End",
+        "ruleType": "JVM",
         "className": "org.apache.camel.util.EventHelper",
         "methodName": "notifyExchangeSent",
         "parameterTypes": [
@@ -268,6 +281,7 @@
         }]
       },{
         "ruleName": "Apache Camel Multicast Producer Create ID",
+        "ruleType": "JVM",
         "notes": [
           "This rule caters for internal spawning of exchanges to handle tasks in parallel.",
           "The parent exchange has an id set, which is then copied into the child exchanges",
@@ -300,6 +314,7 @@
         }]
       },{
         "ruleName": "Apache Camel Multicast Producer Clear ID",
+        "ruleType": "JVM",
         "notes": [
           "When the spawning has finished, cleanup the id so does not cause problems",
           "in other multicast situations. Also close the producer scope."
@@ -321,6 +336,7 @@
         }]
       },{
         "ruleName": "Apache Camel Multicast",
+        "ruleType": "JVM",
         "notes": [
           "If the exchange has a multicast id, then need to track the exchange as a",
           "spawned sub-exchange, using the id as correlation to the spawning exchange.",
@@ -344,6 +360,7 @@
         }]
       },{
         "ruleName": "Apache Camel Multicast Consumer End",
+        "ruleType": "JVM",
         "notes": [
           "As multicast sub-exchange is performed asynchronously, we need to use the 'notifyExchangeDone'",
           "event as a trigger for signifying the end of the exchange - but only if the exchange was",

@@ -4,6 +4,7 @@
       "description": "Test instrumentation",
       "rules": [{
         "ruleName": "Trace echo entry",
+        "ruleType": "JVM",
         "className": "org.hawkular.apm.tests.tools.instrumenter.EchoApp",
         "methodName": "echo",
         "location": "ENTRY",
@@ -19,6 +20,7 @@
         }]
       },{
         "ruleName": "Trace echo exit",
+        "ruleType": "JVM",
         "className": "org.hawkular.apm.tests.tools.instrumenter.EchoApp",
         "methodName": "echo",
         "location": "EXIT",

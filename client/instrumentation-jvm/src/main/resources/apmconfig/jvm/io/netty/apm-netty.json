@@ -4,6 +4,7 @@
       "description": "Netty instrumentation",
       "rules": [{
         "ruleName": "Netty WriteTask Init",
+        "ruleType": "JVM",
         "notes": [
           "HWKBTM-388 - is this a candidate for unlink pending completion?"
         ],
@@ -20,6 +21,7 @@
         }]
       },{
         "ruleName": "Netty WriteTask Run",
+        "ruleType": "JVM",
         "notes": [
         ],
         "className": "^io.netty.channel.AbstractChannelHandlerContext$AbstractWriteTask",
