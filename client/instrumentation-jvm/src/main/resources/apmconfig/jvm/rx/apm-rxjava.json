@@ -4,6 +4,7 @@
       "description": "RxJava instrumentation",
       "rules": [{
         "ruleName": "RxJava Create Subscriber",
+        "ruleType": "JVM",
         "notes": [
         ],
         "className": "rx.observers.Subscribers",
@@ -19,6 +20,7 @@
         }]
       },{
         "ruleName": "RxJava Subscriber onNext",
+        "ruleType": "JVM",
         "notes": [
         ],
         "className": "^rx.Subscriber",
@@ -38,6 +40,7 @@
         }]
       },{
         "ruleName": "RxJava Subscriber onCompleted",
+        "ruleType": "JVM",
         "notes": [
           "HWKBTM-388 Previously also had an 'unlink' action but this removed the association ",
           "with the fragment before the Netty HTTP rule could record the completion of the ",
@@ -58,6 +61,7 @@
         }]
       },{
         "ruleName": "RxJava Subscriber onError",
+        "ruleType": "JVM",
         "notes": [
           "HWKBTM-388 Previously also had an 'unlink' action but this removed the association ",
           "with the fragment before the Netty HTTP rule could record the completion of the ",

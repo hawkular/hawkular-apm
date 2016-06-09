@@ -4,6 +4,7 @@
       "description": "SwitchYard instrumentation",
       "rules": [{
         "ruleName": "SwitchYard Service Consumer Start",
+        "ruleType": "JVM",
         "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
         "methodName": "<init>",
         "parameterTypes": [
@@ -26,6 +27,7 @@
         }]
       },{
         "ruleName": "SwitchYard Service Component Start",
+        "ruleType": "JVM",
         "className": "^org.switchyard.runtime.event.ExchangeInitiatedEvent",
         "methodName": "<init>",
         "parameterTypes": [
@@ -69,6 +71,7 @@
         }]
       },{
         "ruleName": "SwitchYard Service Producer Normal End",
+        "ruleType": "JVM",
         "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
         "methodName": "<init>",
         "parameterTypes": [
@@ -96,6 +99,7 @@
         }]
       },{
         "ruleName": "SwitchYard Service Component Normal End",
+        "ruleType": "JVM",
         "className": "^org.switchyard.runtime.event.ExchangeCompletionEvent",
         "methodName": "<init>",
         "parameterTypes": [
@@ -127,6 +131,7 @@
         }]
       },{
         "ruleName": "SwitchYard Service Component Fault End",
+        "ruleType": "JVM",
         "className": "^org.switchyard.bus.camel.CamelExchange",
         "methodName": "sendFault",
         "parameterTypes": [

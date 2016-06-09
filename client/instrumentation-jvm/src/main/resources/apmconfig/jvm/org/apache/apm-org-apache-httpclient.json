@@ -4,6 +4,7 @@
       "description": "Apache HttpClient instrumentation",
       "rules": [{
         "ruleName": "Apache HttpClient Producer Start",
+        "ruleType": "JVM",
         "className": "^org.apache.http.impl.client.CloseableHttpClient",
         "methodName": "doExecute",
         "parameterTypes": [
@@ -64,6 +65,7 @@
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Request",
+        "ruleType": "JVM",
         "className": "^org.apache.http.impl.client.CloseableHttpClient",
         "methodName": "doExecute",
         "parameterTypes": [
@@ -85,6 +87,7 @@
         }]
       },{
         "ruleName": "Apache HttpClient Producer Check Fault",
+        "ruleType": "JVM",
         "className": "^org.apache.http.message.BasicHttpResponse",
         "methodName": "<init>",
         "parameterTypes": [
@@ -101,6 +104,7 @@
         }]
       },{
         "ruleName": "Apache HttpClient Producer Check Fault Or No Content End",
+        "ruleType": "JVM",
         "className": "^org.apache.http.message.BasicHttpResponse",
         "methodName": "<init>",
         "parameterTypes": [
@@ -117,6 +121,7 @@
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Response",
+        "ruleType": "JVM",
         "className": "^org.apache.http.entity.BasicHttpEntity",
         "methodName": "getContent",
         "parameterTypes": [
@@ -129,6 +134,7 @@
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Close",
+        "ruleType": "JVM",
         "className": "^org.apache.http.impl.io.ContentLengthInputStream",
         "methodName": "close",
         "parameterTypes": [

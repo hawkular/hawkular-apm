@@ -4,6 +4,7 @@
       "description": "Java HttpUrlConnection instrumentation",
       "rules": [{
         "ruleName": "Java HttpUrlConnection connect Producer Start",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "connect",
         "parameterTypes": [
@@ -63,6 +64,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End ConnectException",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "connect",
         "parameterTypes": [
@@ -84,6 +86,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Start",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getOutputStream",
         "parameterTypes": [
@@ -138,6 +141,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Buffer",
+        "ruleType": "JVM",
         "notes": [
           "The actual written data will be captured using the java.io instrumentation rules"
         ],
@@ -153,6 +157,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Link",
+        "ruleType": "JVM",
         "notes": [
           "The actual written data will be captured using the java.io instrumentation rules"
         ],
@@ -170,6 +175,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection getInputStream Producer Start",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getInputStream",
         "parameterTypes": [
@@ -224,6 +230,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End Complete Async Link",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getResponseCode",
         "parameterTypes": [
@@ -236,6 +243,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End Unsuccessful",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getResponseCode",
         "parameterTypes": [
@@ -254,6 +262,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End Success No Content Required",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getResponseCode",
         "parameterTypes": [
@@ -268,6 +277,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream Complete Async Link",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getInputStream",
         "parameterTypes": [
@@ -280,6 +290,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream init",
+        "ruleType": "JVM",
         "className": "^java.net.HttpURLConnection",
         "methodName": "getInputStream",
         "parameterTypes": [
@@ -292,6 +303,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream read 1",
+        "ruleType": "JVM",
         "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
         "methodName": "read",
         "parameterTypes": [
@@ -305,6 +317,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream read 2",
+        "ruleType": "JVM",
         "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
         "methodName": "read",
         "parameterTypes": [
@@ -320,6 +333,7 @@
         }]
       },{
         "ruleName": "Java HttpUrlConnection HttpInputStream close",
+        "ruleType": "JVM",
         "className": "sun.net.www.protocol.http.HttpURLConnection$HttpInputStream",
         "methodName": "close",
         "parameterTypes": [

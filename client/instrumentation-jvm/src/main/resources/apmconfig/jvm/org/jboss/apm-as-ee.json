@@ -4,6 +4,7 @@
       "description": "JBoss AS EE instrumentation",
       "rules": [{
         "ruleName": "EE Component Start",
+        "ruleType": "JVM",
         "notes": [
           "Need to exclude 'onMessage' methods as the ordering of the exit was conflicting with the JMS/MDB rules"
         ],
@@ -27,6 +28,7 @@
         }]
       },{
         "ruleName": "EE Component End",
+        "ruleType": "JVM",
         "notes": [
           "Need to exclude 'onMessage' methods as the ordering of the exit was conflicting with the JMS/MDB rules"
         ],

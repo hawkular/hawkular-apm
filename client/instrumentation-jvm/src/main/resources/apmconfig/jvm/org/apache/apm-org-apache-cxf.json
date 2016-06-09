@@ -4,6 +4,7 @@
       "description": "Apache CXF Instrumentation",
       "rules": [{
         "ruleName": "Apache CXF Jetty HTTPDestination Consumer Start",
+        "ruleType": "JVM",
         "notes": [
           "This method was called one for the request, and then again for the response, but in a diff thread - so used link mechanism to ",
           "firstly determine if call was first or second, then also to link the thread processing the response back to the original business txn session.",

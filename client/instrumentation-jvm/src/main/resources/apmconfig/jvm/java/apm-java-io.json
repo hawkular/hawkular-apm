@@ -4,6 +4,7 @@
       "description": "Java IO instrumentation",
       "rules": [{
         "ruleName": "Java IO PrintWriter Response Append 1",
+        "ruleType": "JVM",
         "className": "^java.io.PrintWriter",
         "methodName": "println",
         "parameterTypes": [

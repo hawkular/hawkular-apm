@@ -4,6 +4,7 @@
       "description": "Java JDBC instrumentation",
       "rules": [{
         "ruleName": "Java JDBC Execute Component Start",
+        "ruleType": "JVM",
         "notes": [
           "HWKBTM-413 - added no compile due to IllegalAccessError in oracle jdbc driver"
         ],
@@ -37,6 +38,7 @@
         }]
       },{
         "ruleName": "Java JDBC Execute Component End",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.Statement",
         "methodName": "execute",
         "parameterTypes": [
@@ -52,6 +54,7 @@
         }]
       },{
         "ruleName": "Java JDBC Query Component Start",
+        "ruleType": "JVM",
         "notes": [
           "HWKBTM-413 - added no compile due to IllegalAccessError in oracle jdbc driver"
         ],
@@ -85,6 +88,7 @@
         }]
       },{
         "ruleName": "Java JDBC Query Component End",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.Statement",
         "methodName": "executeQuery",
         "parameterTypes": [
@@ -100,6 +104,7 @@
         }]
       },{
         "ruleName": "Java JDBC Update Component Start",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.Statement",
         "methodName": "executeUpdate",
         "parameterTypes": [
@@ -130,6 +135,7 @@
         }]
       },{
         "ruleName": "Java JDBC Update Component End",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.Statement",
         "methodName": "executeUpdate",
         "parameterTypes": [
@@ -145,6 +151,7 @@
         }]
       },{
         "ruleName": "Java JDBC Create Prepared Statement End",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.Connection",
         "methodName": "prepareStatement",
         "parameterTypes": [
@@ -161,6 +168,7 @@
         }]
       },{
         "ruleName": "Java JDBC Prepared Query Component Start",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.PreparedStatement",
         "methodName": "executeQuery",
         "parameterTypes": [
@@ -190,6 +198,7 @@
         }]
       },{
         "ruleName": "Java JDBC Prepared Query Component End",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.PreparedStatement",
         "methodName": "executeQuery",
         "parameterTypes": [
@@ -204,6 +213,7 @@
         }]
       },{
         "ruleName": "Java JDBC Prepared Update Component Start",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.PreparedStatement",
         "methodName": "executeUpdate",
         "parameterTypes": [
@@ -233,6 +243,7 @@
         }]
       },{
         "ruleName": "Java JDBC Prepared Update Component End",
+        "ruleType": "JVM",
         "interfaceName": "^java.sql.PreparedStatement",
         "methodName": "executeUpdate",
         "parameterTypes": [

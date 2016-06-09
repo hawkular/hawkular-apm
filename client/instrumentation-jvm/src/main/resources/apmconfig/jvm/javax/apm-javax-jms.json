@@ -4,6 +4,7 @@
       "description": "Javax JMS instrumentation",
       "rules": [{
         "ruleName": "JMS Consumer Start",
+        "ruleType": "JVM",
         "notes": [
           "Need to check if already active, as Hornetq results in multiple layers of onMessage being called"
         ],
@@ -38,6 +39,7 @@
         }]
       },{
         "ruleName": "JMS Consumer Start TextMessage",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -59,6 +61,7 @@
         }]
       },{
         "ruleName": "Javax JMS Consumer Sync End",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -76,6 +79,7 @@
         }]
       },{
         "ruleName": "Javax JMS Consumer Async Initial Thread End",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -88,6 +92,7 @@
         }]
       },{
         "ruleName": "Javax JMS Consumer End After TmpQ Reply TextMessage",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -113,6 +118,7 @@
         }]
       },{
         "ruleName": "Javax JMS Consumer End After TmpQ Reply",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -133,6 +139,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Sync Start",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -180,6 +187,7 @@
         }]
       },{
         "ruleName": "JMS Producer Sync Start TextMessage",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -205,6 +213,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Async Start",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -255,6 +264,7 @@
         }]
       },{
         "ruleName": "JMS Producer Async Start TextMessage",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -280,6 +290,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Sync End",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageProducer",
         "methodName": "send",
         "parameterTypes": [
@@ -299,6 +310,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Async End Correlate",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -312,6 +324,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Async End TextMessage",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
@@ -333,6 +346,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Async End",
+        "ruleType": "JVM",
         "notes": [
           "Instrumenting the 'out' direction for the producer, after separate rules for doing the correlation, to enable the check for the message content to be performed"
         ],
@@ -350,6 +364,7 @@
         }]
       },{
         "ruleName": "Javax JMS Producer Async Response Thread Complete",
+        "ruleType": "JVM",
         "interfaceName": "^javax.jms.MessageListener",
         "methodName": "onMessage",
         "parameterTypes": [
