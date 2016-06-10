@@ -16,8 +16,6 @@
  */
 package org.hawkular.apm.server.jms;
 
-import javax.inject.Singleton;
-
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationPublisher;
 
@@ -26,7 +24,6 @@ import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation
  *
  * @author gbrown
  */
-@Singleton
 public class TraceCompletionInformationPublisherJMS extends AbstractPublisherJMS<TraceCompletionInformation>
         implements TraceCompletionInformationPublisher {
 

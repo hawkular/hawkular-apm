@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.tests.performance;
+package org.hawkular.apm.api.services;
 
-import org.hawkular.apm.api.services.AnalyticsService;
-import org.hawkular.apm.api.services.TraceService;
+import java.util.List;
 
 /**
+ * This interface enables an application to register a handler for metric
+ * information from the publisher.
+ *
  * @author gbrown
  */
-public interface ServicesManager {
+public interface PublisherMetricHandler<T> {
 
-    ServicesManager init() throws Exception;
-
-    String getName();
-
-    AnalyticsService getAnalyticsService();
-
-    TraceService getTraceService();
-
-    void clear() throws Exception;
-
-    void close() throws Exception;
+    /**
+     * This method is invoked with the time taken to publish the
+     * supplied items.
+     *
+     * @param tenantId The tenantId
+     * @param items The items
+     * @param metric The time taken to publish
+     */
+    void published(String tenantId, List<T> items, long metric);
 
 }

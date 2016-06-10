@@ -21,10 +21,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
@@ -45,8 +41,6 @@ activationConfig =
     @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsStore"),
     @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsStore")
 })
-@TransactionManagement(value = TransactionManagementType.CONTAINER)
-@TransactionAttribute(value = TransactionAttributeType.REQUIRED)
 public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationDetails> {
 
     @Inject

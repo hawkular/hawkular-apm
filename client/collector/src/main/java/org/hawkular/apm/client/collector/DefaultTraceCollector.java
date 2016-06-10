@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.logging.Logger;
@@ -124,7 +125,13 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             }
 
             if (refresh != null) {
-                Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
+                Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                    public Thread newThread(Runnable r) {
+                        Thread t = Executors.defaultThreadFactory().newThread(r);
+                        t.setDaemon(true);
+                        return t;
+                    }
+                }).scheduleAtFixedRate(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -173,7 +180,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     /**
      * @param tracePublisher the trace publisher to set
      */
-    protected void setBusinessTransactionPublisher(TracePublisher tracePublisher) {
+    protected void setTracePublisher(TracePublisher tracePublisher) {
         reporter.setTracePublisher(tracePublisher);
     }
 

@@ -16,8 +16,6 @@
  */
 package org.hawkular.apm.server.jms;
 
-import javax.inject.Singleton;
-
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.TracePublisher;
 
@@ -26,7 +24,6 @@ import org.hawkular.apm.api.services.TracePublisher;
  *
  * @author gbrown
  */
-@Singleton
 public class TracePublisherJMS extends AbstractPublisherJMS<Trace>
         implements TracePublisher {
 

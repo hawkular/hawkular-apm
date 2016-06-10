@@ -31,6 +31,7 @@ import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 
 import org.hawkular.apm.api.services.Publisher;
+import org.hawkular.apm.api.services.PublisherMetricHandler;
 import org.hawkular.apm.server.jms.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +83,7 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
     public void init() {
         try {
             InitialContext context = new InitialContext();
-            ConnectionFactory connectionFactory = (ConnectionFactory) context.lookup("java:/JmsXA");
+            ConnectionFactory connectionFactory = (ConnectionFactory) context.lookup("java:/APMJMSCF");
             connection = connectionFactory.createConnection();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);    // TODO: Transacted?
             Destination destination = (Destination) context.lookup(getDestinationURI());
@@ -139,6 +140,13 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
         } catch (Exception e) {
             msgLog.errorFailedToClosePublisher(getDestinationURI(), e);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
+     */
+    @Override
+    public void setMetricHandler(PublisherMetricHandler<T> handler) {
     }
 
 }
