@@ -52,4 +52,11 @@ public interface Publisher<T> {
      */
     void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception;
 
+    /**
+     * This method sets the metric handler for the publisher.
+     *
+     * @param handler The handler
+     */
+    void setMetricHandler(PublisherMetricHandler<T> handler);
+
 }

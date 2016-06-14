@@ -16,8 +16,6 @@
  */
 package org.hawkular.apm.server.jms;
 
-import javax.inject.Singleton;
-
 import org.hawkular.apm.api.model.events.Notification;
 import org.hawkular.apm.server.api.services.NotificationPublisher;
 
@@ -26,7 +24,6 @@ import org.hawkular.apm.server.api.services.NotificationPublisher;
  *
  * @author gbrown
  */
-@Singleton
 public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
         implements NotificationPublisher {
 

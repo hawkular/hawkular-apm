@@ -50,6 +50,21 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_LOG_JUL = "HAWKULAR_APM_LOG_JUL";
 
     /**
+     * The maximum number of traces to batch before sending to the server.
+     */
+    public static final String HAWKULAR_APM_COLLECTOR_BATCHSIZE = "HAWKULAR_APM_COLLECTOR_BATCHSIZE";
+
+    /**
+     * The maximum time (in milliseconds) before sending a batch of traces to the server.
+     */
+    public static final String HAWKULAR_APM_COLLECTOR_BATCHTIME = "HAWKULAR_APM_COLLECTOR_BATCHTIME";
+
+    /**
+     * The thread pool size for reporting a batch of traces to the server.
+     */
+    public static final String HAWKULAR_APM_COLLECTOR_BATCHTHREADS = "HAWKULAR_APM_COLLECTOR_BATCHTHREADS";
+
+    /**
      * This method returns the named property, first checking the system properties
      * and if not found, checking the environment.
      *

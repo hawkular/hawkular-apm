@@ -1,0 +1,88 @@
+= Performance/Scalability Testing for the APM Server
+
+This module provides a performance and scalability testing tool for the APM server. It can be used to simulate service invocations which result in trace fragments being reported to the server.
+
+== Building the client simulator
+
+The simulator can either be built from this folder, using
+
+----
+mvn clean install
+----
+
+or from the top level module using the _performance_ profile,
+
+----
+mvn clean install -Pperformance
+----
+
+== Executing the client simulator
+
+This module builds an executable jar, located in the _target_ folder, called
+*APMClientSimulator.jar*. This client simulator is executed as follows:
+
+----
+java -DHAWKULAR_APM_URI=<serverURI> -DHAWKULAR_APM_USERNAME=<username> -DHAWKULAR_APM_PASSWORD=<password> -jar APMClientSimulator.jar <config> <invocations> <requesters> <reportName>
+----
+
+The _config_ parameter is a file containing a JSON formatted configuration structure outlining the services and their communication paths. This will be explained more below.
+
+The _invocations_ parameter is the number of trace instances that will be created per requester.
+
+The _requesters_ parameter is the number of concurrent requesters that should be started.
+
+The _reportName_ parameter is used to uniquely identify the periodic stats that will be displayed on the console (may be recorded to file eventually).
+
+=== Configuration JSON format
+
+An example of the JSON format, which will be used to explain the model, is:
+
+[source,json]
+----
+{
+  "services": [{
+    "name": "serviceA",
+    "uri": "service/a",
+    "calledServices": {
+      "path1": "serviceB",
+      "path2": "serviceC",
+      "path3": "serviceC"
+    }
+  },{
+    "name": "serviceB",
+    "uri": "service/b"
+  },{
+    "name": "serviceC",
+    "uri": "service/c",
+    "calledServices": {
+      "path3": "serviceD"
+    }
+  },{
+    "name": "serviceD",
+    "uri": "service/d"
+  }],
+  "paths": [{
+    "name": "path1",
+    "service": "serviceA",
+    "weight": 3
+  },{
+    "name": "path2",
+    "service": "serviceA",
+    "weight": 2
+  },{
+    "name": "path3",
+    "service": "serviceA",
+    "weight": 5
+  }]
+}
+----
+
+The _services_ node contains a list of _Service_ objects, which have attributes for _name_ and _uri_, and an optional map of _path name_ to called _service name_.
+
+When a message is being processed by a service, it will be associated with a path - if that path identifies a called service, then that service will be called passing the same message. If no called services are defined or associated with the message's path, then the service will simply return.
+
+The _paths_ node identifies the list of paths that may be used to create a trace through the set of defined services. Each _Path_ node has a _name_, a _service_ identifying the initial service to be called for that path, and a _weight_. The higher the _weight_ number, the more often that path will be selected.
+
+
+
+

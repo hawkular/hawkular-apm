@@ -1,0 +1,36 @@
+{
+  "services": [{
+    "name": "serviceA",
+    "uri": "service/a",
+    "calledServices": {
+      "path1": "serviceB",
+      "path2": "serviceC",
+      "path3": "serviceC"
+    }
+  },{
+    "name": "serviceB",
+    "uri": "service/b"
+  },{
+    "name": "serviceC",
+    "uri": "service/c",
+    "calledServices": {
+      "path3": "serviceD"
+    }
+  },{
+    "name": "serviceD",
+    "uri": "service/d"
+  }],
+  "paths": [{
+    "name": "path1",
+    "service": "serviceA",
+    "weight": 3
+  },{
+    "name": "path2",
+    "service": "serviceA",
+    "weight": 2
+  },{
+    "name": "path3",
+    "service": "serviceA",
+    "weight": 5
+  }]
+}

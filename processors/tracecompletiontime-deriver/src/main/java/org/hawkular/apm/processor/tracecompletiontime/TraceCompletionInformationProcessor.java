@@ -89,6 +89,10 @@ public class TraceCompletionInformationProcessor extends
                 Communication c = item.getCommunications().get(i);
 
                 if (c.getExpire() < currentTime) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Completion info " + item + ": communication expired = " + c);
+                    }
+
                     // Remove communication from remaining list to process
                     item.getCommunications().remove(i);
                     i--;
@@ -101,6 +105,11 @@ public class TraceCompletionInformationProcessor extends
                     // specified with the communication
                     for (int j = 0; cd == null && j < c.getIds().size(); j++) {
                         cd = communicationDetailsCache.getSingleConsumer(tenantId, c.getIds().get(j));
+                    }
+
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Completion info " + item + ": communication details for communication " + c
+                                + " = " + cd);
                     }
 
                     if (cd != null) {
@@ -127,6 +136,10 @@ public class TraceCompletionInformationProcessor extends
                             newc.setBaseDuration(targetFragmentBaseDuration + ob.getProducerOffset());
                             newc.setExpire(System.currentTimeMillis()
                                     + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+
+                            if (log.isLoggable(Level.FINEST)) {
+                                log.finest("Completion info " + item + ": new communication = " + newc);
+                            }
 
                             item.getCommunications().add(newc);
                         }

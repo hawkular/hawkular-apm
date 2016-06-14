@@ -125,6 +125,10 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                     // some margin of error - primarily for cases where a job scheduler
                     // is used. If direct communications, then only need to cater for
                     // latency.
+
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Adding producer information for id=" + cids.get(i).getValue()+" pi=" + pi);
+                    }
                     producerInfoCache.put(tenantId, cids.get(i).getValue(), pi);
                 }
             }

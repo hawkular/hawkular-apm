@@ -14,27 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.performance.server;
 
-import org.hawkular.apm.api.model.events.CompletionTime;
-import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
+import java.util.UUID;
 
 /**
- * This class represents the trace completion time JMS publisher.
- *
  * @author gbrown
  */
-public class TraceCompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
-                        implements TraceCompletionTimePublisher {
+public class Message {
 
-    private static final String DESTINATION = "java:/TraceCompletionTimes";
+    private String type;
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
+    private String id = UUID.randomUUID().toString();
+
+    public Message(String type) {
+        this.setType(type);
+    }
+
+    /**
+     * @return the type
      */
-    @Override
-    protected String getDestinationURI() {
-        return DESTINATION;
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

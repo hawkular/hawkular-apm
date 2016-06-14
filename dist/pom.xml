@@ -151,6 +151,9 @@
                       tofile="${basedir}/target/${build.dir}/standalone/configuration/standalone.xml" overwrite="true" />
                 <move file="${basedir}/target/${build.dir}/standalone/configuration/standalone-full-ha.xml"
                       tofile="${basedir}/target/${build.dir}/standalone/configuration/standalone-ha.xml" overwrite="true" />
+
+                <replace token="Xms64m" value="Xms256m" file="${basedir}/target/${build.dir}/bin/standalone.conf" />
+                <replace token="Xmx512m" value="Xmx2048m" file="${basedir}/target/${build.dir}/bin/standalone.conf" />
               </tasks>
             </configuration>
           </execution>

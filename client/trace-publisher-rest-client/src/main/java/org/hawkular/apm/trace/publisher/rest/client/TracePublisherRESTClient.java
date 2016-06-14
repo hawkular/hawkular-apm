@@ -24,6 +24,7 @@ import java.util.List;
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.services.PublisherMetricHandler;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
@@ -49,6 +50,8 @@ public class TracePublisherRESTClient implements TracePublisher {
     private String authorization = null;
 
     private String uri;
+
+    private PublisherMetricHandler<Trace> handler = null;
 
     {
         uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
@@ -139,6 +142,11 @@ public class TracePublisherRESTClient implements TracePublisher {
 
         addHeaders(connection, tenantId);
 
+        long startTime = 0;
+        if (handler != null) {
+            startTime = System.currentTimeMillis();
+        }
+
         java.io.OutputStream os = connection.getOutputStream();
 
         os.write(mapper.writeValueAsBytes(traces));
@@ -150,6 +158,10 @@ public class TracePublisherRESTClient implements TracePublisher {
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Status code is: " + statusCode);
+        }
+
+        if (handler != null) {
+            handler.published(tenantId, traces, (System.currentTimeMillis() - startTime));
         }
 
         if (statusCode != 200) {
@@ -204,6 +216,14 @@ public class TracePublisherRESTClient implements TracePublisher {
     public boolean isEnabled() {
         // Check URI is specified and starts with http, so either http: or https:
         return uri != null && uri.startsWith("http");
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
+     */
+    @Override
+    public void setMetricHandler(PublisherMetricHandler<Trace> handler) {
+        this.handler = handler;
     }
 
 }

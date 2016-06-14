@@ -40,6 +40,7 @@
       <statistics enabled="true"/>
       <xsl:apply-templates select="@*|node()"/>
 
+      <pooled-connection-factory name="apmpcf" connectors="in-vm" entries="java:/APMJMSCF" max-pool-size="1000"/>
       <jms-topic name="Traces" entries="java:/Traces"/>
       <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
       <jms-topic name="TraceCompletionTimes" entries="java:/TraceCompletionTimes"/>

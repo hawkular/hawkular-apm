@@ -23,10 +23,6 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
@@ -47,8 +43,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceStore"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceStore")
         })
-@TransactionManagement(value = TransactionManagementType.CONTAINER)
-@TransactionAttribute(value = TransactionAttributeType.REQUIRED)
 public class TraceStoreMDB extends RetryCapableMDB<Trace> {
 
     private static final Logger perfLog=Logger.getLogger("org.hawkular.apm.performance.trace");

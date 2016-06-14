@@ -42,6 +42,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.PublisherMetricHandler;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.client.collector.internal.FragmentBuilder;
@@ -69,7 +70,7 @@ public class DefaultTraceCollectorTest {
     public void testSetStartTimeAndDuration() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, URI, TYPE, OP, null);
@@ -115,7 +116,7 @@ public class DefaultTraceCollectorTest {
 
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, URI, TYPE, OP, null);
@@ -144,7 +145,7 @@ public class DefaultTraceCollectorTest {
     public void testIncludeHeaders() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
@@ -188,7 +189,7 @@ public class DefaultTraceCollectorTest {
     public void testIncludeHeadersNotProcessedAgain() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
@@ -233,7 +234,7 @@ public class DefaultTraceCollectorTest {
     public void testIncludeHeadersSuppliedSecondCall() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
@@ -273,7 +274,7 @@ public class DefaultTraceCollectorTest {
     public void testIncludeID() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
         collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, null, null, null, "myid");
@@ -311,7 +312,7 @@ public class DefaultTraceCollectorTest {
     public void testReportingLevelNoneByFilter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -351,7 +352,7 @@ public class DefaultTraceCollectorTest {
     public void testReportingWithOpLevelNoneByFilter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -391,7 +392,7 @@ public class DefaultTraceCollectorTest {
     public void testReportingLevelNoneBySetter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -432,7 +433,7 @@ public class DefaultTraceCollectorTest {
     public void testReportingWithOpLevelNoneBySetter() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -473,7 +474,7 @@ public class DefaultTraceCollectorTest {
     public void testReportingLevelAll() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -512,7 +513,7 @@ public class DefaultTraceCollectorTest {
     public void testReportingWithOpLevelAll() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -694,7 +695,7 @@ public class DefaultTraceCollectorTest {
     public void testNamedOnInitialNode() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -724,7 +725,7 @@ public class DefaultTraceCollectorTest {
     public void testNamedOnSubsequentNodeInitialFragment() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -758,7 +759,7 @@ public class DefaultTraceCollectorTest {
     public void testNamedOnSubsequentNodeInitialFragmentWithOp() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setBusinessTransactionPublisher(traceService);
+        collector.setTracePublisher(traceService);
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -1123,7 +1124,7 @@ public class DefaultTraceCollectorTest {
         private String tenantId;
 
         /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.BusinessTransactionPublisher#publish(java.lang.String, java.util.List)
+         * @see org.hawkular.apm.api.services.TracePublisher#publish(java.lang.String, java.util.List)
          */
         @Override
         public void publish(String tenantId, List<Trace> traces) throws Exception {
@@ -1212,11 +1213,18 @@ public class DefaultTraceCollectorTest {
         }
 
         /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.BusinessTransactionPublisher#isEnabled()
+         * @see org.hawkular.apm.api.services.TracePublisher#isEnabled()
          */
         @Override
         public boolean isEnabled() {
             return true;
+        }
+
+        /* (non-Javadoc)
+         * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
+         */
+        @Override
+        public void setMetricHandler(PublisherMetricHandler<Trace> handler) {
         }
 
     }

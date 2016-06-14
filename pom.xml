@@ -565,7 +565,7 @@
     <profile>
       <id>performance</id>
       <modules>
-        <module>tests/performance</module>
+        <module>performance/server</module>
       </modules>
     </profile>
     <profile>
