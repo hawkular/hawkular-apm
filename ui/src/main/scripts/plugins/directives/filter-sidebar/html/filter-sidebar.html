@@ -63,7 +63,7 @@
         <li class="sb-prop" ng-repeat="prop in value" ng-click="toggleExcludeInclude(prop)">
           <span class="hk-cursor-pointer">
             <i class="fa-li fa" aria-hidden="true"
-              ng-class="prop.excluded ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
+              ng-class="prop.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
           </span>
           {{ prop.value }}
           <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remPropertyFromFilter(prop)">
@@ -91,11 +91,11 @@
               typeahead="propValue.value for propValue in propertyValues | filter:$viewValue | limitTo:12" />
             <div class="input-group-btn">
               <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
-                ng-click="addPropertyToFilter(selPropName.name, selPropValue, false)">
+                ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HAS')">
                 <i class="fa fa-plus sb-prop-incexc"></i>
               </button>
               <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
-                ng-click="addPropertyToFilter(selPropName.name, selPropValue, true)">
+                ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HASNOT')">
                 <i class="fa fa-minus sb-prop-incexc"></i>
               </button>
             </div>
@@ -111,7 +111,7 @@
         <li class="sb-prop" ng-click="toggleExcludeInclude(fault)">
           <span class="hk-cursor-pointer">
             <i class="fa-li fa" aria-hidden="true"
-              ng-class="fault.excluded ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
+              ng-class="fault.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
           </span>
           {{ fault.value }}
           <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remFaultFromFilter(fault)">
@@ -125,11 +125,11 @@
           <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
           <div class="input-group-btn">
             <button type="button" class="btn btn-default" ng-disabled="!selFault"
-              ng-click="addFaultToFilter(selFault.value, false)">
+              ng-click="addFaultToFilter(selFault.value, 'HAS')">
               <i class="fa fa-plus sb-prop-incexc"></i>
             </button>
             <button type="button" class="btn btn-default" ng-disabled="!selFault"
-              ng-click="addFaultToFilter(selFault.value, true)">
+              ng-click="addFaultToFilter(selFault.value, 'HASNOT')">
               <i class="fa fa-minus sb-prop-incexc"></i>
             </button>
           </div>

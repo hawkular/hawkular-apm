@@ -5,7 +5,7 @@
 
       <div class="form-group">
         <span ng-repeat="property in criteria.properties">
-          <span ng-show="!property.excluded">
+          <span ng-show="property.operator === undefined || property.operator === 'HAS'">
             <a class="btn btn-success" ng-click="toggleExclusion(property)">
               <i>{{property.name}}</i>: {{property.value}}
               <a class="btn btn-default" ng-click="removeProperty(property)">
@@ -13,7 +13,7 @@
               </a>
             </a>
           </span>
-          <span ng-show="property.excluded">
+          <span ng-show="property.operator === 'HASNOT'">
             <a class="btn btn-danger" ng-click="toggleExclusion(property)">
               <i>{{property.name}}</i>: {{property.value}}
               <a class="btn btn-default" ng-click="removeProperty(property)">

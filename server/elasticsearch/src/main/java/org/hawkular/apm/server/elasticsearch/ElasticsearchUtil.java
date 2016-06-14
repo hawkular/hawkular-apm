@@ -24,6 +24,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.FaultCriteria;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
 
 /**
@@ -57,12 +58,36 @@ public class ElasticsearchUtil {
 
         if (!criteria.getProperties().isEmpty()) {
             for (PropertyCriteria pc : criteria.getProperties()) {
-                BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
-                        .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
-                        .must(QueryBuilders.matchQuery("properties.value", pc.getValue()));
-                if (pc.isExcluded()) {
-                    query = query.mustNot(QueryBuilders.nestedQuery("properties", nestedQuery));
+                if (pc.getOperator() == Operator.HAS
+                        || pc.getOperator() == Operator.HASNOT
+                        || pc.getOperator() == Operator.EQ
+                        || pc.getOperator() == Operator.NE) {
+                    BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
+                            .must(QueryBuilders.matchQuery("properties.value", pc.getValue()));
+                    if (pc.getOperator() == Operator.HASNOT
+                            || pc.getOperator() == Operator.NE) {
+                        query = query.mustNot(QueryBuilders.nestedQuery("properties", nestedQuery));
+                    } else {
+                        query = query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
+                    }
                 } else {
+                    // Numerical query
+                    RangeQueryBuilder rangeQuery = null;
+                    if (pc.getOperator() == Operator.GTE) {
+                        rangeQuery = QueryBuilders.rangeQuery("properties.number").gte(pc.getValue());
+                    } else if (pc.getOperator() == Operator.GT) {
+                        rangeQuery = QueryBuilders.rangeQuery("properties.number").gt(pc.getValue());
+                    } else if (pc.getOperator() == Operator.LTE) {
+                        rangeQuery = QueryBuilders.rangeQuery("properties.number").lte(pc.getValue());
+                    } else if (pc.getOperator() == Operator.LT) {
+                        rangeQuery = QueryBuilders.rangeQuery("properties.number").lt(pc.getValue());
+                    } else {
+                        throw new IllegalArgumentException("Unknown property criteria operator: "+pc);
+                    }
+                    BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
+                            .must(rangeQuery);
                     query = query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
                 }
             }
@@ -90,7 +115,7 @@ public class ElasticsearchUtil {
 
         if (!criteria.getFaults().isEmpty()) {
             for (FaultCriteria fc : criteria.getFaults()) {
-                if (fc.isExcluded()) {
+                if (fc.getOperator() == Operator.HASNOT) {
                     query = query.mustNot(QueryBuilders.matchQuery("fault", fc.getValue()));
                 } else {
                     query = query.must(QueryBuilders.matchQuery("fault", fc.getValue()));

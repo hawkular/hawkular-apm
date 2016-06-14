@@ -73,6 +73,13 @@
                         "value": {
                             "type": "string",
                             "index": "not_analyzed"
+                        },
+                        "type": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "number": {
+                            "type": "double"
                         }
                     }
                 }
@@ -125,6 +132,13 @@
                         "value": {
                             "type": "string",
                             "index": "not_analyzed"
+                        },
+                        "type": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "number": {
+                            "type": "double"
                         }
                     }
                 }
@@ -198,6 +212,13 @@
                         "value": {
                             "type": "string",
                             "index": "not_analyzed"
+                        },
+                        "type": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "number": {
+                            "type": "double"
                         }
                     }
                 }
@@ -247,6 +268,13 @@
                         "value": {
                             "type": "string",
                             "index": "not_analyzed"
+                        },
+                        "type": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "number": {
+                            "type": "double"
                         }
                     }
                 }
@@ -296,6 +324,13 @@
                         "value": {
                             "type": "string",
                             "index": "not_analyzed"
+                        },
+                        "type": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "number": {
+                            "type": "double"
                         }
                     }
                 }

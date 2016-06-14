@@ -17,7 +17,6 @@
 package org.hawkular.apm.server.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -26,6 +25,7 @@ import java.util.Set;
 
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
 import org.junit.Test;
 
@@ -47,12 +47,12 @@ public class RESTServiceUtilTest {
 
         assertEquals("hello", pc.getName());
         assertEquals("world", pc.getValue());
-        assertFalse(pc.isExcluded());
+        assertEquals(Operator.HAS, pc.getOperator());
     }
 
     @Test
-    public void testDecodePropertiesSingleExclusion() {
-        String encoded = "-hello|world";
+    public void testDecodePropertiesSingleHasNot() {
+        String encoded = "hello|world|HASNOT";
         Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
 
         RESTServiceUtil.decodeProperties(properties, encoded);
@@ -63,7 +63,7 @@ public class RESTServiceUtilTest {
 
         assertEquals("hello", pc.getName());
         assertEquals("world", pc.getValue());
-        assertTrue(pc.isExcluded());
+        assertEquals(Operator.HASNOT, pc.getOperator());
     }
 
     @Test
@@ -77,7 +77,21 @@ public class RESTServiceUtilTest {
 
         assertEquals("hello", pc.getName());
         assertEquals("world", pc.getValue());
-        assertFalse(pc.isExcluded());
+        assertEquals(Operator.HAS, pc.getOperator());
+    }
+
+    @Test
+    public void testDecodePropertiesSingleWithSpacesHasNot() {
+        String encoded = "hello | world | HASNOT ";
+        Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
+
+        RESTServiceUtil.decodeProperties(properties, encoded);
+
+        PropertyCriteria pc = properties.iterator().next();
+
+        assertEquals("hello", pc.getName());
+        assertEquals("world", pc.getValue());
+        assertEquals(Operator.HASNOT, pc.getOperator());
     }
 
     @Test
@@ -96,19 +110,19 @@ public class RESTServiceUtilTest {
         if (pc1.getName().equals("hello")) {
             assertEquals("hello", pc1.getName());
             assertEquals("world", pc1.getValue());
-            assertFalse(pc1.isExcluded());
+            assertEquals(Operator.HAS, pc1.getOperator());
 
             assertEquals("fred", pc2.getName());
             assertEquals("bloggs", pc2.getValue());
-            assertFalse(pc2.isExcluded());
+            assertEquals(Operator.HAS, pc1.getOperator());
         } else {
             assertEquals("hello", pc2.getName());
             assertEquals("world", pc2.getValue());
-            assertFalse(pc2.isExcluded());
+            assertEquals(Operator.HAS, pc2.getOperator());
 
             assertEquals("fred", pc1.getName());
             assertEquals("bloggs", pc1.getValue());
-            assertFalse(pc1.isExcluded());
+            assertEquals(Operator.HAS, pc2.getOperator());
         }
     }
 
