@@ -949,7 +949,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(urisBuilder2)
                 .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                .setSize(criteria.getMaxResponseSize())
+                .setSize(0)
                 .setQuery(query);
 
             SearchResponse response2 = request2.execute().actionGet();
