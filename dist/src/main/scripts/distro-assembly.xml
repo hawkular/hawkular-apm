@@ -22,6 +22,7 @@
   <id>distribution</id>
   <formats>
     <format>zip</format>
+    <format>tar</format>
     <format>dir</format>
   </formats>
 

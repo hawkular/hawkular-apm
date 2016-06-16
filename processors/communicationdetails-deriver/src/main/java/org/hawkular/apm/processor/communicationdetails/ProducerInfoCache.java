@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.processor.communicationdetails;
 
+import java.util.List;
 
 /**
  * This interface represents a cache for producer info.
@@ -35,12 +36,11 @@ public interface ProducerInfoCache {
     ProducerInfo get(String tenantId, String id);
 
     /**
-     * This methods puts the producer information in the cache.
+     * This methods stores the producer information in the cache.
      *
      * @param tenentId The tenant id
-     * @param id The id
-     * @param producerInfo The producer information
+     * @param producerInfoList The producer information list
      */
-    void put(String tenantId, String id, ProducerInfo producerInfo);
+    void store(String tenantId, List<ProducerInfo> producerInfoList);
 
 }

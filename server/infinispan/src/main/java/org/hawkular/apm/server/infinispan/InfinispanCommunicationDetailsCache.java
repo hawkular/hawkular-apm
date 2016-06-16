@@ -18,6 +18,8 @@ package org.hawkular.apm.server.infinispan;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -36,6 +38,11 @@ import org.infinispan.manager.CacheContainer;
 @Singleton
 public class InfinispanCommunicationDetailsCache implements CommunicationDetailsCache {
 
+    private static final Logger log = Logger.getLogger(InfinispanCommunicationDetailsCache.class.getName());
+
+    /**  */
+    protected static final String CACHE_NAME = "communicationdetails";
+
     @Resource(lookup = "java:jboss/infinispan/APM")
     private CacheContainer container;
 
@@ -43,7 +50,7 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
     @PostConstruct
     public void init() {
-        communicationDetails = container.getCache("communicationdetails");
+        communicationDetails = container.getCache(CACHE_NAME);
     }
 
     /**
@@ -66,7 +73,13 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
      */
     @Override
     public CommunicationDetails getSingleConsumer(String tenantId, String id) {
-        return communicationDetails.get(id);
+        CommunicationDetails ret = communicationDetails.get(id);
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get communication details [id="+id+"] = "+ret);
+        }
+
+        return ret;
     }
 
     /* (non-Javadoc)
@@ -85,11 +98,17 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
      */
     @Override
     public void store(String tenantId, List<CommunicationDetails> details) {
+        communicationDetails.startBatch();
+
         for (int i = 0; i < details.size(); i++) {
             CommunicationDetails cd = details.get(i);
             String id = cd.getId();
             if (cd.isMultiConsumer()) {
                 id = cd.getTargetFragmentId();
+            }
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Store communication details [id="+id+"]: "+cd);
             }
 
             // TODO: HWKBTM-348 How long should details be cached if related to long running
@@ -101,6 +120,8 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
             // created after the long wait anyway.
             communicationDetails.put(id, cd, 1, TimeUnit.MINUTES);
         }
+
+        communicationDetails.endBatch(true);
     }
 
 }

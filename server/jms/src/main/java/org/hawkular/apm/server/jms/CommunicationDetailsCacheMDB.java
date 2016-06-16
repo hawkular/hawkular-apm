@@ -30,17 +30,23 @@ import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
+ * This MDB is provided to populate the CommunicationDetailsCache when Communication Details.
+ * Each clustered APM server node will receive the communication details data, so each cache
+ * is expected to only be a local cache.
+ *
+ * Discussion regarding potential future use of a distributed cache is associated with HWKAPM-479.
+ * If this change happens, then this MDB should be converted back to a durable (load balanced) subscriber.
+ *
  * @author gbrown
  */
-@MessageDriven(name = "CommunicationDetails_Cache", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "CommunicationDetails_CommunicationDetailsCache", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
                 @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsCache"),
-                @ActivationConfigProperty(propertyName = "subscriptionName",
-                            propertyValue = "CommunicationDetailsCache")
+                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "apm-${jboss.node.name}"),
+                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsCache")
         })
 public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationDetails> {
 

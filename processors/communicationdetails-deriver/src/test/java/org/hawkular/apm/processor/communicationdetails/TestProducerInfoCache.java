@@ -17,6 +17,7 @@
 package org.hawkular.apm.processor.communicationdetails;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,12 +36,13 @@ public class TestProducerInfoCache implements ProducerInfoCache {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.ProducerInfoCache#put(java.lang.String,
-     *              java.lang.String, org.hawkular.apm.processor.communicationdetails.ProducerInfo)
+     * @see org.hawkular.apm.processor.communicationdetails.ProducerInfoCache#store(java.lang.String, java.util.List)
      */
     @Override
-    public void put(String tenantId, String id, ProducerInfo producerInfo) {
-        producerInfoCache.put(id, producerInfo);
+    public void store(String tenantId, List<ProducerInfo> producerInfoList) {
+        for (int i=0; i < producerInfoList.size(); i++) {
+            producerInfoCache.put(producerInfoList.get(i).getId(), producerInfoList.get(i));
+        }
     }
 
 }

@@ -16,7 +16,10 @@
  */
 package org.hawkular.apm.server.infinispan;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -34,6 +37,8 @@ import org.infinispan.manager.CacheContainer;
  */
 @Singleton
 public class InfinispanProducerInfoCache implements ProducerInfoCache {
+
+    private static final Logger log = Logger.getLogger(InfinispanProducerInfoCache.class.getName());
 
     @Resource(lookup = "java:jboss/infinispan/APM")
     private CacheContainer container;
@@ -64,16 +69,33 @@ public class InfinispanProducerInfoCache implements ProducerInfoCache {
      */
     @Override
     public ProducerInfo get(String tenantId, String id) {
-        return producerInfo.get(id);
+        ProducerInfo ret = producerInfo.get(id);
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get producer info [id="+id+"] = "+ret);
+        }
+
+        return ret;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.ProducerInfoCache#put(java.lang.String,
-     *                  org.hawkular.apm.processor.communicationdetails.ProducerInfo)
+     * @see org.hawkular.apm.processor.communicationdetails.ProducerInfoCache#store(java.lang.String, java.util.List)
      */
     @Override
-    public void put(String tenantId, String id, ProducerInfo pi) {
-        producerInfo.put(id, pi, 1, TimeUnit.MINUTES);
+    public void store(String tenantId, List<ProducerInfo> producerInfoList) {
+        producerInfo.startBatch();
+
+        for (int i = 0; i < producerInfoList.size(); i++) {
+            ProducerInfo pi = producerInfoList.get(i);
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Store producer info [id="+pi.getId()+"]: "+pi);
+            }
+
+            producerInfo.put(pi.getId(), pi, 1, TimeUnit.MINUTES);
+        }
+
+        producerInfo.endBatch(true);
     }
 
 }
