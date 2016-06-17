@@ -16,9 +16,7 @@
  */
 package org.hawkular.apm.server.elasticsearch;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,7 +79,7 @@ public final class ElasticsearchEmbeddedNode {
                 }
                 properties.load(stream);
                 stream.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.log(Level.SEVERE, "Failed to load elasticsearch properties", e);
             }
 
