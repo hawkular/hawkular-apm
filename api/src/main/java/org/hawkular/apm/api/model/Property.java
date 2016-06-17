@@ -124,7 +124,7 @@ public class Property implements Externalizable {
         if (number == null && value != null && type == PropertyType.Number) {
             try {
                 return Double.valueOf(value);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 // Ignore
             }
         }
