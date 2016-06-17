@@ -138,23 +138,23 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                             Map<String, BusinessTxnConfig> changed = cs.getBusinessTransactions(null,
                                     configLastUpdated);
 
-                            for (String btxn : changed.keySet()) {
-                                BusinessTxnConfig btc = changed.get(btxn);
+                            for (Map.Entry<String, BusinessTxnConfig> stringBusinessTxnConfigEntry : changed.entrySet()) {
+                                BusinessTxnConfig btc = stringBusinessTxnConfigEntry.getValue();
 
                                 if (btc.isDeleted()) {
                                     if (log.isLoggable(Level.FINER)) {
-                                        log.finer("Removing config for btxn '" + btxn + "' = " + btc);
+                                        log.finer("Removing config for btxn '" + stringBusinessTxnConfigEntry.getKey() + "' = " + btc);
                                     }
 
-                                    filterManager.remove(btxn);
-                                    processorManager.remove(btxn);
+                                    filterManager.remove(stringBusinessTxnConfigEntry.getKey());
+                                    processorManager.remove(stringBusinessTxnConfigEntry.getKey());
                                 } else {
                                     if (log.isLoggable(Level.FINER)) {
-                                        log.finer("Changed config for btxn '" + btxn + "' = " + btc);
+                                        log.finer("Changed config for btxn '" + stringBusinessTxnConfigEntry.getKey() + "' = " + btc);
                                     }
 
-                                    filterManager.init(btxn, btc);
-                                    processorManager.init(btxn, btc);
+                                    filterManager.init(stringBusinessTxnConfigEntry.getKey(), btc);
+                                    processorManager.init(stringBusinessTxnConfigEntry.getKey(), btc);
                                 }
 
                                 if (btc.getLastUpdated() > configLastUpdated) {
@@ -1253,11 +1253,11 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
             if (headers != null && m.getHeaders().isEmpty()) {
                 // TODO: Need to have config to determine whether headers should be logged
-                for (String key : headers.keySet()) {
-                    String value = getHeaderValueText(headers.get(key));
+                for (Map.Entry<String, ?> stringEntry : headers.entrySet()) {
+                    String value = getHeaderValueText(stringEntry.getValue());
 
                     if (value != null) {
-                        m.getHeaders().put(key, value);
+                        m.getHeaders().put(stringEntry.getKey(), value);
                     }
                 }
             }

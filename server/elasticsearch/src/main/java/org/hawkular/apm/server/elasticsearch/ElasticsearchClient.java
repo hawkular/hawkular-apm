@@ -241,19 +241,19 @@ public class ElasticsearchClient {
     private boolean prepareMapping(String index, Map<String, Object> defaultMappings) {
         boolean success = true;
 
-        for (String type : defaultMappings.keySet()) {
-            Map<String, Object> mapping = (Map<String, Object>) defaultMappings.get(type);
+        for (Map.Entry<String, Object> stringObjectEntry : defaultMappings.entrySet()) {
+            Map<String, Object> mapping = (Map<String, Object>) stringObjectEntry.getValue();
             if (mapping == null) {
                 throw new RuntimeException("type mapping not defined");
             }
             PutMappingRequestBuilder putMappingRequestBuilder = client.admin().indices().preparePutMapping()
                     .setIndices(index);
-            putMappingRequestBuilder.setType(type);
+            putMappingRequestBuilder.setType(stringObjectEntry.getKey());
             putMappingRequestBuilder.setSource(mapping);
 
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Elasticsearch create mapping for index '"
-                        + index + " and type '" + type + "': " + mapping);
+                        + index + " and type '" + stringObjectEntry.getKey() + "': " + mapping);
             }
 
             PutMappingResponse resp = putMappingRequestBuilder.execute().actionGet();
@@ -261,12 +261,12 @@ public class ElasticsearchClient {
             if (resp.isAcknowledged()) {
                 if (log.isLoggable(Level.FINE)) {
                     log.fine("Elasticsearch mapping for index '"
-                            + index + " and type '" + type + "' was acknowledged");
+                            + index + " and type '" + stringObjectEntry.getKey() + "' was acknowledged");
                 }
             } else {
                 success = false;
                 log.warning("Elasticsearch mapping creation was not acknowledged for index '"
-                        + index + " and type '" + type + "'");
+                        + index + " and type '" + stringObjectEntry.getKey() + "'");
             }
         }
 
