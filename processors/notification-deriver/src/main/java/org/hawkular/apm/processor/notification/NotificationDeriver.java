@@ -49,7 +49,7 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
     @Override
     public Notification processSingle(String tenantId, Trace item) throws Exception {
         // Check if named txn and has nodes
-        if (item.getBusinessTransaction() != null && item.getBusinessTransaction().trim().length() > 0 && !item.getNodes().isEmpty()) {
+        if (item.getBusinessTransaction() != null && !item.getBusinessTransaction().trim().isEmpty() && !item.getNodes().isEmpty()) {
             Notification notification = new Notification();
             notification.setId(item.getId());
             notification.setBusinessTransaction(item.getBusinessTransaction());

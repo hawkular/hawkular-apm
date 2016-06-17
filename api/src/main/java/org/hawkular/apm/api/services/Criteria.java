@@ -387,7 +387,7 @@ public class Criteria {
      * @return Whether the criteria would apply to all fragments in a transaction
      */
     public boolean transactionWide() {
-        return !(properties.size() > 0 || correlationIds.size() > 0 || faults.size() > 0 || hostName != null);
+        return !(!properties.isEmpty() || !correlationIds.isEmpty() || !faults.isEmpty() || hostName != null);
     }
 
     /**

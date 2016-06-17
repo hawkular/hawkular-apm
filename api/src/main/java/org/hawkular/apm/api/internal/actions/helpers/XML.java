@@ -130,7 +130,7 @@ public class XML {
         }
 
         // If no xpath expression, then serialize
-        if (xpath == null || xpath.trim().length() == 0) {
+        if (xpath == null || xpath.trim().isEmpty()) {
             return serialize(node);
         }
 

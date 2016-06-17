@@ -1214,7 +1214,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             for (int i = 0; i < btxns.size(); i++) {
                 Trace trace = btxns.get(i);
 
-                if (trace.getHostName() != null && trace.getHostName().trim().length() != 0
+                if (trace.getHostName() != null && !trace.getHostName().trim().isEmpty()
                         && !ret.contains(trace.getHostName())) {
                     ret.add(trace.getHostName());
                 }

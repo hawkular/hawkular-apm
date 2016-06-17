@@ -72,7 +72,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
     {
         uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
-        if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+        if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';
         }
     }
@@ -314,7 +314,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
                     } catch (Throwable t) {
@@ -396,7 +396,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
                     } catch (Throwable t) {
@@ -484,7 +484,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
                     } catch (Throwable t) {
@@ -562,7 +562,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), BusinessTxnConfig.class);
                     } catch (Throwable t) {
@@ -639,7 +639,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), BTXN_SUMMARY_LIST);
                     } catch (Throwable t) {
@@ -718,7 +718,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), BUSINESS_TXN_MAP);
                     } catch (Throwable t) {
