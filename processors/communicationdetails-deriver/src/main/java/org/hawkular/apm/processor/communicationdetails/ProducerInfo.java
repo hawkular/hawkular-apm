@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.utils.SerializationUtil;
 
 /**
  * This class represents information cached about a producer, to enable it to be
@@ -32,6 +33,8 @@ import org.hawkular.apm.api.model.Property;
  * @author gbrown
  */
 public class ProducerInfo implements Externalizable {
+
+    private String id;
 
     private String sourceUri;
 
@@ -50,6 +53,20 @@ public class ProducerInfo implements Externalizable {
     private boolean multipleConsumers = false;
 
     private Set<Property> properties = new HashSet<Property>();
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
 
     /**
      * @return the sourceUri
@@ -211,19 +228,107 @@ public class ProducerInfo implements Externalizable {
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ProducerInfo [id=" + id + ", sourceUri=" + sourceUri + ", sourceOperation=" + sourceOperation
+                + ", timestamp=" + timestamp + ", duration=" + duration + ", fragmentId=" + fragmentId + ", hostName="
+                + hostName + ", hostAddress=" + hostAddress + ", multipleConsumers=" + multipleConsumers
+                + ", properties=" + properties + "]";
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
+        result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
+        result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (multipleConsumers ? 1231 : 1237);
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        result = prime * result + ((sourceOperation == null) ? 0 : sourceOperation.hashCode());
+        result = prime * result + ((sourceUri == null) ? 0 : sourceUri.hashCode());
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ProducerInfo other = (ProducerInfo) obj;
+        if (duration != other.duration)
+            return false;
+        if (fragmentId == null) {
+            if (other.fragmentId != null)
+                return false;
+        } else if (!fragmentId.equals(other.fragmentId))
+            return false;
+        if (hostAddress == null) {
+            if (other.hostAddress != null)
+                return false;
+        } else if (!hostAddress.equals(other.hostAddress))
+            return false;
+        if (hostName == null) {
+            if (other.hostName != null)
+                return false;
+        } else if (!hostName.equals(other.hostName))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (multipleConsumers != other.multipleConsumers)
+            return false;
+        if (properties == null) {
+            if (other.properties != null)
+                return false;
+        } else if (!properties.equals(other.properties))
+            return false;
+        if (sourceOperation == null) {
+            if (other.sourceOperation != null)
+                return false;
+        } else if (!sourceOperation.equals(other.sourceOperation))
+            return false;
+        if (sourceUri == null) {
+            if (other.sourceUri != null)
+                return false;
+        } else if (!sourceUri.equals(other.sourceUri))
+            return false;
+        if (timestamp != other.timestamp)
+            return false;
+        return true;
+    }
+
+    /* (non-Javadoc)
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
 
-        sourceUri = ois.readUTF();
-        sourceOperation = ois.readUTF();
+        id = SerializationUtil.deserializeString(ois);
+        sourceUri = SerializationUtil.deserializeString(ois);
+        sourceOperation = SerializationUtil.deserializeString(ois);
         timestamp = ois.readLong();
         duration = ois.readLong();
-        fragmentId = ois.readUTF();
-        hostName = ois.readUTF();
-        hostAddress = ois.readUTF();
+        fragmentId = SerializationUtil.deserializeString(ois);
+        hostName = SerializationUtil.deserializeString(ois);
+        hostAddress = SerializationUtil.deserializeString(ois);
         multipleConsumers = ois.readBoolean();
 
         int size = ois.readInt();
@@ -239,13 +344,14 @@ public class ProducerInfo implements Externalizable {
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Write version
 
-        oos.writeUTF(sourceUri);
-        oos.writeUTF(sourceOperation);
+        SerializationUtil.serializeString(oos, id);
+        SerializationUtil.serializeString(oos, sourceUri);
+        SerializationUtil.serializeString(oos, sourceOperation);
         oos.writeLong(timestamp);
         oos.writeLong(duration);
-        oos.writeUTF(fragmentId);
-        oos.writeUTF(hostName);
-        oos.writeUTF(hostAddress);
+        SerializationUtil.serializeString(oos, fragmentId);
+        SerializationUtil.serializeString(oos, hostName);
+        SerializationUtil.serializeString(oos, hostAddress);
         oos.writeBoolean(multipleConsumers);
 
         oos.writeInt(properties.size());
