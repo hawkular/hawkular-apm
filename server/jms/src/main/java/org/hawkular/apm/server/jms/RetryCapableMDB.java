@@ -34,6 +34,9 @@ public abstract class RetryCapableMDB<S> implements MessageListener {
 
     private static final Logger log = Logger.getLogger(RetryCapableMDB.class.getName());
 
+    private static final org.hawkular.apm.server.api.log.MsgLogger serverMsgLogger =
+            org.hawkular.apm.server.api.log.MsgLogger.LOGGER;
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private TypeReference<java.util.List<S>> typeReference;
@@ -95,8 +98,7 @@ public abstract class RetryCapableMDB<S> implements MessageListener {
             process(tenantId, items, retryCount);
 
         } catch (Exception e) {
-            // TODO: Handle nak of JMS message?
-            e.printStackTrace();
+            serverMsgLogger.warnMaxRetryReached(e);
         }
     }
 

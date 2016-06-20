@@ -48,7 +48,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "apm-${jboss.node.name}"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsCache")
         })
-public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationDetails> {
+public class CommunicationDetailsCacheMDB extends BulkProcessingMDB<CommunicationDetails> {
 
     @Inject
     private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
@@ -64,10 +64,10 @@ public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationD
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
+     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
      */
     @Override
-    protected void process(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
+    protected void bulkProcess(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
         communicationDetailsCache.store(tenantId, items);
     }
 

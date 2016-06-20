@@ -43,7 +43,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceStore"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceStore")
         })
-public class TraceStoreMDB extends RetryCapableMDB<Trace> {
+public class TraceStoreMDB extends BulkProcessingMDB<Trace> {
 
     private static final Logger perfLog=Logger.getLogger("org.hawkular.apm.performance.trace");
 
@@ -61,10 +61,10 @@ public class TraceStoreMDB extends RetryCapableMDB<Trace> {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
+     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
      */
     @Override
-    protected void process(String tenantId, List<Trace> items, int retryCount) throws Exception {
+    protected void bulkProcess(String tenantId, List<Trace> items, int retryCount) throws Exception {
         long startTime=0;
         if (perfLog.isLoggable(Level.FINEST)) {
             startTime = System.currentTimeMillis();

@@ -41,7 +41,7 @@ activationConfig =
     @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsStore"),
     @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsStore")
 })
-public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationDetails> {
+public class CommunicationDetailsStoreMDB extends BulkProcessingMDB<CommunicationDetails> {
 
     @Inject
     private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
@@ -57,10 +57,10 @@ public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationD
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
+     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
      */
     @Override
-    protected void process(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
+    protected void bulkProcess(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
         analyticsService.storeCommunicationDetails(tenantId, items);
     }
 

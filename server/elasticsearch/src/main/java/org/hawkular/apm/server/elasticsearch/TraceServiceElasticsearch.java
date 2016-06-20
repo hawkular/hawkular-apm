@@ -207,13 +207,13 @@ public class TraceServiceElasticsearch implements TraceService {
 
         if (bulkItemResponses.hasFailures()) {
 
-            // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store traces: " + bulkItemResponses.buildFailureMessage());
-
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Failed to store traces to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
+
+            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
+
         } else {
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Success storing traces to elasticsearch");

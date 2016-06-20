@@ -19,8 +19,6 @@ package org.hawkular.apm.server.api.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hawkular.apm.server.api.log.MsgLogger;
-
 /**
  * This class provides a processing unit for processing a batch of
  * items against a defined processor, and managing the results and/or
@@ -29,8 +27,6 @@ import org.hawkular.apm.server.api.log.MsgLogger;
  * @author gbrown
  */
 public class ProcessingUnit<T, R> implements Handler<T> {
-
-    private final MsgLogger msgLog = MsgLogger.LOGGER;
 
     private Processor<T, R> processor;
 
@@ -146,7 +142,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             if (getRetryCount() > 0) {
                 retryHandler.handle(tenantId, retries);
             } else {
-                msgLog.warnMaxRetryReached(lastException);
+                throw lastException;
             }
         }
     }

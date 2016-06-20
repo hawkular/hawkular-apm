@@ -41,7 +41,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "NodeDetailsStore"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NodeDetailsStore")
         })
-public class NodeDetailsStoreMDB extends RetryCapableMDB<NodeDetails> {
+public class NodeDetailsStoreMDB extends BulkProcessingMDB<NodeDetails> {
 
     @Inject
     private NodeDetailsPublisherJMS nodeDetailsPublisher;
@@ -57,10 +57,10 @@ public class NodeDetailsStoreMDB extends RetryCapableMDB<NodeDetails> {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractRetryMDB#process(java.lang.String, java.util.List, int)
+     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
      */
     @Override
-    protected void process(String tenantId, List<NodeDetails> items, int retryCount) throws Exception {
+    protected void bulkProcess(String tenantId, List<NodeDetails> items, int retryCount) throws Exception {
         analyticsService.storeNodeDetails(tenantId, items);
     }
 

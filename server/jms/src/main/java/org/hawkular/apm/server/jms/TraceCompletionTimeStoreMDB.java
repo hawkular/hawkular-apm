@@ -41,7 +41,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceCompletionTimeStore"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceCompletionTimeStore")
         })
-public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime> {
+public class TraceCompletionTimeStoreMDB extends BulkProcessingMDB<CompletionTime> {
 
     @Inject
     private TraceCompletionTimePublisherJMS traceCompletionTimePublisher;
@@ -57,10 +57,10 @@ public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime>
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.RetryCapableMDB#process(java.lang.String, java.util.List, int)
+     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
      */
     @Override
-    protected void process(String tenantId, List<CompletionTime> items, int retryCount) throws Exception {
+    protected void bulkProcess(String tenantId, List<CompletionTime> items, int retryCount) throws Exception {
         analyticsService.storeTraceCompletionTimes(tenantId, items);
     }
 
