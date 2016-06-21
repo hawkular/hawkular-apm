@@ -18,6 +18,10 @@ package org.hawkular.apm.server.api.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 
 /**
  * This class provides a processing unit for processing a batch of
@@ -27,6 +31,8 @@ import java.util.List;
  * @author gbrown
  */
 public class ProcessingUnit<T, R> implements Handler<T> {
+
+    private static final Logger perfLog = Logger.getLogger("org.hawkular.apm.performance");
 
     private Processor<T, R> processor;
 
@@ -102,34 +108,54 @@ public class ProcessingUnit<T, R> implements Handler<T> {
 
         processor.initialise(tenantId, items);
 
-        for (int i = 0; i < items.size(); i++) {
+        // If performance logging enabled, save the current time
+        long startTime = 0;
+        if (perfLog.isLoggable(Level.FINEST)) {
+            startTime = System.currentTimeMillis();
+        }
+
+        if (processor.getType() == ProcessorType.ManyToMany) {
             try {
-                if (processor.isMultiple()) {
-                    List<R> result = processor.processMultiple(tenantId, items.get(i));
-                    if (resultHandler != null && result != null && !result.isEmpty()) {
-                        if (results == null) {
-                            results = new ArrayList<R>();
-                        }
-                        results.addAll(result);
-                    }
-                } else {
-                    R result = processor.processSingle(tenantId, items.get(i));
-                    if (resultHandler != null && result != null) {
-                        if (results == null) {
-                            results = new ArrayList<R>();
-                        }
-                        results.add(result);
-                    }
-                }
+                results = processor.processManyToMany(tenantId, items);
             } catch (Exception e) {
-                if (retryHandler != null) {
-                    if (retries == null) {
-                        retries = new ArrayList<T>();
+                retries = items;
+            }
+        } else {
+            for (int i = 0; i < items.size(); i++) {
+                try {
+                    if (processor.getType() == ProcessorType.OneToMany) {
+                        List<R> result = processor.processOneToMany(tenantId, items.get(i));
+                        if (resultHandler != null && result != null && !result.isEmpty()) {
+                            if (results == null) {
+                                results = new ArrayList<R>();
+                            }
+                            results.addAll(result);
+                        }
+                    } else {
+                        R result = processor.processOneToOne(tenantId, items.get(i));
+                        if (resultHandler != null && result != null) {
+                            if (results == null) {
+                                results = new ArrayList<R>();
+                            }
+                            results.add(result);
+                        }
                     }
-                    retries.add(items.get(i));
-                    lastException = e;
+                } catch (Exception e) {
+                    if (retryHandler != null) {
+                        if (retries == null) {
+                            retries = new ArrayList<T>();
+                        }
+                        retries.add(items.get(i));
+                        lastException = e;
+                    }
                 }
             }
+        }
+
+        // If performance logging enabled, log the duration associated with the event processing
+        if (perfLog.isLoggable(Level.FINEST)) {
+            perfLog.finest("Performance: invoked processor ["+processor.getClass().getSimpleName()+"] duration=" +
+                    (System.currentTimeMillis() - startTime) + "ms");
         }
 
         processor.cleanup(tenantId, items);

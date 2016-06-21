@@ -41,7 +41,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "NotificationDeriver"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NotificationDeriver")
         })
-public class NotificationDeriverMDB extends ProcessorMDB<Trace, Notification> {
+public class NotificationDeriverMDB extends RetryCapableMDB<Trace, Notification> {
 
     @Inject
     private TracePublisherJMS tracePublisher;

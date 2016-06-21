@@ -74,7 +74,7 @@ public class NotificationDeriverTest {
 
         Notification notification = null;
         try {
-            notification = deriver.processSingle(null, trace);
+            notification = deriver.processOneToOne(null, trace);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Failed to process notifications: " + e);
@@ -113,7 +113,7 @@ public class NotificationDeriverTest {
 
         Notification notification = null;
         try {
-            notification = deriver.processSingle(null, trace);
+            notification = deriver.processOneToOne(null, trace);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Failed to process notifications: " + e);

@@ -32,19 +32,18 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<TraceCompletio
 
     private static final Logger log = Logger.getLogger(TraceCompletionTimeDeriver.class.getName());
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isMultiple()
+    /**
+     * The default constructor.
      */
-    @Override
-    public boolean isMultiple() {
-        return false;
+    public TraceCompletionTimeDeriver() {
+        super(ProcessorType.OneToOne);
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
      */
     @Override
-    public CompletionTime processSingle(String tenantId, TraceCompletionInformation item) throws Exception {
+    public CompletionTime processOneToOne(String tenantId, TraceCompletionInformation item) throws Exception {
         // Check if named txn
         if (item.getCommunications().isEmpty()) {
 
@@ -61,7 +60,7 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<TraceCompletio
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
      */
     @Override
-    public List<CompletionTime> processMultiple(String tenantId, TraceCompletionInformation item) throws Exception {
+    public List<CompletionTime> processOneToMany(String tenantId, TraceCompletionInformation item) throws Exception {
         return null;
     }
 }

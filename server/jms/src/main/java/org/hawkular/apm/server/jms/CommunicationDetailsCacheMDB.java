@@ -26,6 +26,8 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
+import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -48,7 +50,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "clientID", propertyValue = "apm-${jboss.node.name}"),
                 @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsCache")
         })
-public class CommunicationDetailsCacheMDB extends BulkProcessingMDB<CommunicationDetails> {
+public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationDetails,Void> {
 
     @Inject
     private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
@@ -61,14 +63,15 @@ public class CommunicationDetailsCacheMDB extends BulkProcessingMDB<Communicatio
         setRetryPublisher(communicationDetailsPublisher);
         setTypeReference(new TypeReference<java.util.List<CommunicationDetails>>() {
         });
-    }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
-     */
-    @Override
-    protected void bulkProcess(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
-        communicationDetailsCache.store(tenantId, items);
+        setProcessor(new AbstractProcessor<CommunicationDetails,Void>(ProcessorType.ManyToMany) {
+
+            @Override
+            public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items) throws Exception {
+                communicationDetailsCache.store(tenantId, items);
+                return null;
+            }
+        });
     }
 
 }

@@ -26,22 +26,22 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.services.AnalyticsService;
+import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "CommunicationDetails_Store", messageListenerInterface = MessageListener.class,
-activationConfig =
-{
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
-    @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-    @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsStore"),
-    @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsStore")
+@MessageDriven(name = "CommunicationDetails_Store", messageListenerInterface = MessageListener.class, activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsStore"),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsStore")
 })
-public class CommunicationDetailsStoreMDB extends BulkProcessingMDB<CommunicationDetails> {
+public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationDetails, Void> {
 
     @Inject
     private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
@@ -54,14 +54,15 @@ public class CommunicationDetailsStoreMDB extends BulkProcessingMDB<Communicatio
         setRetryPublisher(communicationDetailsPublisher);
         setTypeReference(new TypeReference<java.util.List<CommunicationDetails>>() {
         });
-    }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
-     */
-    @Override
-    protected void bulkProcess(String tenantId, List<CommunicationDetails> items, int retryCount) throws Exception {
-        analyticsService.storeCommunicationDetails(tenantId, items);
+        setProcessor(new AbstractProcessor<CommunicationDetails, Void>(ProcessorType.ManyToMany) {
+
+            @Override
+            public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items) throws Exception {
+                analyticsService.storeCommunicationDetails(tenantId, items);
+                return null;
+            }
+        });
     }
 
 }

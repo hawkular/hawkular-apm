@@ -26,6 +26,13 @@ import java.util.List;
 public interface Processor<T, R> {
 
     /**
+     * This method identifies the type of the processor.
+     *
+     * @return The processor type
+     */
+    ProcessorType getType();
+
+    /**
      * This method enables the processor to perform some initialisation
      * tasks before processing the items individually to generate new
      * information.
@@ -36,14 +43,6 @@ public interface Processor<T, R> {
     void initialise(String tenantId, List<T> items);
 
     /**
-     * This method determines whether the processor results in multiple results
-     * per item.
-     *
-     * @return
-     */
-    boolean isMultiple();
-
-    /**
      * This method processes the supplied item to optionally
      * generated a new resulting value.
      *
@@ -52,7 +51,7 @@ public interface Processor<T, R> {
      * @return The optional value
      * @throws Exception Failed to process the item
      */
-    R processSingle(String tenantId, T item) throws Exception;
+    R processOneToOne(String tenantId, T item) throws Exception;
 
     /**
      * This method processes the supplied item to
@@ -63,7 +62,18 @@ public interface Processor<T, R> {
      * @return The list of values
      * @throws Exception Failed to process the item
      */
-    List<R> processMultiple(String tenantId, T item) throws Exception;
+    List<R> processOneToMany(String tenantId, T item) throws Exception;
+
+    /**
+     * This method processes the supplied items to
+     * generate zero or more resulting values.
+     *
+     * @param tenantId The optional tenant id
+     * @param items The items
+     * @return The list of values
+     * @throws Exception Failed to process the item
+     */
+    List<R> processManyToMany(String tenantId, List<T> items) throws Exception;
 
     /**
      * This method determines the delivery delay (in milliseconds)
@@ -95,4 +105,20 @@ public interface Processor<T, R> {
      */
     void cleanup(String tenantId, List<T> items);
 
+    /**
+     * This method determines what type of processing should be performed on the
+     * inbound information.
+     */
+    public enum ProcessorType {
+
+        /** Each inbound event will be processed individually to return a single result **/
+        OneToOne,
+
+        /** Each inbound event will be processed individually to return a zero or more results each **/
+        OneToMany,
+
+        /** The inbound events will be processed in bulk and may return zero or more results **/
+        ManyToMany
+
+    }
 }

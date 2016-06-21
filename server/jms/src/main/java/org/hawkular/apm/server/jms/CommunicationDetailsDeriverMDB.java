@@ -42,7 +42,7 @@ activationConfig =
     @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsDeriver"),
     @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsDeriver")
 })
-public class CommunicationDetailsDeriverMDB extends ProcessorMDB<Trace, CommunicationDetails> {
+public class CommunicationDetailsDeriverMDB extends RetryCapableMDB<Trace, CommunicationDetails> {
 
     @Inject
     private TracePublisherJMS tracePublisher;

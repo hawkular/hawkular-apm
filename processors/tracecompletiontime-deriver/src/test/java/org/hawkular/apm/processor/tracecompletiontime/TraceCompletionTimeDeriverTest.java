@@ -39,7 +39,7 @@ public class TraceCompletionTimeDeriverTest {
         CompletionTime result = null;
 
         try {
-            result = deriver.processSingle(null, ci);
+            result = deriver.processOneToOne(null, ci);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -59,7 +59,7 @@ public class TraceCompletionTimeDeriverTest {
         CompletionTime result = null;
 
         try {
-            result = deriver.processSingle(null, ci);
+            result = deriver.processOneToOne(null, ci);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

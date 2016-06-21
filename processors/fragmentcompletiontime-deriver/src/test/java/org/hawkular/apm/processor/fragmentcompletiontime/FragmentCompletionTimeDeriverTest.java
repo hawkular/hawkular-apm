@@ -54,7 +54,7 @@ public class FragmentCompletionTimeDeriverTest {
         CompletionTime ct = null;
 
         try {
-            ct = deriver.processSingle(null, trace);
+            ct = deriver.processOneToOne(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -90,7 +90,7 @@ public class FragmentCompletionTimeDeriverTest {
         CompletionTime ct = null;
 
         try {
-            ct = deriver.processSingle(null, trace);
+            ct = deriver.processOneToOne(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

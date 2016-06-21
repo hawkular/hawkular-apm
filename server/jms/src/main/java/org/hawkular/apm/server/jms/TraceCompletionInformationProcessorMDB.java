@@ -43,7 +43,7 @@ activationConfig =
                         propertyValue = "TraceCompletionInformationProcessor")
 })
 public class TraceCompletionInformationProcessorMDB
-        extends ProcessorMDB<TraceCompletionInformation, TraceCompletionInformation> {
+        extends RetryCapableMDB<TraceCompletionInformation, TraceCompletionInformation> {
 
     @Inject
     private TraceCompletionInformationPublisherJMS traceCompletionInformationPublisher;

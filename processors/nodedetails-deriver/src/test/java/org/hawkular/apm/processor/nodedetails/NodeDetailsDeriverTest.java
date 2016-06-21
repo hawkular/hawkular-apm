@@ -57,7 +57,7 @@ public class NodeDetailsDeriverTest {
         List<NodeDetails> details = null;
 
         try {
-            details = deriver.processMultiple(null, trace);
+            details = deriver.processOneToMany(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -86,7 +86,7 @@ public class NodeDetailsDeriverTest {
         List<NodeDetails> details = null;
 
         try {
-            details = deriver.processMultiple(null, trace);
+            details = deriver.processOneToMany(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

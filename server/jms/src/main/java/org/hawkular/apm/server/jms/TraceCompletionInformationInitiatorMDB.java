@@ -45,7 +45,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                             propertyValue = "TraceCompletionInformationInitiator")
         })
 public class TraceCompletionInformationInitiatorMDB
-                extends ProcessorMDB<Trace, TraceCompletionInformation> {
+                extends RetryCapableMDB<Trace, TraceCompletionInformation> {
 
     @Inject
     private TracePublisherJMS tracePublisher;

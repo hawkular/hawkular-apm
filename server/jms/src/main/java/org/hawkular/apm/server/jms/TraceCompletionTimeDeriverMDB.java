@@ -43,7 +43,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "subscriptionName",
                             propertyValue = "TraceCompletionTimeDeriver")
         })
-public class TraceCompletionTimeDeriverMDB extends ProcessorMDB<TraceCompletionInformation, CompletionTime> {
+public class TraceCompletionTimeDeriverMDB extends RetryCapableMDB<TraceCompletionInformation, CompletionTime> {
 
     @Inject
     private TraceCompletionInformationPublisherJMS traceCompletionInformationPublisher;

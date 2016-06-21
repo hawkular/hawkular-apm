@@ -26,23 +26,22 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.AnalyticsService;
+import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "FragmentCompletionTimes_Store", messageListenerInterface = MessageListener.class,
-        activationConfig =
-        {
-                @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "FragmentCompletionTimes"),
-                @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "FragmentCompletionTimeStore"),
-                @ActivationConfigProperty(propertyName = "subscriptionName",
-                            propertyValue = "FragmentCompletionTimeStore")
-        })
-public class FragmentCompletionTimeStoreMDB extends BulkProcessingMDB<CompletionTime> {
+@MessageDriven(name = "FragmentCompletionTimes_Store", messageListenerInterface = MessageListener.class, activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "FragmentCompletionTimes"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "FragmentCompletionTimeStore"),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "FragmentCompletionTimeStore")
+})
+public class FragmentCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime, Void> {
 
     @Inject
     private FragmentCompletionTimePublisherJMS fragmentCompletionTimePublisher;
@@ -55,14 +54,15 @@ public class FragmentCompletionTimeStoreMDB extends BulkProcessingMDB<Completion
         setRetryPublisher(fragmentCompletionTimePublisher);
         setTypeReference(new TypeReference<java.util.List<CompletionTime>>() {
         });
-    }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
-     */
-    @Override
-    protected void bulkProcess(String tenantId, List<CompletionTime> items, int retryCount) throws Exception {
-        analyticsService.storeFragmentCompletionTimes(tenantId, items);
+        setProcessor(new AbstractProcessor<CompletionTime, Void>(ProcessorType.ManyToMany) {
+
+            @Override
+            public List<Void> processManyToMany(String tenantId, List<CompletionTime> items) throws Exception {
+                analyticsService.storeFragmentCompletionTimes(tenantId, items);
+                return null;
+            }
+        });
     }
 
 }

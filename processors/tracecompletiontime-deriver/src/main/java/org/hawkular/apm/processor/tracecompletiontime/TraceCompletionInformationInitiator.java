@@ -34,24 +34,23 @@ import org.hawkular.apm.server.api.task.AbstractProcessor;
  * @author gbrown
  */
 public class TraceCompletionInformationInitiator extends
-                    AbstractProcessor<Trace, TraceCompletionInformation> {
+        AbstractProcessor<Trace, TraceCompletionInformation> {
 
     private static final Logger log = Logger.getLogger(TraceCompletionInformationInitiator.class.getName());
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isMultiple()
+    /**
+     * The default constructor.
      */
-    @Override
-    public boolean isMultiple() {
-        return false;
+    public TraceCompletionInformationInitiator() {
+        super(ProcessorType.OneToOne);
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
      */
     @Override
-    public TraceCompletionInformation processSingle(String tenantId,
-                            Trace item) throws Exception {
+    public TraceCompletionInformation processOneToOne(String tenantId,
+            Trace item) throws Exception {
         // Check whether the trace fragment is an initial fragment
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -65,7 +64,7 @@ public class TraceCompletionInformationInitiator extends
                 ct.setOperation(n.getOperation());
 
                 if (n.getClass() == Consumer.class) {
-                    ct.setEndpointType(((Consumer)n).getEndpointType());
+                    ct.setEndpointType(((Consumer) n).getEndpointType());
                 }
 
                 ct.setBusinessTransaction(item.getBusinessTransaction());
@@ -100,8 +99,8 @@ public class TraceCompletionInformationInitiator extends
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
      */
     @Override
-    public List<TraceCompletionInformation> processMultiple(String tenantId,
-                                Trace item) throws Exception {
+    public List<TraceCompletionInformation> processOneToMany(String tenantId,
+            Trace item) throws Exception {
         return null;
     }
 }

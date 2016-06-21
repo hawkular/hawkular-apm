@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.junit.Test;
 
 /**
@@ -33,21 +34,11 @@ public class ProcessingUnitTest {
     public void testSingleResult() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new AbstractProcessor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToOne) {
 
             @Override
-            public boolean isMultiple() {
-                return false;
-            }
-
-            @Override
-            public String processSingle(String tenantId, String item) throws Exception {
+            public String processOneToOne(String tenantId, String item) throws Exception {
                 return item;
-            }
-
-            @Override
-            public List<String> processMultiple(String tenantId, String item) throws Exception {
-                return null;
             }
         };
 
@@ -79,21 +70,11 @@ public class ProcessingUnitTest {
     public void testSingleRetry() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new AbstractProcessor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToOne) {
 
             @Override
-            public boolean isMultiple() {
-                return false;
-            }
-
-            @Override
-            public String processSingle(String tenantId, String item) throws Exception {
+            public String processOneToOne(String tenantId, String item) throws Exception {
                 throw new Exception("PLEASE RETRY");
-            }
-
-            @Override
-            public List<String> processMultiple(String tenantId, String item) throws Exception {
-                return null;
             }
         };
 
@@ -126,24 +107,14 @@ public class ProcessingUnitTest {
     public void testSingleRetryNoHandler() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new AbstractProcessor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToOne) {
 
             @Override
-            public boolean isMultiple() {
-                return false;
-            }
-
-            @Override
-            public String processSingle(String tenantId, String item) throws Exception {
+            public String processOneToOne(String tenantId, String item) throws Exception {
                 if (item.equals("world")) {
                     throw new Exception("PLEASE RETRY");
                 }
                 return item;
-            }
-
-            @Override
-            public List<String> processMultiple(String tenantId, String item) throws Exception {
-                return null;
             }
         };
 
@@ -176,20 +147,10 @@ public class ProcessingUnitTest {
     public void testMultipleResult() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new AbstractProcessor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToMany) {
 
             @Override
-            public boolean isMultiple() {
-                return true;
-            }
-
-            @Override
-            public String processSingle(String tenantId, String item) throws Exception {
-                return null;
-            }
-
-            @Override
-            public List<String> processMultiple(String tenantId, String item) throws Exception {
+            public List<String> processOneToMany(String tenantId, String item) throws Exception {
                 List<String> ret = new ArrayList<String>();
                 ret.add(item);
                 ret.add(item);
@@ -225,20 +186,10 @@ public class ProcessingUnitTest {
     public void testMultipleRetry() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new AbstractProcessor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToMany) {
 
             @Override
-            public boolean isMultiple() {
-                return true;
-            }
-
-            @Override
-            public String processSingle(String tenantId, String item) throws Exception {
-                return null;
-            }
-
-            @Override
-            public List<String> processMultiple(String tenantId, String item) throws Exception {
+            public List<String> processOneToMany(String tenantId, String item) throws Exception {
                 throw new Exception("PLEASE RETRY");
             }
         };
@@ -272,20 +223,10 @@ public class ProcessingUnitTest {
     public void testMultipleRetryNoHandler() {
         ProcessingUnit<String, String> pu = new ProcessingUnit<String, String>();
 
-        Processor<String, String> proc = new AbstractProcessor<String, String>() {
+        Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToMany) {
 
             @Override
-            public boolean isMultiple() {
-                return true;
-            }
-
-            @Override
-            public String processSingle(String tenantId, String item) throws Exception {
-                return null;
-            }
-
-            @Override
-            public List<String> processMultiple(String tenantId, String item) throws Exception {
+            public List<String> processOneToMany(String tenantId, String item) throws Exception {
                 if (item.equals("world")) {
                     throw new Exception("PLEASE RETRY");
                 }
