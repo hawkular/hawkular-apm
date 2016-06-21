@@ -17,8 +17,6 @@
 package org.hawkular.apm.server.jms;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -45,8 +43,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 })
 public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
 
-    private static final Logger perfLog = Logger.getLogger("org.hawkular.apm.performance.trace");
-
     @Inject
     private TracePublisherJMS tracePublisher;
 
@@ -63,16 +59,7 @@ public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
 
             @Override
             public List<Void> processManyToMany(String tenantId, List<Trace> items) throws Exception {
-                long startTime = 0;
-                if (perfLog.isLoggable(Level.FINEST)) {
-                    startTime = System.currentTimeMillis();
-                    perfLog.finest("Performance: about to store trace (first id=" + items.get(0).getId() + ")");
-                }
                 traceService.storeTraces(tenantId, items);
-                if (perfLog.isLoggable(Level.FINEST)) {
-                    perfLog.finest("Performance: store trace (first id=" + items.get(0).getId() + ") duration=" +
-                            (System.currentTimeMillis() - startTime) + "ms");
-                }
                 return null;
             }
         });

@@ -25,7 +25,6 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.hawkular.apm.api.services.Publisher;
-import org.hawkular.apm.server.api.task.Handler;
 import org.hawkular.apm.server.api.task.ProcessingUnit;
 import org.hawkular.apm.server.api.task.Processor;
 
@@ -33,7 +32,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * This class represents a MDB based class to handle processing of events, publication
+ * of results, and resubmission of failed events using a retry mechanism.
+ *
  * @author gbrown
+ *
+ * @param <S> Source event type
+ * @param <T> Target event type
  */
 public abstract class RetryCapableMDB<S,T> implements MessageListener {
 
@@ -154,21 +159,15 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
         pu.setProcessor(getProcessor());
         pu.setRetryCount(retryCount);
 
-        pu.setResultHandler(new Handler<T>() {
-            @Override
-            public void handle(String tenantId, List<T> items) throws Exception {
-                getPublisher().publish(tenantId, items, getPublisher().getInitialRetryCount(),
-                        getProcessor().getDeliveryDelay(items));
-            }
-        });
+        pu.setResultHandler(
+                (tid, events) -> getPublisher().publish(tid, events, getPublisher().getInitialRetryCount(),
+                                getProcessor().getDeliveryDelay(events))
+        );
 
-        pu.setRetryHandler(new Handler<S>() {
-            @Override
-            public void handle(String tenantId, List<S> items) throws Exception {
-                getRetryPublisher().publish(tenantId, items, pu.getRetryCount() - 1,
-                        getProcessor().getRetryDelay(items));
-            }
-        });
+        pu.setRetryHandler(
+                (tid, events) -> getRetryPublisher().publish(tid, events, pu.getRetryCount() - 1,
+                        getProcessor().getRetryDelay(events))
+        );
 
         pu.handle(tenantId, items);
     }
