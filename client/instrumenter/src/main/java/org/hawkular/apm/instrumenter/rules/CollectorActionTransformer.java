@@ -38,7 +38,7 @@ public abstract class CollectorActionTransformer implements InstrumentActionTran
         // so want to avoid any unnecessary dependencies
 
         CollectorAction collectorAction = (CollectorAction) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
         builder.append(getEntity());

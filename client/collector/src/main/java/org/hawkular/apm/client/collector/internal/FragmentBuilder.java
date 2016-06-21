@@ -640,7 +640,7 @@ public class FragmentBuilder {
      */
     @Override
     public String toString() {
-        StringBuilder info = new StringBuilder();
+        StringBuilder info = new StringBuilder(256);
         info.append("Fragment builder: current btxn=[");
         info.append(trace);
         info.append("] complete=");

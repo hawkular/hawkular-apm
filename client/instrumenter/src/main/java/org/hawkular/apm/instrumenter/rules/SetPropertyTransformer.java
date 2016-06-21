@@ -41,7 +41,7 @@ public class SetPropertyTransformer implements InstrumentActionTransformer {
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetProperty setAction = (SetProperty) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
 

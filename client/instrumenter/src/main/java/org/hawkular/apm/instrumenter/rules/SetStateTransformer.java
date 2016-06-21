@@ -41,7 +41,7 @@ public class SetStateTransformer implements InstrumentActionTransformer {
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetState setState = (SetState) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(32);
 
         builder.append("setState(");
 

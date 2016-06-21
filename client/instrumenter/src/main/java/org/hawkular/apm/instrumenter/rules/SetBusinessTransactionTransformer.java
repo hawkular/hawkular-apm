@@ -41,7 +41,7 @@ public class SetBusinessTransactionTransformer implements InstrumentActionTransf
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetBusinessTransaction setAction = (SetBusinessTransaction) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
 

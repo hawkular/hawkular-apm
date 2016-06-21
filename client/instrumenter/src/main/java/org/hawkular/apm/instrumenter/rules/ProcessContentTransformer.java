@@ -42,7 +42,7 @@ public class ProcessContentTransformer implements InstrumentActionTransformer {
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         ProcessContent pcAction = (ProcessContent) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(128);
 
         builder.append("collector().");
 
