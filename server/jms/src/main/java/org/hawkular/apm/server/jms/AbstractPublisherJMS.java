@@ -94,17 +94,28 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, long)
+    /**
+     * This method publishes the supplied items.
+     *
+     * @param tenantId The tenant id
+     * @param items The items
+     * @param subscriber The optional subscriber name
+     * @param retryCount The retry count
+     * @param delay The delay
+     * @throws Exception Failed to publish
      */
-    @Override
-    public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
+    protected void doPublish(String tenantId, List<T> items, String subscriber,
+            int retryCount, long delay) throws Exception {
         String data = mapper.writeValueAsString(items);
 
         TextMessage tm = session.createTextMessage(data);
 
         if (tenantId != null) {
             tm.setStringProperty("tenant", tenantId);
+        }
+
+        if (subscriber != null) {
+            tm.setStringProperty("subscriber", subscriber);
         }
 
         tm.setIntProperty("retryCount", retryCount);
@@ -121,11 +132,27 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, long)
+     */
+    @Override
+    public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
+        doPublish(tenantId, items, null, retryCount, delay);
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List)
      */
     @Override
     public void publish(String tenantId, List<T> items) throws Exception {
-        publish(tenantId, items, getInitialRetryCount(), 0);
+        doPublish(tenantId, items, null, getInitialRetryCount(), 0);
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
+     */
+    @Override
+    public void retry(String tenantId, List<T> items, String subscriber, int retryCount, long delay) throws Exception {
+        doPublish(tenantId, items, subscriber, retryCount, delay);
     }
 
     @PreDestroy

@@ -38,8 +38,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionTimes"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceCompletionTimeStore"),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceCompletionTimeStore")
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionTimeStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionTimeStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionTimeStoreMDB.SUBSCRIBER+"'")
 })
 public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime, Void> {
 
@@ -48,6 +49,13 @@ public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime,
 
     @Inject
     private AnalyticsService analyticsService;
+
+    /**  */
+    public static final String SUBSCRIBER = "TraceCompletionTimeStore";
+
+    public TraceCompletionTimeStoreMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {

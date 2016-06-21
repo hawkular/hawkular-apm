@@ -41,16 +41,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
  *
  * @author gbrown
  */
-@MessageDriven(name = "CommunicationDetails_CommunicationDetailsCache", messageListenerInterface = MessageListener.class,
-        activationConfig =
-        {
-                @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
-                @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "apm-${jboss.node.name}"),
-                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsCache")
-        })
-public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationDetails,Void> {
+@MessageDriven(name = "CommunicationDetails_CommunicationDetailsCache", messageListenerInterface = MessageListener.class, activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "apm-${jboss.node.name}"),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = CommunicationDetailsCacheMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+CommunicationDetailsCacheMDB.SUBSCRIBER+"'")
+})
+public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationDetails, Void> {
 
     @Inject
     private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
@@ -58,13 +57,20 @@ public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationD
     @Inject
     private CommunicationDetailsCache communicationDetailsCache;
 
+    /**  */
+    public static final String SUBSCRIBER = "CommunicationDetailsCache";
+
+    public CommunicationDetailsCacheMDB() {
+        super(SUBSCRIBER);
+    }
+
     @PostConstruct
     public void init() {
         setRetryPublisher(communicationDetailsPublisher);
         setTypeReference(new TypeReference<java.util.List<CommunicationDetails>>() {
         });
 
-        setProcessor(new AbstractProcessor<CommunicationDetails,Void>(ProcessorType.ManyToMany) {
+        setProcessor(new AbstractProcessor<CommunicationDetails, Void>(ProcessorType.ManyToMany) {
 
             @Override
             public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items) throws Exception {

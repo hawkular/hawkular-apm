@@ -38,8 +38,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceStore"),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceStore")
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceStoreMDB.SUBSCRIBER+"'")
 })
 public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
 
@@ -48,6 +49,13 @@ public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
 
     @Inject
     private TraceService traceService;
+
+    /**  */
+    public static final String SUBSCRIBER = "TraceStore";
+
+    public TraceStoreMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {

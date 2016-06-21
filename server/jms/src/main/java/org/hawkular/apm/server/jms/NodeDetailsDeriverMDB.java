@@ -38,8 +38,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
                 @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "NodeDetailsDeriver"),
-                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "NodeDetailsDeriver")
+                @ActivationConfigProperty(propertyName = "clientID", propertyValue = NodeDetailsDeriverMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = NodeDetailsDeriverMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+NodeDetailsDeriverMDB.SUBSCRIBER+"'")
         })
 public class NodeDetailsDeriverMDB extends RetryCapableMDB<Trace, NodeDetails> {
 
@@ -48,6 +49,13 @@ public class NodeDetailsDeriverMDB extends RetryCapableMDB<Trace, NodeDetails> {
 
     @Inject
     private NodeDetailsPublisher nodeDetailsPublisher;
+
+    /**  */
+    public static final String SUBSCRIBER = "NodeDetailsDeriver";
+
+    public NodeDetailsDeriverMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {

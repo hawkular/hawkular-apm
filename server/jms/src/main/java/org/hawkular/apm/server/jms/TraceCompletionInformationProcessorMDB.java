@@ -38,9 +38,10 @@ activationConfig =
     @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionInformation"),
     @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
     @ActivationConfigProperty(propertyName = "clientID",
-                        propertyValue = "TraceCompletionInformationProcessor"),
+                        propertyValue = TraceCompletionInformationProcessorMDB.SUBSCRIBER),
     @ActivationConfigProperty(propertyName = "subscriptionName",
-                        propertyValue = "TraceCompletionInformationProcessor")
+                        propertyValue = TraceCompletionInformationProcessorMDB.SUBSCRIBER),
+    @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionInformationProcessorMDB.SUBSCRIBER+"'")
 })
 public class TraceCompletionInformationProcessorMDB
         extends RetryCapableMDB<TraceCompletionInformation, TraceCompletionInformation> {
@@ -50,6 +51,13 @@ public class TraceCompletionInformationProcessorMDB
 
     @Inject
     private TraceCompletionInformationProcessor traceCompletionInformationProcessor;
+
+    /**  */
+    public static final String SUBSCRIBER = "TraceCompletionInformationProcessor";
+
+    public TraceCompletionInformationProcessorMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {

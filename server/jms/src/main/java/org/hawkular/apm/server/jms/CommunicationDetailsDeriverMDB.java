@@ -39,8 +39,9 @@ activationConfig =
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
     @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-    @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsDeriver"),
-    @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsDeriver")
+    @ActivationConfigProperty(propertyName = "clientID", propertyValue = CommunicationDetailsDeriverMDB.SUBSCRIBER),
+    @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = CommunicationDetailsDeriverMDB.SUBSCRIBER),
+    @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+CommunicationDetailsDeriverMDB.SUBSCRIBER+"'")
 })
 public class CommunicationDetailsDeriverMDB extends RetryCapableMDB<Trace, CommunicationDetails> {
 
@@ -52,6 +53,13 @@ public class CommunicationDetailsDeriverMDB extends RetryCapableMDB<Trace, Commu
 
     @Inject
     private CommunicationDetailsDeriver communicationDetailsDeriver;
+
+    /**  */
+    public static final String SUBSCRIBER = "CommunicationDetailsDeriver";
+
+    public CommunicationDetailsDeriverMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {
