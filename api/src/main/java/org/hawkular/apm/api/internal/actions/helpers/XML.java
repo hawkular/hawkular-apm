@@ -163,7 +163,7 @@ public class XML {
      * @return
      */
     protected static String getExpression(String expr) {
-        StringBuffer buf=new StringBuffer(expr);
+        StringBuilder buf=new StringBuilder(expr);
         int startIndex=-1;
         do {
             startIndex=buf.indexOf("*:");

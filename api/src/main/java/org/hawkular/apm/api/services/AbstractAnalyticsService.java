@@ -531,7 +531,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      * @return The regular expression
      */
     protected static String createRegex(String endpoint, boolean meta) {
-        StringBuffer regex = new StringBuffer();
+        StringBuilder regex = new StringBuilder();
 
         regex.append('^');
 
