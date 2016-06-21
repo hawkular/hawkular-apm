@@ -227,7 +227,7 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p1);
 
         try {
-            deriver.processSingle(null, trace1);
+            deriver.processOneToOne(null, trace1);
             fail("Should have thrown exception");
         } catch (Exception e) {
         }
@@ -306,7 +306,7 @@ public class CommunicationDetailsDeriverTest {
         try {
             deriver.initialise(null, traces1);
             deriver.initialise(null, traces2);
-            details = deriver.processSingle(null, trace2);
+            details = deriver.processOneToOne(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -412,7 +412,7 @@ public class CommunicationDetailsDeriverTest {
         try {
             deriver.initialise(null, traces1);
             deriver.initialise(null, traces2);
-            details = deriver.processSingle(null, trace2);
+            details = deriver.processOneToOne(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }
@@ -482,7 +482,7 @@ public class CommunicationDetailsDeriverTest {
         try {
             deriver.initialise(null, traces1);
             deriver.initialise(null, traces2);
-            details = deriver.processSingle(null, trace2);
+            details = deriver.processOneToOne(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
         }

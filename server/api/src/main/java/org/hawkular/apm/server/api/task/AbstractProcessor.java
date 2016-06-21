@@ -28,6 +28,25 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
     /**  */
     private static final int DEFAULT_RETRY_DELAY = 1000;
 
+    private ProcessorType type;
+
+    /**
+     * This constructor initialises the type of the processor.
+     *
+     * @param type The type
+     */
+    public AbstractProcessor(ProcessorType type) {
+        this.type = type;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.server.api.task.Processor#getType()
+     */
+    @Override
+    public org.hawkular.apm.server.api.task.Processor.ProcessorType getType() {
+        return type;
+    }
+
     /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#initialise(java.lang.String,java.util.List)
      */
@@ -50,6 +69,30 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
     public long getRetryDelay(List<T> items) {
         // HWKAPM-482 - need to consider best way to determine retry interval/delay
         return DEFAULT_RETRY_DELAY;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.server.api.task.Processor#processOneToOne(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public R processOneToOne(String tenantId, T item) throws Exception {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.server.api.task.Processor#processOneToMany(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public List<R> processOneToMany(String tenantId, T item) throws Exception {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.server.api.task.Processor#processManyToMany(java.lang.String, java.util.List)
+     */
+    @Override
+    public List<R> processManyToMany(String tenantId, List<T> items) throws Exception {
+        return null;
     }
 
     /* (non-Javadoc)

@@ -19,6 +19,8 @@ package org.hawkular.apm.server.api.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
+
 /**
  * This class provides a processing unit for processing a batch of
  * items against a defined processor, and managing the results and/or
@@ -102,32 +104,40 @@ public class ProcessingUnit<T, R> implements Handler<T> {
 
         processor.initialise(tenantId, items);
 
-        for (int i = 0; i < items.size(); i++) {
+        if (processor.getType() == ProcessorType.ManyToMany) {
             try {
-                if (processor.isMultiple()) {
-                    List<R> result = processor.processMultiple(tenantId, items.get(i));
-                    if (resultHandler != null && result != null && !result.isEmpty()) {
-                        if (results == null) {
-                            results = new ArrayList<R>();
-                        }
-                        results.addAll(result);
-                    }
-                } else {
-                    R result = processor.processSingle(tenantId, items.get(i));
-                    if (resultHandler != null && result != null) {
-                        if (results == null) {
-                            results = new ArrayList<R>();
-                        }
-                        results.add(result);
-                    }
-                }
+                results = processor.processManyToMany(tenantId, items);
             } catch (Exception e) {
-                if (retryHandler != null) {
-                    if (retries == null) {
-                        retries = new ArrayList<T>();
+                retries = items;
+            }
+        } else {
+            for (int i = 0; i < items.size(); i++) {
+                try {
+                    if (processor.getType() == ProcessorType.OneToMany) {
+                        List<R> result = processor.processOneToMany(tenantId, items.get(i));
+                        if (resultHandler != null && result != null && !result.isEmpty()) {
+                            if (results == null) {
+                                results = new ArrayList<R>();
+                            }
+                            results.addAll(result);
+                        }
+                    } else {
+                        R result = processor.processOneToOne(tenantId, items.get(i));
+                        if (resultHandler != null && result != null) {
+                            if (results == null) {
+                                results = new ArrayList<R>();
+                            }
+                            results.add(result);
+                        }
                     }
-                    retries.add(items.get(i));
-                    lastException = e;
+                } catch (Exception e) {
+                    if (retryHandler != null) {
+                        if (retries == null) {
+                            retries = new ArrayList<T>();
+                        }
+                        retries.add(items.get(i));
+                        lastException = e;
+                    }
                 }
             }
         }

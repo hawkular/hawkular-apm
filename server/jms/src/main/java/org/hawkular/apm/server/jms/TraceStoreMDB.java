@@ -28,24 +28,24 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.TraceService;
+import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "Trace_Store", messageListenerInterface = MessageListener.class,
-        activationConfig =
-        {
-                @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
-                @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceStore"),
-                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceStore")
-        })
-public class TraceStoreMDB extends BulkProcessingMDB<Trace> {
+@MessageDriven(name = "Trace_Store", messageListenerInterface = MessageListener.class, activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceStore"),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceStore")
+})
+public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
 
-    private static final Logger perfLog=Logger.getLogger("org.hawkular.apm.performance.trace");
+    private static final Logger perfLog = Logger.getLogger("org.hawkular.apm.performance.trace");
 
     @Inject
     private TracePublisherJMS tracePublisher;
@@ -58,23 +58,24 @@ public class TraceStoreMDB extends BulkProcessingMDB<Trace> {
         setRetryPublisher(tracePublisher);
         setTypeReference(new TypeReference<java.util.List<Trace>>() {
         });
-    }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
-     */
-    @Override
-    protected void bulkProcess(String tenantId, List<Trace> items, int retryCount) throws Exception {
-        long startTime=0;
-        if (perfLog.isLoggable(Level.FINEST)) {
-            startTime = System.currentTimeMillis();
-            perfLog.finest("Performance: about to store trace (first id="+items.get(0).getId()+")");
-        }
-        traceService.storeTraces(tenantId, items);
-        if (perfLog.isLoggable(Level.FINEST)) {
-            perfLog.finest("Performance: store trace (first id="+items.get(0).getId()+") duration="+
-                        (System.currentTimeMillis()-startTime)+"ms");
-        }
+        setProcessor(new AbstractProcessor<Trace, Void>(ProcessorType.ManyToMany) {
+
+            @Override
+            public List<Void> processManyToMany(String tenantId, List<Trace> items) throws Exception {
+                long startTime = 0;
+                if (perfLog.isLoggable(Level.FINEST)) {
+                    startTime = System.currentTimeMillis();
+                    perfLog.finest("Performance: about to store trace (first id=" + items.get(0).getId() + ")");
+                }
+                traceService.storeTraces(tenantId, items);
+                if (perfLog.isLoggable(Level.FINEST)) {
+                    perfLog.finest("Performance: store trace (first id=" + items.get(0).getId() + ") duration=" +
+                            (System.currentTimeMillis() - startTime) + "ms");
+                }
+                return null;
+            }
+        });
     }
 
 }

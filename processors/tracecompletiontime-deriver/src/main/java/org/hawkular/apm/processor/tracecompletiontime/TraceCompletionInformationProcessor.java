@@ -33,7 +33,7 @@ import org.hawkular.apm.server.api.task.AbstractProcessor;
  * @author gbrown
  */
 public class TraceCompletionInformationProcessor extends
-                    AbstractProcessor<TraceCompletionInformation, TraceCompletionInformation> {
+        AbstractProcessor<TraceCompletionInformation, TraceCompletionInformation> {
 
     private static final Logger log = Logger.getLogger(TraceCompletionInformationProcessor.class.getName());
 
@@ -41,6 +41,13 @@ public class TraceCompletionInformationProcessor extends
 
     @Inject
     private CommunicationDetailsCache communicationDetailsCache;
+
+    /**
+     * The default constructor.
+     */
+    public TraceCompletionInformationProcessor() {
+        super(ProcessorType.OneToOne);
+    }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#getDeliveryDelay(java.util.List)
@@ -68,19 +75,11 @@ public class TraceCompletionInformationProcessor extends
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isMultiple()
-     */
-    @Override
-    public boolean isMultiple() {
-        return false;
-    }
-
-    /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
      */
     @Override
-    public TraceCompletionInformation processSingle(String tenantId,
-                            TraceCompletionInformation item) throws Exception {
+    public TraceCompletionInformation processOneToOne(String tenantId,
+            TraceCompletionInformation item) throws Exception {
 
         if (!item.getCommunications().isEmpty()) {
             long currentTime = System.currentTimeMillis();
@@ -172,8 +171,8 @@ public class TraceCompletionInformationProcessor extends
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
      */
     @Override
-    public List<TraceCompletionInformation> processMultiple(String tenantId,
-                            TraceCompletionInformation item) throws Exception {
+    public List<TraceCompletionInformation> processOneToMany(String tenantId,
+            TraceCompletionInformation item) throws Exception {
         return null;
     }
 }

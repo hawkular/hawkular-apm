@@ -42,19 +42,18 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
 
     private static final Logger log = Logger.getLogger(NodeDetailsDeriver.class.getName());
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isMultiple()
+    /**
+     * The default constructor.
      */
-    @Override
-    public boolean isMultiple() {
-        return true;
+    public NodeDetailsDeriver() {
+        super(ProcessorType.OneToMany);
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public NodeDetails processSingle(String tenantId, Trace item) throws Exception {
+    public NodeDetails processOneToOne(String tenantId, Trace item) throws Exception {
         return null;
     }
 
@@ -62,7 +61,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<NodeDetails> processMultiple(String tenantId, Trace item) throws Exception {
+    public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws Exception {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
         long baseTime = 0;
@@ -99,9 +98,9 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
             // distort derived statistics. See HWKBTM-434.
             boolean ignoreNode = false;
             boolean ignoreChildNodes = false;
-            if (n.getClass() == Consumer.class && ((Consumer)n).getEndpointType() == null) {
+            if (n.getClass() == Consumer.class && ((Consumer) n).getEndpointType() == null) {
                 ignoreNode = true;
-            } else if (n.getClass() == Producer.class && ((Producer)n).getEndpointType() == null) {
+            } else if (n.getClass() == Producer.class && ((Producer) n).getEndpointType() == null) {
                 ignoreNode = true;
                 ignoreChildNodes = true;
             }
@@ -123,7 +122,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                         childElapsed += ((ContainerNode) n).getNodes().get(j).getDuration();
                     }
                 }
-                nd.setActual(n.getDuration()-childElapsed);
+                nd.setActual(n.getDuration() - childElapsed);
 
                 if (n.getType() == NodeType.Component) {
                     nd.setComponentType(((Component) n).getComponentType());

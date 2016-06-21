@@ -26,22 +26,22 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.AnalyticsService;
+import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "TraceCompletionTimes_Store", messageListenerInterface = MessageListener.class,
-        activationConfig =
-        {
-                @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionTimes"),
-                @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceCompletionTimeStore"),
-                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceCompletionTimeStore")
-        })
-public class TraceCompletionTimeStoreMDB extends BulkProcessingMDB<CompletionTime> {
+@MessageDriven(name = "TraceCompletionTimes_Store", messageListenerInterface = MessageListener.class, activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionTimes"),
+        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "TraceCompletionTimeStore"),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "TraceCompletionTimeStore")
+})
+public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime, Void> {
 
     @Inject
     private TraceCompletionTimePublisherJMS traceCompletionTimePublisher;
@@ -54,14 +54,15 @@ public class TraceCompletionTimeStoreMDB extends BulkProcessingMDB<CompletionTim
         setRetryPublisher(traceCompletionTimePublisher);
         setTypeReference(new TypeReference<java.util.List<CompletionTime>>() {
         });
-    }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.BulkProcessingMDB#bulkProcess(java.lang.String, java.util.List, int)
-     */
-    @Override
-    protected void bulkProcess(String tenantId, List<CompletionTime> items, int retryCount) throws Exception {
-        analyticsService.storeTraceCompletionTimes(tenantId, items);
+        setProcessor(new AbstractProcessor<CompletionTime, Void>(ProcessorType.ManyToMany) {
+
+            @Override
+            public List<Void> processManyToMany(String tenantId, List<CompletionTime> items) throws Exception {
+                analyticsService.storeTraceCompletionTimes(tenantId, items);
+                return null;
+            }
+        });
     }
 
 }

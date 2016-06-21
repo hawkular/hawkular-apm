@@ -52,6 +52,13 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
 
     private ProducerInfoInitialiser producerInfoInitialiser;
 
+    /**
+     * The default constructor.
+     */
+    public CommunicationDetailsDeriver() {
+        super(ProcessorType.OneToOne);
+    }
+
     @PostConstruct
     public void init() {
         producerInfoInitialiser = new ProducerInfoInitialiser();
@@ -81,18 +88,10 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isMultiple()
-     */
-    @Override
-    public boolean isMultiple() {
-        return false;
-    }
-
-    /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CommunicationDetails processSingle(String tenantId, Trace item) throws Exception {
+    public CommunicationDetails processOneToOne(String tenantId, Trace item) throws Exception {
         CommunicationDetails ret = null;
 
         if (log.isLoggable(Level.FINEST)) {
@@ -221,7 +220,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<CommunicationDetails> processMultiple(String tenantId, Trace item) throws Exception {
+    public List<CommunicationDetails> processOneToMany(String tenantId, Trace item) throws Exception {
         return null;
     }
 

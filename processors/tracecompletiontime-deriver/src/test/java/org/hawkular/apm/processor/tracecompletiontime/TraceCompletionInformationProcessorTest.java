@@ -43,7 +43,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -63,7 +63,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -89,7 +89,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -138,7 +138,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -191,7 +191,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -246,7 +246,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -306,7 +306,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -378,7 +378,7 @@ public class TraceCompletionInformationProcessorTest {
         TraceCompletionInformation result = null;
 
         try {
-            result = processor.processSingle(null, info);
+            result = processor.processOneToOne(null, info);
         } catch (Exception e) {
             fail("Failed: " + e);
         }

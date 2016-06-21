@@ -35,19 +35,18 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
 
     private static final Logger log = Logger.getLogger(FragmentCompletionTimeDeriver.class.getName());
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isMultiple()
+    /**
+     * The default constructor.
      */
-    @Override
-    public boolean isMultiple() {
-        return false;
+    public FragmentCompletionTimeDeriver() {
+        super(ProcessorType.OneToOne);
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CompletionTime processSingle(String tenantId, Trace item) throws Exception {
+    public CompletionTime processOneToOne(String tenantId, Trace item) throws Exception {
         // Check fragment has top level node
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -83,7 +82,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<CompletionTime> processMultiple(String tenantId, Trace item) throws Exception {
+    public List<CompletionTime> processOneToMany(String tenantId, Trace item) throws Exception {
         return null;
     }
 }

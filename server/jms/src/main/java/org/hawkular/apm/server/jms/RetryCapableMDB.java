@@ -24,13 +24,18 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.hawkular.apm.api.services.Publisher;
+import org.hawkular.apm.server.api.task.Handler;
+import org.hawkular.apm.server.api.task.ProcessingUnit;
+import org.hawkular.apm.server.api.task.Processor;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author gbrown
  */
-public abstract class RetryCapableMDB<S> implements MessageListener {
+public abstract class RetryCapableMDB<S,T> implements MessageListener {
 
     private static final Logger log = Logger.getLogger(RetryCapableMDB.class.getName());
 
@@ -42,6 +47,38 @@ public abstract class RetryCapableMDB<S> implements MessageListener {
     private TypeReference<java.util.List<S>> typeReference;
 
     private AbstractPublisherJMS<S> retryPublisher;
+
+    private Processor<S, T> processor;
+
+    private Publisher<T> publisher;
+
+    /**
+     * @return the processor
+     */
+    public Processor<S, T> getProcessor() {
+        return processor;
+    }
+
+    /**
+     * @param processor the processor to set
+     */
+    public void setProcessor(Processor<S, T> processor) {
+        this.processor = processor;
+    }
+
+    /**
+     * @return the publisher
+     */
+    public Publisher<T> getPublisher() {
+        return publisher;
+    }
+
+    /**
+     * @param publisher the publisher to set
+     */
+    public void setPublisher(Publisher<T> publisher) {
+        this.publisher = publisher;
+    }
 
     /**
      * @return the retryPublisher
@@ -110,6 +147,30 @@ public abstract class RetryCapableMDB<S> implements MessageListener {
      * @param retryCount The remaining retry count
      * @throws Failed to process items
      */
-    protected abstract void process(String tenantId, List<S> items, int retryCount) throws Exception;
+    protected void process(String tenantId, List<S> items, int retryCount) throws Exception {
+        ProcessingUnit<S, T> pu =
+                new ProcessingUnit<S, T>();
+
+        pu.setProcessor(getProcessor());
+        pu.setRetryCount(retryCount);
+
+        pu.setResultHandler(new Handler<T>() {
+            @Override
+            public void handle(String tenantId, List<T> items) throws Exception {
+                getPublisher().publish(tenantId, items, getPublisher().getInitialRetryCount(),
+                        getProcessor().getDeliveryDelay(items));
+            }
+        });
+
+        pu.setRetryHandler(new Handler<S>() {
+            @Override
+            public void handle(String tenantId, List<S> items) throws Exception {
+                getRetryPublisher().publish(tenantId, items, pu.getRetryCount() - 1,
+                        getProcessor().getRetryDelay(items));
+            }
+        });
+
+        pu.handle(tenantId, items);
+    }
 
 }

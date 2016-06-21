@@ -40,7 +40,7 @@ public class TraceCompletionInformationInitiatorTest {
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
         try {
-            assertNull(initiator.processSingle(null, trace));
+            assertNull(initiator.processOneToOne(null, trace));
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -56,7 +56,7 @@ public class TraceCompletionInformationInitiatorTest {
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
         try {
-            assertNull(initiator.processSingle(null, trace));
+            assertNull(initiator.processOneToOne(null, trace));
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -83,7 +83,7 @@ public class TraceCompletionInformationInitiatorTest {
         TraceCompletionInformation ci = null;
 
         try {
-            ci = initiator.processSingle(null, trace);
+            ci = initiator.processOneToOne(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -121,7 +121,7 @@ public class TraceCompletionInformationInitiatorTest {
         TraceCompletionInformation ci = null;
 
         try {
-            ci = initiator.processSingle(null, trace);
+            ci = initiator.processOneToOne(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
@@ -164,7 +164,7 @@ public class TraceCompletionInformationInitiatorTest {
         TraceCompletionInformation ci = null;
 
         try {
-            ci = initiator.processSingle(null, trace);
+            ci = initiator.processOneToOne(null, trace);
         } catch (Exception e) {
             fail("Failed: " + e);
         }
