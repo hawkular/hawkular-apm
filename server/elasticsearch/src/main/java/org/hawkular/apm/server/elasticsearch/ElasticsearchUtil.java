@@ -52,7 +52,7 @@ public class ElasticsearchUtil {
                 .must(QueryBuilders.rangeQuery(timeProperty).from(startTime).to(endTime));
 
         if (criteria.getBusinessTransaction() != null
-                && criteria.getBusinessTransaction().trim().length() > 0) {
+                && !criteria.getBusinessTransaction().trim().isEmpty()) {
             query = query.must(QueryBuilders.termQuery(businessTxnProperty, criteria.getBusinessTransaction()));
         }
 
@@ -93,11 +93,11 @@ public class ElasticsearchUtil {
             }
         }
 
-        if (criteria.getHostName() != null && criteria.getHostName().trim().length() > 0) {
+        if (criteria.getHostName() != null && !criteria.getHostName().trim().isEmpty()) {
             query = query.must(QueryBuilders.matchQuery("hostName", criteria.getHostName()));
         }
 
-        if (criteria.getPrincipal() != null && criteria.getPrincipal().trim().length() > 0) {
+        if (criteria.getPrincipal() != null && !criteria.getPrincipal().trim().isEmpty()) {
             query = query.must(QueryBuilders.matchQuery("principal", criteria.getPrincipal()));
         }
 
@@ -145,7 +145,7 @@ public class ElasticsearchUtil {
      * @return The filter, or null if not relevant
      */
     public static FilterBuilder buildFilter(Criteria criteria) {
-        if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().length() == 0) {
+        if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().isEmpty()) {
             return FilterBuilders.missingFilter("businessTransaction");
         }
         return null;

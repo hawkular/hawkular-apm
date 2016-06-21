@@ -76,7 +76,7 @@ public class JSON {
      */
     public static boolean predicate(String jsonpath, Object data) {
         // No jsonpath means return false
-        if (jsonpath == null || jsonpath.trim().length() == 0) {
+        if (jsonpath == null || jsonpath.trim().isEmpty()) {
             return false;
         }
 
@@ -89,7 +89,7 @@ public class JSON {
                 } else if (result.getClass() == String.class) {
                     return Boolean.valueOf((String)result);
                 } else if (result.getClass() == JSONArray.class) {
-                    return ((JSONArray)result).size() > 0;
+                    return !((JSONArray) result).isEmpty();
                 }
             }
         }
@@ -108,7 +108,7 @@ public class JSON {
         String json = serialize(data);
 
         // No jsonpath means return serialized form
-        if (jsonpath == null || jsonpath.trim().length() == 0) {
+        if (jsonpath == null || jsonpath.trim().isEmpty()) {
             return json;
         }
 
@@ -117,7 +117,7 @@ public class JSON {
             if (result != null) {
                 if (result.getClass() == JSONArray.class) {
                     JSONArray arr=(JSONArray)result;
-                    if (arr.size() == 0) {
+                    if (arr.isEmpty()) {
                         result = null;
                     } else if (arr.size() == 1) {
                         result = arr.get(0);

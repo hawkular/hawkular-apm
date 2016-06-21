@@ -1392,7 +1392,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             Trace trace = builder.getTrace();
 
             if (trace.getBusinessTransaction() != null
-                    || (trace.getNodes().size() > 0
+                    || (!trace.getNodes().isEmpty()
                     && !trace.getNodes().get(0).getCorrelationIds().isEmpty())) {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("activate: Already active, with btxn name or top level node having correlation ids");

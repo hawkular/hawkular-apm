@@ -43,7 +43,7 @@ public class RESTServiceUtil {
      * @param encoded The string containing the encoded properties
      */
     public static void decodeProperties(Set<PropertyCriteria> properties, String encoded) {
-        if (encoded != null && encoded.trim().length() > 0) {
+        if (encoded != null && !encoded.trim().isEmpty()) {
             StringTokenizer st = new StringTokenizer(encoded, ",");
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
@@ -72,7 +72,7 @@ public class RESTServiceUtil {
      * @param encoded The string containing the encoded correlation identifiers
      */
     public static void decodeCorrelationIdentifiers(Set<CorrelationIdentifier> correlations, String encoded) {
-        if (encoded != null && encoded.trim().length() > 0) {
+        if (encoded != null && !encoded.trim().isEmpty()) {
             StringTokenizer st = new StringTokenizer(encoded, ",");
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
@@ -100,7 +100,7 @@ public class RESTServiceUtil {
      * @param encoded The string containing the encoded faults
      */
     public static void decodeFaults(Set<FaultCriteria> faults, String encoded) {
-        if (encoded != null && encoded.trim().length() > 0) {
+        if (encoded != null && !encoded.trim().isEmpty()) {
             StringTokenizer st = new StringTokenizer(encoded, ",");
             while (st.hasMoreTokens()) {
                 String fault = st.nextToken();

@@ -145,7 +145,7 @@ public class TraceReporter {
             public void run() {
                 // Initial check, to avoid doing too much work if no business
                 // transactions reported
-                if (traces.size() > 0) {
+                if (!traces.isEmpty()) {
                     try {
                         lock.lock();
                         submitTraces();
@@ -204,7 +204,7 @@ public class TraceReporter {
      * This method submits the current list of traces
      */
     protected void submitTraces() {
-        if (traces.size() > 0) {
+        if (!traces.isEmpty()) {
             // Locally store list and create new list for subsequent traces
             List<Trace> toSend=traces;
             traces = new ArrayList<Trace>();
