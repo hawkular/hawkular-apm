@@ -51,6 +51,20 @@
     </xsl:copy>
   </xsl:template>
 
+  <!-- Enable property replacement on MDB annotations -->
+  <xsl:template match="node()[name(.)='spec-descriptor-property-replacement'][last()]">
+
+    <xsl:variable name="enablePropertyReplacement">
+      <annotation-property-replacement>true</annotation-property-replacement>
+    </xsl:variable>
+
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+    <xsl:copy-of select="$enablePropertyReplacement" />
+
+  </xsl:template>
+
   <!-- Add new cache container -->
   <xsl:template match="node()[name(.)='cache-container'][last()]">
 

@@ -51,6 +51,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces = new ArrayList<Trace>();
 
@@ -91,6 +92,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces = new ArrayList<Trace>();
 
@@ -146,6 +148,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces = new ArrayList<Trace>();
 
@@ -198,6 +201,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces = new ArrayList<Trace>();
 
@@ -235,6 +239,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces1 = new ArrayList<Trace>();
 
@@ -341,6 +346,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces1 = new ArrayList<Trace>();
 
@@ -422,6 +428,7 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
         deriver.setProducerInfoCache(cache);
+        deriver.init();
 
         List<Trace> traces1 = new ArrayList<Trace>();
 

@@ -436,7 +436,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                     }
                     for (String filter : config.getFilter().getInclusions()) {
 
-                        if (filter != null && filter.trim().length() > 0) {
+                        if (filter != null && !filter.trim().isEmpty()) {
                             Iterator<EndpointInfo> iter = ret.iterator();
                             while (iter.hasNext()) {
                                 EndpointInfo info = iter.next();

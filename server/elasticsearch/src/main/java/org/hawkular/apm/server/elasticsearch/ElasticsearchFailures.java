@@ -14,33 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.communicationdetails;
-
-import java.util.List;
+package org.hawkular.apm.server.elasticsearch;
 
 /**
- * This interface represents a cache for producer info.
+ * This class is an exception representing Elasticsearch failures.
  *
  * @author gbrown
  */
-public interface ProducerInfoCache {
+public class ElasticsearchFailures extends Exception {
+
+    /**  */
+    private static final long serialVersionUID = -5863892714328876036L;
 
     /**
-     * This method retrieves the producer information based on the supplied
-     * id.
+     * This constructor initialises the exception message.
      *
-     * @param tenentId The tenant id
-     * @param id The id
-     * @return The producer info, or null if not found
+     * @param mesg The elasticsearch failure message
      */
-    ProducerInfo get(String tenantId, String id);
-
-    /**
-     * This methods stores the producer information in the cache.
-     *
-     * @param tenentId The tenant id
-     * @param producerInfoList The producer information list
-     */
-    void store(String tenantId, List<ProducerInfo> producerInfoList);
+    public ElasticsearchFailures(String mesg) {
+        super(mesg);
+    }
 
 }

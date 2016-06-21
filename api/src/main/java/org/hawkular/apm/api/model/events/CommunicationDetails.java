@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.utils.SerializationUtil;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -569,10 +570,10 @@ public class CommunicationDetails implements Externalizable {
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Version
 
-        id = ois.readUTF();
-        businessTransaction = ois.readUTF();
-        source = ois.readUTF();
-        target = ois.readUTF();
+        id = SerializationUtil.deserializeString(ois);
+        businessTransaction = SerializationUtil.deserializeString(ois);
+        source = SerializationUtil.deserializeString(ois);
+        target = SerializationUtil.deserializeString(ois);
         multiConsumer = ois.readBoolean();
         internal = ois.readBoolean();
         timestamp = ois.readLong();
@@ -580,14 +581,14 @@ public class CommunicationDetails implements Externalizable {
         consumerDuration = ois.readLong();
         producerDuration = ois.readLong();
         timestampOffset = ois.readLong();
-        sourceFragmentId = ois.readUTF();
-        sourceHostName = ois.readUTF();
-        sourceHostAddress = ois.readUTF();
-        targetFragmentId = ois.readUTF();
-        targetHostName = ois.readUTF();
-        targetHostAddress = ois.readUTF();
+        sourceFragmentId = SerializationUtil.deserializeString(ois);
+        sourceHostName = SerializationUtil.deserializeString(ois);
+        sourceHostAddress = SerializationUtil.deserializeString(ois);
+        targetFragmentId = SerializationUtil.deserializeString(ois);
+        targetHostName = SerializationUtil.deserializeString(ois);
+        targetHostAddress = SerializationUtil.deserializeString(ois);
         targetFragmentDuration = ois.readLong();
-        principal = ois.readUTF();
+        principal = SerializationUtil.deserializeString(ois);
 
         int size = ois.readInt();
         for (int i = 0; i < size; i++) {
@@ -607,10 +608,10 @@ public class CommunicationDetails implements Externalizable {
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Version
 
-        oos.writeUTF(id);
-        oos.writeUTF(businessTransaction);
-        oos.writeUTF(source);
-        oos.writeUTF(target);
+        SerializationUtil.serializeString(oos, id);
+        SerializationUtil.serializeString(oos, businessTransaction);
+        SerializationUtil.serializeString(oos, source);
+        SerializationUtil.serializeString(oos, target);
         oos.writeBoolean(multiConsumer);
         oos.writeBoolean(internal);
         oos.writeLong(timestamp);
@@ -618,14 +619,14 @@ public class CommunicationDetails implements Externalizable {
         oos.writeLong(consumerDuration);
         oos.writeLong(producerDuration);
         oos.writeLong(timestampOffset);
-        oos.writeUTF(sourceFragmentId);
-        oos.writeUTF(sourceHostName);
-        oos.writeUTF(sourceHostAddress);
-        oos.writeUTF(targetFragmentId);
-        oos.writeUTF(targetHostName);
-        oos.writeUTF(targetHostAddress);
+        SerializationUtil.serializeString(oos, sourceFragmentId);
+        SerializationUtil.serializeString(oos, sourceHostName);
+        SerializationUtil.serializeString(oos, sourceHostAddress);
+        SerializationUtil.serializeString(oos, targetFragmentId);
+        SerializationUtil.serializeString(oos, targetHostName);
+        SerializationUtil.serializeString(oos, targetHostAddress);
         oos.writeLong(targetFragmentDuration);
-        oos.writeUTF(principal);
+        SerializationUtil.serializeString(oos, principal);
 
         oos.writeInt(properties.size());
         for (Property property : properties) {

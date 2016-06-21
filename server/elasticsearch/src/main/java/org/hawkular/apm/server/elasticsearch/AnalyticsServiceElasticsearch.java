@@ -1039,13 +1039,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         if (bulkItemResponses.hasFailures()) {
 
-            // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store communication details: " + bulkItemResponses.buildFailureMessage());
-
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Failed to store communication details to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
+
+            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
+
         } else {
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Success storing communication details to elasticsearch");
@@ -1078,13 +1078,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         if (bulkItemResponses.hasFailures()) {
 
-            // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store node details: " + bulkItemResponses.buildFailureMessage());
-
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Failed to store node details to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
+
+            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
+
         } else {
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Success storing node details to elasticsearch");
@@ -1117,13 +1117,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         if (bulkItemResponses.hasFailures()) {
 
-            // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store btxn completion times: " + bulkItemResponses.buildFailureMessage());
-
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Failed to store btxn completion times to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
+
+            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
+
         } else {
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Success storing btxn completion times to elasticsearch");
@@ -1157,13 +1157,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         if (bulkItemResponses.hasFailures()) {
 
-            // TODO: Candidate for retry??? HWKBTM-187
-            msgLog.error("Failed to store fragment completion times: " + bulkItemResponses.buildFailureMessage());
-
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Failed to store fragment completion times to elasticsearch: "
                         + bulkItemResponses.buildFailureMessage());
             }
+
+            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
+
         } else {
             if (msgLog.isTraceEnabled()) {
                 msgLog.trace("Success storing fragment completion times to elasticsearch");
@@ -1214,7 +1214,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             for (int i = 0; i < btxns.size(); i++) {
                 Trace trace = btxns.get(i);
 
-                if (trace.getHostName() != null && trace.getHostName().trim().length() != 0
+                if (trace.getHostName() != null && !trace.getHostName().trim().isEmpty()
                         && !ret.contains(trace.getHostName())) {
                     ret.add(trace.getHostName());
                 }

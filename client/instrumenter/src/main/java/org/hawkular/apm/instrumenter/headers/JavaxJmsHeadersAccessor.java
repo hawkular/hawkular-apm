@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.instrumenter.headers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class JavaxJmsHeadersAccessor implements HeadersAccessor {
                 try {
                     String value = (String) getHeaderMethod.invoke(target, key);
                     ret.put(key, value);
-                } catch (Exception e) {
+                } catch (IllegalAccessException|IllegalArgumentException|InvocationTargetException e) {
                     // Ignore property
                 }
             }

@@ -33,7 +33,7 @@ public class EndpointUtil {
      */
     public static String encodeEndpoint(String uri, String operation) {
         StringBuilder buf=new StringBuilder(uri);
-        if (operation != null && operation.trim().length() > 0) {
+        if (operation != null && !operation.trim().isEmpty()) {
             buf.append('[');
             buf.append(operation);
             buf.append(']');

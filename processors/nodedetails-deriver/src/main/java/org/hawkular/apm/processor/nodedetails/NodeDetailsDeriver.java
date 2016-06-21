@@ -131,15 +131,15 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                     nd.setComponentType(n.getType().name());
                 }
 
-                if (n.getFault() != null && n.getFault().trim().length() > 0) {
+                if (n.getFault() != null && !n.getFault().trim().isEmpty()) {
                     nd.setFault(n.getFault());
                 }
 
-                if (trace.getHostName() != null && trace.getHostName().trim().length() > 0) {
+                if (trace.getHostName() != null && !trace.getHostName().trim().isEmpty()) {
                     nd.setHostName(trace.getHostName());
                 }
 
-                if (trace.getPrincipal() != null && trace.getPrincipal().trim().length() > 0) {
+                if (trace.getPrincipal() != null && !trace.getPrincipal().trim().isEmpty()) {
                     nd.setPrincipal(trace.getPrincipal());
                 }
 

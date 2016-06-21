@@ -28,10 +28,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 /**
@@ -104,7 +106,7 @@ public class XML {
             if (result != null) {
                 return result;
             }
-        } catch (Exception e) {
+        } catch (XPathExpressionException e) {
             log.log(Level.SEVERE, "Failed to execute predicate xpath '" + xpath + "'", e);
         }
 
@@ -130,7 +132,7 @@ public class XML {
         }
 
         // If no xpath expression, then serialize
-        if (xpath == null || xpath.trim().length() == 0) {
+        if (xpath == null || xpath.trim().isEmpty()) {
             return serialize(node);
         }
 
@@ -148,7 +150,7 @@ public class XML {
                 }
                 return serialize(result);
             }
-        } catch (Exception e) {
+        } catch (DOMException|XPathExpressionException e) {
             log.log(Level.SEVERE, "Failed to evaluate xpath '" + xpath + "'", e);
         }
 
@@ -275,7 +277,7 @@ public class XML {
             xpath = getExpression(xpath);
             XPath xp = XPathFactory.newInstance().newXPath();
             return (Node) xp.evaluate(xpath, domNode, XPathConstants.NODE);
-        } catch (Exception e) {
+        } catch (XPathExpressionException e) {
             log.log(Level.SEVERE, "Failed to select node for xpath '" + xpath + "'", e);
         }
 

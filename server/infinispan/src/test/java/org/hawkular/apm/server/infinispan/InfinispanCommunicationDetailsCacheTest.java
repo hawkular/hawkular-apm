@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
+import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,13 +40,15 @@ public class InfinispanCommunicationDetailsCacheTest {
     @BeforeClass
     public static void initClass() {
         cm = new DefaultCacheManager();
+        Configuration c = new ConfigurationBuilder().invocationBatching().enable().build();
+        cm.defineConfiguration(InfinispanCommunicationDetailsCache.CACHE_NAME, c);
     }
 
     @Test
     public void testSingleConsumerNotFound() {
         InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
 
-        cdc.setCommunicationDetails(cm.getCache());
+        cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
 
         assertNull(cdc.getSingleConsumer(null, "id1"));
     }
@@ -53,7 +57,7 @@ public class InfinispanCommunicationDetailsCacheTest {
     public void testSingleConsumerFound() {
         InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
 
-        cdc.setCommunicationDetails(cm.getCache());
+        cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
 
         List<CommunicationDetails> details = new ArrayList<CommunicationDetails>();
         CommunicationDetails cd = new CommunicationDetails();
@@ -70,7 +74,7 @@ public class InfinispanCommunicationDetailsCacheTest {
     public void testMultiConsumerFound() {
         InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
 
-        cdc.setCommunicationDetails(cm.getCache());
+        cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
 
         List<CommunicationDetails> details = new ArrayList<CommunicationDetails>();
         CommunicationDetails cd1 = new CommunicationDetails();

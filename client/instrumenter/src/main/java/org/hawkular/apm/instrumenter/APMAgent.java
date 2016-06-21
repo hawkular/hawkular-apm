@@ -41,7 +41,7 @@ public class APMAgent {
     }
 
     protected static String addManager(String agentArgs) {
-        if (agentArgs == null || agentArgs.trim().length() == 0) {
+        if (agentArgs == null || agentArgs.trim().isEmpty()) {
             agentArgs = "";
         } else {
             agentArgs += ",";

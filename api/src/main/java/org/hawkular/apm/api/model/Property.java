@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import org.hawkular.apm.api.utils.SerializationUtil;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -122,7 +124,7 @@ public class Property implements Externalizable {
         if (number == null && value != null && type == PropertyType.Number) {
             try {
                 return Double.valueOf(value);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 // Ignore
             }
         }
@@ -191,8 +193,8 @@ public class Property implements Externalizable {
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
 
-        name = ois.readUTF();
-        value = ois.readUTF();
+        name = SerializationUtil.deserializeString(ois);
+        value = SerializationUtil.deserializeString(ois);
         type = PropertyType.values()[ois.readInt()];
         number = ois.readDouble();
     }
@@ -204,10 +206,10 @@ public class Property implements Externalizable {
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Write version
 
-        oos.writeUTF(name);
-        oos.writeUTF(value);
+        SerializationUtil.serializeString(oos, name);
+        SerializationUtil.serializeString(oos, value);
         oos.writeInt(type.ordinal());
-        oos.writeDouble(number);
+        oos.writeDouble(number == null ? 0 : number);
     }
 
 }

@@ -104,7 +104,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
     {
         uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
-        if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+        if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';
         }
     }
@@ -212,7 +212,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), URIINFO_LIST);
                     } catch (Throwable t) {
@@ -290,7 +290,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), URIINFO_LIST);
                     } catch (Throwable t) {
@@ -363,7 +363,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), PROPERTY_INFO_LIST);
                     } catch (Throwable t) {
@@ -436,7 +436,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), PRINCIPAL_INFO_LIST);
                     } catch (Throwable t) {
@@ -510,7 +510,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return Long.parseLong(resp.toString());
                     } catch (Throwable t) {
@@ -583,7 +583,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return Long.parseLong(resp.toString());
                     } catch (Throwable t) {
@@ -657,7 +657,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), Percentiles.class);
                     } catch (Throwable t) {
@@ -736,7 +736,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), COMPLETION_STATISTICS_LIST);
                     } catch (Throwable t) {
@@ -810,7 +810,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), CARDINALITY_LIST);
                     } catch (Throwable t) {
@@ -886,7 +886,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), CARDINALITY_LIST);
                     } catch (Throwable t) {
@@ -998,7 +998,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), NODE_TIMESERIES_STATISTICS_LIST);
                     } catch (Throwable t) {
@@ -1072,7 +1072,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), NODE_SUMMARY_STATISTICS_LIST);
                     } catch (Throwable t) {
@@ -1154,7 +1154,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), COMMS_SUMMARY_STATISTICS_LIST);
                     } catch (Throwable t) {
@@ -1290,7 +1290,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Returned json=[" + resp.toString() + "]");
                 }
-                if (resp.toString().trim().length() > 0) {
+                if (!resp.toString().trim().isEmpty()) {
                     try {
                         return mapper.readValue(resp.toString(), STRING_LIST);
                     } catch (Throwable t) {

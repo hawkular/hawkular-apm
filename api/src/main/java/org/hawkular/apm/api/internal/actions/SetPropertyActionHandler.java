@@ -60,7 +60,7 @@ public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
 
         SetPropertyAction action = (SetPropertyAction) getAction();
 
-        if (action.getName() == null || action.getName().trim().length() == 0) {
+        if (action.getName() == null || action.getName().trim().isEmpty()) {
             ProcessorIssue pi = new ProcessorIssue();
             pi.setProcessor(processor.getDescription());
             pi.setAction(getAction().getDescription());
