@@ -106,7 +106,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             try {
                 if (processor.isMultiple()) {
                     List<R> result = processor.processMultiple(tenantId, items.get(i));
-                    if (resultHandler != null && result != null && result.size() > 0) {
+                    if (resultHandler != null && result != null && !result.isEmpty()) {
                         if (results == null) {
                             results = new ArrayList<R>();
                         }
@@ -134,11 +134,11 @@ public class ProcessingUnit<T, R> implements Handler<T> {
 
         processor.cleanup(tenantId, items);
 
-        if (results != null && results.size() > 0) {
+        if (results != null && !results.isEmpty()) {
             resultHandler.handle(tenantId, results);
         }
 
-        if (retries != null && retries.size() > 0) {
+        if (retries != null && !retries.isEmpty()) {
             if (getRetryCount() > 0) {
                 retryHandler.handle(tenantId, retries);
             } else {

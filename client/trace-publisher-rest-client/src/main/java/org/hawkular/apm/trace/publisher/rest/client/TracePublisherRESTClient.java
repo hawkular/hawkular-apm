@@ -56,7 +56,7 @@ public class TracePublisherRESTClient implements TracePublisher {
     {
         uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
-        if (uri != null && uri.length() > 0 && uri.charAt(uri.length() - 1) != '/') {
+        if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';
         }
     }

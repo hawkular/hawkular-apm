@@ -273,11 +273,11 @@ public class ProcessorManager {
          * This method initialises the processor.
          */
         protected void init() {
-            if (processor.getUriFilter() != null && processor.getUriFilter().trim().length() > 0) {
+            if (processor.getUriFilter() != null && !processor.getUriFilter().trim().isEmpty()) {
                 uriFilter = Pattern.compile(processor.getUriFilter()).asPredicate();
             }
 
-            if (processor.getFaultFilter() != null && processor.getFaultFilter().trim().length() > 0) {
+            if (processor.getFaultFilter() != null && !processor.getFaultFilter().trim().isEmpty()) {
                 faultFilter = Pattern.compile(processor.getFaultFilter()).asPredicate();
             }
 
@@ -415,7 +415,7 @@ public class ProcessorManager {
 
                 // Check if operation has been specified
                 if (processor.getOperation() != null
-                        && processor.getOperation().trim().length() > 0
+                        && !processor.getOperation().trim().isEmpty()
                         && !processor.getOperation().equals(node.getOperation())) {
                     return;
                 }

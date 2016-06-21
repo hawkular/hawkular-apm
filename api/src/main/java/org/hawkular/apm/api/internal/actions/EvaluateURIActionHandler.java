@@ -97,7 +97,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
 
         EvaluateURIAction action = (EvaluateURIAction) getAction();
 
-        if (action.getTemplate() == null || action.getTemplate().trim().length() == 0) {
+        if (action.getTemplate() == null || action.getTemplate().trim().isEmpty()) {
             ProcessorIssue pi = new ProcessorIssue();
             pi.setProcessor(processor.getDescription());
             pi.setAction(getAction().getDescription());
