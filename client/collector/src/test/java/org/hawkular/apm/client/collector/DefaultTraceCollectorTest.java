@@ -43,6 +43,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.PublisherMetricHandler;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.client.collector.internal.FragmentBuilder;
@@ -1192,7 +1193,7 @@ public class DefaultTraceCollectorTest {
          */
         @Override
         public void storeTraces(String tenantId, List<Trace> businessTransactions)
-                throws Exception {
+                throws StoreException {
         }
 
         /* (non-Javadoc)

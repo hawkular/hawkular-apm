@@ -75,7 +75,7 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
      * @see org.hawkular.apm.server.api.task.Processor#processOneToOne(java.lang.String, java.lang.Object)
      */
     @Override
-    public R processOneToOne(String tenantId, T item) throws Exception {
+    public R processOneToOne(String tenantId, T item) throws RetryAttemptException {
         return null;
     }
 
@@ -83,7 +83,7 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
      * @see org.hawkular.apm.server.api.task.Processor#processOneToMany(java.lang.String, java.lang.Object)
      */
     @Override
-    public List<R> processOneToMany(String tenantId, T item) throws Exception {
+    public List<R> processOneToMany(String tenantId, T item) throws RetryAttemptException {
         return null;
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
      * @see org.hawkular.apm.server.api.task.Processor#processManyToMany(java.lang.String, java.util.List)
      */
     @Override
-    public List<R> processManyToMany(String tenantId, List<T> items) throws Exception {
+    public List<R> processManyToMany(String tenantId, List<T> items) throws RetryAttemptException {
         return null;
     }
 

@@ -52,9 +52,9 @@ public interface TraceService {
      *
      * @param tenantId The tenant id
      * @param traces The traces
-     * @throws Exception Failed to store
+     * @throws StoreException Failed to store
      */
-    void storeTraces(String tenantId, List<Trace> traces) throws Exception;
+    void storeTraces(String tenantId, List<Trace> traces) throws StoreException;
 
     /**
      * This method clears the trace data for the supplied tenant.

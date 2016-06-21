@@ -32,6 +32,7 @@ import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the node details deriver.
@@ -50,18 +51,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
-     */
-    @Override
-    public NodeDetails processOneToOne(String tenantId, Trace item) throws Exception {
-        return null;
-    }
-
-    /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
      */
     @Override
-    public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws Exception {
+    public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws RetryAttemptException {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
         long baseTime = 0;

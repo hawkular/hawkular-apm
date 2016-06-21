@@ -26,6 +26,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the function for initiating completion time calculation based on
@@ -50,7 +51,7 @@ public class TraceCompletionInformationInitiator extends
      */
     @Override
     public TraceCompletionInformation processOneToOne(String tenantId,
-            Trace item) throws Exception {
+            Trace item) throws RetryAttemptException {
         // Check whether the trace fragment is an initial fragment
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -100,7 +101,7 @@ public class TraceCompletionInformationInitiator extends
      */
     @Override
     public List<TraceCompletionInformation> processOneToMany(String tenantId,
-            Trace item) throws Exception {
+            Trace item) throws RetryAttemptException {
         return null;
     }
 }

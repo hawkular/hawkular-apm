@@ -37,7 +37,7 @@ public class ProcessingUnitTest {
         Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToOne) {
 
             @Override
-            public String processOneToOne(String tenantId, String item) throws Exception {
+            public String processOneToOne(String tenantId, String item) throws RetryAttemptException {
                 return item;
             }
         };
@@ -73,8 +73,8 @@ public class ProcessingUnitTest {
         Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToOne) {
 
             @Override
-            public String processOneToOne(String tenantId, String item) throws Exception {
-                throw new Exception("PLEASE RETRY");
+            public String processOneToOne(String tenantId, String item) throws RetryAttemptException {
+                throw new RetryAttemptException("PLEASE RETRY");
             }
         };
 
@@ -110,9 +110,9 @@ public class ProcessingUnitTest {
         Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToOne) {
 
             @Override
-            public String processOneToOne(String tenantId, String item) throws Exception {
+            public String processOneToOne(String tenantId, String item) throws RetryAttemptException {
                 if (item.equals("world")) {
-                    throw new Exception("PLEASE RETRY");
+                    throw new RetryAttemptException("PLEASE RETRY");
                 }
                 return item;
             }
@@ -150,7 +150,7 @@ public class ProcessingUnitTest {
         Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToMany) {
 
             @Override
-            public List<String> processOneToMany(String tenantId, String item) throws Exception {
+            public List<String> processOneToMany(String tenantId, String item) throws RetryAttemptException {
                 List<String> ret = new ArrayList<String>();
                 ret.add(item);
                 ret.add(item);
@@ -189,8 +189,8 @@ public class ProcessingUnitTest {
         Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToMany) {
 
             @Override
-            public List<String> processOneToMany(String tenantId, String item) throws Exception {
-                throw new Exception("PLEASE RETRY");
+            public List<String> processOneToMany(String tenantId, String item) throws RetryAttemptException {
+                throw new RetryAttemptException("PLEASE RETRY");
             }
         };
 
@@ -226,9 +226,9 @@ public class ProcessingUnitTest {
         Processor<String, String> proc = new AbstractProcessor<String, String>(ProcessorType.OneToMany) {
 
             @Override
-            public List<String> processOneToMany(String tenantId, String item) throws Exception {
+            public List<String> processOneToMany(String tenantId, String item) throws RetryAttemptException {
                 if (item.equals("world")) {
-                    throw new Exception("PLEASE RETRY");
+                    throw new RetryAttemptException("PLEASE RETRY");
                 }
                 List<String> ret = new ArrayList<String>();
                 ret.add(item);

@@ -26,8 +26,10 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.services.AnalyticsService;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -58,8 +60,13 @@ public class NodeDetailsStoreMDB extends RetryCapableMDB<NodeDetails, Void> {
         setProcessor(new AbstractProcessor<NodeDetails, Void>(ProcessorType.ManyToMany) {
 
             @Override
-            public List<Void> processManyToMany(String tenantId, List<NodeDetails> items) throws Exception {
-                analyticsService.storeNodeDetails(tenantId, items);
+            public List<Void> processManyToMany(String tenantId, List<NodeDetails> items)
+                    throws RetryAttemptException {
+                try {
+                    analyticsService.storeNodeDetails(tenantId, items);
+                } catch (StoreException se) {
+                    throw new RetryAttemptException(se);
+                }
                 return null;
             }
         });

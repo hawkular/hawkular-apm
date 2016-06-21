@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.server.elasticsearch;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
 /**
@@ -177,7 +179,7 @@ public class ElasticsearchClient {
     }
 
     @SuppressWarnings("unchecked")
-    public void initTenant(String tenantId) throws Exception {
+    public void initTenant(String tenantId) throws StoreException {
 
         if (!knownTenants.contains(tenantId)) {
             synchronized (knownTenants) {
@@ -193,34 +195,38 @@ public class ElasticsearchClient {
                     }
 
                     if (s != null) {
-                        String index = getIndex(tenantId);
+                        try {
+                            String index = getIndex(tenantId);
 
-                        String jsonDefaultUserIndex = IOUtils.toString(s);
-                        if (log.isLoggable(Level.FINEST)) {
-                            log.finest("Mapping [" + jsonDefaultUserIndex + "]");
-                        }
-
-                        Map<String, Object> dataMap = XContentFactory.xContent(jsonDefaultUserIndex)
-                                .createParser(jsonDefaultUserIndex).mapAndClose();
-
-                        if (createIndex(index, (Map<String, Object>) dataMap.get(SETTINGS))) {
+                            String jsonDefaultUserIndex = IOUtils.toString(s);
                             if (log.isLoggable(Level.FINEST)) {
-                                log.finest("Index '" + index + "' created");
+                                log.finest("Mapping [" + jsonDefaultUserIndex + "]");
                             }
-                            // refresh index
-                            RefreshRequestBuilder refreshRequestBuilder = getElasticsearchClient().admin().indices()
-                                    .prepareRefresh(index);
-                            getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request())
-                            .actionGet();
-                        } else if (log.isLoggable(Level.FINEST)) {
-                            log.finest("Index '" + index + "' already exists. Doing nothing.");
+
+                            Map<String, Object> dataMap = XContentFactory.xContent(jsonDefaultUserIndex)
+                                    .createParser(jsonDefaultUserIndex).mapAndClose();
+
+                            if (createIndex(index, (Map<String, Object>) dataMap.get(SETTINGS))) {
+                                if (log.isLoggable(Level.FINEST)) {
+                                    log.finest("Index '" + index + "' created");
+                                }
+                                // refresh index
+                                RefreshRequestBuilder refreshRequestBuilder = getElasticsearchClient().admin().indices()
+                                        .prepareRefresh(index);
+                                getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request())
+                                .actionGet();
+                            } else if (log.isLoggable(Level.FINEST)) {
+                                log.finest("Index '" + index + "' already exists. Doing nothing.");
+                            }
+
+                            // Apply mapping in case changes have occurred - however will only be done
+                            // once per server session, for a particular index (i.e. tenant)
+                            prepareMapping(index, (Map<String, Object>) dataMap.get(MAPPINGS));
+
+                            knownTenants.add(tenantId);
+                        } catch (IOException ioe) {
+                            throw new StoreException(ioe);
                         }
-
-                        // Apply mapping in case changes have occurred - however will only be done
-                        // once per server session, for a particular index (i.e. tenant)
-                        prepareMapping(index, (Map<String, Object>) dataMap.get(MAPPINGS));
-
-                        knownTenants.add(tenantId);
                     } else {
                         log.warning("Could not locate '" + HAWKULAR_APM_MAPPING_JSON
                                 + "' index mapping file. Mapping file required to use elasticsearch");

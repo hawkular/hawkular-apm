@@ -27,6 +27,7 @@ import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.trace.publisher.rest.client.TracePublisherRESTClient;
@@ -206,7 +207,7 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
      */
     @Override
     public void storeTraces(String tenantId, List<Trace> traces)
-            throws Exception {
+            throws StoreException {
         throw new UnsupportedOperationException();
     }
 

@@ -39,6 +39,7 @@ import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.services.AnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -1208,7 +1209,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      */
     @Override
     public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
-            throws Exception {
+            throws StoreException {
         throw new UnsupportedOperationException();
     }
 
@@ -1216,7 +1217,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @see org.hawkular.apm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
      */
     @Override
-    public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception {
+    public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
@@ -1224,7 +1225,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
      */
     @Override
-    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
@@ -1233,7 +1234,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
      *                      java.util.List)
      */
     @Override
-    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
+    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         throw new UnsupportedOperationException();
     }
 

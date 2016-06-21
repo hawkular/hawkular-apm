@@ -28,6 +28,7 @@ import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -67,7 +68,8 @@ public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationD
         setProcessor(new AbstractProcessor<CommunicationDetails,Void>(ProcessorType.ManyToMany) {
 
             @Override
-            public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items) throws Exception {
+            public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items)
+                    throws RetryAttemptException {
                 communicationDetailsCache.store(tenantId, items);
                 return null;
             }
