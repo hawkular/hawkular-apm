@@ -75,6 +75,9 @@ public class Consumer extends InteractionNode {
         if (this == obj) {
             return true;
         }
+        if (obj == null) {
+            return false;
+        }
         if (!super.equals(obj)) {
             return false;
         }

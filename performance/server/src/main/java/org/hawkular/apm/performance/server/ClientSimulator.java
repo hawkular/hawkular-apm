@@ -57,11 +57,10 @@ public class ClientSimulator {
 
         try {
             cs = new ClientSimulator(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
+            cs.run();
         } catch (Exception e1) {
             System.err.println("Error: " + e1);
         }
-
-        cs.run();
     }
 
     public ClientSimulator(String configFile, int invocations, int requesters, String name) throws Exception {

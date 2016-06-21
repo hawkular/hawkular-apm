@@ -116,6 +116,9 @@ public abstract class ContainerNode extends Node {
         if (this == obj) {
             return true;
         }
+        if (obj == null) {
+            return false;
+        }
         if (!super.equals(obj)) {
             return false;
         }
