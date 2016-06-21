@@ -48,6 +48,7 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
      */
     @Override
     public long getRetryDelay(List<T> items) {
+        // HWKAPM-482 - need to consider best way to determine retry interval/delay
         return DEFAULT_RETRY_DELAY;
     }
 
