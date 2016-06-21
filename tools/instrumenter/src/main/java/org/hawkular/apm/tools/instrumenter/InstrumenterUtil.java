@@ -150,7 +150,10 @@ public class InstrumenterUtil {
 
                 InputStream is = node.getAsset().openStream();
                 byte[] cls = new byte[is.available()];
-                is.read(cls);
+                int count = is.read(cls);
+                if (count != cls.length) {
+                    log.warning("Incomplete data read");
+                }
                 is.close();
 
                 String clsName = path.get();

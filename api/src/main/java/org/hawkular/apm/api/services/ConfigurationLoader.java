@@ -177,10 +177,8 @@ public class ConfigurationLoader {
                 ret = ret.resolve(name);
 
                 if (name.endsWith(".jar") || name.endsWith(".war")) {
-                    try {
-                        FileSystem jarfs = FileSystems.newFileSystem(ret,
-                                Thread.currentThread().getContextClassLoader());
-
+                    try (FileSystem jarfs = FileSystems.newFileSystem(ret,
+                            Thread.currentThread().getContextClassLoader())) {
                         ret = jarfs.getRootDirectories().iterator().next();
                     } catch (IOException e) {
                         log.log(Level.SEVERE, "Failed to access archive '" + name + "'", e);

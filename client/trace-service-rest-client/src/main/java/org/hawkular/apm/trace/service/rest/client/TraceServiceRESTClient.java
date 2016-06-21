@@ -79,7 +79,10 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
 
             byte[] b = new byte[is.available()];
 
-            is.read(b);
+            int count = is.read(b);
+            if (count != b.length) {
+                log.warning("Incomplete data read");
+            }
 
             is.close();
 
