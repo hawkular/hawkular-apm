@@ -41,7 +41,7 @@ public class CompleteCorrelationTransformer implements InstrumentActionTransform
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         CompleteCorrelation completeAction = (CompleteCorrelation) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(32);
 
         builder.append("completeCorrelation(");
 

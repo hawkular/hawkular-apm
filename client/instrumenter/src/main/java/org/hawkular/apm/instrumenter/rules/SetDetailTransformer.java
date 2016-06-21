@@ -41,7 +41,7 @@ public class SetDetailTransformer implements InstrumentActionTransformer {
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetDetail setAction = (SetDetail) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
 

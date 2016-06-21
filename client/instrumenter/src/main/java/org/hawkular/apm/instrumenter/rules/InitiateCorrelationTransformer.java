@@ -41,7 +41,7 @@ public class InitiateCorrelationTransformer implements InstrumentActionTransform
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         InitiateCorrelation initiateAction = (InitiateCorrelation) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(32);
 
         builder.append("initiateCorrelation(");
 

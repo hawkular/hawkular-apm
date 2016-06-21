@@ -41,7 +41,7 @@ public class SetFaultTransformer implements InstrumentActionTransformer {
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetFault setAction = (SetFault) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
 

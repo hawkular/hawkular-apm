@@ -42,7 +42,7 @@ public class ProcessHeadersTransformer implements InstrumentActionTransformer {
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         ProcessHeaders phAction = (ProcessHeaders) action;
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
 
