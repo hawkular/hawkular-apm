@@ -101,7 +101,7 @@ public class PropertyUtil {
         if (value != null) {
             try {
                 return Integer.parseInt(value);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 LOG.log(Level.WARNING, "Failed to convert property value '" + value + "' to integer", e);
             }
         }
