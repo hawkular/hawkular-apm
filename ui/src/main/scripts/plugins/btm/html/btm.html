@@ -1,13 +1,13 @@
 <div>
-  <div ng-show="businessTransactions">
+  <div ng-show="businessTransactions" >
 
     <!-- BTxns Tabs -->
     <hawkular-subtab class="hk-align-center hk-screen-top-nav">
       <div class="hk-nav-tabs-container">
         <ul class="nav nav-tabs nav-tabs-pf">
-          <li class="active"><a href="/hawkular-ui/btm" >Managed</a></li>
-          <li><a href="/hawkular-ui/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
-          <li><a href="/hawkular-ui/btm/ignored">Ignored</a></li>
+          <li class="active"><a href="/hawkular-ui/apm/btm" >Managed</a></li>
+          <li><a href="/hawkular-ui/apm/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
+          <li><a href="/hawkular-ui/apm/btm/ignored">Ignored</a></li>
         </ul>
       </div>
     </hawkular-subtab>
@@ -24,7 +24,7 @@
         <i class="fa fa-gears"></i>
       </div>
       <h1>No Business Transactions defined.</h1>
-      <h2>Create a new one at the <a href="/hawkular-ui/btm/candidates">Candidates</a> tab.</h2>
+      <h2>Create a new one at the <a href="/hawkular-ui/apm/btm/candidates">Candidates</a> tab.</h2>
     </div>
 
     <!-- BTxns toolbar -->
@@ -78,30 +78,30 @@
           <div class="card-pf">
             <div class="card-pf-title">
               <span tooltip="No data being collected for this service. Activate it to collect." ng-show="btxn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
-              <a href="/hawkular-ui/btm/info/{{btxn.name}}">{{btxn.name}}</a>
+              <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}">{{btxn.name}}</a>
               <span class="hk-settings pull-right">
-                <a href="/hawkular-ui/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
+                <a href="/hawkular-ui/apm/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
                 <a href="#" ng-click="deleteBusinessTxn(btxn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
               </span>
             </div>
             <div class="card-pf-body hk-summary">
               <div class="row">
                 <div class="col-sm-4 hk-summary-item">
-                  <a href="/hawkular-ui/btm/info/{{btxn.name}}">
+                  <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}">
                     <span class="hk-data" ng-show="btxn.count !== undefined">{{btxn.count}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Transactions (per hour)</span>
                   </a>
                 </div>
                 <div class="col-sm-4 hk-summary-item">
-                  <a href="/hawkular-ui/btm/info/{{btxn.name}}">
+                  <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}">
                     <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Completion (secs 95%)</span>
                   </a>
                 </div>
                 <div class="col-sm-4 hk-summary-item">
-                  <a href="/hawkular-ui/btm/info/{{btxn.name}}">
+                  <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}">
                     <span class="hk-data" ng-show="btxn.faultcount !== undefined">{{btxn.faultcount}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.faultcount !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
                     <span class="hk-item">Faults</span>

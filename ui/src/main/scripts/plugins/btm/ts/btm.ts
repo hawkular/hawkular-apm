@@ -29,7 +29,7 @@ module BTM {
 
     let redirectToInfo = function(btxn) {
       $timeout(() => {
-        $location.path('/hawkular-ui/btm/info/' + btxn.id);
+        $location.path('/hawkular-ui/apm/btm/info/' + btxn.id);
       });
     };
 

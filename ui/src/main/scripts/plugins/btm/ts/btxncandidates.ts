@@ -80,7 +80,7 @@ module BTM {
         }
       }
       $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
-        $location.path('/hawkular-ui/btm/config/' + $scope.newBTxnName);
+        $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
       },function(resp) {
         console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
       });
@@ -111,7 +111,7 @@ module BTM {
         }
       }
       $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
-        $location.path('/hawkular-ui/btm/config/' + $scope.newBTxnName);
+        $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
       },function(resp) {
         console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
       });
@@ -127,7 +127,7 @@ module BTM {
         }
         $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
           console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
-          $location.path('/hawkular-ui/btm/config/' + $scope.existingBTxnName);
+          $location.path('/hawkular-ui/apm/btm/config/' + $scope.existingBTxnName);
         },function(resp) {
           console.log('Failed to save business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
         });

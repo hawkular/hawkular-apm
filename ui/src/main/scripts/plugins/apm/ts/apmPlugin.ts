@@ -30,14 +30,71 @@ module APM {
       .id(APM.pluginName)
       .title(() => 'Application Performance')
       .href(() => '/hawkular-ui/apm')
+      .subPath('Components', 'components', builder.join(APM.templatePath, 'apm.html'))
+      .subPath('Distributed Tracing', 'tracing', builder.join(E2E.templatePath, 'e2e.html'))
+      .subPath('Business Transactions', 'btm', builder.join(BTM.templatePath, 'btm.html'))
       .rank(30)
       .build();
     builder.configureRouting($routeProvider, tab);
     $locationProvider.html5Mode(true);
     $routeProvider.
-      when('/hawkular-ui/apm', {
+      when('/hawkular-ui/apm/components', {
         templateUrl: 'plugins/apm/html/apm.html',
         controller: 'APM.APMController'
+      }).
+      when('/hawkular-ui/apm/tracing', {
+        templateUrl: 'plugins/e2e/html/e2e.html',
+        controller: 'E2E.E2EController'
+      }).
+      when('/hawkular-ui/apm/btm', {
+        templateUrl: 'plugins/btm/html/btm.html',
+        controller: 'BTM.BTMController'
+      }).
+      when('/hawkular-ui/apm/btm/candidates', {
+        templateUrl: 'plugins/btm/html/btxncandidates.html',
+        controller: 'BTM.BTMCandidatesController'
+      }).
+      when('/hawkular-ui/apm/btm/ignored', {
+        templateUrl: 'plugins/btm/html/btxnignored.html',
+        controller: 'BTM.BTMIgnoredController'
+      }).
+      when('/hawkular-ui/apm/btm/config/:businesstransaction', {
+        templateUrl: 'plugins/btm/html/btxnconfig.html',
+        controller: 'BTM.BTxnConfigController',
+        resolve: {
+          btxn: function($http, $route, $location, toastr) {
+            return $http.get('/hawkular/apm/config/businesstxn/full/' +
+              $route.current.params.businesstransaction).then(function(resp) {
+              if (!resp.data) {
+                $location.path('/hawkular-ui/apm/btm');
+                toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+              }
+              return resp.data;
+            }, function(resp) {
+              toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+              $location.path('/hawkular-ui/apm/btm');
+            });
+          }
+        }
+      }).
+      when('/hawkular-ui/apm/btm/info/:businesstransaction', {
+        templateUrl: 'plugins/btm/html/btxninfo.html',
+        controller: 'BTM.BTxnInfoController',
+        resolve: {
+          btxn: function($http, $route, $location, toastr) {
+            return $http.get('/hawkular/apm/config/businesstxn/full/' +
+              $route.current.params.businesstransaction).then(function(resp) {
+              if (!resp.data) {
+                $location.path('/hawkular-ui/apm/btm');
+                toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+              }
+              return resp.data;
+            }, function(resp) {
+              toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+              $location.path('/hawkular-ui/apm/btm');
+            });
+          }
+        }
       });
   }]);
 

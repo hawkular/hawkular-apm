@@ -21,28 +21,9 @@ module E2E {
 
   export var _module = angular.module(E2E.pluginName, ['ui.bootstrap', 'patternfly.select']);
 
-  let tab = undefined;
-
   _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
-    tab = builder.create()
-      .id(E2E.pluginName)
-      .title(() => 'Distributed Tracing')
-      .href(() => '/hawkular-ui/e2e')
-      .rank(20)
-      .build();
-    //builder.configureRouting($routeProvider, tab);
-    //$locationProvider.html5Mode(true);
-    $routeProvider.
-      when('/hawkular-ui/e2e', {
-        templateUrl: 'plugins/e2e/html/e2e.html',
-        controller: 'E2E.E2EController'
-      });
-  }]);
-
-  _module.run(['HawtioNav', (HawtioNav: HawtioMainNav.Registry) => {
-    HawtioNav.add(tab);
-    log.debug('loaded');
+    // Doesn't link an empty block
   }]);
 
   hawtioPluginLoader.addModule(E2E.pluginName);
