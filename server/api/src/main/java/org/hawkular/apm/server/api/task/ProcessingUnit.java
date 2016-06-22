@@ -106,7 +106,12 @@ public class ProcessingUnit<T, R> implements Handler<T> {
         List<T> retries = null;
         RetryAttemptException lastException = null;
 
-        processor.initialise(tenantId, items);
+        try {
+            processor.initialise(tenantId, items);
+        } catch (RetryAttemptException e) {
+            retries = items;
+            lastException = e;
+        }
 
         // If performance logging enabled, save the current time
         long startTime = 0;

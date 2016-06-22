@@ -51,7 +51,7 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
      * @see org.hawkular.apm.server.api.task.Processor#initialise(java.lang.String,java.util.List)
      */
     @Override
-    public void initialise(String tenantId, List<T> items) {
+    public void initialise(String tenantId, List<T> items) throws RetryAttemptException {
     }
 
     /* (non-Javadoc)

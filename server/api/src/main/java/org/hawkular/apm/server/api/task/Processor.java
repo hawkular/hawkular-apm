@@ -39,8 +39,9 @@ public interface Processor<T, R> {
      *
      * @param tenantId The optional tenant id
      * @param items
+     * @throws RetryAttemptException Failed to process the item
      */
-    void initialise(String tenantId, List<T> items);
+    void initialise(String tenantId, List<T> items) throws RetryAttemptException;
 
     /**
      * This method processes the supplied item to optionally

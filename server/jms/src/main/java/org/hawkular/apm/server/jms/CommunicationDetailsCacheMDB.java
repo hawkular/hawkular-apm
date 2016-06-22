@@ -26,6 +26,7 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
+import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
@@ -70,7 +71,11 @@ public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationD
             @Override
             public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items)
                     throws RetryAttemptException {
-                communicationDetailsCache.store(tenantId, items);
+                try {
+                    communicationDetailsCache.store(tenantId, items);
+                } catch (CacheException e) {
+                    throw new RetryAttemptException(e);
+                }
                 return null;
             }
         });

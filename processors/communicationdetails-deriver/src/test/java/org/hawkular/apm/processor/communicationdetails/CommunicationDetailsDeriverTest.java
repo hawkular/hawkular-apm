@@ -35,6 +35,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.junit.Test;
 
 /**
@@ -80,7 +81,11 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p1);
 
-        deriver.initialise(null, traces);
+        try {
+            deriver.initialise(null, traces);
+        } catch (RetryAttemptException e) {
+            fail("Failed: "+e);
+        }
 
         assertNotNull(deriver.getProducerInfoCache().get(null, "pid1"));
         assertNull(deriver.getProducerInfoCache().get(null, "cid1"));
@@ -126,7 +131,11 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p2);
 
-        deriver.initialise(null, traces);
+        try {
+            deriver.initialise(null, traces);
+        } catch (RetryAttemptException e) {
+            fail("Failed: "+e);
+        }
 
         ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
         ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
@@ -183,7 +192,11 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p2);
 
-        deriver.initialise(null, traces);
+        try {
+            deriver.initialise(null, traces);
+        } catch (RetryAttemptException e) {
+            fail("Failed: "+e);
+        }
 
         ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
         ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");

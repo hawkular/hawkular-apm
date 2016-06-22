@@ -29,6 +29,8 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the capability for initialising the producer information.
@@ -64,8 +66,9 @@ public class ProducerInfoInitialiser {
      *
      * @param tenantId
      * @param items
+     * @throws RetryAttemptException Failed to initialise producer information
      */
-    public void initialise(String tenantId, List<Trace> items) {
+    public void initialise(String tenantId, List<Trace> items) throws RetryAttemptException {
         List<ProducerInfo> producerInfoList = new ArrayList<ProducerInfo>();
 
         // This method initialises the deriver with a list of trace fragments
@@ -81,7 +84,11 @@ public class ProducerInfoInitialiser {
             }
         }
 
-        producerInfoCache.store(tenantId, producerInfoList);
+        try {
+            producerInfoCache.store(tenantId, producerInfoList);
+        } catch (CacheException e) {
+            throw new RetryAttemptException(e);
+        }
     }
 
     /**

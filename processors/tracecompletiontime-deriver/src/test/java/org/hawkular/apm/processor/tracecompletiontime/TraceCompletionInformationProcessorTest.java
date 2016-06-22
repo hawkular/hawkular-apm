@@ -28,6 +28,7 @@ import java.util.List;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.server.api.services.CacheException;
 import org.junit.Test;
 
 /**
@@ -116,7 +117,11 @@ public class TraceCompletionInformationProcessorTest {
 
         cds.add(cd1);
 
-        processor.getCommunicationDetailsCache().store(null, cds);
+        try {
+            processor.getCommunicationDetailsCache().store(null, cds);
+        } catch (CacheException e1) {
+            fail("Failed: "+e1);
+        }
 
         TraceCompletionInformation info = new TraceCompletionInformation();
 
@@ -171,7 +176,11 @@ public class TraceCompletionInformationProcessorTest {
 
         cds.add(cd1);
 
-        processor.getCommunicationDetailsCache().store(null, cds);
+        try {
+            processor.getCommunicationDetailsCache().store(null, cds);
+        } catch (CacheException e1) {
+            fail("Failed: "+e1);
+        }
 
         TraceCompletionInformation info = new TraceCompletionInformation();
 
@@ -226,7 +235,11 @@ public class TraceCompletionInformationProcessorTest {
 
         cds.add(cd1);
 
-        processor.getCommunicationDetailsCache().store(null, cds);
+        try {
+            processor.getCommunicationDetailsCache().store(null, cds);
+        } catch (CacheException e1) {
+            fail("Failed: "+e1);
+        }
 
         TraceCompletionInformation info = new TraceCompletionInformation();
 
@@ -286,7 +299,11 @@ public class TraceCompletionInformationProcessorTest {
         cds.add(cd1);
         cds.add(cd2);
 
-        processor.getCommunicationDetailsCache().store(null, cds);
+        try {
+            processor.getCommunicationDetailsCache().store(null, cds);
+        } catch (CacheException e1) {
+            fail("Failed: "+e1);
+        }
 
         TraceCompletionInformation info = new TraceCompletionInformation();
 
@@ -358,7 +375,11 @@ public class TraceCompletionInformationProcessorTest {
 
         cds.add(cd3);
 
-        processor.getCommunicationDetailsCache().store(null, cds);
+        try {
+            processor.getCommunicationDetailsCache().store(null, cds);
+        } catch (CacheException e1) {
+            fail("Failed: "+e1);
+        }
 
         TraceCompletionInformation info = new TraceCompletionInformation();
 

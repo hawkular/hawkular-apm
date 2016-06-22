@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
+import org.hawkular.apm.server.api.services.CacheException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 
@@ -68,11 +69,11 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#getSingleConsumer(
+     * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#get(
      *                      java.lang.String, java.lang.String)
      */
     @Override
-    public CommunicationDetails getSingleConsumer(String tenantId, String id) {
+    public CommunicationDetails get(String tenantId, String id) {
         CommunicationDetails ret = communicationDetails.get(id);
 
         if (log.isLoggable(Level.FINEST)) {
@@ -83,21 +84,11 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#getMultipleConsumers(
-     *                      java.lang.String, java.lang.String)
-     */
-    @Override
-    public List<CommunicationDetails> getMultipleConsumers(String tenantId, String id) {
-        // TODO HWKBTM-356 query based on 'id' field
-        return null;
-    }
-
-    /* (non-Javadoc)
      * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#store(java.lang.String,
      *                      java.util.List)
      */
     @Override
-    public void store(String tenantId, List<CommunicationDetails> details) {
+    public void store(String tenantId, List<CommunicationDetails> details) throws CacheException {
         communicationDetails.startBatch();
 
         for (int i = 0; i < details.size(); i++) {

@@ -36,17 +36,8 @@ public class TestCommunicationDetailsCache implements CommunicationDetailsCache 
      * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#getSingleConsumer(java.lang.String)
      */
     @Override
-    public CommunicationDetails getSingleConsumer(String tenantId, String id) {
+    public CommunicationDetails get(String tenantId, String id) {
         return singleConsumer.get(id);
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#getMultipleConsumers(
-     *                          java.lang.String)
-     */
-    @Override
-    public List<CommunicationDetails> getMultipleConsumers(String tenantId, String id) {
-        return multipleConsumers.get(id);
     }
 
     /* (non-Javadoc)
