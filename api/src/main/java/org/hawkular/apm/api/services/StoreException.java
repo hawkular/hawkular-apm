@@ -14,25 +14,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.elasticsearch;
+package org.hawkular.apm.api.services;
 
 /**
- * This class is an exception representing Elasticsearch failures.
+ * This exception indicates a failure to store information.
  *
  * @author gbrown
  */
-public class ElasticsearchFailures extends Exception {
+public class StoreException extends Exception {
 
     /**  */
-    private static final long serialVersionUID = -5863892714328876036L;
+    private static final long serialVersionUID = -2673182772454488068L;
 
     /**
      * This constructor initialises the exception message.
      *
-     * @param mesg The elasticsearch failure message
+     * @param mesg The message
      */
-    public ElasticsearchFailures(String mesg) {
+    public StoreException(String mesg) {
         super(mesg);
+    }
+
+    /**
+     * This constructor initialises the associated exception.
+     *
+     * @param t The associated exception
+     */
+    public StoreException(Throwable t) {
+        super(t);
+    }
+
+    /**
+     * This constructor initialises the exception message.
+     *
+     * @param mesg The message
+     * @param t The associated exception
+     */
+    public StoreException(String mesg, Throwable t) {
+        super(mesg, t);
     }
 
 }

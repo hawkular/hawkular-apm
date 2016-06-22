@@ -26,8 +26,10 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.AnalyticsService;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -58,8 +60,13 @@ public class FragmentCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTi
         setProcessor(new AbstractProcessor<CompletionTime, Void>(ProcessorType.ManyToMany) {
 
             @Override
-            public List<Void> processManyToMany(String tenantId, List<CompletionTime> items) throws Exception {
-                analyticsService.storeFragmentCompletionTimes(tenantId, items);
+            public List<Void> processManyToMany(String tenantId, List<CompletionTime> items)
+                    throws RetryAttemptException {
+                try {
+                    analyticsService.storeFragmentCompletionTimes(tenantId, items);
+                } catch (StoreException se) {
+                    throw new RetryAttemptException(se);
+                }
                 return null;
             }
         });

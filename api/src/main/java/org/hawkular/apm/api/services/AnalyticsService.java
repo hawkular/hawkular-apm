@@ -190,42 +190,6 @@ public interface AnalyticsService {
                                 Criteria criteria, boolean asTree);
 
     /**
-     * This method stores the supplied list of node details.
-     *
-     * @param tenantId The tenant id
-     * @param nodeDetails The node details
-     * @throws Exception Failed to store
-     */
-    void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception;
-
-    /**
-     * This method stores the supplied list of communication details.
-     *
-     * @param tenantId The tenant id
-     * @param communicationDetails The communication details
-     * @throws Exception Failed to store
-     */
-    void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails) throws Exception;
-
-    /**
-     * This method stores the supplied list of completion times for end to end traces.
-     *
-     * @param tenantId The tenant id
-     * @param completionTimes The completion times
-     * @throws Exception Failed to store
-     */
-    void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
-
-    /**
-     * This method stores the supplied list of completion times for individual fragments.
-     *
-     * @param tenantId The tenant id
-     * @param completionTimes The completion times
-     * @throws Exception Failed to store
-     */
-    void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception;
-
-    /**
      * This method returns the list of host names where activities were executed, subject to the supplied
      * criteria.
      *
@@ -234,6 +198,43 @@ public interface AnalyticsService {
      * @return The list of host names
      */
     List<String> getHostNames(String tenantId, Criteria criteria);
+
+    /**
+     * This method stores the supplied list of node details.
+     *
+     * @param tenantId The tenant id
+     * @param nodeDetails The node details
+     * @throws StoreException Failed to store
+     */
+    void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws StoreException;
+
+    /**
+     * This method stores the supplied list of communication details.
+     *
+     * @param tenantId The tenant id
+     * @param communicationDetails The communication details
+     * @throws StoreException Failed to store
+     */
+    void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
+            throws StoreException;
+
+    /**
+     * This method stores the supplied list of completion times for end to end traces.
+     *
+     * @param tenantId The tenant id
+     * @param completionTimes The completion times
+     * @throws StoreException Failed to store
+     */
+    void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException;
+
+    /**
+     * This method stores the supplied list of completion times for individual fragments.
+     *
+     * @param tenantId The tenant id
+     * @param completionTimes The completion times
+     * @throws StoreException Failed to store
+     */
+    void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException;
 
     /**
      * This method clears the analytics data for the specified tenant.

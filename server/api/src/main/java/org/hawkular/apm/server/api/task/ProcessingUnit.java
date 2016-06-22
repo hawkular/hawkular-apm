@@ -104,7 +104,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
     public void handle(String tenantId, List<T> items) throws Exception {
         List<R> results = null;
         List<T> retries = null;
-        Exception lastException = null;
+        RetryAttemptException lastException = null;
 
         processor.initialise(tenantId, items);
 
@@ -117,8 +117,9 @@ public class ProcessingUnit<T, R> implements Handler<T> {
         if (processor.getType() == ProcessorType.ManyToMany) {
             try {
                 results = processor.processManyToMany(tenantId, items);
-            } catch (Exception e) {
+            } catch (RetryAttemptException e) {
                 retries = items;
+                lastException = e;
             }
         } else {
             for (int i = 0; i < items.size(); i++) {
@@ -140,7 +141,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
                             results.add(result);
                         }
                     }
-                } catch (Exception e) {
+                } catch (RetryAttemptException e) {
                     if (retryHandler != null) {
                         if (retries == null) {
                             retries = new ArrayList<T>();

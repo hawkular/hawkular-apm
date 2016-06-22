@@ -25,6 +25,7 @@ import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the notification deriver.
@@ -46,7 +47,7 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public Notification processOneToOne(String tenantId, Trace item) throws Exception {
+    public Notification processOneToOne(String tenantId, Trace item) throws RetryAttemptException {
         // Check if named txn and has nodes
         if (item.getBusinessTransaction() != null && !item.getBusinessTransaction().trim().isEmpty()
                 && !item.getNodes().isEmpty()) {
@@ -91,11 +92,4 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
-     */
-    @Override
-    public List<Notification> processOneToMany(String tenantId, Trace item) throws Exception {
-        return null;
-    }
 }

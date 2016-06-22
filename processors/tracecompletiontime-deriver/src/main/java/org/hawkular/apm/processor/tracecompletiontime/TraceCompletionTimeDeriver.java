@@ -16,12 +16,12 @@
  */
 package org.hawkular.apm.processor.tracecompletiontime;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the end to end business transaction completion time deriver.
@@ -43,7 +43,8 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<TraceCompletio
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
      */
     @Override
-    public CompletionTime processOneToOne(String tenantId, TraceCompletionInformation item) throws Exception {
+    public CompletionTime processOneToOne(String tenantId, TraceCompletionInformation item)
+            throws RetryAttemptException {
         // Check if named txn
         if (item.getCommunications().isEmpty()) {
 
@@ -56,11 +57,4 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<TraceCompletio
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
-     */
-    @Override
-    public List<CompletionTime> processOneToMany(String tenantId, TraceCompletionInformation item) throws Exception {
-        return null;
-    }
 }

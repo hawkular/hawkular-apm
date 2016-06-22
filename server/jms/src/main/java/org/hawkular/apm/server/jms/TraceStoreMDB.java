@@ -25,9 +25,11 @@ import javax.inject.Inject;
 import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -58,8 +60,13 @@ public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
         setProcessor(new AbstractProcessor<Trace, Void>(ProcessorType.ManyToMany) {
 
             @Override
-            public List<Void> processManyToMany(String tenantId, List<Trace> items) throws Exception {
-                traceService.storeTraces(tenantId, items);
+            public List<Void> processManyToMany(String tenantId, List<Trace> items)
+                    throws RetryAttemptException {
+                try {
+                    traceService.storeTraces(tenantId, items);
+                } catch (StoreException se) {
+                    throw new RetryAttemptException(se);
+                }
                 return null;
             }
         });

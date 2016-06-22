@@ -34,6 +34,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the communication details deriver.
@@ -91,7 +92,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CommunicationDetails processOneToOne(String tenantId, Trace item) throws Exception {
+    public CommunicationDetails processOneToOne(String tenantId, Trace item) throws RetryAttemptException {
         CommunicationDetails ret = null;
 
         if (log.isLoggable(Level.FINEST)) {
@@ -169,7 +170,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                     }
 
                     // Need to retry, as the producer information is not currently available
-                    throw new RuntimeException("Producer information not available [last id checked = "
+                    throw new RetryAttemptException("Producer information not available [last id checked = "
                                             + lastId + "]");
                 }
             }
@@ -214,21 +215,6 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                 initialiseOutbound(((ContainerNode) n).getNodes(), baseTime, cd);
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
-     */
-    @Override
-    public List<CommunicationDetails> processOneToMany(String tenantId, Trace item) throws Exception {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#cleanup(java.util.List)
-     */
-    @Override
-    public void cleanup(String tenantId, List<Trace> items) {
     }
 
 }

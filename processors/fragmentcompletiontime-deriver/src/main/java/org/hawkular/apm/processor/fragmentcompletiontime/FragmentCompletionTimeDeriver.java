@@ -16,7 +16,6 @@
  */
 package org.hawkular.apm.processor.fragmentcompletiontime;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +24,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the fragment completion time deriver.
@@ -46,7 +46,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override
-    public CompletionTime processOneToOne(String tenantId, Trace item) throws Exception {
+    public CompletionTime processOneToOne(String tenantId, Trace item) throws RetryAttemptException {
         // Check fragment has top level node
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
@@ -78,11 +78,4 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
-     */
-    @Override
-    public List<CompletionTime> processOneToMany(String tenantId, Trace item) throws Exception {
-        return null;
-    }
 }

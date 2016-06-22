@@ -49,9 +49,9 @@ public interface Processor<T, R> {
      * @param tenantId The optional tenant id
      * @param item The item
      * @return The optional value
-     * @throws Exception Failed to process the item
+     * @throws RetryAttemptException Failed to process the item
      */
-    R processOneToOne(String tenantId, T item) throws Exception;
+    R processOneToOne(String tenantId, T item) throws RetryAttemptException;
 
     /**
      * This method processes the supplied item to
@@ -60,9 +60,9 @@ public interface Processor<T, R> {
      * @param tenantId The optional tenant id
      * @param item The item
      * @return The list of values
-     * @throws Exception Failed to process the item
+     * @throws RetryAttemptException Failed to process the item
      */
-    List<R> processOneToMany(String tenantId, T item) throws Exception;
+    List<R> processOneToMany(String tenantId, T item) throws RetryAttemptException;
 
     /**
      * This method processes the supplied items to
@@ -71,9 +71,9 @@ public interface Processor<T, R> {
      * @param tenantId The optional tenant id
      * @param items The items
      * @return The list of values
-     * @throws Exception Failed to process the item
+     * @throws RetryAttemptException Failed to process the item
      */
-    List<R> processManyToMany(String tenantId, List<T> items) throws Exception;
+    List<R> processManyToMany(String tenantId, List<T> items) throws RetryAttemptException;
 
     /**
      * This method determines the delivery delay (in milliseconds)

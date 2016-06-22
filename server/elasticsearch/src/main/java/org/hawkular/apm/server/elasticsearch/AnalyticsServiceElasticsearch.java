@@ -75,9 +75,11 @@ import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.AbstractAnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apmserver.elasticsearch.log.MsgLogger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -1014,164 +1016,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
-     */
-    @Override
-    public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
-            throws Exception {
-        client.initTenant(tenantId);
-
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
-
-        for (int i = 0; i < communicationDetails.size(); i++) {
-            CommunicationDetails cd = communicationDetails.get(i);
-            String json = mapper.writeValueAsString(cd);
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("Storing communication details: %s", json);
-            }
-
-            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    COMMUNICATION_DETAILS_TYPE, cd.getId()).setSource(json));
-        }
-
-        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-
-        if (bulkItemResponses.hasFailures()) {
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Failed to store communication details to elasticsearch: "
-                        + bulkItemResponses.buildFailureMessage());
-            }
-
-            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
-
-        } else {
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Success storing communication details to elasticsearch");
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
-     */
-    @Override
-    public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws Exception {
-        client.initTenant(tenantId);
-
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
-
-        for (int i = 0; i < nodeDetails.size(); i++) {
-            NodeDetails rt = nodeDetails.get(i);
-            String json = mapper.writeValueAsString(rt);
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("Storing node details: %s", json);
-            }
-
-            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    NODE_DETAILS_TYPE, rt.getId()).setSource(json));
-        }
-
-        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-
-        if (bulkItemResponses.hasFailures()) {
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Failed to store node details to elasticsearch: "
-                        + bulkItemResponses.buildFailureMessage());
-            }
-
-            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
-
-        } else {
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Success storing node details to elasticsearch");
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
-     */
-    @Override
-    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
-        client.initTenant(tenantId);
-
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
-
-        for (int i = 0; i < completionTimes.size(); i++) {
-            CompletionTime ct = completionTimes.get(i);
-            String json = mapper.writeValueAsString(ct);
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("Storing btxn completion time: %s", json);
-            }
-
-            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    TRACE_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
-        }
-
-        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-
-        if (bulkItemResponses.hasFailures()) {
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Failed to store btxn completion times to elasticsearch: "
-                        + bulkItemResponses.buildFailureMessage());
-            }
-
-            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
-
-        } else {
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Success storing btxn completion times to elasticsearch");
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
-     *                                      java.util.List)
-     */
-    @Override
-    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws Exception {
-        client.initTenant(tenantId);
-
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
-
-        for (int i = 0; i < completionTimes.size(); i++) {
-            CompletionTime ct = completionTimes.get(i);
-            String json = mapper.writeValueAsString(ct);
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("Storing fragment completion time: %s", json);
-            }
-
-            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    FRAGMENT_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
-        }
-
-        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-
-        if (bulkItemResponses.hasFailures()) {
-
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Failed to store fragment completion times to elasticsearch: "
-                        + bulkItemResponses.buildFailureMessage());
-            }
-
-            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
-
-        } else {
-            if (msgLog.isTraceEnabled()) {
-                msgLog.trace("Success storing fragment completion times to elasticsearch");
-            }
-        }
-    }
-
-    /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.AnalyticsService#getHostNames(java.lang.String,
      *                      org.hawkular.apm.api.services.BaseCriteria)
      */
@@ -1230,6 +1074,182 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         Collections.sort(ret);
 
         return ret;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
+            throws StoreException {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        try {
+            for (int i = 0; i < communicationDetails.size(); i++) {
+                CommunicationDetails cd = communicationDetails.get(i);
+                String json = mapper.writeValueAsString(cd);
+
+                if (msgLog.isTraceEnabled()) {
+                    msgLog.tracef("Storing communication details: %s", json);
+                }
+
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        COMMUNICATION_DETAILS_TYPE, cd.getId()).setSource(json));
+            }
+        } catch (JsonProcessingException e) {
+            throw new StoreException(e);
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store communication details to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+
+            throw new StoreException(bulkItemResponses.buildFailureMessage());
+
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing communication details to elasticsearch");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws StoreException {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        try {
+            for (int i = 0; i < nodeDetails.size(); i++) {
+                NodeDetails rt = nodeDetails.get(i);
+                String json = mapper.writeValueAsString(rt);
+
+                if (msgLog.isTraceEnabled()) {
+                    msgLog.tracef("Storing node details: %s", json);
+                }
+
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        NODE_DETAILS_TYPE, rt.getId()).setSource(json));
+            }
+        } catch (JsonProcessingException e) {
+            throw new StoreException(e);
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store node details to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+
+            throw new StoreException(bulkItemResponses.buildFailureMessage());
+
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing node details to elasticsearch");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
+     */
+    @Override
+    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes)
+            throws StoreException {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        try {
+            for (int i = 0; i < completionTimes.size(); i++) {
+                CompletionTime ct = completionTimes.get(i);
+                String json = mapper.writeValueAsString(ct);
+
+                if (msgLog.isTraceEnabled()) {
+                    msgLog.tracef("Storing btxn completion time: %s", json);
+                }
+
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        TRACE_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
+            }
+        } catch (JsonProcessingException e) {
+            throw new StoreException(e);
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store btxn completion times to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+
+            throw new StoreException(bulkItemResponses.buildFailureMessage());
+
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing btxn completion times to elasticsearch");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
+     *                                      java.util.List)
+     */
+    @Override
+    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes)
+            throws StoreException {
+        client.initTenant(tenantId);
+
+        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+
+        try {
+            for (int i = 0; i < completionTimes.size(); i++) {
+                CompletionTime ct = completionTimes.get(i);
+                String json = mapper.writeValueAsString(ct);
+
+                if (msgLog.isTraceEnabled()) {
+                    msgLog.tracef("Storing fragment completion time: %s", json);
+                }
+
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        FRAGMENT_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
+            }
+        } catch (JsonProcessingException e) {
+            throw new StoreException(e);
+        }
+
+        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+
+        if (bulkItemResponses.hasFailures()) {
+
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Failed to store fragment completion times to elasticsearch: "
+                        + bulkItemResponses.buildFailureMessage());
+            }
+
+            throw new StoreException(bulkItemResponses.buildFailureMessage());
+
+        } else {
+            if (msgLog.isTraceEnabled()) {
+                msgLog.trace("Success storing fragment completion times to elasticsearch");
+            }
+        }
     }
 
     /* (non-Javadoc)

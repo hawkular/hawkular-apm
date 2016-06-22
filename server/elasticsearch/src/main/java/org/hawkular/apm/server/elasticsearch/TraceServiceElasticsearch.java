@@ -36,9 +36,11 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apmserver.elasticsearch.log.MsgLogger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -186,21 +188,25 @@ public class TraceServiceElasticsearch implements TraceService {
      */
     @Override
     public void storeTraces(String tenantId, List<Trace> traces)
-            throws Exception {
+            throws StoreException {
         client.initTenant(tenantId);
 
         BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
 
-        for (int i = 0; i < traces.size(); i++) {
-            Trace trace = traces.get(i);
-            String json = mapper.writeValueAsString(trace);
+        try {
+            for (int i = 0; i < traces.size(); i++) {
+                Trace trace = traces.get(i);
+                String json = mapper.writeValueAsString(trace);
 
-            if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("Storing trace: %s", json);
+                if (msgLog.isTraceEnabled()) {
+                    msgLog.tracef("Storing trace: %s", json);
+                }
+
+                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                        TRACE_TYPE, trace.getId()).setSource(json));
             }
-
-            bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
-                    TRACE_TYPE, trace.getId()).setSource(json));
+        } catch (JsonProcessingException e) {
+            throw new StoreException(e);
         }
 
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
@@ -212,7 +218,7 @@ public class TraceServiceElasticsearch implements TraceService {
                         + bulkItemResponses.buildFailureMessage());
             }
 
-            throw new ElasticsearchFailures(bulkItemResponses.buildFailureMessage());
+            throw new StoreException(bulkItemResponses.buildFailureMessage());
 
         } else {
             if (msgLog.isTraceEnabled()) {

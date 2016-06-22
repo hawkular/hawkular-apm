@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation.Communication;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
  * This class represents the function for processing completion information associated with
@@ -79,7 +80,7 @@ public class TraceCompletionInformationProcessor extends
      */
     @Override
     public TraceCompletionInformation processOneToOne(String tenantId,
-            TraceCompletionInformation item) throws Exception {
+            TraceCompletionInformation item) throws RetryAttemptException {
 
         if (!item.getCommunications().isEmpty()) {
             long currentTime = System.currentTimeMillis();
@@ -167,12 +168,4 @@ public class TraceCompletionInformationProcessor extends
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
-     */
-    @Override
-    public List<TraceCompletionInformation> processOneToMany(String tenantId,
-            TraceCompletionInformation item) throws Exception {
-        return null;
-    }
 }
