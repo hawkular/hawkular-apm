@@ -16,31 +16,13 @@
  */
 package org.hawkular.apm.processor.communicationdetails;
 
-import java.util.List;
+import org.hawkular.apm.server.api.services.Cache;
 
 /**
  * This interface represents a cache for producer info.
  *
  * @author gbrown
  */
-public interface ProducerInfoCache {
-
-    /**
-     * This method retrieves the producer information based on the supplied
-     * id.
-     *
-     * @param tenentId The tenant id
-     * @param id The id
-     * @return The producer info, or null if not found
-     */
-    ProducerInfo get(String tenantId, String id);
-
-    /**
-     * This methods stores the producer information in the cache.
-     *
-     * @param tenentId The tenant id
-     * @param producerInfoList The producer information list
-     */
-    void store(String tenantId, List<ProducerInfo> producerInfoList);
+public interface ProducerInfoCache extends Cache<ProducerInfo> {
 
 }

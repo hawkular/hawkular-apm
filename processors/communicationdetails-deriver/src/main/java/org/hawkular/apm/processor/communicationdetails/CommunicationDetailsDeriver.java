@@ -84,7 +84,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
      * @see org.hawkular.apm.server.api.task.Processor#initialise(java.util.List)
      */
     @Override
-    public void initialise(String tenantId, List<Trace> items) {
+    public void initialise(String tenantId, List<Trace> items) throws RetryAttemptException {
         producerInfoInitialiser.initialise(tenantId, items);
     }
 

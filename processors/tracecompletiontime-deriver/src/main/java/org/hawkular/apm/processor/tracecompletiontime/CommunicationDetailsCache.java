@@ -16,44 +16,14 @@
  */
 package org.hawkular.apm.processor.tracecompletiontime;
 
-import java.util.List;
-
 import org.hawkular.apm.api.model.events.CommunicationDetails;
+import org.hawkular.apm.server.api.services.Cache;
 
 /**
  * This interface represents a cache for communication details.
  *
  * @author gbrown
  */
-public interface CommunicationDetailsCache {
-
-    /**
-     * This method retrieves communication details based on the supplied
-     * interaction id.
-     *
-     * @param tenentId The tenant id
-     * @param id The interaction id
-     * @return The communication details, or null if not currently available
-     *                 or the interaction id is associated with multiple consumers
-     */
-    CommunicationDetails getSingleConsumer(String tenantId, String id);
-
-    /**
-     * This method retrieves zero or more communication details based on the supplied
-     * interaction id.
-     *
-     * @param tenentId The tenant id
-     * @param id The interaction id
-     * @return The list of communication details, or an empty list if no details currently available
-     */
-    List<CommunicationDetails> getMultipleConsumers(String tenantId, String id);
-
-    /**
-     * This methods the communication details in the cache.
-     *
-     * @param tenentId The tenant id
-     * @param details The list of communication details
-     */
-    void store(String tenantId, List<CommunicationDetails> details);
+public interface CommunicationDetailsCache extends Cache<CommunicationDetails> {
 
 }

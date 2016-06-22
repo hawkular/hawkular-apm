@@ -17,13 +17,14 @@
 package org.hawkular.apm.server.infinispan;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
+import org.hawkular.apm.server.api.services.CacheException;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
@@ -50,7 +51,7 @@ public class InfinispanCommunicationDetailsCacheTest {
 
         cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
 
-        assertNull(cdc.getSingleConsumer(null, "id1"));
+        assertNull(cdc.get(null, "id1"));
     }
 
     @Test
@@ -64,35 +65,13 @@ public class InfinispanCommunicationDetailsCacheTest {
         cd.setId("id1");
         details.add(cd);
 
-        cdc.store(null, details);
+        try {
+            cdc.store(null, details);
+        } catch (CacheException e) {
+            fail("Failed: "+e);
+        }
 
-        assertEquals(cd, cdc.getSingleConsumer(null, "id1"));
-    }
-
-    @Test
-    @org.junit.Ignore("HWKBTM-356 Support multiple consumers")
-    public void testMultiConsumerFound() {
-        InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
-
-        cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
-
-        List<CommunicationDetails> details = new ArrayList<CommunicationDetails>();
-        CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("id1");
-        cd1.setTargetFragmentId("fid1");
-        details.add(cd1);
-
-        CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("id1");
-        cd2.setTargetFragmentId("fid2");
-        details.add(cd2);
-
-        cdc.store(null, details);
-
-        List<CommunicationDetails> result = cdc.getMultipleConsumers(null, "id1");
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(cd, cdc.get(null, "id1"));
     }
 
 }

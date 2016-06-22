@@ -104,7 +104,7 @@ public class TraceCompletionInformationProcessor extends
                     // Find communication details associated with one of the ids
                     // specified with the communication
                     for (int j = 0; cd == null && j < c.getIds().size(); j++) {
-                        cd = communicationDetailsCache.getSingleConsumer(tenantId, c.getIds().get(j));
+                        cd = communicationDetailsCache.get(tenantId, c.getIds().get(j));
                     }
 
                     if (log.isLoggable(Level.FINEST)) {
