@@ -31,7 +31,7 @@ public interface Cache<T> {
      * This method retrieves the information based on the supplied
      * id.
      *
-     * @param tenentId The tenant id
+     * @param tenantId The tenant id
      * @param id The id
      * @return The information, or null if not found
      */
@@ -42,7 +42,7 @@ public interface Cache<T> {
      * id for each piece of information is obtained from the information
      * itself.
      *
-     * @param tenentId The tenant id
+     * @param tenantId The tenant id
      * @param information The list of information
      * @throws Failed to store information in the cache
      */
