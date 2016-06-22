@@ -173,7 +173,7 @@ public class ElasticsearchClient {
 
     public String getIndex(String tenantId) {
         if (tenantId == null) {
-            return "apm";
+            return "apm-hawkular";
         }
         return "apm-" + tenantId.toLowerCase();
     }
