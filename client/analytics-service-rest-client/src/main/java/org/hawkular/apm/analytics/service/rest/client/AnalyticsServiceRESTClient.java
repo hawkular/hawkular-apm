@@ -921,12 +921,12 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
             builder.append('?');
 
             boolean first = true;
-            for (String key : queryParams.keySet()) {
+            for (Map.Entry<String, String> stringStringEntry : queryParams.entrySet()) {
                 if (!first) {
                     builder.append('&');
                 }
-                String value = queryParams.get(key);
-                builder.append(key);
+                String value = stringStringEntry.getValue();
+                builder.append(stringStringEntry.getKey());
                 builder.append('=');
                 builder.append(value);
                 first = false;

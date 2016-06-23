@@ -101,17 +101,17 @@ public class ClientManager {
         List<String> scriptNames = new ArrayList<String>();
         Map<String, Instrumentation> instrumentTypes=config.getInstrumentation();
 
-        for (String name : instrumentTypes.keySet()) {
-            Instrumentation types = instrumentTypes.get(name);
-            String rules = ruleTransformer.transform(name, types,
-                            config.getProperty("version."+name, null));
+        for (Map.Entry<String, Instrumentation> stringInstrumentationEntry : instrumentTypes.entrySet()) {
+            Instrumentation types = stringInstrumentationEntry.getValue();
+            String rules = ruleTransformer.transform(stringInstrumentationEntry.getKey(), types,
+                            config.getProperty("version."+ stringInstrumentationEntry.getKey(), null));
 
             if (log.isLoggable(Level.FINER)) {
-                log.finer("Update instrumentation script name=" + name + " rules=" + rules);
+                log.finer("Update instrumentation script name=" + stringInstrumentationEntry.getKey() + " rules=" + rules);
             }
 
             if (rules != null) {
-                scriptNames.add(name);
+                scriptNames.add(stringInstrumentationEntry.getKey());
                 scripts.add(rules);
             }
         }

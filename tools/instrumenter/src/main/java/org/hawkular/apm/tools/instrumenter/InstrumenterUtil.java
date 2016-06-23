@@ -129,13 +129,13 @@ public class InstrumenterUtil {
         List<String> scriptNames = new ArrayList<String>();
         Map<String, Instrumentation> instrumentTypes = config.getInstrumentation();
 
-        for (String name : instrumentTypes.keySet()) {
-            Instrumentation types = instrumentTypes.get(name);
-            String rules = ruleTransformer.transform(name, types,
-                    config.getProperty("version." + name, null));
+        for (Map.Entry<String, Instrumentation> stringInstrumentationEntry : instrumentTypes.entrySet()) {
+            Instrumentation types = stringInstrumentationEntry.getValue();
+            String rules = ruleTransformer.transform(stringInstrumentationEntry.getKey(), types,
+                    config.getProperty("version." + stringInstrumentationEntry.getKey(), null));
 
             if (rules != null) {
-                scriptNames.add(name);
+                scriptNames.add(stringInstrumentationEntry.getKey());
                 scripts.add(rules);
             }
         }
@@ -145,8 +145,8 @@ public class InstrumenterUtil {
 
             Transformer transformer = new Transformer(null, moduleSystem, scriptNames, scripts, false);
 
-            for (ArchivePath path : content.keySet()) {
-                Node node = content.get(path);
+            for (Map.Entry<ArchivePath, Node> archivePathNodeEntry : content.entrySet()) {
+                Node node = archivePathNodeEntry.getValue();
 
                 InputStream is = node.getAsset().openStream();
                 byte[] cls = new byte[is.available()];
@@ -156,7 +156,7 @@ public class InstrumenterUtil {
                 }
                 is.close();
 
-                String clsName = path.get();
+                String clsName = archivePathNodeEntry.getKey().get();
                 clsName = clsName.replace(java.io.File.separatorChar, '.').substring(1, clsName.length() - 6);
 
                 if (log.isLoggable(Level.FINEST)) {
@@ -170,7 +170,7 @@ public class InstrumenterUtil {
                         log.finest("Instrumented class '" + clsName + "' length=" + newcls.length);
                     }
 
-                    archive.delete(path);
+                    archive.delete(archivePathNodeEntry.getKey());
 
                     Asset asset = new Asset() {
                         @Override
@@ -178,7 +178,7 @@ public class InstrumenterUtil {
                             return new ByteArrayInputStream(newcls);
                         }
                     };
-                    archive.add(asset, path);
+                    archive.add(asset, archivePathNodeEntry.getKey());
 
                     modified = true;
                 }
@@ -226,8 +226,8 @@ public class InstrumenterUtil {
 
             });
 
-            for (ArchivePath path : content.keySet()) {
-                Node node = content.get(path);
+            for (Map.Entry<ArchivePath, Node> archivePathNodeEntry : content.entrySet()) {
+                Node node = archivePathNodeEntry.getValue();
 
                 try (InputStream is = node.getAsset().openStream()) {
                     CollectorConfiguration subconfig = mapper.readValue(is, CollectorConfiguration.class);
@@ -254,13 +254,13 @@ public class InstrumenterUtil {
 
         Map<String, Instrumentation> instrumentTypes = config.getInstrumentation();
 
-        for (String name : instrumentTypes.keySet()) {
-            Instrumentation types = instrumentTypes.get(name);
-            String rules = ruleTransformer.transform(name, types,
-                    config.getProperty("version." + name, null));
+        for (Map.Entry<String, Instrumentation> stringInstrumentationEntry : instrumentTypes.entrySet()) {
+            Instrumentation types = stringInstrumentationEntry.getValue();
+            String rules = ruleTransformer.transform(stringInstrumentationEntry.getKey(), types,
+                    config.getProperty("version." + stringInstrumentationEntry.getKey(), null));
 
             if (rules != null) {
-                ruleCheck.addRule(name, rules);
+                ruleCheck.addRule(stringInstrumentationEntry.getKey(), rules);
             }
         }
 

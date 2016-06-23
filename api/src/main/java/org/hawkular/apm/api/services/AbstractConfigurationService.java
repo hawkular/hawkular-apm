@@ -93,8 +93,8 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
             throws Exception {
         List<ConfigMessage> messages = new ArrayList<ConfigMessage>();
 
-        for (String name : configs.keySet()) {
-            messages.addAll(setBusinessTransaction(tenantId, name, configs.get(name)));
+        for (Map.Entry<String, BusinessTxnConfig> stringBusinessTxnConfigEntry : configs.entrySet()) {
+            messages.addAll(setBusinessTransaction(tenantId, stringBusinessTxnConfigEntry.getKey(), stringBusinessTxnConfigEntry.getValue()));
         }
 
         return messages;
