@@ -37,6 +37,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
     private Processor<T, R> processor;
 
     private int retryCount;
+    private String retrySubscriber;
 
     private Handler<R> resultHandler;
     private Handler<T> retryHandler;
@@ -67,6 +68,20 @@ public class ProcessingUnit<T, R> implements Handler<T> {
      */
     public void setRetryCount(int retryCount) {
         this.retryCount = retryCount;
+    }
+
+    /**
+     * @return the retrySubscriber
+     */
+    public String getRetrySubscriber() {
+        return retrySubscriber;
+    }
+
+    /**
+     * @param retrySubscriber the retrySubscriber to set
+     */
+    public void setRetrySubscriber(String retrySubscriber) {
+        this.retrySubscriber = retrySubscriber;
     }
 
     /**

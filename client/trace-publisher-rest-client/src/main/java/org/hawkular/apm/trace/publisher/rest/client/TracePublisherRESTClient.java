@@ -181,6 +181,15 @@ public class TracePublisherRESTClient implements TracePublisher {
         throw new java.lang.UnsupportedOperationException("Cannot set the retry count and delay");
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
+     */
+    @Override
+    public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay)
+            throws Exception {
+        throw new java.lang.UnsupportedOperationException("Cannot retry");
+    }
+
     /**
      * Add the header values to the supplied connection.
      *

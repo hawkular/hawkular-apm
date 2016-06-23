@@ -40,8 +40,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "CommunicationDetails"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = "CommunicationDetailsStore"),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "CommunicationDetailsStore")
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = CommunicationDetailsStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = CommunicationDetailsStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+CommunicationDetailsStoreMDB.SUBSCRIBER+"'")
 })
 public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationDetails, Void> {
 
@@ -50,6 +51,13 @@ public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationD
 
     @Inject
     private AnalyticsService analyticsService;
+
+    /**  */
+    public static final String SUBSCRIBER = "CommunicationDetailsStore";
+
+    public CommunicationDetailsStoreMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {

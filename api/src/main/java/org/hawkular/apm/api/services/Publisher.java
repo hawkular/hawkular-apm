@@ -53,6 +53,18 @@ public interface Publisher<T> {
     void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception;
 
     /**
+     * This method publishes the list of items.
+     *
+     * @param tenantId The tenant
+     * @param items The list of items
+     * @param subscriber The optional name of the subscriber requesting the retry
+     * @param retryCount The retry count
+     * @param delay The delay
+     * @throws Exception Failed to publish
+     */
+    void retry(String tenantId, List<T> items, String subscriber, int retryCount, long delay) throws Exception;
+
+    /**
      * This method sets the metric handler for the publisher.
      *
      * @param handler The handler

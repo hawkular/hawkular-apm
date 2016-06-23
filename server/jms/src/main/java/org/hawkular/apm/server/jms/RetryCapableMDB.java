@@ -57,6 +57,17 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
 
     private Publisher<T> publisher;
 
+    private String retrySubscriber;
+
+    /**
+     * This constructor initialises the retry capable MDB with the subscriber name.
+     *
+     * @param subscriberName The subscriber name
+     */
+    public RetryCapableMDB(String subscriberName) {
+        retrySubscriber = subscriberName;
+    }
+
     /**
      * @return the processor
      */
@@ -157,6 +168,7 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
                 new ProcessingUnit<S, T>();
 
         pu.setProcessor(getProcessor());
+        pu.setRetrySubscriber(retrySubscriber);
         pu.setRetryCount(retryCount);
 
         pu.setResultHandler(
@@ -165,8 +177,8 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
         );
 
         pu.setRetryHandler(
-                (tid, events) -> getRetryPublisher().publish(tid, events, pu.getRetryCount() - 1,
-                        getProcessor().getRetryDelay(events))
+                (tid, events) -> getRetryPublisher().retry(tid, events, pu.getRetrySubscriber(),
+                        pu.getRetryCount() - 1, getProcessor().getRetryDelay(events))
         );
 
         pu.handle(tenantId, items);

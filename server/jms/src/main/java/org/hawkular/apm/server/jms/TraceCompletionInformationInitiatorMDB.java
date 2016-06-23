@@ -40,9 +40,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
                 @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
                 @ActivationConfigProperty(propertyName = "clientID",
-                            propertyValue = "TraceCompletionInformationInitiator"),
+                            propertyValue = TraceCompletionInformationInitiatorMDB.SUBSCRIBER),
                 @ActivationConfigProperty(propertyName = "subscriptionName",
-                            propertyValue = "TraceCompletionInformationInitiator")
+                            propertyValue = TraceCompletionInformationInitiatorMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionInformationInitiatorMDB.SUBSCRIBER+"'")
         })
 public class TraceCompletionInformationInitiatorMDB
                 extends RetryCapableMDB<Trace, TraceCompletionInformation> {
@@ -52,6 +53,13 @@ public class TraceCompletionInformationInitiatorMDB
 
     @Inject
     private TraceCompletionInformationPublisher traceCompletionInformationPublisher;
+
+    /**  */
+    public static final String SUBSCRIBER = "TraceCompletionInformationInitiator";
+
+    public TraceCompletionInformationInitiatorMDB() {
+        super(SUBSCRIBER);
+    }
 
     @PostConstruct
     public void init() {

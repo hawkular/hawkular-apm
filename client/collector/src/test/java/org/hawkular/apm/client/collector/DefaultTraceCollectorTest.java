@@ -1143,6 +1143,14 @@ public class DefaultTraceCollectorTest {
         }
 
         /* (non-Javadoc)
+         * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
+         */
+        @Override
+        public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay)
+                throws Exception {
+        }
+
+        /* (non-Javadoc)
          * @see org.hawkular.apm.api.services.BusinessTransactionService#get(java.lang.String, java.lang.String)
          */
         @Override
