@@ -4,9 +4,9 @@
   <hawkular-subtab class="hk-align-center hk-screen-top-nav">
     <div class="hk-nav-tabs-container">
       <ul class="nav nav-tabs nav-tabs-pf">
-        <li><a href="/hawkular-ui/btm" >Managed</a></li>
-        <li><a href="/hawkular-ui/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
-        <li class="active"><a href="/hawkular-ui/btm/ignored">Ignored</a></li>
+        <li><a href="/hawkular-ui/apm/btm" >Managed</a></li>
+        <li><a href="/hawkular-ui/apm/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
+        <li class="active"><a href="/hawkular-ui/apm/btm/ignored">Ignored</a></li>
       </ul>
     </div>
   </hawkular-subtab>
@@ -49,9 +49,9 @@
         <div class="hk-txn-item" ng-repeat="btxn in filteredIgnBT = (ignoredBT = (businessTransactions | filter: {level: 'Ignore'}) | filter:query) track by btxn.name" ng-show="btxn.level === 'Ignore'">
           <div class="panel panel-default hk-txn-heading">
             <div class="panel-body">
-              <a href="/hawkular-ui/btm/info/{{btxn.name}}" class="hk-panel-item">{{btxn.name}}</a>
+              <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}" class="hk-panel-item">{{btxn.name}}</a>
               <span class="hk-settings pull-right">
-                <a href="/hawkular-ui/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
+                <a href="/hawkular-ui/apm/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
                 <a href="#" ng-click="deleteBusinessTxn(btxn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
               </span>
             </div>
