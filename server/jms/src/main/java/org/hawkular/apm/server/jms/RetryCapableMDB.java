@@ -25,6 +25,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.hawkular.apm.api.services.Publisher;
+import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.server.api.task.ProcessingUnit;
 import org.hawkular.apm.server.api.task.Processor;
 
@@ -58,6 +59,12 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
     private Publisher<T> publisher;
 
     private String retrySubscriber;
+
+    /**  */
+    private static final int DEFAULT_MAX_RETRY_COUNT = 3;
+
+    private int maxRetryCount = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT,
+            DEFAULT_MAX_RETRY_COUNT);
 
     /**
      * This constructor initialises the retry capable MDB with the subscriber name.
@@ -141,7 +148,7 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
             if (message.propertyExists("retryCount")) {
                 retryCount = message.getIntProperty("retryCount");
             } else {
-                retryCount = 3; // TODO: Should this be configurable?
+                retryCount = maxRetryCount;
             }
 
             String data = ((TextMessage) message).getText();
@@ -178,7 +185,7 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
 
         pu.setRetryHandler(
                 (tid, events) -> getRetryPublisher().retry(tid, events, pu.getRetrySubscriber(),
-                        pu.getRetryCount() - 1, getProcessor().getRetryDelay(events))
+                        pu.getRetryCount() - 1, getProcessor().getRetryDelay(events, pu.getRetryCount() - 1))
         );
 
         pu.handle(tenantId, items);
