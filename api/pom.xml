@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.apm</groupId>
     <artifactId>hawkular-apm</artifactId>
-    <version>0.8.1.Final-SNAPSHOT</version>
+    <version>0.9.0.Final</version>
   </parent>
 
   <artifactId>hawkular-apm-api</artifactId>
