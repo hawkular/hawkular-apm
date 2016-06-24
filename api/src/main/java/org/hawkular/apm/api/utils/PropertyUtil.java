@@ -65,6 +65,22 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_COLLECTOR_BATCHTHREADS = "HAWKULAR_APM_COLLECTOR_BATCHTHREADS";
 
     /**
+     * The maximum number of retry attempts when processing a batch of events.
+     */
+    public static final String HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT = "HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT";
+
+    /**
+     * The interval between retrying the processing of a batch of failed events.
+     */
+    public static final String HAWKULAR_APM_PROCESSOR_RETRY_DELAY = "HAWKULAR_APM_PROCESSOR_RETRY_DELAY";
+
+    /**
+     * The interval between retrying the processing of a batch of failed events for the last time before
+     * giving up.
+     */
+    public static final String HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY = "HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY";
+
+    /**
      * This method returns the named property, first checking the system properties
      * and if not found, checking the environment.
      *
@@ -94,9 +110,21 @@ public class PropertyUtil {
     /**
      * This method returns the property as an integer value.
      *
+     * @param name The property name
      * @return The property as an integer, or null if not found
      */
     public static Integer getPropertyAsInteger(String name) {
+        return getPropertyAsInteger(name, null);
+    }
+
+    /**
+     * This method returns the property as an integer value.
+     *
+     * @param name The property name
+     * @param def The optional default value
+     * @return The property as an integer, or null if not found
+     */
+    public static Integer getPropertyAsInteger(String name, Integer def) {
         String value = getProperty(name);
         if (value != null) {
             try {
@@ -105,7 +133,7 @@ public class PropertyUtil {
                 LOG.log(Level.WARNING, "Failed to convert property value '" + value + "' to integer", e);
             }
         }
-        return null;
+        return def;
     }
 
     /**

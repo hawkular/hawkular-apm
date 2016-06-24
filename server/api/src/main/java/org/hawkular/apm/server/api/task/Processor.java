@@ -90,9 +90,10 @@ public interface Processor<T, R> {
      * associated with the supplied list of items.
      *
      * @param items The items
+     * @param retryCount The retry count
      * @return The retry delay, or 0 if no delay
      */
-    long getRetryDelay(List<T> items);
+    long getRetryDelay(List<T> items, int retryCount);
 
     /**
      * This method is called once all of the items in the list of been

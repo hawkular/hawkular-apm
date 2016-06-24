@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 
 import org.hawkular.apm.api.services.Publisher;
 import org.hawkular.apm.api.services.PublisherMetricHandler;
+import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.server.jms.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +56,8 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
     private Session session;
     private MessageProducer producer;
 
-    private int initialRetryCount = DEFAULT_INITIAL_RETRY_COUNT;
+    private int initialRetryCount = PropertyUtil.getPropertyAsInteger(
+            PropertyUtil.HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT, DEFAULT_INITIAL_RETRY_COUNT);
 
     /**
      * This method returns the destination associated with the publisher.

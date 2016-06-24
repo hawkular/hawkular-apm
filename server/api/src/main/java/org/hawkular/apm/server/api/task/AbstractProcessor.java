@@ -18,6 +18,8 @@ package org.hawkular.apm.server.api.task;
 
 import java.util.List;
 
+import org.hawkular.apm.api.utils.PropertyUtil;
+
 /**
  * This abstract class represents the base class for processors.
  *
@@ -26,7 +28,16 @@ import java.util.List;
 public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
 
     /**  */
-    private static final int DEFAULT_RETRY_DELAY = 1000;
+    private static final int DEFAULT_RETRY_DELAY = 2000;
+
+    /**  */
+    private static final int DEFAULT_LAST_RETRY_DELAY = 10000;
+
+    private long retryDelay = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_PROCESSOR_RETRY_DELAY,
+            DEFAULT_RETRY_DELAY);
+
+    private long lastRetryDelay = PropertyUtil.getPropertyAsInteger(
+            PropertyUtil.HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY, DEFAULT_LAST_RETRY_DELAY);
 
     private ProcessorType type;
 
@@ -63,12 +74,14 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#getRetryDelay(java.util.List)
+     * @see org.hawkular.apm.server.api.task.Processor#getRetryDelay(java.util.List, int)
      */
     @Override
-    public long getRetryDelay(List<T> items) {
-        // HWKAPM-482 - need to consider best way to determine retry interval/delay
-        return DEFAULT_RETRY_DELAY;
+    public long getRetryDelay(List<T> items, int retryCount) {
+        if (retryCount == 0) {
+            return lastRetryDelay;
+        }
+        return retryDelay;
     }
 
     /* (non-Javadoc)
