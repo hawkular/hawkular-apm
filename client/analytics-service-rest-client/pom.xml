@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.apm</groupId>
     <artifactId>hawkular-apm</artifactId>
-    <version>0.9.2.Final</version>
+    <version>0.9.3.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
