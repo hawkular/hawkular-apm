@@ -511,6 +511,12 @@
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>${version.org.codehaus.groovy}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

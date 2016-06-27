@@ -97,16 +97,19 @@
   <profiles>
     <profile>
       <id>docgen</id>
+      <properties>
+        <restDocDirectory>${project.basedir}/src/main/rest-doc</restDocDirectory>
+        <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
+      </properties>
       <build>
         <!-- Document generation from the Swagger annotations on the REST-API. -->
         <plugins>
-          <!-- Uncomment when pulling templates from build tools
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <id>unpack</id>
+                <id>unpack-apidoc-groovy</id>
                 <phase>process-resources</phase>
                 <goals>
                   <goal>unpack</goal>
@@ -118,15 +121,13 @@
                       <artifactId>hawkular-build-tools</artifactId>
                       <version>${version.org.hawkular.hawkular-build-tools}</version>
                       <type>jar</type>
-                      <includes>**/*.mustache</includes>
-                      <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+                      <includes>**/*.groovy</includes>
                     </artifactItem>
                   </artifactItems>
                 </configuration>
               </execution>
             </executions>
           </plugin>
-          -->
           <plugin>
             <groupId>com.github.kongchen</groupId>
             <artifactId>swagger-maven-plugin</artifactId>
@@ -135,21 +136,15 @@
                 <apiSource>
                   <springmvc>false</springmvc>
                   <locations>org.hawkular.apm.server.rest</locations>
-                  <schemes>http,https</schemes>
-                  <basePath>/hawkular/apm</basePath>
+                  <basePath>/hawkular/apm/</basePath>
                   <info>
-                    <title>Hawkular Application Performance Management</title>
-                    <version>v1</version>
-                    <description>The REST API for the Hawkular Application Performance Management server</description>
-                    <license>
-                      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-                      <name>Apache 2.0</name>
-                    </license>
+                    <title>Hawkular APM REST API</title>
+                    <version>1.0</version>
                   </info>
-                  <!-- templatePath>${project.build.directory}/dependency/hawkular-documentation/asciidoc.mustache</templatePath -->
-                  <templatePath>${project.basedir}/src/main/templates/asciidoc.mustache</templatePath>
-                  <outputPath>${project.build.directory}/generated/rest-apm.adoc</outputPath>
-                  <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
+                  <!--
+                  <swaggerInternalFilter>org.hawkular.metrics.api.jaxrs.swagger.SwaggerFilter</swaggerInternalFilter>
+                  -->
+                  <swaggerDirectory>${swaggerDirectory}</swaggerDirectory>
                 </apiSource>
               </apiSources>
             </configuration>
@@ -162,8 +157,39 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.codehaus.gmavenplus</groupId>
+            <artifactId>gmavenplus-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${version.org.codehaus.groovy}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <properties>
+                <baseFile>${restDocDirectory}/base.adoc</baseFile>
+                <swaggerFile>${swaggerDirectory}/swagger.json</swaggerFile>
+                <outputFile>${project.build.directory}/generated/rest-apm.adoc</outputFile>
+              </properties>
+              <scripts>
+                <script>file:///${project.build.directory}/dependency/hawkular-documentation/apidoc.groovy</script>
+              </scripts>
+            </configuration>
+            <executions>
+              <execution>
+                <id>generate-api-doc</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
   </profiles>
+
 </project>
