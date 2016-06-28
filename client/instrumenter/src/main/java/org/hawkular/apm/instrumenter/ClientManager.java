@@ -21,6 +21,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
@@ -28,6 +31,7 @@ import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.instrumentation.Instrumentation;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.ServiceResolver;
+import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.TraceCollector;
 import org.hawkular.apm.instrumenter.rules.RuleTransformer;
 import org.jboss.byteman.agent.Retransformer;
@@ -39,6 +43,9 @@ import org.jboss.byteman.agent.Retransformer;
  */
 public class ClientManager {
 
+    /** The number of seconds to wait before trying again to retrieve the collector config */
+    private static final int DEFAULT_CONFIG_RETRY_INTERVAL = 10;
+
     private static final Logger log = Logger.getLogger(ClientManager.class.getName());
 
     private static Retransformer transformer;
@@ -47,6 +54,9 @@ public class ClientManager {
 
     private static TraceCollector collector;
     private static ConfigurationService configService;
+
+    private static Integer configRetryInterval =
+            PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_CONFIG_REFRESH, DEFAULT_CONFIG_RETRY_INTERVAL);
 
     /**
      * This method initializes the manager.
@@ -76,24 +86,40 @@ public class ClientManager {
         }
 
         if (configService != null) {
-            // Read configuration
-            CollectorConfiguration config = configService.getCollector(null, null, null, null);
-
-            if (config != null) {
-                try {
-                    updateInstrumentation(config);
-                } catch (Exception e) {
-                    System.err.println("Failed to update instrumentation rules: " + e);
-                    e.printStackTrace();
-                }
-            } else {
-                log.severe("Unable to configure APM");
-            }
+            initConfig();
         } else {
             log.info("APM has not been configured");
         }
     }
 
+    protected static void initConfig() {
+        // Read configuration
+        CollectorConfiguration config = configService.getCollector(null, null, null, null);
+
+        if (config != null) {
+            try {
+                updateInstrumentation(config);
+            } catch (Exception e) {
+                log.severe("Failed to update instrumentation rules: " + e);
+            }
+        } else {
+            log.warning("Unable to obtain APM configuration, will retry ...");
+
+            Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                public Thread newThread(Runnable r) {
+                    Thread t = Executors.defaultThreadFactory().newThread(r);
+                    t.setDaemon(true);
+                    return t;
+                }
+            }).schedule(new Runnable() {
+                @Override
+                public void run() {
+                    initConfig();
+                }
+            }, configRetryInterval, TimeUnit.SECONDS);
+        }
+
+    }
     /**
      * This method updates the instrumentation instructions.
      *

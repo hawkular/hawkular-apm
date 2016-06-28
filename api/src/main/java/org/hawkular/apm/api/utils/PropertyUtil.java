@@ -41,6 +41,9 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_PASSWORD = "HAWKULAR_APM_PASSWORD";
 
     /**  */
+    public static final String HAWKULAR_APM_CONFIG_RETRY_INTERVAL = "HAWKULAR_APM_CONFIG_RETRY_INTERVAL";
+
+    /**  */
     public static final String HAWKULAR_APM_CONFIG_REFRESH = "HAWKULAR_APM_CONFIG_REFRESH";
 
     /**  */

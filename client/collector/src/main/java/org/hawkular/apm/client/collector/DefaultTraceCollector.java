@@ -63,11 +63,16 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     private static final Logger log = Logger.getLogger(DefaultTraceCollector.class.getName());
 
+    /** The number of seconds to wait before trying again to retrieve the collector config */
+    private static final int DEFAULT_CONFIG_RETRY_INTERVAL = 10;
+
     private FragmentManager fragmentManager = new FragmentManager();
 
     private FilterManager filterManager;
 
     private ProcessorManager processorManager;
+
+    private ConfigurationService configurationService;
 
     private TraceReporter reporter = new TraceReporter();
 
@@ -79,30 +84,39 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     private static boolean testMode;
 
+    private static Integer configRetryInterval =
+            PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_CONFIG_REFRESH, DEFAULT_CONFIG_RETRY_INTERVAL);
+
     static {
         testMode = Boolean.getBoolean("hawkular-apm.test.mode");
     }
 
     {
-        // Obtain the configuration service
         setConfigurationService(ServiceResolver.getSingletonService(ConfigurationService.class));
     }
 
     /**
      * This method sets the configuration service.
      *
-     * @param cs The configuration service
+     * @param configService The configuration service
      */
-    public void setConfigurationService(ConfigurationService cs) {
+    protected void setConfigurationService(ConfigurationService configService) {
         if (log.isLoggable(Level.FINER)) {
-            log.finer("Set configuration service = " + cs);
+            log.finer("Set configuration service = " + configService);
         }
 
-        CollectorConfiguration config = null;
+        configurationService = configService;
 
-        if (cs != null) {
-            config = cs.getCollector(null, null, null, null);
+        if (configurationService != null) {
+            initConfig();
         }
+    }
+
+    /**
+     * This method initialises the configuration.
+     */
+    protected void initConfig() {
+        CollectorConfiguration config = configurationService.getCollector(null, null, null, null);
 
         if (config != null) {
             configLastUpdated = System.currentTimeMillis();
@@ -117,56 +131,77 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                 }
             }
 
-            // Check if should check for updates
-            Integer refresh = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_CONFIG_REFRESH);
+            initRefreshCycle();
+        } else {
+            // Wait for a period of time and try doing the initial config again
+            Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                public Thread newThread(Runnable r) {
+                    Thread t = Executors.defaultThreadFactory().newThread(r);
+                    t.setDaemon(true);
+                    return t;
+                }
+            }).schedule(new Runnable() {
+                @Override
+                public void run() {
+                    initConfig();
+                }
+            }, configRetryInterval, TimeUnit.SECONDS);
+        }
+    }
 
-            if (log.isLoggable(Level.FINER)) {
-                log.finer("Configuration refresh cycle (in seconds) = " + refresh);
-            }
+    /**
+     * This method initialises the refresh cycle.
+     */
+    protected void initRefreshCycle() {
+        // Check if should check for updates
+        Integer refresh = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_CONFIG_REFRESH);
 
-            if (refresh != null) {
-                Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-                    public Thread newThread(Runnable r) {
-                        Thread t = Executors.defaultThreadFactory().newThread(r);
-                        t.setDaemon(true);
-                        return t;
-                    }
-                }).scheduleAtFixedRate(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Map<String, BusinessTxnConfig> changed = cs.getBusinessTransactions(null,
-                                    configLastUpdated);
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Configuration refresh cycle (in seconds) = " + refresh);
+        }
 
-                            for (Map.Entry<String, BusinessTxnConfig> stringBusinessTxnConfigEntry : changed.entrySet()) {
-                                BusinessTxnConfig btc = stringBusinessTxnConfigEntry.getValue();
+        if (refresh != null) {
+            Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                public Thread newThread(Runnable r) {
+                    Thread t = Executors.defaultThreadFactory().newThread(r);
+                    t.setDaemon(true);
+                    return t;
+                }
+            }).scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Map<String, BusinessTxnConfig> changed = configurationService.getBusinessTransactions(null,
+                                configLastUpdated);
 
-                                if (btc.isDeleted()) {
-                                    if (log.isLoggable(Level.FINER)) {
-                                        log.finer("Removing config for btxn '" + stringBusinessTxnConfigEntry.getKey() + "' = " + btc);
-                                    }
+                        for (Map.Entry<String, BusinessTxnConfig> stringBusinessTxnConfigEntry : changed.entrySet()) {
+                            BusinessTxnConfig btc = stringBusinessTxnConfigEntry.getValue();
 
-                                    filterManager.remove(stringBusinessTxnConfigEntry.getKey());
-                                    processorManager.remove(stringBusinessTxnConfigEntry.getKey());
-                                } else {
-                                    if (log.isLoggable(Level.FINER)) {
-                                        log.finer("Changed config for btxn '" + stringBusinessTxnConfigEntry.getKey() + "' = " + btc);
-                                    }
-
-                                    filterManager.init(stringBusinessTxnConfigEntry.getKey(), btc);
-                                    processorManager.init(stringBusinessTxnConfigEntry.getKey(), btc);
+                            if (btc.isDeleted()) {
+                                if (log.isLoggable(Level.FINER)) {
+                                    log.finer("Removing config for btxn '" + stringBusinessTxnConfigEntry.getKey() + "' = " + btc);
                                 }
 
-                                if (btc.getLastUpdated() > configLastUpdated) {
-                                    configLastUpdated = btc.getLastUpdated();
+                                filterManager.remove(stringBusinessTxnConfigEntry.getKey());
+                                processorManager.remove(stringBusinessTxnConfigEntry.getKey());
+                            } else {
+                                if (log.isLoggable(Level.FINER)) {
+                                    log.finer("Changed config for btxn '" + stringBusinessTxnConfigEntry.getKey() + "' = " + btc);
                                 }
+
+                                filterManager.init(stringBusinessTxnConfigEntry.getKey(), btc);
+                                processorManager.init(stringBusinessTxnConfigEntry.getKey(), btc);
                             }
-                        } catch (Exception e) {
-                            log.log(Level.SEVERE, "Failed to update business transaction configuration", e);
+
+                            if (btc.getLastUpdated() > configLastUpdated) {
+                                configLastUpdated = btc.getLastUpdated();
+                            }
                         }
+                    } catch (Exception e) {
+                        log.log(Level.SEVERE, "Failed to update business transaction configuration", e);
                     }
-                }, refresh.intValue(), refresh.intValue(), TimeUnit.SECONDS);
-            }
+                }
+            }, refresh.intValue(), refresh.intValue(), TimeUnit.SECONDS);
         }
     }
 
