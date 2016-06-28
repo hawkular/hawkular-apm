@@ -61,10 +61,19 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.apm:hawkular-apm-server:war</include>
-        <include>org.hawkular.apm:hawkular-apm-ui:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/standalone/deployments/hawkular-apm-ui.war</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.apm:hawkular-apm-ui:war</include>
+      </includes>
+      <unpack>true</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>

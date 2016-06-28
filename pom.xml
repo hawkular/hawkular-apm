@@ -530,6 +530,7 @@
             <exclude>**/*.data</exclude>
             <exclude>**/*.btm</exclude>
             <exclude>**/*.sh</exclude>
+            <exclude>**/*.deployed</exclude>
           </excludes>
         </configuration>
       </plugin>
