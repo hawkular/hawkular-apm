@@ -26,11 +26,4 @@ import org.hawkular.apm.api.model.trace.Trace;
  */
 public interface TracePublisher extends Publisher<Trace> {
 
-    /**
-     * This method indicates whether this publisher is enabled.
-     *
-     * @return Whether the publisher is enabled
-     */
-    boolean isEnabled();
-
 }

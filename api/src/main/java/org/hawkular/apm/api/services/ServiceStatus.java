@@ -17,16 +17,17 @@
 package org.hawkular.apm.api.services;
 
 /**
+ * This interface provides information about the status of a service.
+ *
  * @author gbrown
  */
-public class TestService2Impl implements TestService, ServiceStatus {
+public interface ServiceStatus {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
+    /**
+     * This method indicates whether the service implementation is available.
+     *
+     * @return Whether the service is available
      */
-    @Override
-    public boolean isAvailable() {
-        return true;
-    }
+    boolean isAvailable();
 
 }

@@ -37,12 +37,4 @@ public class TracePublisherJMS extends AbstractPublisherJMS<Trace>
         return DESTINATION;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TracePublisher#isEnabled()
-     */
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
 }
