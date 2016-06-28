@@ -78,7 +78,9 @@ public class ServiceResolver {
         List<T> ret = new ArrayList<T>();
 
         for (T service : ServiceLoader.load(intf)) {
-            ret.add(service);
+            if (!(service instanceof ServiceStatus) || ((ServiceStatus)service).isAvailable()) {
+                ret.add(service);
+            }
         }
 
         return ret;

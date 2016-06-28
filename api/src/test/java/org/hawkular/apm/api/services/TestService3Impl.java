@@ -19,14 +19,14 @@ package org.hawkular.apm.api.services;
 /**
  * @author gbrown
  */
-public class TestService2Impl implements TestService, ServiceStatus {
+public class TestService3Impl implements TestService, ServiceStatus {
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
      */
     @Override
     public boolean isAvailable() {
-        return true;
+        return false;
     }
 
 }

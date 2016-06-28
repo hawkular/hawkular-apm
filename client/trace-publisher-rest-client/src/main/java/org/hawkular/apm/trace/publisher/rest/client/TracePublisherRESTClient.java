@@ -25,6 +25,7 @@ import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.PublisherMetricHandler;
+import org.hawkular.apm.api.services.ServiceStatus;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
@@ -36,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class TracePublisherRESTClient implements TracePublisher {
+public class TracePublisherRESTClient implements TracePublisher, ServiceStatus {
 
     private static final Logger log = Logger.getLogger(TracePublisherRESTClient.class.getName());
 
@@ -59,6 +60,15 @@ public class TracePublisherRESTClient implements TracePublisher {
         if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
+     */
+    @Override
+    public boolean isAvailable() {
+        // Check URI is specified and starts with http, so either http: or https:
+        return uri != null && uri.startsWith("http");
     }
 
     /**
@@ -216,15 +226,6 @@ public class TracePublisherRESTClient implements TracePublisher {
         if (authorization != null) {
             connection.setRequestProperty("Authorization", authorization);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TracePublisher#isEnabled()
-     */
-    @Override
-    public boolean isEnabled() {
-        // Check URI is specified and starts with http, so either http: or https:
-        return uri != null && uri.startsWith("http");
     }
 
     /* (non-Javadoc)

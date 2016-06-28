@@ -31,6 +31,7 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.apm.api.services.ConfigurationLoader;
 import org.hawkular.apm.api.services.ConfigurationService;
+import org.hawkular.apm.api.services.ServiceStatus;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class ConfigurationServiceRESTClient implements ConfigurationService {
+public class ConfigurationServiceRESTClient implements ConfigurationService, ServiceStatus {
 
     private static final Logger log = Logger.getLogger(ConfigurationServiceRESTClient.class.getName());
 
@@ -75,6 +76,15 @@ public class ConfigurationServiceRESTClient implements ConfigurationService {
         if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
             uri = uri + '/';
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
+     */
+    @Override
+    public boolean isAvailable() {
+        // Check URI is specified and starts with http, so either http: or https:
+        return uri != null && uri.startsWith("http");
     }
 
     /**

@@ -54,7 +54,7 @@ public class TraceReporter {
     /**  */
     private static final int DEFAULT_BATCH_SIZE = 1000;
 
-    private TracePublisher traceublisher;
+    private TracePublisher tracePublisher;
 
     private int batchSize = DEFAULT_BATCH_SIZE;
     private int batchTime = DEFAULT_BATCH_TIME;
@@ -64,8 +64,6 @@ public class TraceReporter {
     private ExecutorService executor;
     private final ReentrantLock lock=new ReentrantLock();
     private List<Trace> traces = new ArrayList<Trace>();
-
-    private boolean enabled = false;
 
     {
         executor = Executors.newFixedThreadPool(DEFAULT_BATCH_THREAD_POOL_SIZE,
@@ -86,21 +84,14 @@ public class TraceReporter {
      * @param tp The trace publisher
      */
     public void setTracePublisher(TracePublisher tp) {
-        this.traceublisher = tp;
-
-        // Check whether publisher is enabled
-        if (tp != null) {
-            enabled = tp.isEnabled();
-        } else {
-            enabled = false;
-        }
+        this.tracePublisher = tp;
     }
 
     /**
      * @return the trace publisher
      */
     public TracePublisher getTracePublisher() {
-        return traceublisher;
+        return tracePublisher;
     }
 
     /**
@@ -161,7 +152,7 @@ public class TraceReporter {
      * @return the enabled
      */
     public boolean isEnabled() {
-        return enabled;
+        return tracePublisher != null;
     }
 
     /**
@@ -184,7 +175,7 @@ public class TraceReporter {
      * @param trace The trace
      */
     public void report(Trace trace) {
-        if (traceublisher != null) {
+        if (tracePublisher != null) {
             try {
                 lock.lock();
                 traces.add(trace);
@@ -213,7 +204,7 @@ public class TraceReporter {
                 @Override
                 public void run() {
                     try {
-                        traceublisher.publish(tenantId, toSend);
+                        tracePublisher.publish(tenantId, toSend);
                     } catch (Exception e) {
                         // TODO: Retain for retry
                         log.log(Level.SEVERE, "Failed to publish traces", e);

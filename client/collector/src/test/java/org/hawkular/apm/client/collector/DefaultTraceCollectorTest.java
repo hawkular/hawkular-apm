@@ -1222,14 +1222,6 @@ public class DefaultTraceCollectorTest {
         }
 
         /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.TracePublisher#isEnabled()
-         */
-        @Override
-        public boolean isEnabled() {
-            return true;
-        }
-
-        /* (non-Javadoc)
          * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
          */
         @Override

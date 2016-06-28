@@ -75,18 +75,22 @@ public class ClientManager {
             log.finer("Configuration Service: " + configService);
         }
 
-        // Read configuration
-        CollectorConfiguration config = configService.getCollector(null, null, null, null);
+        if (configService != null) {
+            // Read configuration
+            CollectorConfiguration config = configService.getCollector(null, null, null, null);
 
-        if (config != null) {
-            try {
-                updateInstrumentation(config);
-            } catch (Exception e) {
-                System.err.println("Failed to update instrumentation rules: " + e);
-                e.printStackTrace();
+            if (config != null) {
+                try {
+                    updateInstrumentation(config);
+                } catch (Exception e) {
+                    System.err.println("Failed to update instrumentation rules: " + e);
+                    e.printStackTrace();
+                }
+            } else {
+                log.severe("Unable to configure APM");
             }
         } else {
-            log.severe("Unable to configure APM");
+            log.info("APM has not been configured");
         }
     }
 

@@ -1,2 +1,3 @@
 org.hawkular.apm.api.services.TestService1Impl
 org.hawkular.apm.api.services.TestService2Impl
+org.hawkular.apm.api.services.TestService3Impl
