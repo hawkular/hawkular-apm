@@ -254,7 +254,9 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to send 'get' collector configuration request", e);
+            if (log.isLoggable(Level.FINE)) {
+                log.log(Level.FINE, "Failed to send 'get' collector configuration request", e);
+            }
         }
 
         return null;
@@ -743,7 +745,9 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
                 }
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get business transaction configurations", e);
+            if (log.isLoggable(Level.FINE)) {
+                log.log(Level.FINE, "Failed to get business transaction configurations", e);
+            }
         }
 
         return null;
