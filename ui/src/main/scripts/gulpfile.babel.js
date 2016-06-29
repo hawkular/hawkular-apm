@@ -44,7 +44,7 @@ let inProgress = false;
 
 const POM_MAIN_PATH = '../../../pom.xml';
 const DIST_TARGET_PATH = '../../../dist/target/';
-const WF_CONSOLE_PATH = 'modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-apm-ui.war/dist/';
+const WF_CONSOLE_PATH = 'standalone/deployments/hawkular-apm-ui.war/dist/';
 
 const plugins = gulpLoadPlugins({
   rename: {
@@ -309,13 +309,13 @@ gulp.task('clean', ['concat'], () => {
   del(['templates.js', 'compiled.js']);
 });
 
-gulp.task('watch-server', ['build-live', 'copy-kettle-js', 'copy-kettle-css'], () => {
+gulp.task('watch-server', ['build-live', 'copy-apm-js', 'copy-apm-css'], () => {
   plugins.watch([config.srcPrefix + 'plugins/**/*.ts', config.srcPrefix + '/plugins/**/*.html'], () => {
-  gulp.start('copy-kettle-js');
+  gulp.start('copy-apm-js');
 });
 
 plugins.watch([config.srcPrefix + '/plugins/**/*.less'], () => {
-  gulp.start('copy-kettle-css');
+  gulp.start('copy-apm-css');
 });
 });
 
@@ -345,7 +345,7 @@ gulp.src(src)
 });
 });
 
-gulp.task('copy-kettle-js', ['build-live', 'set-server-path'], () => {
+gulp.task('copy-apm-js', ['build-live', 'set-server-path'], () => {
   inProgress = false;
 gulp.src(['dist/hawkularapm.js'])
   .pipe(gulp.dest(config.serverPath));
@@ -378,7 +378,7 @@ gulp.src(src)
 });
 });
 
-gulp.task('copy-kettle-css', ['less-live', 'set-server-path'], () => {
+gulp.task('copy-apm-css', ['less-live', 'set-server-path'], () => {
   inProgress = false;
 gulp.src(['dist/hawkularapm.css'])
   .pipe(gulp.dest(config.serverPath));
