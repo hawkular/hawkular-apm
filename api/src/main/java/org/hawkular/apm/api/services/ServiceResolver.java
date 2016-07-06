@@ -79,6 +79,10 @@ public class ServiceResolver {
 
         for (T service : ServiceLoader.load(intf)) {
             if (!(service instanceof ServiceStatus) || ((ServiceStatus)service).isAvailable()) {
+                if (service instanceof ServiceLifecycle) {
+                    ((ServiceLifecycle)service).init();
+                }
+
                 ret.add(service);
             }
         }

@@ -29,4 +29,12 @@ public class TestService3Impl implements TestService, ServiceStatus {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.TestService#isInitialised()
+     */
+    @Override
+    public boolean isInitialised() {
+        return false;
+    }
+
 }

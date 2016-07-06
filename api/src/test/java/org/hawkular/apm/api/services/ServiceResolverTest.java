@@ -17,6 +17,7 @@
 package org.hawkular.apm.api.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -47,6 +48,9 @@ public class ServiceResolverTest {
 
         assertNotNull(services);
         assertTrue("List should have two services", services.size() == 2);
+
+        assertTrue(services.get(0).isInitialised());
+        assertFalse(services.get(1).isInitialised());
     }
 
     @Test
