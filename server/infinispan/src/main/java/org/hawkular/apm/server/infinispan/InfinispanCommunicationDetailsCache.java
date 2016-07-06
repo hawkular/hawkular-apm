@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import javax.inject.Singleton;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
+import org.hawkular.apm.api.services.ServiceLifecycle;
 import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.infinispan.Cache;
@@ -37,7 +38,7 @@ import org.infinispan.manager.CacheContainer;
  * @author gbrown
  */
 @Singleton
-public class InfinispanCommunicationDetailsCache implements CommunicationDetailsCache {
+public class InfinispanCommunicationDetailsCache implements CommunicationDetailsCache, ServiceLifecycle {
 
     private static final Logger log = Logger.getLogger(InfinispanCommunicationDetailsCache.class.getName());
 
@@ -51,7 +52,19 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
     @PostConstruct
     public void init() {
-        communicationDetails = container.getCache(CACHE_NAME);
+        // If cache container not already provisions, then must be running outside of a JEE
+        // environment, so create a default cache container
+        if (container == null) {
+            if (log.isLoggable(Level.FINER)) {
+                log.fine("Using default cache");
+            }
+            setCommunicationDetails(InfinispanCacheManager.getDefaultCache(CACHE_NAME));
+        } else {
+            if (log.isLoggable(Level.FINER)) {
+                log.fine("Using container provided cache");
+            }
+            setCommunicationDetails(container.getCache(CACHE_NAME));
+        }
     }
 
     /**
@@ -89,7 +102,9 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
      */
     @Override
     public void store(String tenantId, List<CommunicationDetails> details) throws CacheException {
-        communicationDetails.startBatch();
+        if (container != null) {
+            communicationDetails.startBatch();
+        }
 
         for (int i = 0; i < details.size(); i++) {
             CommunicationDetails cd = details.get(i);
@@ -112,7 +127,9 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
             communicationDetails.put(id, cd, 1, TimeUnit.MINUTES);
         }
 
-        communicationDetails.endBatch(true);
+        if (container != null) {
+            communicationDetails.endBatch(true);
+        }
     }
 
 }
