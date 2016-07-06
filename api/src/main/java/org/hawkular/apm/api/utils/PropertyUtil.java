@@ -90,6 +90,49 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY = "HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY";
 
     /**
+     * The comma separated list of host:port addresses for the Kafka servers.
+     */
+    public static final String HAWKULAR_APM_KAFKA_SERVERS = "HAWKULAR_APM_KAFKA_SERVERS";
+
+    /**
+     * The standard polling interval (in milliseconds) used by processors.
+     */
+    public static final String HAWKULAR_APM_KAFKA_POLLING_INTERVAL = "HAWKULAR_APM_KAFKA_POLLING_INTERVAL";
+
+    /**
+     * The maximum number of records to retrieve when polling a topic.
+     */
+    public static final String HAWKULAR_APM_KAFKA_MAX_POLL_RECORDS = "HAWKULAR_APM_KAFKA_MAX_POLL_RECORDS";
+
+    /**
+     * The maximum number of retries when a producer send fails.
+     */
+    public static final String HAWKULAR_APM_KAFKA_PRODUCER_RETRIES = "HAWKULAR_APM_KAFKA_PRODUCER_RETRIES";
+
+    /**
+     * The interval (in milliseconds) between consumer auto commits.
+     */
+    public static final String HAWKULAR_APM_KAFKA_CONSUMER_AUTO_COMMIT_INTERVAL =
+                                    "HAWKULAR_APM_KAFKA_CONSUMER_AUTO_COMMIT_INTERVAL";
+
+    /**
+     * The kafka consumer session timeout (in milliseconds).
+     */
+    public static final String HAWKULAR_APM_KAFKA_CONSUMER_SESSION_TIMEOUT =
+                                    "HAWKULAR_APM_KAFKA_CONSUMER_SESSION_TIMEOUT";
+
+    /**
+     * This method determines whether a property exists, as a system property
+     * or environment variable.
+     *
+     * @param name The name
+     * @return Whether the property has been defined
+     */
+    public static boolean hasProperty(String name) {
+        return getProperty(name) != null;
+    }
+
+    /**
      * This method returns the named property, first checking the system properties
      * and if not found, checking the environment.
      *

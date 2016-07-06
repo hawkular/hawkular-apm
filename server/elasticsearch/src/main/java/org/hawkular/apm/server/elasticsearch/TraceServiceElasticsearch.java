@@ -36,7 +36,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TraceService;
-import org.hawkular.apmserver.elasticsearch.log.MsgLogger;
+import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

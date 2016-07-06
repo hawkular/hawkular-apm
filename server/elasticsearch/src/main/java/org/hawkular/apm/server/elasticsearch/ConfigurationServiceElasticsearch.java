@@ -38,7 +38,7 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.apm.api.services.AbstractConfigurationService;
 import org.hawkular.apm.api.services.ConfigurationLoader;
-import org.hawkular.apmserver.elasticsearch.log.MsgLogger;
+import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

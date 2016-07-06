@@ -1,0 +1,13 @@
+org.hawkular.apm.server.kafka.CommunicationDetailsCacheKafka
+org.hawkular.apm.server.kafka.CommunicationDetailsDeriverKafka
+org.hawkular.apm.server.kafka.CommunicationDetailsStoreKafka
+org.hawkular.apm.server.kafka.FragmentCompletionTimeDeriverKafka
+org.hawkular.apm.server.kafka.FragmentCompletionTimeStoreKafka
+org.hawkular.apm.server.kafka.NodeDetailsDeriverKafka
+org.hawkular.apm.server.kafka.NodeDetailsStoreKafka
+org.hawkular.apm.server.kafka.ProducerInfoCacheKafka
+org.hawkular.apm.server.kafka.TraceCompletionInformationInitiatorKafka
+org.hawkular.apm.server.kafka.TraceCompletionInformationProcessorKafka
+org.hawkular.apm.server.kafka.TraceCompletionTimeDeriverKafka
+org.hawkular.apm.server.kafka.TraceCompletionTimeStoreKafka
+org.hawkular.apm.server.kafka.TraceStoreKafka
