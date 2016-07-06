@@ -35,6 +35,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.trace.publisher.rest.client.TracePublisherRESTClient;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -61,11 +62,17 @@ public class TraceServiceRESTTest {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private static TracePublisherRESTClient publisher;
+
     @BeforeClass
     public static void initClass() {
         service = new TraceServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
+
+        publisher = new TracePublisherRESTClient();
+        publisher.setUsername(TEST_USERNAME);
+        publisher.setPassword(TEST_PASSWORD);
     }
 
     @Before
@@ -82,7 +89,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -113,7 +120,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -148,7 +155,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -186,7 +193,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -222,7 +229,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -260,7 +267,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -294,7 +301,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -330,7 +337,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -364,7 +371,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -405,7 +412,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -448,7 +455,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -482,7 +489,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            service.publish(null, traces);
+            publisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }

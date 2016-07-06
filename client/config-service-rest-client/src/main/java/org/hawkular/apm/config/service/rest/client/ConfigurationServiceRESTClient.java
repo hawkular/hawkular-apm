@@ -18,7 +18,6 @@ package org.hawkular.apm.config.service.rest.client;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,8 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.apm.api.services.ConfigurationLoader;
 import org.hawkular.apm.api.services.ConfigurationService;
-import org.hawkular.apm.api.services.ServiceStatus;
 import org.hawkular.apm.api.utils.PropertyUtil;
+import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class ConfigurationServiceRESTClient implements ConfigurationService, ServiceStatus {
+public class ConfigurationServiceRESTClient extends AbstractRESTClient implements ConfigurationService {
 
     private static final Logger log = Logger.getLogger(ConfigurationServiceRESTClient.class.getName());
 
@@ -61,88 +60,8 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
             new TypeReference<java.util.List<ConfigMessage>>() {
     };
 
-    private static final String HAWKULAR_TENANT = "Hawkular-Tenant";
-
-    private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
-    private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
-
-    private String authorization = null;
-
-    private String uri;
-
-    {
-        uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
-
-        if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
-            uri = uri + '/';
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
-     */
-    @Override
-    public boolean isAvailable() {
-        // Check URI is specified and starts with http, so either http: or https:
-        return uri != null && uri.startsWith("http");
-    }
-
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the uri
-     */
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * @param uri the uri to set
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    /**
-     * This method determines if the configuration service is enabled.
-     *
-     * @return Whether enabled
-     */
-    public boolean isEnabled() {
-        // Enabled if URI specified and is http: or https:
-        return uri != null && uri.startsWith("http");
+    public ConfigurationServiceRESTClient() {
+        super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
     /* (non-Javadoc)
@@ -170,14 +89,14 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
             return ret;
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return null;
         }
 
-        StringBuilder builder = new StringBuilder().append(uri).append("hawkular/apm/config/collector");
+        StringBuilder builder = new StringBuilder().append(getUri()).append("hawkular/apm/config/collector");
 
         if (host != null) {
             builder.append("?host=");
@@ -274,7 +193,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/config/businesstxn/full/")
                 .append(name);
 
@@ -357,7 +276,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/config/businesstxn/full");
 
         try {
@@ -437,7 +356,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
             log.finest("Validate busioess transaction configuration: config=[" + config + "]");
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
@@ -445,7 +364,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/config/businesstxn/validate");
 
         try {
@@ -526,7 +445,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
                     + name + "]");
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
@@ -534,7 +453,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-            .append(uri)
+            .append(getUri())
             .append("hawkular/apm/config/businesstxn/full/")
             .append(name);
 
@@ -604,7 +523,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
             log.finest("Get business transaction summaries: tenantId=[" + tenantId + "]");
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
@@ -612,7 +531,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-            .append(uri)
+            .append(getUri())
             .append("hawkular/apm/config/businesstxn/summary");
 
         try {
@@ -682,7 +601,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
                     + "] updated=[" + updated + "]");
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
@@ -690,7 +609,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-            .append(uri)
+            .append(getUri())
             .append("hawkular/apm/config/businesstxn/full?updated=")
             .append(updated);
 
@@ -764,7 +683,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
                     + name + "]]");
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
@@ -772,7 +691,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/config/businesstxn/full/")
                 .append(name);
 
@@ -803,34 +722,6 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
         }
     }
 
-    /**
-     * Add the header values to the supplied connection.
-     *
-     * @param connection The connection
-     * @param tenantId The optional tenant id
-     */
-    protected void addHeaders(HttpURLConnection connection, String tenantId) {
-        if (tenantId == null) {
-            // Check if default tenant provided as property
-            tenantId = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_TENANT);
-        }
-
-        if (tenantId != null) {
-            connection.setRequestProperty(HAWKULAR_TENANT, tenantId);
-        }
-
-        if (authorization == null && username != null) {
-            String authString = username + ":" + password;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            authorization = "Basic " + encoded;
-        }
-
-        if (authorization != null) {
-            connection.setRequestProperty("Authorization", authorization);
-        }
-    }
-
     /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.ConfigurationService#clear(java.lang.String)
      */
@@ -840,7 +731,7 @@ public class ConfigurationServiceRESTClient implements ConfigurationService, Ser
             log.finest("Clear business transaction configurations: tenantId=[" + tenantId + "]");
         }
 
-        if (!isEnabled()) {
+        if (!isAvailable()) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }

@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-trace-service-rest-client</artifactId>
+      <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
     </dependency>
 
     <dependency>
