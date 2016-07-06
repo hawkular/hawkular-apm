@@ -17,10 +17,15 @@
 package org.hawkular.apm.api.services;
 
 /**
+ * This interface provides lifecycle methods for the service.
+ *
  * @author gbrown
  */
-public interface TestService {
+public interface ServiceLifecycle {
 
-    boolean isInitialised();
+    /**
+     * This method will initialise the service when first resolved.
+     */
+    void init();
 
 }
