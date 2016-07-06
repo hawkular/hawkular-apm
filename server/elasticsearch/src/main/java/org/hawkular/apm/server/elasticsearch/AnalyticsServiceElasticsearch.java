@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -108,8 +106,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @Inject
-    private ElasticsearchClient client;
+    private ElasticsearchClient client = ElasticsearchClient.getSingleton();
 
     /**
      * This method gets the elasticsearch client.
@@ -151,8 +148,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
 
@@ -162,7 +159,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .order(Order.aggregation("_count", false))
                     .size(criteria.getMaxResponseSize());
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TraceServiceElasticsearch.TRACE_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
@@ -211,12 +208,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -251,14 +248,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
             FilterBuilder filter = FilterBuilders.existsFilter("fault");
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -296,8 +293,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -305,7 +302,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .percentiles("percentiles")
                     .field("duration");
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(percentileAgg)
@@ -348,8 +345,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -368,7 +365,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .subAggregation(statsBuilder)
                     .subAggregation(faultCountBuilder);
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(histogramBuilder)
@@ -420,8 +417,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -431,7 +428,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .order(Order.aggregation("_count", false))
                     .size(criteria.getMaxResponseSize());
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(cardinalityBuilder)
@@ -483,8 +480,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -510,7 +507,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .path("properties")
                     .subAggregation(filterAggBuilder);
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(nestedBuilder)
@@ -570,8 +567,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -591,7 +588,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .field("timestamp")
                     .subAggregation(componentsBuilder);
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(NODE_DETAILS_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(histogramBuilder)
@@ -650,8 +647,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -708,7 +705,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .subAggregation(componentsBuilder)
                     .subAggregation(missingComponentsBuilder);
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(NODE_DETAILS_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(nodesBuilder)
@@ -847,8 +844,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                             String index, Criteria criteria, boolean addMetrics) {
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
 
@@ -871,7 +868,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .size(criteria.getMaxResponseSize())
                     .subAggregation(targetBuilder);
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(COMMUNICATION_DETAILS_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addAggregation(sourceBuilder)
@@ -946,7 +943,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     .subAggregation(operationsBuilder2)
                     .subAggregation(missingOperationBuilder2);
 
-            SearchRequestBuilder request2 = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request2 = client.getClient().prepareSearch(index)
                 .setTypes(FRAGMENT_COMPLETION_TIME_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .addAggregation(urisBuilder2)
@@ -1026,12 +1023,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TraceServiceElasticsearch.TRACE_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -1084,7 +1081,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             throws StoreException {
         client.initTenant(tenantId);
 
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.getClient().prepareBulk();
 
         try {
             for (int i = 0; i < communicationDetails.size(); i++) {
@@ -1095,7 +1092,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     msgLog.tracef("Storing communication details: %s", json);
                 }
 
-                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                bulkRequestBuilder.add(client.getClient().prepareIndex(client.getIndex(tenantId),
                         COMMUNICATION_DETAILS_TYPE, cd.getId()).setSource(json));
             }
         } catch (JsonProcessingException e) {
@@ -1127,7 +1124,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws StoreException {
         client.initTenant(tenantId);
 
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.getClient().prepareBulk();
 
         try {
             for (int i = 0; i < nodeDetails.size(); i++) {
@@ -1138,7 +1135,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     msgLog.tracef("Storing node details: %s", json);
                 }
 
-                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                bulkRequestBuilder.add(client.getClient().prepareIndex(client.getIndex(tenantId),
                         NODE_DETAILS_TYPE, rt.getId()).setSource(json));
             }
         } catch (JsonProcessingException e) {
@@ -1171,7 +1168,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             throws StoreException {
         client.initTenant(tenantId);
 
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.getClient().prepareBulk();
 
         try {
             for (int i = 0; i < completionTimes.size(); i++) {
@@ -1182,7 +1179,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     msgLog.tracef("Storing btxn completion time: %s", json);
                 }
 
-                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                bulkRequestBuilder.add(client.getClient().prepareIndex(client.getIndex(tenantId),
                         TRACE_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
             }
         } catch (JsonProcessingException e) {
@@ -1216,7 +1213,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             throws StoreException {
         client.initTenant(tenantId);
 
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.getClient().prepareBulk();
 
         try {
             for (int i = 0; i < completionTimes.size(); i++) {
@@ -1227,7 +1224,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     msgLog.tracef("Storing fragment completion time: %s", json);
                 }
 
-                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                bulkRequestBuilder.add(client.getClient().prepareIndex(client.getIndex(tenantId),
                         FRAGMENT_COMPLETION_TIME_TYPE, ct.getId()).setSource(json));
             }
         } catch (JsonProcessingException e) {
@@ -1260,7 +1257,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         String index = client.getIndex(tenantId);
 
         try {
-            client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+            client.getClient().admin().indices().prepareDelete(index).execute().actionGet();
             client.clear(tenantId);
         } catch (IndexMissingException ime) {
             // Ignore

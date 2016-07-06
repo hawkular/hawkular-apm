@@ -19,8 +19,6 @@ package org.hawkular.apm.server.elasticsearch;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -58,8 +56,7 @@ public class TraceServiceElasticsearch implements TraceService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @Inject
-    private ElasticsearchClient client;
+    private ElasticsearchClient client = ElasticsearchClient.getSingleton();
 
     /**
      * This method gets the elasticsearch client.
@@ -86,7 +83,7 @@ public class TraceServiceElasticsearch implements TraceService {
     public Trace get(String tenantId, String id) {
         Trace ret = null;
 
-        GetResponse response = client.getElasticsearchClient().prepareGet(
+        GetResponse response = client.getClient().prepareGet(
                 client.getIndex(tenantId), TRACE_TYPE, id).setRouting(id)
                 .execute()
                 .actionGet();
@@ -130,12 +127,12 @@ public class TraceServiceElasticsearch implements TraceService {
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
 
-            SearchRequestBuilder request = client.getElasticsearchClient().prepareSearch(index)
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
@@ -191,7 +188,7 @@ public class TraceServiceElasticsearch implements TraceService {
             throws StoreException {
         client.initTenant(tenantId);
 
-        BulkRequestBuilder bulkRequestBuilder = client.getElasticsearchClient().prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.getClient().prepareBulk();
 
         try {
             for (int i = 0; i < traces.size(); i++) {
@@ -202,7 +199,7 @@ public class TraceServiceElasticsearch implements TraceService {
                     msgLog.tracef("Storing trace: %s", json);
                 }
 
-                bulkRequestBuilder.add(client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+                bulkRequestBuilder.add(client.getClient().prepareIndex(client.getIndex(tenantId),
                         TRACE_TYPE, trace.getId()).setSource(json));
             }
         } catch (JsonProcessingException e) {
@@ -235,7 +232,7 @@ public class TraceServiceElasticsearch implements TraceService {
         String index = client.getIndex(tenantId);
 
         try {
-            client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+            client.getClient().admin().indices().prepareDelete(index).execute().actionGet();
             client.clear(tenantId);
         } catch (IndexMissingException ime) {
             // Ignore

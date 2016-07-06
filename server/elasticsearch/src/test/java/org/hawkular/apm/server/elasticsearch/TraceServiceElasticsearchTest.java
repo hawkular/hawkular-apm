@@ -44,8 +44,6 @@ public class TraceServiceElasticsearchTest {
 
     private TraceServiceElasticsearch ts;
 
-    private ElasticsearchClient client;
-
     @BeforeClass
     public static void initClass() {
         System.setProperty("HAWKULAR_APM_DATA_DIR", "target");
@@ -53,20 +51,12 @@ public class TraceServiceElasticsearchTest {
 
     @Before
     public void beforeTest() {
-        client = new ElasticsearchClient();
-        try {
-            client.init();
-        } catch (Exception e) {
-            fail("Failed to initialise Elasticsearch client: "+e);
-        }
         ts = new TraceServiceElasticsearch();
-        ts.setElasticsearchClient(client);
     }
 
     @After
     public void afterTest() {
         ts.clear(null);
-        client.close();
     }
 
     @Test

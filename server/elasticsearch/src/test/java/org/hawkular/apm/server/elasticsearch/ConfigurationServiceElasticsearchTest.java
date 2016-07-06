@@ -48,8 +48,6 @@ public class ConfigurationServiceElasticsearchTest {
 
     private ConfigurationServiceElasticsearch cfgs;
 
-    private ElasticsearchClient client;
-
     @BeforeClass
     public static void initClass() {
         System.setProperty("HAWKULAR_APM_DATA_DIR", "target");
@@ -57,20 +55,12 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Before
     public void beforeTest() {
-        client = new ElasticsearchClient();
-        try {
-            client.init();
-        } catch (Exception e) {
-            fail("Failed to initialise Elasticsearch client: " + e);
-        }
         cfgs = new ConfigurationServiceElasticsearch();
-        cfgs.setElasticsearchClient(client);
     }
 
     @After
     public void afterTest() {
         cfgs.clear(null);
-        client.close();
     }
 
     @Test
