@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Singleton;
 
+import org.hawkular.apm.api.services.ServiceLifecycle;
 import org.hawkular.apm.processor.communicationdetails.ProducerInfo;
 import org.hawkular.apm.processor.communicationdetails.ProducerInfoCache;
 import org.infinispan.Cache;
@@ -36,7 +37,10 @@ import org.infinispan.manager.CacheContainer;
  * @author gbrown
  */
 @Singleton
-public class InfinispanProducerInfoCache implements ProducerInfoCache {
+public class InfinispanProducerInfoCache implements ProducerInfoCache, ServiceLifecycle {
+
+    /**  */
+    private static final String CACHE_NAME = "producerinfo";
 
     private static final Logger log = Logger.getLogger(InfinispanProducerInfoCache.class.getName());
 
@@ -47,7 +51,19 @@ public class InfinispanProducerInfoCache implements ProducerInfoCache {
 
     @PostConstruct
     public void init() {
-        setProducerInfo(container.getCache("producerinfo"));
+        // If cache container not already provisions, then must be running outside of a JEE
+        // environment, so create a default cache container
+        if (container == null) {
+            if (log.isLoggable(Level.FINER)) {
+                log.fine("Using default cache");
+            }
+            setProducerInfo(InfinispanCacheManager.getDefaultCache(CACHE_NAME));
+        } else {
+            if (log.isLoggable(Level.FINER)) {
+                log.fine("Using container provided cache");
+            }
+            setProducerInfo(container.getCache(CACHE_NAME));
+        }
     }
 
     /**
@@ -83,7 +99,9 @@ public class InfinispanProducerInfoCache implements ProducerInfoCache {
      */
     @Override
     public void store(String tenantId, List<ProducerInfo> producerInfoList) {
-        producerInfo.startBatch();
+        if (container != null) {
+            producerInfo.startBatch();
+        }
 
         for (int i = 0; i < producerInfoList.size(); i++) {
             ProducerInfo pi = producerInfoList.get(i);
@@ -95,7 +113,9 @@ public class InfinispanProducerInfoCache implements ProducerInfoCache {
             producerInfo.put(pi.getId(), pi, 1, TimeUnit.MINUTES);
         }
 
-        producerInfo.endBatch(true);
+        if (container != null) {
+            producerInfo.endBatch(true);
+        }
     }
 
 }
