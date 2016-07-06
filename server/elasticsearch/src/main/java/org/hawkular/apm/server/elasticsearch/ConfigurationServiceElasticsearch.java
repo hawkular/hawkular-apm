@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
@@ -62,8 +60,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @Inject
-    private ElasticsearchClient client;
+    private ElasticsearchClient client = ElasticsearchClient.getSingleton();
 
     /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
@@ -105,11 +102,11 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
             String index = client.getIndex(tenantId);
 
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             // Only retrieve valid configurations
-            SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+            SearchResponse response = client.getClient().prepareSearch(index)
                     .setTypes(BUSINESS_TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
@@ -159,7 +156,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
         String index = (messages.isEmpty() ? BUSINESS_TXN_CONFIG_TYPE : BUSINESS_TXN_CONFIG_INVALID_TYPE);
 
-        IndexRequestBuilder builder = client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+        IndexRequestBuilder builder = client.getClient().prepareIndex(client.getIndex(tenantId),
                 index, name).setRouting(name)
                 .setSource(mapper.writeValueAsString(config));
 
@@ -172,7 +169,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
             messages.add(cm);
 
             // Delete any invalid entry
-            DeleteRequestBuilder deletion = client.getElasticsearchClient().prepareDelete(client.getIndex(tenantId),
+            DeleteRequestBuilder deletion = client.getClient().prepareDelete(client.getIndex(tenantId),
                     BUSINESS_TXN_CONFIG_INVALID_TYPE, name);
 
             deletion.execute().actionGet();
@@ -203,18 +200,18 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
             String index = client.getIndex(tenantId);
 
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             // First check if an invalid config exists
-            GetResponse response = client.getElasticsearchClient().prepareGet(
+            GetResponse response = client.getClient().prepareGet(
                     index, BUSINESS_TXN_CONFIG_INVALID_TYPE, name).setRouting(name)
                     .execute()
                     .actionGet();
 
             if (response.isSourceEmpty()) {
                 // Retrieve the valid configuration
-                response = client.getElasticsearchClient().prepareGet(
+                response = client.getClient().prepareGet(
                         index, BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
                         .execute()
                         .actionGet();
@@ -258,10 +255,10 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+            SearchResponse response = client.getClient().prepareSearch(index)
                     .setTypes(BUSINESS_TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
@@ -292,7 +289,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             // Check whether any invalid business transactions exist that have not yet
             // been stored in the valid list
-            response = client.getElasticsearchClient().prepareSearch(index)
+            response = client.getClient().prepareSearch(index)
                     .setTypes(BUSINESS_TXN_CONFIG_INVALID_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
@@ -338,11 +335,11 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
         try {
             RefreshRequestBuilder refreshRequestBuilder =
-                    client.getElasticsearchClient().admin().indices().prepareRefresh(index);
-            client.getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             // Should only obtain valid business transactions
-            SearchResponse response = client.getElasticsearchClient().prepareSearch(index)
+            SearchResponse response = client.getClient().prepareSearch(index)
                     .setTypes(BUSINESS_TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
@@ -385,14 +382,14 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         config.setLastUpdated(System.currentTimeMillis());
 
         // Remove valid version of the business transaction config
-        IndexRequestBuilder builder = client.getElasticsearchClient().prepareIndex(client.getIndex(tenantId),
+        IndexRequestBuilder builder = client.getClient().prepareIndex(client.getIndex(tenantId),
                 BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
                 .setSource(mapper.writeValueAsString(config));
 
         builder.execute().actionGet();
 
         // Remove invalid version of the business transaction config, which may or may not exist
-        DeleteRequestBuilder deletion = client.getElasticsearchClient().prepareDelete(client.getIndex(tenantId),
+        DeleteRequestBuilder deletion = client.getClient().prepareDelete(client.getIndex(tenantId),
                 BUSINESS_TXN_CONFIG_INVALID_TYPE, name);
 
         deletion.execute().actionGet();
@@ -410,7 +407,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         String index = client.getIndex(tenantId);
 
         try {
-            client.getElasticsearchClient().admin().indices().prepareDelete(index).execute().actionGet();
+            client.getClient().admin().indices().prepareDelete(index).execute().actionGet();
             client.clear(tenantId);
         } catch (IndexMissingException ime) {
             // Ignore

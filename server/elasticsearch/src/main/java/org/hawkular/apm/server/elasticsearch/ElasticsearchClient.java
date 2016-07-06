@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
@@ -46,7 +45,6 @@ import org.hawkular.apm.api.utils.PropertyUtil;
 /**
  * This class represents the ElasticSearch client.
  */
-@Singleton
 public class ElasticsearchClient {
 
     /**  */
@@ -95,16 +93,36 @@ public class ElasticsearchClient {
 
     private static List<String> knownTenants = new ArrayList<String>();
 
+    private static ElasticsearchClient singleton;
+
     /**
      * Default constructor.
      */
-    public ElasticsearchClient() {
-        if (PropertyUtil.getProperty("HAWKULAR_APM_DATA_DIR") == null) {
+    private ElasticsearchClient() {
+        if (PropertyUtil.getProperty("HAWKULAR_APM_DATA_DIR") == null
+                && System.getProperty("jboss.server.data.dir") != null) {
             System.setProperty("HAWKULAR_APM_DATA_DIR", System.getProperty("jboss.server.data.dir"));
         }
 
         hosts = PropertyUtil.getProperty(ELASTICSEARCH_HOSTS, ELASTICSEARCH_HOSTS_DEFAULT);
         cluster = PropertyUtil.getProperty(ELASTICSEARCH_CLUSTER, ELASTICSEARCH_CLUSTER_DEFAULT);
+    }
+
+    /**
+     * This method explicit instantiates the singleton. For use outside a CDI environment.
+     *
+     * @return The singleton
+     */
+    public static synchronized ElasticsearchClient getSingleton() {
+        if (singleton == null) {
+            singleton = new ElasticsearchClient();
+            try {
+                singleton.init();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to initialise Elasticsearch client", e);
+            }
+        }
+        return singleton;
     }
 
     /**
@@ -154,7 +172,7 @@ public class ElasticsearchClient {
         } else {
             String[] hostsArray = hosts.split(",");
             Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
-            TransportClient c = new TransportClient(settings);
+            client = new TransportClient(settings);
 
             for (String aHostsArray : hostsArray) {
                 String s = aHostsArray.trim();
@@ -164,10 +182,9 @@ public class ElasticsearchClient {
                     log.fine(" Connecting to elasticsearch host. [" + host[0] + ":" + host[1] + "]");
                 }
 
-                c = c.addTransportAddress(new InetSocketTransportAddress(host[0], new Integer(host[1])));
+                client = ((TransportClient)client).addTransportAddress(new InetSocketTransportAddress(host[0],
+                        new Integer(host[1])));
             }
-
-            client = c;
         }
     }
 
@@ -211,9 +228,9 @@ public class ElasticsearchClient {
                                     log.finest("Index '" + index + "' created");
                                 }
                                 // refresh index
-                                RefreshRequestBuilder refreshRequestBuilder = getElasticsearchClient().admin().indices()
+                                RefreshRequestBuilder refreshRequestBuilder = getClient().admin().indices()
                                         .prepareRefresh(index);
-                                getElasticsearchClient().admin().indices().refresh(refreshRequestBuilder.request())
+                                getClient().admin().indices().refresh(refreshRequestBuilder.request())
                                 .actionGet();
                             } else if (log.isLoggable(Level.FINEST)) {
                                 log.finest("Index '" + index + "' already exists. Doing nothing.");
@@ -321,7 +338,7 @@ public class ElasticsearchClient {
      *
      * @return The client
      */
-    public Client getElasticsearchClient() {
+    public Client getClient() {
         return client;
     }
 
