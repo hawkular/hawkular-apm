@@ -18,7 +18,6 @@ package org.hawkular.apm.analytics.service.rest.client;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,7 @@ import org.hawkular.apm.api.services.AnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.PropertyUtil;
+import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class AnalyticsServiceRESTClient implements AnalyticsService {
+public class AnalyticsServiceRESTClient extends AbstractRESTClient implements AnalyticsService {
 
     private static final Logger log = Logger.getLogger(AnalyticsServiceRESTClient.class.getName());
 
@@ -93,69 +93,8 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
             new TypeReference<java.util.List<PrincipalInfo>>() {
             };
 
-    private static final String HAWKULAR_TENANT = "Hawkular-Tenant";
-
-    private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
-    private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
-
-    private String authorization = null;
-
-    private String uri;
-
-    {
-        uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
-
-        if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
-            uri = uri + '/';
-        }
-    }
-
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the uri
-     */
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * @param uri the uri to set
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
+    public AnalyticsServiceRESTClient() {
+        super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
     /* (non-Javadoc)
@@ -169,7 +108,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/unboundendpoints?startTime=")
                 .append(startTime)
                 .append("&endTime=")
@@ -247,7 +186,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/boundendpoints/")
                 .append(businessTransaction)
                 .append("?startTime=")
@@ -323,7 +262,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/properties");
 
         buildQueryString(builder, criteria);
@@ -396,7 +335,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/principals");
 
         buildQueryString(builder, criteria);
@@ -470,7 +409,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/trace/completion/count");
 
         buildQueryString(builder, criteria);
@@ -543,7 +482,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/trace/completion/faultcount");
 
         buildQueryString(builder, criteria);
@@ -617,7 +556,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/trace/completion/percentiles");
 
         buildQueryString(builder, criteria);
@@ -693,7 +632,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/trace/completion/statistics");
 
         buildQueryString(builder, criteria);
@@ -770,7 +709,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/trace/completion/faults");
 
         buildQueryString(builder, criteria);
@@ -845,7 +784,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/trace/completion/property/")
                 .append(property);
 
@@ -951,7 +890,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/node/statistics");
 
         if (buildQueryString(builder, criteria)) {
@@ -1032,7 +971,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/node/summary");
 
         buildQueryString(builder, criteria);
@@ -1107,7 +1046,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/communication/summary");
 
         if (buildQueryString(builder, criteria)) {
@@ -1176,34 +1115,6 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         return null;
     }
 
-    /**
-     * Add the header values to the supplied connection.
-     *
-     * @param connection The connection
-     * @param tenantId The optional tenant id
-     */
-    protected void addHeaders(HttpURLConnection connection, String tenantId) {
-        if (tenantId == null) {
-            // Check if default tenant provided as property
-            tenantId = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_TENANT);
-        }
-
-        if (tenantId != null) {
-            connection.setRequestProperty(HAWKULAR_TENANT, tenantId);
-        }
-
-        if (authorization == null && username != null) {
-            String authString = username + ":" + password;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            authorization = "Basic " + encoded;
-        }
-
-        if (authorization != null) {
-            connection.setRequestProperty("Authorization", authorization);
-        }
-    }
-
     /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
      */
@@ -1250,7 +1161,7 @@ public class AnalyticsServiceRESTClient implements AnalyticsService {
         }
 
         StringBuilder builder = new StringBuilder()
-                .append(uri)
+                .append(getUri())
                 .append("hawkular/apm/analytics/hostnames");
 
         buildQueryString(builder, criteria);

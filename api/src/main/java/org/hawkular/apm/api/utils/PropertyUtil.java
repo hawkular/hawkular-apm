@@ -35,6 +35,12 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_URI = "HAWKULAR_APM_URI";
 
     /**  */
+    public static final String HAWKULAR_APM_URI_SERVICES = "HAWKULAR_APM_URI_SERVICES";
+
+    /**  */
+    public static final String HAWKULAR_APM_URI_PUBLISHER = "HAWKULAR_APM_URI_PUBLISHER";
+
+    /**  */
     public static final String HAWKULAR_APM_USERNAME = "HAWKULAR_APM_USERNAME";
 
     /**  */

@@ -28,9 +28,9 @@ import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
-import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
-import org.hawkular.apm.trace.publisher.rest.client.TracePublisherRESTClient;
+import org.hawkular.apm.api.utils.PropertyUtil;
+import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,8 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public class TraceServiceRESTClient extends TracePublisherRESTClient
-                            implements TraceService, TracePublisher {
+public class TraceServiceRESTClient extends AbstractRESTClient implements TraceService {
 
     private static final Logger log = Logger.getLogger(TraceServiceRESTClient.class.getName());
 
@@ -51,6 +50,10 @@ public class TraceServiceRESTClient extends TracePublisherRESTClient
     };
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    public TraceServiceRESTClient() {
+        super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
+    }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.TraceService#get(java.lang.String, java.lang.String)
