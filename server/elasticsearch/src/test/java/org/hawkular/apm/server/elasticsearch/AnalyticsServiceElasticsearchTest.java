@@ -254,7 +254,8 @@ public class AnalyticsServiceElasticsearchTest {
                 wait(1000);
             }
         } catch (Exception e) {
-            fail("Failed to store");
+            e.printStackTrace();
+            fail("Failed to store: "+e);
         }
 
         analytics.setConfigurationService(new ConfigurationService() {

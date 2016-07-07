@@ -27,30 +27,66 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-apm-performance-server</artifactId>
+  <artifactId>hawkular-apm-server-kafka</artifactId>
   <packaging>jar</packaging>
-
-  <name>Hawkular APM::Performance::Server</name>
+  <name>Hawkular APM::Server::Kafka</name>
 
   <dependencies>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-collector</artifactId>
+      <artifactId>hawkular-apm-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-config-service-rest-client</artifactId>
+      <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
+      <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-fragmentcompletiontime-deriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-notification-deriver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-elasticsearch</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-client-kafka</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-infinispan</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
     </dependency>
 
     <dependency>
@@ -67,8 +103,15 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -81,10 +124,10 @@
           <descriptors>
             <descriptor>src/main/scripts/all-assembly.xml</descriptor>
           </descriptors>
-          <finalName>APMClientSimulator</finalName>
+          <finalName>APMProcessor</finalName>
           <archive>
             <manifest>
-              <mainClass>org.hawkular.apm.performance.server.ClientSimulator</mainClass>
+              <mainClass>org.hawkular.apm.server.kafka.APMProcessor</mainClass>
             </manifest>
           </archive>
           <appendAssemblyId>false</appendAssemblyId>

@@ -65,6 +65,7 @@
     <module>client/config-service-rest-client</module>
     <module>client/instrumentation-jvm</module>
     <module>client/instrumenter</module>
+    <module>client/kafka</module>
     <module>client/trace-publisher-rest-client</module>
     <module>client/trace-service-rest-client</module>
     <module>processors/communicationdetails-deriver</module>
@@ -76,6 +77,7 @@
     <module>server/elasticsearch</module>
     <module>server/infinispan</module>
     <module>server/jms</module>
+    <module>server/kafka</module>
     <module>server/rest</module>
     <module>server/security-jaas</module>
     <module>server/war</module>
@@ -113,6 +115,7 @@
     <version.org.apache.activemq>5.11.1</version.org.apache.activemq>
     <version.org.apache.camel>2.15.2</version.org.apache.camel>
     <version.org.apache.httpcomponents>4.3.5</version.org.apache.httpcomponents>
+    <version.org.apache.kafka>0.10.0.0</version.org.apache.kafka>
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
@@ -187,6 +190,12 @@
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-config-manager-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-client-kafka</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -482,6 +491,13 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${version.org.apache.lucene}</version>
+      </dependency>
+
+      <!-- Apache Kafka dependencies -->
+      <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${version.org.apache.kafka}</version>
       </dependency>
 
       <!-- Test dependencies -->
