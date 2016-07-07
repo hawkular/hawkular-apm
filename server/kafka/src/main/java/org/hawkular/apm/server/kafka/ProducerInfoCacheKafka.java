@@ -18,6 +18,7 @@ package org.hawkular.apm.server.kafka;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * @author gbrown
  */
 public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
+
+    private static final Logger log = Logger.getLogger(ProducerInfoCacheKafka.class.getName());
 
     /** Create a unique group id, to enable each separate instance of this processor to be
      * able to receive all messages stored on the topic (i.e. topic subscriber rather than
@@ -51,20 +54,24 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
 
         producerInfoCache = ServiceResolver.getSingletonService(ProducerInfoCache.class);
 
-        producerInfoInitialiser = new ProducerInfoInitialiser();
-        producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
+        if (producerInfoCache == null) {
+            log.severe("Producer Info Cache not found - possibly not configured correctly");
+        } else {
+            producerInfoInitialiser = new ProducerInfoInitialiser();
+            producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
 
-        setTypeReference(new TypeReference<Trace>() {
-        });
+            setTypeReference(new TypeReference<Trace>() {
+            });
 
-        setProcessor(new AbstractProcessor<Trace, Void>(ProcessorType.ManyToMany) {
+            setProcessor(new AbstractProcessor<Trace, Void>(ProcessorType.ManyToMany) {
 
-            @Override
-            public List<Void> processManyToMany(String tenantId, List<Trace> items)
-                    throws RetryAttemptException {
-                producerInfoInitialiser.initialise(tenantId, items);
-                return null;
-            }
-        });
+                @Override
+                public List<Void> processManyToMany(String tenantId, List<Trace> items)
+                        throws RetryAttemptException {
+                    producerInfoInitialiser.initialise(tenantId, items);
+                    return null;
+                }
+            });
+        }
     }
 }

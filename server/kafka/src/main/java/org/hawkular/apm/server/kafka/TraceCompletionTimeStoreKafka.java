@@ -17,6 +17,7 @@
 package org.hawkular.apm.server.kafka;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.AnalyticsService;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class TraceCompletionTimeStoreKafka extends AbstractConsumerKafka<CompletionTime, Void> {
 
+    private static final Logger log = Logger.getLogger(TraceCompletionTimeStoreKafka.class.getName());
+
     /**  */
     private static final String GROUP_ID = "TraceCompletionTimeStore";
 
@@ -46,21 +49,26 @@ public class TraceCompletionTimeStoreKafka extends AbstractConsumerKafka<Complet
 
         analyticsService = ServiceResolver.getSingletonService(AnalyticsService.class);
 
-        setTypeReference(new TypeReference<CompletionTime>() {
-        });
+        if (analyticsService == null) {
+            log.severe("Analytics Service not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new AbstractProcessor<CompletionTime, Void>(ProcessorType.ManyToMany) {
+            setTypeReference(new TypeReference<CompletionTime>() {
+            });
 
-            @Override
-            public List<Void> processManyToMany(String tenantId, List<CompletionTime> items)
-                    throws RetryAttemptException {
-                try {
-                    analyticsService.storeTraceCompletionTimes(tenantId, items);
-                } catch (StoreException se) {
-                    throw new RetryAttemptException(se);
+            setProcessor(new AbstractProcessor<CompletionTime, Void>(ProcessorType.ManyToMany) {
+
+                @Override
+                public List<Void> processManyToMany(String tenantId, List<CompletionTime> items)
+                        throws RetryAttemptException {
+                    try {
+                        analyticsService.storeTraceCompletionTimes(tenantId, items);
+                    } catch (StoreException se) {
+                        throw new RetryAttemptException(se);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        });
+            });
+        }
     }
 }

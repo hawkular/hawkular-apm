@@ -17,6 +17,7 @@
 package org.hawkular.apm.server.kafka;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class TraceStoreKafka extends AbstractConsumerKafka<Trace, Void> {
 
+    private static final Logger log = Logger.getLogger(TraceStoreKafka.class.getName());
+
     /**  */
     private static final String GROUP_ID = "TraceStore";
 
@@ -46,21 +49,26 @@ public class TraceStoreKafka extends AbstractConsumerKafka<Trace, Void> {
 
         traceService = ServiceResolver.getSingletonService(TraceService.class);
 
-        setTypeReference(new TypeReference<Trace>() {
-        });
+        if (traceService == null) {
+            log.severe("Trace Service not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new AbstractProcessor<Trace, Void>(ProcessorType.ManyToMany) {
+            setTypeReference(new TypeReference<Trace>() {
+            });
 
-            @Override
-            public List<Void> processManyToMany(String tenantId, List<Trace> items)
-                    throws RetryAttemptException {
-                try {
-                    traceService.storeTraces(tenantId, items);
-                } catch (StoreException se) {
-                    throw new RetryAttemptException(se);
+            setProcessor(new AbstractProcessor<Trace, Void>(ProcessorType.ManyToMany) {
+
+                @Override
+                public List<Void> processManyToMany(String tenantId, List<Trace> items)
+                        throws RetryAttemptException {
+                    try {
+                        traceService.storeTraces(tenantId, items);
+                    } catch (StoreException se) {
+                        throw new RetryAttemptException(se);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        });
+            });
+        }
     }
 }

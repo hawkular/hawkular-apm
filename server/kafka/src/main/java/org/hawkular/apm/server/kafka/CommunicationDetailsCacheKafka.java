@@ -18,6 +18,7 @@ package org.hawkular.apm.server.kafka;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.services.ServiceResolver;
@@ -34,6 +35,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class CommunicationDetailsCacheKafka extends AbstractConsumerKafka<CommunicationDetails, Void> {
 
+    private static final Logger log = Logger.getLogger(CommunicationDetailsCacheKafka.class.getName());
+
     /** Create a unique group id, to enable each separate instance of this processor to be
      * able to receive all messages stored on the topic (i.e. topic subscriber rather than
      * queue semantics) */
@@ -49,21 +52,26 @@ public class CommunicationDetailsCacheKafka extends AbstractConsumerKafka<Commun
 
         communicationDetailsCache = ServiceResolver.getSingletonService(CommunicationDetailsCache.class);
 
-        setTypeReference(new TypeReference<CommunicationDetails>() {
-        });
+        if (communicationDetailsCache == null) {
+            log.severe("Communication Details Cache not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new AbstractProcessor<CommunicationDetails, Void>(ProcessorType.ManyToMany) {
+            setTypeReference(new TypeReference<CommunicationDetails>() {
+            });
 
-            @Override
-            public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items)
-                    throws RetryAttemptException {
-                try {
-                    communicationDetailsCache.store(tenantId, items);
-                } catch (CacheException ce) {
-                    throw new RetryAttemptException(ce);
+            setProcessor(new AbstractProcessor<CommunicationDetails, Void>(ProcessorType.ManyToMany) {
+
+                @Override
+                public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items)
+                        throws RetryAttemptException {
+                    try {
+                        communicationDetailsCache.store(tenantId, items);
+                    } catch (CacheException ce) {
+                        throw new RetryAttemptException(ce);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        });
+            });
+        }
     }
 }

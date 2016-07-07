@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.PublisherMetricHandler;
@@ -34,6 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author gbrown
  */
 public class ClientSimulator {
+
+    private static final Logger log = Logger.getLogger(ClientSimulator.class.getName());
 
     private SystemConfiguration systemConfig;
 
@@ -88,6 +91,11 @@ public class ClientSimulator {
 
         // Initialise publisher metrics handler
         TracePublisher publisher = ServiceResolver.getSingletonService(TracePublisher.class);
+        if (publisher == null) {
+            log.severe("Trace publisher has not been configured correctly");
+            return;
+        }
+
         publisher.setMetricHandler(new PublisherMetricHandler<Trace>() {
             @Override
             public void published(String tenantId, List<Trace> items, long metric) {
