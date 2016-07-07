@@ -89,8 +89,8 @@ public class ConfigurationLoader {
         if (!f.isAbsolute()) {
             if (f.exists()) {
                 uri = f.getAbsolutePath();
-            } else if (System.getProperties().containsKey("jboss.server.data.dir")) {
-                uri = System.getProperty("jboss.server.data.dir") + java.io.File.separatorChar + uri;
+            } else if (System.getProperties().containsKey("jboss.server.config.dir")) {
+                uri = System.getProperty("jboss.server.config.dir") + java.io.File.separatorChar + uri;
             } else {
                 try {
                     URL url = Thread.currentThread().getContextClassLoader().getResource(uri);
