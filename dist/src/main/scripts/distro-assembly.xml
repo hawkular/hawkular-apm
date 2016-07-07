@@ -78,7 +78,7 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/standalone/data</outputDirectory>
+      <outputDirectory>/standalone/configuration</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.apm:hawkular-apm-instrumentation-jvm</include>
