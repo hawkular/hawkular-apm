@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.kafka;
 
+import java.util.logging.Logger;
+
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
@@ -30,6 +32,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class TraceCompletionInformationInitiatorKafka
         extends AbstractConsumerKafka<Trace, TraceCompletionInformation> {
 
+    private static final Logger log = Logger.getLogger(TraceCompletionInformationInitiatorKafka.class.getName());
+
     /**  */
     private static final String GROUP_ID = "TraceCompletionInformationInitiator";
 
@@ -41,9 +45,14 @@ public class TraceCompletionInformationInitiatorKafka
 
         setPublisher(ServiceResolver.getSingletonService(TraceCompletionInformationPublisher.class));
 
-        setTypeReference(new TypeReference<Trace>() {
-        });
+        if (getPublisher() == null) {
+            log.severe("Trace Completion Information Publisher not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new TraceCompletionInformationInitiator());
+            setTypeReference(new TypeReference<Trace>() {
+            });
+
+            setProcessor(new TraceCompletionInformationInitiator());
+        }
     }
 }

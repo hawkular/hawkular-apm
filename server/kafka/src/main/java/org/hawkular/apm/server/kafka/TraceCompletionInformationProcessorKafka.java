@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.kafka;
 
+import java.util.logging.Logger;
+
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
@@ -30,6 +32,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class TraceCompletionInformationProcessorKafka
         extends AbstractRetryConsumerKafka<TraceCompletionInformation, TraceCompletionInformation> {
 
+    private static final Logger log = Logger.getLogger(TraceCompletionInformationProcessorKafka.class.getName());
+
     private static final String GROUP_ID = "TraceCompletionInformationProcessor";
 
     /**  */
@@ -41,12 +45,27 @@ public class TraceCompletionInformationProcessorKafka
         TraceCompletionInformationProcessor processor = new TraceCompletionInformationProcessor();
         processor.setCommunicationDetailsCache(ServiceResolver.getSingletonService(CommunicationDetailsCache.class));
 
-        setProcessor(processor);
+        if (processor.getCommunicationDetailsCache() == null) {
+            log.severe("Communication Details Cache not found - possibly not configured correctly");
+            processor = null;
+        }
 
         setPublisher(ServiceResolver.getSingletonService(TraceCompletionInformationPublisher.class));
 
-        setTypeReference(new TypeReference<TraceCompletionInformation>() {
-        });
+        if (getPublisher() == null) {
+            log.severe("Trace Completion Information Publisher not found - possibly not configured correctly");
+            processor = null;
+        }
+
+        if (processor != null) {
+
+            setTypeReference(new TypeReference<TraceCompletionInformation>() {
+            });
+
+            setProcessor(processor);
+        } else {
+            log.severe("Trace Completion Information Processor not started - publisher and/or cache not available");
+        }
     }
 
     /* (non-Javadoc)

@@ -17,6 +17,7 @@
 package org.hawkular.apm.server.kafka;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.services.AnalyticsService;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class NodeDetailsStoreKafka extends AbstractConsumerKafka<NodeDetails, Void> {
 
+    private static final Logger log = Logger.getLogger(NodeDetailsStoreKafka.class.getName());
+
     /**  */
     private static final String GROUP_ID = "NodeDetailsStore";
 
@@ -46,21 +49,26 @@ public class NodeDetailsStoreKafka extends AbstractConsumerKafka<NodeDetails, Vo
 
         analyticsService = ServiceResolver.getSingletonService(AnalyticsService.class);
 
-        setTypeReference(new TypeReference<NodeDetails>() {
-        });
+        if (analyticsService == null) {
+            log.severe("Analytics Service not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new AbstractProcessor<NodeDetails, Void>(ProcessorType.ManyToMany) {
+            setTypeReference(new TypeReference<NodeDetails>() {
+            });
 
-            @Override
-            public List<Void> processManyToMany(String tenantId, List<NodeDetails> items)
-                    throws RetryAttemptException {
-                try {
-                    analyticsService.storeNodeDetails(tenantId, items);
-                } catch (StoreException se) {
-                    throw new RetryAttemptException(se);
+            setProcessor(new AbstractProcessor<NodeDetails, Void>(ProcessorType.ManyToMany) {
+
+                @Override
+                public List<Void> processManyToMany(String tenantId, List<NodeDetails> items)
+                        throws RetryAttemptException {
+                    try {
+                        analyticsService.storeNodeDetails(tenantId, items);
+                    } catch (StoreException se) {
+                        throw new RetryAttemptException(se);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        });
+            });
+        }
     }
 }

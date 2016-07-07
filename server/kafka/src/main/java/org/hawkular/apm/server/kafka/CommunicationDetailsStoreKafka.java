@@ -17,6 +17,7 @@
 package org.hawkular.apm.server.kafka;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.services.AnalyticsService;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class CommunicationDetailsStoreKafka extends AbstractConsumerKafka<CommunicationDetails, Void> {
 
+    private static final Logger log = Logger.getLogger(CommunicationDetailsStoreKafka.class.getName());
+
     /**  */
     private static final String GROUP_ID = "CommunicationDetailsStore";
 
@@ -46,21 +49,26 @@ public class CommunicationDetailsStoreKafka extends AbstractConsumerKafka<Commun
 
         analyticsService = ServiceResolver.getSingletonService(AnalyticsService.class);
 
-        setTypeReference(new TypeReference<CommunicationDetails>() {
-        });
+        if (analyticsService == null) {
+            log.severe("Analytics Service not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new AbstractProcessor<CommunicationDetails, Void>(ProcessorType.ManyToMany) {
+            setTypeReference(new TypeReference<CommunicationDetails>() {
+            });
 
-            @Override
-            public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items)
-                    throws RetryAttemptException {
-                try {
-                    analyticsService.storeCommunicationDetails(tenantId, items);
-                } catch (StoreException se) {
-                    throw new RetryAttemptException(se);
+            setProcessor(new AbstractProcessor<CommunicationDetails, Void>(ProcessorType.ManyToMany) {
+
+                @Override
+                public List<Void> processManyToMany(String tenantId, List<CommunicationDetails> items)
+                        throws RetryAttemptException {
+                    try {
+                        analyticsService.storeCommunicationDetails(tenantId, items);
+                    } catch (StoreException se) {
+                        throw new RetryAttemptException(se);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        });
+            });
+        }
     }
 }

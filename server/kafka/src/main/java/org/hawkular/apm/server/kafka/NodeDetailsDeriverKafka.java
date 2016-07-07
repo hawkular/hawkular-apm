@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.kafka;
 
+import java.util.logging.Logger;
+
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
@@ -29,6 +31,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class NodeDetailsDeriverKafka extends AbstractConsumerKafka<Trace, NodeDetails> {
 
+    private static final Logger log = Logger.getLogger(NodeDetailsDeriverKafka.class.getName());
+
     /**  */
     private static final String GROUP_ID = "NodeDetailsDeriver";
 
@@ -40,9 +44,14 @@ public class NodeDetailsDeriverKafka extends AbstractConsumerKafka<Trace, NodeDe
 
         setPublisher(ServiceResolver.getSingletonService(NodeDetailsPublisher.class));
 
-        setTypeReference(new TypeReference<Trace>() {
-        });
+        if (getPublisher() == null) {
+            log.severe("Node Details Publisher not found - possibly not configured correctly");
+        } else {
 
-        setProcessor(new NodeDetailsDeriver());
+            setTypeReference(new TypeReference<Trace>() {
+            });
+
+            setProcessor(new NodeDetailsDeriver());
+        }
     }
 }

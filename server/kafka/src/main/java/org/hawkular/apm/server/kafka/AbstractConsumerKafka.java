@@ -170,6 +170,11 @@ public class AbstractConsumerKafka<S, T> implements KafkaProcessor {
 
     @Override
     public void run() {
+        // If no processor, then don't start comsuming records
+        if (getProcessor() == null) {
+            return;
+        }
+
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(getPollingInterval());
 
@@ -185,7 +190,7 @@ public class AbstractConsumerKafka<S, T> implements KafkaProcessor {
 
                 try {
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest(getClass().getSimpleName()+": received " + items.size() +
+                        log.finest(getClass().getSimpleName() + ": received " + items.size() +
                                 " records after polling " + getPollingInterval() + "ms");
                     }
                     process(null, items, 1);

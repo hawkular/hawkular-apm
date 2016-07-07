@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.kafka;
 
+import java.util.logging.Logger;
+
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
@@ -30,6 +32,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 public class CommunicationDetailsDeriverKafka extends AbstractRetryConsumerKafka<Trace, CommunicationDetails> {
 
+    private static final Logger log = Logger.getLogger(CommunicationDetailsDeriverKafka.class.getName());
+
     private static final String GROUP_ID = "CommunicationDetailsDeriver";
 
     /**  */
@@ -39,15 +43,33 @@ public class CommunicationDetailsDeriverKafka extends AbstractRetryConsumerKafka
         super(TOPIC, GROUP_ID);
 
         CommunicationDetailsDeriver communicationDetailsDeriver = new CommunicationDetailsDeriver();
-        communicationDetailsDeriver.setProducerInfoCache(ServiceResolver.getSingletonService(ProducerInfoCache.class));
-        communicationDetailsDeriver.init();
 
-        setProcessor(communicationDetailsDeriver);
+        ProducerInfoCache cache = ServiceResolver.getSingletonService(ProducerInfoCache.class);
+        if (cache == null) {
+            log.severe("Producer Info Cache not available - possibly not configured correctly");
+            communicationDetailsDeriver = null;
+        } else {
+            communicationDetailsDeriver.setProducerInfoCache(cache);
+            communicationDetailsDeriver.init();
+        }
 
-        setPublisher(ServiceResolver.getSingletonService(CommunicationDetailsPublisher.class));
+        CommunicationDetailsPublisher publisher = ServiceResolver
+                .getSingletonService(CommunicationDetailsPublisher.class);
+        if (publisher == null) {
+            log.severe("Communication Details Publisher not available - possibly not configured correctly");
+            communicationDetailsDeriver = null;
+        } else {
+            setPublisher(publisher);
+        }
 
-        setTypeReference(new TypeReference<Trace>() {
-        });
+        if (communicationDetailsDeriver != null) {
+            setProcessor(communicationDetailsDeriver);
+
+            setTypeReference(new TypeReference<Trace>() {
+            });
+        } else {
+            log.severe("Communication Details Deriver not started - missing cache and/or publisher");
+        }
     }
 
     /* (non-Javadoc)
