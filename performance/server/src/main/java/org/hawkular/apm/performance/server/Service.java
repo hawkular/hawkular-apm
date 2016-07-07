@@ -16,7 +16,6 @@
  */
 package org.hawkular.apm.performance.server;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public class Service {
 
     private String name;
 
-    private Map<String, String> calledServices = new HashMap<String, String>();
+    private Map<String, String> calledServices;
 
     private long lastUsed = System.currentTimeMillis();
 
@@ -138,12 +137,14 @@ public class Service {
      *
      * @param mesg The message to be exchanged
      * @param interactionId The interaction id, or null if initial call
+     * @param btxnName The optional business txn name
      */
-    public void call(Message mesg, String interactionId) {
+    public void call(Message mesg, String interactionId, String btxnName) {
         boolean activated = collector.activate(uri, null, interactionId);
 
         if (activated) {
             collector.consumerStart(null, uri, "Test", null, interactionId);
+            collector.setBusinessTransaction(null, btxnName);
         }
 
         if (calledServices != null) {
@@ -152,7 +153,7 @@ public class Service {
             // Introduce a delay related to the business logic
             synchronized (this) {
                 try {
-                    wait(((int)Math.random()%300) + 50);
+                    wait(((int) Math.random() % 300) + 50);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -170,13 +171,13 @@ public class Service {
                 // Introduce a delay related to the latency
                 synchronized (this) {
                     try {
-                        wait(((int)Math.random()%100) + 10);
+                        wait(((int) Math.random() % 100) + 10);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                calledService.call(mesg, nextInteractionId);
+                calledService.call(mesg, nextInteractionId, collector.getBusinessTransaction());
 
                 if (activated) {
                     collector.producerEnd(null, calledService.getUri(), "Test", null);

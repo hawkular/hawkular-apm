@@ -16,86 +16,26 @@
  */
 package org.hawkular.apm.performance.server;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-import java.util.UUID;
-
 /**
+ * The service registry interface.
+ *
  * @author gbrown
  */
-public class ServiceRegistry {
+public interface ServiceRegistry {
 
-    private Map<String, ServiceConfiguration> serviceConfigs = new HashMap<String, ServiceConfiguration>();
+    /**
+     * This method returns a service instance associated with the supplied name.
+     *
+     * @param name The service name
+     * @return The service instance
+     */
+    Service getServiceInstance(String name);
 
-    private Map<String, Stack<Service>> services = new HashMap<String, Stack<Service>>();
+    /**
+     * This method returns the service instance after use.
+     *
+     * @param service The service instance
+     */
+    void returnServiceInstance(Service service);
 
-    private Metrics metrics;
-
-    public ServiceRegistry(SystemConfiguration sysConfig, Metrics metrics) {
-        this.metrics = metrics;
-
-        for (ServiceConfiguration serviceConfig : sysConfig.getServices()) {
-            serviceConfigs.put(serviceConfig.getName(), serviceConfig);
-        }
-    }
-
-    public Service getServiceInstance(String name) {
-        Stack<Service> stack = null;
-
-        synchronized (services) {
-            stack = services.get(name);
-            if (stack == null) {
-                stack = new Stack<Service>();
-                services.put(name, stack);
-            }
-        }
-
-        synchronized (stack) {
-            if (stack.isEmpty()) {
-                // Allocate new instance
-                return newServiceInstance(name);
-            } else {
-                Service service = stack.pop();
-
-                // Check service hasn't expired
-                if (System.currentTimeMillis() - service.getLastUsed() > 10000) {
-
-                    for (int i = 0; i < stack.size(); i++) {
-                        // Record fact that service instance is being closed
-                        metrics.closeService(name);
-                    }
-
-                    stack.clear();
-
-                    return newServiceInstance(name);
-                }
-
-                return service;
-            }
-        }
-    }
-
-    protected Service newServiceInstance(String name) {
-        metrics.createService(name);
-        ServiceConfiguration serviceConfig = serviceConfigs.get(name);
-        return new Service(name, serviceConfig.getUri(), UUID.randomUUID().toString(), this,
-                serviceConfig.getCalledServices());
-    }
-
-    public void returnServiceInstance(Service service) {
-        Stack<Service> stack = null;
-
-        synchronized (services) {
-            stack = services.get(service.getName());
-            if (stack == null) {
-                stack = new Stack<Service>();
-                services.put(service.getName(), stack);
-            }
-        }
-
-        synchronized (stack) {
-            stack.push(service);
-        }
-    }
 }
