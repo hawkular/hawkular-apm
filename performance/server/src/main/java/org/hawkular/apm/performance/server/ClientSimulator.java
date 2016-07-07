@@ -80,7 +80,7 @@ public class ClientSimulator {
 
     public void run() {
         Metrics metrics = new Metrics(name);
-        ServiceRegistry reg = new ServiceRegistry(systemConfig, metrics);
+        ServiceRegistry reg = new DefaultServiceRegistry(systemConfig, metrics);
 
         List<PathConfiguration> paths = new ArrayList<PathConfiguration>();
         for (PathConfiguration pc : systemConfig.getPaths()) {
@@ -131,7 +131,7 @@ public class ClientSimulator {
 
                         Message m = new Message(paths.get(index).getName());
 
-                        s.call(m, null);
+                        s.call(m, null, null);
                     }
 
                     System.out.println("THREAD: " + Thread.currentThread() + ": FINISHED: " + new java.util.Date());
