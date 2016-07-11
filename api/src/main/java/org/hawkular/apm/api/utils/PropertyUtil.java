@@ -90,11 +90,6 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY = "HAWKULAR_APM_PROCESSOR_LAST_RETRY_DELAY";
 
     /**
-     * The comma separated list of host:port addresses for the Kafka servers.
-     */
-    public static final String HAWKULAR_APM_KAFKA_SERVERS = "HAWKULAR_APM_KAFKA_SERVERS";
-
-    /**
      * The standard polling interval (in milliseconds) used by processors.
      */
     public static final String HAWKULAR_APM_KAFKA_POLLING_INTERVAL = "HAWKULAR_APM_KAFKA_POLLING_INTERVAL";
@@ -120,6 +115,9 @@ public class PropertyUtil {
      */
     public static final String HAWKULAR_APM_KAFKA_CONSUMER_SESSION_TIMEOUT =
                                     "HAWKULAR_APM_KAFKA_CONSUMER_SESSION_TIMEOUT";
+
+    /** The URI prefix to denote use of Kafka */
+    public static final String KAFKA_PREFIX = "kafka:";
 
     /**
      * This method determines whether a property exists, as a system property
