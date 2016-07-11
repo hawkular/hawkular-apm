@@ -51,7 +51,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-agent-rest</artifactId>
+      <artifactId>hawkular-apm-agent</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
