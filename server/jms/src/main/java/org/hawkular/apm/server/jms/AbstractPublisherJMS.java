@@ -32,6 +32,8 @@ import javax.naming.InitialContext;
 
 import org.hawkular.apm.api.services.Publisher;
 import org.hawkular.apm.api.services.PublisherMetricHandler;
+import org.hawkular.apm.api.services.ServiceLifecycle;
+import org.hawkular.apm.api.services.ServiceStatus;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.server.jms.log.MsgLogger;
 
@@ -42,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
+public abstract class AbstractPublisherJMS<T> implements Publisher<T>, ServiceLifecycle, ServiceStatus {
 
     private static final Logger log = Logger.getLogger(AbstractPublisherJMS.class.getName());
 
@@ -58,6 +60,15 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T> {
 
     private int initialRetryCount = PropertyUtil.getPropertyAsInteger(
             PropertyUtil.HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT, DEFAULT_INITIAL_RETRY_COUNT);
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
+     */
+    @Override
+    public boolean isAvailable() {
+        // If no publisher is defined, then this is the default implementation
+        return !PropertyUtil.hasProperty(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER);
+    }
 
     /**
      * This method returns the destination associated with the publisher.
