@@ -27,9 +27,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-apm-server-jms</artifactId>
+  <artifactId>hawkular-apm-server-zipkin-rest</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular APM::Server::JMS</name>
+  <name>Hawkular APM::Server::Zipkin REST</name>
 
   <dependencies>
 
@@ -41,45 +41,10 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-fragmentcompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-notification-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-processors-zipkin</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-processor</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -92,15 +57,16 @@
       <artifactId>jackson-databind</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <scope>provided</scope>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-annotations</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -109,5 +75,30 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Wildfly provided -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-processor</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
+
 </project>

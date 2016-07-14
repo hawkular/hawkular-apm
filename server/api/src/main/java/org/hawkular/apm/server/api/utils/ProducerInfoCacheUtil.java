@@ -16,8 +16,11 @@
  */
 package org.hawkular.apm.server.api.utils;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +34,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
@@ -153,6 +157,79 @@ public class ProducerInfoCacheUtil {
                 initialiseProducerInfo(producerInfoList, tenantId, trace, origin,
                         ((ContainerNode) node).getNodes().get(j));
             }
+        }
+    }
+
+    /**
+     * This method initialises producer information associated with the supplied
+     * traces.
+     *
+     * @param tenantId
+     * @param items
+     * @throws RetryAttemptException Failed to initialise producer information
+     */
+    public void initialiseFromSpans(String tenantId, List<Span> items) throws RetryAttemptException {
+        List<ProducerInfo> producerInfoList = new ArrayList<ProducerInfo>();
+
+        // Identify source URI details
+        // NOTE: This mechanism assumes the list of spans contains all of the spans
+        // associated with a service invocation.
+        Map<String,String> sourceURIs = new HashMap<String,String>();
+        Map<String,String> sourceOps = new HashMap<String,String>();
+        for (int i = 0; i < items.size(); i++) {
+            Span span = items.get(i);
+            if (span.serverSpan()) {
+                URL url = span.url();
+                if (url != null) {
+                    sourceURIs.put(span.getId(), url.getPath());
+
+                    String op = span.operation();
+                    if (op != null) {
+                        sourceOps.put(span.getId(), op);
+                    }
+                }
+            }
+        }
+
+        // This method initialises the deriver with a list of trace fragments
+        // that will need to be referenced when correlating a consumer with a producer
+        for (int i = 0; i < items.size(); i++) {
+            // Need to check for Client spans
+            Span span = items.get(i);
+
+            if (span.clientSpan()) {
+                ProducerInfo pi = new ProducerInfo();
+                pi.setDuration(span.getDuration());
+                pi.setTimestamp(span.getTimestamp() / 1000);
+                pi.setFragmentId(span.getId());
+
+                // TODO: SET IP ADDRESS
+                //pi.setHostAddress(...);
+
+                pi.setId(span.getId());
+                pi.setMultipleConsumers(false);
+
+                if (span.getParentId() != null) {
+                    pi.setSourceUri(sourceURIs.get(span.getParentId()));
+                    pi.setSourceOperation(sourceOps.get(span.getParentId()));
+                } else {
+                    URL url = span.url();
+                    if (url != null) {
+                        pi.setSourceUri(Constants.URI_CLIENT_PREFIX + url.getPath());
+                        pi.setSourceOperation(span.operation());
+                    } else {
+                        log.severe("No source URL");
+                    }
+                }
+
+                producerInfoList.add(pi);
+            }
+        }
+
+        try {
+            producerInfoCache.store(tenantId, producerInfoList);
+        } catch (CacheException e) {
+            throw new RetryAttemptException(e);
         }
     }
 

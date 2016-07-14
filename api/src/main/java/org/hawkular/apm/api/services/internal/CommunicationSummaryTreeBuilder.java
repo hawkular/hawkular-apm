@@ -99,8 +99,8 @@ public class CommunicationSummaryTreeBuilder {
      */
     protected static Collection<CommunicationSummaryStatistics> getRootCommunicationSummaryNodes(
             Map<String, CommunicationSummaryStatistics> nodeMap) {
-        Map<String, CommunicationSummaryStatistics> nodeMapCopy =
-                new HashMap<String, CommunicationSummaryStatistics>(nodeMap);
+        Map<String, CommunicationSummaryStatistics> nodeMapCopy = new HashMap<String, CommunicationSummaryStatistics>(
+                nodeMap);
 
         for (CommunicationSummaryStatistics css : nodeMap.values()) {
             for (String linkId : css.getOutbound().keySet()) {

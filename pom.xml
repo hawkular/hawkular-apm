@@ -73,6 +73,7 @@
     <module>processors/fragmentcompletiontime-deriver</module>
     <module>processors/notification-deriver</module>
     <module>processors/nodedetails-deriver</module>
+    <module>processors/zipkin</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
     <module>server/infinispan</module>
@@ -80,6 +81,8 @@
     <module>server/kafka</module>
     <module>server/rest</module>
     <module>server/security-jaas</module>
+    <module>server/zipkin-rest</module>
+    <module>server/zipkin-war</module>
     <module>server/war</module>
     <module>tools/instrumenter</module>
     <module>ui</module>
@@ -226,6 +229,12 @@
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-processors-zipkin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- APM Server -->
       <dependency>
         <groupId>org.hawkular.apm</groupId>
@@ -233,6 +242,13 @@
         <type>war</type>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-zipkin</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-server-api</artifactId>
@@ -266,6 +282,11 @@
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-server-security-jaas</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-zipkin-rest</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -547,6 +568,7 @@
             <exclude>**/*.btm</exclude>
             <exclude>**/*.sh</exclude>
             <exclude>**/*.deployed</exclude>
+            <exclude>**/.babelrc</exclude>
           </excludes>
         </configuration>
       </plugin>

@@ -61,6 +61,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.apm:hawkular-apm-server:war</include>
+        <include>org.hawkular.apm:hawkular-apm-server-zipkin:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
