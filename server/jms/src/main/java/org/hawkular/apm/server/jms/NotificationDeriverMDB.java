@@ -25,7 +25,6 @@ import javax.jms.MessageListener;
 import org.hawkular.apm.api.model.events.Notification;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.processor.notification.NotificationDeriver;
-import org.hawkular.apm.server.api.services.NotificationPublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -48,7 +47,7 @@ public class NotificationDeriverMDB extends RetryCapableMDB<Trace, Notification>
     private TracePublisherJMS tracePublisher;
 
     @Inject
-    private NotificationPublisher notificationPublisher;
+    private NotificationPublisherJMS notificationPublisher;
 
     /**  */
     public static final String SUBSCRIBER = "NotificationDeriver";

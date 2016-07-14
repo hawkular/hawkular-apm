@@ -25,7 +25,6 @@ import javax.jms.MessageListener;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.processor.nodedetails.NodeDetailsDeriver;
-import org.hawkular.apm.server.api.services.NodeDetailsPublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -48,7 +47,7 @@ public class NodeDetailsDeriverMDB extends RetryCapableMDB<Trace, NodeDetails> {
     private TracePublisherJMS tracePublisher;
 
     @Inject
-    private NodeDetailsPublisher nodeDetailsPublisher;
+    private NodeDetailsPublisherJMS nodeDetailsPublisher;
 
     /**  */
     public static final String SUBSCRIBER = "NodeDetailsDeriver";

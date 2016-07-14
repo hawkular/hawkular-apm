@@ -25,7 +25,6 @@ import javax.jms.MessageListener;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.processor.communicationdetails.CommunicationDetailsDeriver;
-import org.hawkular.apm.server.api.services.CommunicationDetailsPublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -49,7 +48,7 @@ public class CommunicationDetailsDeriverMDB extends RetryCapableMDB<Trace, Commu
     private TracePublisherJMS tracePublisher;
 
     @Inject
-    private CommunicationDetailsPublisher communicationDetailsPublisher;
+    private CommunicationDetailsPublisherJMS communicationDetailsPublisher;
 
     @Inject
     private CommunicationDetailsDeriver communicationDetailsDeriver;

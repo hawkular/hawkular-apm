@@ -25,7 +25,6 @@ import javax.jms.MessageListener;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationInitiator;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationPublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -52,7 +51,7 @@ public class TraceCompletionInformationInitiatorMDB
     private TracePublisherJMS tracePublisher;
 
     @Inject
-    private TraceCompletionInformationPublisher traceCompletionInformationPublisher;
+    private TraceCompletionInformationPublisherJMS traceCompletionInformationPublisher;
 
     /**  */
     public static final String SUBSCRIBER = "TraceCompletionInformationInitiator";

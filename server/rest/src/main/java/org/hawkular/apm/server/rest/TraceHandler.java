@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -42,6 +43,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
+import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.server.api.security.SecurityProvider;
@@ -73,8 +75,16 @@ public class TraceHandler {
     @Inject
     TraceService traceService;
 
-    @Inject
     TracePublisher tracePublisher;
+
+    @PostConstruct
+    public void init() {
+        tracePublisher = ServiceResolver.getSingletonService(TracePublisher.class);
+
+        if (tracePublisher == null) {
+            log.error("Unable to locate Trace Publisher");
+        }
+    }
 
     @POST
     @ApiOperation(value = "Add a list of trace fragments")
