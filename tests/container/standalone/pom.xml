@@ -49,7 +49,7 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-agent-rest</artifactId>
+      <artifactId>hawkular-apm-agent</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -108,10 +108,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.apm</groupId>
-                  <artifactId>hawkular-apm-agent-rest</artifactId>
+                  <artifactId>hawkular-apm-agent</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-apm.lib}</outputDirectory>
-                  <destFileName>hawkular-apm-agent-rest.jar</destFileName>
+                  <destFileName>hawkular-apm-agent.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -185,7 +185,7 @@
                     <pathelement path="${project.build.outputDirectory}" />
                     <pathelement path="${runtime_classpath}" />
                   </classpath>
-                  <jvmarg value="-javaagent:${hawkular-apm.lib}/hawkular-apm-agent-rest.jar" />
+                  <jvmarg value="-javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar" />
                   <jvmarg value="-DHAWKULAR_APM_CONFIG=${HAWKULAR_APM_CONFIGuration}" />
                   <jvmarg value="-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}" />
                   <jvmarg value="-Dhawkular-apm.testapp.host=${hawkular-apm.testapp.host}" />

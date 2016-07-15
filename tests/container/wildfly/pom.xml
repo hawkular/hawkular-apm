@@ -84,7 +84,7 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-agent-rest</artifactId>
+      <artifactId>hawkular-apm-agent</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -185,10 +185,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.apm</groupId>
-                  <artifactId>hawkular-apm-agent-rest</artifactId>
+                  <artifactId>hawkular-apm-agent</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-apm.lib}</outputDirectory>
-                  <destFileName>hawkular-apm-agent-rest.jar</destFileName>
+                  <destFileName>hawkular-apm-agent.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -330,7 +330,7 @@
                 <javaOpt>-Dsun.rmi.dgc.server.gcInterval=3600000</javaOpt>
                 <javaOpt>-Xdebug</javaOpt>
                 <javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
-                <javaOpt>-javaagent:${hawkular-apm.lib}/hawkular-apm-agent-rest.jar</javaOpt>
+                <javaOpt>-javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_USERNAME=jdoe</javaOpt>

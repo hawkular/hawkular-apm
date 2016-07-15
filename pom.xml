@@ -58,7 +58,7 @@
 
   <modules>
     <module>api</module>
-    <module>client/agent-rest</module>
+    <module>client/agent</module>
     <module>client/analytics-service-rest-client</module>
     <module>client/api</module>
     <module>client/collector</module>
@@ -184,7 +184,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-agent-rest</artifactId>
+        <artifactId>hawkular-apm-agent</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

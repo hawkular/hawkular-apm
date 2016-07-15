@@ -2,4 +2,4 @@ Agent-Class: org.hawkular.apm.instrumenter.APMAgent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true
 Premain-Class: org.hawkular.apm.instrumenter.APMAgent
-Boot-Class-Path: ./hawkular-apm-agent-rest.jar
+Boot-Class-Path: ./hawkular-apm-agent.jar

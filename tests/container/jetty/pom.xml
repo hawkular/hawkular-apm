@@ -50,7 +50,7 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-agent-rest</artifactId>
+      <artifactId>hawkular-apm-agent</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -114,10 +114,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular.apm</groupId>
-                  <artifactId>hawkular-apm-agent-rest</artifactId>
+                  <artifactId>hawkular-apm-agent</artifactId>
                   <overWrite>true</overWrite>
                   <outputDirectory>${hawkular-apm.lib}</outputDirectory>
-                  <destFileName>hawkular-apm-agent-rest.jar</destFileName>
+                  <destFileName>hawkular-apm-agent.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -147,7 +147,7 @@
           <threadCount>1</threadCount>
           <threadCountClasses>1</threadCountClasses>
           <argLine>
-              -javaagent:${hawkular-apm.lib}/hawkular-apm-agent-rest.jar
+              -javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar
               -DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig
               -DHAWKULAR_APM_URI=http://localhost:8080
               -DHAWKULAR_APM_USERNAME=jdoe

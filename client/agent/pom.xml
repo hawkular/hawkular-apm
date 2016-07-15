@@ -27,9 +27,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-apm-agent-rest</artifactId>
+  <artifactId>hawkular-apm-agent</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular APM::Client::Agent REST</name>
+  <name>Hawkular APM::Client::Agent</name>
 
   <dependencies>
 
@@ -44,6 +44,10 @@
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-collector</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-client-kafka</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
@@ -79,6 +83,11 @@
     <dependency>
       <groupId>org.mvel</groupId>
       <artifactId>mvel2</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
     </dependency>
 
     <dependency>
@@ -172,6 +181,9 @@
                   <shadedPattern>org.hawkular.apm.shaded.org.slf4j</shadedPattern>
                 </relocation>
               </relocations>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
             </configuration>
           </execution>
         </executions>

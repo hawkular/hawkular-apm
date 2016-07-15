@@ -90,7 +90,7 @@
       <outputDirectory>/apm</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.apm:hawkular-apm-agent-rest:jar</include>
+        <include>org.hawkular.apm:hawkular-apm-agent:jar</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
