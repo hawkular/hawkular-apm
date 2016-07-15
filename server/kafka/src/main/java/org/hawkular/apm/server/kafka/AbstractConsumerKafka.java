@@ -80,8 +80,8 @@ public class AbstractConsumerKafka<S, T> implements KafkaProcessor {
      */
     protected void init(String topic, String groupId) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_KAFKA_SERVERS,
-                "localhost:9092"));
+        props.put("bootstrap.servers", PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI,
+                PropertyUtil.KAFKA_PREFIX + "localhost:9092").substring(PropertyUtil.KAFKA_PREFIX.length()));
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms",

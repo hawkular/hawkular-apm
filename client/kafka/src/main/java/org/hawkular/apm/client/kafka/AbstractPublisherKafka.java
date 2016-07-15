@@ -63,7 +63,9 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
      */
     @Override
     public boolean isAvailable() {
-        return PropertyUtil.hasProperty(PropertyUtil.HAWKULAR_APM_KAFKA_SERVERS);
+        String uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER,
+                PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI));
+        return uri != null && uri.startsWith(PropertyUtil.KAFKA_PREFIX);
     }
 
     /**
@@ -71,7 +73,9 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
      */
     protected void init() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_KAFKA_SERVERS));
+        props.put("bootstrap.servers", PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER,
+                PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI))
+                .substring(PropertyUtil.KAFKA_PREFIX.length()));
         props.put("acks", "all");
         props.put("retries", PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_KAFKA_PRODUCER_RETRIES, 3));
         props.put("batch.size", 16384);
@@ -104,7 +108,7 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
      */
     @Override
     public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
-        long startTime=0;
+        long startTime = 0;
 
         // Check if delay is required
         // TODO: May need to check if delay is excessive and schedule message publish in separate thread
@@ -122,7 +126,7 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
             startTime = System.currentTimeMillis();
         }
 
-        for (int i=0; i < items.size(); i++) {
+        for (int i = 0; i < items.size(); i++) {
             String data = mapper.writeValueAsString(items.get(i));
             // Sending record asynchronously without waiting for response. Failures
             // should be handled by Kafka's own retry mechanism, which has been
