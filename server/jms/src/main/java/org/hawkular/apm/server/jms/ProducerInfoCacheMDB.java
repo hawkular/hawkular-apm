@@ -54,9 +54,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 })
 public class ProducerInfoCacheMDB implements MessageListener {
 
-    /**  */
-    protected static final String CLIENT_PREFIX = "[client]";
-
     private static final Logger log = Logger.getLogger(ProducerInfoCacheMDB.class.getName());
 
     @Inject
