@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.server.jms.trace;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -24,6 +24,7 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationProcessor;
+import org.hawkular.apm.server.jms.RetryCapableMDB;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

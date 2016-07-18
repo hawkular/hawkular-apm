@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.server.jms.trace;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.TracePublisher;
+import org.hawkular.apm.server.jms.AbstractPublisherJMS;
 
 /**
  * This class represents the trace JMS publisher.

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.server.jms.trace;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -22,50 +22,50 @@ import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationInitiator;
+import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionTimeDeriver;
+import org.hawkular.apm.server.jms.RetryCapableMDB;
+import org.hawkular.apm.server.jms.TraceCompletionTimePublisherJMS;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "Trace_TraceCompletionInformationInitiator",
+@MessageDriven(name = "TraceCompletionInformation_TraceCompletionTimeDeriver",
         messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-                @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
+                @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionInformation"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID",
-                            propertyValue = TraceCompletionInformationInitiatorMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionTimeDeriverMDB.SUBSCRIBER),
                 @ActivationConfigProperty(propertyName = "subscriptionName",
-                            propertyValue = TraceCompletionInformationInitiatorMDB.SUBSCRIBER),
-                @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionInformationInitiatorMDB.SUBSCRIBER+"'")
+                            propertyValue = TraceCompletionTimeDeriverMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionTimeDeriverMDB.SUBSCRIBER+"'")
         })
-public class TraceCompletionInformationInitiatorMDB
-                extends RetryCapableMDB<Trace, TraceCompletionInformation> {
-
-    @Inject
-    private TracePublisherJMS tracePublisher;
+public class TraceCompletionTimeDeriverMDB extends RetryCapableMDB<TraceCompletionInformation, CompletionTime> {
 
     @Inject
     private TraceCompletionInformationPublisherJMS traceCompletionInformationPublisher;
 
-    /**  */
-    public static final String SUBSCRIBER = "TraceCompletionInformationInitiator";
+    @Inject
+    private TraceCompletionTimePublisherJMS traceCompletionTimePublisher;
 
-    public TraceCompletionInformationInitiatorMDB() {
+    /**  */
+    public static final String SUBSCRIBER = "TraceCompletionTimeDeriver";
+
+    public TraceCompletionTimeDeriverMDB() {
         super(SUBSCRIBER);
     }
 
     @PostConstruct
     public void init() {
-        setProcessor(new TraceCompletionInformationInitiator());
-        setRetryPublisher(tracePublisher);
-        setPublisher(traceCompletionInformationPublisher);
-        setTypeReference(new TypeReference<java.util.List<Trace>>() {
+        setProcessor(new TraceCompletionTimeDeriver());
+        setRetryPublisher(traceCompletionInformationPublisher);
+        setPublisher(traceCompletionTimePublisher);
+        setTypeReference(new TypeReference<java.util.List<TraceCompletionInformation>>() {
         });
     }
 

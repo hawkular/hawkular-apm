@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.server.jms.trace;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -22,47 +22,48 @@ import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.apm.api.model.events.NodeDetails;
+import org.hawkular.apm.api.model.events.Notification;
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.processor.nodedetails.NodeDetailsDeriver;
+import org.hawkular.apm.processor.notification.NotificationDeriver;
+import org.hawkular.apm.server.jms.NotificationPublisherJMS;
+import org.hawkular.apm.server.jms.RetryCapableMDB;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-@MessageDriven(name = "Trace_NodeDetailsDeriver", messageListenerInterface = MessageListener.class,
+@MessageDriven(name = "Trace_NotificationDeriver", messageListenerInterface = MessageListener.class,
         activationConfig =
         {
                 @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
                 @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
                 @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-                @ActivationConfigProperty(propertyName = "clientID", propertyValue = NodeDetailsDeriverMDB.SUBSCRIBER),
-                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = NodeDetailsDeriverMDB.SUBSCRIBER),
-                @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+NodeDetailsDeriverMDB.SUBSCRIBER+"'")
+                @ActivationConfigProperty(propertyName = "clientID", propertyValue = NotificationDeriverMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = NotificationDeriverMDB.SUBSCRIBER),
+                @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+NotificationDeriverMDB.SUBSCRIBER+"'")
         })
-public class NodeDetailsDeriverMDB extends RetryCapableMDB<Trace, NodeDetails> {
+public class NotificationDeriverMDB extends RetryCapableMDB<Trace, Notification> {
 
     @Inject
     private TracePublisherJMS tracePublisher;
 
     @Inject
-    private NodeDetailsPublisherJMS nodeDetailsPublisher;
+    private NotificationPublisherJMS notificationPublisher;
 
     /**  */
-    public static final String SUBSCRIBER = "NodeDetailsDeriver";
+    public static final String SUBSCRIBER = "NotificationDeriver";
 
-    public NodeDetailsDeriverMDB() {
+    public NotificationDeriverMDB() {
         super(SUBSCRIBER);
     }
 
     @PostConstruct
     public void init() {
-        setProcessor(new NodeDetailsDeriver());
+        setProcessor(new NotificationDeriver());
         setRetryPublisher(tracePublisher);
-        setPublisher(nodeDetailsPublisher);
+        setPublisher(notificationPublisher);
         setTypeReference(new TypeReference<java.util.List<Trace>>() {
         });
     }
-
 }
