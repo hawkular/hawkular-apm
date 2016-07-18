@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation.Communication;
+import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 

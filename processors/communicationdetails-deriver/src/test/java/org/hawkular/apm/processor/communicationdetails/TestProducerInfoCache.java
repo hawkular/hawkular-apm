@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hawkular.apm.api.model.events.ProducerInfo;
+import org.hawkular.apm.server.api.services.ProducerInfoCache;
+
 /**
  * @author gbrown
  */

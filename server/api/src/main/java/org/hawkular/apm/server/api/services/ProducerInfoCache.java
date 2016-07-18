@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.communicationdetails;
+package org.hawkular.apm.server.api.services;
 
-import org.hawkular.apm.server.api.services.Cache;
+import org.hawkular.apm.api.model.events.ProducerInfo;
 
 /**
  * This interface represents a cache for producer info.

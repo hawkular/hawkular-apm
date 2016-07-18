@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.communicationdetails;
+package org.hawkular.apm.server.api.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -31,6 +32,7 @@ import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
@@ -38,9 +40,9 @@ import org.hawkular.apm.server.api.task.RetryAttemptException;
  *
  * @author gbrown
  */
-public class ProducerInfoInitialiser {
+public class ProducerInfoCacheUtil {
 
-    private static final Logger log = Logger.getLogger(ProducerInfoInitialiser.class.getName());
+    private static final Logger log = Logger.getLogger(ProducerInfoCacheUtil.class.getName());
 
     private ProducerInfoCache producerInfoCache;
 

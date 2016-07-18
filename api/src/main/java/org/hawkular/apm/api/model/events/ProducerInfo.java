@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.communicationdetails;
+package org.hawkular.apm.api.model.events;
 
 import java.io.Externalizable;
 import java.io.IOException;

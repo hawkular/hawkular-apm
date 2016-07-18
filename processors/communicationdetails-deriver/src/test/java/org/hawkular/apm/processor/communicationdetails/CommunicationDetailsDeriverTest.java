@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
+import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;

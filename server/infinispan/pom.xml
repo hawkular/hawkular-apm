@@ -43,15 +43,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
     </dependency>
