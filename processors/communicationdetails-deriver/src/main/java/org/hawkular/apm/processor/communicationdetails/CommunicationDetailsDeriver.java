@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
+import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -33,8 +34,10 @@ import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.EndpointUtil;
+import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
 
 /**
  * This class represents the communication details deriver.
@@ -48,7 +51,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     @Inject
     private ProducerInfoCache producerInfoCache;
 
-    private ProducerInfoInitialiser producerInfoInitialiser;
+    private ProducerInfoCacheUtil producerInfoInitialiser;
 
     /**
      * The default constructor.
@@ -59,7 +62,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
 
     @PostConstruct
     public void init() {
-        producerInfoInitialiser = new ProducerInfoInitialiser();
+        producerInfoInitialiser = new ProducerInfoCacheUtil();
         producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
     }
 

@@ -19,10 +19,10 @@ package org.hawkular.apm.server.kafka;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationProcessor;
 import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationPublisher;
+import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

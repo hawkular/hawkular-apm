@@ -27,8 +27,8 @@ import javax.inject.Singleton;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.services.ServiceLifecycle;
-import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 

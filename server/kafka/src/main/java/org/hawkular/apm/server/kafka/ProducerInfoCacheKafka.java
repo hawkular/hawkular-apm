@@ -22,11 +22,11 @@ import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.processor.communicationdetails.ProducerInfoCache;
-import org.hawkular.apm.processor.communicationdetails.ProducerInfoInitialiser;
+import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -47,7 +47,7 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
 
     private ProducerInfoCache producerInfoCache;
 
-    private ProducerInfoInitialiser producerInfoInitialiser;
+    private ProducerInfoCacheUtil producerInfoInitialiser;
 
     public ProducerInfoCacheKafka() {
         super(TOPIC, GROUP_ID);
@@ -57,7 +57,7 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
         if (producerInfoCache == null) {
             log.severe("Producer Info Cache not found - possibly not configured correctly");
         } else {
-            producerInfoInitialiser = new ProducerInfoInitialiser();
+            producerInfoInitialiser = new ProducerInfoCacheUtil();
             producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
 
             setTypeReference(new TypeReference<Trace>() {

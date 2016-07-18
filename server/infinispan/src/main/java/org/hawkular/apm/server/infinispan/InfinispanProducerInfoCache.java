@@ -25,9 +25,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Singleton;
 
+import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.services.ServiceLifecycle;
-import org.hawkular.apm.processor.communicationdetails.ProducerInfo;
-import org.hawkular.apm.processor.communicationdetails.ProducerInfoCache;
+import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 

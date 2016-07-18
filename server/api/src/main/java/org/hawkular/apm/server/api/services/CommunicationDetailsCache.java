@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.processor.tracecompletiontime;
+package org.hawkular.apm.server.api.services;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.server.api.services.Cache;
 
 /**
  * This interface represents a cache for communication details.

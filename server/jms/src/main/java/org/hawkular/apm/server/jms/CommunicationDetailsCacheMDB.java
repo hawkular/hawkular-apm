@@ -25,8 +25,8 @@ import javax.inject.Inject;
 import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.processor.tracecompletiontime.CommunicationDetailsCache;
 import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.hawkular.apm.server.api.task.RetryAttemptException;

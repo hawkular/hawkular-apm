@@ -29,8 +29,8 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.processor.communicationdetails.ProducerInfoCache;
-import org.hawkular.apm.processor.communicationdetails.ProducerInfoInitialiser;
+import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +59,7 @@ public class ProducerInfoCacheMDB implements MessageListener {
     @Inject
     private ProducerInfoCache producerInfoCache;
 
-    private ProducerInfoInitialiser producerInfoInitialiser;
+    private ProducerInfoCacheUtil producerInfoInitialiser;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -68,7 +68,7 @@ public class ProducerInfoCacheMDB implements MessageListener {
 
     @PostConstruct
     public void init() {
-        producerInfoInitialiser = new ProducerInfoInitialiser();
+        producerInfoInitialiser = new ProducerInfoCacheUtil();
         producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
     }
 
