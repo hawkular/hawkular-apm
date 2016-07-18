@@ -43,9 +43,6 @@ import org.hawkular.apm.server.api.task.RetryAttemptException;
  */
 public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, CommunicationDetails> {
 
-    /**  */
-    protected static final String CLIENT_PREFIX = "[client]";
-
     private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class.getName());
 
     @Inject

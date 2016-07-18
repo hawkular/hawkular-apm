@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -38,9 +39,6 @@ import org.hawkular.apm.server.api.task.RetryAttemptException;
  * @author gbrown
  */
 public class ProducerInfoInitialiser {
-
-    /**  */
-    protected static final String CLIENT_PREFIX = "[client]";
 
     private static final Logger log = Logger.getLogger(ProducerInfoInitialiser.class.getName());
 
@@ -110,7 +108,7 @@ public class ProducerInfoInitialiser {
             // identify based on being a client of the URI associated
             // with the producer
             if (origin.getUri() == null) {
-                origin.setUri(CLIENT_PREFIX + producer.getUri());
+                origin.setUri(Constants.URI_CLIENT_PREFIX + producer.getUri());
             }
 
             // Calculate the timestamp for the producer
