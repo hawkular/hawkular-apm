@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.server.jms.trace;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -25,6 +25,8 @@ import javax.jms.MessageListener;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.processor.communicationdetails.CommunicationDetailsDeriver;
+import org.hawkular.apm.server.jms.CommunicationDetailsPublisherJMS;
+import org.hawkular.apm.server.jms.RetryCapableMDB;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

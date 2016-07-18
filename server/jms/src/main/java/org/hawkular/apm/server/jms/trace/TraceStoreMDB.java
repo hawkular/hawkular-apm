@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+package org.hawkular.apm.server.jms.trace;
 
 import java.util.List;
 
@@ -30,6 +30,7 @@ import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.jms.RetryCapableMDB;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
