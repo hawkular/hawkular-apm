@@ -85,6 +85,14 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.apm.server.api.task.Processor#isReportRetryExpirationAsWarning()
+     */
+    @Override
+    public boolean isReportRetryExpirationAsWarning() {
+        return true;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processOneToOne(java.lang.String, java.lang.Object)
      */
     @Override

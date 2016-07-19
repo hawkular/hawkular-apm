@@ -96,6 +96,14 @@ public interface Processor<T, R> {
     long getRetryDelay(List<T> items, int retryCount);
 
     /**
+     * This method determines whether a retry expiration should be reported as
+     * a warning. If not, then it will just be logged as detailed logging.
+     *
+     * @return Whether to report retry expiration as a warning message
+     */
+    boolean isReportRetryExpirationAsWarning();
+
+    /**
      * This method is called once all of the items in the list of been
      * processed to generate new information. It can be used to
      * clean up any information managed by the processor related to

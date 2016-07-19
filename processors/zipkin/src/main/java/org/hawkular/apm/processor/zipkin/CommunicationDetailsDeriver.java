@@ -84,6 +84,16 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.apm.server.api.task.Processor#isReportRetryExpirationAsWarning()
+     */
+    @Override
+    public boolean isReportRetryExpirationAsWarning() {
+        // We don't want to report a warning, as server spans with no matching client span
+        // will result in the retry expiration
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
      */
     @Override

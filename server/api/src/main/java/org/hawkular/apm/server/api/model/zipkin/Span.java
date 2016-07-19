@@ -48,9 +48,9 @@ public class Span {
 
     private Boolean debug;
 
-    private Long timestamp;
+    private long timestamp;
 
-    private Long duration;
+    private long duration;
 
     /**
      * @return the traceId
@@ -153,28 +153,28 @@ public class Span {
     /**
      * @return the timestamp
      */
-    public Long getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
     /**
      * @param timestamp the timestamp to set
      */
-    public void setTimestamp(Long timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
     /**
      * @return the duration
      */
-    public Long getDuration() {
+    public long getDuration() {
         return duration;
     }
 
     /**
      * @param duration the duration to set
      */
-    public void setDuration(Long duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 
