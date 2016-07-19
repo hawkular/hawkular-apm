@@ -85,7 +85,9 @@ module DagreD3 {
         });
         if (!angular.equals({}, d.outbound)) {
           _.each(Object.keys(d.outbound), (nd: any) => {
-            drawNode(d.outbound[nd].node);
+            if (d.outbound[nd].node) { // we check because in case of outbound to itself, node will be null
+              drawNode(d.outbound[nd].node);
+            }
             let edge = d.outbound[nd];
             let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + edge.averageLatency;
             linkTooltip += ' / ' + edge.minimumLatency + ' / ' + edge.maximumLatency;
