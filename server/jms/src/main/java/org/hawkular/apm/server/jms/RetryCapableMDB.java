@@ -158,7 +158,11 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
             process(tenantId, items, retryCount);
 
         } catch (Exception e) {
-            serverMsgLogger.warnMaxRetryReached(e);
+            if (processor.isReportRetryExpirationAsWarning()) {
+                serverMsgLogger.warnMaxRetryReached(e);
+            } else if (log.isLoggable(Level.FINEST)) {
+                log.log(Level.FINEST, "Maximum retry reached. Last exception to occur ....", e);
+            }
         }
     }
 
