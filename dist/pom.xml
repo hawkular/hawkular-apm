@@ -60,6 +60,12 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-zipkin</artifactId>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-ui</artifactId>
       <type>war</type>
     </dependency>

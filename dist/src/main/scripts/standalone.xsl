@@ -48,6 +48,7 @@
       <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
       <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
       <jms-topic name="Notifications" entries="java:/Notifications"/>
+      <jms-topic name="Spans" entries="java:/Spans"/>
     </xsl:copy>
   </xsl:template>
 
