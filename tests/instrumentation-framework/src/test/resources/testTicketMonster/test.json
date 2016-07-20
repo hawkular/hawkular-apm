@@ -1,0 +1,28 @@
+{
+  "name": "Ticket monster test",
+  "environment": {
+    "image": "pavolloffay/jboss-ticket-monster",
+    "initWaitSeconds": "10",
+    "type": "APM"
+  },
+  "tests": [
+    {
+      "description" : "Dummy test with no validation",
+      "skip": false,
+      "script": "action1.sh",
+      "afterScriptWaitSeconds": "10",
+      "verify": {
+        "jsonPath": [
+          {
+            "path": "$.length()",
+            "result": 1
+          },
+          {
+            "path": "$.[0].nodes[0].operation",
+            "result": "POST"
+          }
+        ]
+      }
+    }
+  ]
+}
