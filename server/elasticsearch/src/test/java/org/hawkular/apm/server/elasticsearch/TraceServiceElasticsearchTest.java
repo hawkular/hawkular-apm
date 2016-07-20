@@ -29,6 +29,7 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
@@ -36,6 +37,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author gbrown
@@ -81,7 +85,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace3);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -94,7 +98,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("trace1");
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -124,7 +128,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace3);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -137,7 +141,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("");
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -168,7 +172,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace3);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -181,7 +185,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", null);
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -211,7 +215,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace3);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -224,7 +228,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", Operator.HASNOT);
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(2, result1.size());
@@ -262,7 +266,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace4);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -276,7 +280,7 @@ public class TraceServiceElasticsearchTest {
         criteria.addProperty("prop1", "value1", null);
         criteria.addProperty("prop3", "value3", null);
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -306,7 +310,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace3);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -320,7 +324,7 @@ public class TraceServiceElasticsearchTest {
         criteria.addProperty("prop1", "value1", Operator.HASNOT);
         criteria.addProperty("prop1", "value3", Operator.HASNOT);
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
@@ -350,7 +354,7 @@ public class TraceServiceElasticsearchTest {
         trace2.getNodes().add(c2);
 
         try {
-            ts.storeTraces(null, traces);
+            ts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -363,10 +367,89 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "gid1"));
 
-        List<Trace> result1 = ts.query(null, criteria);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
         assertEquals("id1", result1.get(0).getId());
     }
+
+    @Test
+    public void testStoreAndRetrieveComplexTraceById() {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis());
+        trace1.getProperties().add(new Property("prop1","value1"));
+        Consumer c1 = new Consumer();
+        c1.setUri("uri1");
+        trace1.getNodes().add(c1);
+        Producer p1_1 = new Producer();
+        p1_1.addInteractionId("id1_1");
+        c1.getNodes().add(p1_1);
+        Producer p1_2 = new Producer();
+        p1_2.addInteractionId("id1_2");
+        p1_2.setUri("uri2");
+        c1.getNodes().add(p1_2);
+
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setStartTime(System.currentTimeMillis());
+        trace2.getProperties().add(new Property("prop1","value1"));
+        trace2.getProperties().add(new Property("prop2","value2"));
+        Consumer c2 = new Consumer();
+        c2.setUri("uri2");
+        c2.addInteractionId("id1_2");
+        trace2.getNodes().add(c2);
+        Producer p2_1 = new Producer();
+        p2_1.addInteractionId("id2_1");
+        c2.getNodes().add(p2_1);
+        Producer p2_2 = new Producer();
+        p2_2.addInteractionId("id2_2");
+        c2.getNodes().add(p2_2);
+
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+        traces.add(trace2);
+
+        try {
+            ts.storeFragments(null, traces);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store");
+        }
+
+        // Retrieve stored trace
+        Trace result = ts.getTrace(null, "1");
+
+        assertNotNull(result);
+        assertEquals("1", result.getId());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            System.out.println("TRACE=" + mapper.writeValueAsString(result));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        assertEquals(2, result.getProperties().size());
+        assertEquals(1, result.getNodes().size());
+        assertEquals(Consumer.class, result.getNodes().get(0).getClass());
+        assertEquals("uri1", result.getNodes().get(0).getUri());
+        assertEquals(2, ((Consumer)result.getNodes().get(0)).getNodes().size());
+        assertEquals(Producer.class, ((Consumer)result.getNodes().get(0)).getNodes().get(0).getClass());
+        assertTrue(((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(0)).getNodes().isEmpty());
+        assertEquals(Producer.class, ((Consumer)result.getNodes().get(0)).getNodes().get(1).getClass());
+        assertEquals("uri2", ((Consumer)result.getNodes().get(0)).getNodes().get(1).getUri());
+        assertEquals(1, ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes().size());
+        assertEquals(Consumer.class, ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes()
+                .get(0).getClass());
+        assertEquals("uri2", ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes()
+                .get(0).getUri());
+    }
+
 }

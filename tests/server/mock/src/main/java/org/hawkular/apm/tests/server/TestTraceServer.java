@@ -175,7 +175,7 @@ public class TestTraceServer {
                         exchange.getResponseSender().send("ok");
                         shutdown();
                     }
-                }).addPrefixPath("hawkular/apm/fragments", new HttpHandler() {
+                }).addPrefixPath("hawkular/apm/traces/fragments", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
                         if (exchange.isInIoThread()) {

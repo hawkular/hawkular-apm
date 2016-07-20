@@ -28,24 +28,34 @@ import org.hawkular.apm.api.model.trace.Trace;
 public interface TraceService {
 
     /**
-     * This method returns the trace associated with the
+     * This method returns the trace fragment associated with the
      * supplied id.
      *
      * @param tenantId The tenant
      * @param id The id
-     * @return The trace, or null if not found
+      * @return The trace fragment, or null if not found
      */
-    Trace get(String tenantId, String id);
+    Trace getFragment(String tenantId, String id);
 
     /**
-     * This method returns a set of traces that meet the
+     * This method returns the end to end trace associated with the
+     * supplied id.
+     *
+     * @param tenantId The tenant
+     * @param id The id
+      * @return The end to end trace, or null if not found
+     */
+    Trace getTrace(String tenantId, String id);
+
+    /**
+     * This method returns a set of trace fragments that meet the
      * supplied query criteria.
      *
      * @param tenantId The tenant
      * @param criteria The query criteria
-     * @return The list of traces that meet the criteria
+     * @return The list of trace fragments that meet the criteria
      */
-    List<Trace> query(String tenantId, Criteria criteria);
+    List<Trace> searchFragments(String tenantId, Criteria criteria);
 
     /**
      * This method stores the supplied list of trace fragments.
@@ -54,7 +64,7 @@ public interface TraceService {
      * @param traces The traces
      * @throws StoreException Failed to store
      */
-    void storeTraces(String tenantId, List<Trace> traces) throws StoreException;
+    void storeFragments(String tenantId, List<Trace> traces) throws StoreException;
 
     /**
      * This method clears the trace data for the supplied tenant.

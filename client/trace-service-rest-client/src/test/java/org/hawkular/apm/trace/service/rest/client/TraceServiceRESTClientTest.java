@@ -44,14 +44,14 @@ import org.junit.Test;
 public class TraceServiceRESTClientTest {
 
     @Test
-    public void testGetQueryURL() {
+    public void testGetSearchURL() {
         TraceServiceRESTClient client=new TraceServiceRESTClient();
         client.setUri("base/");
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
 
-        String url=client.getQueryURL(criteria);
+        String url=client.getSearchURL(criteria);
 
-        assertEquals("base/hawkular/apm/fragments?startTime=100", url);
+        assertEquals("base/hawkular/apm/traces/fragments/search?startTime=100", url);
     }
 }

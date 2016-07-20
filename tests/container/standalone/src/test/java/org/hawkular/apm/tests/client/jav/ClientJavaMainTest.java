@@ -109,7 +109,7 @@ public class ClientJavaMainTest {
         // Retrieve stored business transaction
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime);
-        List<Trace> result = service.query(null, criteria);
+        List<Trace> result = service.searchFragments(null, criteria);
 
         assertNotNull(result);
         assertEquals("Only expecting 1 business txn", 1, result.size());

@@ -33,6 +33,7 @@ import org.apache.camel.model.rest.RestBindingMode;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -177,7 +178,7 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         assertEquals("GET", createOrder.getOperation());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(createOrder.getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(createOrder.getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 2 producers", 2, producers.size());
 

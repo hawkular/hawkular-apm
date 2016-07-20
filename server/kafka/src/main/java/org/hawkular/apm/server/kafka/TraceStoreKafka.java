@@ -62,7 +62,7 @@ public class TraceStoreKafka extends AbstractConsumerKafka<Trace, Void> {
                 public List<Void> processManyToMany(String tenantId, List<Trace> items)
                         throws RetryAttemptException {
                     try {
-                        traceService.storeTraces(tenantId, items);
+                        traceService.storeFragments(tenantId, items);
                     } catch (StoreException se) {
                         throw new RetryAttemptException(se);
                     }

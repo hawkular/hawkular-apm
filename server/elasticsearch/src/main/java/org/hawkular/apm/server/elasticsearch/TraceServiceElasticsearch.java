@@ -32,10 +32,12 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
+import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TraceService;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -77,10 +79,10 @@ public class TraceServiceElasticsearch implements TraceService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.BusinessTransactionService#get(java.lang.String,java.lang.String)
+     * @see org.hawkular.apm.api.services.TraceService#getFragment(java.lang.String, java.lang.String)
      */
     @Override
-    public Trace get(String tenantId, String id) {
+    public Trace getFragment(String tenantId, String id) {
         Trace ret = null;
 
         GetResponse response = client.getClient().prepareGet(
@@ -96,18 +98,75 @@ public class TraceServiceElasticsearch implements TraceService {
         }
 
         if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Get trace with id[%s] is: %s", id, ret);
+            msgLog.tracef("Get fragment with id[%s] is: %s", id, ret);
         }
 
         return ret;
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.BusinessTransactionService#query(java.lang.String,
-     *          org.hawkular.apm.api.services.BusinessTransactionQuery)
+     * @see org.hawkular.apm.api.services.TraceService#getTrace(java.lang.String, java.lang.String)
      */
     @Override
-    public List<Trace> query(String tenantId, Criteria criteria) {
+    public Trace getTrace(String tenantId, String id) {
+        Trace ret = getFragment(tenantId, id);
+
+        if (ret != null) {
+            processConnectedFragment(tenantId, ret, ret, null);
+        }
+
+        if (msgLog.isTraceEnabled()) {
+            msgLog.tracef("Get trace with id[%s] is: %s", id, ret);
+        }
+
+        return ret;
+    }
+
+    /**
+     * This method aggregates enhances the root trace, representing the
+     * complete end to end instance view, with the details available from
+     * a linked trace fragment that should be attached to the supplied
+     * Producer node. If the producer node is null then don't merge
+     * (as fragment is root) and just recursively process the fragment
+     * to identify additional linked fragments.
+     *
+     * @param tenantId The tenant id
+     * @param root The root trace
+     * @param fragment The fragment to be processed
+     * @param producer The producer node, or null if processing the top level fragment
+     */
+    protected void processConnectedFragment(String tenantId, Trace root, Trace fragment, Producer producer) {
+        if (producer != null) {
+            // Merge the properties associated with the fragment into the root
+            root.getProperties().addAll(fragment.getProperties());
+
+            // Attach the fragment root nodes to the producer
+            producer.getNodes().addAll(fragment.getNodes());
+        }
+
+        List<Producer> producers = new ArrayList<Producer>();
+        NodeUtil.findNodes(fragment.getNodes(), Producer.class, producers);
+
+        for (Producer p : producers) {
+            if (!p.getCorrelationIds().isEmpty()) {
+                // Enable unrestricted time search for now - may need to restrict if becomes too inefficient
+                Criteria criteria = new Criteria().setStartTime(100);
+                criteria.getCorrelationIds().addAll(p.getCorrelationIds());
+                List<Trace> fragments = searchFragments(tenantId, criteria);
+
+                for (Trace tf : fragments) {
+                    processConnectedFragment(tenantId, root, tf, p);
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.TraceService#searchFragments(java.lang.String,
+     *          org.hawkular.apm.api.services.Criteria)
+     */
+    @Override
+    public List<Trace> searchFragments(String tenantId, Criteria criteria) {
         return internalQuery(client, tenantId, criteria);
     }
 
@@ -126,8 +185,7 @@ public class TraceServiceElasticsearch implements TraceService {
         String index = client.getIndex(tenantId);
 
         try {
-            RefreshRequestBuilder refreshRequestBuilder =
-                    client.getClient().admin().indices().prepareRefresh(index);
+            RefreshRequestBuilder refreshRequestBuilder = client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
@@ -184,7 +242,7 @@ public class TraceServiceElasticsearch implements TraceService {
      *                              java.util.List)
      */
     @Override
-    public void storeTraces(String tenantId, List<Trace> traces)
+    public void storeFragments(String tenantId, List<Trace> traces)
             throws StoreException {
         client.initTenant(tenantId);
 

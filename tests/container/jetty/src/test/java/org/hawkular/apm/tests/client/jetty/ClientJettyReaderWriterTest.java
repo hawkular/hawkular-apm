@@ -40,6 +40,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -230,8 +231,8 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
         assertEquals(2, getTestTraceServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
-        findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -249,8 +250,8 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
                 testProducer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         List<Consumer> consumers = new ArrayList<Consumer>();
-        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Consumer.class, consumers);
-        findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Consumer.class, consumers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Consumer.class, consumers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Consumer.class, consumers);
 
         assertEquals("Expecting 1 consumers", 1, consumers.size());
 
