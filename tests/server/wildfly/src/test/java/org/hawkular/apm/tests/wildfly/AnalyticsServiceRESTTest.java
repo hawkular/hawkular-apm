@@ -41,6 +41,7 @@ import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
@@ -63,6 +64,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class AnalyticsServiceRESTTest {
 
+    /**  */
+    private static final String MY_FAULT = "MyFault";
+    /**  */
+    private static final String TESTAPP = "testapp";
     /**  */
     private static final String TEST_PASSWORD = "password";
     /**  */
@@ -301,7 +306,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionCount() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -333,7 +338,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
         Long count = analytics.getTraceCompletionCount(null, criteria);
@@ -346,7 +351,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionCountWithPropertyFilter() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -381,31 +386,31 @@ public class AnalyticsServiceRESTTest {
 
         // Get transaction count
         assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction("testapp")
+                .setBusinessTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop1", "1", Operator.GT)));
 
         assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction("testapp")
+                .setBusinessTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop1", "3", Operator.LT)));
 
         assertEquals(0, analytics.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction("testapp")
+                .setBusinessTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop1", "2.4", Operator.LT)));
 
         assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction("testapp")
+                .setBusinessTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop2", "hello", Operator.HAS)));
 
         assertEquals(0, analytics.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction("testapp")
+                .setBusinessTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop2", "hello", Operator.HASNOT)));
@@ -415,7 +420,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionFaultCount() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -448,7 +453,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
         Long count = analytics.getTraceCompletionFaultCount(null, criteria);
@@ -458,10 +463,121 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
+    public void testGetCompletionTimes() {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        trace1.getNodes().add(c1);
+
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+
+        try {
+            publisher.publish(null, traces);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getId());
+
+        Criteria criteria = new Criteria();
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+
+        // Get trace completion times
+        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, criteria);
+
+        assertNotNull(times);
+        assertEquals(1, times.size());
+
+        CompletionTime ct = times.get(0);
+        assertEquals(TESTAPP, ct.getBusinessTransaction());
+    }
+
+    @Test
+    public void testGetCompletionTimesWithPropertyFilter() {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri1");
+        c1.setFault(MY_FAULT);
+        trace1.getNodes().add(c1);
+        trace1.getProperties().add(new Property("prop2", "hello"));
+
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction(TESTAPP);
+        trace2.setStartTime(System.currentTimeMillis() - 2000); // Within last hour
+        Consumer c2 = new Consumer();
+        c2.setUri("testuri2");
+        trace2.getNodes().add(c2);
+        trace2.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
+
+        List<Trace> traces = new ArrayList<Trace>();
+        traces.add(trace1);
+        traces.add(trace2);
+
+        try {
+            publisher.publish(null, traces);
+        } catch (Exception e1) {
+            fail("Failed to store: " + e1);
+        }
+
+        // Wait to ensure record persisted
+        try {
+            synchronized (this) {
+                wait(2000);
+            }
+        } catch (Exception e) {
+            fail("Failed to wait");
+        }
+
+        // Query stored trace
+        List<Trace> result = service.query(null, new Criteria());
+
+        assertEquals(2, result.size());
+
+        // Get trace completion times
+        Criteria criteria = new Criteria()
+                .setBusinessTransaction(TESTAPP)
+                .setStartTime(0)
+                .setEndTime(0)
+                .addProperty("prop2", "hello", Operator.HAS);
+
+        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, criteria);
+
+        assertNotNull(times);
+        assertEquals(1, times.size());
+
+        CompletionTime ct = times.get(0);
+        assertEquals("1", ct.getId());
+        assertNotNull(ct.getFault());
+        assertEquals(MY_FAULT, ct.getFault());
+    }
+
+    @Test
     public void testGetCompletionTimeseriesStatistics() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -494,7 +610,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000);
@@ -507,7 +623,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionTimeseriesStatisticsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -564,7 +680,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction("testapp")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)));
 
             os.flush();
             os.close();
@@ -597,7 +713,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionPropertyDetails() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.getProperties().add(new Property("prop1", "value1"));
 
@@ -632,7 +748,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1");
 
@@ -644,7 +760,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionPropertyDetailsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.getProperties().add(new Property("prop1", "value1"));
 
@@ -702,7 +818,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction("testapp")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)));
 
             os.flush();
             os.close();
@@ -735,7 +851,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionFaultDetails() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -770,7 +886,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analytics.getTraceCompletionFaultDetails(null, criteria);
 
@@ -782,7 +898,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCompletionFaultDetailsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -840,7 +956,7 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction("testapp")));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)));
 
             os.flush();
             os.close();
@@ -873,7 +989,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeTimeseriesStatistics() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -928,7 +1044,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeTimeseriesStatisticsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -1027,7 +1143,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeTimeseriesStatisticsHostName() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
@@ -1092,7 +1208,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeTimeseriesStatisticsPOSTHostName() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
@@ -1243,7 +1359,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeSummaryStatistics() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -1297,7 +1413,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeSummaryStatisticsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -1396,7 +1512,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeSummaryStatisticsHostName() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
@@ -1459,7 +1575,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetNodeSummaryStatisticsPOSTHostName() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
@@ -1613,7 +1729,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCommunicationSummaryStatisticsFlat() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -1632,7 +1748,7 @@ public class AnalyticsServiceRESTTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setBusinessTransaction("testapp");
+        trace2.setBusinessTransaction(TESTAPP);
         trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
 
         Consumer c2 = new Consumer();
@@ -1710,7 +1826,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCommunicationSummaryStatisticsTree() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -1729,7 +1845,7 @@ public class AnalyticsServiceRESTTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setBusinessTransaction("testapp");
+        trace2.setBusinessTransaction(TESTAPP);
         trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
 
         Consumer c2 = new Consumer();
@@ -1803,7 +1919,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetCommunicationSummaryStatisticsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -1822,7 +1938,7 @@ public class AnalyticsServiceRESTTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setBusinessTransaction("testapp");
+        trace2.setBusinessTransaction(TESTAPP);
         trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
 
         Consumer c2 = new Consumer();
@@ -1944,7 +2060,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetHostNames() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
@@ -1987,7 +2103,7 @@ public class AnalyticsServiceRESTTest {
     public void testGetHostNamesPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
@@ -2086,7 +2202,7 @@ public class AnalyticsServiceRESTTest {
 
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(baseTime); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -2105,7 +2221,7 @@ public class AnalyticsServiceRESTTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setBusinessTransaction("testapp");
+        trace2.setBusinessTransaction(TESTAPP);
         trace2.setStartTime(baseTime + 1000); // Within last hour
 
         Consumer c2 = new Consumer();
@@ -2149,7 +2265,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(2, result.size());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(0).setEndTime(0);
+        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 10000);

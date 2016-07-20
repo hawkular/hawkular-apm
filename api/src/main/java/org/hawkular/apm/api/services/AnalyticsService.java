@@ -106,6 +106,16 @@ public interface AnalyticsService {
     long getTraceCompletionFaultCount(String tenantId, Criteria criteria);
 
     /**
+     * This method returns the list of trace completion times that meet the supplied
+     * criteria.
+     *
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @return The list of trace completion times
+     */
+    List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria);
+
+    /**
      * This method returns the completion time percentiles, for the specified criteria, that were
      * executed during the time range. The business transaction name must be specified
      * as part of the criteria.

@@ -51,6 +51,7 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.AnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.server.api.security.SecurityProvider;
@@ -497,6 +498,108 @@ public class AnalyticsHandler {
                     .entity(errors).type(APPLICATION_JSON_TYPE).build());
         }
 
+    }
+
+    @GET
+    @Path("trace/completion/times")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the trace completion times associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getTraceCompletionTimes(
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "business transaction name") @QueryParam("businessTransaction") String businessTransaction,
+            @ApiParam(required = false,
+            value = "traces after this time,"
+                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
+            @ApiParam(required = false,
+                    value = "traces before this time, "
+                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
+            @ApiParam(required = false,
+                            value = "host name") @QueryParam("hostName") String hostName,
+            @ApiParam(required = false,
+                            value = "principal") @QueryParam("principal") String principal,
+            @ApiParam(required = false,
+                            value = "traces with these properties, defined as a comma "
+                                    + "separated list of name|value "
+                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
+            @ApiParam(required = false,
+                                    value = "faults") @QueryParam("faults") String faults) {
+
+        try {
+            Criteria criteria = new Criteria();
+            criteria.setBusinessTransaction(businessTransaction);
+            criteria.setStartTime(startTime);
+            criteria.setEndTime(endTime);
+            criteria.setHostName(hostName);
+            criteria.setPrincipal(principal);
+
+            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
+
+            RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
+
+            log.tracef("Get trace completion times for criteria (GET) [%s]",
+                    criteria);
+
+            List<CompletionTime> times = analyticsService.getTraceCompletionTimes(
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
+
+            log.tracef("Got trace completion times for criteria (GET) [%s] = %s",
+                    criteria, times);
+
+            response.resume(Response.status(Response.Status.OK).entity(times).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("trace/completion/times")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the trace completion times associated with criteria",
+            response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getTraceCompletionTimes(
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "query criteria") Criteria criteria) {
+
+        try {
+            log.tracef("Get trace completion times for criteria (POST) [%s]",
+                    criteria);
+
+            List<CompletionTime> times = analyticsService.getTraceCompletionTimes(
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
+
+            log.tracef("Got trace completion times for criteria (POST) [%s] = %s",
+                    criteria, times);
+
+            response.resume(Response.status(Response.Status.OK).entity(times).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
     }
 
     @GET
