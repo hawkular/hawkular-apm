@@ -491,7 +491,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -551,7 +551,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -620,6 +620,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
+    @org.junit.Ignore
     public void testGetCompletionTimeseriesStatisticsPOST() {
         Trace trace1 = new Trace();
         trace1.setId("1");
@@ -680,7 +681,8 @@ public class AnalyticsServiceRESTTest {
 
             java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)));
+            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)
+                    .setStartTime(0).setEndTime(0)));
 
             os.flush();
             os.close();
