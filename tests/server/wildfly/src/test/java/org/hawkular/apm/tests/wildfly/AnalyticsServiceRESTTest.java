@@ -18,6 +18,7 @@ package org.hawkular.apm.tests.wildfly;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -2013,6 +2014,11 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(first);
         assertNotNull(second);
+
+        assertEquals("originuri", first.getUri());
+        assertNull(first.getOperation());
+        assertEquals("testuri", second.getUri());
+        assertNull(second.getOperation());
 
         assertEquals(1, first.getOutbound().size());
         assertEquals(0, second.getOutbound().size());
