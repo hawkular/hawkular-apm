@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
 import org.junit.Test;
 
@@ -128,7 +129,7 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
         assertEquals(1, getTestTraceServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -181,7 +182,7 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
         assertEquals(1, getTestTraceServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -234,7 +235,7 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
         assertEquals(1, getTestTraceServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

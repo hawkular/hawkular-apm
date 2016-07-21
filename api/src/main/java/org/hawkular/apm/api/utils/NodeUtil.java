@@ -16,6 +16,9 @@
  */
 package org.hawkular.apm.api.utils;
 
+import java.util.List;
+
+import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.Node;
 
 /**
@@ -68,4 +71,26 @@ public class NodeUtil {
         }
         return false;
     }
+
+    /**
+     * This method recursively scans a node hierarchy to locate instances of a particular
+     * type.
+     *
+     * @param nodes The nodes to scan
+     * @param cls The class of the node to be returned
+     * @param results The list of nodes found
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Node> void findNodes(List<Node> nodes, Class<T> cls, List<T> results) {
+        for (Node n : nodes) {
+            if (n instanceof ContainerNode) {
+                findNodes(((ContainerNode) n).getNodes(), cls, results);
+            }
+
+            if (cls.isAssignableFrom(n.getClass())) {
+                results.add((T) n);
+            }
+        }
+    }
+
 }

@@ -62,7 +62,7 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
     @Override
     public void publish(String tenantId, List<Trace> traces) throws Exception {
 
-        URL url = new URL(getUri() + "hawkular/apm/fragments");
+        URL url = new URL(getUri() + "hawkular/apm/traces/fragments");
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Publish traces [tenant=" + tenantId + "][url=" + url + "]: " + traces);

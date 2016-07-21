@@ -1151,19 +1151,27 @@ public class DefaultTraceCollectorTest {
         }
 
         /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.BusinessTransactionService#get(java.lang.String, java.lang.String)
+         * @see org.hawkular.apm.api.services.TraceService#getFragment(java.lang.String, java.lang.String)
          */
         @Override
-        public Trace get(String tenantId, String id) {
+        public Trace getFragment(String tenantId, String id) {
             return null;
         }
 
         /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.BusinessTransactionService#query(java.lang.String,
+         * @see org.hawkular.apm.api.services.TraceService#getTrace(java.lang.String, java.lang.String)
+         */
+        @Override
+        public Trace getTrace(String tenantId, String id) {
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.hawkular.apm.api.services.TraceService#query(java.lang.String,
          *              org.hawkular.apm.api.services.Criteria)
          */
         @Override
-        public List<Trace> query(String tenantId, Criteria criteria) {
+        public List<Trace> searchFragments(String tenantId, Criteria criteria) {
             return null;
         }
 
@@ -1200,7 +1208,7 @@ public class DefaultTraceCollectorTest {
          *                              java.util.List)
          */
         @Override
-        public void storeTraces(String tenantId, List<Trace> businessTransactions)
+        public void storeFragments(String tenantId, List<Trace> businessTransactions)
                 throws StoreException {
         }
 

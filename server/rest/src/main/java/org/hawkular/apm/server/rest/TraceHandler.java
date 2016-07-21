@@ -61,10 +61,10 @@ import io.swagger.annotations.ApiResponses;
  * @author gbrown
  *
  */
-@Path("fragments")
+@Path("traces")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
-@Api(value = "fragments", description = "Report/Query trace fragments")
+@Api(value = "traces", description = "Report/Query trace fragments")
 public class TraceHandler {
 
     private static final Logger log = Logger.getLogger(TraceHandler.class);
@@ -87,6 +87,7 @@ public class TraceHandler {
     }
 
     @POST
+    @Path("fragments")
     @ApiOperation(value = "Add a list of trace fragments")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Adding traces succeeded."),
@@ -112,22 +113,23 @@ public class TraceHandler {
     }
 
     @GET
-    @Path("{id}")
+    @Path("fragments/{id}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Retrieve trace fragment for specified id",
             response = Trace.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success, trace fragment found and returned"),
+            @ApiResponse(code = 200, message = "Success, trace found and returned"),
             @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 404, message = "Unknown trace fragment id") })
-    public void getTrace(
+            @ApiResponse(code = 404, message = "Unknown fragment id") })
+    public void getFragment(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
-            @ApiParam(required = true, value = "id of required trace") @PathParam("id") String id) {
+            @ApiParam(required = true, value = "id of required trace fragment") @PathParam("id") String id) {
 
         try {
-            Trace trace = traceService.get(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), id);
+            Trace trace = traceService.getFragment(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
+                    id);
 
             if (trace == null) {
                 log.tracef("Trace fragment '" + id + "' not found");
@@ -148,6 +150,44 @@ public class TraceHandler {
     }
 
     @GET
+    @Path("complete/{id}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Retrieve end to end trace for specified id",
+            response = Trace.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success, trace found and returned"),
+            @ApiResponse(code = 500, message = "Internal server error"),
+            @ApiResponse(code = 404, message = "Unknown trace id") })
+    public void getTrace(
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true, value = "id of required trace") @PathParam("id") String id) {
+
+        try {
+            Trace trace = traceService.getTrace(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
+                    id);
+
+            if (trace == null) {
+                log.tracef("Trace '" + id + "' not found");
+                response.resume(Response.status(Response.Status.NOT_FOUND).type(APPLICATION_JSON_TYPE).build());
+            } else {
+                log.tracef("Trace '" + id + "' found");
+                response.resume(Response.status(Response.Status.OK).entity(trace).type(APPLICATION_JSON_TYPE)
+                        .build());
+            }
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @GET
+    @Path("fragments/search")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Query trace fragments associated with criteria",
@@ -155,7 +195,7 @@ public class TraceHandler {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void queryTraces(
+    public void queryFragments(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = false,
@@ -187,7 +227,7 @@ public class TraceHandler {
 
             log.tracef("Query trace fragments for criteria [%s]", criteria);
 
-            List<Trace> btxns = traceService.query(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
+            List<Trace> btxns = traceService.searchFragments(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Queried trace fragments for criteria [%s] = %s", criteria, btxns);
 
@@ -205,7 +245,7 @@ public class TraceHandler {
     }
 
     @POST
-    @Path("query")
+    @Path("fragments/search")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Query trace fragments associated with criteria",
@@ -213,7 +253,7 @@ public class TraceHandler {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void queryTracesWithCriteria(
+    public void queryFragmentsWithCriteria(
             @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
             @Suspended final AsyncResponse response,
             @ApiParam(required = true,
@@ -222,7 +262,7 @@ public class TraceHandler {
         try {
             log.tracef("Query trace fragments for criteria [%s]", criteria);
 
-            List<Trace> btxns = traceService.query(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
+            List<Trace> btxns = traceService.searchFragments(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
 
             log.tracef("Queried trace fragments for criteria [%s] = %s", criteria, btxns);
 

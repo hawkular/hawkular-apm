@@ -119,7 +119,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace2.getNodes().add(c2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -166,7 +166,7 @@ public class AnalyticsServiceElasticsearchTest {
         t2.getNodes().add(p2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -218,7 +218,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace2.getNodes().add(c2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -248,7 +248,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace1.getNodes().add(c1);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -332,7 +332,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace1.getNodes().add(c1);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -437,7 +437,7 @@ public class AnalyticsServiceElasticsearchTest {
         trace2.getNodes().add(c2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -482,7 +482,7 @@ public class AnalyticsServiceElasticsearchTest {
         traces.add(trace2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -534,7 +534,7 @@ public class AnalyticsServiceElasticsearchTest {
         traces.add(trace2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);
@@ -2830,7 +2830,7 @@ public class AnalyticsServiceElasticsearchTest {
         traces.add(trace2);
 
         try {
-            bts.storeTraces(null, traces);
+            bts.storeFragments(null, traces);
 
             synchronized (this) {
                 wait(1000);

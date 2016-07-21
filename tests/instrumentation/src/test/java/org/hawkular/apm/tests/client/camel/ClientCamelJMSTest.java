@@ -38,6 +38,7 @@ import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -131,8 +132,8 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         Producer queueProducer = null;
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(queueConsumer.getNodes(), Producer.class, producers);
-        findNodes(testComponent.getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(queueConsumer.getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(testComponent.getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 2 producers", 2, producers.size());
 
@@ -233,8 +234,8 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         Producer queueProducer = null;
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(queueConsumer.getNodes(), Producer.class, producers);
-        findNodes(testComponent.getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(queueConsumer.getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(testComponent.getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 2 producers", 2, producers.size());
 

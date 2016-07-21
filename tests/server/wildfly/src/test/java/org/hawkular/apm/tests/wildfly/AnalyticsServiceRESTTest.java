@@ -149,7 +149,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -192,7 +192,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -233,7 +233,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -278,7 +278,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -326,7 +326,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -373,7 +373,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -441,7 +441,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -487,7 +487,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -533,7 +533,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -625,7 +625,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -672,7 +672,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -763,7 +763,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -810,7 +810,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -908,7 +908,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -963,7 +963,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1063,7 +1063,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1128,7 +1128,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1278,7 +1278,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1332,7 +1332,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1432,7 +1432,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1495,7 +1495,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -1662,7 +1662,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -1759,7 +1759,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -1852,7 +1852,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(2, result.size());
 
@@ -1967,7 +1967,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -2010,7 +2010,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -2144,7 +2144,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(1500, trace2.calculateDuration());
 
         // Query stored trace
-        List<Trace> result = service.query(null, new Criteria());
+        List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(2, result.size());
 

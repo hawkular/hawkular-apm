@@ -27,6 +27,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,12 +82,12 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
         Trace trace = getTestTraceServer().getTraces().get(0);
 
         List<Consumer> consumers = new ArrayList<Consumer>();
-        findNodes(trace.getNodes(), Consumer.class, consumers);
+        NodeUtil.findNodes(trace.getNodes(), Consumer.class, consumers);
 
         assertTrue("Should be no consumers", consumers.isEmpty());
 
         List<Producer> producers = new ArrayList<Producer>();
-        findNodes(trace.getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(trace.getNodes(), Producer.class, producers);
 
         assertTrue("Should be no producers", producers.isEmpty());
     }

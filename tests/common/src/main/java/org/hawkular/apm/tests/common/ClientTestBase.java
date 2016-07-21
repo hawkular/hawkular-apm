@@ -19,12 +19,8 @@ package org.hawkular.apm.tests.common;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.List;
-
 import org.hawkular.apm.api.model.trace.Consumer;
-import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
-import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.tests.server.TestTraceServer;
 import org.junit.After;
@@ -96,26 +92,6 @@ public abstract class ClientTestBase {
         CorrelationIdentifier ccid = consumer.getCorrelationIds().iterator().next();
 
         assertEquals(pcid, ccid);
-    }
-
-    /**
-     * This method finds nodes within a hierarchy of the required type.
-     *
-     * @param nodes The nodes to recursively check
-     * @param cls The class of interest
-     * @param results The results
-     */
-    @SuppressWarnings("unchecked")
-    protected <T extends Node> void findNodes(List<Node> nodes, Class<T> cls, List<T> results) {
-        for (Node n : nodes) {
-            if (n instanceof ContainerNode) {
-                findNodes(((ContainerNode) n).getNodes(), cls, results);
-            }
-
-            if (cls.isAssignableFrom(n.getClass())) {
-                results.add((T) n);
-            }
-        }
     }
 
     protected void setProcessHeaders(boolean b) {
