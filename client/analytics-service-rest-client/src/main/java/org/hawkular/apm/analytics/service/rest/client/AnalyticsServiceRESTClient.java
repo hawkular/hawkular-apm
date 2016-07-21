@@ -93,6 +93,10 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             new TypeReference<java.util.List<PrincipalInfo>>() {
             };
 
+    private static final TypeReference<java.util.List<CompletionTime>> COMPLETION_TIME_LIST =
+            new TypeReference<java.util.List<CompletionTime>>() {
+            };
+
     public AnalyticsServiceRESTClient() {
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
@@ -542,6 +546,79 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         }
 
         return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.AnalyticsService#getTraceCompletionTimes(java.lang.String, org.hawkular.apm.api.services.Criteria)
+     */
+    @Override
+    public List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get completion times: tenantId=[" + tenantId + "] criteria="
+                    + criteria);
+        }
+
+        StringBuilder builder = new StringBuilder()
+                .append(getUri())
+                .append("hawkular/apm/analytics/trace/completion/times");
+
+        buildQueryString(builder, criteria);
+
+        try {
+            URL url = new URL(builder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setUseCaches(false);
+            connection.setAllowUserInteraction(false);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            addHeaders(connection, tenantId);
+
+            java.io.InputStream is = connection.getInputStream();
+
+            StringBuilder resp = new StringBuilder();
+            byte[] b = new byte[10000];
+
+            while (true) {
+                int len = is.read(b);
+
+                if (len == -1) {
+                    break;
+                }
+
+                resp.append(new String(b, 0, len));
+            }
+
+            is.close();
+
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Returned json=[" + resp.toString() + "]");
+                }
+                if (!resp.toString().trim().isEmpty()) {
+                    try {
+                        return mapper.readValue(resp.toString(), COMPLETION_TIME_LIST);
+                    } catch (Throwable t) {
+                        log.log(Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Failed to get completion times: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get completion times", e);
+        }
+
+        return null;
     }
 
     /* (non-Javadoc)

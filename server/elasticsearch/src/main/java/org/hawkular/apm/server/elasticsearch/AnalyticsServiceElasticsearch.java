@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.server.elasticsearch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,7 +78,9 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -279,6 +282,59 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         }
 
         return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.api.services.AnalyticsService#getTraceCompletionTimes(java.lang.String, org.hawkular.apm.api.services.Criteria)
+     */
+    @Override
+    public List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria) {
+        String index = client.getIndex(tenantId);
+
+        try {
+            RefreshRequestBuilder refreshRequestBuilder =
+                    client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
+                    .setTypes(TRACE_COMPLETION_TIME_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
+                    .setSize(criteria.getMaxResponseSize())
+                    .setQuery(query);
+
+            SearchResponse response = request.execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+                return null;
+            }
+
+            List<CompletionTime> ret = new ArrayList<CompletionTime>();
+
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    ret.add(mapper.readValue(searchHitFields.getSourceAsString(),
+                            CompletionTime.class));
+                } catch (JsonParseException|JsonMappingException e) {
+                    msgLog.errorFailedToParse(e);
+                } catch (IOException e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+
+            return ret;
+
+        } catch (org.elasticsearch.indices.IndexMissingException t) {
+            // Ignore, as means that no traces have
+            // been stored yet
+            if (msgLog.isTraceEnabled()) {
+                msgLog.tracef("No index found, so unable to get completion count");
+            }
+        }
+
+        return null;
     }
 
     /* (non-Javadoc)
