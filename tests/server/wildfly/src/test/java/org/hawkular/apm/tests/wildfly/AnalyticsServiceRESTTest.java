@@ -617,47 +617,9 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
-    }
-
-    @Test
-    @org.junit.Ignore
-    public void testGetCompletionTimeseriesStatisticsPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        trace1.getNodes().add(c1);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
 
         // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = null;
+        List<CompletionTimeseriesStatistics> statsPOST = null;
 
         try {
             URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/statistics?interval=1000");
@@ -701,14 +663,14 @@ public class AnalyticsServiceRESTTest {
             is.close();
 
             if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), COMPLETION_STATISTICS_LIST);
+                statsPOST = mapper.readValue(builder.toString(), COMPLETION_STATISTICS_LIST);
             }
         } catch (Exception e) {
             fail("Failed to send statistics request: " + e);
         }
 
-        assertNotNull(stats);
-        assertEquals(1, stats.size());
+        assertNotNull(statsPOST);
+        assertEquals(1, statsPOST.size());
     }
 
     @Test
