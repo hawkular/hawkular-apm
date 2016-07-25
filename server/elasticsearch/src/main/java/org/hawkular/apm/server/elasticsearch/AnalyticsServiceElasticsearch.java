@@ -154,7 +154,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction",
+                    Trace.class);
 
             TermsBuilder cardinalityBuilder = AggregationBuilders
                     .terms("cardinality")
@@ -214,7 +215,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
@@ -254,7 +256,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             FilterBuilder filter = FilterBuilders.existsFilter("fault");
 
@@ -296,7 +299,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_COMPLETION_TIME_TYPE)
@@ -352,7 +356,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             PercentilesBuilder percentileAgg = AggregationBuilders
                     .percentiles("percentiles")
@@ -404,7 +409,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             StatsBuilder statsBuilder = AggregationBuilders
                     .stats("stats")
@@ -476,7 +482,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             TermsBuilder cardinalityBuilder = AggregationBuilders
                     .terms("cardinality")
@@ -539,7 +546,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    CompletionTime.class);
 
             BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
                     .must(QueryBuilders.matchQuery("properties.name", property));
@@ -626,7 +634,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    NodeDetails.class);
 
             AvgBuilder avgBuilder = AggregationBuilders
                     .avg("avg")
@@ -706,7 +715,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    NodeDetails.class);
 
             AvgBuilder actualBuilder = AggregationBuilders
                     .avg("actual")
@@ -903,7 +913,10 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction");
+            // Don't specify target class, so that query provided that can be used with
+            // CommunicationDetails and CompletionTime
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "timestamp", "businessTransaction",
+                    null);
 
             // Only want external communications
             query = query.mustNot(QueryBuilders.matchQuery("internal", "true"));
@@ -1087,7 +1100,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction",
+                    Trace.class);
 
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TraceServiceElasticsearch.TRACE_TYPE)

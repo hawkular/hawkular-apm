@@ -557,6 +557,141 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCompletionTimes() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        ct1.setPrincipal("p1");
+        ct1.setUri("uri1");
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        ct2.setPrincipal("p2");
+        ct2.setFault("TestFault1");
+        ct2.setUri("uri2");
+        cts.add(ct2);
+
+        CompletionTime ct3 = new CompletionTime();
+        ct3.setBusinessTransaction("testapp");
+        ct3.setTimestamp(2000);
+        ct3.setPrincipal("p1");
+        ct3.setFault("TestFault2");
+        ct3.setUri("uri1");
+        cts.add(ct3);
+
+        try {
+            analytics.storeTraceCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria().setStartTime(100).setEndTime(0);
+
+        List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
+
+        assertNotNull(results);
+        assertEquals(3, results.size());
+    }
+
+    @Test
+    public void testGetCompletionTimesForUri() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        ct1.setPrincipal("p1");
+        ct1.setUri("uri1");
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        ct2.setPrincipal("p2");
+        ct2.setFault("TestFault1");
+        ct2.setUri("uri2");
+        cts.add(ct2);
+
+        CompletionTime ct3 = new CompletionTime();
+        ct3.setBusinessTransaction("testapp");
+        ct3.setTimestamp(2000);
+        ct3.setPrincipal("p1");
+        ct3.setFault("TestFault2");
+        ct3.setUri("uri1");
+        cts.add(ct3);
+
+        try {
+            analytics.storeTraceCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria().setUri("uri1").setStartTime(100).setEndTime(0);
+
+        List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
+
+        assertNotNull(results);
+        assertEquals(2, results.size());
+    }
+
+    @Test
+    public void testGetCompletionTimesForOperation() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        ct1.setPrincipal("p1");
+        ct1.setOperation("op1");
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        ct2.setPrincipal("p2");
+        ct2.setFault("TestFault1");
+        ct2.setOperation("op2");
+        cts.add(ct2);
+
+        CompletionTime ct3 = new CompletionTime();
+        ct3.setBusinessTransaction("testapp");
+        ct3.setTimestamp(2000);
+        ct3.setPrincipal("p1");
+        ct3.setFault("TestFault2");
+        ct3.setOperation("op1");
+        cts.add(ct3);
+
+        try {
+            analytics.storeTraceCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria().setOperation("op1").setStartTime(100).setEndTime(0);
+
+        List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
+
+        assertNotNull(results);
+        assertEquals(2, results.size());
+    }
+
+    @Test
     public void testGetCompletionCount() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 
