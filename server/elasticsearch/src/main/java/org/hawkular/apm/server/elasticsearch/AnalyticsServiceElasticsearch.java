@@ -949,6 +949,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 if (css == null) {
                     css = new CommunicationSummaryStatistics();
                     css.setId(sourceBucket.getKey());
+                    css.setUri(EndpointUtil.decodeEndpointURI(css.getId()));
+                    css.setOperation(EndpointUtil.decodeEndpointOperation(css.getId(), true));
                     stats.put(css.getId(), css);
                 }
 
@@ -1026,6 +1028,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     if (css == null) {
                         css = new CommunicationSummaryStatistics();
                         css.setId(id);
+                        css.setUri(urisBucket.getKey());
+                        css.setOperation(operationBucket.getKey());
                         stats.put(id, css);
                     }
 
@@ -1047,6 +1051,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     if (css == null) {
                         css = new CommunicationSummaryStatistics();
                         css.setId(id);
+                        css.setUri(id);
                         stats.put(id, css);
                     }
 

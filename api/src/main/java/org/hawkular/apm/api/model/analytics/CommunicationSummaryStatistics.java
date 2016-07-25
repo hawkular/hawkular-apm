@@ -39,6 +39,10 @@ public class CommunicationSummaryStatistics {
 
     private int severity = 0;
 
+    private String uri;
+
+    private String operation;
+
     private Map<String, ConnectionStatistics> outbound = new HashMap<String, ConnectionStatistics>();
 
     /**
@@ -149,6 +153,34 @@ public class CommunicationSummaryStatistics {
     }
 
     /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation the operation to set
+     */
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    /**
      * @return the outbound
      */
     public Map<String, ConnectionStatistics> getOutbound() {
@@ -169,7 +201,8 @@ public class CommunicationSummaryStatistics {
     public String toString() {
         return "CommunicationSummaryStatistics [id=" + id + ", minimumDuration=" + minimumDuration
                 + ", averageDuration=" + averageDuration + ", maximumDuration=" + maximumDuration + ", count=" + count
-                + ", severity=" + severity + ", outbound=" + outbound + "]";
+                + ", severity=" + severity + ", uri=" + uri + ", operation=" + operation + ", outbound=" + outbound
+                + "]";
     }
 
     /**

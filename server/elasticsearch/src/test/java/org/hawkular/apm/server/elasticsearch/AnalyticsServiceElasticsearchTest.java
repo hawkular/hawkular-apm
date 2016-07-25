@@ -2095,6 +2095,9 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(out1_2);
         assertNotNull(out2_1);
 
+        assertEquals("in1", in1.getUri());
+        assertNull(in1.getOperation());
+
         assertEquals(1, in1.getCount());
         assertEquals(2, in2.getCount());
         assertEquals(1, out1_1.getCount());
@@ -2285,6 +2288,9 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(out1_1);
         assertNotNull(out1_2);
         assertNotNull(out2_1);
+
+        assertEquals("in1", in1.getUri());
+        assertEquals("op1", in1.getOperation());
 
         assertEquals(1, in1.getCount());
         assertEquals(2, in2.getCount());
