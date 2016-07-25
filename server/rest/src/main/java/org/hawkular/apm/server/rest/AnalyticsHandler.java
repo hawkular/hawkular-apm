@@ -198,6 +198,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -211,6 +215,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -298,6 +304,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -311,6 +321,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -398,6 +410,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -411,6 +427,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -462,6 +480,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -475,6 +497,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -525,6 +549,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -538,6 +566,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -628,6 +658,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -641,6 +675,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -691,6 +727,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -707,6 +747,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -801,6 +843,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -814,6 +860,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -903,6 +951,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -918,6 +970,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -1009,6 +1063,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -1023,6 +1081,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -1139,6 +1199,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
@@ -1150,6 +1214,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -1260,6 +1326,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
@@ -1273,6 +1343,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 
@@ -1390,6 +1462,10 @@ public class AnalyticsHandler {
             @ApiParam(required = false,
                             value = "principal") @QueryParam("principal") String principal,
             @ApiParam(required = false,
+                            value = "uri") @QueryParam("uri") String uri,
+            @ApiParam(required = false,
+                            value = "operation") @QueryParam("operation") String operation,
+            @ApiParam(required = false,
                             value = "traces with these properties, defined as a comma "
                                     + "separated list of name|value "
                                     + "pairs") @DefaultValue("") @QueryParam("properties") String properties) {
@@ -1401,6 +1477,8 @@ public class AnalyticsHandler {
             criteria.setEndTime(endTime);
             criteria.setHostName(hostName);
             criteria.setPrincipal(principal);
+            criteria.setUri(uri);
+            criteria.setOperation(operation);
 
             RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
 

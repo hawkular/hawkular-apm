@@ -21,6 +21,8 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.FaultCriteria;
@@ -41,10 +43,11 @@ public class ElasticsearchUtil {
      * @param timeProperty The name of the time property
      * @param businessTxnProperty The name of the business transaction property
      * @param criteria the criteria
+     * @param targetClass The class being queried
      * @return The query
      */
     public static BoolQueryBuilder buildQuery(Criteria criteria, String timeProperty,
-            String businessTxnProperty) {
+            String businessTxnProperty, Class<?> targetClass) {
         long startTime = criteria.calculateStartTime();
         long endTime = criteria.calculateEndTime();
 
@@ -133,6 +136,16 @@ public class ElasticsearchUtil {
                 rangeQuery.lte(criteria.getUpperBound());
             }
             query = query.must(rangeQuery);
+        }
+
+        // Querying uri and operation are only relevant to NodeDetails and CompletionTime
+        if (targetClass == NodeDetails.class || targetClass == CompletionTime.class) {
+            if (criteria.getUri() != null && !criteria.getUri().trim().isEmpty()) {
+                query = query.must(QueryBuilders.matchQuery("uri", criteria.getUri()));
+            }
+            if (criteria.getOperation() != null && !criteria.getOperation().trim().isEmpty()) {
+                query = query.must(QueryBuilders.matchQuery("operation", criteria.getOperation()));
+            }
         }
 
         return query;

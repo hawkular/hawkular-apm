@@ -32,7 +32,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
  */
 public class Criteria {
 
-    private final Logger log = Logger.getLogger(Criteria.class.getName());
+    private static final Logger log = Logger.getLogger(Criteria.class.getName());
 
     private long startTime = 0L;
     private long endTime = 0L;
@@ -44,6 +44,8 @@ public class Criteria {
     private long upperBound;
     private long lowerBound;
     private String principal;
+    private String uri;
+    private String operation;
 
     /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
@@ -248,6 +250,38 @@ public class Criteria {
     }
 
     /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     * @return The criteria
+     */
+    public Criteria setUri(String uri) {
+        this.uri = uri;
+        return this;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation the operation to set
+     * @return The criteria
+     */
+    public Criteria setOperation(String operation) {
+        this.operation = operation;
+        return this;
+    }
+
+    /**
      * @return the faults
      */
     public Set<FaultCriteria> getFaults() {
@@ -373,6 +407,14 @@ public class Criteria {
             ret.put("principal", principal);
         }
 
+        if (uri != null) {
+            ret.put("uri", uri);
+        }
+
+        if (operation != null) {
+            ret.put("operation", operation);
+        }
+
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Criteria parameters [" + ret + "]");
         }
@@ -387,7 +429,8 @@ public class Criteria {
      * @return Whether the criteria would apply to all fragments in a transaction
      */
     public boolean transactionWide() {
-        return !(!properties.isEmpty() || !correlationIds.isEmpty() || !faults.isEmpty() || hostName != null);
+        return !(!properties.isEmpty() || !correlationIds.isEmpty() || !faults.isEmpty() || hostName != null
+                || uri != null || operation != null);
     }
 
     /**
@@ -412,8 +455,8 @@ public class Criteria {
         return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
                 + businessTransaction + ", properties=" + properties + ", correlationIds=" + correlationIds
                 + ", faults=" + faults + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound="
-                + lowerBound + ", principal=" + principal + ", timeout=" + timeout + ", maxResponseSize="
-                + maxResponseSize + "]";
+                + lowerBound + ", principal=" + principal + ", uri=" + uri + ", operation=" + operation + ", timeout="
+                + timeout + ", maxResponseSize=" + maxResponseSize + "]";
     }
 
     /**

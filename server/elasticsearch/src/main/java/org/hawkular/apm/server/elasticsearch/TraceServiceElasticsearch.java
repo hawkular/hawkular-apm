@@ -188,7 +188,8 @@ public class TraceServiceElasticsearch implements TraceService {
             RefreshRequestBuilder refreshRequestBuilder = client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction");
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction",
+                    Trace.class);
 
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_TYPE)
