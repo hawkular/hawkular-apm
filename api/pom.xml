@@ -57,16 +57,19 @@
     <dependency>
       <groupId>org.mvel</groupId>
       <artifactId>mvel2</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- REST documentation -->
