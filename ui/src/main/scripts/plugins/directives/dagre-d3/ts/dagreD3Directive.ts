@@ -118,10 +118,9 @@ module DagreD3 {
             marginx: 20,
             marginy: 20
           });
-        } else {
-          prevNodes = angular.copy(currNodes);
-          currNodes = [];
         }
+        prevNodes = angular.copy(currNodes);
+        currNodes = [];
 
         // force removing existing tooltips, otherwise they'll get sticky
         angular.element('.graph-tooltip').remove();
