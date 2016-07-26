@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.tests.dockerized;
+package org.hawkular.apm.tests.dockerized.exception;
 
 
 import org.hawkular.apm.tests.dockerized.model.TestCase;

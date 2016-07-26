@@ -25,6 +25,7 @@ package org.hawkular.apm.tests.dockerized.model;
 public class TestEnvironment {
 
     private String image;
+    private String dockerCompose;
     private long initWaitSeconds;
     private Type type;
 
@@ -52,11 +53,21 @@ public class TestEnvironment {
         this.type = type;
     }
 
+    public String getDockerCompose() {
+        return dockerCompose;
+    }
+
+    public void setDockerCompose(String dockerCompose) {
+        this.dockerCompose = dockerCompose;
+    }
+
     @Override
     public String toString() {
         return "TestEnvironment{" +
                 "image='" + image + '\'' +
+                ", dockerCompose='" + dockerCompose + '\'' +
                 ", initWaitSeconds=" + initWaitSeconds +
+                ", type=" + type +
                 '}';
     }
 }

@@ -20,10 +20,8 @@ package org.hawkular.apm.tests.dockerized;
 import java.io.IOException;
 import java.util.List;
 
-import org.hawkular.apm.tests.dockerized.ProjectVersion;
-import org.hawkular.apm.tests.dockerized.TestScenarioRunner;
-import org.hawkular.apm.tests.dockerized.TestScenariosFinder;
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
+import org.hawkular.apm.tests.server.ApmMockServer;
 import org.junit.Test;
 
 import com.spotify.docker.client.exceptions.DockerCertificateException;
@@ -57,8 +55,18 @@ public class InstrumentationTest {
         }
 
         System.out.println("\n\nSuccessful scenarios: " + successfulScenarios +
-                ", failed: " + (testScenarios.size() - successfulScenarios));
+                ", failed: " + (testScenarios.size() - successfulScenarios) + "\n\n");
+    }
 
-        caseRunner.close();
+    @Test
+    public void a() throws InterruptedException {
+        ApmMockServer apmMockServer = new ApmMockServer();
+
+        apmMockServer.setHost("172.17.0.1");
+        apmMockServer.setPort(9080);
+        apmMockServer.setShutdownTimer(100000000);
+        apmMockServer.run();
+
+        Thread.sleep(1000000);
     }
 }

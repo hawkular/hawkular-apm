@@ -21,28 +21,24 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
+import org.hawkular.apm.tests.dockerized.exception.TestFailException;
 import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import org.hawkular.apm.tests.dockerized.model.TestCase;
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
-import org.hawkular.apm.tests.dockerized.model.Type;
-import org.hawkular.apm.tests.server.TestTraceServer;
+import org.hawkular.apm.tests.server.ApmMockServer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.HostConfig;
 
 /**
  * @author Pavol Loffay
  */
 public class TestScenarioRunner {
-    private static final String DOCKER_MONT_DIR = "/opt/hawkular-apm-agent";
 
     /**
      * Version of APM, needed for ENV variable inside docker image
@@ -54,16 +50,9 @@ public class TestScenarioRunner {
     private final int apmServerPort;
 
     /**
-     * Docker config
-     */
-    private final DockerClient dockerClient;
-    private final HostConfig hostConfig;
-
-    /**
      * Mocked Hawkular APM server to collect information captured by agents.
      */
-    private final TestTraceServer apmServer;
-
+    private final ApmMockServer apmServer;
     private final ObjectMapper objectMapper;
 
 
@@ -76,30 +65,17 @@ public class TestScenarioRunner {
         this.apmVersion = apmVersion;
         this.apmServerPort = apmServerPort;
 
-        this.dockerClient = DefaultDockerClient.fromEnv().build();
-        this.hostConfig = hostConfig();
-
-        this.apmServer = new TestTraceServer();
+        Set<String> dockerInterfaceIpAddresses = InterfaceIpAddress.getIpAddresses("docker0");
+        if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
+            throw new EnvironmentException("Could not find any ip address of network interface docker0");
+        }
+        String hostIpAddress = dockerInterfaceIpAddresses.iterator().next();
+        this.apmServer = new ApmMockServer();
         this.apmServer.setPort(apmServerPort);
+        this.apmServer.setHost(hostIpAddress);
         this.apmServer.setShutdownTimer(60*60*1000);
 
         this.objectMapper = new ObjectMapper();
-    }
-
-    private HostConfig hostConfig() {
-        /**
-         * Target directory is mounted to docker in order to access agent's jar
-         */
-        String hostOsMountDir = System.getProperties().getProperty("buildDirectory");
-
-        return HostConfig.builder()
-                .networkMode("host")
-                .appendBinds(HostConfig.Bind
-                        .from(hostOsMountDir)
-                        .to(DOCKER_MONT_DIR)
-                        .readOnly(true)
-                        .build())
-                .build();
     }
 
     /**
@@ -118,45 +94,27 @@ public class TestScenarioRunner {
                 continue;
             }
 
-            if (testScenario.getEnvironment().getImage() != null) {
-                try {
-                    runSingleImageTest(testScenario, test);
-                    successfulTestCases++;
-                } catch (TestFailException ex) {
-                    System.out.println("Test case failed: " + ex.getTestCase());
-                    System.out.println(ex.getMessage());
-                    ex.printStackTrace();
-                }
-            } else {
-                // TODO docker-compose
+            TestEnvironmentExecutor testEnvironmentExecutor = testEnvironmentExecutor(testScenario);
+
+            try {
+                runSingleTest(testScenario, test, testEnvironmentExecutor);
+                successfulTestCases++;
+            } catch (TestFailException ex) {
+                System.out.println("Test case failed: " + ex.getTestCase());
+                System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
 
         return successfulTestCases;
     }
 
-    public void close() {
-        dockerClient.close();
-    }
-
-    private void runSingleImageTest(TestScenario testScenario, TestCase testCase) throws TestFailException {
+    private void runSingleTest(TestScenario testScenario, TestCase testCase,
+                               TestEnvironmentExecutor testEnvironmentExecutor) throws TestFailException {
 
         System.out.println("Executing test: " + testCase);
 
-        ContainerConfig.Builder containerConfigBuilder = ContainerConfig.builder()
-                .hostConfig(hostConfig)
-                // when using --net=host hostname should be null
-                .hostname(null)
-                .image(testScenario.getEnvironment().getImage())
-                .env(instrumentationEnvVariables(DOCKER_MONT_DIR));
-
-        if (testScenario.getEnvironment().getType() == Type.APM) {
-            containerConfigBuilder.env(instrumentationEnvVariables(DOCKER_MONT_DIR));
-        }
-
-        ContainerConfig containerConfig = containerConfigBuilder.build();
-
-        String containerId = null;
+        String environmentId = null;
         try {
             /**
              * Start APM server
@@ -165,37 +123,33 @@ public class TestScenarioRunner {
             apmServer.run();
 
             /**
-             * Start container and wait
+             * Run a container and wait
              */
-            containerId = dockerClient.createContainer(containerConfig).id();
-            dockerClient.startContainer(containerId);
-            Thread.sleep(testScenario.getEnvironment().getInitWaitSeconds() * 1000);
+            environmentId = testEnvironmentExecutor.run(testScenario.getEnvironment(), testCase.getScript());
+            Thread.sleep(testScenario.getEnvironment().getInitWaitSeconds()*1000);
 
             /**
              * Execute test script and wait
              */
-            Integer returnValue = executeTestScript(testScenario, testCase);
-            if (returnValue == null || !returnValue.equals(0)) {
-                throw new TestFailException(testCase, "Script exit value != 0, -> " + returnValue);
-            }
-            Thread.sleep(testCase.getAfterScriptWaitSeconds() * 1000);
+            DockerImageExecutor dockerImageExecutor = (DockerImageExecutor) testEnvironmentExecutor;
+            dockerImageExecutor.exec(environmentId, testCase.getScript());
+//            Integer returnValue = executeTestScript(testScenario, testCase);
+//            if (returnValue == null || !returnValue.equals(0)) {
+//                throw new TestFailException(testCase, "Script exit value != 0, -> " + returnValue);
+//            }
+            Thread.sleep(testCase.getAfterScriptWaitSeconds()*1000);
 
             /**
              * verify results
              */
             verifyResults(testCase);
-        } catch (InterruptedException | DockerException ex) {
+        } catch (InterruptedException ex) {
             throw new TestFailException(testCase, ex);
         } finally {
             apmServer.shutdown();
 
-            if (containerId != null) {
-                try {
-                    dockerClient.killContainer(containerId);
-                    dockerClient.removeContainer(containerId);
-                } catch (DockerException | InterruptedException ex) {
-                    //ignore
-                }
+            if (environmentId != null) {
+                testEnvironmentExecutor.clean(environmentId);
             }
         }
     }
@@ -217,6 +171,19 @@ public class TestScenarioRunner {
                 throw new TestFailException(testCase, "Failed to verify: " + jsonPathVerify.toString());
             }
         }
+    }
+
+    private TestEnvironmentExecutor testEnvironmentExecutor(TestScenario testScenario) {
+
+        TestEnvironmentExecutor testEnvironmentExecutor;
+        if (testScenario.getEnvironment().getImage() != null) {
+            testEnvironmentExecutor = new DockerImageExecutor(apmVersion, apmServerPort,
+                    testScenario.getScenarioDirectory());
+        } else {
+            testEnvironmentExecutor = new DockerComposeEnvironmentExecutor();
+        }
+
+        return testEnvironmentExecutor;
     }
 
     /**
@@ -245,34 +212,10 @@ public class TestScenarioRunner {
         return process != null ? process.exitValue() : null;
     }
 
-    private List<String> instrumentationEnvVariables(String agentDirectory) {
-        List<String> envVariables = new ArrayList<>();
-
-        String agentName = "hawkular-apm-agent.jar";
-        String agentLocation = agentDirectory + "/" + agentName;
-
-        envVariables.add("APM_VERSION=" + apmVersion);
-        envVariables.add("APM_AGENT=" + agentLocation);
-
-        envVariables.add("HAWKULAR_APM_LOG_LEVEL=FINEST");
-        envVariables.add("HAWKULAR_APM_CONFIG=" + agentDirectory + "/apmconfig");
-
-        envVariables.add("HAWKULAR_APM_URI=http://localhost:" + apmServerPort + "/");
-        envVariables.add("HAWKULAR_APM_USERNAME=jdoe");
-        envVariables.add("HAWKULAR_APM_PASSWORD=password");
-
-        envVariables.add("JAVA_OPTS=-javaagent:" + agentLocation + "=boot:" + agentLocation +
-                " -Djboss.modules.system.pkgs=" +
-                "org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api");
-
-        return envVariables;
-    }
-
     private String serialize(Object object) throws IOException {
         StringWriter out = new StringWriter();
 
         JsonGenerator gen = objectMapper.getFactory().createGenerator(out);
-
         gen.writeObject(object);
 
         gen.close();

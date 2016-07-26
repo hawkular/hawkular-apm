@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+    ticket-monster:
+        image: pavolloffay/jboss-ticket-monster
+        ports:
+            - "8080:8080"
+
+        extra_hosts:
+            - "hawkular-apm:172.17.0.1"
+        env_file: env
+        volumes:
+            - ./:/opt/hawkular/

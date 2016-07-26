@@ -45,7 +45,7 @@ import io.undertow.util.Methods;
  *
  * @author gbrown
  */
-public class TestTraceServer {
+public class ApmMockServer {
 
     /**  */
     private static final String HAWKULAR_APM_TEST_SERVER_HOST = "hawkular-apm.test.server.host";
@@ -59,7 +59,7 @@ public class TestTraceServer {
     /**  */
     private static final int DEFAULT_SHUTDOWN_TIMER = 30000;
 
-    private static final Logger log = Logger.getLogger(TestTraceServer.class.getName());
+    private static final Logger log = Logger.getLogger(ApmMockServer.class.getName());
 
     private Undertow server = null;
 
@@ -99,7 +99,7 @@ public class TestTraceServer {
      * @param args The arguments
      */
     public static void main(String[] args) {
-        TestTraceServer main = new TestTraceServer();
+        ApmMockServer main = new ApmMockServer();
         main.run();
     }
 
@@ -149,6 +149,15 @@ public class TestTraceServer {
      */
     public void setPort(int port) {
         this.port = port;
+    }
+
+    /**
+     * This method sets the host to bind at.
+     *
+     * @param host The host to bind
+     */
+    public void setHost(String host) {
+        this.host = host;
     }
 
     /**
