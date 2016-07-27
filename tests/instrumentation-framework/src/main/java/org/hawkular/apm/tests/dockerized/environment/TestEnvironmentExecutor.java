@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.tests.dockerized;
+package org.hawkular.apm.tests.dockerized.environment;
 
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 
 /**
  * @author Pavol Loffay
  */
-public class DockerComposeEnvironmentExecutor implements TestEnvironmentExecutor {
+public interface TestEnvironmentExecutor {
 
-    @Override
-    public String run(TestEnvironment testEnvironment) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Run test environment
+     * @param testEnvironment test environment
+     * @return
+     */
+    String run(TestEnvironment testEnvironment);
 
-    @Override
-    public void clean(String id) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Cleans and removes environment
+     * @param id Id of the environment
+     */
+    void clean(String id);
 
-    @Override
-    public void close() {
-        throw new UnsupportedOperationException();
-    }
+    void execScript(String id, String serviceName, String script);
+
+    /**
+     * Frees all resources for accessing/creating environment
+     */
+    void close();
 }

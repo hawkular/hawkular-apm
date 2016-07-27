@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
+import org.hawkular.apm.tests.dockerized.environment.DockerComposeExecutor;
+import org.hawkular.apm.tests.dockerized.environment.DockerImageExecutor;
+import org.hawkular.apm.tests.dockerized.environment.TestEnvironmentExecutor;
 import org.hawkular.apm.tests.dockerized.exception.TestFailException;
 import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import org.hawkular.apm.tests.dockerized.model.TestCase;
@@ -51,9 +53,10 @@ public class TestScenarioRunner {
     /**
      * Mocked Hawkular APM server to collect information captured by agents.
      */
-    private final ApmMockServer apmServer;
+//    private final ApmMockServer apmServer;
     private final ObjectMapper objectMapper;
 
+    private final ApmMockServer apmServer;
 
     /**
      * @param apmVersion - version of the Hawkular APM (usually current version)
@@ -64,22 +67,14 @@ public class TestScenarioRunner {
         this.apmVersion = apmVersion;
         this.apmServerPort = apmServerPort;
 
-        List<String> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
-        if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
-            throw new EnvironmentException("Could not find any ip address of network interface docker0");
-        }
-
-        String hostIpAddress = dockerInterfaceIpAddresses.iterator().next();
-        this.apmServer = new ApmMockServer();
-        this.apmServer.setPort(apmServerPort);
-        this.apmServer.setHost(hostIpAddress);
-        this.apmServer.setShutdownTimer(60*60*1000);
-
         this.objectMapper = new ObjectMapper();
+        apmServer = new ApmMockServer();
+        apmServer.setPort(apmServerPort);
+        apmServer.setShutdownTimer(60*60*1000);
     }
 
     /**
-     * Run test scenario
+     * Run a test scenario
      *
      * @param testScenario
      * @return number of successful test cases
@@ -97,7 +92,7 @@ public class TestScenarioRunner {
             TestEnvironmentExecutor testEnvironmentExecutor = testEnvironmentExecutor(testScenario);
 
             try {
-                runSingleTest(testScenario, test, testEnvironmentExecutor);
+                runTestCase(testScenario, test, testEnvironmentExecutor);
                 successfulTestCases++;
             } catch (TestFailException ex) {
                 System.out.println("Test case failed: " + ex.toString());
@@ -111,18 +106,32 @@ public class TestScenarioRunner {
         return successfulTestCases;
     }
 
-    private void runSingleTest(TestScenario testScenario, TestCase testCase,
-                               TestEnvironmentExecutor testEnvironmentExecutor) throws TestFailException {
+    /**
+     * Run single test case
+     *
+     * @param testScenario Test scenario of the test case
+     * @param testCase Test case to run
+     * @param testEnvironmentExecutor Initialized environment
+     * @throws TestFailException
+     */
+    private void runTestCase(TestScenario testScenario, TestCase testCase,
+                             TestEnvironmentExecutor testEnvironmentExecutor) throws TestFailException {
 
         System.out.println("Executing test case: " + testCase);
 
         String environmentId = null;
         try {
+            if (testEnvironmentExecutor instanceof DockerComposeExecutor) {
+                ((DockerComposeExecutor) testEnvironmentExecutor).createNetwork();
+            }
+
             /**
              * Start APM server
              */
+            apmServer.setHost("0.0.0.0");
             apmServer.setTraces(new ArrayList<>());
             apmServer.run();
+            Thread.sleep(2*1000);
 
             /**
              * Run a container and wait
@@ -133,22 +142,19 @@ public class TestScenarioRunner {
             /**
              * Execute test script and wait
              */
-            DockerImageExecutor dockerImageExecutor = (DockerImageExecutor) testEnvironmentExecutor;
-            dockerImageExecutor.execScript(environmentId, testCase.getScript());
-//            Integer returnValue = executeTestScript(testScenario, testCase);
-//            if (returnValue == null || !returnValue.equals(0)) {
-//                throw new TestFailException(testCase, "Script exit value != 0, -> " + returnValue);
-//            }
+            testEnvironmentExecutor.execScript(environmentId, testCase.getScriptServiceName(), testCase.getScript());
             Thread.sleep(testCase.getAfterScriptWaitSeconds()*1000);
 
             /**
              * verify results
              */
-            verifyResults(testCase);
+            verifyResults(testCase, apmServer);
         } catch (InterruptedException ex) {
             throw new TestFailException(testCase, ex);
         } finally {
-            apmServer.shutdown();
+            if (apmServer != null) {
+                apmServer.shutdown();
+            }
 
             if (environmentId != null) {
                 testEnvironmentExecutor.clean(environmentId);
@@ -156,7 +162,7 @@ public class TestScenarioRunner {
         }
     }
 
-    private void verifyResults(TestCase testCase) throws TestFailException {
+    private void verifyResults(TestCase testCase, ApmMockServer apmServer) throws TestFailException {
 
         List<Trace> traces = apmServer.getTraces();
         System.out.println("Captured traces:\n" + traces);
@@ -182,36 +188,10 @@ public class TestScenarioRunner {
             testEnvironmentExecutor = new DockerImageExecutor(apmVersion, apmServerPort,
                     testScenario.getScenarioDirectory());
         } else {
-            testEnvironmentExecutor = new DockerComposeEnvironmentExecutor();
+            testEnvironmentExecutor = new DockerComposeExecutor(testScenario.getEnvironment().getApmAddress());
         }
 
         return testEnvironmentExecutor;
-    }
-
-    /**
-     * Execute test script
-     */
-    private Integer executeTestScript(TestScenario testScenario, TestCase testCase) throws TestFailException {
-
-        Process process = null;
-        try {
-            process = Runtime.getRuntime()
-                    .exec("chmod +x " + testScenario.getScenarioDirectory() + "/" + testCase.getScript());
-            if (process == null || process.waitFor() != 0) {
-                return null;
-            }
-
-            process = Runtime.getRuntime().exec(testScenario.getScenarioDirectory() + "/" + testCase.getScript());
-            if (process == null || process.waitFor() != 0) {
-                return null;
-            }
-
-        } catch (InterruptedException | IOException ex) {
-            ex.printStackTrace();
-            throw new TestFailException(testCase, "Failed to execute test script", ex);
-        }
-
-        return process != null ? process.exitValue() : null;
     }
 
     private String serialize(Object object) throws IOException {

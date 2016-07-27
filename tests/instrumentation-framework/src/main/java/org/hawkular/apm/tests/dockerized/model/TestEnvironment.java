@@ -28,6 +28,7 @@ public class TestEnvironment {
     private String dockerCompose;
     private long initWaitSeconds;
     private Type type;
+    private String apmAddress;
 
     public String getImage() {
         return image;
@@ -61,6 +62,14 @@ public class TestEnvironment {
         this.dockerCompose = dockerCompose;
     }
 
+    public String getApmAddress() {
+        return apmAddress;
+    }
+
+    public void setApmAddress(String apmAddress) {
+        this.apmAddress = apmAddress;
+    }
+
     @Override
     public String toString() {
         return "TestEnvironment{" +
@@ -68,6 +77,7 @@ public class TestEnvironment {
                 ", dockerCompose='" + dockerCompose + '\'' +
                 ", initWaitSeconds=" + initWaitSeconds +
                 ", type=" + type +
+                ", apmAddress='" + apmAddress + '\'' +
                 '}';
     }
 }

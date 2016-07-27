@@ -2,15 +2,17 @@
   "name": "Ticket monster test",
   "environment": {
     "dockerCompose": "docker-compose.yml",
-    "initWaitSeconds": "10",
-    "type": "APM"
+    "initWaitSeconds": "20",
+    "type": "APM",
+    "apmAddress": "172.16.158.1"
   },
   "tests": [
     {
       "description" : "Docker compose JBoss Ticker Monster",
-      "skip": true,
+      "skip": false,
       "script": "action1.sh",
-      "afterScriptWaitSeconds": "10",
+      "scriptServiceName": "ticket-monster",
+      "afterScriptWaitSeconds": "20",
       "verify": {
         "jsonPath": [
           {

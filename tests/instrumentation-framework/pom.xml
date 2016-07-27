@@ -66,6 +66,14 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>docker-compose-env-variables.properties</include>
+        </includes>
+        <targetPath>${project.build.directory}</targetPath>
+      </resource>
     </resources>
 
     <plugins>
@@ -117,8 +125,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <propertyName>buildDirectory</propertyName>
             <buildDirectory>${project.build.directory}</buildDirectory>
+            <HAWKULAR_APM_CONFIG>${project.build.directory}/apmconfig</HAWKULAR_APM_CONFIG>
           </systemPropertyVariables>
         </configuration>
       </plugin>

@@ -31,6 +31,10 @@ public class TestCase {
      * This script can be shell, python... It only depends on what is installed on the host OS.
      */
     private String script;
+    /**
+     * Service from docker-compose in which the script will be invoked
+     */
+    private String scriptServiceName;
     private TestCaseVerify verify;
     /**
      * Time in seconds to wait after executing {@link TestCase#script}
@@ -78,13 +82,22 @@ public class TestCase {
         this.skip = skip;
     }
 
+    public String getScriptServiceName() {
+        return scriptServiceName;
+    }
+
+    public void setScriptServiceName(String scriptServiceName) {
+        this.scriptServiceName = scriptServiceName;
+    }
+
     @Override
     public String toString() {
         return "TestCase{" +
                 "description='" + description + '\'' +
                 ", skip=" + skip +
                 ", script='" + script + '\'' +
-                ", verify='" + verify + '\'' +
+                ", scriptServiceName='" + scriptServiceName + '\'' +
+                ", verify=" + verify +
                 ", afterScriptWaitSeconds=" + afterScriptWaitSeconds +
                 '}';
     }

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
+import org.hawkular.apm.tests.server.ApmMockServer;
 import org.junit.Test;
 
 import com.spotify.docker.client.exceptions.DockerCertificateException;
@@ -66,5 +67,17 @@ public class InstrumentationTest {
 
         System.out.println("\n\nScenarios results:\nSuccessful: " + successfulScenarios +
                 ", Failed: " + failedScearios + "\n\n");
+    }
+
+//    @Test
+    public void test() throws InterruptedException {
+        ApmMockServer apmMockServer = new ApmMockServer();
+        apmMockServer.setPort(9080);
+        apmMockServer.setHost("0.0.0.0");
+
+        apmMockServer.setShutdownTimer(10000000);
+        apmMockServer.run();
+
+        Thread.sleep(1000* 1000);
     }
 }

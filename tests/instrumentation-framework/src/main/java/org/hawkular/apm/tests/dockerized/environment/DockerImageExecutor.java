@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.tests.dockerized;
+package org.hawkular.apm.tests.dockerized.environment;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.apm.tests.dockerized.InterfaceIpV4Address;
 import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 import org.hawkular.apm.tests.dockerized.model.Type;
@@ -97,7 +98,8 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
      * @param script script name, this script should be accessible in containers
      *      {@link DockerImageExecutor#TEST_SCRIPT_DIRECTORY}
      */
-    public void execScript(String id, String script) {
+    @Override
+    public void execScript(String id, String serviceName, String script) {
         String execCreate = null;
         try {
             String sOrigAbsolutePath = TEST_SCRIPT_DIRECTORY + "/" + script;
@@ -111,17 +113,17 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
              * 3. chmod script
              * 4. execute script
              */
-            String[] commands2 = new String[]{"bash", "-c",
+            String[] commands = new String[]{"bash", "-c",
                     "mkdir " + sNewAbsolutePath + " && " +
-                    "mv " + sOrigAbsolutePath + " " + sNewAbsolutePath + " && " +
+                    "cp " + sOrigAbsolutePath + " " + sNewAbsolutePath + " && " +
                     "chmod +x " + sNewAbsolutePath + "/" + script  + " && " +
                     sNewAbsolutePath + "/" + script};
 
-            execCreate = dockerClient.execCreate(id, commands2,
+            execCreate = dockerClient.execCreate(id, commands,
                     DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr());
 
             LogStream logStream = dockerClient.execStart(execCreate);
-            System.out.println("\n\nTest script:\n" + logStream.readFully());
+//            System.out.println("\n\nTest script:\n" + logStream.readFully());
         } catch (DockerException | InterruptedException ex) {
             throw new EnvironmentException("Could not execute command", ex);
         }
