@@ -20,31 +20,31 @@ package org.hawkular.apm.tests.dockerized;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Class for accessing ip addresses of given interface.
  *
  * @author Pavol Loffay
  */
-public class InterfaceIpAddress {
+public class InterfaceIpV4Address {
 
-    private static Map<String, Set<String>> interfaceIpAddressMap;
+    private static Map<String, List<String>> interfaceIpAddressMap;
 
 
-    private InterfaceIpAddress() {
+    private InterfaceIpV4Address() {
     }
 
     /**
      * @param intfc The interface name
      * @return
      */
-    public static Set<String> getIpAddresses(String intfc) {
+    public static List<String> getIpAddresses(String intfc) {
         if (interfaceIpAddressMap == null) {
             interfaceIpAddressMap = init();
         }
@@ -53,8 +53,8 @@ public class InterfaceIpAddress {
     }
 
 
-    private static Map<String, Set<String>> init() {
-        Map<String, Set<String>> interfacesIpAddressesMap = new HashMap<>();
+    private static Map<String, List<String>> init() {
+        Map<String, List<String>> interfacesIpAddressesMap = new HashMap<>();
 
         Enumeration networkInterfaces = null;
         try {
@@ -66,15 +66,17 @@ public class InterfaceIpAddress {
             NetworkInterface networkInterface = (NetworkInterface) networkInterfaces.nextElement();
             networkInterface.getDisplayName();
 
-            Set<String> ipAddresses = new HashSet<>();
+            List<String> ipAddresses = new ArrayList<>();
 
             Enumeration ee = networkInterface.getInetAddresses();
             while (ee.hasMoreElements()) {
                 InetAddress inetAddress = (InetAddress) ee.nextElement();
-                ipAddresses.add(inetAddress.getHostAddress());
+                if (inetAddress.isSiteLocalAddress()) {
+                    ipAddresses.add(inetAddress.getHostAddress());
+                }
             }
 
-            interfacesIpAddressesMap.put(networkInterface.getDisplayName(), Collections.unmodifiableSet(ipAddresses));
+            interfacesIpAddressesMap.put(networkInterface.getDisplayName(), Collections.unmodifiableList(ipAddresses));
         }
 
         return Collections.unmodifiableMap(interfacesIpAddressesMap);

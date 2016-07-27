@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
-import org.hawkular.apm.tests.server.ApmMockServer;
 import org.junit.Test;
 
 import com.spotify.docker.client.exceptions.DockerCertificateException;
@@ -44,29 +43,28 @@ public class InstrumentationTest {
         TestScenarioRunner caseRunner = new TestScenarioRunner(ProjectVersion.currentVersion(), 9080);
 
         int successfulScenarios = 0;
+        int failedScearios = 0;
 
         for (TestScenario testScenario: testScenarios) {
-            int successfulTests = caseRunner.run(testScenario);
+            if (testScenario.enabledTests() == 0) {
+                continue;
+            }
 
-            if (successfulTests == testScenario.enabledTests()) {
+            int successfulTestCases = caseRunner.run(testScenario);
+
+            if (successfulTestCases == testScenario.enabledTests()) {
                 System.out.println("\nScenario success: " + testScenario + "\n");
+                System.out.println("Number of successful test cases: " + successfulTestCases);
                 successfulScenarios++;
+            } else {
+                System.out.println("\nScenario failed: " + testScenario + "\n");
+                System.out.println("Number of failed test cases: " +
+                        (testScenario.enabledTests() - successfulTestCases));
+                failedScearios++;
             }
         }
 
-        System.out.println("\n\nSuccessful scenarios: " + successfulScenarios +
-                ", failed: " + (testScenarios.size() - successfulScenarios) + "\n\n");
-    }
-
-    @Test
-    public void a() throws InterruptedException {
-        ApmMockServer apmMockServer = new ApmMockServer();
-
-        apmMockServer.setHost("172.17.0.1");
-        apmMockServer.setPort(9080);
-        apmMockServer.setShutdownTimer(100000000);
-        apmMockServer.run();
-
-        Thread.sleep(1000000);
+        System.out.println("\n\nScenarios results:\nSuccessful: " + successfulScenarios +
+                ", Failed: " + failedScearios + "\n\n");
     }
 }

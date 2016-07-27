@@ -19,7 +19,6 @@ package org.hawkular.apm.tests.dockerized;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
@@ -66,7 +65,7 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
     }
 
     @Override
-    public String run(TestEnvironment testEnvironment, String action) {
+    public String run(TestEnvironment testEnvironment) {
         ContainerConfig.Builder containerConfigBuilder = ContainerConfig.builder()
                 .hostConfig(hostConfig)
                 // when using --net=host hostname should be null
@@ -91,18 +90,38 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
         return containerId;
     }
 
-    public void exec(String id, String command) {
+    /**
+     * Method executes script in docker container
+     *
+     * @param id The container id
+     * @param script script name, this script should be accessible in containers
+     *      {@link DockerImageExecutor#TEST_SCRIPT_DIRECTORY}
+     */
+    public void execScript(String id, String script) {
         String execCreate = null;
         try {
-            String[] commands = new String[]{"bash", "-c", "chmod +x " + TEST_SCRIPT_DIRECTORY + "/" + command,
-//                    "&&",
-                    TEST_SCRIPT_DIRECTORY + "/" + command};
+            String sOrigAbsolutePath = TEST_SCRIPT_DIRECTORY + "/" + script;
+            String sNewAbsolutePath = "/opt/hawkular-apm-test-local";
 
-            execCreate = dockerClient.execCreate(id, commands,
+            /**
+             * Due to permissions problem with mounted volume script is moved to some local directory in container
+             *
+             * 1. create new directory in container
+             * 2. move there script
+             * 3. chmod script
+             * 4. execute script
+             */
+            String[] commands2 = new String[]{"bash", "-c",
+                    "mkdir " + sNewAbsolutePath + " && " +
+                    "mv " + sOrigAbsolutePath + " " + sNewAbsolutePath + " && " +
+                    "chmod +x " + sNewAbsolutePath + "/" + script  + " && " +
+                    sNewAbsolutePath + "/" + script};
+
+            execCreate = dockerClient.execCreate(id, commands2,
                     DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr());
 
             LogStream logStream = dockerClient.execStart(execCreate);
-//            System.out.println(logStream.readFully());
+            System.out.println("\n\nTest script:\n" + logStream.readFully());
         } catch (DockerException | InterruptedException ex) {
             throw new EnvironmentException("Could not execute command", ex);
         }
@@ -112,9 +131,16 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
     public void clean(String id) {
         try {
             dockerClient.killContainer(id);
-//            dockerClient.removeContainer(id);
+            dockerClient.removeContainer(id);
         } catch (DockerException | InterruptedException ex) {
             throw new EnvironmentException("Could not remove container: " + id, ex);
+        }
+    }
+
+    @Override
+    public void close() {
+        if (dockerClient != null) {
+            dockerClient.close();
         }
     }
 
@@ -124,7 +150,7 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
          */
         String hostOsMountDir = System.getProperties().getProperty("buildDirectory");
 
-        Set<String> dockerInterfaceIpAddresses = InterfaceIpAddress.getIpAddresses("docker0");
+        List<String> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
         if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
             throw new EnvironmentException("Could not find any ip address of network interface docker0");
         }

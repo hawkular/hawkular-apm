@@ -18,6 +18,7 @@
 package org.hawkular.apm.tests.dockerized.exception;
 
 
+import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import org.hawkular.apm.tests.dockerized.model.TestCase;
 
 /**
@@ -28,6 +29,7 @@ import org.hawkular.apm.tests.dockerized.model.TestCase;
 public class TestFailException extends Exception {
 
     private TestCase testCase;
+    private JsonPathVerify jsonPathVerify;
 
     public TestFailException() {
     }
@@ -39,6 +41,12 @@ public class TestFailException extends Exception {
     public TestFailException(TestCase testCase) {
         super(testCase.toString());
         this.testCase = testCase;
+    }
+
+    public TestFailException(TestCase testCase, JsonPathVerify jsonPathVerify) {
+        super(testCase.toString());
+        this.testCase = testCase;
+        this.jsonPathVerify = jsonPathVerify;
     }
 
     public TestFailException(TestCase testCase, String message) {
@@ -58,5 +66,17 @@ public class TestFailException extends Exception {
 
     public TestCase getTestCase() {
         return testCase;
+    }
+
+    public JsonPathVerify getJsonPathVerify() {
+        return jsonPathVerify;
+    }
+
+    @Override
+    public String toString() {
+        return "TestFailException{" +
+                "testCase=" + testCase +
+                ", jsonPathVerify=" + jsonPathVerify +
+                '}';
     }
 }

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
@@ -65,10 +64,11 @@ public class TestScenarioRunner {
         this.apmVersion = apmVersion;
         this.apmServerPort = apmServerPort;
 
-        Set<String> dockerInterfaceIpAddresses = InterfaceIpAddress.getIpAddresses("docker0");
+        List<String> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
         if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
             throw new EnvironmentException("Could not find any ip address of network interface docker0");
         }
+
         String hostIpAddress = dockerInterfaceIpAddresses.iterator().next();
         this.apmServer = new ApmMockServer();
         this.apmServer.setPort(apmServerPort);
@@ -100,10 +100,12 @@ public class TestScenarioRunner {
                 runSingleTest(testScenario, test, testEnvironmentExecutor);
                 successfulTestCases++;
             } catch (TestFailException ex) {
-                System.out.println("Test case failed: " + ex.getTestCase());
+                System.out.println("Test case failed: " + ex.toString());
                 System.out.println(ex.getMessage());
                 ex.printStackTrace();
             }
+
+            testEnvironmentExecutor.close();
         }
 
         return successfulTestCases;
@@ -112,7 +114,7 @@ public class TestScenarioRunner {
     private void runSingleTest(TestScenario testScenario, TestCase testCase,
                                TestEnvironmentExecutor testEnvironmentExecutor) throws TestFailException {
 
-        System.out.println("Executing test: " + testCase);
+        System.out.println("Executing test case: " + testCase);
 
         String environmentId = null;
         try {
@@ -125,14 +127,14 @@ public class TestScenarioRunner {
             /**
              * Run a container and wait
              */
-            environmentId = testEnvironmentExecutor.run(testScenario.getEnvironment(), testCase.getScript());
+            environmentId = testEnvironmentExecutor.run(testScenario.getEnvironment());
             Thread.sleep(testScenario.getEnvironment().getInitWaitSeconds()*1000);
 
             /**
              * Execute test script and wait
              */
             DockerImageExecutor dockerImageExecutor = (DockerImageExecutor) testEnvironmentExecutor;
-            dockerImageExecutor.exec(environmentId, testCase.getScript());
+            dockerImageExecutor.execScript(environmentId, testCase.getScript());
 //            Integer returnValue = executeTestScript(testScenario, testCase);
 //            if (returnValue == null || !returnValue.equals(0)) {
 //                throw new TestFailException(testCase, "Script exit value != 0, -> " + returnValue);
@@ -168,7 +170,7 @@ public class TestScenarioRunner {
 
         for (JsonPathVerify jsonPathVerify: testCase.getVerify().getJsonPath()) {
             if (!JsonPathVerifier.verify(tracesJson, jsonPathVerify)) {
-                throw new TestFailException(testCase, "Failed to verify: " + jsonPathVerify.toString());
+                throw new TestFailException(testCase, jsonPathVerify);
             }
         }
     }

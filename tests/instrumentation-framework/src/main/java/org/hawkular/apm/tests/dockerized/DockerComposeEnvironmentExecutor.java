@@ -25,12 +25,17 @@ import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 public class DockerComposeEnvironmentExecutor implements TestEnvironmentExecutor {
 
     @Override
-    public String run(TestEnvironment testEnvironment, String run) {
-        return null;
+    public String run(TestEnvironment testEnvironment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void clean(String id) {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public void close() {
+        throw new UnsupportedOperationException();
     }
 }

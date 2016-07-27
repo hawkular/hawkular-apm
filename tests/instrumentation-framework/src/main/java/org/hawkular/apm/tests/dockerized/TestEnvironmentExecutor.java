@@ -24,7 +24,21 @@ import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
  */
 public interface TestEnvironmentExecutor {
 
-    String run(TestEnvironment testEnvironment, String action);
+    /**
+     * Run test environment
+     * @param testEnvironment test environment
+     * @return
+     */
+    String run(TestEnvironment testEnvironment);
 
+    /**
+     * Cleans and removes environment
+     * @param id Id of the environment
+     */
     void clean(String id);
+
+    /**
+     * Frees all resources for accessing/creating environment
+     */
+    void close();
 }
