@@ -10,7 +10,7 @@
       "description" : "Docker image JBoss Ticker Monster",
       "skip": false,
       "action": "action1.sh",
-      "afterScriptWaitSeconds": "10",
+      "afterActionWaitSeconds": "10",
       "verify": {
         "jsonPath": [
           {

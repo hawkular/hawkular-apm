@@ -39,7 +39,7 @@ public class TestCase {
     /**
      * Time in seconds to wait after executing {@link TestCase#action}
      */
-    private long afterScriptWaitSeconds;
+    private long afterActionWaitSeconds;
 
 
     public String getDescription() {
@@ -66,12 +66,12 @@ public class TestCase {
         this.verify = verify;
     }
 
-    public long getAfterScriptWaitSeconds() {
-        return afterScriptWaitSeconds;
+    public long getAfterActionWaitSeconds() {
+        return afterActionWaitSeconds;
     }
 
-    public void setAfterScriptWaitSeconds(long afterScriptWaitSeconds) {
-        this.afterScriptWaitSeconds = afterScriptWaitSeconds;
+    public void setAfterActionWaitSeconds(long afterActionWaitSeconds) {
+        this.afterActionWaitSeconds = afterActionWaitSeconds;
     }
 
     public boolean isSkip() {
@@ -98,7 +98,7 @@ public class TestCase {
                 ", action='" + action + '\'' +
                 ", scriptServiceName='" + scriptServiceName + '\'' +
                 ", verify=" + verify +
-                ", afterScriptWaitSeconds=" + afterScriptWaitSeconds +
+                ", afterActionWaitSeconds=" + afterActionWaitSeconds +
                 '}';
     }
 }

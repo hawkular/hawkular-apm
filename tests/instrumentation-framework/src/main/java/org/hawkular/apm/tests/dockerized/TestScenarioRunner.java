@@ -82,6 +82,10 @@ public class TestScenarioRunner {
      * @return number of successful test cases
      */
     public int run(TestScenario testScenario) {
+        if (testScenario.getEnvironment().getDockerCompose() != null &&
+                testScenario.getEnvironment().getImage() != null) {
+            throw new IllegalArgumentException("Ambiguous environment: defined docker image and docker-compose");
+        }
 
         System.out.println("Starting test scenario: " + testScenario);
         int successfulTestCases = 0;
@@ -144,7 +148,7 @@ public class TestScenarioRunner {
              * Execute test script and wait
              */
             testEnvironmentExecutor.execScript(environmentId, testCase.getScriptServiceName(), testCase.getAction());
-            Thread.sleep(testCase.getAfterScriptWaitSeconds()*1000);
+            Thread.sleep(testCase.getAfterActionWaitSeconds()*1000);
 
             /**
              * verify results

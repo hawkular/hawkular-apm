@@ -12,7 +12,7 @@
       "skip": false,
       "action": "action1.sh",
       "scriptServiceName": "ticket-monster",
-      "afterScriptWaitSeconds": "20",
+      "afterActionWaitSeconds": "20",
       "verify": {
         "jsonPath": [
           {
