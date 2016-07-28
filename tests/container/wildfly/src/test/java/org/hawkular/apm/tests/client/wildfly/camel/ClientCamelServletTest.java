@@ -108,7 +108,7 @@ public class ClientCamelServletTest extends ClientTestBase {
 
         List<BusinessTransaction> btxns = service.query(null, criteria);
          */
-        List<Trace> btxns = getTestTraceServer().getTraces();
+        List<Trace> btxns = getApmMockServer().getTraces();
 
         for (Trace trace : btxns) {
             ObjectMapper mapper = new ObjectMapper();

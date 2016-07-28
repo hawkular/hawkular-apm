@@ -138,13 +138,13 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         }
 
         // Check stored traces (including 1 for test client)
-        assertEquals(6, getTestTraceServer().getTraces().size());
+        assertEquals(6, getApmMockServer().getTraces().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;
         Consumer createOrder = null;
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

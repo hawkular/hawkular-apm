@@ -69,7 +69,7 @@ public class ClientCamelSplitterParallelTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        List<Trace> btxns=getTestTraceServer().getTraces();
+        List<Trace> btxns= getApmMockServer().getTraces();
 
         for (Trace trace : btxns) {
             ObjectMapper mapper = new ObjectMapper();

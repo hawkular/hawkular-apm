@@ -130,13 +130,13 @@ public class ClientCamelVmSedaTest extends ClientCamelTestBase {
         }
 
         // Check stored traces (including 1 for the test client)
-        assertEquals(4, getTestTraceServer().getTraces().size());
+        assertEquals(4, getApmMockServer().getTraces().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;
         Consumer createOrder = null;
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

@@ -216,7 +216,7 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -228,11 +228,11 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(2, getTestTraceServer().getTraces().size());
+        assertEquals(2, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(1).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -250,8 +250,8 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
                 testProducer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         List<Consumer> consumers = new ArrayList<Consumer>();
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Consumer.class, consumers);
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(1).getNodes(), Consumer.class, consumers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Consumer.class, consumers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(1).getNodes(), Consumer.class, consumers);
 
         assertEquals("Expecting 1 consumers", 1, consumers.size());
 

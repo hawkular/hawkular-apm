@@ -112,7 +112,7 @@ public class NettyHttpTest extends ClientTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -124,10 +124,10 @@ public class NettyHttpTest extends ClientTestBase {
         }
 
         // Check stored traces (including 1 for the test client)
-        assertEquals(1, getTestTraceServer().getTraces().size());
+        assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -165,7 +165,7 @@ public class NettyHttpTest extends ClientTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -177,10 +177,10 @@ public class NettyHttpTest extends ClientTestBase {
         }
 
         // Check stored traces (including 1 for the test client)
-        assertEquals(1, getTestTraceServer().getTraces().size());
+        assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -218,7 +218,7 @@ public class NettyHttpTest extends ClientTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -230,10 +230,10 @@ public class NettyHttpTest extends ClientTestBase {
         }
 
         // Check stored traces (including 1 for the test client)
-        assertEquals(1, getTestTraceServer().getTraces().size());
+        assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getTestTraceServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

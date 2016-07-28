@@ -65,7 +65,7 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
             fail("Failed to wait for btxns to store");
         }
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -77,9 +77,9 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
         }
 
         // Check stored traces (including 1 for the test client)
-        assertEquals(1, getTestTraceServer().getTraces().size());
+        assertEquals(1, getApmMockServer().getTraces().size());
 
-        Trace trace = getTestTraceServer().getTraces().get(0);
+        Trace trace = getApmMockServer().getTraces().get(0);
 
         List<Consumer> consumers = new ArrayList<Consumer>();
         NodeUtil.findNodes(trace.getNodes(), Consumer.class, consumers);

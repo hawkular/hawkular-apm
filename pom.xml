@@ -607,6 +607,7 @@
         <module>tests/server/wildfly</module>
         <module>tests/server/mock</module>
         <module>tests/tools/instrumenter</module>
+        <module>tests/instrumentation-framework</module>
       </modules>
     </profile>
     <profile>

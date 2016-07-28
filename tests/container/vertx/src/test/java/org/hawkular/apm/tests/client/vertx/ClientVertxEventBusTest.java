@@ -153,12 +153,12 @@ public class ClientVertxEventBusTest extends ClientTestBase {
 
     protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
-        assertEquals(2, getTestTraceServer().getTraces().size());
+        assertEquals(2, getApmMockServer().getTraces().size());
 
         Consumer consumer = null;
         Producer producer = null;
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
