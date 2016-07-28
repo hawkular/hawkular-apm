@@ -37,6 +37,13 @@ public interface TestEnvironmentExecutor {
      */
     void clean(String id);
 
+    /**
+     * Execute script in running environment
+     *
+     * @param id Id of the environment.
+     * @param serviceName Service name in running environment.
+     * @param script Script to execute
+     */
     void execScript(String id, String serviceName, String script);
 
     /**

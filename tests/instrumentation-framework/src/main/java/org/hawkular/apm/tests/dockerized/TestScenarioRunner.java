@@ -20,9 +20,8 @@ package org.hawkular.apm.tests.dockerized;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.dockerized.environment.DockerComposeExecutor;
 import org.hawkular.apm.tests.dockerized.environment.DockerImageExecutor;
 import org.hawkular.apm.tests.dockerized.environment.TestEnvironmentExecutor;
@@ -30,6 +29,7 @@ import org.hawkular.apm.tests.dockerized.exception.TestFailException;
 import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import org.hawkular.apm.tests.dockerized.model.TestCase;
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
+import org.hawkular.apm.tests.dockerized.model.Type;
 import org.hawkular.apm.tests.server.ApmMockServer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -37,6 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 
 /**
+ * Class for running test scenario.
+ *
  * @author Pavol Loffay
  */
 public class TestScenarioRunner {
@@ -131,7 +133,6 @@ public class TestScenarioRunner {
             apmServer.setHost("0.0.0.0");
             apmServer.setTraces(new ArrayList<>());
             apmServer.run();
-            Thread.sleep(2*1000);
 
             /**
              * Run a container and wait
@@ -142,13 +143,13 @@ public class TestScenarioRunner {
             /**
              * Execute test script and wait
              */
-            testEnvironmentExecutor.execScript(environmentId, testCase.getScriptServiceName(), testCase.getScript());
+            testEnvironmentExecutor.execScript(environmentId, testCase.getScriptServiceName(), testCase.getAction());
             Thread.sleep(testCase.getAfterScriptWaitSeconds()*1000);
 
             /**
              * verify results
              */
-            verifyResults(testCase, apmServer);
+            verifyResults(testScenario, testCase, apmServer);
         } catch (InterruptedException ex) {
             throw new TestFailException(testCase, ex);
         } finally {
@@ -162,23 +163,40 @@ public class TestScenarioRunner {
         }
     }
 
-    private void verifyResults(TestCase testCase, ApmMockServer apmServer) throws TestFailException {
+    private void verifyResults(TestScenario testScenario, TestCase testCase, ApmMockServer apmServer) throws
+            TestFailException {
 
-        List<Trace> traces = apmServer.getTraces();
-        System.out.println("Captured traces:\n" + traces);
+        Collection<?> objects = getCapturedData(testScenario.getEnvironment().getType(), apmServer);
 
-        String tracesJson;
+        System.out.println("Captured objects:\n" + objects);
+
+        String json;
         try {
-            tracesJson = serialize(traces);
+            json = serialize(objects);
         } catch (IOException e) {
             throw new TestFailException(testCase, "Failed to serialize traces", e);
         }
 
         for (JsonPathVerify jsonPathVerify: testCase.getVerify().getJsonPath()) {
-            if (!JsonPathVerifier.verify(tracesJson, jsonPathVerify)) {
+            if (!JsonPathVerifier.verify(json, jsonPathVerify)) {
                 throw new TestFailException(testCase, jsonPathVerify);
             }
         }
+    }
+
+    private Collection<?> getCapturedData(Type type, ApmMockServer apmMockServer) {
+        Collection<?> objects = null;
+
+        switch (type) {
+            case APM:
+                objects = apmMockServer.getTraces();
+                break;
+            case ZIPKIN:
+                objects = apmMockServer.getSpans();
+                break;
+        }
+
+        return objects;
     }
 
     private TestEnvironmentExecutor testEnvironmentExecutor(TestScenario testScenario) {

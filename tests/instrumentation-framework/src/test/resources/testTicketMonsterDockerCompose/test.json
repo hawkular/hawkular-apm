@@ -10,7 +10,7 @@
     {
       "description" : "Docker compose JBoss Ticker Monster",
       "skip": false,
-      "script": "action1.sh",
+      "action": "action1.sh",
       "scriptServiceName": "ticket-monster",
       "afterScriptWaitSeconds": "20",
       "verify": {

@@ -28,16 +28,16 @@ public class TestCase {
     private boolean skip;
     /**
      * Script which is run to execute some actions within example application inside docker container.
-     * This script can be shell, python... It only depends on what is installed on the host OS.
+     * This action can be shell, python... It only depends on what is installed on the host OS.
      */
-    private String script;
+    private String action;
     /**
-     * Service from docker-compose in which the script will be invoked
+     * Service from docker-compose in which the action will be invoked
      */
     private String scriptServiceName;
     private TestCaseVerify verify;
     /**
-     * Time in seconds to wait after executing {@link TestCase#script}
+     * Time in seconds to wait after executing {@link TestCase#action}
      */
     private long afterScriptWaitSeconds;
 
@@ -50,12 +50,12 @@ public class TestCase {
         this.description = description;
     }
 
-    public String getScript() {
-        return script;
+    public String getAction() {
+        return action;
     }
 
-    public void setScript(String script) {
-        this.script = script;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public TestCaseVerify getVerify() {
@@ -95,7 +95,7 @@ public class TestCase {
         return "TestCase{" +
                 "description='" + description + '\'' +
                 ", skip=" + skip +
-                ", script='" + script + '\'' +
+                ", action='" + action + '\'' +
                 ", scriptServiceName='" + scriptServiceName + '\'' +
                 ", verify=" + verify +
                 ", afterScriptWaitSeconds=" + afterScriptWaitSeconds +

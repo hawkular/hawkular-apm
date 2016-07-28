@@ -22,7 +22,7 @@ import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import com.jayway.jsonpath.JsonPath;
 
 /**
- * This class verifies json path expression against json string.
+ * This class verifies json path expression against give json.
  *
  * @author Pavol Loffay
  */

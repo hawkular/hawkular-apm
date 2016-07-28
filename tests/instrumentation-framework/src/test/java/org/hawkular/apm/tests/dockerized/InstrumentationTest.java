@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
-import org.hawkular.apm.tests.server.ApmMockServer;
 import org.junit.Test;
 
 import com.spotify.docker.client.exceptions.DockerCertificateException;
@@ -36,6 +35,7 @@ public class InstrumentationTest {
     @Test
     public void testScenarios() throws IOException, DockerCertificateException {
 
+        // path to test/resources
         String testResourcesPath = getClass().getClassLoader().getResource(".").getPath();
 
         TestScenariosFinder testScenariosFinder = new TestScenariosFinder(testResourcesPath);
@@ -44,7 +44,7 @@ public class InstrumentationTest {
         TestScenarioRunner caseRunner = new TestScenarioRunner(ProjectVersion.currentVersion(), 9080);
 
         int successfulScenarios = 0;
-        int failedScearios = 0;
+        int failedScenarios = 0;
 
         for (TestScenario testScenario: testScenarios) {
             if (testScenario.enabledTests() == 0) {
@@ -61,23 +61,11 @@ public class InstrumentationTest {
                 System.out.println("\nScenario failed: " + testScenario + "\n");
                 System.out.println("Number of failed test cases: " +
                         (testScenario.enabledTests() - successfulTestCases));
-                failedScearios++;
+                failedScenarios++;
             }
         }
 
         System.out.println("\n\nScenarios results:\nSuccessful: " + successfulScenarios +
-                ", Failed: " + failedScearios + "\n\n");
-    }
-
-//    @Test
-    public void test() throws InterruptedException {
-        ApmMockServer apmMockServer = new ApmMockServer();
-        apmMockServer.setPort(9080);
-        apmMockServer.setHost("0.0.0.0");
-
-        apmMockServer.setShutdownTimer(10000000);
-        apmMockServer.run();
-
-        Thread.sleep(1000* 1000);
+                ", Failed: " + failedScenarios + "\n\n");
     }
 }

@@ -34,12 +34,18 @@ public class DockerComposeExecutor implements TestEnvironmentExecutor {
 
     private final String apmBindAddress;
 
+
+    /**
+     * @param apmBindAddress Address of default gateway (host OS where is running APM server). This network
+     *                       is also used as default in docker-compose
+     */
     public DockerComposeExecutor(String apmBindAddress) {
         this.apmBindAddress = apmBindAddress;
     }
 
     /**
-     * Creates network which is used as default in docker-compose.yml
+     * Create network which is used as default in docker-compose.yml
+     * This should be run before {@link DockerComposeExecutor#run(TestEnvironment)}
      */
     public void createNetwork() {
         String[] command = new String[] {
@@ -63,10 +69,16 @@ public class DockerComposeExecutor implements TestEnvironmentExecutor {
 
     @Override
     public void clean(String dockerComposeDirectory) {
-        String[] command = new String[] {
-            "docker-compose", "-f", dockerComposeDirectory, "down"
-        };
-        runShellCommand(command);
+
+        String[] command;
+        try {
+            command = new String[]{
+                    "docker-compose", "-f", dockerComposeDirectory, "down"
+            };
+            runShellCommand(command);
+        } catch (EnvironmentException ex) {
+            System.out.println(ex);
+        }
 
         command = new String[] {
             "docker", "network", "rm", HAWKULAR_APM_NETWORK
@@ -74,6 +86,12 @@ public class DockerComposeExecutor implements TestEnvironmentExecutor {
         runShellCommand(command);
     }
 
+    /**
+     *
+     * @param id Id of the environment, Concretely path to docker-compose file.
+     * @param serviceName Service name in running environment. Service defined in docker-compose.
+     * @param script Script to execute
+     */
     @Override
     public void execScript(String id, String serviceName, String script) {
 

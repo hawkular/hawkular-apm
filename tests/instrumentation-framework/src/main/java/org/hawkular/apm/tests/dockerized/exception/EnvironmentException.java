@@ -18,6 +18,8 @@
 package org.hawkular.apm.tests.dockerized.exception;
 
 /**
+ * Exception thrown when an unrecoverable error occurs in test environment.
+ *
  * @author Pavol Loffay
  */
 public class EnvironmentException extends RuntimeException {

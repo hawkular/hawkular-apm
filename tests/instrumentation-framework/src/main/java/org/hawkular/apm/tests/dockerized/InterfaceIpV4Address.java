@@ -42,7 +42,7 @@ public class InterfaceIpV4Address {
 
     /**
      * @param intfc The interface name
-     * @return
+     * @return List of ipv4 addresses of given interface. Only site local addresses are returned.
      */
     public static List<String> getIpAddresses(String intfc) {
         if (interfaceIpAddressMap == null) {

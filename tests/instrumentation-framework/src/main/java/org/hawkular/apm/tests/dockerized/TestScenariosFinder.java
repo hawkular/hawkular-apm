@@ -54,6 +54,11 @@ public class TestScenariosFinder {
         this.objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Returns defined test scenarios.
+     * @return Defined test scenarios.
+     * @throws IOException
+     */
     public List<TestScenario> getScenarios() throws IOException {
 
         File folder = new File(directory);

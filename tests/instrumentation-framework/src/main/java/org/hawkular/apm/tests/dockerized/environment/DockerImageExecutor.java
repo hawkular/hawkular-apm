@@ -92,11 +92,10 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
     }
 
     /**
-     * Method executes script in docker container
      *
-     * @param id The container id
-     * @param script script name, this script should be accessible in containers
-     *      {@link DockerImageExecutor#TEST_SCRIPT_DIRECTORY}
+     * @param id Id of the environment. The container id.
+     * @param serviceName Service name in running environment. Can be null.
+     * @param script Script to execute
      */
     @Override
     public void execScript(String id, String serviceName, String script) {
