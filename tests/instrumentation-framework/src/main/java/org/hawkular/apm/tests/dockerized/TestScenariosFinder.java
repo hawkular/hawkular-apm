@@ -75,7 +75,7 @@ public class TestScenariosFinder {
                 testScenario.setScenarioDirectory(directory.getAbsolutePath());
                 if (testScenario.getEnvironment().getDockerCompose() != null) {
                     testScenario.getEnvironment().setDockerCompose(
-                            directory.getAbsolutePath() + "/" + testScenario.getEnvironment().getDockerCompose());
+                            directory.getAbsolutePath() + File.separator + testScenario.getEnvironment().getDockerCompose());
                 }
 
                 testScenarios.add(testScenario);

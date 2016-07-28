@@ -170,7 +170,7 @@ public class ApmMockServer {
     }
 
     public void run() {
-        log.info("************** STARTED TEST TRACE SERVICE: host=" + host + " port=" + port + " shutdownTimer="
+        log.info("************** STARTED TEST MOCK SERVICE: host=" + host + " port=" + port + " shutdownTimer="
                 + shutdown);
 
         if (shutdown != -1) {
@@ -186,7 +186,7 @@ public class ApmMockServer {
                         }
                     }
 
-                    log.severe("************** ABORTING TEST TRACE SERVICE");
+                    log.severe("************** ABORTING TEST MOCK SERVICE");
                     System.exit(1);
                 }
             });
@@ -293,7 +293,7 @@ public class ApmMockServer {
     }
 
     public void shutdown() {
-        log.info("************ TEST TRACE SERVICE EXITING");
+        log.info("************ TEST MOCK SERVICE EXITING");
         server.stop();
     }
 

@@ -23,7 +23,6 @@ import java.util.List;
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
 import org.junit.Test;
 
-import com.spotify.docker.client.exceptions.DockerCertificateException;
 
 /**
  * This test runs test scenarios defined in test/resources.
@@ -33,7 +32,7 @@ import com.spotify.docker.client.exceptions.DockerCertificateException;
 public class InstrumentationTest {
 
     @Test
-    public void testScenarios() throws IOException, DockerCertificateException {
+    public void testScenarios() throws IOException {
 
         // path to test/resources
         String testResourcesPath = getClass().getClassLoader().getResource(".").getPath();
@@ -41,7 +40,7 @@ public class InstrumentationTest {
         TestScenariosFinder testScenariosFinder = new TestScenariosFinder(testResourcesPath);
         List<TestScenario> testScenarios = testScenariosFinder.getScenarios();
 
-        TestScenarioRunner caseRunner = new TestScenarioRunner(ProjectVersion.currentVersion(), 9080);
+        TestScenarioRunner caseRunner = new TestScenarioRunner(9080);
 
         int successfulScenarios = 0;
         int failedScenarios = 0;

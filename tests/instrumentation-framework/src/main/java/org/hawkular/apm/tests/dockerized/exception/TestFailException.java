@@ -18,6 +18,8 @@
 package org.hawkular.apm.tests.dockerized.exception;
 
 
+import java.util.Collection;
+
 import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import org.hawkular.apm.tests.dockerized.model.TestCase;
 
@@ -29,7 +31,7 @@ import org.hawkular.apm.tests.dockerized.model.TestCase;
 public class TestFailException extends Exception {
 
     private TestCase testCase;
-    private JsonPathVerify jsonPathVerify;
+    private Collection<JsonPathVerify> jsonPathVerify;
 
     public TestFailException() {
     }
@@ -43,7 +45,7 @@ public class TestFailException extends Exception {
         this.testCase = testCase;
     }
 
-    public TestFailException(TestCase testCase, JsonPathVerify jsonPathVerify) {
+    public TestFailException(TestCase testCase, Collection<JsonPathVerify> jsonPathVerify) {
         super(testCase.toString());
         this.testCase = testCase;
         this.jsonPathVerify = jsonPathVerify;
@@ -68,7 +70,7 @@ public class TestFailException extends Exception {
         return testCase;
     }
 
-    public JsonPathVerify getJsonPathVerify() {
+    public Collection<JsonPathVerify> getJsonPathVerify() {
         return jsonPathVerify;
     }
 

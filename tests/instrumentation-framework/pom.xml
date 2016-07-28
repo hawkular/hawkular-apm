@@ -38,13 +38,24 @@
     </dependency>
 
     <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>docker-client</artifactId>
-      <version>${version.com.spotify.docker-client}</version>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java</artifactId>
+      <version>${version.com.github.docker-java.docker-java}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <version>${version.org.slf4j}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jcl</artifactId>
       <version>${version.org.slf4j}</version>
     </dependency>
 
@@ -70,7 +81,7 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
         <includes>
-          <include>docker-compose-env-variables.properties</include>
+          <include>apm-env-variables.properties</include>
         </includes>
         <targetPath>${project.build.directory}</targetPath>
       </resource>
@@ -127,6 +138,7 @@
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
             <HAWKULAR_APM_CONFIG>${project.build.directory}/apmconfig</HAWKULAR_APM_CONFIG>
+            <testSources>${project.build.testSourceDirectory}</testSources>
           </systemPropertyVariables>
         </configuration>
       </plugin>

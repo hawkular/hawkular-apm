@@ -34,7 +34,10 @@ import java.util.Map;
  */
 public class InterfaceIpV4Address {
 
-    private static Map<String, List<String>> interfaceIpAddressMap;
+    /**
+     * interface name -> ip addresses
+     */
+    private static Map<String, List<InetAddress>> interfaceIpAddressMap;
 
 
     private InterfaceIpV4Address() {
@@ -44,7 +47,7 @@ public class InterfaceIpV4Address {
      * @param intfc The interface name
      * @return List of ipv4 addresses of given interface. Only site local addresses are returned.
      */
-    public static List<String> getIpAddresses(String intfc) {
+    public static List<InetAddress> getIpAddresses(String intfc) {
         if (interfaceIpAddressMap == null) {
             interfaceIpAddressMap = init();
         }
@@ -52,9 +55,8 @@ public class InterfaceIpV4Address {
         return interfaceIpAddressMap.get(intfc);
     }
 
-
-    private static Map<String, List<String>> init() {
-        Map<String, List<String>> interfacesIpAddressesMap = new HashMap<>();
+    private static Map<String, List<InetAddress>> init() {
+        Map<String, List<InetAddress>> interfacesIpAddressesMap = new HashMap<>();
 
         Enumeration networkInterfaces = null;
         try {
@@ -66,13 +68,13 @@ public class InterfaceIpV4Address {
             NetworkInterface networkInterface = (NetworkInterface) networkInterfaces.nextElement();
             networkInterface.getDisplayName();
 
-            List<String> ipAddresses = new ArrayList<>();
+            List<InetAddress> ipAddresses = new ArrayList<>();
 
             Enumeration ee = networkInterface.getInetAddresses();
             while (ee.hasMoreElements()) {
                 InetAddress inetAddress = (InetAddress) ee.nextElement();
                 if (inetAddress.isSiteLocalAddress()) {
-                    ipAddresses.add(inetAddress.getHostAddress());
+                    ipAddresses.add(inetAddress);
                 }
             }
 

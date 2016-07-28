@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.tests.dockerized.environment.DockerComposeExecutor;
 import org.hawkular.apm.tests.dockerized.environment.DockerImageExecutor;
@@ -34,7 +36,6 @@ import org.hawkular.apm.tests.server.ApmMockServer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
 
 /**
  * Class for running test scenario.
@@ -43,36 +44,22 @@ import com.spotify.docker.client.exceptions.DockerCertificateException;
  */
 public class TestScenarioRunner {
 
-    /**
-     * Version of APM, needed for ENV variable inside docker image
-     */
-    private final String apmVersion;
-    /**
-     * Port at which will be listening APM server
-     */
-    private final int apmServerPort;
+    private static final Logger log = Logger.getLogger(TestScenarioRunner.class.getName());
 
     /**
      * Mocked Hawkular APM server to collect information captured by agents.
      */
-//    private final ApmMockServer apmServer;
     private final ObjectMapper objectMapper;
 
-    private final ApmMockServer apmServer;
+    private int apmServerPort;
+
 
     /**
-     * @param apmVersion - version of the Hawkular APM (usually current version)
      * @param apmServerPort - port at which Hawkular APM server will be started
-     * @throws DockerCertificateException
      */
-    public TestScenarioRunner(String apmVersion, int apmServerPort) throws DockerCertificateException {
-        this.apmVersion = apmVersion;
+    public TestScenarioRunner(int apmServerPort) {
         this.apmServerPort = apmServerPort;
-
         this.objectMapper = new ObjectMapper();
-        apmServer = new ApmMockServer();
-        apmServer.setPort(apmServerPort);
-        apmServer.setShutdownTimer(60*60*1000);
     }
 
     /**
@@ -84,10 +71,11 @@ public class TestScenarioRunner {
     public int run(TestScenario testScenario) {
         if (testScenario.getEnvironment().getDockerCompose() != null &&
                 testScenario.getEnvironment().getImage() != null) {
-            throw new IllegalArgumentException("Ambiguous environment: defined docker image and docker-compose");
+            throw new IllegalArgumentException("Ambiguous environment: defined docker image and docker-compose" +
+                    ", but we expect only one of them to be defined!");
         }
 
-        System.out.println("Starting test scenario: " + testScenario);
+        log.info(String.format("Starting test scenario: %s", testScenario));
         int successfulTestCases = 0;
 
         for (TestCase test: testScenario.getTests()) {
@@ -101,8 +89,7 @@ public class TestScenarioRunner {
                 runTestCase(testScenario, test, testEnvironmentExecutor);
                 successfulTestCases++;
             } catch (TestFailException ex) {
-                System.out.println("Test case failed: " + ex.toString());
-                System.out.println(ex.getMessage());
+                log.severe(String.format("Test case failed: %s\n%s", ex.toString(), ex.getMessage()));
                 ex.printStackTrace();
             }
 
@@ -123,9 +110,14 @@ public class TestScenarioRunner {
     private void runTestCase(TestScenario testScenario, TestCase testCase,
                              TestEnvironmentExecutor testEnvironmentExecutor) throws TestFailException {
 
-        System.out.println("Executing test case: " + testCase);
+        log.info(String.format("Executing test case: %s", testCase));
 
         String environmentId = null;
+        ApmMockServer apmServer = new ApmMockServer();
+        apmServer.setHost("0.0.0.0");
+        apmServer.setPort(apmServerPort);
+        // disable shut down timer
+        apmServer.setShutdownTimer(60*60*1000);
         try {
             if (testEnvironmentExecutor instanceof DockerComposeExecutor) {
                 ((DockerComposeExecutor) testEnvironmentExecutor).createNetwork();
@@ -134,8 +126,6 @@ public class TestScenarioRunner {
             /**
              * Start APM server
              */
-            apmServer.setHost("0.0.0.0");
-            apmServer.setTraces(new ArrayList<>());
             apmServer.run();
 
             /**
@@ -153,39 +143,48 @@ public class TestScenarioRunner {
             /**
              * verify results
              */
-            verifyResults(testScenario, testCase, apmServer);
+            Collection<JsonPathVerify> jsonPathVerifies = verifyResults(testScenario, testCase, apmServer);
+            if (!jsonPathVerifies.isEmpty()) {
+                throw new TestFailException(testCase, jsonPathVerifies);
+            }
         } catch (InterruptedException ex) {
+            log.severe("Interruption exception");
+            log.severe(ex.toString());
             throw new TestFailException(testCase, ex);
         } finally {
-            if (apmServer != null) {
-                apmServer.shutdown();
-            }
-
             if (environmentId != null) {
                 testEnvironmentExecutor.clean(environmentId);
+            }
+
+            if (apmServer != null) {
+                apmServer.shutdown();
             }
         }
     }
 
-    private void verifyResults(TestScenario testScenario, TestCase testCase, ApmMockServer apmServer) throws
-            TestFailException {
+    private List<JsonPathVerify> verifyResults(TestScenario testScenario, TestCase testCase, ApmMockServer apmServer) {
 
         Collection<?> objects = getCapturedData(testScenario.getEnvironment().getType(), apmServer);
 
-        System.out.println("Captured objects:\n" + objects);
+        log.info(String.format("Captured objects:\n%s", objects));
 
         String json;
         try {
             json = serialize(objects);
-        } catch (IOException e) {
-            throw new TestFailException(testCase, "Failed to serialize traces", e);
+        } catch (IOException ex) {
+            log.severe(String.format("Failed to serialize traces: %s", objects));
+            throw new RuntimeException("Failed to serialize traces = " + objects, ex);
         }
+
+        List<JsonPathVerify> failedJsonPathVerify = new ArrayList<>();
 
         for (JsonPathVerify jsonPathVerify: testCase.getVerify().getJsonPath()) {
             if (!JsonPathVerifier.verify(json, jsonPathVerify)) {
-                throw new TestFailException(testCase, jsonPathVerify);
+                failedJsonPathVerify.add(jsonPathVerify);
             }
         }
+
+        return failedJsonPathVerify;
     }
 
     private Collection<?> getCapturedData(Type type, ApmMockServer apmMockServer) {
@@ -207,8 +206,7 @@ public class TestScenarioRunner {
 
         TestEnvironmentExecutor testEnvironmentExecutor;
         if (testScenario.getEnvironment().getImage() != null) {
-            testEnvironmentExecutor = new DockerImageExecutor(apmVersion, apmServerPort,
-                    testScenario.getScenarioDirectory());
+            testEnvironmentExecutor = new DockerImageExecutor(testScenario.getScenarioDirectory());
         } else {
             testEnvironmentExecutor = new DockerComposeExecutor(testScenario.getEnvironment().getApmAddress());
         }

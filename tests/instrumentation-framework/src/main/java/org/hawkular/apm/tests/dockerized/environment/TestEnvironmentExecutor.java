@@ -17,6 +17,8 @@
 
 package org.hawkular.apm.tests.dockerized.environment;
 
+import java.util.UUID;
+
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 
 /**
@@ -50,4 +52,43 @@ public interface TestEnvironmentExecutor {
      * Frees all resources for accessing/creating environment
      */
     void close();
+
+    /**
+     * Prepares command which will be executed inside docker container. This should be used for executing
+     * action script inside docker container. Due to permissions problems with mounted volumes script is
+     * moved to another directory.
+     * @param script The script name.
+     * @return command.
+     */
+    default String scriptExecCommand(String script) {
+        String sNewAbsolutePath = "/opt/hawkular-apm-test-local" + UUID.randomUUID();
+
+        return  "mkdir " + sNewAbsolutePath + " && " +
+                "cp " + Constants.HAWKULAR_APM_TEST_DIRECTORY + "/" + script + " " + sNewAbsolutePath + " && " +
+                "chmod +x " + sNewAbsolutePath + "/" + script  + " && " +
+                sNewAbsolutePath + "/" + script;
+    }
+
+    final class Constants {
+
+        protected static final String HOST_ADDED_TO_ETC_HOSTS = "hawkular-apm";
+
+        /**
+         * Directory inside environment with agent jar
+         */
+        public static final String HAWKULAR_APM_AGENT_DIRECTORY;
+        /**
+         * Directory inside test environment where are located test scenario files (e.g. action script)
+         * This directory is mounted to docker container, therefore there could be permission issues in host OS.
+         */
+        public static final String HAWKULAR_APM_TEST_DIRECTORY;
+
+        static {
+            String property = System.getProperties().getProperty("hawkular-apm.test.environment.agent.dir");
+            HAWKULAR_APM_AGENT_DIRECTORY = property != null ? property : "/opt/hawkular-apm-agent";
+
+            property = System.getProperties().getProperty("hawkular-apm.test.environment.test.dir");
+            HAWKULAR_APM_TEST_DIRECTORY = property != null ? property : "/opt/hawkular-apm-test";
+        }
+    }
 }

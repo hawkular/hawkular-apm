@@ -20,13 +20,11 @@ version: "2"
 services:
   ticket-monster:
     image: pavolloffay/jboss-ticket-monster
-    ports:
-      - "8080:8080"
 
 # Hawkular APM specific
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    env_file: ../../docker-compose-env-variables.properties
+    env_file: ../../apm-env-variables.properties
     volumes:
       - .:/opt/hawkular-apm-test
       - ../..:/opt/hawkular-apm-agent

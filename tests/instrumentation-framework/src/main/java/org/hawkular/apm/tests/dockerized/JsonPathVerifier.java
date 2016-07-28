@@ -28,6 +28,13 @@ import com.jayway.jsonpath.JsonPath;
  */
 public class JsonPathVerifier {
 
+    /**
+     * Verifies that in the input json there is expected element defined as json path.
+     *
+     * @param json Json.
+     * @param jsonPathVerify Json path expression and expected result.
+     * @return
+     */
     public static boolean verify(String json, JsonPathVerify jsonPathVerify) {
 
         Object pathResultObject = JsonPath.read(json, jsonPathVerify.getPath());

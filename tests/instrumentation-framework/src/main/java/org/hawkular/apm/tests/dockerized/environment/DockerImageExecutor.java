@@ -17,123 +17,131 @@
 
 package org.hawkular.apm.tests.dockerized.environment;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.tests.dockerized.InterfaceIpV4Address;
 import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 import org.hawkular.apm.tests.dockerized.model.Type;
 
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.HostConfig;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.AccessMode;
+import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.Volume;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.github.dockerjava.core.command.PullImageResultCallback;
 
 /**
  * @author Pavol Loffay
  */
 public class DockerImageExecutor implements TestEnvironmentExecutor {
-    private static final String APM_AGENT_DIRECTORY = "/opt/hawkular-apm-agent";
-    private static final String TEST_SCRIPT_DIRECTORY = "/opt/hawkular-apm-test";
+    private static final Logger log = Logger.getLogger(DockerImageExecutor.class.getName());
 
-    private String apmVersion;
-    private int apmServerPort;
     private String scenarioDirectory;
 
     /**
      * Docker config
      */
     private final DockerClient dockerClient;
-    private final HostConfig hostConfig;
 
 
-    public DockerImageExecutor(String apmVersion, int apmServerPort, String scenarioDirectory) {
-        this.apmVersion = apmVersion;
-        this.apmServerPort = apmServerPort;
+    public DockerImageExecutor(String scenarioDirectory) {
         this.scenarioDirectory = scenarioDirectory;
-
-        try {
-            this.dockerClient = DefaultDockerClient.fromEnv().build();
-        } catch (DockerCertificateException ex) {
-            throw new EnvironmentException();
-        }
-
-        this.hostConfig = hostConfig();
+        this.dockerClient = DockerClientBuilder.getInstance().build();
     }
 
     @Override
     public String run(TestEnvironment testEnvironment) {
-        ContainerConfig.Builder containerConfigBuilder = ContainerConfig.builder()
-                .hostConfig(hostConfig)
-                // when using --net=host hostname should be null
-//                .hostname(null)
-                .image(testEnvironment.getImage());
+        String hostOsMountDir = System.getProperties().getProperty("buildDirectory");
+
+        List<InetAddress> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
+        if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
+            throw new EnvironmentException("Could not find any ip address of network interface docker0");
+        }
+        String hostIpAddress = dockerInterfaceIpAddresses.iterator().next().getHostAddress();
+
+        CreateContainerCmd containerBuilder = dockerClient.createContainerCmd(testEnvironment.getImage())
+                .withBinds(new Bind(hostOsMountDir, new Volume(Constants.HAWKULAR_APM_AGENT_DIRECTORY), AccessMode.ro),
+                    new Bind(scenarioDirectory, new Volume(Constants.HAWKULAR_APM_TEST_DIRECTORY)))
+                .withExtraHosts(Constants.HOST_ADDED_TO_ETC_HOSTS + ":" + hostIpAddress);
 
         if (testEnvironment.getType() == Type.APM) {
-            containerConfigBuilder.env(instrumentationEnvVariables(APM_AGENT_DIRECTORY));
+            containerBuilder.withEnv(apmEnvVariables());
         }
 
-        ContainerConfig containerConfig = containerConfigBuilder.build();
+        log.info("Pulling image...");
+        dockerClient.pullImageCmd(testEnvironment.getImage()).exec(new PullImageResultCallback()).awaitSuccess();
+        CreateContainerResponse containerResponse = containerBuilder.exec();
+        log.info(String.format("Starting docker container: %s", containerResponse));
 
-        String containerId = null;
         try {
-            containerId = dockerClient.createContainer(containerConfig).id();
-            dockerClient.startContainer(containerId);
-
-        } catch (DockerException | InterruptedException ex) {
+            dockerClient.startContainerCmd(containerResponse.getId()).exec();
+        } catch (DockerException ex) {
+            log.severe(String.format("Could not create or start docker container: %s", containerResponse));
             throw new EnvironmentException("Could not create or start docker container.", ex);
         }
 
-        return containerId;
+        return containerResponse.getId();
     }
 
     /**
-     *
      * @param id Id of the environment. The container id.
      * @param serviceName Service name in running environment. Can be null.
      * @param script Script to execute
      */
     @Override
     public void execScript(String id, String serviceName, String script) {
-        String execCreate = null;
-        try {
-            String sOrigAbsolutePath = TEST_SCRIPT_DIRECTORY + "/" + script;
-            String sNewAbsolutePath = "/opt/hawkular-apm-test-local";
+        log.info(String.format("Executing script: %s, in container: %s", script, id));
 
+        String[] commands = null;
+        try {
             /**
-             * Due to permissions problem with mounted volume script is moved to some local directory in container
+             * Due to permissions problems with mounted volume script is moved to some local directory in container
              *
              * 1. create new directory in container
              * 2. move there script
              * 3. chmod script
              * 4. execute script
              */
-            String[] commands = new String[]{"bash", "-c",
-                    "mkdir " + sNewAbsolutePath + " && " +
-                    "cp " + sOrigAbsolutePath + " " + sNewAbsolutePath + " && " +
-                    "chmod +x " + sNewAbsolutePath + "/" + script  + " && " +
-                    sNewAbsolutePath + "/" + script};
+            commands = new String[] {
+                "bash", "-c",
+                scriptExecCommand(script)
+            };
 
-            execCreate = dockerClient.execCreate(id, commands,
-                    DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr());
+            ExecCreateCmdResponse exec = dockerClient.execCreateCmd(id)
+                    .withCmd(commands)
+                    .withAttachStdout(true)
+                    .withAttachStderr(true)
+                    .exec();
 
-            LogStream logStream = dockerClient.execStart(execCreate);
-//            System.out.println("\n\nTest script:\n" + logStream.readFully());
+            dockerClient.execStartCmd(exec.getId())
+                    .exec(new ExecStartResultCallback(System.out, System.err))
+                    .awaitCompletion();
         } catch (DockerException | InterruptedException ex) {
-            throw new EnvironmentException("Could not execute command", ex);
+            log.severe(String.format("Could not execute command: %s", Arrays.toString(commands)));
+            throw new EnvironmentException("Could not execute command " + Arrays.toString(commands), ex);
         }
     }
 
     @Override
     public void clean(String id) {
+        log.info(String.format("Cleaning environment %s", id));
         try {
-            dockerClient.killContainer(id);
-            dockerClient.removeContainer(id);
-        } catch (DockerException | InterruptedException ex) {
+            dockerClient.removeContainerCmd(id).withForce(true).exec();
+        } catch (DockerException ex) {
+            log.severe(String.format("Could not remove container: %s", id));
             throw new EnvironmentException("Could not remove container: " + id, ex);
         }
     }
@@ -141,58 +149,37 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
     @Override
     public void close() {
         if (dockerClient != null) {
-            dockerClient.close();
+            try {
+                dockerClient.close();
+            } catch (IOException ex) {
+                log.severe("Could not close docker client");
+                throw new EnvironmentException("Could not close docker client", ex);
+            }
         }
     }
 
-    private HostConfig hostConfig() {
-        /**
-         * Target directory is mounted to docker in order to access agent's jar
-         */
-        String hostOsMountDir = System.getProperties().getProperty("buildDirectory");
+    private List<String> apmEnvVariables() {
+        Properties properties = new Properties();
+        String filename = "apm-env-variables.properties";
+        InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
 
-        List<String> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
-        if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
-            throw new EnvironmentException("Could not find any ip address of network interface docker0");
+        if(is == null) {
+            throw new EnvironmentException("Could not load env variables property file: " + filename);
         }
 
-        String hostIpAddress = dockerInterfaceIpAddresses.iterator().next();
+        try {
+            properties.load(is);
+        } catch (IOException ex) {
+            log.severe(String.format("Could not open properties file: %s", filename));
+            throw new EnvironmentException("Could not load env variables property file: " + filename, ex);
+        }
 
-        return HostConfig.builder()
-//                .networkMode("host")
-                .extraHosts("hawkular-apm:" + hostIpAddress)
-                .appendBinds(
-                    HostConfig.Bind
-                        .from(hostOsMountDir)
-                        .to(APM_AGENT_DIRECTORY)
-                        .readOnly(true)
-                        .build(),
-                    HostConfig.Bind
-                        .from(scenarioDirectory)
-                        .to(TEST_SCRIPT_DIRECTORY)
-                        .build())
-                .build();
-    }
-
-    private List<String> instrumentationEnvVariables(String agentDirectory) {
         List<String> envVariables = new ArrayList<>();
+        for(String key : properties.stringPropertyNames()) {
+            String value = properties.getProperty(key);
 
-        String agentName = "hawkular-apm-agent.jar";
-        String agentLocation = agentDirectory + "/" + agentName;
-
-        envVariables.add("APM_VERSION=" + apmVersion);
-        envVariables.add("APM_AGENT=" + agentLocation);
-
-        envVariables.add("HAWKULAR_APM_LOG_LEVEL=FINEST");
-        envVariables.add("HAWKULAR_APM_CONFIG=" + agentDirectory + "/apmconfig");
-
-        envVariables.add("HAWKULAR_APM_URI=http://hawkular-apm:" + apmServerPort + "/");
-        envVariables.add("HAWKULAR_APM_USERNAME=jdoe");
-        envVariables.add("HAWKULAR_APM_PASSWORD=password");
-
-        envVariables.add("JAVA_OPTS=-javaagent:" + agentLocation + "=boot:" + agentLocation +
-                " -Djboss.modules.system.pkgs=" +
-                "org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api");
+            envVariables.add(key + "=" + value);
+        }
 
         return envVariables;
     }
