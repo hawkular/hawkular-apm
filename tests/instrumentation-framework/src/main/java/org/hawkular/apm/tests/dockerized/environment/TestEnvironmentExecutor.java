@@ -53,6 +53,9 @@ public interface TestEnvironmentExecutor {
      */
     void close();
 
+    /**
+     * Creates network for the environment.
+     */
     void createNetwork();
 
     /**

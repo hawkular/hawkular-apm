@@ -49,11 +49,16 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
 
     private boolean userDefinedNetwork;
 
+
     private DockerImageExecutor(String scenarioDirectory, String apmBindAddress, Boolean userDefinedNetwork) {
         super(scenarioDirectory, apmBindAddress);
         this.userDefinedNetwork = userDefinedNetwork;
     }
 
+    /**
+     * @param scenarioDirectory Absolute path of test scenario directory
+     * @param apmBindAddress Address of default gateway, if null default docker network will be used (docker0 interface)
+     */
     public static DockerImageExecutor getInstance(String scenarioDirectory, String apmBindAddress) {
         boolean userDefinedAddress = apmBindAddress != null;
         if (apmBindAddress == null) {
@@ -78,6 +83,9 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
                 .withExtraHosts(Constants.HOST_ADDED_TO_ETC_HOSTS + ":" + apmBindAddress);
 
         if (userDefinedNetwork) {
+            if (network == null) {
+                throw new IllegalStateException("Create network before running environment");
+            }
             containerBuilder.withNetworkMode(network.getName());
         }
 

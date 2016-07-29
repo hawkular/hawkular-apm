@@ -43,7 +43,7 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
     }
 
     /**
-     * @param scenarioDirectory Absolute path of directory
+     * @param scenarioDirectory Absolute path of test scenario directory
      * @param apmBindAddress Address of default gateway (host OS where is running APM server). This network
      *                       is also used as default in docker-compose
      */
