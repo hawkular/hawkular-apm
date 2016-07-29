@@ -65,6 +65,16 @@ public class TestScenarioRunner {
     /**
      * Run a test scenario
      *
+     * Life cycle of the test case:
+     * 1. Create network (must for docker-compose, optional for single docker image)
+     * 2. Start apm server
+     * 3. Start environment (which includes start of a test app)
+     * 4. Wait for app start
+     * 5. Run action in the app which is executed inside docker container.
+     * 6. Wait some time that the action is processed and some data propagated to apm server
+     * 7. Verify results.
+     * 8. Shut down test environment and apm server.
+     *
      * @param testScenario
      * @return number of successful test cases
      */

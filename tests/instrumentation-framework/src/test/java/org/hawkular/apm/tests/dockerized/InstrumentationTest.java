@@ -50,7 +50,13 @@ public class InstrumentationTest {
                 continue;
             }
 
-            int successfulTestCases = caseRunner.run(testScenario);
+            int successfulTestCases = 0;
+            try {
+                successfulTestCases = caseRunner.run(testScenario);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+                System.out.print("Exception while running test scenario: " + testScenario);
+            }
 
             if (successfulTestCases == testScenario.enabledTests()) {
                 System.out.println("\nScenario success: " + testScenario + "\n");

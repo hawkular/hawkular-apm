@@ -64,13 +64,11 @@ public abstract class AbstractDockerBasedEnvironment implements TestEnvironmentE
             }
         }
 
-        if (dockerClient != null) {
-            try {
-                dockerClient.close();
-            } catch (IOException ex) {
-                log.severe("Could not close docker client");
-                throw new EnvironmentException("Could not close docker client", ex);
-            }
+        try {
+            dockerClient.close();
+        } catch (IOException ex) {
+            log.severe("Could not close docker client");
+            throw new EnvironmentException("Could not close docker client", ex);
         }
     }
 

@@ -40,6 +40,11 @@ public interface TestEnvironmentExecutor {
     void clean(String id);
 
     /**
+     * Frees all resources for accessing/creating environment
+     */
+    void close();
+
+    /**
      * Execute script in running environment
      *
      * @param id Id of the environment.
@@ -47,11 +52,6 @@ public interface TestEnvironmentExecutor {
      * @param script Script to execute
      */
     void execScript(String id, String serviceName, String script);
-
-    /**
-     * Frees all resources for accessing/creating environment
-     */
-    void close();
 
     /**
      * Creates network for the environment.
