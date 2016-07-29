@@ -73,10 +73,6 @@ public class TestScenariosFinder {
                 String scenarioJson = readFile(scenarioFile);
                 TestScenario testScenario = deserialize(scenarioJson, TestScenario.class);
                 testScenario.setScenarioDirectory(directory.getAbsolutePath());
-                if (testScenario.getEnvironment().getDockerCompose() != null) {
-                    testScenario.getEnvironment().setDockerCompose(
-                            directory.getAbsolutePath() + File.separator + testScenario.getEnvironment().getDockerCompose());
-                }
 
                 testScenarios.add(testScenario);
             }

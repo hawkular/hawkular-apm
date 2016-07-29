@@ -31,7 +31,6 @@ import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 import org.hawkular.apm.tests.dockerized.model.Type;
 
-import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
@@ -39,43 +38,48 @@ import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.AccessMode;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Volume;
-import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 
 /**
  * @author Pavol Loffay
  */
-public class DockerImageExecutor implements TestEnvironmentExecutor {
+public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
     private static final Logger log = Logger.getLogger(DockerImageExecutor.class.getName());
 
-    private String scenarioDirectory;
+    private boolean userDefinedNetwork;
 
-    /**
-     * Docker config
-     */
-    private final DockerClient dockerClient;
+    private DockerImageExecutor(String scenarioDirectory, String apmBindAddress, Boolean userDefinedNetwork) {
+        super(scenarioDirectory, apmBindAddress);
+        this.userDefinedNetwork = userDefinedNetwork;
+    }
 
+    public static DockerImageExecutor getInstance(String scenarioDirectory, String apmBindAddress) {
+        boolean userDefinedAddress = apmBindAddress != null;
+        if (apmBindAddress == null) {
+            List<InetAddress> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
+            if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
+                throw new EnvironmentException("Could not find any ip address of network interface docker0");
+            }
+            apmBindAddress = dockerInterfaceIpAddresses.iterator().next().getHostAddress();
+        }
 
-    public DockerImageExecutor(String scenarioDirectory) {
-        this.scenarioDirectory = scenarioDirectory;
-        this.dockerClient = DockerClientBuilder.getInstance().build();
+        return new DockerImageExecutor(scenarioDirectory, apmBindAddress, userDefinedAddress);
     }
 
     @Override
     public String run(TestEnvironment testEnvironment) {
         String hostOsMountDir = System.getProperties().getProperty("buildDirectory");
 
-        List<InetAddress> dockerInterfaceIpAddresses = InterfaceIpV4Address.getIpAddresses("docker0");
-        if (dockerInterfaceIpAddresses == null || dockerInterfaceIpAddresses.isEmpty()) {
-            throw new EnvironmentException("Could not find any ip address of network interface docker0");
-        }
-        String hostIpAddress = dockerInterfaceIpAddresses.iterator().next().getHostAddress();
 
         CreateContainerCmd containerBuilder = dockerClient.createContainerCmd(testEnvironment.getImage())
                 .withBinds(new Bind(hostOsMountDir, new Volume(Constants.HAWKULAR_APM_AGENT_DIRECTORY), AccessMode.ro),
                     new Bind(scenarioDirectory, new Volume(Constants.HAWKULAR_APM_TEST_DIRECTORY)))
-                .withExtraHosts(Constants.HOST_ADDED_TO_ETC_HOSTS + ":" + hostIpAddress);
+                .withExtraHosts(Constants.HOST_ADDED_TO_ETC_HOSTS + ":" + apmBindAddress);
+
+        if (userDefinedNetwork) {
+            containerBuilder.withNetworkMode(network.getName());
+        }
 
         if (testEnvironment.getType() == Type.APM) {
             containerBuilder.withEnv(apmEnvVariables());
@@ -143,18 +147,6 @@ public class DockerImageExecutor implements TestEnvironmentExecutor {
         } catch (DockerException ex) {
             log.severe(String.format("Could not remove container: %s", id));
             throw new EnvironmentException("Could not remove container: " + id, ex);
-        }
-    }
-
-    @Override
-    public void close() {
-        if (dockerClient != null) {
-            try {
-                dockerClient.close();
-            } catch (IOException ex) {
-                log.severe("Could not close docker client");
-                throw new EnvironmentException("Could not close docker client", ex);
-            }
         }
     }
 

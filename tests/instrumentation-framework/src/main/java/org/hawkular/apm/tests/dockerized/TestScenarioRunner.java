@@ -83,7 +83,7 @@ public class TestScenarioRunner {
                 continue;
             }
 
-            TestEnvironmentExecutor testEnvironmentExecutor = testEnvironmentExecutor(testScenario);
+            TestEnvironmentExecutor testEnvironmentExecutor = createTestEnvironmentExecutor(testScenario);
 
             try {
                 runTestCase(testScenario, test, testEnvironmentExecutor);
@@ -119,8 +119,12 @@ public class TestScenarioRunner {
         // disable shut down timer
         apmServer.setShutdownTimer(60*60*1000);
         try {
-            if (testEnvironmentExecutor instanceof DockerComposeExecutor) {
-                ((DockerComposeExecutor) testEnvironmentExecutor).createNetwork();
+
+            /**
+             * Create network if necessary
+             */
+            if (testScenario.getEnvironment().getApmAddress() != null) {
+                testEnvironmentExecutor.createNetwork();
             }
 
             /**
@@ -202,13 +206,15 @@ public class TestScenarioRunner {
         return objects;
     }
 
-    private TestEnvironmentExecutor testEnvironmentExecutor(TestScenario testScenario) {
+    private TestEnvironmentExecutor createTestEnvironmentExecutor(TestScenario testScenario) {
 
         TestEnvironmentExecutor testEnvironmentExecutor;
         if (testScenario.getEnvironment().getImage() != null) {
-            testEnvironmentExecutor = new DockerImageExecutor(testScenario.getScenarioDirectory());
+            testEnvironmentExecutor = DockerImageExecutor.getInstance(testScenario.getScenarioDirectory(),
+                    testScenario.getEnvironment().getApmAddress());
         } else {
-            testEnvironmentExecutor = new DockerComposeExecutor(testScenario.getEnvironment().getApmAddress());
+            testEnvironmentExecutor = DockerComposeExecutor.getInstance(testScenario.getScenarioDirectory(),
+                    testScenario.getEnvironment().getApmAddress());
         }
 
         return testEnvironmentExecutor;

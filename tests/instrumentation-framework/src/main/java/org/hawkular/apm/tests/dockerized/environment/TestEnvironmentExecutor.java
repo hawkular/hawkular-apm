@@ -53,6 +53,8 @@ public interface TestEnvironmentExecutor {
      */
     void close();
 
+    void createNetwork();
+
     /**
      * Prepares command which will be executed inside docker container. This should be used for executing
      * action script inside docker container. Due to permissions problems with mounted volumes script is

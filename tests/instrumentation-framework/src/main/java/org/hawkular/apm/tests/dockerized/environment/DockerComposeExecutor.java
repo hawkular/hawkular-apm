@@ -18,6 +18,7 @@
 package org.hawkular.apm.tests.dockerized.environment;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,60 +28,33 @@ import java.util.logging.Logger;
 import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.CreateNetworkResponse;
-import com.github.dockerjava.api.exception.DockerException;
-import com.github.dockerjava.api.model.Network;
-import com.github.dockerjava.core.DockerClientBuilder;
-
 /**
  * @author Pavol Loffay
  */
-public class DockerComposeExecutor implements TestEnvironmentExecutor {
+public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
     private static final Logger log = Logger.getLogger(DockerComposeExecutor.class.getName());
 
-    private final String apmBindAddress;
 
-    private DockerClient dockerClient;
-    private Network network;
-
-    /**
-     * @param apmBindAddress Address of default gateway (host OS where is running APM server). This network
-     *                       is also used as default in docker-compose
-     */
-    public DockerComposeExecutor(String apmBindAddress) {
-        this.apmBindAddress = apmBindAddress;
-        this.dockerClient = DockerClientBuilder.getInstance().build();
+    private DockerComposeExecutor(String scenarioDirectory, String apmBindAddress) {
+        super(scenarioDirectory, apmBindAddress);
+        if (apmBindAddress == null) {
+            throw new NullPointerException("Bind address for APM should be specified.");
+        }
     }
 
     /**
-     * Create network which is used as default in docker-compose.yml
-     * This should be run before {@link DockerComposeExecutor#run(TestEnvironment)}
+     * @param scenarioDirectory Absolute path of directory
+     * @param apmBindAddress Address of default gateway (host OS where is running APM server). This network
+     *                       is also used as default in docker-compose
      */
-    public void createNetwork() {
-        String apmNetwork = apmBindAddress.substring(0, apmBindAddress.lastIndexOf(".")) + ".0/24";
-        Network.Ipam ipam = new Network.Ipam()
-                .withConfig(new Network.Ipam.Config()
-                    .withSubnet(apmNetwork)
-                    .withGateway(apmBindAddress));
-
-        CreateNetworkResponse createNetworkResponse = dockerClient.createNetworkCmd()
-                .withName(Constants.HOST_ADDED_TO_ETC_HOSTS)
-                .withIpam(ipam)
-                .exec();
-
-        try {
-            network = dockerClient.inspectNetworkCmd().withNetworkId(createNetworkResponse.getId()).exec();
-        } catch (DockerException ex) {
-            log.severe(String.format("Could not create network: %s", createNetworkResponse));
-            throw new EnvironmentException("Could not create network: " + createNetworkResponse, ex);
-        }
+    public static DockerComposeExecutor getInstance(String scenarioDirectory, String apmBindAddress) {
+        return new DockerComposeExecutor(scenarioDirectory, apmBindAddress);
     }
 
     @Override
     public String run(TestEnvironment testEnvironment) {
         String[] command = new String[] {
-            "docker-compose", "-f", testEnvironment.getDockerCompose(), "up", "-d"
+            "docker-compose", "-f", scenarioDirectory + File.separator + testEnvironment.getDockerCompose(), "up", "-d"
         };
 
         runShellCommand(command);
@@ -89,31 +63,22 @@ public class DockerComposeExecutor implements TestEnvironmentExecutor {
     }
 
     @Override
-    public void clean(String dockerComposeDirectory) {
+    public void clean(String dockerCompose) {
 
         String[] command;
         try {
             command = new String[]{
-                    "docker-compose", "-f", dockerComposeDirectory, "down"
+                    "docker-compose", "-f", scenarioDirectory + File.separator + dockerCompose, "down"
             };
             runShellCommand(command);
         } catch (EnvironmentException ex) {
             log.severe(String.format("docker-compose down failed %s", ex.getMessage()));
             ex.printStackTrace();
         }
-
-        if (network != null) {
-            try {
-                dockerClient.removeNetworkCmd(network.getId()).exec();
-            } catch (DockerException ex) {
-                log.severe(String.format("Could not remove network: %s", network));
-                throw new EnvironmentException("Could not remove network: " + network, ex);
-            }
-        }
     }
 
     /**
-     * @param id Id of the environment, Concretely path to docker-compose file.
+     * @param id Id of the environment, Concretely docker-compose file.
      * @param serviceName Service name in running environment. Service defined in docker-compose.
      * @param script Script to execute
      */
@@ -121,23 +86,11 @@ public class DockerComposeExecutor implements TestEnvironmentExecutor {
     public void execScript(String id, String serviceName, String script) {
 
         String[] command = new String[] {
-                "docker-compose", "-f", id, "exec", serviceName, "bash", "-c",
+                "docker-compose", "-f", scenarioDirectory + File.separator + id, "exec", serviceName, "bash", "-c",
                 scriptExecCommand(script),
         };
 
         runShellCommand(command);
-    }
-
-    @Override
-    public void close() {
-        if (dockerClient != null) {
-            try {
-                dockerClient.close();
-            } catch (IOException ex) {
-                log.severe("Could not close docker client");
-                throw new EnvironmentException("Could not close docker client", ex);
-            }
-        }
     }
 
     private void runShellCommand(String[] commands) {
