@@ -261,11 +261,6 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-server-cassandra</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-server-elasticsearch</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -612,12 +607,6 @@
       <modules>
         <module>performance/server</module>
       </modules>
-    </profile>
-    <profile>
-      <id>cassandra</id>
-      <properties>
-        <hawkular-apm-db>cassandra</hawkular-apm-db>
-      </properties>
     </profile>
   </profiles>
 
