@@ -93,13 +93,13 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         }
 
         // Check stored traces - one btxn represents the test sender
-        assertEquals(3, getTestTraceServer().getTraces().size());
+        assertEquals(3, getApmMockServer().getTraces().size());
 
         Consumer queueConsumer = null;
         Consumer topicConsumer = null;
         Component testComponent = null;
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -195,13 +195,13 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
         }
 
         // Check stored traces - one btxn represents the test sender
-        assertEquals(3, getTestTraceServer().getTraces().size());
+        assertEquals(3, getApmMockServer().getTraces().size());
 
         Consumer queueConsumer = null;
         Consumer topicConsumer = null;
         Component testComponent = null;
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

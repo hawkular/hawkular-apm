@@ -86,7 +86,7 @@ public class EchoAppTest extends ClientTestBase {
             fail("Failed to wait for traces to store");
         }
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
                 System.out.println("TRACE=" + mapper.writeValueAsString(trace));
@@ -97,7 +97,7 @@ public class EchoAppTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getTestTraceServer().getTraces().size());
+        assertEquals(1, getApmMockServer().getTraces().size());
     }
 
 }

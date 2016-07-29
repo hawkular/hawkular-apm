@@ -1,0 +1,28 @@
+{
+  "name": "Ticket monster test",
+  "environment": {
+    "image": "pavolloffay/jboss-ticket-monster",
+    "initWaitSeconds": "20",
+    "type": "APM"
+  },
+  "tests": [
+    {
+      "description" : "Docker image JBoss Ticker Monster",
+      "skip": false,
+      "action": "action1.sh",
+      "afterActionWaitSeconds": "10",
+      "verify": {
+        "jsonPath": [
+          {
+            "path": "$.length()",
+            "result": 1
+          },
+          {
+            "path": "$.[0].nodes[0].operation",
+            "result": "POST"
+          }
+        ]
+      }
+    }
+  ]
+}

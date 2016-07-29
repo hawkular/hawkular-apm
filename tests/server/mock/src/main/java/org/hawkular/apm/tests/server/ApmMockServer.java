@@ -19,6 +19,8 @@ package org.hawkular.apm.tests.server;
 import static io.undertow.Handlers.path;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.logging.Logger;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationLoader;
+import org.hawkular.apm.server.api.model.zipkin.Span;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,7 +45,7 @@ import io.undertow.util.Methods;
  *
  * @author gbrown
  */
-public class TestTraceServer {
+public class ApmMockServer {
 
     /**  */
     private static final String HAWKULAR_APM_TEST_SERVER_HOST = "hawkular-apm.test.server.host";
@@ -56,7 +59,7 @@ public class TestTraceServer {
     /**  */
     private static final int DEFAULT_SHUTDOWN_TIMER = 30000;
 
-    private static final Logger log = Logger.getLogger(TestTraceServer.class.getName());
+    private static final Logger log = Logger.getLogger(ApmMockServer.class.getName());
 
     private Undertow server = null;
 
@@ -65,8 +68,12 @@ public class TestTraceServer {
     private static final TypeReference<java.util.List<Trace>> TRACE_LIST =
             new TypeReference<java.util.List<Trace>>() {
             };
+    private static final TypeReference<java.util.List<Span>> SPAN_LIST =
+            new TypeReference<java.util.List<Span>>() {
+            };
 
-    private List<Trace> traces = new ArrayList<Trace>();
+    private List<Trace> traces = new ArrayList<>();
+    private List<Span> zipkinSpans = new ArrayList<>();
 
     private int port = 8080;
     private String host = "localhost";
@@ -92,7 +99,7 @@ public class TestTraceServer {
      * @param args The arguments
      */
     public static void main(String[] args) {
-        TestTraceServer main = new TestTraceServer();
+        ApmMockServer main = new ApmMockServer();
         main.run();
     }
 
@@ -108,6 +115,20 @@ public class TestTraceServer {
      */
     public void setTraces(List<Trace> traces) {
         this.traces = traces;
+    }
+
+    /**
+     * @return the zipkin spans
+     */
+    public List<Span> getSpans() {
+        return zipkinSpans;
+    }
+
+    /**
+     * @param spans the zipkin spans to set
+     */
+    public void setSpans(List<Span> spans) {
+        this.zipkinSpans = spans;
     }
 
     /**
@@ -131,6 +152,15 @@ public class TestTraceServer {
     }
 
     /**
+     * This method sets the host to bind at.
+     *
+     * @param host The host to bind
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    /**
      * This method sets the test configuration.
      *
      * @param testConfig The test collector configuration
@@ -140,7 +170,7 @@ public class TestTraceServer {
     }
 
     public void run() {
-        log.info("************** STARTED TEST TRACE SERVICE: host=" + host + " port=" + port + " shutdownTimer="
+        log.info("************** STARTED TEST MOCK SERVICE: host=" + host + " port=" + port + " shutdownTimer="
                 + shutdown);
 
         if (shutdown != -1) {
@@ -156,7 +186,7 @@ public class TestTraceServer {
                         }
                     }
 
-                    log.severe("************** ABORTING TEST TRACE SERVICE");
+                    log.severe("************** ABORTING TEST MOCK SERVICE");
                     System.exit(1);
                 }
             });
@@ -188,19 +218,8 @@ public class TestTraceServer {
                         if (exchange.getRequestMethod() == Methods.POST) {
                             exchange.startBlocking();
 
-                            java.io.InputStream is = exchange.getInputStream();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-                            StringBuilder builder = new StringBuilder();
-                            String str = null;
-
-                            while ((str = reader.readLine()) != null) {
-                                builder.append(str);
-                            }
-
-                            is.close();
-
-                            List<Trace> btxns = mapper.readValue(builder.toString(), TRACE_LIST);
+                            String body = getBody(exchange.getInputStream());
+                            List<Trace> btxns = mapper.readValue(body, TRACE_LIST);
 
                             synchronized (traces) {
                                 traces.addAll(btxns);
@@ -239,13 +258,57 @@ public class TestTraceServer {
                             exchange.getResponseSender().send(cc);
                         }
                     }
-                })).build();
+                }).addPrefixPath("v1/spans", new HttpHandler() {
+                    @Override
+                    public void handleRequest(HttpServerExchange exchange) throws Exception {
+                        if (exchange.isInIoThread()) {
+                            exchange.dispatch(this);
+                            return;
+                        }
 
+                        log.info("Zipkin spans request received: " + exchange);
+
+                        if (exchange.getRequestMethod() == Methods.POST) {
+                            exchange.startBlocking();
+
+                            String body = getBody(exchange.getInputStream());
+                            List<Span> spans = mapper.readValue(body, SPAN_LIST);
+
+                            synchronized (zipkinSpans) {
+                                zipkinSpans.addAll(spans);
+                            }
+
+                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+                            exchange.getResponseSender().send("");
+                        } else if (exchange.getRequestMethod() == Methods.GET) {
+                            synchronized (zipkinSpans) {
+                                String zipkinSpansStr = mapper.writeValueAsString(zipkinSpans);
+                                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                                exchange.getResponseSender().send(zipkinSpansStr);
+                            }
+                        }
+                    }
+                })).build();
         server.start();
     }
 
     public void shutdown() {
-        log.info("************ TEST TRACE SERVICE EXITING");
+        log.info("************ TEST MOCK SERVICE EXITING");
         server.stop();
+    }
+
+    private String getBody(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        StringBuilder builder = new StringBuilder();
+        String str = null;
+
+        while ((str = reader.readLine()) != null) {
+            builder.append(str);
+        }
+
+        inputStream.close();
+
+        return builder.toString();
     }
 }

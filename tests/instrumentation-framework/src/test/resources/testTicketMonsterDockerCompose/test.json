@@ -1,0 +1,30 @@
+{
+  "name": "Ticket monster test",
+  "environment": {
+    "dockerCompose": "docker-compose.yml",
+    "initWaitSeconds": "20",
+    "type": "APM",
+    "apmAddress": "172.16.158.1"
+  },
+  "tests": [
+    {
+      "description" : "Docker compose JBoss Ticker Monster",
+      "skip": false,
+      "action": "action1.sh",
+      "scriptServiceName": "ticket-monster",
+      "afterActionWaitSeconds": "20",
+      "verify": {
+        "jsonPath": [
+          {
+            "path": "$.length()",
+            "result": 1
+          },
+          {
+            "path": "$.[0].nodes[0].operation",
+            "result": "POST"
+          }
+        ]
+      }
+    }
+  ]
+}

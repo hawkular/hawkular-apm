@@ -126,14 +126,14 @@ public class ClientVertxTest extends ClientTestBase {
         }
 
         // Check stored business transactions (including 1 for test client)
-        assertEquals(4, getTestTraceServer().getTraces().size());
+        assertEquals(4, getApmMockServer().getTraces().size());
 
         Consumer consumerREST = null;
         Consumer consumerServiceA = null;
         Consumer consumerServiceB = null;
         Producer producerREST = null;
 
-        for (Trace trace : getTestTraceServer().getTraces()) {
+        for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {

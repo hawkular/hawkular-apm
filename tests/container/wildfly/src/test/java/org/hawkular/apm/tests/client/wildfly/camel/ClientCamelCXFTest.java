@@ -128,7 +128,7 @@ public class ClientCamelCXFTest extends ClientTestBase {
         }
 
         // Check if trace fragments have been reported
-        List<Trace> btxns = getTestTraceServer().getTraces();
+        List<Trace> btxns = getApmMockServer().getTraces();
 
         for (Trace trace : btxns) {
             ObjectMapper mapper = new ObjectMapper();

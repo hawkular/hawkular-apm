@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Producer;
-import org.hawkular.apm.tests.server.TestTraceServer;
+import org.hawkular.apm.tests.server.ApmMockServer;
 import org.junit.After;
 import org.junit.Before;
 
@@ -31,7 +31,7 @@ import org.junit.Before;
  */
 public abstract class ClientTestBase {
 
-    private TestTraceServer testAPMServer = new TestTraceServer();
+    private ApmMockServer apmMockServer = new ApmMockServer();
 
     public int getPort() {
         return 8080;
@@ -40,9 +40,9 @@ public abstract class ClientTestBase {
     @Before
     public void init() {
         try {
-            testAPMServer.setPort(getPort());
-            testAPMServer.setShutdownTimer(-1); // Disable timer
-            testAPMServer.run();
+            apmMockServer.setPort(getPort());
+            apmMockServer.setShutdownTimer(-1); // Disable timer
+            apmMockServer.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ public abstract class ClientTestBase {
     @After
     public void close() {
         try {
-            testAPMServer.shutdown();
+            apmMockServer.shutdown();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,17 +68,17 @@ public abstract class ClientTestBase {
     }
 
     /**
-     * @return the testAPMServer
+     * @return the apmMockServer
      */
-    public TestTraceServer getTestTraceServer() {
-        return testAPMServer;
+    public ApmMockServer getApmMockServer() {
+        return apmMockServer;
     }
 
     /**
-     * @param testAPMServer the testAPMServer to set
+     * @param testAPMServer the apmMockServer to set
      */
-    public void setTestAPMServer(TestTraceServer testAPMServer) {
-        this.testAPMServer = testAPMServer;
+    public void setApmMockServer(ApmMockServer testAPMServer) {
+        this.apmMockServer = testAPMServer;
     }
 
     /**
