@@ -25,31 +25,18 @@ import java.util.List;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.server.api.services.CacheException;
-import org.infinispan.configuration.cache.Configuration;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.manager.DefaultCacheManager;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * @author gbrown
  */
-public class InfinispanCommunicationDetailsCacheTest {
-
-    private static DefaultCacheManager cm;
-
-    @BeforeClass
-    public static void initClass() {
-        cm = new DefaultCacheManager();
-        Configuration c = new ConfigurationBuilder().invocationBatching().enable().build();
-        cm.defineConfiguration(InfinispanCommunicationDetailsCache.CACHE_NAME, c);
-    }
+public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testSingleConsumerNotFound() {
         InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
 
-        cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        cdc.setCommunicationDetails(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
 
         assertNull(cdc.get(null, "id1"));
     }
@@ -58,7 +45,7 @@ public class InfinispanCommunicationDetailsCacheTest {
     public void testSingleConsumerFound() {
         InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
 
-        cdc.setCommunicationDetails(cm.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        cdc.setCommunicationDetails(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
 
         List<CommunicationDetails> details = new ArrayList<CommunicationDetails>();
         CommunicationDetails cd = new CommunicationDetails();
