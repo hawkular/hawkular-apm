@@ -26,6 +26,8 @@ module FilterSidebar {
 
     public templateUrl = templatePath;
 
+    private defaultCriteria;
+
     public link: (scope, elm, attrs, ctrl) => any;
 
     constructor(public $compile, public $rootScope, public $http) {
@@ -47,7 +49,7 @@ module FilterSidebar {
         {time: '1',            text: 'All'}
       ];
 
-      let defaultCriteria = {
+      this.defaultCriteria = {
         businessTransaction: '',
         hostName: '',
         properties: [],
@@ -57,7 +59,7 @@ module FilterSidebar {
       };
 
       $rootScope.sbFilter = $rootScope.sbFilter || {};
-      $rootScope.sbFilter.criteria = $rootScope.sbFilter.criteria || defaultCriteria;
+      $rootScope.sbFilter.criteria = $rootScope.sbFilter.criteria || this.defaultCriteria;
       $rootScope.sbFilter.data = $rootScope.sbFilter.data || {};
 
       // FIXME: this should not go into rootScope
@@ -98,7 +100,7 @@ module FilterSidebar {
             if ($rootScope.sbFilter.customStartTime) {
               $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
             } else {
-              $rootScope.sbFilter.criteria.startTime = '-3600000';
+              $rootScope.sbFilter.criteria.startTime = this.defaultCriteria.startTime;
             }
             if ($rootScope.sbFilter.customEndTime) {
               $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
@@ -107,7 +109,7 @@ module FilterSidebar {
         };
 
         $rootScope.sbFilter.timeSpan = angular.isUndefined($rootScope.sbFilter.timeSpan) ?
-          '-3600000' : $rootScope.sbFilter.timeSpan;
+          this.defaultCriteria.startTime : $rootScope.sbFilter.timeSpan;
         $rootScope.$watch('sbFilter.timeSpan', (newValue, oldValue) => {
           if (oldValue !== '' && newValue === '') { // setting a custom time
             $rootScope.sbFilter.customStartTime = new Date(+new Date() + parseInt(oldValue, 10));
