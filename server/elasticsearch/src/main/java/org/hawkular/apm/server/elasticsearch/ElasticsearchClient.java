@@ -18,9 +18,9 @@ package org.hawkular.apm.server.elasticsearch;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,7 +91,7 @@ public class ElasticsearchClient {
 
     private static ElasticsearchEmbeddedNode node = null;
 
-    private static List<String> knownTenants = new ArrayList<String>();
+    private static Set<String> knownTenants = new HashSet<>();
 
     private static ElasticsearchClient singleton;
 
