@@ -21,7 +21,8 @@ module E2E {
   declare let dagreD3: any;
 
   export let E2EController = _module.controller('E2E.E2EController', ['$scope', '$rootScope', '$routeParams', '$http',
-    '$location', '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $location, $interval, $timeout) => {
+    '$location', '$interval', '$timeout', '$modal', ($scope, $rootScope, $routeParams, $http, $location, $interval,
+    $timeout, $modal) => {
 
     $scope.reload = function() {
 
@@ -91,6 +92,51 @@ module E2E {
         });
         $scope.filteredNodes = branch ? [branch] : [];
       }
+    };
+
+    let ModalInstanceCtrl = function ($scope, $modalInstance, $log, rootNode) {
+
+      $scope.rootNode = {
+        'uri': rootNode
+      };
+
+      let instDetails = $http.post('/hawkular/apm/analytics/trace/completion/times',
+                                   $rootScope.sbFilter.criteria);
+
+      instDetails.then(function(resp) {
+        $scope.timesData = resp.data;
+      });
+
+      $scope.sortKey = 'timestamp';
+      $scope.reverse = false;
+
+      $scope.sort = function(keyname) {
+        $scope.sortKey = keyname; // set the sortKey to the param passed
+        $scope.reverse = !$scope.reverse; // if true make it false and vice versa
+      };
+
+      $scope.durationRange = function (entry) {
+        return entry.duration >= ($scope.minDuration || 0) &&
+          entry.duration <= ($scope.maxDuration || Number.MAX_VALUE);
+      };
+
+      $scope.close = function() {
+        $modalInstance.dismiss('cancel');
+      };
+    };
+
+    $scope.showInstanceDetails = function() {
+      $modal.open({
+        templateUrl: 'plugins/e2e/html/details-modal.html',
+        controller: ModalInstanceCtrl,
+        size: 'lg',
+        resolve: {
+          rootNode: function () {
+            console.log($scope.rootNode);
+            return $scope.rootNode;
+          }
+        }
+      });
     };
 
     $scope.resetZoom = function() {

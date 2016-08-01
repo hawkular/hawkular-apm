@@ -149,5 +149,10 @@
          placeholder="Enter a host name" typeahead-editable="false"
          typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" />
     </div>
+
+    <div class="hk-filter-v-block" ng-if="fsb.showInstDetails">
+      <button class="btn btn-default" ng-click="showInstanceDetails()">Show {{ $root.sbFilter.instanceCount }} Instance(s) Details</button>
+    </div>
+
   </div>
 </div>

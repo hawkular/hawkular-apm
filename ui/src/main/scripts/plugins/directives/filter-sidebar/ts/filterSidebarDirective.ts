@@ -85,7 +85,8 @@ module FilterSidebar {
         showBtxns: !attrs.hasOwnProperty('noBtxns'),
         showHosts: !attrs.hasOwnProperty('noHosts'),
         showProps: !attrs.hasOwnProperty('noProps'),
-        showFaults: !attrs.hasOwnProperty('noFaults')
+        showFaults: !attrs.hasOwnProperty('noFaults'),
+        showInstDetails: !attrs.hasOwnProperty('noInstDetails')
       };
 
       scope.$on('dataUpdated', () => {
@@ -166,6 +167,15 @@ module FilterSidebar {
           this.$rootScope.sbFilter.data.faults = resp.data || [];
         }, (error) => {
             console.log('Failed to get faults: ' + JSON.stringify(error));
+        });
+      }
+
+      if (scope.fsb.showInstDetails) {
+        this.$http.get('/hawkular/apm/analytics/trace/completion/count',
+            this.$rootScope.sbFilter.criteria).then((resp) => {
+          this.$rootScope.sbFilter.instanceCount = resp.data || 0;
+        }, (error) => {
+            console.log('Failed to get instance count: ' + JSON.stringify(error));
         });
       }
     }
