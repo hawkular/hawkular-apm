@@ -27,6 +27,7 @@ import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 
 /**
  * This class represents the zipkin node details deriver.
@@ -60,7 +61,8 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         }
 
         if (item.clientSpan()) {
-            nd.setId(nd.getId() + "-client"); // Need to qualify id, as same id used for both client and server
+            // Need to qualify id, as same id used for both client and server
+            nd.setId(SpanUniqueIdGenerator.toUnique(item));
             nd.setType(NodeType.Producer);
             nd.setComponentType("Producer");
             nd.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, item.getId()));

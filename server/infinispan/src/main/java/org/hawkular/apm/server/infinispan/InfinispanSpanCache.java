@@ -19,6 +19,7 @@ package org.hawkular.apm.server.infinispan;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ import org.hawkular.apm.api.services.ServiceLifecycle;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.query.Search;
@@ -69,8 +71,12 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
 
     }
 
+    /**
+     * Note that method assumes that span id was changed with {@link SpanUniqueIdGenerator#toUnique(Span)}.
+     */
     @Override
     public Span get(String tenantId, String id) {
+
         Span span = spansCache.get(id);
 
         if (log.isLoggable(Level.FINEST)) {
@@ -82,6 +88,13 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
 
     @Override
     public void store(String tenantId, List<Span> spans) throws CacheException {
+        store(tenantId, spans, x -> x.getId());
+    }
+
+    @Override
+    public void store(String tenantId, List<Span> spans, Function<Span, String> cacheKeyEntrySupplier)
+            throws CacheException {
+
         if (cacheContainer != null) {
             spansCache.startBatch();
         }
@@ -92,7 +105,7 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
                 log.finest("Store communication details [id=" + span.getId() + "]: " + span);
             }
 
-            spansCache.put(span.getId(), span, 1, TimeUnit.MINUTES);
+            spansCache.put(cacheKeyEntrySupplier.apply(span), span, 1, TimeUnit.MINUTES);
         }
 
         if (cacheContainer != null) {
@@ -100,12 +113,15 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
         }
     }
 
+    /**
+     * Note that method assumes that id was changed with {@link SpanUniqueIdGenerator#toUnique(Span)}.
+     */
     @Override
-    public List<Span> getChildren(String tenant, String parentId) {
+    public List<Span> getChildren(String tenant, String id) {
         QueryFactory<?> queryFactory = Search.getQueryFactory(spansCache);
         Query query = queryFactory.from(Span.class)
                 .having("parentId")
-                .eq(parentId)
+                .eq(id)
                 .toBuilder().build();
 
         List<Span> queryResult = query.list();

@@ -26,6 +26,7 @@ import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 
 /**
  * This class represents the zipkin fragment completion time deriver.
@@ -55,7 +56,8 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
             ct.setId(item.getId());
 
             if (item.clientSpan()) {
-                ct.setId(item.getId() + "-client"); // To differentiate from the server fragment
+                // To differentiate from the server fragment
+                ct.setId(SpanUniqueIdGenerator.toUnique(item));
             }
 
             URL url = item.url();
