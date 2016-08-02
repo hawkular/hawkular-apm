@@ -18,7 +18,10 @@
 package org.hawkular.apm.server.infinispan;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
@@ -78,11 +81,37 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
         Assert.assertEquals(2, spanCache.getChildren(TENANT, parent.getId()).size());
     }
 
+    @Test
+    public void testCacheKeyEntryGenerator() throws CacheException {
+        InfinispanSpanCache spanCache = new InfinispanSpanCache();
+        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+
+        Span span = new Span();
+        span.setId("parent");
+        span.setAnnotations(annotations());
+
+        spanCache.store(TENANT, Arrays.asList(span), x -> x.getId() + "-foo");
+
+        Span spanFromCache = spanCache.get(TENANT, span.getId() + "-foo");
+
+        Assert.assertEquals(span, spanFromCache);
+
+    }
+
     private void storeOne(SpanCache spanCache, Span span) throws CacheException {
         spanCache.store(TENANT, Arrays.asList(span));
     }
 
     private Span getOne(SpanCache spanCache, String id) throws CacheException {
         return spanCache.get(TENANT, id);
+    }
+
+    private List<Annotation> annotations() {
+        Annotation csAnnotation = new Annotation();
+        csAnnotation.setValue("cs");
+        Annotation crAnnotation = new Annotation();
+        crAnnotation.setValue("cr");
+
+        return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
     }
 }

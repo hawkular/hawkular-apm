@@ -18,6 +18,7 @@
 package org.hawkular.apm.server.api.services;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.hawkular.apm.server.api.model.zipkin.Span;
 
@@ -27,9 +28,22 @@ import org.hawkular.apm.server.api.model.zipkin.Span;
 public interface SpanCache extends Cache<Span> {
 
     /**
-     * Get all child parent.
-     * @param parentId Parent id.
-     * @return Spans with given parent.
+     * Get all children of a given span.
+     *
+     * @param id Id of the span.
+     * @return Children spans of a given span.
      */
-    List<Span> getChildren(String tenant, String parentId);
+    List<Span> getChildren(String tenant, String id);
+
+    /**
+     * Stores spans into cache
+     *
+     * @param tenantId The tenant
+     * @param spans The spans
+     * @param cacheKeyEntrySupplier Function to generate unique id of the span
+     *          @see {@link org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator}. This is used as key
+     *          entry in the cache.
+     * @throws CacheException
+     */
+    void store(String tenantId, List<Span> spans, Function<Span, String> cacheKeyEntrySupplier) throws CacheException;
 }
