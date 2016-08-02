@@ -61,7 +61,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="tData in filteredData = (timesData | filter:rootNode | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse)">
+          <tr dir-paginate="tData in filteredData = (timesData | filter:rootNode | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
             <td>{{ tData.timestamp | date:'medium' }}</td>
             <!--<td>{{ tData.uri }}</td>-->
             <td>
@@ -74,6 +74,11 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <dir-pagination-controls class="pull-right" max-size="numPerPage" direction-links="true" boundary-links="true" />
     </div>
   </div>
 </div>

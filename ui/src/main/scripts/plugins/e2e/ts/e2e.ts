@@ -107,6 +107,7 @@ module E2E {
         $scope.timesData = resp.data;
       });
 
+      // Table sorting
       $scope.sortKey = 'timestamp';
       $scope.reverse = false;
 
@@ -119,6 +120,9 @@ module E2E {
         return entry.duration >= ($scope.minDuration || 0) &&
           entry.duration <= ($scope.maxDuration || Number.MAX_VALUE);
       };
+
+      // Pagination
+      $scope.numPerPage = 15;
 
       $scope.close = function() {
         $modalInstance.dismiss('cancel');
