@@ -17,12 +17,15 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
@@ -81,6 +84,8 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
 
             ct.setTimestamp(item.getTimestamp()/1000);
 
+            setFault(ct, item.getBinaryAnnotations());
+
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("FragmentCompletionTimeDeriver ret=" + ct);
             }
@@ -88,6 +93,18 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
         }
 
         return null;
+    }
+
+    private void setFault(CompletionTime completionTime, List<BinaryAnnotation> binaryAnnotations) {
+        List<HttpCodesUtil.HttpCode> errorCodes =
+                HttpCodesUtil.getClientOrServerErrors(HttpCodesUtil.getHttpStatusCodes(binaryAnnotations));
+
+        if (errorCodes.size() > 0) {
+            HttpCodesUtil.HttpCode errorCode = errorCodes.iterator().next();
+
+            completionTime.setFault(errorCode.getDescription());
+            completionTime.getProperties().add(new Property("http.status_code", String.valueOf(errorCode.getCode())));
+        }
     }
 
 }

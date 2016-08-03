@@ -17,13 +17,16 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.NodeType;
+import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
@@ -86,10 +89,25 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
 
         nd.setTimestamp(item.getTimestamp() / 1000);
 
+        setFault(nd, item.getBinaryAnnotations());
+
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver ret=" + nd);
         }
         return nd;
+    }
+
+
+    private void setFault(NodeDetails nodeDetails, List<BinaryAnnotation> binaryAnnotations) {
+        List<HttpCodesUtil.HttpCode> errorCodes =
+                HttpCodesUtil.getClientOrServerErrors(HttpCodesUtil.getHttpStatusCodes(binaryAnnotations));
+
+        if (errorCodes.size() > 0) {
+            HttpCodesUtil.HttpCode errorCode = errorCodes.iterator().next();
+
+            nodeDetails.setFault(errorCode.getDescription());
+            nodeDetails.getProperties().add(new Property("http.status_code", String.valueOf(errorCode.getCode())));
+        }
     }
 
 }
