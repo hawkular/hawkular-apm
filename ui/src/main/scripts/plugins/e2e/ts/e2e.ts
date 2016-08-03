@@ -39,6 +39,12 @@ module E2E {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
       });
 
+      $http.get('/hawkular/apm/analytics/trace/completion/count', $rootScope.sbFilter.criteria).then((resp) => {
+        $scope.instanceCount = resp.data || 0;
+      }, (error) => {
+        console.log('Failed to get instance count: ' + JSON.stringify(error));
+      });
+
       // this informs the sidebar directive, so it'll update it's data as well
       $scope.$broadcast('dataUpdated');
     };
@@ -107,6 +113,10 @@ module E2E {
         $scope.timesData = resp.data;
       });
 
+      $scope.checkMinMaxDuration = function() {
+        $scope.maxDuration = Math.max($scope.maxDuration, $scope.minDuration);
+      };
+
       // Table sorting
       $scope.sortKey = 'timestamp';
       $scope.reverse = false;
@@ -118,7 +128,7 @@ module E2E {
 
       $scope.durationRange = function (entry) {
         return entry.duration >= ($scope.minDuration || 0) &&
-          entry.duration <= ($scope.maxDuration || Number.MAX_VALUE);
+          entry.duration <= ($scope.maxDuration === 0 ? 0 : ($scope.maxDuration || Number.MAX_VALUE));
       };
 
       // Pagination
@@ -136,7 +146,6 @@ module E2E {
         size: 'lg',
         resolve: {
           rootNode: function () {
-            console.log($scope.rootNode);
             return $scope.rootNode;
           }
         }
