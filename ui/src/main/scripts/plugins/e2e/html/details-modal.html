@@ -1,0 +1,88 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="close()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Instance Details for {{ rootNode.uri }} ({{filteredData.length}} entries shown)</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="txtFilter">Text</label>
+          <input type="text" class="form-control" id="txtFilter" placeholder="Filter" ng-model="tableFilter">
+        </div>
+        <div class="form-group">
+          <label for="minDuration">Duration From</label>
+          <div class="input-group">
+            <input type="number" min="0" class="form-control" placeholder="Minimum Duration" id="minDuration"
+              ng-model="minDuration" ng-change="checkMinMaxDuration()">
+            <div class="input-group-addon">ms</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="maxDuration">To</label>
+          <div class="input-group">
+            <input type="number" min="{{minDuration || 0}}" class="form-control" placeholder="Maximum Duration" id="maxDuration" ng-model="maxDuration">
+            <div class="input-group-addon">ms</div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    &nbsp;
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="datatable table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th ng-click="sort('timestamp')">Timestamp
+              <span class="glyphicon sort-icon" ng-show="sortKey=='timestamp'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <!--<th ng-click="sort('uri')">URL
+              <span class="glyphicon sort-icon" ng-show="sortKey=='uri'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>-->
+            <th ng-click="sort('properties')">Properties
+              <span class="glyphicon sort-icon" ng-show="sortKey=='properties'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th ng-click="sort('principal')">Principal
+              <span class="glyphicon sort-icon" ng-show="sortKey=='principal'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th ng-click="sort('hostname')">Host name
+              <span class="glyphicon sort-icon" ng-show="sortKey=='hostname'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th ng-click="sort('ip_address')">IP Address
+              <span class="glyphicon sort-icon" ng-show="sortKey=='ip_address'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th ng-click="sort('duration')">Duration
+              <span class="glyphicon sort-icon" ng-show="sortKey=='duration'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr dir-paginate="tData in filteredData = (timesData | filter:rootNode | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
+            <td>{{ tData.timestamp | date:'medium' }}</td>
+            <!--<td>{{ tData.uri }}</td>-->
+            <td>
+              <span class="label label-default" style="margin: 1px;" ng-repeat="tDataProp in tData.properties">{{tDataProp.name}}:{{tDataProp.value}}</span>
+            </td>
+            <td>{{ tData.principal }}</td>
+            <td>{{ tData.hostname }}</td>
+            <td>{{ tData.ip_address }}</td>
+            <td>{{ tData.duration }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <dir-pagination-controls class="pull-right" max-size="numPerPage" direction-links="true" boundary-links="true" />
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="close()">Close</button>
+</div>

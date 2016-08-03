@@ -13,6 +13,9 @@
             </select>
           </div>
         </div>
+        <div class="form-group col-md-3">
+          <button class="btn btn-default" ng-click="showInstanceDetails()" ng-disabled="instanceCount === 0">Show {{ instanceCount }} Instance(s) Details</button>
+        </div>
         <div class="form-group pull-right">
           <button class="btn btn-default" ng-click="resetZoom()"><i class="fa fa-dot-circle-o"></i> Reset Zoom</button>
         </div>

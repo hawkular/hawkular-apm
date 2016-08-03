@@ -168,6 +168,7 @@ module FilterSidebar {
             console.log('Failed to get faults: ' + JSON.stringify(error));
         });
       }
+
     }
 
   }
