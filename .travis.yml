@@ -1,16 +1,30 @@
-sudo: false
+sudo: required
+dist: trusty
+
 language: java
 jdk:
 - oraclejdk8
+
+cache:
+  directories:
+  - $HOME/.m2/repository
+  - $HOME/mvn-home
+
 notifications:
   irc:
     channels:
     - chat.freenode.net#hawkular
     on_success: change
+
 install:
+# install maven 3.3.9 if it is not in cache already
+- bash .travis.install.maven.sh "3.3.9" "${HOME}/mvn-home"
+- export M2_HOME=${HOME}/mvn-home
+- export PATH=${HOME}/mvn-home/bin:${PATH}
 - mvn -version -B
 # unshallow is needed by license-maven-plugin
 - git fetch origin --unshallow
+
 script:
 - mvn -s .travis.maven.settings.xml verify | grep -vF "[INFO] Downloading:" | grep -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 env:
@@ -20,6 +34,20 @@ env:
   # Nexus deploy tokens
   - secure: LQS+PsFgOMoMtUOPpQF1UotdO3I17Y5nSSqXn56MKA2OvPBWX4ANBe/tKcnkHKDs4+FV3i5d08xxjBIsu/pfQsNedXjhx/B2CZG301oumWyCKukgJ3FIf2IXoN69TDWHU4SSStfck7enbM2G9TV7IHyHL+4x5LIo2xJ+7xL9GxU=
   - secure: W+HwWNFJHw0eXemHopbghj4cFz4WlBxb4aqsErE6DF0MjUfO27BVYy12lSZ/fMU4JpCOVwaceoNu9n2QnaenQkkEFDN4+N+fTpU2EK676NPcYxDYWFm6R6FRQtC75fWh4qT80PwtFLdaqEHtS5yOMx8aQHtFvHwbuGtLBdwwqmQ=
+
+before_cache:
+# Clean the cached directories once their size exceeds the space left on the partition.
+# This is important because Travis zips the chached directories to a temporary file on the same partition.
+# Note that while we consider the summed size of all cached dirs, we remove only those ones that tend to grow over time
+- CACHED_DIRECTORIES=("$HOME/.m2/repository" "$HOME/mvn-home")
+- availBytes=$(df -P . | tail -1 | awk '{print $4}')
+- cachedBytes=$(du -cs "${CACHED_DIRECTORIES[@]}" | tail -1 | awk '{print $1}')
+- echo "Checking if the size of directories to cache ${cachedBytes} Bytes exceeds the free space ${availBytes} Bytes left on the current partition"
+- if [ "${cachedBytes}" -gt "${availBytes}" ] ; then
+    echo "Cleaning the cached dirs (${cachedBytes} Bytes) because their size exceeds the free space (${availBytes} Bytes) left on the current partition"
+    rm -Rf "$HOME/.m2"
+  fi
+
 after_success:
 - PROJECT_VERSION=`mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
