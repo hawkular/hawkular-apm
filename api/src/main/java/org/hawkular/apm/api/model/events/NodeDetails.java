@@ -72,6 +72,9 @@ public class NodeDetails {
     private String hostName;
 
     @JsonInclude(Include.NON_NULL)
+    private String hostAddress;
+
+    @JsonInclude(Include.NON_NULL)
     private String principal;
 
     @JsonInclude(Include.NON_EMPTY)
@@ -235,6 +238,24 @@ public class NodeDetails {
      */
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    /**
+     * Get host address (e.g. ipv4).
+     *
+     * @return the host address
+     */
+    public String getHostAddress() {
+        return hostAddress;
+    }
+
+    /**
+     * Set host address (e.g. ipv4).
+     *
+     * @param hostAddress the host address
+     */
+    public void setHostAddress(String hostAddress) {
+        this.hostAddress = hostAddress;
     }
 
     /**

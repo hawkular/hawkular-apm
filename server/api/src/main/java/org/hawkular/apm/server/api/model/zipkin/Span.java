@@ -18,10 +18,16 @@ package org.hawkular.apm.server.api.model.zipkin;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.server.api.utils.AnnotationTypeUtil;
 
 /**
  * A trace is a series of spans (often RPC calls) which form a latency tree.
@@ -225,4 +231,42 @@ public class Span {
         return null;
     }
 
+    public static String ipv4Address(List<Property> properties) {
+        for (Property property: properties) {
+            if (property.getName().equals("ipv4")) {
+                return property.getValue();
+            }
+        }
+        return null;
+    }
+
+    public List<Property> properties() {
+        if (binaryAnnotations == null || binaryAnnotations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Property> properties = new ArrayList<>();
+        Set<Endpoint> endpoints = new HashSet<>();
+
+        for (BinaryAnnotation binaryAnnotation : binaryAnnotations) {
+            properties.add(new Property(binaryAnnotation.getKey(),
+                    binaryAnnotation.getValue(),
+                    AnnotationTypeUtil.toPropertyType(binaryAnnotation.getType())));
+
+            if (binaryAnnotation.getEndpoint() != null) {
+                Endpoint endpoint = binaryAnnotation.getEndpoint();
+
+                if (endpoints.isEmpty()) {
+                    properties.add(new Property("service", endpoint.getServiceName()));
+                    properties.add(new Property("ipv4", endpoint.getIpv4()));
+                } else if (!endpoints.contains(endpoint)){
+                    log.severe("Multiple Endpoints within one Span: " + endpoint);
+                }
+
+                endpoints.add(endpoint);
+            }
+        }
+
+        return properties;
+    }
 }

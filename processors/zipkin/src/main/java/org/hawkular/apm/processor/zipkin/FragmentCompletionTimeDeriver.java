@@ -17,11 +17,13 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
@@ -74,10 +76,9 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
 
             ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.NANOSECONDS));
 
-            // TODO: ADD IP ADDRESS TO COMPLETION TIME
-            //ct.setIpAddress(item.getAnnotations().get(0).getEndpoint().getIpv4());
-
-            // TODO: ADD SERVICE NAME AS PROPERTY?
+            List<Property> spanProperties = item.properties();
+            ct.setHostAddress(Span.ipv4Address(spanProperties));
+            ct.getProperties().addAll(spanProperties);
 
             ct.setTimestamp(item.getTimestamp()/1000);
 

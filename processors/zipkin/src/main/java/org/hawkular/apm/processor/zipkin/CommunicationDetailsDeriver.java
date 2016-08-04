@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.utils.EndpointUtil;
@@ -143,15 +144,16 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 //ret.setInternal(consumer.getEndpointType() == null);
 
                 // Merge properties from consumer and producer
-                //ret.getProperties().addAll(item.getProperties());
-                //ret.getProperties().addAll(pi.getProperties());
+                List<Property> spanProperties = item.properties();
+                ret.getProperties().addAll(spanProperties);
+                ret.getProperties().addAll(pi.getProperties());
 
                 ret.setSourceFragmentId(pi.getFragmentId());
                 ret.setSourceHostName(pi.getHostName());
                 ret.setSourceHostAddress(pi.getHostAddress());
                 ret.setTargetFragmentId(item.getId());
                 //ret.setTargetHostName(item.getHostName());
-                //ret.setTargetHostAddress(item.getHostAddress());
+                ret.setTargetHostAddress(Span.ipv4Address(spanProperties));
                 //ret.setTargetFragmentDuration(item.calculateDuration());
 
                 // HWKBTM-349 Deal with timestamp and offset. Currently

@@ -75,4 +75,24 @@ public class Endpoint {
         this.serviceName = serviceName;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Endpoint)) return false;
+
+        Endpoint endpoint = (Endpoint) o;
+
+        if (port != endpoint.port) return false;
+        if (ipv4 != null ? !ipv4.equals(endpoint.ipv4) : endpoint.ipv4 != null) return false;
+        return serviceName != null ? serviceName.equals(endpoint.serviceName) : endpoint.serviceName == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ipv4 != null ? ipv4.hashCode() : 0;
+        result = 31 * result + port;
+        result = 31 * result + (serviceName != null ? serviceName.hashCode() : 0);
+        return result;
+    }
 }

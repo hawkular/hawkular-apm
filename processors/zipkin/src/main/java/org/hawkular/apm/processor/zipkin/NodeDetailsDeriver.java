@@ -17,9 +17,11 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -80,11 +82,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         // TODO: How to calculate actual - i.e. would need to know child times???
         nd.setActual(item.getDuration());
 
-        //ct.setIpAddress(item.getAnnotations().get(0).getEndpoint().getIpv4());
-
-        // TODO: ADD SERVICE NAME AS PROPERTY?
-
+        List<Property> spanProperties = item.properties();
         nd.setTimestamp(item.getTimestamp() / 1000);
+        nd.getProperties().addAll(spanProperties);
+        nd.setHostAddress(Span.ipv4Address(spanProperties));
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver ret=" + nd);
