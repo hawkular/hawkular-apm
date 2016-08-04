@@ -106,7 +106,7 @@
     <hawkular-apm-db>elasticsearch</hawkular-apm-db>
 
     <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
-    <version.com.github.eirslett.frontend-maven-plugin>0.0.26</version.com.github.eirslett.frontend-maven-plugin>
+    <version.com.github.eirslett.frontend-maven-plugin>1.0</version.com.github.eirslett.frontend-maven-plugin>
 
     <version.com.fasterxml.jackson.core>2.6.0</version.com.fasterxml.jackson.core>
     <version.com.github.docker-java.docker-java>3.0.0</version.com.github.docker-java.docker-java>
