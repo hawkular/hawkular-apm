@@ -39,7 +39,8 @@ module E2E {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/apm/analytics/trace/completion/count', $rootScope.sbFilter.criteria).then((resp) => {
+      $http.get('/hawkular/apm/analytics/trace/completion/count?startTime=' + $rootScope.sbFilter.criteria.startTime).
+        then((resp) => {
         $scope.instanceCount = resp.data || 0;
       }, (error) => {
         console.log('Failed to get instance count: ' + JSON.stringify(error));
