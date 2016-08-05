@@ -20,13 +20,14 @@ package org.hawkular.apm.server.infinispan;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -36,17 +37,25 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     private static final String TENANT = "tenant";
 
+    private InfinispanSpanCache spanCache;
+
+    @Before
+    public void before() {
+        spanCache = new InfinispanSpanCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+    }
+
+    @After
+    public void after() {
+        cacheManager.removeCache(InfinispanCommunicationDetailsCache.CACHE_NAME);
+    }
+
     @Test
     public void testNull() {
-        InfinispanSpanCache spanCache = createCache();
-
         Assert.assertNull(spanCache.get(null, "id1"));
     }
 
     @Test
     public void testGetOne() throws CacheException {
-        InfinispanSpanCache spanCache = createCache();
-
         Span span = new Span();
         span.setId("parent");
         storeOne(spanCache, span);
@@ -60,8 +69,6 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testGetParent() throws CacheException {
-        InfinispanSpanCache spanCache = createCache();
-
         Span parent = new Span();
         parent.setId("parent");
         storeOne(spanCache, parent);
@@ -81,18 +88,12 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testCacheKeyEntryGenerator() throws CacheException {
-        InfinispanSpanCache spanCache = createCache();
-
         Span span = new Span();
         span.setId("parent");
         span.setAnnotations(annotations());
 
         spanCache.store(TENANT, Arrays.asList(span), x -> x.getId() + "-foo");
-
-        Span spanFromCache = spanCache.get(TENANT, span.getId() + "-foo");
-
-        Assert.assertEquals(span, spanFromCache);
-
+        Assert.assertEquals(span, spanCache.get(TENANT, span.getId() + "-foo"));
     }
 
     private void storeOne(SpanCache spanCache, Span span) throws CacheException {
@@ -110,13 +111,5 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
         crAnnotation.setValue("cr");
 
         return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
-    }
-
-    private InfinispanSpanCache createCache() {
-        InfinispanSpanCache spanCache = new InfinispanSpanCache();
-        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME +
-                UUID.randomUUID()));
-
-        return spanCache;
     }
 }

@@ -53,35 +53,32 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
     private Cache<String, CommunicationDetails> communicationDetails;
 
+
+    public InfinispanCommunicationDetailsCache() {}
+
+    public InfinispanCommunicationDetailsCache(Cache<String, CommunicationDetails> cache) {
+        this.communicationDetails = cache;
+    }
+
     @PostConstruct
     public void init() {
+        if (communicationDetails != null) {
+            return;
+        }
+
         // If cache container not already provisions, then must be running outside of a JEE
         // environment, so create a default cache container
         if (container == null) {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using default cache");
             }
-            setCommunicationDetails(InfinispanCacheManager.getDefaultCache(CACHE_NAME));
+            communicationDetails = InfinispanCacheManager.getDefaultCache(CACHE_NAME);
         } else {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
-            setCommunicationDetails(container.getCache(CACHE_NAME));
+            communicationDetails = container.getCache(CACHE_NAME);
         }
-    }
-
-    /**
-     * @return the communicationDetails
-     */
-    public Cache<String, CommunicationDetails> getCommunicationDetails() {
-        return communicationDetails;
-    }
-
-    /**
-     * @param communicationDetails the communicationDetails to set
-     */
-    public void setCommunicationDetails(Cache<String, CommunicationDetails> communicationDetails) {
-        this.communicationDetails = communicationDetails;
     }
 
     /* (non-Javadoc)

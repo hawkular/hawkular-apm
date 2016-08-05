@@ -52,21 +52,32 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
     private Cache<String, Span> spansCache;
 
 
+    public InfinispanSpanCache() {
+    }
+
+    public InfinispanSpanCache(Cache<String, Span> spanCache) {
+        this.spansCache = spanCache;
+    }
+
     @Override
     @PostConstruct
     public void init() {
+        if (spansCache != null) {
+            return;
+        }
+
         // If cache container not already provisions, then must be running outside of a JEE
         // environment, so create a default cache container
         if (cacheContainer == null) {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using default cache");
             }
-            setSpansCache(InfinispanCacheManager.getDefaultCache(CACHE_NAME));
+            spansCache = InfinispanCacheManager.getDefaultCache(CACHE_NAME);
         } else {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
-            setSpansCache(cacheContainer.getCache(CACHE_NAME));
+            spansCache = cacheContainer.getCache(CACHE_NAME);
         }
 
     }
@@ -99,7 +110,7 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
             spansCache.startBatch();
         }
 
-        for (Span span: spans) {
+        for (Span span : spans) {
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Store communication details [id=" + span.getId() + "]: " + span);
@@ -129,13 +140,5 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
                 .toBuilder().build();
 
         return query.list();
-    }
-
-    public Cache<String, Span> getSpansCache() {
-        return spansCache;
-    }
-
-    public void setSpansCache(Cache<String, Span> spansCache) {
-        this.spansCache = spansCache;
     }
 }

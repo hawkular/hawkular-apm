@@ -63,18 +63,6 @@ public class TestCommunicationDetailsCache implements CommunicationDetailsCache 
 
     @Override
     public List<CommunicationDetails> getById(String tenantId, String id) {
-
-        List<CommunicationDetails> ret = new ArrayList<>();
-
-        if (multipleConsumers.containsKey(id)) {
-            ret.addAll(multipleConsumers.get(id));
-        }
-
-        CommunicationDetails singleConsumer = this.singleConsumer.get(id);
-        if (singleConsumer != null) {
-            ret.add(singleConsumer);
-        }
-
-        return ret;
+        throw new UnsupportedOperationException();
     }
 }
