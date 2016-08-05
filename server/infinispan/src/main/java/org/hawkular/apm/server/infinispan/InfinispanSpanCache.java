@@ -118,15 +118,17 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
      */
     @Override
     public List<Span> getChildren(String tenant, String id) {
+        if (id == null) {
+            throw new NullPointerException("Id should not be null!");
+        }
+
         QueryFactory<?> queryFactory = Search.getQueryFactory(spansCache);
         Query query = queryFactory.from(Span.class)
                 .having("parentId")
                 .eq(id)
                 .toBuilder().build();
 
-        List<Span> queryResult = query.list();
-
-        return queryResult;
+        return query.list();
     }
 
     public Cache<String, Span> getSpansCache() {

@@ -20,6 +20,7 @@ package org.hawkular.apm.server.infinispan;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
@@ -37,16 +38,14 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testNull() {
-        InfinispanSpanCache spanCache = new InfinispanSpanCache();
-        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        InfinispanSpanCache spanCache = createCache();
 
         Assert.assertNull(spanCache.get(null, "id1"));
     }
 
     @Test
     public void testGetOne() throws CacheException {
-        InfinispanSpanCache spanCache = new InfinispanSpanCache();
-        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        InfinispanSpanCache spanCache = createCache();
 
         Span span = new Span();
         span.setId("parent");
@@ -61,8 +60,7 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testGetParent() throws CacheException {
-        InfinispanSpanCache spanCache = new InfinispanSpanCache();
-        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        InfinispanSpanCache spanCache = createCache();
 
         Span parent = new Span();
         parent.setId("parent");
@@ -83,8 +81,7 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testCacheKeyEntryGenerator() throws CacheException {
-        InfinispanSpanCache spanCache = new InfinispanSpanCache();
-        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        InfinispanSpanCache spanCache = createCache();
 
         Span span = new Span();
         span.setId("parent");
@@ -113,5 +110,13 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
         crAnnotation.setValue("cr");
 
         return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
+    }
+
+    private InfinispanSpanCache createCache() {
+        InfinispanSpanCache spanCache = new InfinispanSpanCache();
+        spanCache.setSpansCache(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME +
+                UUID.randomUUID()));
+
+        return spanCache;
     }
 }

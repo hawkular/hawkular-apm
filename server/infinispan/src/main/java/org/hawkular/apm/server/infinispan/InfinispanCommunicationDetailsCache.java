@@ -31,6 +31,9 @@ import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
+import org.infinispan.query.Search;
+import org.infinispan.query.dsl.Query;
+import org.infinispan.query.dsl.QueryFactory;
 
 /**
  * This class provides the infinispan based implementation of the communication details cache.
@@ -132,4 +135,18 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
         }
     }
 
+    @Override
+    public List<CommunicationDetails> getById(String tenantId, String id) {
+        if (id == null) {
+            throw new NullPointerException("Id should not be null!");
+        }
+
+        QueryFactory<?> queryFactory = Search.getQueryFactory(communicationDetails);
+        Query query = queryFactory.from(CommunicationDetails.class)
+                .having("id")
+                .eq(id)
+                .toBuilder().build();
+
+        return query.list();
+    }
 }

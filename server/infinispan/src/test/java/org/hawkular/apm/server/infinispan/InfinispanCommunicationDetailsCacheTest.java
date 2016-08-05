@@ -21,10 +21,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.server.api.services.CacheException;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -34,18 +38,14 @@ public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanT
 
     @Test
     public void testSingleConsumerNotFound() {
-        InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
-
-        cdc.setCommunicationDetails(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        InfinispanCommunicationDetailsCache cdc = createCache();
 
         assertNull(cdc.get(null, "id1"));
     }
 
     @Test
     public void testSingleConsumerFound() {
-        InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
-
-        cdc.setCommunicationDetails(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+        InfinispanCommunicationDetailsCache cdc = createCache();
 
         List<CommunicationDetails> details = new ArrayList<CommunicationDetails>();
         CommunicationDetails cd = new CommunicationDetails();
@@ -61,4 +61,54 @@ public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanT
         assertEquals(cd, cdc.get(null, "id1"));
     }
 
+    @Test
+    public void testGetByIdMultiple() throws CacheException {
+        InfinispanCommunicationDetailsCache cdc = createCache();
+
+        CommunicationDetails cdMultipleConsumer1 = new CommunicationDetails();
+        cdMultipleConsumer1.setId("id1");
+        cdMultipleConsumer1.setTargetFragmentId("fragmentId1");
+        cdMultipleConsumer1.setMultiConsumer(true);
+
+        CommunicationDetails cdMultipleConsumer2 = new CommunicationDetails();
+        cdMultipleConsumer2.setId("id1");
+        cdMultipleConsumer2.setTargetFragmentId("fragmentId2");
+        cdMultipleConsumer2.setMultiConsumer(true);
+
+        CommunicationDetails cd3 = new CommunicationDetails();
+        cd3.setId("id2");
+
+        cdc.store(null, Arrays.asList(cdMultipleConsumer1, cdMultipleConsumer2, cd3));
+
+        List<CommunicationDetails> cdFromCache = cdc.getById(null, "id1");
+
+        Assert.assertEquals(2, cdFromCache.size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList(cdMultipleConsumer1, cdMultipleConsumer2)),
+                new HashSet<>(cdFromCache));
+    }
+
+    @Test
+    public void testGetMultipleEmpty() {
+        InfinispanCommunicationDetailsCache cdc = createCache();
+
+        List<CommunicationDetails> id = cdc.getById(null, "id");
+        Assert.assertTrue(id.isEmpty());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetMultipleNull() {
+        InfinispanCommunicationDetailsCache cdc = createCache();
+
+        List<CommunicationDetails> id = cdc.getById(null, null);
+        Assert.assertTrue(id.isEmpty());
+    }
+
+
+    private InfinispanCommunicationDetailsCache createCache() {
+        InfinispanCommunicationDetailsCache cdc = new InfinispanCommunicationDetailsCache();
+        cdc.setCommunicationDetails(cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME +
+                UUID.randomUUID()));
+
+        return cdc;
+    }
 }
