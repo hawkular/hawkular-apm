@@ -50,9 +50,6 @@ module E2E {
       $scope.$broadcast('dataUpdated');
     };
 
-    $rootScope.$watch('sbFilter.customStartTime', $scope.reload);
-    $rootScope.$watch('sbFilter.customEndTime', $scope.reload);
-
     let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
@@ -134,6 +131,17 @@ module E2E {
 
       // Pagination
       $scope.numPerPage = 15;
+
+      $scope.showIVD = function(txId) {
+        if ($scope.selectedTx === txId) {
+          $scope.selectedTx = '';
+        } else {
+          $http.get('/hawkular/apm/traces/complete/' + txId).then(function(resp) {
+            $scope.instDetails = resp.data.nodes;
+            $scope.selectedTx = txId;
+          });
+        }
+      };
 
       $scope.close = function() {
         $modalInstance.dismiss('cancel');

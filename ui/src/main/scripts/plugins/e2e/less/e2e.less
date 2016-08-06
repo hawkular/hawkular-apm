@@ -117,11 +117,11 @@ th {
         margin-top: 5px;
         color: #d6d6d6;
     }
-    .node g div {
-        width: 200px;
-        height: 40px;
-        color: #fff;
-    }
+    // .node g div {
+    //     width: 200px;
+    //     height: 40px;
+    //     color: #fff;
+    // }
     .node g div span.node-count {
         display: inline-block;
         width: 20px;
@@ -178,4 +178,38 @@ th {
             margin-top: 0.9em
         }
     }
+    .entity {
+        stroke-width: 1.5px;
+        stroke: #bbb;
+    }
+    .entity.consumer {
+       fill: #6e929a;
+    }
+    .entity.producer {
+        fill: #af9c3e;
+    }
+    .entity.component {
+       fill: #5f5f5f;
+    }
+    .dashed-line {
+        stroke-dasharray: 6,3
+    }
+    .black-line path {
+        stroke: #000 !important;
+        fill: #000 !important;
+    }
+}
+
+.graph.dt .node g div {
+    width: 200px;
+    height: 40px;
+    color: #fff;
+}
+
+.show-details-cell {
+    cursor: pointer;
+    text-align: center;
+}
+.details-row {
+    background-color: #FFF;
 }
