@@ -59,10 +59,12 @@
             <th ng-click="sort('duration')">Duration
               <span class="glyphicon sort-icon" ng-show="sortKey=='duration'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
+            <th>Details
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr dir-paginate="tData in filteredData = (timesData | filter:rootNode | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
+          <tr dir-paginate-start="tData in filteredData = (timesData | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
             <td>{{ tData.timestamp | date:'medium' }}</td>
             <!--<td>{{ tData.uri }}</td>-->
             <td>
@@ -72,6 +74,10 @@
             <td>{{ tData.hostname }}</td>
             <td>{{ tData.ip_address }}</td>
             <td>{{ tData.duration }}</td>
+            <td class="show-details-cell" ng-click="showIVD(tData.id)"><i class="fa fa-sitemap"></i></td>
+          </tr>
+          <tr dir-paginate-end ng-if="selectedTx === tData.id">
+            <td colspan="7" class="details-row" instance-view-diagram nodes="instDetails"><svg id="idetails" class="graph"><g/></svg></td>
           </tr>
         </tbody>
       </table>
