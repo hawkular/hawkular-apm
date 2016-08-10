@@ -157,7 +157,7 @@
               <target>
                 <property name="runtime_classpath" refid="maven.runtime.classpath" />
                 <echo message="runtime classpath: ${runtime_classpath}" />
-                <java classname="org.hawkular.apm.tests.server.TestTraceServer" fork="true" spawn="true">
+                <java classname="org.hawkular.apm.tests.server.ApmMockServer" fork="true" spawn="true">
                   <classpath>
                     <pathelement path="${project.build.outputDirectory}" />
                     <pathelement path="${runtime_classpath}" />
