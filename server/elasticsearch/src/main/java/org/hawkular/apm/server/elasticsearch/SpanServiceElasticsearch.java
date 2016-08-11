@@ -79,7 +79,6 @@ public class SpanServiceElasticsearch implements SpanService {
                 span = deserialize(response.getSourceAsString(), Span.class);
             } catch (IOException ex) {
                 log.errorFailedToParse(ex);
-                throw new IllegalStateException("Failed to deserialize span", ex);
             }
         }
 
@@ -122,7 +121,6 @@ public class SpanServiceElasticsearch implements SpanService {
                     spans.add(deserialize(searchHitFields.getSourceAsString(), Span.class));
                 } catch (IOException ex) {
                     log.errorFailedToParse(ex);
-                    throw new IllegalStateException("Failed to deserialize span", ex);
                 }
             }
         } catch (IndexMissingException ex) {
@@ -167,11 +165,11 @@ public class SpanServiceElasticsearch implements SpanService {
         BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
 
         if (bulkItemResponses.hasFailures()) {
-            log.tracef("Failed to store traces to elasticsearch: %s", bulkItemResponses.buildFailureMessage());
+            log.tracef("Failed to store spans to elasticsearch: %s", bulkItemResponses.buildFailureMessage());
             throw new StoreException(bulkItemResponses.buildFailureMessage());
         }
 
-        log.trace("Success storing traces to elasticsearch");
+        log.trace("Success storing spans to elasticsearch");
     }
 
     @Override
