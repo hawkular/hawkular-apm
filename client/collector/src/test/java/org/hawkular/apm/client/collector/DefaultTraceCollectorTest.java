@@ -589,6 +589,22 @@ public class DefaultTraceCollectorTest {
     }
 
     @Test
+    public void testDeactivate() {
+        DefaultTraceCollector collector = new DefaultTraceCollector();
+
+        assertFalse(collector.isActive());
+
+        // Cause a fragment builder to be created
+        collector.getFragmentManager().getFragmentBuilder();
+
+        assertTrue(collector.isActive());
+
+        collector.deactivate();
+
+        assertFalse(collector.isActive());
+    }
+
+    @Test
     public void testActivateUnknownURI() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
 

@@ -352,6 +352,14 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.apm.client.api.SessionManager#deactivate()
+     */
+    @Override
+    public void deactivate() {
+        collector().session().deactivate();
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.apm.client.api.SessionManager#retainNode(java.lang.String)
      */
     @Override

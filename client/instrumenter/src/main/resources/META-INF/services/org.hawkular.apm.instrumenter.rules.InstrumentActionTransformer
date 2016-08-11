@@ -18,3 +18,4 @@ org.hawkular.apm.instrumenter.rules.CompleteCorrelationTransformer
 org.hawkular.apm.instrumenter.rules.UnlinkTransformer
 org.hawkular.apm.instrumenter.rules.AssertCompleteTransformer
 org.hawkular.apm.instrumenter.rules.SuppressTransformer
+org.hawkular.apm.instrumenter.rules.DeactivateTransformer

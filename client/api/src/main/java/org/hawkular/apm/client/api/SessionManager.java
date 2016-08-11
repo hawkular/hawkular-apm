@@ -69,6 +69,12 @@ public interface SessionManager {
     boolean isActive();
 
     /**
+     * This method deactivates an active session. This will result in the current
+     * fragment builder being discarded.
+     */
+    void deactivate();
+
+    /**
      * This method indicates that the current node, for this thread of execution, should
      * be retained temporarily pending further changes. IMPORTANT: Make sure the node
      * is released, as otherwise this will prevent the fragment from being completed

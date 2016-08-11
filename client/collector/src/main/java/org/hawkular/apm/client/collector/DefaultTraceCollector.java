@@ -1494,6 +1494,22 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     }
 
     /* (non-Javadoc)
+     * @see org.hawkular.apm.client.api.SessionManager#deactivate()
+     */
+    @Override
+    public void deactivate() {
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                fragmentManager.clear();
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "deactivate failed", t);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.hawkular.apm.api.client.TraceCollector#retainNode(java.lang.String)
      */
     @Override
