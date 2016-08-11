@@ -103,7 +103,7 @@
         },{
           "name": "uri",
           "type": "java.net.URI",
-          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
+          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.uri())"
         }],
         "condition": "activate(uri.getPath(),$0.method())",
         "actions": [{
@@ -172,7 +172,7 @@
         },{
           "name": "uri",
           "type": "java.net.URI",
-          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.request.getUri())"
+          "expression": "new java.net.URI(\"http://\"+$0.host+\":\"+$0.port+$0.uri())"
         }],
         "condition": "activate(uri.getPath(),$0.method())",
         "actions": [{
