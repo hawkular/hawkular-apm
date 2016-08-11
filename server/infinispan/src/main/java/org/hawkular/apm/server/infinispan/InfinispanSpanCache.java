@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Singleton;
 
 import org.hawkular.apm.api.services.ServiceLifecycle;
 import org.hawkular.apm.server.api.model.zipkin.Span;
@@ -40,6 +41,7 @@ import org.infinispan.query.dsl.QueryFactory;
 /**
  * @author Pavol Loffay
  */
+@Singleton
 public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
 
     private static final Logger log = Logger.getLogger(InfinispanSpanCache.class.getName());
