@@ -17,14 +17,13 @@
 
 package org.hawkular.apm.server.infinispan;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.server.api.services.CacheException;
-import org.hawkular.apm.server.api.services.ObservableProperty;
+import org.hawkular.apm.server.api.services.Property;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -32,93 +31,158 @@ import org.junit.Test;
  */
 public class InfinispanPropertyCacheTest extends AbstractInfinispanTest {
 
+    private InfinispanPropertyCache propertyCache;
+
+    @Before
+    public void before() {
+        propertyCache = new InfinispanPropertyCache(cacheManager.getCache(InfinispanPropertyCache.CACHE_NAME));
+    }
+
+    @After
+    public void after() {
+        cacheManager.removeCache(InfinispanPropertyCache.CACHE_NAME);
+    }
+
     @Test
     public void testGetNonExisting() {
-        InfinispanPropertyCache cache = createCache();
-
-        ObservableProperty observableProperty = cache.get(null, "id");
-        Assert.assertNull(observableProperty);
+        Property property = propertyCache.get(null, "id");
+        Assert.assertNull(property);
     }
 
     @Test
     public void testGetOne() throws CacheException {
-        InfinispanPropertyCache cache = createCache();
+        Property<Double> doubleProperty = new Property<>("id", 15D);
+        Property<String> stringProperty = new Property<>("id2", "str");
 
-        ObservableProperty<Double> doubleObservableProperty = new ObservableProperty<>("id", 15D);
-        ObservableProperty<String> stringObservableProperty = new ObservableProperty<>("id2", "str");
+        propertyCache.store(null, doubleProperty);
+        propertyCache.store(null, stringProperty);
 
-        cache.store(null, Arrays.asList(doubleObservableProperty, stringObservableProperty));
+        Property propertyFromDb = propertyCache.get(null, "id");
+        Assert.assertEquals(doubleProperty.getValue(), propertyFromDb.getValue());
 
-        ObservableProperty propertyFromDb = cache.get(null, "id");
-        Assert.assertEquals(doubleObservableProperty.getValue(), propertyFromDb.getValue());
+        propertyFromDb = propertyCache.get(null, "id2");
+        Assert.assertEquals(stringProperty.getValue(), propertyFromDb.getValue());
+    }
 
-        propertyFromDb = cache.get(null, "id2");
-        Assert.assertEquals(stringObservableProperty.getValue(), propertyFromDb.getValue());
+    @Test
+    public void testRemove() throws CacheException {
+        propertyCache.remove(null, "id1");
+        Assert.assertNull(propertyCache.get(null, "id1"));
+
+        propertyCache.store(null, new Property<>("id", "foo"));
+        CountingObserver observer = new CountingObserver();
+        propertyCache.addObserver(null, "id", observer);
+        propertyCache.store(null, new Property<>("id", "bar"));
+        Assert.assertEquals(1, observer.updatedCounter.intValue());
+
+        propertyCache.remove(null, "id");
+        Assert.assertNull(propertyCache.get(null, "id"));
     }
 
     @Test
     public void testSystemProp() {
-        InfinispanPropertyCache cache = createCache();
-
         System.setProperty("strProp", "foo");
-        ObservableProperty<?> observableProperty = cache.get(null, "strProp");
-        Assert.assertEquals("foo", observableProperty.getValue());
+        Assert.assertEquals("foo", propertyCache.get(null, "strProp").getValue());
         System.clearProperty("strProp");
 
         System.setProperty("intProp", "2");
-        observableProperty = cache.get(null, "intProp");
-        Assert.assertEquals("2", observableProperty.getValue());
+        Assert.assertEquals("2", propertyCache.get(null, "intProp").getValue());
         System.clearProperty("intProp");
     }
 
     @Test
-    public void testObservablePropertyChanges() throws CacheException {
-        InfinispanPropertyCache cache = createCache();
+    public void testObservableCreated() throws CacheException {
+        CountingObserver observer = new CountingObserver();
+        propertyCache.addObserver(null, "id1", observer);
 
-        DummyObserver observer = new DummyObserver();
+        propertyCache.store(null, new Property<>("id1", 2));
+        Assert.assertEquals(1, observer.createdCounter.intValue());
 
-        ObservableProperty<Integer> property = new ObservableProperty<>("id1", 2, Collections.singleton(observer));
-        cache.store(null, Arrays.asList(property));
-
-        cache.get(null, "id1").updateValue(2);
-        cache.get(null, "id1").updateValue(5);
-
-        Assert.assertEquals(2, observer.called.intValue());
+        propertyCache.store(null, new Property<>("id1", 22));
+        Assert.assertEquals(1, observer.createdCounter.intValue());
     }
 
     @Test
-    public void testStore() throws CacheException {
-        InfinispanPropertyCache cache = createCache();
+    public void testObservableUpdated() throws CacheException {
+        CountingObserver observer = new CountingObserver();
+        propertyCache.addObserver(null, "id1", observer);
 
-        DummyObserver observer = new DummyObserver();
-        ObservableProperty<Integer> property = new ObservableProperty<>("id1", 2, Collections.singleton(observer));
-        cache.store(null, Arrays.asList(property));
+        propertyCache.store(null, new Property<>("id1", 2));
+        Assert.assertEquals(0, observer.updatedCounter.intValue());
 
-        DummyObserver observer2 = new DummyObserver();
-        ObservableProperty<Integer> property2 = new ObservableProperty<>("id1", 3, Collections.singleton(observer2));
+        propertyCache.store(null, new Property<>("id1", 2));
+        Assert.assertEquals(0, observer.updatedCounter.intValue());
 
-        cache.store(null, Arrays.asList(property2));
-
-        ObservableProperty propFromCache = cache.get(null, "id1");
-        Assert.assertEquals(3, propFromCache.getValue());
-        Assert.assertEquals(1, observer.called.intValue());
-        Assert.assertEquals(0, observer2.called.intValue());
+        propertyCache.store(null, new Property<>("id1", 111));
+        Assert.assertEquals(1, observer.updatedCounter.intValue());
     }
 
-    private InfinispanPropertyCache createCache() {
-        InfinispanPropertyCache propertyCache = new InfinispanPropertyCache(
-                cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME + UUID.randomUUID()));
+    @Test
+    public void testObservableRemoved() throws CacheException {
+        CountingObserver observer = new CountingObserver();
+        propertyCache.addObserver(null, "id1", observer);
 
-        return propertyCache;
+        propertyCache.store(null, new Property<>("id1", 2));
+        Assert.assertEquals(0, observer.removedCounter.intValue());
+
+        propertyCache.store(null, new Property<>("id1", 111));
+        Assert.assertEquals(0, observer.removedCounter.intValue());
+
+        propertyCache.remove(null, "id1");
+        Assert.assertEquals(1, observer.removedCounter.intValue());
+        propertyCache.remove(null, "id1");
+        Assert.assertEquals(1, observer.removedCounter.intValue());
+
+        propertyCache.store(null, new Property<>("id1", 222));
+        propertyCache.remove(null, "id1");
+        Assert.assertEquals(2, observer.removedCounter.intValue());
     }
 
-    private class DummyObserver implements ObservableProperty.Observer {
+    @Test
+    public void testObservableOnNonExistingEntry() throws CacheException {
+        CountingObserver observer = new CountingObserver();
+        propertyCache.addObserver(null, "id1", observer);
 
-        private AtomicInteger called = new AtomicInteger();
+        propertyCache.store(null, new Property<>("id1", 33));
+        Assert.assertEquals(1, observer.createdCounter.intValue());
+        Assert.assertEquals(0, observer.updatedCounter.intValue());
+        Assert.assertEquals(0, observer.removedCounter.intValue());
+    }
+
+    @Test
+    public void testRemoveObserver() throws CacheException {
+        CountingObserver observer = new CountingObserver();
+
+        propertyCache.store(null, new Property<>("id1", 2));
+        propertyCache.addObserver(null, "id1", observer);
+
+        propertyCache.store(null, new Property<>("id1", 34));
+        Assert.assertEquals(1, observer.updatedCounter.intValue());
+
+        propertyCache.removeObserver(null, "id1", observer);
+        propertyCache.store(null, new Property<>("id1", 32));
+        Assert.assertEquals(1, observer.updatedCounter.intValue());
+    }
+
+    private class CountingObserver<T> implements InfinispanPropertyCache.Observer<T> {
+
+        private AtomicInteger createdCounter = new AtomicInteger();
+        private AtomicInteger updatedCounter = new AtomicInteger();
+        private AtomicInteger removedCounter = new AtomicInteger();
 
         @Override
-        public void update() {
-            called.incrementAndGet();
+        public void created(Property<T> value) {
+            createdCounter.getAndIncrement();
+        }
+
+        @Override
+        public void updated(Property<T> newValue) {
+            updatedCounter.getAndIncrement();
+        }
+
+        @Override
+        public void removed(Property<T> oldValue) {
+            removedCounter.getAndIncrement();
         }
     }
 }
