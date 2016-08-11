@@ -212,6 +212,41 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-itest-user</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>java</executable>
+              <environmentVariables>
+                <JBOSS_HOME>${hawkular.home}</JBOSS_HOME>
+              </environmentVariables>
+              <arguments>
+                <argument>-jar</argument>
+                <argument>${hawkular.home}/jboss-modules.jar</argument>
+                <argument>-mp</argument>
+                <argument>${hawkular.home}/modules</argument>
+                <argument>org.jboss.as.domain-add-user</argument>
+                <argument>-a</argument>
+                <argument>--user</argument>
+                <argument>jdoe</argument>
+                <argument>--password</argument>
+                <argument>password</argument>
+                <argument>--group</argument>
+                <argument>read-write,read-only</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-maven-plugin</artifactId>
