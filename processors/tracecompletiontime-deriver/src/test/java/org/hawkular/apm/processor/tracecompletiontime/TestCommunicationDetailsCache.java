@@ -61,4 +61,8 @@ public class TestCommunicationDetailsCache implements CommunicationDetailsCache 
         }
     }
 
+    @Override
+    public List<CommunicationDetails> getById(String tenantId, String id) {
+        throw new UnsupportedOperationException();
+    }
 }

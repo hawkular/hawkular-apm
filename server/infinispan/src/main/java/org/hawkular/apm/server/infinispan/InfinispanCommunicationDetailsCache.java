@@ -31,6 +31,9 @@ import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
+import org.infinispan.query.Search;
+import org.infinispan.query.dsl.Query;
+import org.infinispan.query.dsl.QueryFactory;
 
 /**
  * This class provides the infinispan based implementation of the communication details cache.
@@ -50,35 +53,32 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
     private Cache<String, CommunicationDetails> communicationDetails;
 
+
+    public InfinispanCommunicationDetailsCache() {}
+
+    public InfinispanCommunicationDetailsCache(Cache<String, CommunicationDetails> cache) {
+        this.communicationDetails = cache;
+    }
+
     @PostConstruct
     public void init() {
+        if (communicationDetails != null) {
+            return;
+        }
+
         // If cache container not already provisions, then must be running outside of a JEE
         // environment, so create a default cache container
         if (container == null) {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using default cache");
             }
-            setCommunicationDetails(InfinispanCacheManager.getDefaultCache(CACHE_NAME));
+            communicationDetails = InfinispanCacheManager.getDefaultCache(CACHE_NAME);
         } else {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
-            setCommunicationDetails(container.getCache(CACHE_NAME));
+            communicationDetails = container.getCache(CACHE_NAME);
         }
-    }
-
-    /**
-     * @return the communicationDetails
-     */
-    public Cache<String, CommunicationDetails> getCommunicationDetails() {
-        return communicationDetails;
-    }
-
-    /**
-     * @param communicationDetails the communicationDetails to set
-     */
-    public void setCommunicationDetails(Cache<String, CommunicationDetails> communicationDetails) {
-        this.communicationDetails = communicationDetails;
     }
 
     /* (non-Javadoc)
@@ -132,4 +132,18 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
         }
     }
 
+    @Override
+    public List<CommunicationDetails> getById(String tenantId, String id) {
+        if (id == null) {
+            throw new NullPointerException("Id should not be null!");
+        }
+
+        QueryFactory<?> queryFactory = Search.getQueryFactory(communicationDetails);
+        Query query = queryFactory.from(CommunicationDetails.class)
+                .having("id")
+                .eq(id)
+                .toBuilder().build();
+
+        return query.list();
+    }
 }

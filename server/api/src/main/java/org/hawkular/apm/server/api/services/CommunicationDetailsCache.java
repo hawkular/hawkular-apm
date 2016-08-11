@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.api.services;
 
+import java.util.List;
+
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 
 /**
@@ -25,4 +27,13 @@ import org.hawkular.apm.api.model.events.CommunicationDetails;
  */
 public interface CommunicationDetailsCache extends Cache<CommunicationDetails> {
 
+    /**
+     * Method returns all communication details with given id. Because fragments share the same id
+     * it is possible that this method returns multiple objects.
+     *
+     * @param tenantId tenant
+     * @param id id of the communication details
+     * @return communication details with the same id
+     */
+    List<CommunicationDetails> getById(String tenantId, String id);
 }

@@ -49,6 +49,12 @@ public class InfinispanProducerInfoCache implements ProducerInfoCache, ServiceLi
 
     private Cache<String, ProducerInfo> producerInfo;
 
+    public InfinispanProducerInfoCache() {}
+
+    public InfinispanProducerInfoCache(Cache<String, ProducerInfo> cache) {
+        this.producerInfo = cache;
+    }
+
     @PostConstruct
     public void init() {
         // If cache container not already provisions, then must be running outside of a JEE
@@ -57,27 +63,13 @@ public class InfinispanProducerInfoCache implements ProducerInfoCache, ServiceLi
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using default cache");
             }
-            setProducerInfo(InfinispanCacheManager.getDefaultCache(CACHE_NAME));
+            producerInfo = InfinispanCacheManager.getDefaultCache(CACHE_NAME);
         } else {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
-            setProducerInfo(container.getCache(CACHE_NAME));
+            producerInfo = container.getCache(CACHE_NAME);
         }
-    }
-
-    /**
-     * @return the producerInfo
-     */
-    public Cache<String, ProducerInfo> getProducerInfo() {
-        return producerInfo;
-    }
-
-    /**
-     * @param producerInfo the producerInfo to set
-     */
-    public void setProducerInfo(Cache<String, ProducerInfo> producerInfo) {
-        this.producerInfo = producerInfo;
     }
 
     /* (non-Javadoc)
