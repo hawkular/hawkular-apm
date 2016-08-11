@@ -88,6 +88,34 @@
           "type": "AssertComplete"
         }]
       },{
+        "ruleName": "Vertx HTTP Consumer End 2",
+        "ruleType": "JVM",
+        "interfaceName": "^io.vertx.core.http.HttpServerResponse",
+        "methodName": "end",
+        "parameterTypes": [
+        ],
+        "location": "ENTRY",
+        "actions": [{
+          "type": "InstrumentConsumer",
+          "direction": "Out",
+          "endpointTypeExpression": "\"HTTP\""
+        },{
+          "type": "AssertComplete"
+        }]
+      },{
+        "ruleName": "Vertx HTTP Consumer Deactivate Static Handler",
+        "ruleType": "JVM",
+        "interfaceName": "^io.vertx.ext.web.handler.StaticHandler",
+        "methodName": "handle",
+        "parameterTypes": [
+          "*"
+        ],
+        "location": "ENTRY",
+        "condition": "isActive()",
+        "actions": [{
+          "type": "Deactivate"
+        }]
+      },{
         "ruleName": "Vertx HTTP Producer Start 1",
         "ruleType": "JVM",
         "className": "^io.vertx.core.http.impl.HttpClientRequestImpl",
