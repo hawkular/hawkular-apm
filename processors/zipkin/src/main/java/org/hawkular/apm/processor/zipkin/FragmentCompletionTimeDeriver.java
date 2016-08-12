@@ -77,10 +77,9 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
 
             ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.NANOSECONDS));
 
-            // TODO: ADD IP ADDRESS TO COMPLETION TIME
-            //ct.setIpAddress(item.getAnnotations().get(0).getEndpoint().getIpv4());
-
-            // TODO: ADD SERVICE NAME AS PROPERTY?
+            List<Property> spanProperties = item.properties();
+            ct.setHostAddress(Span.ipv4Address(spanProperties));
+            ct.getProperties().addAll(spanProperties);
 
             ct.setTimestamp(item.getTimestamp()/1000);
 

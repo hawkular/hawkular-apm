@@ -31,6 +31,16 @@ public enum PropertyType {
     /**
      * This represents a numeric value.
      */
-    Number
+    Number,
+
+    /**
+     * This represents a boolean value.
+     */
+    Boolean,
+
+    /**
+     * This represents a binary value.
+     */
+    Binary,
 
 }

@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
@@ -203,8 +204,9 @@ public class ProducerInfoCacheUtil {
                 pi.setTimestamp(span.getTimestamp() / 1000);
                 pi.setFragmentId(span.getId());
 
-                // TODO: SET IP ADDRESS
-                //pi.setHostAddress(...);
+                List<Property> spanProperties = span.properties();
+                pi.getProperties().addAll(spanProperties);
+                pi.setHostAddress(Span.ipv4Address(spanProperties));
 
                 pi.setId(span.getId());
                 pi.setMultipleConsumers(false);

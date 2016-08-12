@@ -83,11 +83,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         // TODO: How to calculate actual - i.e. would need to know child times???
         nd.setActual(item.getDuration());
 
-        //ct.setIpAddress(item.getAnnotations().get(0).getEndpoint().getIpv4());
-
-        // TODO: ADD SERVICE NAME AS PROPERTY?
-
+        List<Property> spanProperties = item.properties();
         nd.setTimestamp(item.getTimestamp() / 1000);
+        nd.getProperties().addAll(spanProperties);
+        nd.setHostAddress(Span.ipv4Address(spanProperties));
 
         setFault(nd, item.getBinaryAnnotations());
 
