@@ -517,7 +517,7 @@ public class TraceServiceRESTTest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
-        cid.setScope(Scope.Global);
+        cid.setScope(Scope.Interaction);
         cid.setValue("myid");
 
         Consumer c1 = new Consumer();
@@ -544,7 +544,7 @@ public class TraceServiceRESTTest {
 
         // Query stored trace
         Criteria criteria = new Criteria();
-        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "myid"));
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "myid"));
 
         List<Trace> result = service.searchFragments(null, criteria);
 
@@ -560,7 +560,7 @@ public class TraceServiceRESTTest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
-        cid.setScope(Scope.Global);
+        cid.setScope(Scope.Interaction);
         cid.setValue("myid");
 
         Consumer c1 = new Consumer();

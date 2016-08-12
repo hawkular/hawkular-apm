@@ -256,24 +256,6 @@ public abstract class Node {
     }
 
     /**
-     * This method adds a global correlation id.
-     *
-     * @param id The id
-     */
-    public void addGlobalId(String id) {
-        this.correlationIds.add(new CorrelationIdentifier(Scope.Global, id));
-    }
-
-    /**
-     * This method adds a local correlation id.
-     *
-     * @param id The id
-     */
-    public void addLocalId(String id) {
-        this.correlationIds.add(new CorrelationIdentifier(Scope.Local, id));
-    }
-
-    /**
      * This methd returns the subset of correlation ids that have the
      * specified scope.
      *

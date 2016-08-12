@@ -28,32 +28,6 @@ import org.junit.Test;
 public class CorrelationIdentifierTest {
 
     @Test
-    public void testMatchGlobalSameValue() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Global);
-        id1.setValue("Test");
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Global);
-        id2.setValue("Test");
-
-        assertTrue("Global ids should match", id1.equals(id2));
-    }
-
-    @Test
-    public void testMatchGlobalDiffValue() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Global);
-        id1.setValue("Test");
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Global);
-        id2.setValue("Other");
-
-        assertFalse("Global ids should NOT match", id1.equals(id2));
-    }
-
-    @Test
     public void testMatchInteractionSameValue() {
         CorrelationIdentifier id1 = new CorrelationIdentifier();
         id1.setScope(Scope.Interaction);
@@ -77,32 +51,6 @@ public class CorrelationIdentifierTest {
         id2.setValue("Other");
 
         assertFalse("Interaction ids should NOT match", id1.equals(id2));
-    }
-
-    @Test
-    public void testMatchLocalSameValue() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Local);
-        id1.setValue("Test");
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Local);
-        id2.setValue("Test");
-
-        assertTrue("Local ids should match", id1.equals(id2));
-    }
-
-    @Test
-    public void testMatchLocalDiffValue() {
-        CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Local);
-        id1.setValue("Test");
-
-        CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Local);
-        id2.setValue("Other");
-
-        assertFalse("Local ids should NOT match", id1.equals(id2));
     }
 
 }

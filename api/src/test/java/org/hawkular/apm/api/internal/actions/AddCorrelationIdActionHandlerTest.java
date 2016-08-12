@@ -35,9 +35,9 @@ public class AddCorrelationIdActionHandlerTest {
     private static final String TEST_VALUE_1 = "testvalue1";
 
     @Test
-    public void testGlobal() {
+    public void testInteractionCorrelationId() {
         AddCorrelationIdAction action = new AddCorrelationIdAction();
-        action.setScope(Scope.Global);
+        action.setScope(Scope.Interaction);
         action.setExpression(new LiteralExpression().setValue(TEST_VALUE_1));
 
         AddCorrelationIdActionHandler handler = new AddCorrelationIdActionHandler(action);
