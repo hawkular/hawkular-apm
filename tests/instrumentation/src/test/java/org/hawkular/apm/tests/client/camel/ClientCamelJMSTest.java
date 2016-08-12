@@ -39,6 +39,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,13 +85,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
             fail("Failed to send test message: " + e);
         }
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 3);
 
         // Check stored traces - one btxn represents the test sender
         assertEquals(3, getApmMockServer().getTraces().size());
@@ -171,14 +166,6 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
     public void testJMSRequestResponse() {
         Object resp = null;
         try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait before sending message");
-        }
-
-        try {
             resp = template.sendBody("jms:queue:inboundq", ExchangePattern.InOut, "Test Message");
         } catch (Exception e) {
             fail("Failed to send test message: " + e);
@@ -186,13 +173,7 @@ public class ClientCamelJMSTest extends ClientCamelTestBase {
 
         assertEquals("Hello", resp);
 
-        try {
-            synchronized (this) {
-                wait(4000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 3);
 
         // Check stored traces - one btxn represents the test sender
         assertEquals(3, getApmMockServer().getTraces().size());

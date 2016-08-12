@@ -60,6 +60,12 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-tests-common</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-config-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>

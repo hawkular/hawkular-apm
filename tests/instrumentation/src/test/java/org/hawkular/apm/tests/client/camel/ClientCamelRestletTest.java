@@ -34,6 +34,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -129,13 +130,7 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
             fail("Failed to perform testOp: " + e);
         }
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 6);
 
         // Check stored traces (including 1 for test client)
         assertEquals(6, getApmMockServer().getTraces().size());

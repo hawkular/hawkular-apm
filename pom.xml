@@ -87,6 +87,8 @@
     <module>tools/instrumenter</module>
     <module>ui</module>
     <module>dist</module>
+    <module>tests/common</module>
+    <module>tests/server/mock</module>
   </modules>
 
   <scm>
@@ -594,14 +596,12 @@
     <profile>
       <id>tests</id>
       <modules>
-        <module>tests/common</module>
         <module>tests/instrumentation</module>
         <module>tests/container/standalone</module>
         <module>tests/container/jetty</module>
         <module>tests/container/vertx</module>
         <module>tests/container/wildfly</module>
         <module>tests/server/wildfly</module>
-        <module>tests/server/mock</module>
         <module>tests/tools/instrumenter</module>
         <module>tests/instrumentation-framework</module>
       </modules>

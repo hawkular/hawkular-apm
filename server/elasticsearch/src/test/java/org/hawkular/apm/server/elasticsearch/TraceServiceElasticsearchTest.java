@@ -33,6 +33,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -86,10 +87,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -98,6 +95,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("trace1");
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -129,10 +127,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -141,6 +135,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.setBusinessTransaction("");
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -173,10 +168,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -185,6 +176,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", null);
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -216,10 +208,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -228,6 +216,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.addProperty("prop1", "value1", Operator.HASNOT);
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 2);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -267,10 +256,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -280,6 +265,7 @@ public class TraceServiceElasticsearchTest {
         criteria.addProperty("prop1", "value1", null);
         criteria.addProperty("prop3", "value3", null);
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -311,10 +297,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -324,6 +306,7 @@ public class TraceServiceElasticsearchTest {
         criteria.addProperty("prop1", "value1", Operator.HASNOT);
         criteria.addProperty("prop1", "value3", Operator.HASNOT);
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -355,10 +338,6 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -367,6 +346,7 @@ public class TraceServiceElasticsearchTest {
         criteria.setStartTime(100);
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "gid1"));
 
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
 
         assertNotNull(result1);
@@ -413,15 +393,12 @@ public class TraceServiceElasticsearchTest {
 
         try {
             ts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
 
         // Retrieve stored trace
+        Wait.until(() -> ts.getTrace(null, "1") != null);
         Trace result = ts.getTrace(null, "1");
 
         assertNotNull(result);

@@ -28,6 +28,7 @@ import java.util.List;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -67,15 +68,8 @@ public class ClientCamelCXFTest extends ClientTestBase {
 
     @Test
     public void testInvokeCamelCXFService() {
-
         // Delay to avoid picking up previously reported txns
-        try {
-            synchronized (this) {
-                wait(500);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 0);
 
         try {
             URL url = new URL(System.getProperty("test.uri")
@@ -118,14 +112,7 @@ public class ClientCamelCXFTest extends ClientTestBase {
             fail("Failed to get cxf response: " + e);
         }
 
-        // Need to wait for trace fragment to be reported to server
-        try {
-            synchronized (this) {
-                wait(3000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
 
         // Check if trace fragments have been reported
         List<Trace> btxns = getApmMockServer().getTraces();

@@ -18,7 +18,6 @@ package org.hawkular.apm.tests.client.camel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,13 +57,7 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
 
     @Test
     public void testFileSplitNotParallel() {
-        try {
-            synchronized (this) {
-                wait(5000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
 
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();

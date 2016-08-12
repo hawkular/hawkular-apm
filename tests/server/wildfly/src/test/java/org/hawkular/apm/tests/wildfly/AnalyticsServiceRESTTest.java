@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.analytics.service.rest.client.AnalyticsServiceRESTClient;
 import org.hawkular.apm.api.model.Property;
@@ -49,6 +50,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.trace.publisher.rest.client.TracePublisherRESTClient;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Before;
@@ -146,13 +148,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -189,13 +185,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -230,13 +220,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -275,13 +259,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -323,13 +301,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -370,13 +342,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -438,13 +404,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -483,13 +443,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -543,13 +497,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -595,13 +543,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -697,13 +639,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -744,13 +680,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -835,13 +765,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -882,13 +806,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -980,13 +898,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1035,13 +947,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1135,13 +1041,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1200,13 +1100,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1350,13 +1244,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1404,13 +1292,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1504,13 +1386,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1522,15 +1398,15 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setHostName("hostA").setStartTime(0).setEndTime(0);
 
+        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 2);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
-
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        criteria = new Criteria();
-        criteria.setHostName("hostB").setStartTime(0).setEndTime(0);
+        Criteria criteria2 = new Criteria();
+        criteria2.setHostName("hostB").setStartTime(0).setEndTime(0);
 
-        stats = analytics.getNodeSummaryStatistics(null, criteria);
+        stats = analytics.getNodeSummaryStatistics(null, criteria2);
 
         assertNotNull(stats);
         assertEquals(0, stats.size());
@@ -1567,13 +1443,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1734,13 +1604,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1830,14 +1694,8 @@ public class AnalyticsServiceRESTTest {
             fail("Failed to store: " + e1);
         }
 
-        // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        // Wait to ensure record persisted, 10 seconds didn't seem enough :/
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2, 15, TimeUnit.SECONDS);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1924,13 +1782,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -2044,13 +1896,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -2087,13 +1933,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -2159,15 +1999,6 @@ public class AnalyticsServiceRESTTest {
 
     @Test
     public void testGetCompletionTimeMultiFragment() {
-        // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
         long baseTime=System.currentTimeMillis() - 4000;
 
         Trace trace1 = new Trace();
@@ -2211,6 +2042,9 @@ public class AnalyticsServiceRESTTest {
         traces.add(trace1);
         traces.add(trace2);
 
+        assertEquals(1000, trace1.calculateDuration());
+        assertEquals(1500, trace2.calculateDuration());
+
         try {
             publisher.publish(null, traces);
         } catch (Exception e1) {
@@ -2218,16 +2052,7 @@ public class AnalyticsServiceRESTTest {
         }
 
         // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        assertEquals(1000, trace1.calculateDuration());
-        assertEquals(1500, trace2.calculateDuration());
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -2238,6 +2063,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
+        Wait.until(() -> analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 10000).size() == 1);
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 10000);
 
         assertNotNull(stats);

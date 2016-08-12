@@ -18,7 +18,6 @@ package org.hawkular.apm.tests.client.vertx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -96,13 +96,7 @@ public class ClientVertxTest extends ClientTestBase {
             });
         }).listen(8080);
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for vertx service startup");
-        }
+        Wait.forPortToBeUsed(8080);
 
         Vertx.vertx().createHttpClient().post(8080, "localhost", "/hello_end_to_end", resp -> {
             System.out.println("Got response " + resp.statusCode());
@@ -117,13 +111,7 @@ public class ClientVertxTest extends ClientTestBase {
     }
 
     protected void evaluateBTxnFragments() {
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 4);
 
         // Check stored business transactions (including 1 for test client)
         assertEquals(4, getApmMockServer().getTraces().size());
