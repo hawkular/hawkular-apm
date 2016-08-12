@@ -145,9 +145,6 @@
             </goals>
             <configuration>
               <tasks>
-                <copy file="${basedir}/src/main/security/application-roles.properties" todir="${basedir}/target/${build.dir}/standalone/configuration" overwrite="true" />
-                <copy file="${basedir}/src/main/security/application-users.properties" todir="${basedir}/target/${build.dir}/standalone/configuration" overwrite="true" />
-
                 <!-- Overwrite the standalone.xml with the modified standalone-full.xml, so that
                      it becomes the new default, and the standalone-ha.xml with the modified
                      standalone-ha-full.xml to be consistent -->
@@ -181,5 +178,56 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <copy
+                      file="${basedir}/src/main/security/application-roles.properties"
+                      todir="${basedir}/target/${build.dir}/standalone/configuration"
+                      overwrite="true" />
+                    <copy
+                      file="${basedir}/src/main/security/application-users.properties"
+                      todir="${basedir}/target/${build.dir}/standalone/configuration"
+                      overwrite="true" />
+
+                    <!-- Overwrite the standalone.xml with the modified standalone-full.xml,
+                      so that it becomes the new default, and the standalone-ha.xml with the modified
+                      standalone-ha-full.xml to be consistent -->
+                    <move
+                      file="${basedir}/target/${build.dir}/standalone/configuration/standalone-full.xml"
+                      tofile="${basedir}/target/${build.dir}/standalone/configuration/standalone.xml"
+                      overwrite="true" />
+                    <move
+                      file="${basedir}/target/${build.dir}/standalone/configuration/standalone-full-ha.xml"
+                      tofile="${basedir}/target/${build.dir}/standalone/configuration/standalone-ha.xml"
+                      overwrite="true" />
+
+                    <replace token="Xms64m" value="Xms256m"
+                      file="${basedir}/target/${build.dir}/bin/standalone.conf" />
+                    <replace token="Xmx512m" value="Xmx2048m"
+                      file="${basedir}/target/${build.dir}/bin/standalone.conf" />
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
