@@ -89,13 +89,13 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         nd.setHostAddress(Span.ipv4Address(spanProperties));
 
         setFault(nd, item.getBinaryAnnotations());
+        nd.setOperation(SpanDeriverUtil.deriveOperation(item));
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver ret=" + nd);
         }
         return nd;
     }
-
 
     private void setFault(NodeDetails nodeDetails, List<BinaryAnnotation> binaryAnnotations) {
         List<HttpCodesUtil.HttpCode> errorCodes =

@@ -65,6 +65,7 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<Span, Completi
             ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.NANOSECONDS));
 
             ct.setTimestamp(item.getTimestamp()/1000);
+            ct.setOperation(SpanDeriverUtil.deriveOperation(item));
 
             List<Property> spanProperties = item.properties();
             ct.getProperties().addAll(spanProperties);

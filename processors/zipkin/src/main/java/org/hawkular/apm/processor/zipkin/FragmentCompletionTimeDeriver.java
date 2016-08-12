@@ -84,6 +84,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
             ct.setTimestamp(item.getTimestamp()/1000);
 
             setFault(ct, item.getBinaryAnnotations());
+            ct.setOperation(SpanDeriverUtil.deriveOperation(item));
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("FragmentCompletionTimeDeriver ret=" + ct);
