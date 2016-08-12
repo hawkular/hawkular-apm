@@ -722,6 +722,36 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCompletionCount2() {
+        List<CompletionTime> cts = new ArrayList<CompletionTime>();
+
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setTimestamp(1000);
+        cts.add(ct1);
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("testapp");
+        ct2.setTimestamp(2000);
+        cts.add(ct2);
+
+        try {
+            analytics.storeTraceCompletionTimes(null, cts);
+
+            synchronized (this) {
+                wait(1000);
+            }
+        } catch (Exception e) {
+            fail("Failed to store: " + e);
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(1500);
+
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+    }
+
+    @Test
     public void testGetCompletionCountForFault() {
         List<CompletionTime> cts = new ArrayList<CompletionTime>();
 

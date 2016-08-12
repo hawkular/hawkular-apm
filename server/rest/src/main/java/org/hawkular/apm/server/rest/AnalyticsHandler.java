@@ -454,6 +454,42 @@ public class AnalyticsHandler {
 
     }
 
+    @POST
+    @Path("trace/completion/count")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the trace completion count",
+            response = Long.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getTraceCompletionCount(
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "query criteria") Criteria criteria) {
+
+        try {
+            log.tracef("Get trace completion count for criteria [%s]", criteria);
+
+            long count = analyticsService.getTraceCompletionCount(
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
+
+            log.tracef("Got trace completion count: criteria [%s] = [%s]", criteria, count);
+
+            response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
     @GET
     @Path("trace/completion/faultcount")
     @Produces(APPLICATION_JSON)
@@ -504,6 +540,42 @@ public class AnalyticsHandler {
 
             RESTServiceUtil.decodeFaults(criteria.getFaults(), faults);
 
+            log.tracef("Get trace fault count for criteria [%s]", criteria);
+
+            long count = analyticsService.getTraceCompletionFaultCount(
+                    securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
+
+            log.tracef("Got trace fault count: criteria [%s] = [%s]", criteria, count);
+
+            response.resume(Response.status(Response.Status.OK).entity(count).type(APPLICATION_JSON_TYPE)
+                    .build());
+
+        } catch (Throwable e) {
+            log.debug(e.getMessage(), e);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("errorMsg", "Internal Error: " + e.getMessage());
+            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+        }
+
+    }
+
+    @POST
+    @Path("trace/completion/faultcount")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Get the number of trace instances that returned a fault",
+            response = Long.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public void getTraceCompletionFaultCount(
+            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
+            @Suspended final AsyncResponse response,
+            @ApiParam(required = true,
+                    value = "query criteria") Criteria criteria) {
+
+        try {
             log.tracef("Get trace fault count for criteria [%s]", criteria);
 
             long count = analyticsService.getTraceCompletionFaultCount(

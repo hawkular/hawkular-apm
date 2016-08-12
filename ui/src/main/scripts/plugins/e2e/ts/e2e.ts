@@ -39,15 +39,28 @@ module E2E {
         console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
       });
 
-      $http.get('/hawkular/apm/analytics/trace/completion/count?startTime=' + $rootScope.sbFilter.criteria.startTime).
+      $scope.updateInstanceCount();
+
+      // this informs the sidebar directive, so it'll update it's data as well
+      $scope.$broadcast('dataUpdated');
+    };
+
+    $scope.updateInstanceCount = function() {
+
+      let localCriteria = JSON.parse(JSON.stringify($rootScope.sbFilter.criteria));
+      let nodeIndex = _.indexOf($scope.topLevel, $scope.rootNode);
+
+      if (nodeIndex > -1) {
+        localCriteria.uri = $scope.uris[nodeIndex];
+        localCriteria.operation = $scope.operations[nodeIndex];
+      }
+
+      $http.post('/hawkular/apm/analytics/trace/completion/count', localCriteria).
         then((resp) => {
         $scope.instanceCount = resp.data || 0;
       }, (error) => {
         console.log('Failed to get instance count: ' + JSON.stringify(error));
       });
-
-      // this informs the sidebar directive, so it'll update it's data as well
-      $scope.$broadcast('dataUpdated');
     };
 
     let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
@@ -55,11 +68,18 @@ module E2E {
 
     $rootScope.$watch('sbFilter.criteria', $scope.reload, true);
 
+    $scope.$watch('rootNode', $scope.updateInstanceCount, true);
+
     // get top level nodes
     $scope.findTopLevels = function() {
       $scope.topLevel = [];
+      $scope.uris = [];
+      $scope.operations = [];
+
       _.each($scope.e2eData, (node) => {
         $scope.topLevel.push(node.id);
+        $scope.uris.push(node.uri);
+        $scope.operations.push(node.operation);
       });
     };
 
@@ -98,14 +118,22 @@ module E2E {
       }
     };
 
-    let ModalInstanceCtrl = function ($scope, $modalInstance, $log, rootNode) {
+    let ModalInstanceCtrl = function ($scope, $modalInstance, $log, rootNode, topLevel, uris, operations) {
 
       $scope.rootNode = {
         'uri': rootNode
       };
 
+      let localCriteria = JSON.parse(JSON.stringify($rootScope.sbFilter.criteria));
+      let nodeIndex = _.indexOf(topLevel, rootNode);
+
+      if (nodeIndex > -1) {
+        localCriteria.uri = uris[nodeIndex];
+        localCriteria.operation = operations[nodeIndex];
+      }
+
       let instDetails = $http.post('/hawkular/apm/analytics/trace/completion/times',
-                                   $rootScope.sbFilter.criteria);
+                                   localCriteria);
 
       instDetails.then(function(resp) {
         $scope.timesData = resp.data;
@@ -156,6 +184,15 @@ module E2E {
         resolve: {
           rootNode: function () {
             return $scope.rootNode;
+          },
+          topLevel: function () {
+            return $scope.topLevel;
+          },
+          uris: function() {
+            return $scope.uris;
+          },
+          operations: function() {
+            return $scope.operations;
           }
         }
       });

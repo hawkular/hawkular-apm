@@ -63,6 +63,8 @@ public class CommunicationSummaryStatistics {
         this.maximumDuration = node.maximumDuration;
         this.count = node.count;
         this.severity = node.severity;
+        this.uri = node.uri;
+        this.operation = node.operation;
         for (String id : node.getOutbound().keySet()) {
             this.outbound.put(id, new ConnectionStatistics(node.getOutbound().get(id)));
         }
@@ -205,6 +207,70 @@ public class CommunicationSummaryStatistics {
                 + "]";
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (averageDuration ^ (averageDuration >>> 32));
+        result = prime * result + (int) (count ^ (count >>> 32));
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (int) (maximumDuration ^ (maximumDuration >>> 32));
+        result = prime * result + (int) (minimumDuration ^ (minimumDuration >>> 32));
+        result = prime * result + ((operation == null) ? 0 : operation.hashCode());
+        result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
+        result = prime * result + severity;
+        result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CommunicationSummaryStatistics other = (CommunicationSummaryStatistics) obj;
+        if (averageDuration != other.averageDuration)
+            return false;
+        if (count != other.count)
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (maximumDuration != other.maximumDuration)
+            return false;
+        if (minimumDuration != other.minimumDuration)
+            return false;
+        if (operation == null) {
+            if (other.operation != null)
+                return false;
+        } else if (!operation.equals(other.operation))
+            return false;
+        if (outbound == null) {
+            if (other.outbound != null)
+                return false;
+        } else if (!outbound.equals(other.outbound))
+            return false;
+        if (severity != other.severity)
+            return false;
+        if (uri == null) {
+            if (other.uri != null)
+                return false;
+        } else if (!uri.equals(other.uri))
+            return false;
+        return true;
+    }
+
     /**
      * This class represents the stats associated with an outbound communication
      * channel to another node.
@@ -339,6 +405,52 @@ public class CommunicationSummaryStatistics {
             return "ConnectionStatistics [minimumLatency=" + minimumLatency + ", averageLatency=" + averageLatency
                     + ", maximumLatency=" + maximumLatency + ", count=" + count + ", severity=" + severity + ", node="
                     + node + "]";
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (int) (averageLatency ^ (averageLatency >>> 32));
+            result = prime * result + (int) (count ^ (count >>> 32));
+            result = prime * result + (int) (maximumLatency ^ (maximumLatency >>> 32));
+            result = prime * result + (int) (minimumLatency ^ (minimumLatency >>> 32));
+            result = prime * result + ((node == null) ? 0 : node.hashCode());
+            result = prime * result + severity;
+            return result;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ConnectionStatistics other = (ConnectionStatistics) obj;
+            if (averageLatency != other.averageLatency)
+                return false;
+            if (count != other.count)
+                return false;
+            if (maximumLatency != other.maximumLatency)
+                return false;
+            if (minimumLatency != other.minimumLatency)
+                return false;
+            if (node == null) {
+                if (other.node != null)
+                    return false;
+            } else if (!node.equals(other.node))
+                return false;
+            if (severity != other.severity)
+                return false;
+            return true;
         }
 
     }
