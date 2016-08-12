@@ -22,18 +22,39 @@ import java.util.List;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 
 /**
+ * Class for deriving various information from {@link Span}.
+ *
  * @author Pavol Loffay
  */
 public class SpanDeriverUtil {
 
     private SpanDeriverUtil() {}
 
+    /**
+     * Derives an operation from supplied span.
+     *
+     * @param span the Span
+     * @return operation (e.g. HTTP method)
+     */
     public static String deriveOperation(Span span) {
-        List<HttpCodesUtil.HttpCode> httpStatusCodes = HttpCodesUtil.getHttpStatusCodes(span.getBinaryAnnotations());
-        if (httpStatusCodes.size() > 0) {
-            return span.getName();
+        return SpanHttpDeriverUtil.getHttpMethod(span);
+    }
+
+    /**
+     * Derives fault from Span. Fault is determined by HTTP client/server error code contained in binary annotations.
+     *
+     * @param span the span
+     * @return fault ()
+     */
+    public static String deriveFault(Span span) {
+        List<SpanHttpDeriverUtil.HttpCode> errorCodes =
+                SpanHttpDeriverUtil.getClientOrServerErrors(SpanHttpDeriverUtil.getHttpStatusCodes(span.getBinaryAnnotations()));
+
+        if (errorCodes.size() > 0) {
+            return errorCodes.iterator().next().getDescription();
         }
 
         return null;
     }
+
 }
