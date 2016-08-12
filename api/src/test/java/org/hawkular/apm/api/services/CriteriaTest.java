@@ -175,7 +175,7 @@ public class CriteriaTest {
         Criteria criteria = new Criteria();
 
         CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Global);
+        id1.setScope(Scope.Interaction);
         id1.setValue("value1");
 
         criteria.getCorrelationIds().add(id1);
@@ -186,7 +186,7 @@ public class CriteriaTest {
 
         assertTrue(queryParameters.containsKey("correlations"));
 
-        assertEquals("Global|value1", queryParameters.get("correlations"));
+        assertEquals("Interaction|value1", queryParameters.get("correlations"));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class CriteriaTest {
         Criteria criteria = new Criteria();
 
         CorrelationIdentifier id1 = new CorrelationIdentifier();
-        id1.setScope(Scope.Global);
+        id1.setScope(Scope.Interaction);
         id1.setValue("value1");
 
         criteria.getCorrelationIds().add(id1);
@@ -211,8 +211,8 @@ public class CriteriaTest {
 
         assertTrue(queryParameters.containsKey("correlations"));
 
-        assertTrue(queryParameters.get("correlations").equals("Global|value1,Interaction|value2")
-                || queryParameters.get("correlations").equals("Interaction|value2,Global|value1"));
+        assertTrue(queryParameters.get("correlations").equals("Interaction|value1,Interaction|value2")
+                || queryParameters.get("correlations").equals("Interaction|value2,Interaction|value1"));
     }
 
 }

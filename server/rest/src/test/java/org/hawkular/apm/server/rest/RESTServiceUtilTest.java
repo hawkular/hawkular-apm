@@ -128,7 +128,7 @@ public class RESTServiceUtilTest {
 
     @Test
     public void testDecodeCorrelationIdsSingle() {
-        String encoded = "Global|world";
+        String encoded = "Interaction|world";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
         RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
@@ -136,7 +136,7 @@ public class RESTServiceUtilTest {
         assertTrue("Correlation identifiers should have 1 entry", correlations.size() == 1);
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
-        cid.setScope(Scope.Global);
+        cid.setScope(Scope.Interaction);
         cid.setValue("world");
 
         assertTrue(correlations.contains(cid));
@@ -144,7 +144,7 @@ public class RESTServiceUtilTest {
 
     @Test
     public void testDecodeCorrelationIdsSingleWithSpaces() {
-        String encoded = " Local | world ";
+        String encoded = " Interaction | world ";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
         RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
@@ -152,7 +152,7 @@ public class RESTServiceUtilTest {
         assertTrue("Correlation identifiers should have 1 entry", correlations.size() == 1);
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
-        cid.setScope(Scope.Local);
+        cid.setScope(Scope.Interaction);
         cid.setValue("world");
 
         assertTrue(correlations.contains(cid));
@@ -160,7 +160,7 @@ public class RESTServiceUtilTest {
 
     @Test
     public void testDecodeCorrelationIdsMultiple() {
-        String encoded = "Global|world,Interaction|hello";
+        String encoded = "Interaction|world,Interaction|hello";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
         RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
@@ -168,7 +168,7 @@ public class RESTServiceUtilTest {
         assertTrue("Correlation identifiers should have 2 entry", correlations.size() == 2);
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
-        cid1.setScope(Scope.Global);
+        cid1.setScope(Scope.Interaction);
         cid1.setValue("world");
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();

@@ -341,7 +341,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace1);
 
         Consumer c1=new Consumer();
-        c1.addGlobalId("gid1");
+        c1.addInteractionId("gid1");
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
@@ -350,7 +350,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace2);
 
         Consumer c2=new Consumer();
-        c2.addGlobalId("gid2");
+        c2.addInteractionId("gid2");
         trace2.getNodes().add(c2);
 
         try {
@@ -365,7 +365,7 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "gid1"));
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "gid1"));
 
         List<Trace> result1 = ts.searchFragments(null, criteria);
 

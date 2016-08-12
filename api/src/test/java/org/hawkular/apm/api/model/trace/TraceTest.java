@@ -130,7 +130,6 @@ public class TraceTest {
         Trace trace = new Trace();
 
         Consumer c1 = new Consumer();
-        c1.addGlobalId("gid");
         trace.getNodes().add(c1);
 
         assertTrue(trace.initialFragment());
@@ -141,7 +140,6 @@ public class TraceTest {
         Trace trace = new Trace();
 
         Consumer c1 = new Consumer();
-        c1.addGlobalId("gid");
         c1.addInteractionId("myid");
         trace.getNodes().add(c1);
 
@@ -159,7 +157,7 @@ public class TraceTest {
         Consumer c1 = new Consumer();
         trace.getNodes().add(c1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID2"));
         c1.setDuration(1000);
         c1.setBaseTime(1);
@@ -182,7 +180,7 @@ public class TraceTest {
         Component s1 = new Component();
         c1.getNodes().add(s1);
 
-        s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID1"));
+        s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
         s1.setDuration(900);
         s1.setBaseTime(2);
         s1.setOperation("Op1");
@@ -203,7 +201,7 @@ public class TraceTest {
         Component s2 = new Component();
         s1.getNodes().add(s2);
 
-        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3"));
+        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID3"));
         s2.setDuration(500);
         s2.setBaseTime(3);
         s2.setOperation("Op2");
@@ -213,7 +211,7 @@ public class TraceTest {
         Producer p1 = new Producer();
         s2.getNodes().add(p1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Global, "CID3"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID3"));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID4"));
         c1.setDuration(400);
         c1.setBaseTime(4);

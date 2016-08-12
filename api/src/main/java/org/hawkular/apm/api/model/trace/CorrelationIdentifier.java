@@ -127,22 +127,12 @@ public class CorrelationIdentifier {
      *
      */
     public enum Scope {
-        /**
-         * The 'Global' scope means the identifier is unique over the end to end
-         * life of the trace.
-         */
-        Global,
-
-        /**
-         * The 'Local' scope means the identifier is unique within an island
-         * of the trace (e.g. a business process instance).
-         */
-        Local,
 
         /**
          * The 'Interaction' scope means the identifier is only unique in relation
          * to a specific exchange between two (or more) participants.
          */
         Interaction
+
     }
 }

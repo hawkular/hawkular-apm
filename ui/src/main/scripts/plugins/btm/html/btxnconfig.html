@@ -208,7 +208,11 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="simple-dropdown">
                 <li><a href="" ng-click="addAction(processor, 'AddContent')">Add Content</a></li>
+
+                <!-- See HWKAPM-566
                 <li><a href="" ng-click="addAction(processor, 'AddCorrelationId')">Add Correlation Identifier</a></li>
+                -->
+
                 <li><a href="" ng-click="addAction(processor, 'EvaluateURI')">Evaluate URI</a></li>
                 <li><a href="" ng-click="addAction(processor, 'SetDetail')">Set Detail</a></li>
                 <li><a href="" ng-click="addAction(processor, 'SetFault')">Set Fault Code</a></li>
@@ -311,9 +315,10 @@
                     <label for="correlationScope"  class="col-sm-3" >Correlation Scope: </label>
                     <div class="col-sm-6">
                       <select name="correlationScope" ng-model="action.scope" ng-show="action.actionType === 'AddCorrelationId'" ng-change="setDirty()" class="form-control">
-                        <option value="Global">Global</option>
+                        <!-- HWKAPM-566 - not sure whether this scope value should be specified by the user.
+                             Possibly only reserved for auto-generated interaction based correlation.
                         <option value="Interaction">Interaction</option>
-                        <option value="Local">Local</option>
+                        -->
                       </select>
                     </div>
                   </div>
