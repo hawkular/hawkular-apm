@@ -20,8 +20,12 @@ package org.hawkular.apm.server.elasticsearch;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -35,7 +39,15 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
+import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.trace.Component;
+import org.hawkular.apm.api.model.trace.Consumer;
+import org.hawkular.apm.api.model.trace.InteractionNode;
+import org.hawkular.apm.api.model.trace.Node;
+import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.StoreException;
+import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanService;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
@@ -118,7 +130,10 @@ public class SpanServiceElasticsearch implements SpanService {
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    spans.add(deserialize(searchHitFields.getSourceAsString(), Span.class));
+                    Span span = deserialize(searchHitFields.getSourceAsString(), Span.class);
+                    if (!span.serverSpan()) {
+                        spans.add(span);
+                    }
                 } catch (IOException ex) {
                     log.errorFailedToParse(ex);
                 }
@@ -190,6 +205,145 @@ public class SpanServiceElasticsearch implements SpanService {
 
             client.clear(tenantId);
         }
+    }
+
+    @Override
+    public Trace getTraceFragment(String tenantId, String id) {
+        Span span = getSpan(tenantId, id);
+
+        if (span == null) {
+            return null;
+        }
+
+        InteractionNode interactionNode = spanToNode(span);
+        interactionNode.setNodes(recursiveTraceFragment(tenantId, span));
+
+        Trace trace = spanToTrace(span);
+        trace.getNodes().add(interactionNode);
+
+        return trace;
+    }
+
+    @Override
+    public Trace getTrace(String tenantId, String id) {
+        Trace trace = getTraceFragment(tenantId, id);
+
+        if (trace != null) {
+            processConnectedFragment(tenantId, trace, trace, null);
+        }
+
+        return trace;
+    }
+
+    /**
+     * This method aggregates enhances the root trace, representing the
+     * complete end to end instance view, with the details available from
+     * a linked trace fragment that should be attached to the supplied
+     * Producer node. If the producer node is null then don't merge
+     * (as fragment is root) and just recursively process the fragment
+     * to identify additional linked fragments.
+     *
+     * @param tenantId The tenant id
+     * @param root The root trace
+     * @param fragment The fragment to be processed
+     * @param producer The producer node, or null if processing the top level fragment
+     */
+    protected void processConnectedFragment(String tenantId, Trace root, Trace fragment, Producer producer) {
+        if (producer != null) {
+            // Merge the properties associated with the fragment into the root
+            root.getProperties().addAll(fragment.getProperties());
+
+            // Attach the fragment root nodes to the producer
+            producer.getNodes().addAll(fragment.getNodes());
+        }
+
+        List<Producer> producers = new ArrayList<>();
+        NodeUtil.findNodes(fragment.getNodes(), Producer.class, producers);
+
+        for (Producer p : producers) {
+            if (!p.getCorrelationIds().isEmpty()) {
+                List<Trace> fragments = getTraceFragments(tenantId, p.getCorrelationIds().stream()
+                        .map(correlationIdentifier -> correlationIdentifier.getValue())
+                        .collect(Collectors.toList()));
+
+                for (Trace tf : fragments) {
+                    processConnectedFragment(tenantId, root, tf, p);
+                }
+            }
+        }
+    }
+
+    private List<Trace> getTraceFragments(String tenantId, List<String> ids) {
+        List<Trace> traces = new ArrayList<>();
+
+        for (String id: ids) {
+            Trace traceFragment = getTraceFragment(tenantId, id);
+            if (traceFragment != null) {
+                traces.add(traceFragment);
+            }
+        }
+
+        return traces;
+    }
+
+    private List<Node> recursiveTraceFragment(String tenantId, Span parent) {
+        List<Span> spanChildren = getChildren(tenantId, parent.getId());
+
+        if (spanChildren == null) {
+            return Collections.emptyList();
+        }
+
+        List<Node> nodes = new ArrayList<>();
+
+        for (Span child: spanChildren) {
+            InteractionNode node = spanToNode(child);
+
+            if (!parent.clientSpan()) {
+                nodes.add(node);
+            }
+
+            if (!child.clientSpan()) {
+                node.setNodes(recursiveTraceFragment(tenantId, child));
+            }
+        }
+
+        return nodes;
+    }
+
+    private Trace spanToTrace(Span span) {
+        if (span == null) {
+            throw new NullPointerException();
+        }
+
+        List<Property> spanProperties = span.properties();
+
+        Trace trace = new Trace();
+        trace.setId(span.getId());
+        trace.setStartTime(span.getTimestamp());
+        trace.setHostAddress(Span.ipv4Address(spanProperties));
+        trace.setProperties(new HashSet<>(span.properties()));
+
+        return trace;
+    }
+
+    private InteractionNode spanToNode(Span span) {
+        String endpointType = "HTTP";
+        String url = span.url() != null ? span.url().getPath() : null;
+
+        InteractionNode node;
+        if (span.serverSpan()) {
+            node = new Consumer(url, endpointType);
+            node.addInteractionId(span.getId());
+        }else if (span.clientSpan()) {
+            node = new Producer(url, endpointType);
+            node.addInteractionId(span.getId());
+        } else {
+            node = new Component(url, null);
+        }
+
+        node.setBaseTime(TimeUnit.NANOSECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
+        node.setDuration(TimeUnit.NANOSECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
+        return node;
     }
 
     private <T> T deserialize(String json, Class<T> type) throws IOException {

@@ -17,11 +17,23 @@
 
 package org.hawkular.apm.server.elasticsearch;
 
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.hawkular.apm.api.model.trace.Component;
+import org.hawkular.apm.api.model.trace.Consumer;
+import org.hawkular.apm.api.model.trace.InteractionNode;
+import org.hawkular.apm.api.model.trace.Node;
+import org.hawkular.apm.api.model.trace.NodeType;
+import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.AnnotationType;
@@ -29,6 +41,7 @@ import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Endpoint;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanService;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,7 +94,7 @@ public class SpanServiceElasticsearchTest {
         span.setAnnotations(Arrays.asList(annotation));
         span.setBinaryAnnotations(Arrays.asList(binaryAnnotation));
 
-        storeAndWait(null, span);
+        storeAndWait(null, Collections.singletonList(span));
         Span spanFromDb = spanService.getSpan(null, span.getId());
 
         assertSpansEquals(span, spanFromDb);
@@ -93,7 +106,7 @@ public class SpanServiceElasticsearchTest {
         parentSpan.setId("parent");
         parentSpan.setName("foo parent");
 
-        storeAndWait(null, parentSpan);
+        storeAndWait(null, Collections.singletonList(parentSpan));
 
         Annotation annotation = new Annotation();
         annotation.setValue("foo bar");
@@ -117,13 +130,13 @@ public class SpanServiceElasticsearchTest {
         span.setAnnotations(Arrays.asList(annotation));
         span.setBinaryAnnotations(Arrays.asList(binaryAnnotation));
 
-        storeAndWait(null, span);
+        storeAndWait(null, Collections.singletonList(span));
 
         span = new Span();
         span.setId("id2");
         span.setParentId("parent");
 
-        storeAndWait(null, span);
+        storeAndWait(null, Collections.singletonList(span));
 
         List<Span> children = spanService.getChildren(null, "parent");
 
@@ -137,15 +150,15 @@ public class SpanServiceElasticsearchTest {
         Span clientSpan = new Span();
         clientSpan.setId("foo");
         clientSpan.setDuration(111);
-        clientSpan.setAnnotations(annotations());
+        clientSpan.setAnnotations(clientAnnotations());
 
-        storeAndWait(null, clientSpan, x -> x.getId() + clientIdsuffix);
+        storeAndWait(null, Collections.singletonList(clientSpan), x -> x.getId() + clientIdsuffix);
 
         Span span = new Span();
         span.setId("foo");
         span.setDuration(444);
 
-        storeAndWait(null, span, x -> x.getId());
+        storeAndWait(null, Collections.singletonList(span), x -> x.getId());
 
         Span spanFromDb = spanService.getSpan(null, "foo");
         assertSpansEquals(span, spanFromDb);
@@ -162,7 +175,7 @@ public class SpanServiceElasticsearchTest {
 
     @Test
     public void testGetChildrenTenantIndexExists() throws StoreException, InterruptedException {
-        storeAndWait(null, new Span());
+        storeAndWait(null, Collections.singletonList(new Span()));
         List<Span> spans = spanService.getChildren(null, "id");
         Assert.assertTrue(spans.isEmpty());
     }
@@ -173,16 +186,276 @@ public class SpanServiceElasticsearchTest {
         Assert.assertNull(spanFromDB);
     }
 
-    private void storeAndWait(String tenant, Span span) throws StoreException, InterruptedException {
-        spanService.storeSpan(tenant, Arrays.asList(span));
+    @Test
+    public void testGetTraceFragmentRootServerSpan() throws StoreException, InterruptedException {
+        Span rootServerSpan = new Span();
+        rootServerSpan.setId("root");
+        rootServerSpan.setTraceId("root");
+        rootServerSpan.setAnnotations(serverAnnotations());
+
+        Span clientDescendant = new Span();
+        clientDescendant.setId("descendant");
+        clientDescendant.setParentId("root");
+        clientDescendant.setTraceId("root");
+        clientDescendant.setAnnotations(clientAnnotations());
+
+        Span clientDescendant2 = new Span();
+        clientDescendant2.setId("descendant2");
+        clientDescendant2.setParentId("root");
+        clientDescendant2.setTraceId("root");
+        clientDescendant2.setAnnotations(clientAnnotations());
+
+        Span serverDescendantOfDescendant2 = new Span();
+        serverDescendantOfDescendant2.setId("descendant2");
+        serverDescendantOfDescendant2.setParentId("root");
+        serverDescendantOfDescendant2.setTraceId("root");
+        serverDescendantOfDescendant2.setAnnotations(serverAnnotations());
+
+        Span serverDescendantOfDescendant = new Span();
+        serverDescendantOfDescendant.setId("descendant");
+        serverDescendantOfDescendant.setParentId("root");
+        serverDescendantOfDescendant.setTraceId("root");
+        serverDescendantOfDescendant.setAnnotations(serverAnnotations());
+
+        storeAndWait(null, Arrays.asList(rootServerSpan,
+                clientDescendant,
+                clientDescendant2,
+                serverDescendantOfDescendant,
+                serverDescendantOfDescendant2),
+                SpanUniqueIdGenerator::toUnique);
+
+        Trace trace = spanService.getTraceFragment(null, "root");
+        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals(1, trace.getNodes().size());
+
+        InteractionNode rootConsumerNode = ((InteractionNode) trace.getNodes().get(0));
+        Assert.assertThat(rootConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, rootConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(2, rootConsumerNode.getNodes().size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("descendant", "descendant2")),
+                extractCorrelationIds(rootConsumerNode.getNodes()));
+
+        InteractionNode descendantProducerNode = ((InteractionNode) rootConsumerNode.getNodes().get(0));
+        Assert.assertThat(descendantProducerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, descendantProducerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant", descendantProducerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertTrue(descendantProducerNode.getNodes().isEmpty());
+
+        InteractionNode descendantProducerNode2 = ((InteractionNode) rootConsumerNode.getNodes().get(1));
+        Assert.assertThat(descendantProducerNode2, instanceOf(Producer.class));
+        Assert.assertEquals(1, descendantProducerNode2.getCorrelationIds().size());
+        Assert.assertEquals("descendant2", descendantProducerNode2.getCorrelationIds().get(0).getValue());
+        Assert.assertTrue(descendantProducerNode2.getNodes().isEmpty());
+    }
+
+    @Test
+    public void testGetTraceFragmentClientRoot() throws StoreException, InterruptedException {
+        Span rootClientSpan = new Span();
+        rootClientSpan.setId("root");
+        rootClientSpan.setTraceId("root");
+        rootClientSpan.setName("rootClientSpan");
+        rootClientSpan.setAnnotations(clientAnnotations());
+
+        Span serverSpan = new Span();
+        serverSpan.setId("root");
+        serverSpan.setTraceId("root");
+        serverSpan.setAnnotations(serverAnnotations());
+
+        Span clientSpanDescendantRoot = new Span();
+        serverSpan.setId("root2");
+        serverSpan.setParentId("root");
+        serverSpan.setTraceId("root");
+        serverSpan.setAnnotations(clientAnnotations());
+
+        Span serverSpanOfClientDescendantRoot = new Span();
+        serverSpanOfClientDescendantRoot.setId("root2");
+        serverSpanOfClientDescendantRoot.setParentId("root");
+        serverSpanOfClientDescendantRoot.setTraceId("root");
+        serverSpanOfClientDescendantRoot.setAnnotations(serverAnnotations());
+
+        storeAndWait(null, Arrays.asList(
+                rootClientSpan,
+                serverSpan,
+                clientSpanDescendantRoot,
+                serverSpanOfClientDescendantRoot),
+                SpanUniqueIdGenerator::toUnique);
+
+        Trace trace = spanService.getTraceFragment(null, SpanUniqueIdGenerator.getClientId("root"));
+        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals(1, trace.getNodes().size());
+
+        InteractionNode rootProducerNode = (InteractionNode) trace.getNodes().get(0);
+        Assert.assertThat(rootProducerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, rootProducerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootProducerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, rootProducerNode.getNodes().size());
+    }
+
+    @Test
+    public void testGetTraceFragmentComponent() throws StoreException, InterruptedException {
+        Span rootServerSpan = new Span();
+        rootServerSpan.setId("root");
+        rootServerSpan.setTraceId("root");
+        rootServerSpan.setAnnotations(serverAnnotations());
+
+        Span componentSpan = new Span();
+        componentSpan.setId("component");
+        componentSpan.setParentId("root");
+        componentSpan.setTraceId("root");
+        componentSpan.setName("ejb");
+
+        Span clientComponentSpan = new Span();
+        clientComponentSpan.setId("clientComponent");
+        clientComponentSpan.setParentId("component");
+        clientComponentSpan.setTraceId("root");
+        clientComponentSpan.setAnnotations(clientAnnotations());
+
+        Span clientComponentSpan2 = new Span();
+        clientComponentSpan2.setId("clientComponent2");
+        clientComponentSpan2.setParentId("component");
+        clientComponentSpan2.setTraceId("root");
+        clientComponentSpan2.setAnnotations(clientAnnotations());
+
+        Span descendant = new Span();
+        descendant.setId("descendant");
+        descendant.setParentId("root");
+        descendant.setTraceId("root");
+        descendant.setAnnotations(clientAnnotations());
+
+        Span descendantServer = new Span();
+        descendantServer.setId("descendant");
+        descendantServer.setParentId("root");
+        descendantServer.setTraceId("root");
+        descendantServer.setAnnotations(serverAnnotations());
+
+        storeAndWait(null, Arrays.asList(
+                rootServerSpan,
+                componentSpan,
+                clientComponentSpan,
+                clientComponentSpan2,
+                descendant,
+                descendantServer),
+                SpanUniqueIdGenerator::toUnique);
+
+        Trace trace = spanService.getTraceFragment(null, "root");
+        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals(1, trace.getNodes().size());
+
+        InteractionNode rootConsumerNode = (InteractionNode) trace.getNodes().get(0);
+        Assert.assertThat(rootConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, rootConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(2, rootConsumerNode.getNodes().size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("descendant")),
+                extractCorrelationIds(rootConsumerNode.getNodes()));
+
+        InteractionNode componentNode = (InteractionNode) rootConsumerNode.getNodes().get(0);
+        Assert.assertThat(componentNode, instanceOf(Component.class));
+        Assert.assertEquals(0, componentNode.getCorrelationIds().size());
+        Assert.assertEquals(2, componentNode.getNodes().size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("clientComponent", "clientComponent2")),
+                extractCorrelationIds(componentNode.getNodes()));
+
+        InteractionNode producerNode = (InteractionNode) rootConsumerNode.getNodes().get(1);
+        Assert.assertThat(producerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, producerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant", producerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, producerNode.getNodes().size());
+    }
+
+    @Test
+    public void testGetEndToEndTrace() throws StoreException, InterruptedException {
+        Span rootServerSpan = new Span();
+        rootServerSpan.setId("root");
+        rootServerSpan.setTraceId("root");
+        rootServerSpan.setAnnotations(serverAnnotations());
+
+        Span clientDescendant = new Span();
+        clientDescendant.setId("descendant");
+        clientDescendant.setParentId("root");
+        clientDescendant.setTraceId("root");
+        clientDescendant.setAnnotations(clientAnnotations());
+
+        Span clientDescendant2 = new Span();
+        clientDescendant2.setId("descendant2");
+        clientDescendant2.setParentId("root");
+        clientDescendant2.setTraceId("root");
+        clientDescendant2.setAnnotations(clientAnnotations());
+
+        Span serverDescendantOfDescendant2 = new Span();
+        serverDescendantOfDescendant2.setId("descendant2");
+        serverDescendantOfDescendant2.setParentId("root");
+        serverDescendantOfDescendant2.setTraceId("root");
+        serverDescendantOfDescendant2.setAnnotations(serverAnnotations());
+
+        Span serverDescendantOfDescendant = new Span();
+        serverDescendantOfDescendant.setId("descendant");
+        serverDescendantOfDescendant.setParentId("root");
+        serverDescendantOfDescendant.setTraceId("root");
+        serverDescendantOfDescendant.setAnnotations(serverAnnotations());
+
+        storeAndWait(null, Arrays.asList(rootServerSpan,
+                clientDescendant,
+                clientDescendant2,
+                serverDescendantOfDescendant,
+                serverDescendantOfDescendant2),
+                SpanUniqueIdGenerator::toUnique);
+
+        Trace trace = spanService.getTrace(null, "root");
+        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals(1, trace.getNodes().size());
+
+        InteractionNode rootConsumerNode = ((InteractionNode) trace.getNodes().get(0));
+        Assert.assertThat(rootConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, rootConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(2, rootConsumerNode.getNodes().size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("descendant", "descendant2")),
+                extractCorrelationIds(rootConsumerNode.getNodes()));
+
+        InteractionNode descendantProducerNode = ((InteractionNode) rootConsumerNode.getNodes().get(0));
+        Assert.assertThat(descendantProducerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, descendantProducerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant", descendantProducerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(1, descendantProducerNode.getNodes().size());
+
+        InteractionNode descendantConsumerNode = ((InteractionNode) descendantProducerNode.getNodes().get(0));
+        Assert.assertThat(descendantConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, descendantConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant", descendantConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, descendantConsumerNode.getNodes().size());
+
+        InteractionNode descendantProducerNode2 = ((InteractionNode) rootConsumerNode.getNodes().get(1));
+        Assert.assertThat(descendantProducerNode2, instanceOf(Producer.class));
+        Assert.assertEquals(1, descendantProducerNode2.getCorrelationIds().size());
+        Assert.assertEquals("descendant2", descendantProducerNode2.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(1, descendantProducerNode2.getNodes().size());
+
+        InteractionNode descendant2ConsumerNode = ((InteractionNode) descendantProducerNode2.getNodes().get(0));
+        Assert.assertThat(descendant2ConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, descendant2ConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant2", descendant2ConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, descendant2ConsumerNode.getNodes().size());
+    }
+
+    private Set<String> extractCorrelationIds(List<Node> nodes) {
+        return new HashSet<>(nodes.stream()
+                .filter(node -> node.getType() != NodeType.Component)
+                .map(node -> node.getCorrelationIds().get(0).getValue())
+                .collect(Collectors.toList()));
+    }
+
+    private void storeAndWait(String tenant, List<Span> spans) throws StoreException, InterruptedException {
+        spanService.storeSpan(tenant, spans);
         synchronized (this) {
             wait(1000);
         }
     }
 
-    private void storeAndWait(String tenant, Span span, Function<Span, String> idSupplier) throws StoreException,
+    private void storeAndWait(String tenant, List<Span> spans, Function<Span, String> idSupplier) throws StoreException,
             InterruptedException {
-        spanService.storeSpan(tenant, Arrays.asList(span), idSupplier);
+        spanService.storeSpan(tenant, spans, idSupplier);
         synchronized (this) {
             wait(1000);
         }
@@ -244,11 +517,20 @@ public class SpanServiceElasticsearchTest {
         Assert.assertEquals(expected.getIpv4(), actual.getIpv4());
     }
 
-    private List<Annotation> annotations() {
+    private List<Annotation> clientAnnotations() {
         Annotation csAnnotation = new Annotation();
         csAnnotation.setValue("cs");
         Annotation crAnnotation = new Annotation();
         crAnnotation.setValue("cr");
+
+        return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
+    }
+
+    private List<Annotation> serverAnnotations() {
+        Annotation csAnnotation = new Annotation();
+        csAnnotation.setValue("sr");
+        Annotation crAnnotation = new Annotation();
+        crAnnotation.setValue("ss");
 
         return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
     }

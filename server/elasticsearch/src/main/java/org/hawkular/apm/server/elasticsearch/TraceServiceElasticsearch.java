@@ -19,6 +19,8 @@ package org.hawkular.apm.server.elasticsearch;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -38,6 +40,7 @@ import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.server.api.services.SpanService;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,7 +61,16 @@ public class TraceServiceElasticsearch implements TraceService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private SpanService spanService;
+
     private ElasticsearchClient client = ElasticsearchClient.getSingleton();
+
+    public TraceServiceElasticsearch() {}
+
+    @Inject
+    public TraceServiceElasticsearch(SpanService spanService) {
+        this.spanService = spanService;
+    }
 
     /**
      * This method gets the elasticsearch client.
@@ -117,6 +129,10 @@ public class TraceServiceElasticsearch implements TraceService {
 
         if (msgLog.isTraceEnabled()) {
             msgLog.tracef("Get trace with id[%s] is: %s", id, ret);
+        }
+
+        if (ret == null && spanService != null) {
+            ret = spanService.getTrace(tenantId, id);
         }
 
         return ret;
