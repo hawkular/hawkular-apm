@@ -18,25 +18,31 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
+import org.hawkular.apm.server.api.model.zipkin.Span;
 
 /**
  * @author Pavol Loffay
  */
-public class HttpCodesUtil {
+public class SpanHttpDeriverUtil {
+    private static final Logger log = Logger.getLogger(SpanHttpDeriverUtil.class.getName());
 
-    private static final Logger log = Logger.getLogger(HttpCodesUtil.class.getName());
+    private static final Set<String> HTTP_METHODS = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList("GET", "PUT", "POST", "DELETE", "HEAD", "TRACE", "OPTIONS")));
 
     protected static final String ZIPKIN_HTTP_CODE_KEY = "http.status_code";
 
-    private HttpCodesUtil() {}
+    private SpanHttpDeriverUtil() {}
 
     /**
      * Method returns list of http status codes.
@@ -78,6 +84,28 @@ public class HttpCodesUtil {
         return httpCodes.stream()
                 .filter(x -> x.isClientOrServerError())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Derives HTTP operation from Span's binary annotations.
+     *
+     * @param span the span
+     * @return HTTP method
+     */
+    public static String getHttpMethod(Span span) {
+        List<SpanHttpDeriverUtil.HttpCode> httpStatusCodes =
+                SpanHttpDeriverUtil.getHttpStatusCodes(span.getBinaryAnnotations());
+
+        if (httpStatusCodes.size() > 0) {
+
+            String httpMethod = span.getName().toUpperCase();
+
+            if (HTTP_METHODS.contains(httpMethod)) {
+                return httpMethod;
+            }
+        }
+
+        return null;
     }
 
     /**

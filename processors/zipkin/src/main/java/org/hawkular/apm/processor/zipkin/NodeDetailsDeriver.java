@@ -26,7 +26,6 @@ import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.NodeType;
-import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
@@ -88,7 +87,8 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         nd.getProperties().addAll(spanProperties);
         nd.setHostAddress(Span.ipv4Address(spanProperties));
 
-        setFault(nd, item.getBinaryAnnotations());
+        nd.setFault(SpanDeriverUtil.deriveFault(item));
+        nd.setOperation(SpanDeriverUtil.deriveOperation(item));
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver ret=" + nd);
@@ -96,17 +96,5 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         return nd;
     }
 
-
-    private void setFault(NodeDetails nodeDetails, List<BinaryAnnotation> binaryAnnotations) {
-        List<HttpCodesUtil.HttpCode> errorCodes =
-                HttpCodesUtil.getClientOrServerErrors(HttpCodesUtil.getHttpStatusCodes(binaryAnnotations));
-
-        if (errorCodes.size() > 0) {
-            HttpCodesUtil.HttpCode errorCode = errorCodes.iterator().next();
-
-            nodeDetails.setFault(errorCode.getDescription());
-            nodeDetails.getProperties().add(new Property("http.status_code", String.valueOf(errorCode.getCode())));
-        }
-    }
 
 }

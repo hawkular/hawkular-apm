@@ -28,7 +28,7 @@ import org.junit.Test;
 /**
  * @author Pavol Loffay
  */
-public class HttpCodesUtilTest {
+public class SpanHttpDeriverUtilTest {
 
     @Test
     public void testGetHttpStatusCodes() {
@@ -43,46 +43,46 @@ public class HttpCodesUtilTest {
 
         List<BinaryAnnotation> binaryAnnotationList = Arrays.asList(http200, http302, http400, http500, other);
         Assert.assertEquals(
-                Arrays.asList(new HttpCodesUtil.HttpCode(200, "ok"),
-                    new HttpCodesUtil.HttpCode(302, "302"),
-                    new HttpCodesUtil.HttpCode(400, "400"),
-                    new HttpCodesUtil.HttpCode(500, "500")),
-                HttpCodesUtil .getHttpStatusCodes(binaryAnnotationList));
+                Arrays.asList(new SpanHttpDeriverUtil.HttpCode(200, "ok"),
+                    new SpanHttpDeriverUtil.HttpCode(302, "302"),
+                    new SpanHttpDeriverUtil.HttpCode(400, "400"),
+                    new SpanHttpDeriverUtil.HttpCode(500, "500")),
+                SpanHttpDeriverUtil.getHttpStatusCodes(binaryAnnotationList));
 
         binaryAnnotationList = Arrays.asList(other, other);
-        Assert.assertEquals(Collections.emptyList(), HttpCodesUtil.getHttpStatusCodes(binaryAnnotationList));
+        Assert.assertEquals(Collections.emptyList(), SpanHttpDeriverUtil.getHttpStatusCodes(binaryAnnotationList));
 
-        Assert.assertEquals("OK", HttpCodesUtil.getHttpStatusCodes(
+        Assert.assertEquals("OK", SpanHttpDeriverUtil.getHttpStatusCodes(
                 Arrays.asList(createHttpCodeBinaryAnnotation("200"))).get(0).getDescription());
     }
 
     @Test
     public void testGetHttpStatusCodesOfNullAndEmptyInput() {
-        Assert.assertTrue(HttpCodesUtil.getHttpStatusCodes(null).isEmpty());
-        Assert.assertTrue(HttpCodesUtil.getHttpStatusCodes(Collections.emptyList()).isEmpty());
+        Assert.assertTrue(SpanHttpDeriverUtil.getHttpStatusCodes(null).isEmpty());
+        Assert.assertTrue(SpanHttpDeriverUtil.getHttpStatusCodes(Collections.emptyList()).isEmpty());
     }
 
     @Test
     public void testGetErrors() {
-        HttpCodesUtil.HttpCode code200 = new HttpCodesUtil.HttpCode(200, "Ok");
-        HttpCodesUtil.HttpCode code302 = new HttpCodesUtil.HttpCode(302, "Found");
-        HttpCodesUtil.HttpCode code400 = new HttpCodesUtil.HttpCode(400, "Bad Request");
-        HttpCodesUtil.HttpCode code501 = new HttpCodesUtil.HttpCode(501, "Not Implemented");
+        SpanHttpDeriverUtil.HttpCode code200 = new SpanHttpDeriverUtil.HttpCode(200, "Ok");
+        SpanHttpDeriverUtil.HttpCode code302 = new SpanHttpDeriverUtil.HttpCode(302, "Found");
+        SpanHttpDeriverUtil.HttpCode code400 = new SpanHttpDeriverUtil.HttpCode(400, "Bad Request");
+        SpanHttpDeriverUtil.HttpCode code501 = new SpanHttpDeriverUtil.HttpCode(501, "Not Implemented");
 
-        List<HttpCodesUtil.HttpCode> codeList = Arrays.asList(code200, code400, code400, code302, code501);
+        List<SpanHttpDeriverUtil.HttpCode> codeList = Arrays.asList(code200, code400, code400, code302, code501);
 
-        List<HttpCodesUtil.HttpCode> clientOrServerErrors = HttpCodesUtil.getClientOrServerErrors(codeList);
+        List<SpanHttpDeriverUtil.HttpCode> clientOrServerErrors = SpanHttpDeriverUtil.getClientOrServerErrors(codeList);
         Assert.assertEquals(
-                Arrays.asList(new HttpCodesUtil.HttpCode(400, "400"),
-                    new HttpCodesUtil.HttpCode(400, "400"),
-                    new HttpCodesUtil.HttpCode(501, "501")),
+                Arrays.asList(new SpanHttpDeriverUtil.HttpCode(400, "400"),
+                    new SpanHttpDeriverUtil.HttpCode(400, "400"),
+                    new SpanHttpDeriverUtil.HttpCode(501, "501")),
                 clientOrServerErrors);
         Assert.assertEquals(Arrays.asList(code400, code400, code501), clientOrServerErrors);
     }
 
     public BinaryAnnotation createHttpCodeBinaryAnnotation(String code) {
         BinaryAnnotation httpCodeBinaryAnnotation = new BinaryAnnotation();
-        httpCodeBinaryAnnotation.setKey(HttpCodesUtil.ZIPKIN_HTTP_CODE_KEY);
+        httpCodeBinaryAnnotation.setKey(SpanHttpDeriverUtil.ZIPKIN_HTTP_CODE_KEY);
         httpCodeBinaryAnnotation.setValue(code);
         return httpCodeBinaryAnnotation;
     }
