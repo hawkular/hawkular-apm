@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
@@ -30,7 +29,7 @@ import javax.jms.TextMessage;
 
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.services.ProducerInfoCache;
-import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
+import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,18 +58,10 @@ public class ProducerInfoCacheMDB implements MessageListener {
     @Inject
     private ProducerInfoCache producerInfoCache;
 
-    private ProducerInfoCacheUtil producerInfoInitialiser;
-
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private TypeReference<java.util.List<Trace>> typeRef = new TypeReference<java.util.List<Trace>>() {
     };
-
-    @PostConstruct
-    public void init() {
-        producerInfoInitialiser = new ProducerInfoCacheUtil();
-        producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
-    }
 
     /* (non-Javadoc)
      * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
@@ -88,7 +79,7 @@ public class ProducerInfoCacheMDB implements MessageListener {
 
             List<Trace> items = mapper.readValue(data, typeRef);
 
-            producerInfoInitialiser.initialise(tenantId, items);
+            ProducerInfoUtil.initialise(tenantId, items, producerInfoCache);
 
         } catch (Exception e) {
             // TODO: Handle nak of JMS message?

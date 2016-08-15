@@ -31,6 +31,6 @@ public class Constants {
      * this constant defines a prefix that should be added to the URI when
      * deriving information about the client activity.
      */
-    public static final String URI_CLIENT_PREFIX = "[client]";
+    public static final String URI_CLIENT_PREFIX = "client:";
 
 }

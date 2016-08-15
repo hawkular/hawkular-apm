@@ -50,7 +50,6 @@ public class CommunicationDetailsDeriverKafka extends AbstractRetryConsumerKafka
             communicationDetailsDeriver = null;
         } else {
             communicationDetailsDeriver.setProducerInfoCache(cache);
-            communicationDetailsDeriver.init();
         }
 
         CommunicationDetailsPublisher publisher = ServiceResolver

@@ -26,7 +26,7 @@ import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
+import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -47,8 +47,6 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
 
     private ProducerInfoCache producerInfoCache;
 
-    private ProducerInfoCacheUtil producerInfoInitialiser;
-
     public ProducerInfoCacheKafka() {
         super(TOPIC, GROUP_ID);
 
@@ -57,9 +55,6 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
         if (producerInfoCache == null) {
             log.severe("Producer Info Cache not found - possibly not configured correctly");
         } else {
-            producerInfoInitialiser = new ProducerInfoCacheUtil();
-            producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
-
             setTypeReference(new TypeReference<Trace>() {
             });
 
@@ -68,7 +63,7 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
                 @Override
                 public List<Void> processManyToMany(String tenantId, List<Trace> items)
                         throws RetryAttemptException {
-                    producerInfoInitialiser.initialise(tenantId, items);
+                    ProducerInfoUtil.initialise(tenantId, items, producerInfoCache);
                     return null;
                 }
             });

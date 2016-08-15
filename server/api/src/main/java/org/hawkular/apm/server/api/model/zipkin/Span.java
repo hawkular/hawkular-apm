@@ -184,6 +184,10 @@ public class Span {
         this.duration = duration;
     }
 
+    public boolean topLevelSpan() {
+        return getParentId() == null || getParentId().equals(getId());
+    }
+
     public boolean clientSpan() {
         return annotations.size() == 2
                 && annotations.get(0).getValue().equals("cs")
@@ -269,4 +273,15 @@ public class Span {
 
         return properties;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Span [traceId=" + traceId + ", name=" + name + ", id=" + id + ", parentId=" + parentId
+                + ", annotations=" + annotations + ", binaryAnnotations=" + binaryAnnotations + ", debug=" + debug
+                + ", timestamp=" + timestamp + ", duration=" + duration + "]";
+    }
+
 }

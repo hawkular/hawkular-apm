@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.hawkular.apm.api.model.Property;
@@ -30,10 +29,10 @@ import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
-import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
+import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
 
 /**
  * This class represents the zipkin communication details deriver.
@@ -45,9 +44,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
     private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class.getName());
 
     @Inject
-    private ProducerInfoCache producerInfoCache;
-
-    private ProducerInfoCacheUtil producerInfoInitialiser;
+    private SpanCache spanCache;
 
     /**
      * The default constructor.
@@ -56,32 +53,14 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
         super(ProcessorType.OneToOne);
     }
 
-    @PostConstruct
-    public void init() {
-        producerInfoInitialiser = new ProducerInfoCacheUtil();
-        producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
-    }
-
     /**
-     * @return the producerInfoCache
+     * This constructor initialises the span cache.
+     *
+     * @param cache The span cache
      */
-    public ProducerInfoCache getProducerInfoCache() {
-        return producerInfoCache;
-    }
-
-    /**
-     * @param producerInfoCache the producerInfoCache to set
-     */
-    public void setProducerInfoCache(ProducerInfoCache producerInfoCache) {
-        this.producerInfoCache = producerInfoCache;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#initialise(java.util.List)
-     */
-    @Override
-    public void initialise(String tenantId, List<Span> items) throws RetryAttemptException {
-        producerInfoInitialiser.initialiseFromSpans(tenantId, items);
+    public CommunicationDetailsDeriver(SpanCache cache) {
+        this();
+        spanCache = cache;
     }
 
     /* (non-Javadoc)
@@ -108,7 +87,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
         // Check if trace has a Consumer top level node with an
         // interaction based correlation id
         if (item.serverSpan()) {
-            ProducerInfo pi = producerInfoCache.get(tenantId, item.getId());
+            ProducerInfo pi = ProducerInfoUtil.getProducerInfo(tenantId, item, spanCache);
             if (pi != null) {
                 ret = new CommunicationDetails();
                 ret.setId(item.getId());
