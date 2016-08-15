@@ -28,6 +28,9 @@ public class AnnotationTypeUtil {
     private AnnotationTypeUtil() {}
 
     public static PropertyType toPropertyType(AnnotationType annotationType) {
+        if (annotationType == null) {
+            return PropertyType.Text;
+        }
 
         PropertyType propertyType;
 
