@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.processor.zipkin;
+package org.hawkular.apm.server.api.utils;
 
 import java.util.Arrays;
 import java.util.Collections;

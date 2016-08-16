@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
@@ -35,6 +36,8 @@ import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.Conne
  * @author gbrown
  */
 public class CommunicationSummaryTreeBuilder {
+
+    private static final Logger log = Logger.getLogger(CommunicationSummaryTreeBuilder.class.getName());
 
     /**
      * This method returns the supplied list of flat nodes as a set of tree structures with related nodes.
@@ -82,6 +85,9 @@ public class CommunicationSummaryTreeBuilder {
             Map<String, CommunicationSummaryStatistics> nodeMap, Set<String> usedIds) {
         for (String id : node.getOutbound().keySet()) {
             if (!usedIds.contains(id)) {
+                if (!nodeMap.containsKey(id)) {
+                    log.severe("Node missing for id = "+id);
+                }
                 CommunicationSummaryStatistics copy = new CommunicationSummaryStatistics(nodeMap.get(id));
                 ConnectionStatistics cs = node.getOutbound().get(id);
                 cs.setNode(copy);

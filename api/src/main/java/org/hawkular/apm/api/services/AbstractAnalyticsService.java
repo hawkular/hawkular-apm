@@ -332,6 +332,10 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         communicationSeverityAnalyser.evaluateCommunicationSummarySeverity(ret);
 
         if (asTree) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("getCommunicationSummaryStatistics (before tree) = " + ret);
+            }
+
             ret = CommunicationSummaryTreeBuilder.buildCommunicationSummaryTree(ret);
 
             if (!criteria.transactionWide()) {
@@ -340,10 +344,19 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                 while (iter.hasNext()) {
                     CommunicationSummaryStatistics css=iter.next();
                     if (!hasMetrics(css)) {
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.finest("getCommunicationSummaryStatistics remove unused = " + css);
+                        }
                         iter.remove();
                     }
                 }
             }
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("getCommunicationSummaryStatistics (tree) = " + ret);
+            }
+        } else if (log.isLoggable(Level.FINEST)) {
+            log.finest("getCommunicationSummaryStatistics (flat) = " + ret);
         }
 
         return ret;

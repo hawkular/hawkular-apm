@@ -72,6 +72,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- http codes -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${version.org.apache.httpcomponents}</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

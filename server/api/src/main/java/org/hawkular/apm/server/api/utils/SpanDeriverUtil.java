@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.processor.zipkin;
+package org.hawkular.apm.server.api.utils;
 
 import java.util.List;
 
@@ -37,7 +37,10 @@ public class SpanDeriverUtil {
      * @return operation (e.g. HTTP method)
      */
     public static String deriveOperation(Span span) {
-        return SpanHttpDeriverUtil.getHttpMethod(span);
+        if (SpanHttpDeriverUtil.isHttp(span)) {
+            return SpanHttpDeriverUtil.getHttpMethod(span);
+        }
+        return span.getName();
     }
 
     /**

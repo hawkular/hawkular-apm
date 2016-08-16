@@ -222,14 +222,6 @@ public class Span {
         return null;
     }
 
-    public String operation() {
-        BinaryAnnotation httpUrl = getBinaryAnnotation("http.method");
-        if (httpUrl != null) {
-            return httpUrl.getValue();
-        }
-        return null;
-    }
-
     public String componentType() {
         // TODO: Determine from standard binary annotations (e.g. sql means Database)
         return null;
