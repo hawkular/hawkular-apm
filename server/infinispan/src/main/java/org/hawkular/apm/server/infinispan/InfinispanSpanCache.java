@@ -93,7 +93,7 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
         Span span = spansCache.get(id);
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get communication details [id=" + id + "] = " + span);
+            log.finest("Get span [id=" + id + "] = " + span);
         }
 
         return span;
@@ -115,7 +115,7 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
         for (Span span : spans) {
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Store communication details [id=" + span.getId() + "]: " + span);
+                log.finest("Store span [id=" + span.getId() + "]: " + span);
             }
 
             spansCache.put(cacheKeyEntrySupplier.apply(span), span, 1, TimeUnit.MINUTES);

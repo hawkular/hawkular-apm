@@ -16,11 +16,8 @@
  */
 package org.hawkular.apm.server.api.utils;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +35,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
@@ -45,24 +43,11 @@ import org.hawkular.apm.server.api.task.RetryAttemptException;
  *
  * @author gbrown
  */
-public class ProducerInfoCacheUtil {
+public class ProducerInfoUtil {
 
-    private static final Logger log = Logger.getLogger(ProducerInfoCacheUtil.class.getName());
+    private static final Logger log = Logger.getLogger(ProducerInfoUtil.class.getName());
 
-    private ProducerInfoCache producerInfoCache;
-
-    /**
-     * @return the producerInfoCache
-     */
-    public ProducerInfoCache getProducerInfoCache() {
-        return producerInfoCache;
-    }
-
-    /**
-     * @param producerInfoCache the producerInfoCache to set
-     */
-    public void setProducerInfoCache(ProducerInfoCache producerInfoCache) {
-        this.producerInfoCache = producerInfoCache;
+    private ProducerInfoUtil() {
     }
 
     /**
@@ -71,9 +56,11 @@ public class ProducerInfoCacheUtil {
      *
      * @param tenantId
      * @param items
+     * @param producerInfoCache The cache
      * @throws RetryAttemptException Failed to initialise producer information
      */
-    public void initialise(String tenantId, List<Trace> items) throws RetryAttemptException {
+    public static void initialise(String tenantId, List<Trace> items, ProducerInfoCache producerInfoCache)
+                                throws RetryAttemptException {
         List<ProducerInfo> producerInfoList = new ArrayList<ProducerInfo>();
 
         // This method initialises the deriver with a list of trace fragments
@@ -85,7 +72,7 @@ public class ProducerInfoCacheUtil {
             Trace trace = items.get(i);
             for (int j = 0; j < trace.getNodes().size(); j++) {
                 Node node = trace.getNodes().get(j);
-                initialiseProducerInfo(producerInfoList, tenantId, trace, originUri, node);
+                initialiseProducerInfo(producerInfoList, tenantId, trace, originUri, node, producerInfoCache);
             }
         }
 
@@ -104,9 +91,10 @@ public class ProducerInfoCacheUtil {
      * @param trace The trace
      * @param origin The origin node information
      * @param node The node
+     * @param producerInfoCache The cache
      */
-    protected void initialiseProducerInfo(List<ProducerInfo> producerInfoList, String tenantId,
-            Trace trace, Origin origin, Node node) {
+    protected static void initialiseProducerInfo(List<ProducerInfo> producerInfoList, String tenantId,
+            Trace trace, Origin origin, Node node, ProducerInfoCache producerInfoCache) {
         if (node.getClass() == Producer.class) {
             // Check for interaction correlation ids
             Producer producer = (Producer) node;
@@ -116,6 +104,7 @@ public class ProducerInfoCacheUtil {
             // with the producer
             if (origin.getUri() == null) {
                 origin.setUri(Constants.URI_CLIENT_PREFIX + producer.getUri());
+                origin.setOperation(producer.getOperation());
             }
 
             // Calculate the timestamp for the producer
@@ -156,83 +145,73 @@ public class ProducerInfoCacheUtil {
             }
             for (int j = 0; j < ((ContainerNode) node).getNodes().size(); j++) {
                 initialiseProducerInfo(producerInfoList, tenantId, trace, origin,
-                        ((ContainerNode) node).getNodes().get(j));
+                        ((ContainerNode) node).getNodes().get(j), producerInfoCache);
             }
         }
     }
 
     /**
-     * This method initialises producer information associated with the supplied
-     * traces.
+     * This method identifies the root or enclosing server span that contains the
+     * supplied client span.
      *
-     * @param tenantId
-     * @param items
-     * @throws RetryAttemptException Failed to initialise producer information
+     * @param tenantId The tenant id
+     * @param span The client span
+     * @param spanCache The span cache
+     * @return The root or enclosing server span, or null if not found
      */
-    public void initialiseFromSpans(String tenantId, List<Span> items) throws RetryAttemptException {
-        List<ProducerInfo> producerInfoList = new ArrayList<ProducerInfo>();
-
-        // Identify source URI details
-        // NOTE: This mechanism assumes the list of spans contains all of the spans
-        // associated with a service invocation.
-        Map<String,String> sourceURIs = new HashMap<String,String>();
-        Map<String,String> sourceOps = new HashMap<String,String>();
-        for (int i = 0; i < items.size(); i++) {
-            Span span = items.get(i);
-            if (span.serverSpan()) {
-                URL url = span.url();
-                if (url != null) {
-                    sourceURIs.put(span.getId(), url.getPath());
-
-                    String op = span.operation();
-                    if (op != null) {
-                        sourceOps.put(span.getId(), op);
-                    }
-                }
-            }
+    protected static Span findRootOrServerSpan(String tenantId, Span span, SpanCache spanCache) {
+        while (span != null &&
+                !span.serverSpan() && !span.topLevelSpan()) {
+            span = spanCache.get(tenantId, span.getParentId());
         }
+        return span;
+    }
 
-        // This method initialises the deriver with a list of trace fragments
-        // that will need to be referenced when correlating a consumer with a producer
-        for (int i = 0; i < items.size(); i++) {
-            // Need to check for Client spans
-            Span span = items.get(i);
+    /**
+     * This method attempts to derive the Producer Information for the supplied server
+     * span. If the information is not available, then a null will be returned, which
+     * can be used to trigger a retry attempt if appropriate.
+     *
+     * @param tenantId The tenant id
+     * @param serverSpan The server span
+     * @param spanCache The cache
+     * @return The producer information, or null if not found
+     */
+    public static ProducerInfo getProducerInfo(String tenantId, Span serverSpan, SpanCache spanCache) {
+        String clientSpanId = SpanUniqueIdGenerator.getClientId(serverSpan.getId());
+        if (spanCache != null && clientSpanId != null) {
+            Span clientSpan = spanCache.get(tenantId, clientSpanId);
 
-            if (span.clientSpan()) {
+            // Work up span hierarchy until find a server span, or top level span
+            Span rootOrServerSpan = findRootOrServerSpan(tenantId, clientSpan, spanCache);
+
+            if (rootOrServerSpan != null) {
+                // Build producer information
                 ProducerInfo pi = new ProducerInfo();
-                pi.setDuration(span.getDuration());
-                pi.setTimestamp(span.getTimestamp() / 1000);
-                pi.setFragmentId(span.getId());
+                pi.setDuration(clientSpan.getDuration());
+                pi.setTimestamp(clientSpan.getTimestamp() / 1000);
+                pi.setFragmentId(clientSpan.getId());
 
-                List<Property> spanProperties = span.properties();
+                List<Property> spanProperties = clientSpan.properties();
                 pi.getProperties().addAll(spanProperties);
                 pi.setHostAddress(Span.ipv4Address(spanProperties));
 
-                pi.setId(span.getId());
+                pi.setId(clientSpan.getId());
                 pi.setMultipleConsumers(false);
 
-                if (span.getParentId() != null) {
-                    pi.setSourceUri(sourceURIs.get(span.getParentId()));
-                    pi.setSourceOperation(sourceOps.get(span.getParentId()));
+                pi.setSourceOperation(rootOrServerSpan.operation());
+
+                if (rootOrServerSpan.serverSpan()) {
+                    pi.setSourceUri(rootOrServerSpan.url().getPath());
                 } else {
-                    URL url = span.url();
-                    if (url != null) {
-                        pi.setSourceUri(Constants.URI_CLIENT_PREFIX + url.getPath());
-                        pi.setSourceOperation(span.operation());
-                    } else {
-                        log.severe("No source URL");
-                    }
+                    pi.setSourceUri(Constants.URI_CLIENT_PREFIX + clientSpan.url().getPath());
                 }
 
-                producerInfoList.add(pi);
+                return pi;
             }
         }
 
-        try {
-            producerInfoCache.store(tenantId, producerInfoList);
-        } catch (CacheException e) {
-            throw new RetryAttemptException(e);
-        }
+        return null;
     }
 
     /**
@@ -240,7 +219,7 @@ public class ProducerInfoCacheUtil {
      *
      * @author gbrown
      */
-    public class Origin {
+    public static class Origin {
 
         private String uri;
         private String operation;

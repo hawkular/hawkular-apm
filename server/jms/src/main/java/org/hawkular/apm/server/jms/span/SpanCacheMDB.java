@@ -33,6 +33,7 @@ import javax.jms.TextMessage;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,7 +80,7 @@ public class SpanCacheMDB implements MessageListener {
 
             List<Span> items = mapper.readValue(data, typeRef);
 
-            spanCache.store(tenantId, items);
+            spanCache.store(tenantId, items, SpanUniqueIdGenerator::toUnique);
 
         } catch (JMSException | IOException | CacheException e) {
             log.log(Level.SEVERE, "Failed to process message", e);

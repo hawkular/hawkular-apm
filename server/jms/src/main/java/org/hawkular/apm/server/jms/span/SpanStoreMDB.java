@@ -31,6 +31,7 @@ import org.hawkular.apm.server.api.services.SpanService;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -71,7 +72,7 @@ public class SpanStoreMDB extends RetryCapableMDB<Span, Void> {
             @Override
             public List<Void> processManyToMany(String tenantId, List<Span> spans) throws RetryAttemptException {
                 try {
-                    spanService.storeSpan(tenantId, spans);
+                    spanService.storeSpan(tenantId, spans, SpanUniqueIdGenerator::toUnique);
                 } catch (StoreException ex) {
                     throw new RetryAttemptException(ex);
                 }

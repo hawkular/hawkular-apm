@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
@@ -50,13 +51,19 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<Span, Completi
     @Override
     public CompletionTime processOneToOne(String tenantId, Span item) throws RetryAttemptException {
 
-        if (item.getParentId() == null) {
+        if (item.topLevelSpan()) {
             CompletionTime ct = new CompletionTime();
             ct.setId(item.getId());
 
             URL url = item.url();
             if (url != null) {
-                ct.setUri(url.getPath());
+                // Need to distinguish between the url used by a server span, and one used as
+                // part of a client
+                if (item.clientSpan()) {
+                    ct.setUri(Constants.URI_CLIENT_PREFIX + url.getPath());
+                } else {
+                    ct.setUri(url.getPath());
+                }
                 ct.setEndpointType(url.getProtocol() == null ? null : url.getProtocol().toUpperCase());
             } else {
                 ct.setEndpointType("Unknown");
@@ -73,7 +80,7 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<Span, Completi
             ct.setHostAddress(Span.ipv4Address(spanProperties));
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("TraceCompletionTimeDeriver ret=" + ct);
+                log.finest("TraceCompletionTimeDeriver span=" + item + " completion time=" + ct);
             }
             return ct;
         }

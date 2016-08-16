@@ -74,4 +74,12 @@ public class Annotation {
         this.endpoint = endpoint;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Annotation [timestamp=" + timestamp + ", value=" + value + ", endpoint=" + endpoint + "]";
+    }
+
 }

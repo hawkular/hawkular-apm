@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
@@ -37,7 +36,7 @@ import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.ProducerInfoCacheUtil;
+import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
 
 /**
  * This class represents the communication details deriver.
@@ -51,19 +50,11 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     @Inject
     private ProducerInfoCache producerInfoCache;
 
-    private ProducerInfoCacheUtil producerInfoInitialiser;
-
     /**
      * The default constructor.
      */
     public CommunicationDetailsDeriver() {
         super(ProcessorType.OneToOne);
-    }
-
-    @PostConstruct
-    public void init() {
-        producerInfoInitialiser = new ProducerInfoCacheUtil();
-        producerInfoInitialiser.setProducerInfoCache(producerInfoCache);
     }
 
     /**
@@ -85,7 +76,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
      */
     @Override
     public void initialise(String tenantId, List<Trace> items) throws RetryAttemptException {
-        producerInfoInitialiser.initialise(tenantId, items);
+        ProducerInfoUtil.initialise(tenantId, items, producerInfoCache);
     }
 
     /* (non-Javadoc)
