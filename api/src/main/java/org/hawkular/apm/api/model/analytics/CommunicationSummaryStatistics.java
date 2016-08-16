@@ -65,8 +65,8 @@ public class CommunicationSummaryStatistics {
         this.severity = node.severity;
         this.uri = node.uri;
         this.operation = node.operation;
-        for (String id : node.getOutbound().keySet()) {
-            this.outbound.put(id, new ConnectionStatistics(node.getOutbound().get(id)));
+        for (Map.Entry<String, ConnectionStatistics> entry: node.getOutbound().entrySet()) {
+            this.outbound.put(entry.getKey(), new ConnectionStatistics(entry.getValue()));
         }
     }
 

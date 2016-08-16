@@ -18,9 +18,12 @@ package org.hawkular.apm.api.services.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
@@ -51,12 +54,11 @@ public class CommunicationSummaryTreeBuilder {
         Collection<CommunicationSummaryStatistics> rootNodes = getRootCommunicationSummaryNodes(nodeMap);
 
         if (rootNodes != null) {
-            List<CommunicationSummaryStatistics> ret = new ArrayList<CommunicationSummaryStatistics>();
+            List<CommunicationSummaryStatistics> ret = new ArrayList<>();
             for (CommunicationSummaryStatistics css : rootNodes) {
                 CommunicationSummaryStatistics rootNode = new CommunicationSummaryStatistics(css);
-                List<String> usedIds = new ArrayList<String>();
-                usedIds.add(rootNode.getId());
-                initCommunicationSummaryTreeNode(rootNode, nodeMap, usedIds);
+                initCommunicationSummaryTreeNode(rootNode, nodeMap,
+                        new HashSet<>(Collections.singleton(rootNode.getId())));
                 ret.add(rootNode);
             }
             return ret;
@@ -77,7 +79,7 @@ public class CommunicationSummaryTreeBuilder {
      * @param usedIds The list of node ids already included in the tree
      */
     protected static void initCommunicationSummaryTreeNode(CommunicationSummaryStatistics node,
-            Map<String, CommunicationSummaryStatistics> nodeMap, List<String> usedIds) {
+            Map<String, CommunicationSummaryStatistics> nodeMap, Set<String> usedIds) {
         for (String id : node.getOutbound().keySet()) {
             if (!usedIds.contains(id)) {
                 CommunicationSummaryStatistics copy = new CommunicationSummaryStatistics(nodeMap.get(id));
