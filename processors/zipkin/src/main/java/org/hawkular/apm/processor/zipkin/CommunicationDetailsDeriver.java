@@ -33,6 +33,7 @@ import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
+import org.hawkular.apm.server.api.utils.SpanDeriverUtil;
 
 /**
  * This class represents the zipkin communication details deriver.
@@ -96,7 +97,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                         pi.getSourceOperation()));
 
                 URL url = item.url();
-                String op = item.operation();
+                String op = SpanDeriverUtil.deriveOperation(item);
 
                 if (url != null) {
                     ret.setTarget(EndpointUtil.encodeEndpoint(url.getPath(),

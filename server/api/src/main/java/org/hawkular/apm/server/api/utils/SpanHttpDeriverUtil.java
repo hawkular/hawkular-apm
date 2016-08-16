@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.processor.zipkin;
+package org.hawkular.apm.server.api.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +39,8 @@ public class SpanHttpDeriverUtil {
 
     private static final Set<String> HTTP_METHODS = Collections.unmodifiableSet(
             new HashSet<>(Arrays.asList("GET", "PUT", "POST", "DELETE", "HEAD", "TRACE", "OPTIONS")));
+
+    protected static final String ZIPKIN_HTTP_URL_KEY = "http.url";
 
     protected static final String ZIPKIN_HTTP_CODE_KEY = "http.status_code";
 
@@ -93,12 +95,14 @@ public class SpanHttpDeriverUtil {
      * @return HTTP method
      */
     public static String getHttpMethod(Span span) {
-        List<SpanHttpDeriverUtil.HttpCode> httpStatusCodes =
-                SpanHttpDeriverUtil.getHttpStatusCodes(span.getBinaryAnnotations());
-
-        if (httpStatusCodes.size() > 0) {
-
-            String httpMethod = span.getName().toUpperCase();
+        if (isHttp(span)) {
+            BinaryAnnotation ba = span.getBinaryAnnotation("http.method");
+            String httpMethod = null;
+            if (ba != null) {
+                httpMethod = ba.getValue().toUpperCase();
+            } else if (span.getName() != null) {
+                httpMethod = span.getName().toUpperCase();
+            }
 
             if (HTTP_METHODS.contains(httpMethod)) {
                 return httpMethod;
@@ -106,6 +110,17 @@ public class SpanHttpDeriverUtil {
         }
 
         return null;
+    }
+
+    /**
+     * This method determines whether the span is associated with
+     * a HTTP communication.
+     *
+     * @param span The span
+     * @return Whether HTTP based
+     */
+    public static boolean isHttp(Span span) {
+        return span.getBinaryAnnotation(ZIPKIN_HTTP_URL_KEY) != null;
     }
 
     /**

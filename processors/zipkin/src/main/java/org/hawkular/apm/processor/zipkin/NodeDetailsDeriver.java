@@ -29,6 +29,7 @@ import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.SpanDeriverUtil;
 import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 
 /**

@@ -199,7 +199,7 @@ public class ProducerInfoUtil {
                 pi.setId(clientSpan.getId());
                 pi.setMultipleConsumers(false);
 
-                pi.setSourceOperation(rootOrServerSpan.operation());
+                pi.setSourceOperation(SpanDeriverUtil.deriveOperation(rootOrServerSpan));
 
                 if (rootOrServerSpan.serverSpan()) {
                     pi.setSourceUri(rootOrServerSpan.url().getPath());
