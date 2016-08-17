@@ -18,6 +18,7 @@ package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,13 +79,13 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
             nd.setComponentType(item.componentType());
         }
 
-        nd.setElapsed(item.getDuration());
+        nd.setElapsed(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
         // TODO: How to calculate actual - i.e. would need to know child times???
-        nd.setActual(item.getDuration());
+        nd.setActual(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
         List<Property> spanProperties = item.properties();
-        nd.setTimestamp(item.getTimestamp() / 1000);
+        nd.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
         nd.getProperties().addAll(spanProperties);
         nd.setHostAddress(Span.ipv4Address(spanProperties));
 

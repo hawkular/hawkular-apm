@@ -188,8 +188,8 @@ public class ProducerInfoUtil {
             if (rootOrServerSpan != null) {
                 // Build producer information
                 ProducerInfo pi = new ProducerInfo();
-                pi.setDuration(clientSpan.getDuration());
-                pi.setTimestamp(clientSpan.getTimestamp() / 1000);
+                pi.setDuration(TimeUnit.MILLISECONDS.convert(clientSpan.getDuration(), TimeUnit.MICROSECONDS));
+                pi.setTimestamp(TimeUnit.MILLISECONDS.convert(clientSpan.getTimestamp(), TimeUnit.MICROSECONDS));
                 pi.setFragmentId(clientSpan.getId());
 
                 List<Property> spanProperties = clientSpan.properties();

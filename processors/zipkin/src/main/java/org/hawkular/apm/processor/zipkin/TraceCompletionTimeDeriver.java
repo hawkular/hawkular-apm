@@ -70,9 +70,9 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<Span, Completi
                 ct.setEndpointType("Unknown");
             }
 
-            ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.NANOSECONDS));
+            ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
-            ct.setTimestamp(item.getTimestamp()/1000);
+            ct.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
             ct.setOperation(SpanDeriverUtil.deriveOperation(item));
             ct.setFault(SpanDeriverUtil.deriveFault(item));
 

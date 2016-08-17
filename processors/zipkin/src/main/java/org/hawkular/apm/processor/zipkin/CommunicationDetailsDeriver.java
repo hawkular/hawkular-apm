@@ -107,8 +107,9 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                     log.warning("NO URL");
                 }
 
-                long diff = TimeUnit.MILLISECONDS.convert(pi.getDuration() - (item.getDuration()/1000),
-                        TimeUnit.NANOSECONDS);
+                // Calculate difference in milliseconds
+                long diff = pi.getDuration() - TimeUnit.MILLISECONDS.convert(item.getDuration(),
+                        TimeUnit.MICROSECONDS);
                 if (diff > 0) {
                     ret.setLatency(diff / 2);
                 } else if (diff < 0) {
@@ -118,7 +119,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 }
 
                 ret.setProducerDuration(pi.getDuration());
-                ret.setConsumerDuration(item.getDuration()/1000);
+                ret.setConsumerDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
                 ret.setMultiConsumer(pi.isMultipleConsumers());
                 //ret.setInternal(consumer.getEndpointType() == null);

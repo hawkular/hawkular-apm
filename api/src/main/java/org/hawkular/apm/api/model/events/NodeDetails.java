@@ -164,6 +164,8 @@ public class NodeDetails {
     }
 
     /**
+     * This method sets the elapsed duration, in nanoseconds.
+     *
      * @param elapsed the elapsed to set
      */
     public void setElapsed(long elapsed) {
@@ -178,6 +180,8 @@ public class NodeDetails {
     }
 
     /**
+     * This method sets the actual duration, in nanoseconds.
+     *
      * @param actual the actual to set
      */
     public void setActual(long actual) {
