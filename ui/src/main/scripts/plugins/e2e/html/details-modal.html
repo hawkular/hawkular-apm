@@ -67,7 +67,7 @@
           <tr dir-paginate-start="tData in filteredData = (timesData | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
             <td>{{ tData.timestamp | date:'medium' }}</td>
             <!--<td>{{ tData.uri }}</td>-->
-            <td>
+            <td style="overflow: hidden">
               <span class="label label-default" style="margin: 1px; display: inline-block" ng-repeat="tDataProp in tData.properties">
                 {{tDataProp.name}}:{{tDataProp.value}}
               </span>
