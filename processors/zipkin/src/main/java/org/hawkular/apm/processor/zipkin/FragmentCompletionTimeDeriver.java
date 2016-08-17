@@ -75,13 +75,13 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
                 ct.setEndpointType("Unknown");
             }
 
-            ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.NANOSECONDS));
+            ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
             List<Property> spanProperties = item.properties();
             ct.setHostAddress(Span.ipv4Address(spanProperties));
             ct.getProperties().addAll(spanProperties);
 
-            ct.setTimestamp(item.getTimestamp()/1000);
+            ct.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
 
             ct.setFault(SpanDeriverUtil.deriveFault(item));
             ct.setOperation(SpanDeriverUtil.deriveOperation(item));
