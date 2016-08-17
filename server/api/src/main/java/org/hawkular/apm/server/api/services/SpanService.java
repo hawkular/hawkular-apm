@@ -20,6 +20,7 @@ package org.hawkular.apm.server.api.services;
 import java.util.List;
 import java.util.function.Function;
 
+import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 
@@ -76,4 +77,22 @@ public interface SpanService {
      * @param tenantId The tenant id
      */
     void clear(String tenantId);
+
+    /**
+     * This method returns the trace fragment associated with the supplied id.
+     *
+     * @param tenantId the tenant
+     * @param id the span id
+     * @return the trace fragment, null if not found
+     */
+    Trace getTraceFragment(String tenantId, String id);
+
+    /**
+     * This method returns the end to end trace associated with the supplied id.
+     *
+     * @param tenantId the tenant
+     * @param id the id
+     * @return the end to end trace, or null if not found
+     */
+    Trace getTrace(String tenantId, String id);
 }
