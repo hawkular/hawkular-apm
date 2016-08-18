@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -141,6 +142,8 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
                 .eq(id)
                 .toBuilder().build();
 
-        return query.list();
+        return query.<Span>list().stream()
+                .filter(span -> !span.serverSpan())
+                .collect(Collectors.toList());
     }
 }
