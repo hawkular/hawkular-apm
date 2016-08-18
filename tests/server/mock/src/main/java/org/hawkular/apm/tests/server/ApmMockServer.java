@@ -293,8 +293,10 @@ public class ApmMockServer {
     }
 
     public void shutdown() {
-        log.info("************ TEST MOCK SERVICE EXITING");
-        server.stop();
+        if (server!= null) {
+            log.info("************ TEST MOCK SERVICE EXITING");
+            server.stop();
+        }
     }
 
     private String getBody(InputStream inputStream) throws IOException {
