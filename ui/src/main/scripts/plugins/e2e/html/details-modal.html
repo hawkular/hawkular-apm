@@ -35,7 +35,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table class="datatable table table-striped table-bordered">
+      <table class="datatable table table-striped table-bordered" style="table-layout: fixed">
         <thead>
           <tr>
             <th ng-click="sort('timestamp')">Timestamp
@@ -44,7 +44,7 @@
             <!--<th ng-click="sort('uri')">URL
               <span class="glyphicon sort-icon" ng-show="sortKey=='uri'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>-->
-            <th ng-click="sort('properties')">Properties
+            <th ng-click="sort('properties')" style="width: 40%">Properties
               <span class="glyphicon sort-icon" ng-show="sortKey=='properties'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
             <th ng-click="sort('principal')">Principal
@@ -67,13 +67,15 @@
           <tr dir-paginate-start="tData in filteredData = (timesData | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
             <td>{{ tData.timestamp | date:'medium' }}</td>
             <!--<td>{{ tData.uri }}</td>-->
-            <td>
-              <span class="label label-default" style="margin: 1px;" ng-repeat="tDataProp in tData.properties">{{tDataProp.name}}:{{tDataProp.value}}</span>
+            <td style="overflow: hidden">
+              <span class="label label-default" style="margin: 1px; display: inline-block" ng-repeat="tDataProp in tData.properties">
+                {{tDataProp.name}}:{{tDataProp.value}}
+              </span>
             </td>
-            <td>{{ tData.principal }}</td>
-            <td>{{ tData.hostname }}</td>
-            <td>{{ tData.ip_address }}</td>
-            <td>{{ tData.duration }}</td>
+            <td style="word-wrap: break-word">{{ tData.principal }}</td>
+            <td style="word-wrap: break-word">{{ tData.hostname }}</td>
+            <td style="word-wrap: break-word">{{ tData.ip_address }}</td>
+            <td style="word-wrap: break-word">{{ tData.duration }}</td>
             <td class="show-details-cell" ng-click="showIVD(tData.id)"><i class="fa fa-sitemap"></i></td>
           </tr>
           <tr dir-paginate-end ng-if="selectedTx === tData.id">
