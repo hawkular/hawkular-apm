@@ -216,7 +216,12 @@ public class Span {
             try {
                 return new URL(httpUrl.getValue());
             } catch (MalformedURLException e) {
-                log.log(Level.SEVERE, "Failed to decode URL", e);
+                // Use the value as a path
+                try {
+                    return new URL("http", null, httpUrl.getValue());
+                } catch (MalformedURLException e1) {
+                    log.log(Level.SEVERE, "Failed to decode URL", e);
+                }
             }
         }
         return null;
