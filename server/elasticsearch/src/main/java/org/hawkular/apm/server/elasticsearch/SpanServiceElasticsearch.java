@@ -50,6 +50,7 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanService;
+import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -226,6 +227,17 @@ public class SpanServiceElasticsearch implements SpanService {
 
     @Override
     public Trace getTrace(String tenantId, String id) {
+        Span span = getSpan(tenantId, id);
+        if (span != null && span.serverSpan()) {
+            // We need to check if there is a client span for the same id
+            String clientId = SpanUniqueIdGenerator.getClientId(id);
+            if (getSpan(tenantId, clientId) != null) {
+                // Replace the top level id we are interested in with the
+                // client side version
+                id = clientId;
+            }
+        }
+
         Trace trace = getTraceFragment(tenantId, id);
 
         if (trace != null) {
