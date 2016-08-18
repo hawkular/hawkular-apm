@@ -79,6 +79,9 @@ public abstract class AbstractDockerBasedEnvironment implements TestEnvironmentE
     @Override
     public void createNetwork() {
         String apmNetwork = apmBindAddress.substring(0, apmBindAddress.lastIndexOf(".")) + ".0/24";
+
+        log.info(String.format("Creating network %s:", apmNetwork));
+
         Network.Ipam ipam = new Network.Ipam()
                 .withConfig(new Network.Ipam.Config()
                         .withSubnet(apmNetwork)
