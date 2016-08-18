@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
@@ -550,7 +551,7 @@ public class DefaultTraceCollectorTest {
     }
 
     @Test
-    public void testCorrelation() {
+    public void testCorrelation() throws InterruptedException, ExecutionException {
         DefaultTraceCollector collector = new DefaultTraceCollector();
 
         final FragmentBuilder fragmentBuilder = collector.getFragmentManager().getFragmentBuilder();
@@ -562,7 +563,7 @@ public class DefaultTraceCollectorTest {
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                collector.completeCorrelation("TestLink", true);
+                collector.completeCorrelation("TestLink", false);
 
                 FragmentBuilder other = collector.getFragmentManager().getFragmentBuilder();
 
@@ -571,7 +572,7 @@ public class DefaultTraceCollectorTest {
                 // Check link is no marked as unresolved
                 assertTrue(other.getUncompletedCorrelationIds().isEmpty());
             }
-        });
+        }).get();
     }
 
     @Test
