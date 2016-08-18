@@ -439,6 +439,95 @@ public class SpanServiceElasticsearchTest {
         Assert.assertEquals(0, descendant2ConsumerNode.getNodes().size());
     }
 
+    @Test
+    public void testGetEndToEndTraceClientRoot() throws StoreException, InterruptedException {
+        Span rootClientSpan = new Span();
+        rootClientSpan.setId("root");
+        rootClientSpan.setTraceId("root");
+        rootClientSpan.setAnnotations(clientAnnotations());
+
+        Span rootServerSpan = new Span();
+        rootServerSpan.setId("root");
+        rootServerSpan.setTraceId("root");
+        rootServerSpan.setAnnotations(serverAnnotations());
+
+        Span clientDescendant = new Span();
+        clientDescendant.setId("descendant");
+        clientDescendant.setParentId("root");
+        clientDescendant.setTraceId("root");
+        clientDescendant.setAnnotations(clientAnnotations());
+
+        Span clientDescendant2 = new Span();
+        clientDescendant2.setId("descendant2");
+        clientDescendant2.setParentId("root");
+        clientDescendant2.setTraceId("root");
+        clientDescendant2.setAnnotations(clientAnnotations());
+
+        Span serverDescendantOfDescendant2 = new Span();
+        serverDescendantOfDescendant2.setId("descendant2");
+        serverDescendantOfDescendant2.setParentId("root");
+        serverDescendantOfDescendant2.setTraceId("root");
+        serverDescendantOfDescendant2.setAnnotations(serverAnnotations());
+
+        Span serverDescendantOfDescendant = new Span();
+        serverDescendantOfDescendant.setId("descendant");
+        serverDescendantOfDescendant.setParentId("root");
+        serverDescendantOfDescendant.setTraceId("root");
+        serverDescendantOfDescendant.setAnnotations(serverAnnotations());
+
+        storeAndWait(null, Arrays.asList(rootClientSpan,
+                rootServerSpan,
+                clientDescendant,
+                clientDescendant2,
+                serverDescendantOfDescendant,
+                serverDescendantOfDescendant2),
+                SpanUniqueIdGenerator::toUnique);
+
+        Trace trace = spanService.getTrace(null, "root");
+        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals(1, trace.getNodes().size());
+
+        InteractionNode rootProducerNode = ((InteractionNode) trace.getNodes().get(0));
+        Assert.assertThat(rootProducerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, rootProducerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootProducerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(1, rootProducerNode.getNodes().size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("root")),
+                extractCorrelationIds(rootProducerNode.getNodes()));
+
+        InteractionNode rootConsumerNode = ((InteractionNode) rootProducerNode.getNodes().get(0));
+        Assert.assertThat(rootConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, rootConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(2, rootConsumerNode.getNodes().size());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("descendant", "descendant2")),
+                extractCorrelationIds(rootConsumerNode.getNodes()));
+
+        InteractionNode descendantProducerNode = ((InteractionNode) rootConsumerNode.getNodes().get(0));
+        Assert.assertThat(descendantProducerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, descendantProducerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant", descendantProducerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(1, descendantProducerNode.getNodes().size());
+
+        InteractionNode descendantConsumerNode = ((InteractionNode) descendantProducerNode.getNodes().get(0));
+        Assert.assertThat(descendantConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, descendantConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant", descendantConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, descendantConsumerNode.getNodes().size());
+
+        InteractionNode descendantProducerNode2 = ((InteractionNode) rootConsumerNode.getNodes().get(1));
+        Assert.assertThat(descendantProducerNode2, instanceOf(Producer.class));
+        Assert.assertEquals(1, descendantProducerNode2.getCorrelationIds().size());
+        Assert.assertEquals("descendant2", descendantProducerNode2.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(1, descendantProducerNode2.getNodes().size());
+
+        InteractionNode descendant2ConsumerNode = ((InteractionNode) descendantProducerNode2.getNodes().get(0));
+        Assert.assertThat(descendant2ConsumerNode, instanceOf(Consumer.class));
+        Assert.assertEquals(1, descendant2ConsumerNode.getCorrelationIds().size());
+        Assert.assertEquals("descendant2", descendant2ConsumerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, descendant2ConsumerNode.getNodes().size());
+    }
+
     private Set<String> extractCorrelationIds(List<Node> nodes) {
         return new HashSet<>(nodes.stream()
                 .filter(node -> node.getType() != NodeType.Component)
