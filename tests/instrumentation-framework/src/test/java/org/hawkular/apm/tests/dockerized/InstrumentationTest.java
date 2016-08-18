@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -72,5 +73,9 @@ public class InstrumentationTest {
 
         System.out.println("\n\nScenarios results:\nSuccessful: " + successfulScenarios +
                 ", Failed: " + failedScenarios + "\n\n");
+
+        if (failedScenarios > 0) {
+            Assert.fail();
+        }
     }
 }
