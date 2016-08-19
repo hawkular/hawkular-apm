@@ -16,12 +16,20 @@
  */
 package org.hawkular.apm.analytics.service.rest.client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
@@ -43,6 +51,7 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -62,12 +71,12 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             new TypeReference<java.util.List<EndpointInfo>>() {
             };
 
-    private static final TypeReference<java.util.List<String>> STRING_LIST =
-            new TypeReference<java.util.List<String>>() {
-            };
-
     private static final TypeReference<java.util.Set<String>> STRING_SET =
             new TypeReference<java.util.Set<String>>() {
+            };
+
+    private static final TypeReference<Long> LONG =
+            new TypeReference<Long>() {
             };
 
     private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
@@ -102,6 +111,10 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             new TypeReference<java.util.List<CompletionTime>>() {
             };
 
+    private static final TypeReference<Percentiles> PERCENTILES_TYPE_REFERENCE =
+            new TypeReference<Percentiles>() {
+            };
+
     public AnalyticsServiceRESTClient() {
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
@@ -116,70 +129,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + " endTime=" + endTime + " compress=" + compress);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/unboundendpoints?startTime=")
-                .append(startTime)
-                .append("&endTime=")
-                .append(endTime)
-                .append("&compress=")
-                .append(compress);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), URIINFO_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get unbound endpoints: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get unbound endpoints", e);
-        }
-
-        return null;
+        String path = "analytics/unboundendpoints?startTime=%d&endTime=%d&compress=%b";
+        return getResultsForUrl(tenantId, URIINFO_LIST, path, startTime, endTime, compress);
     }
 
     /* (non-Javadoc)
@@ -188,76 +139,14 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      */
     @Override
     public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
-                                    long endTime) {
+                                                long endTime) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get bound endpoints: tenantId=[" + tenantId + "] businessTransaction="
                     + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/boundendpoints/")
-                .append(businessTransaction)
-                .append("?startTime=")
-                .append(startTime)
-                .append("&endTime=")
-                .append(endTime);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), URIINFO_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get bound endpoints: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get bound endpoints", e);
-        }
-
-        return null;
+        String path = "analytics/boundendpoints/%s?startTime=%d&endTime=%d";
+        return getResultsForUrl(tenantId, URIINFO_LIST, path, businessTransaction, startTime, endTime);
     }
 
     /* (non-Javadoc)
@@ -270,67 +159,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             log.finest("Get property info: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/properties");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), PROPERTY_INFO_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get property info: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get property info", e);
-        }
-
-        return null;
+        String path = "analytics/properties?criteria=%s";
+        return getResultsForUrl(tenantId, PROPERTY_INFO_LIST, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -343,67 +173,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             log.finest("Get principal info: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/principals");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), PRINCIPAL_INFO_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get principal info: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get principal info", e);
-        }
-
-        return null;
+        String path = "analytics/principals?criteria=%s";
+        return getResultsForUrl(tenantId, PRINCIPAL_INFO_LIST, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -417,67 +188,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/count");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return Long.parseLong(resp.toString());
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion count: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion count", e);
-        }
-
-        return 0;
+        String path = "analytics/trace/completion/count?criteria=%s";
+        return getResultsForUrl(tenantId, LONG, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -490,67 +202,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             log.finest("Get completion fault count: tenantId=[" + tenantId + "] criteria=" + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/faultcount");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return Long.parseLong(resp.toString());
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion fault count: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion fault count", e);
-        }
-
-        return 0;
+        String path = "analytics/trace/completion/faultcount?criteria=%s";
+        return getResultsForUrl(tenantId, LONG, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -563,67 +216,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/times");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), COMPLETION_TIME_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion times: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion times", e);
-        }
-
-        return null;
+        String path = "analytics/trace/completion/times?criteria=%s";
+        return getResultsForUrl(tenantId, COMPLETION_TIME_LIST, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -637,67 +231,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/percentiles");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), Percentiles.class);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion percentiles: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion percentiles", e);
-        }
-
-        return null;
+        String path = "analytics/trace/completion/percentiles?criteria=%s";
+        return getResultsForUrl(tenantId, PERCENTILES_TYPE_REFERENCE, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -706,77 +241,15 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      */
     @Override
     public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
-            Criteria criteria,
-            long interval) {
+                                                                                       Criteria criteria,
+                                                                                       long interval) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria + " interval=" + interval);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/statistics");
-
-        buildQueryString(builder, criteria);
-
-        builder.append("&interval=");
-        builder.append(interval);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), COMPLETION_STATISTICS_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion statistics: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion statistics", e);
-        }
-
-        return null;
+        String path = "analytics/trace/completion/statistics?criteria=%s&interval=%d";
+        return getResultsForUrl(tenantId, COMPLETION_STATISTICS_LIST, path, criteria, interval);
     }
 
     /* (non-Javadoc)
@@ -790,67 +263,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/faults");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), CARDINALITY_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion fault details: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion fault details", e);
-        }
-
-        return null;
+        String path = "analytics/trace/completion/faults?criteria=%s";
+        return getResultsForUrl(tenantId, CARDINALITY_LIST, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -859,104 +273,16 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      */
     @Override
     public List<Cardinality> getTraceCompletionPropertyDetails(String tenantId, Criteria criteria,
-            String property) {
+                                                               String property) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion property details: tenantId=[" + tenantId + "] criteria="
                     + criteria + " property=" + property);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/trace/completion/property/")
-                .append(property);
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), CARDINALITY_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get completion property details: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get completion property details", e);
-        }
-
-        return null;
-    }
-
-    /**
-     * This method builds the URL query string based on the supplied criteria.
-     *
-     * @param builder The url
-     * @param criteria The criteria
-     */
-    protected boolean buildQueryString(StringBuilder builder, Criteria criteria) {
-        Map<String, String> queryParams = criteria.parameters();
-
-        if (!queryParams.isEmpty()) {
-            builder.append('?');
-
-            boolean first = true;
-            for (Map.Entry<String, String> stringStringEntry : queryParams.entrySet()) {
-                if (!first) {
-                    builder.append('&');
-                }
-                String value = stringStringEntry.getValue();
-                builder.append(stringStringEntry.getKey());
-                builder.append('=');
-                builder.append(value);
-                first = false;
-            }
-
-            return true;
-        }
-
-        return false;
+        // attention! the second property parameter (2nd parameter to the formatter) is used first
+        // and the first parameter to the formatter (criteria) is used second
+        String path = "analytics/trace/completion/property/%2$s/?criteria=%1$s";
+        return getResultsForUrl(tenantId, CARDINALITY_LIST, path, criteria, property);
     }
 
     /* (non-Javadoc)
@@ -965,80 +291,19 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      */
     @Override
     public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId,
-            Criteria criteria, long interval) {
+                                                                      Criteria criteria, long interval) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get node timeseries statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria + " interval=" + interval);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/node/statistics");
-
-        if (buildQueryString(builder, criteria)) {
-            builder.append('&');
+        if (criteria.parameters().isEmpty()) {
+            String path = "analytics/node/statistics?interval=%d";
+            return getResultsForUrl(tenantId, NODE_TIMESERIES_STATISTICS_LIST, path, interval);
         } else {
-            builder.append('?');
+            String path = "analytics/node/statistics?criteria=%s&interval=%d";
+            return getResultsForUrl(tenantId, NODE_TIMESERIES_STATISTICS_LIST, path, criteria, interval);
         }
-
-        builder.append("interval=");
-        builder.append(interval);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), NODE_TIMESERIES_STATISTICS_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get node timeseries statistics: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get node timeseries statistics", e);
-        }
-
-        return null;
     }
 
     /* (non-Javadoc)
@@ -1052,67 +317,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/node/summary");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), NODE_SUMMARY_STATISTICS_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get node summary statistics: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get node summary statistics", e);
-        }
-
-        return null;
+        String path = "analytics/node/summary?criteria=%s";
+        return getResultsForUrl(tenantId, NODE_SUMMARY_STATISTICS_LIST, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -1121,80 +327,19 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      */
     @Override
     public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
-            Criteria criteria, boolean tree) {
+                                                                                        Criteria criteria, boolean tree) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get communication summary statistics: tenantId=[" + tenantId + "] criteria="
                     + criteria + " as tree? " + tree);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/communication/summary");
-
-        if (buildQueryString(builder, criteria)) {
-            builder.append('&');
+        if (criteria.parameters().isEmpty()) {
+            String path = "analytics/communication/summary?tree=%b";
+            return getResultsForUrl(tenantId, COMMS_SUMMARY_STATISTICS_LIST, path, tree);
         } else {
-            builder.append('?');
+            String path = "analytics/communication/summary?criteria=%s&tree=%b";
+            return getResultsForUrl(tenantId, COMMS_SUMMARY_STATISTICS_LIST, path, criteria, tree);
         }
-
-        builder.append("tree=");
-        builder.append(tree);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), COMMS_SUMMARY_STATISTICS_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get communication summary statistics: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get communication summary statistics", e);
-        }
-
-        return null;
     }
 
     /* (non-Javadoc)
@@ -1242,67 +387,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                     + criteria);
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/analytics/hostnames");
-
-        buildQueryString(builder, criteria);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), STRING_SET);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get host names: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get host names", e);
-        }
-
-        return null;
+        String path = "analytics/hostnames?criteria=%s";
+        return getResultsForUrl(tenantId, STRING_SET, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -1314,35 +400,123 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             log.finest("Clear analytics: tenantId=[" + tenantId + "]");
         }
 
-        try {
-            URL url = new URL(new StringBuilder().append(getUri()).append("hawkular/apm/analytics").toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("DELETE");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Analytics cleared");
+        URL url = getUrl("analytics");
+        withContext(tenantId, url, (connection) -> {
+            try {
+                connection.setRequestMethod("DELETE");
+                if (connection.getResponseCode() == 200) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Analytics cleared");
+                    }
+                } else {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.warning("Failed to clear analytics: status=["
+                                + connection.getResponseCode() + "]:"
+                                + connection.getResponseMessage());
+                    }
                 }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to clear analytics: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.log(Level.SEVERE, "Failed to send 'clear' analytics request", e);
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to send 'clear' analytics request", e);
+            return null;
+        });
+    }
+
+    private URL getUrl(String path, Object... args) {
+        return getUrl(String.format(path, args));
+    }
+
+    private URL getUrl(String path) {
+        try {
+            return new URL(getUri() + "hawkular/apm/" + path);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    private <T> T withContext(String tenantId, URL url, Function<HttpURLConnection, T> function) {
+        HttpURLConnection connection = null;
+        try {
+            connection = getConnectionForGetRequest(tenantId, url);
+            return function.apply(connection);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    private <T, E> T getResultsForUrl(String tenantId, TypeReference<E> typeReference, String path, Object... parameters) {
+        return withContext(tenantId, getUrl(path, parameters), (connection) -> {
+            try {
+                String response = getResponse(connection);
+
+                if (connection.getResponseCode() == 200) {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Returned json=[" + response + "]");
+                    }
+                    if (!response.trim().isEmpty()) {
+                        try {
+                            return mapper.readValue(response, typeReference);
+                        } catch (Throwable t) {
+                            log.log(Level.SEVERE, "Failed to deserialize", t);
+                        }
+                    }
+                } else {
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Failed to get results: status=["
+                                + connection.getResponseCode() + "]:"
+                                + connection.getResponseMessage());
+                    }
+                }
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to get results", e);
+            }
+
+            return null;
+        });
+    }
+
+    private <T, E> T getResultsForUrl(String tenantId, TypeReference<E> typeReference, String path, Criteria criteria) {
+        return getResultsForUrl(tenantId, typeReference, path, encodedCriteria(criteria));
+    }
+    private <T, E> T getResultsForUrl(String tenantId, TypeReference<E> typeReference, String path, Criteria criteria, Object arg) {
+        return getResultsForUrl(tenantId, typeReference, path, encodedCriteria(criteria), arg);
+    }
+
+    private String encodedCriteria(Criteria criteria) {
+        try {
+            return URLEncoder.encode(mapper.writeValueAsString(criteria), "UTF-8");
+        } catch (UnsupportedEncodingException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private HttpURLConnection getConnectionForGetRequest(String tenantId, URL url) throws IOException {
+        return getConnectionForRequest(tenantId, url, "GET");
+    }
+
+    private HttpURLConnection getConnectionForRequest(String tenantId, URL url, String method) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setRequestMethod(method);
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        addHeaders(connection, tenantId);
+        return connection;
+    }
+
+    private String getResponse(HttpURLConnection connection) throws IOException {
+        InputStream is = connection.getInputStream();
+        String response;
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(is))) {
+            response = buffer.lines().collect(Collectors.joining("\n"));
+        }
+        return response;
+    }
 }
