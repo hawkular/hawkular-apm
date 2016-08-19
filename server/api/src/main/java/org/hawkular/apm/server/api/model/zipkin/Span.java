@@ -18,7 +18,6 @@ package org.hawkular.apm.server.api.model.zipkin;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -26,8 +25,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.server.api.utils.AnnotationTypeUtil;
+import org.hawkular.apm.server.api.utils.zipkin.BinaryAnnotationMappingDeriver;
+import org.hawkular.apm.server.api.utils.zipkin.MappingResult;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A trace is a series of spans (often RPC calls) which form a latency tree.
@@ -50,13 +52,37 @@ public class Span {
 
     private List<Annotation> annotations = Collections.emptyList();
 
-    private List<BinaryAnnotation> binaryAnnotations = Collections.emptyList();
+    private final List<BinaryAnnotation> binaryAnnotations;
 
     private Boolean debug;
 
     private long timestamp;
 
     private long duration;
+
+    /**
+     * Hawkular APM specific
+     */
+    private final MappingResult mappingResult;
+    private String service;
+    private String ipv4;
+    private URL url;
+
+    public Span() {
+        this(Collections.emptyList());
+    }
+
+    @JsonCreator
+    public Span(@JsonProperty("binaryAnnotations") List<BinaryAnnotation> binaryAnnotations) {
+        if (binaryAnnotations == null) {
+            binaryAnnotations = Collections.emptyList();
+        }
+
+        this.binaryAnnotations = Collections.unmodifiableList(binaryAnnotations);
+        this.mappingResult = BinaryAnnotationMappingDeriver.getInstance().mappingResult(binaryAnnotations);
+        initUrl();
+        initIpv4AndService();
+    }
 
     /**
      * @return the traceId
@@ -136,13 +162,6 @@ public class Span {
     }
 
     /**
-     * @param binaryAnnotations the binaryAnnotations to set
-     */
-    public void setBinaryAnnotations(List<BinaryAnnotation> binaryAnnotations) {
-        this.binaryAnnotations = binaryAnnotations;
-    }
-
-    /**
      * @return the debug
      */
     public Boolean getDebug() {
@@ -210,66 +229,62 @@ public class Span {
         return null;
     }
 
+    public MappingResult binaryAnnotationMapping() {
+        return mappingResult;
+    }
+
+    public String ipv4() {
+        return ipv4;
+    }
+
+    public String service() {
+        return service;
+    }
+
     public URL url() {
+        return url;
+    }
+
+    private void initUrl() {
         BinaryAnnotation httpUrl = getBinaryAnnotation("http.url");
         if (httpUrl != null) {
             try {
-                return new URL(httpUrl.getValue());
+                url = new URL(httpUrl.getValue());
             } catch (MalformedURLException e) {
                 // Use the value as a path
                 try {
-                    return new URL("http", null, httpUrl.getValue());
+                    url = new URL("http", null, httpUrl.getValue());
                 } catch (MalformedURLException e1) {
                     log.log(Level.SEVERE, "Failed to decode URL", e);
                 }
             }
         }
-        return null;
     }
 
-    public String componentType() {
-        // TODO: Determine from standard binary annotations (e.g. sql means Database)
-        return null;
-    }
-
-    public static String ipv4Address(List<Property> properties) {
-        for (Property property: properties) {
-            if (property.getName().equals("ipv4")) {
-                return property.getValue();
-            }
-        }
-        return null;
-    }
-
-    public List<Property> properties() {
-        if (binaryAnnotations == null || binaryAnnotations.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Property> properties = new ArrayList<>();
+    private void initIpv4AndService() {
         Set<Endpoint> endpoints = new HashSet<>();
 
         for (BinaryAnnotation binaryAnnotation : binaryAnnotations) {
-            properties.add(new Property(binaryAnnotation.getKey(),
-                    binaryAnnotation.getValue(),
-                    AnnotationTypeUtil.toPropertyType(binaryAnnotation.getType())));
-
             if (binaryAnnotation.getEndpoint() != null) {
                 Endpoint endpoint = binaryAnnotation.getEndpoint();
 
-                if (endpoints.isEmpty()) {
-                    properties.add(new Property("service", endpoint.getServiceName()));
-                    properties.add(new Property("ipv4", endpoint.getIpv4()));
-                } else if (!endpoints.contains(endpoint)){
-                    log.severe("Multiple Endpoints within one Span: " + endpoint);
-                }
 
                 endpoints.add(endpoint);
             }
         }
 
-        return properties;
+        if (endpoints.size() > 1) {
+            log.severe("Multiple different Endpoints within one Span: " + endpoints);
+        }
+
+        Endpoint endpoint = endpoints.size() > 0 ? endpoints.iterator().next() : null;
+        if (endpoint != null) {
+            ipv4 = endpoint.getIpv4();
+            service = endpoint.getServiceName();
+        }
     }
+
+
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

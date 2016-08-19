@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.hawkular.apm.server.api.model.zipkin.Span;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 
 /**
  * @author Pavol Loffay
@@ -41,7 +42,7 @@ public interface SpanCache extends Cache<Span> {
      * @param tenantId The tenant
      * @param spans The spans
      * @param cacheKeyEntrySupplier Function to generate unique id of the span
-     *          @see {@link org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator}. This is used as key
+     *          @see {@link SpanUniqueIdGenerator}. This is used as key
      *          entry in the cache.
      * @throws CacheException
      */

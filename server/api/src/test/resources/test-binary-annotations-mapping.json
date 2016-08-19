@@ -1,0 +1,21 @@
+{
+  "foo": {
+    "componentType": "foo.modified",
+    "endpointType": "foo.endpoint",
+    "nodeDetails": {
+      "key": "foo.detail"
+    },
+    "property": {
+      "key": "foo.prop",
+      "include": true
+    }
+  },
+  "bar": {
+    "property": {
+      "include": true
+    }
+  },
+  "ignore.key": {
+    "ignore": true
+  }
+}

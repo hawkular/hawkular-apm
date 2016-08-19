@@ -34,6 +34,7 @@ import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 import org.junit.Test;
 
 /**
@@ -45,7 +46,7 @@ public class ProducerInfoUtilTest {
     public void testGetProducerInfoNoClient() throws CacheException {
         SpanCache spanCache = new TestSpanCache();
 
-        Span serverSpan = new Span();
+        Span serverSpan = new Span(null);
         serverSpan.setId("1");
         serverSpan.setParentId("1");
 
@@ -58,18 +59,17 @@ public class ProducerInfoUtilTest {
     public void testGetProducerInfoJustClient() throws CacheException {
         SpanCache spanCache = new TestSpanCache();
 
-        Span serverSpan = new Span();
+        Span serverSpan = new Span(null);
         serverSpan.setId("1");
         serverSpan.setParentId("1");
         serverSpan.setAnnotations(serverAnnotations());
 
-        Span clientSpan = new Span();
-        clientSpan.setId("1");
-        clientSpan.setParentId("1");
         BinaryAnnotation ba = new BinaryAnnotation();
         ba.setKey("http.url");
         ba.setValue("http://myhost:8080/myuri");
-        clientSpan.setBinaryAnnotations(Arrays.asList(ba));
+        Span clientSpan = new Span(Arrays.asList(ba));
+        clientSpan.setId("1");
+        clientSpan.setParentId("1");
         clientSpan.setAnnotations(clientAnnotations());
 
         spanCache.store(null, Arrays.asList(serverSpan, clientSpan),
@@ -90,13 +90,12 @@ public class ProducerInfoUtilTest {
         serverSpan.setParentId("1");
         serverSpan.setAnnotations(serverAnnotations());
 
-        Span clientSpan = new Span();
-        clientSpan.setId("2");
-        clientSpan.setParentId("1");
         BinaryAnnotation ba = new BinaryAnnotation();
         ba.setKey("http.url");
         ba.setValue("http://myhost:8080/myuri");
-        clientSpan.setBinaryAnnotations(Arrays.asList(ba));
+        Span clientSpan = new Span(Arrays.asList(ba));
+        clientSpan.setId("2");
+        clientSpan.setParentId("1");
         clientSpan.setAnnotations(clientAnnotations());
 
         Span parentSpan = new Span();
@@ -121,27 +120,25 @@ public class ProducerInfoUtilTest {
         serverSpan.setParentId("2");
         serverSpan.setAnnotations(serverAnnotations());
 
-        Span clientSpan = new Span();
-        clientSpan.setId("3");
-        clientSpan.setParentId("2");
         BinaryAnnotation ba = new BinaryAnnotation();
         ba.setKey("http.url");
         ba.setValue("http://myhost:8080/myuri");
-        clientSpan.setBinaryAnnotations(Arrays.asList(ba));
+        Span clientSpan = new Span(Arrays.asList(ba));
+        clientSpan.setId("3");
+        clientSpan.setParentId("2");
         clientSpan.setAnnotations(clientAnnotations());
 
         Span midSpan = new Span();
         midSpan.setId("2");
         midSpan.setParentId("1");
 
-        Span topServerSpan = new Span();
-        topServerSpan.setId("1");
-        topServerSpan.setParentId("1");
-        topServerSpan.setAnnotations(serverAnnotations());
         BinaryAnnotation ba2 = new BinaryAnnotation();
         ba2.setKey("http.url");
         ba2.setValue("http://myhost:8080/originaluri");
-        topServerSpan.setBinaryAnnotations(Arrays.asList(ba2));
+        Span topServerSpan = new Span(Arrays.asList(ba2));
+        topServerSpan.setId("1");
+        topServerSpan.setParentId("1");
+        topServerSpan.setAnnotations(serverAnnotations());
 
         spanCache.store(null, Arrays.asList(serverSpan, clientSpan, midSpan, topServerSpan),
                     SpanUniqueIdGenerator::toUnique);

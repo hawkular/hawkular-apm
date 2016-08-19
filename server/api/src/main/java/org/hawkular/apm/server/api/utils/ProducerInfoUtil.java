@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
-import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
@@ -37,6 +36,8 @@ import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.ProducerInfoCache;
 import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 
 /**
  * This class represents the capability for initialising the producer information.
@@ -192,9 +193,8 @@ public class ProducerInfoUtil {
                 pi.setTimestamp(TimeUnit.MILLISECONDS.convert(clientSpan.getTimestamp(), TimeUnit.MICROSECONDS));
                 pi.setFragmentId(clientSpan.getId());
 
-                List<Property> spanProperties = clientSpan.properties();
-                pi.getProperties().addAll(spanProperties);
-                pi.setHostAddress(Span.ipv4Address(spanProperties));
+                pi.getProperties().addAll(clientSpan.binaryAnnotationMapping().getProperties());
+                pi.setHostAddress(clientSpan.ipv4());
 
                 pi.setId(clientSpan.getId());
                 pi.setMultipleConsumers(false);

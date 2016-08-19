@@ -41,7 +41,7 @@ import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Endpoint;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanService;
-import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +83,7 @@ public class SpanServiceElasticsearchTest {
         binaryAnnotation.setKey("foo key");
         binaryAnnotation.setType(AnnotationType.I64);
 
-        Span span = new Span();
+        Span span = new Span(Arrays.asList(binaryAnnotation));
         span.setId("id");
         span.setTraceId("traceId");
         span.setParentId("parentId");
@@ -92,7 +92,6 @@ public class SpanServiceElasticsearchTest {
         span.setTimestamp(1234456L);
         span.setDuration(55468L);
         span.setAnnotations(Arrays.asList(annotation));
-        span.setBinaryAnnotations(Arrays.asList(binaryAnnotation));
 
         storeAndWait(null, Collections.singletonList(span));
         Span spanFromDb = spanService.getSpan(null, span.getId());
@@ -119,7 +118,7 @@ public class SpanServiceElasticsearchTest {
         binaryAnnotation.setKey("foo key");
         binaryAnnotation.setType(AnnotationType.I64);
 
-        Span span = new Span();
+        Span span = new Span(Arrays.asList(binaryAnnotation));
         span.setId("id1");
         span.setTraceId("traceId");
         span.setParentId("parent");
@@ -128,7 +127,6 @@ public class SpanServiceElasticsearchTest {
         span.setTimestamp(1234456L);
         span.setDuration(55468L);
         span.setAnnotations(Arrays.asList(annotation));
-        span.setBinaryAnnotations(Arrays.asList(binaryAnnotation));
 
         storeAndWait(null, Collections.singletonList(span));
 

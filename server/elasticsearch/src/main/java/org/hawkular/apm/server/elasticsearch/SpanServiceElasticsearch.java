@@ -39,7 +39,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
-import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.InteractionNode;
@@ -50,7 +49,7 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanService;
-import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -327,13 +326,11 @@ public class SpanServiceElasticsearch implements SpanService {
             throw new NullPointerException();
         }
 
-        List<Property> spanProperties = span.properties();
-
         Trace trace = new Trace();
         trace.setId(span.getId());
         trace.setStartTime(span.getTimestamp());
-        trace.setHostAddress(Span.ipv4Address(spanProperties));
-        trace.setProperties(new HashSet<>(span.properties()));
+        trace.setHostAddress(span.ipv4());
+        trace.setProperties(new HashSet<>(span.binaryAnnotationMapping().getProperties()));
 
         return trace;
     }

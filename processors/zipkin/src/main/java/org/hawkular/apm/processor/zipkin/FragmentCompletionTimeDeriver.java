@@ -17,19 +17,17 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
-import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.SpanDeriverUtil;
-import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
+import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 
 /**
  * This class represents the zipkin fragment completion time deriver.
@@ -77,9 +75,8 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
 
             ct.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
-            List<Property> spanProperties = item.properties();
-            ct.setHostAddress(Span.ipv4Address(spanProperties));
-            ct.getProperties().addAll(spanProperties);
+            ct.setHostAddress(item.ipv4());
+            ct.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
 
             ct.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
 
