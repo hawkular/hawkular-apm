@@ -14,22 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.api;
+package org.hawkular.apm.client.opentracing;
 
-import org.hawkular.apm.api.model.trace.Trace;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This interface represents a component for reporting Trace fragments.
- *
  * @author gbrown
  */
-public interface TraceReporter {
+public class Message {
+
+    private Map<String, String> headers = new HashMap<>();
 
     /**
-     * This method reports a trace fragment.
-     *
-     * @param trace The trace fragment
+     * @return the headers
      */
-    void report(Trace trace);
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    /**
+     * @param headers the headers to set
+     */
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
 
 }

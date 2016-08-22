@@ -66,6 +66,7 @@
     <module>client/instrumentation-jvm</module>
     <module>client/instrumenter</module>
     <module>client/kafka</module>
+    <module>client/opentracing</module>
     <module>client/trace-publisher-rest-client</module>
     <module>client/trace-service-rest-client</module>
     <module>server/api</module>
@@ -108,6 +109,7 @@
     <version.com.github.docker-java.docker-java>3.0.0</version.com.github.docker-java.docker-java>
     <version.com.jayway.jsonpath>2.2.0</version.com.jayway.jsonpath>
     <version.commons-io>2.1</version.commons-io>
+    <version.io.opentracing>0.15.0</version.io.opentracing>
     <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.io.vertx>3.0.0</version.io.vertx>
     <version.javaee.spec>7.0</version.javaee.spec>
@@ -332,6 +334,17 @@
         <artifactId>shrinkwrap-resolver-depchain</artifactId>
         <version>${version.org.jboss.shrinkwrap.resolvers}</version>
         <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>io.opentracing</groupId>
+        <artifactId>opentracing-api</artifactId>
+        <version>${version.io.opentracing}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentracing</groupId>
+        <artifactId>opentracing-impl-java8</artifactId>
+        <version>${version.io.opentracing}</version>
       </dependency>
 
       <dependency>

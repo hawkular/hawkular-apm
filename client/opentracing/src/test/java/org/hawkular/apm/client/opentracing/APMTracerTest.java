@@ -1,0 +1,398 @@
+/*
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.hawkular.apm.client.opentracing;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.hawkular.apm.api.model.trace.Component;
+import org.hawkular.apm.api.model.trace.Consumer;
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.client.api.reporter.TraceReporter;
+import org.hawkular.apm.tests.common.Wait;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import io.opentracing.APMTracer;
+
+/**
+ * @author gbrown
+ */
+public class APMTracerTest {
+
+    /**  */
+    private static final String TEST_BTXN = "TestBTxn";
+
+    /**  */
+    private static final String TEST_APM_ID = "abcd";
+    private static ObjectMapper mapper;
+
+    @BeforeClass
+    public static void init() {
+        mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    @Test
+    public void testClient() throws JsonProcessingException, InterruptedException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        ClientService service = new ClientService(tracer);
+
+        service.handle();
+
+        assertEquals(1, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace = reporter.getTraces().get(0);
+        assertEquals(1, trace.getNodes().size());
+        assertEquals(Component.class, trace.getNodes().get(0).getClass());
+
+        Component component = (Component) trace.getNodes().get(0);
+
+        // Get producer invoking a remote service
+        assertEquals(1, component.getNodes().size());
+        assertEquals(Producer.class, component.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) component.getNodes().get(0);
+
+        assertEquals(1, service.getMessages().size());
+
+        // Check producer has interaction based correlation id matching the value in the outbound message
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+
+        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+
+        assertEquals(ClientService.ORDER_ID_VALUE,
+                component.getProperties(ClientService.ORDER_ID_NAME).iterator().next().getValue());
+    }
+
+    @Test
+    public void testSync() throws JsonProcessingException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        SyncService service = new SyncService(tracer);
+
+        Message message = new Message();
+        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(APMTracer.HAWKULAR_BT_NAME, TEST_BTXN);
+
+        service.handle1(message);
+
+        assertEquals(1, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace = reporter.getTraces().get(0);
+
+        assertEquals(TEST_BTXN, trace.getBusinessTransaction());
+        assertEquals(1, trace.getNodes().size());
+        assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
+
+        Consumer consumer = (Consumer) trace.getNodes().get(0);
+
+        // Check has supplied correlation id
+        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+
+        assertEquals("http", consumer.getEndpointType());
+        assertEquals(SyncService.MY_FAULT, consumer.getFault());
+
+        // Get middle component
+        assertEquals(1, consumer.getNodes().size());
+        assertEquals(Component.class, consumer.getNodes().get(0).getClass());
+
+        Component component = (Component) consumer.getNodes().get(0);
+
+        // Get producer invoking a remote service
+        assertEquals(1, component.getNodes().size());
+        assertEquals("database", component.getComponentType());
+        assertTrue(component.getProperties("sql").size() > 0);
+        assertEquals(Producer.class, component.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) component.getNodes().get(0);
+
+        assertEquals(1, service.getMessages().size());
+
+        // Check producer has interaction based correlation id matching the value in the outbound message
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertEquals("http", producer.getEndpointType());
+        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+    }
+
+    @Test
+    public void testSyncSetTxnNameOnConsumer() throws JsonProcessingException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        SyncService service = new SyncService(tracer);
+
+        Message message = new Message();
+        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+
+        service.handle1(message);
+
+        assertEquals(1, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace = reporter.getTraces().get(0);
+
+        assertEquals(SyncService.SYNC_BTXN_NAME_1, trace.getBusinessTransaction());
+        assertEquals(1, trace.getNodes().size());
+        assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
+
+        Consumer consumer = (Consumer) trace.getNodes().get(0);
+
+        // Check has supplied correlation id
+        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+
+        assertEquals("http", consumer.getEndpointType());
+        assertEquals(SyncService.MY_FAULT, consumer.getFault());
+
+        // Get middle component
+        assertEquals(1, consumer.getNodes().size());
+        assertEquals(Component.class, consumer.getNodes().get(0).getClass());
+
+        Component component = (Component) consumer.getNodes().get(0);
+
+        // Get producer invoking a remote service
+        assertEquals(1, component.getNodes().size());
+        assertEquals("database", component.getComponentType());
+        assertTrue(component.getProperties("sql").size() > 0);
+        assertEquals(Producer.class, component.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) component.getNodes().get(0);
+
+        assertEquals(1, service.getMessages().size());
+
+        // Check producer has interaction based correlation id matching the value in the outbound message
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertEquals("http", producer.getEndpointType());
+        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+
+        assertEquals(SyncService.SYNC_BTXN_NAME_1,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_BT_NAME));
+    }
+
+    @Test
+    public void testSyncSetTxnNameOnProducer() throws JsonProcessingException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        SyncService service = new SyncService(tracer);
+
+        Message message = new Message();
+        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+
+        // Call alternate 'handle' method that does not set the transaction name straightaway
+        service.handle2(message);
+
+        assertEquals(1, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace = reporter.getTraces().get(0);
+
+        assertEquals(SyncService.SYNC_BTXN_NAME_2, trace.getBusinessTransaction());
+        assertEquals(1, trace.getNodes().size());
+        assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
+
+        Consumer consumer = (Consumer) trace.getNodes().get(0);
+
+        // Check has supplied correlation id
+        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+
+        assertEquals("http", consumer.getEndpointType());
+        assertEquals(SyncService.MY_FAULT, consumer.getFault());
+
+        // Get middle component
+        assertEquals(1, consumer.getNodes().size());
+        assertEquals(Component.class, consumer.getNodes().get(0).getClass());
+
+        Component component = (Component) consumer.getNodes().get(0);
+
+        // Get producer invoking a remote service
+        assertEquals(1, component.getNodes().size());
+        assertEquals("database", component.getComponentType());
+        assertTrue(component.getProperties("sql").size() > 0);
+        assertEquals(Producer.class, component.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) component.getNodes().get(0);
+
+        assertEquals(1, service.getMessages().size());
+
+        // Check producer has interaction based correlation id matching the value in the outbound message
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertEquals("http", producer.getEndpointType());
+        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+
+        assertEquals(SyncService.SYNC_BTXN_NAME_2,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_BT_NAME));
+    }
+
+    @Test
+    public void testAsync() throws JsonProcessingException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        AsyncService service = new AsyncService(tracer);
+
+        Message message = new Message();
+        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(APMTracer.HAWKULAR_BT_NAME, TEST_BTXN);
+
+        service.handle(message);
+
+        Wait.until(() -> reporter.getTraces().size() == 2, 5, TimeUnit.SECONDS);
+
+        assertEquals(2, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace1 = reporter.getTraces().get(0);
+        assertEquals(TEST_BTXN, trace1.getBusinessTransaction());
+        assertEquals(1, trace1.getNodes().size());
+        assertEquals(Consumer.class, trace1.getNodes().get(0).getClass());
+
+        Consumer consumer = (Consumer) trace1.getNodes().get(0);
+
+        // Check has supplied correlation id
+        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+
+        // Get middle component
+        assertEquals(1, consumer.getNodes().size());
+        assertEquals(Component.class, consumer.getNodes().get(0).getClass());
+
+        Component component1 = (Component) consumer.getNodes().get(0);
+
+        assertEquals(0, component1.getNodes().size());
+
+        // Check trace2
+        Trace trace2 = reporter.getTraces().get(1);
+        assertEquals(TEST_BTXN, trace2.getBusinessTransaction());
+        assertEquals(1, trace2.getNodes().size());
+        assertEquals(Component.class, trace2.getNodes().get(0).getClass());
+
+        Component component2 = (Component) trace2.getNodes().get(0);
+
+        assertTrue(component2.getCorrelationIds().contains(new CorrelationIdentifier(Scope.CausedBy,
+                trace1.getId() + ":0:0")));
+
+        // Get producer invoking a remote service
+        assertEquals(1, component2.getNodes().size());
+        assertEquals(Producer.class, component2.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) component2.getNodes().get(0);
+
+        assertEquals(1, service.getMessages().size());
+
+        // Check producer has interaction based correlation id matching the value in the outbound message
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+
+        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+
+        assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_BT_NAME));
+    }
+
+    @Test
+    public void testForkJoin() throws JsonProcessingException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        ForkJoinService service = new ForkJoinService(tracer);
+
+        Message message = new Message();
+        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(APMTracer.HAWKULAR_BT_NAME, TEST_BTXN);
+
+        service.handle(message);
+
+        assertEquals(1, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace = reporter.getTraces().get(0);
+        assertEquals(TEST_BTXN, trace.getBusinessTransaction());
+        assertEquals(1, trace.getNodes().size());
+        assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
+
+        Consumer consumer = (Consumer) trace.getNodes().get(0);
+
+        // Check has supplied correlation id
+        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+
+        // Get middle component
+        assertEquals(5, consumer.getNodes().size());
+        for (int i = 0; i < 5; i++) {
+            assertEquals(Component.class, consumer.getNodes().get(i).getClass());
+            Component component = (Component) consumer.getNodes().get(i);
+            assertEquals(0, component.getNodes().size());
+        }
+
+        assertEquals(0, service.getMessages().size());
+    }
+
+    public static class TestTraceReporter implements TraceReporter {
+
+        private List<Trace> traces = new ArrayList<>();
+
+        @Override
+        public void report(Trace trace) {
+            traces.add(trace);
+        }
+
+        /**
+         * @return the traces
+         */
+        public List<Trace> getTraces() {
+            return traces;
+        }
+
+    }
+
+}

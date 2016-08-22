@@ -1,0 +1,14 @@
+= Hawkular-APM OpenTracing support
+:source-language: java
+
+The OpenTracing support provided by this module is currently at the prototype stage. It has been
+provided to help evaluate and progress the work being done by the OpenTracing group.
+
+However the APIs being developed by OpenTracing are not yet stable, and the implementations
+they provide are subject to change.
+
+Any feedback on using our OpenTracing provider to instrument your applications will be appreciated.
+
+Any comments regarding the usability of the API should be directed to the http://opentracing.io/
+project (although we would also be interested in hearing your thoughts).
+
