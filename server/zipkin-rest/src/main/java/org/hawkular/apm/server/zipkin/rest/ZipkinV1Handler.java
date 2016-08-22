@@ -75,7 +75,7 @@ public class ZipkinV1Handler {
             response.resume(Response.status(Response.Status.OK).build());
 
         } catch (Throwable t) {
-            log.debug(t.getMessage(), t);
+            log.errorf(t.getMessage(), t);
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("errorMsg", "Internal Error: " + t.getMessage());
             response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)

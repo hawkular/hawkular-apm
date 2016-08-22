@@ -32,7 +32,7 @@ import org.hawkular.apm.api.services.ServiceLifecycle;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
-import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.query.Search;

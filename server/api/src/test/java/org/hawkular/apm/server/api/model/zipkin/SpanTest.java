@@ -32,11 +32,10 @@ public class SpanTest {
     @Test
     public void testFullUrl() throws MalformedURLException {
         URL url = new URL("http://localhost:8080/my/path");
-        Span span = new Span();
         BinaryAnnotation ba = new BinaryAnnotation();
         ba.setKey("http.url");
         ba.setValue(url.toString());
-        span.setBinaryAnnotations(Arrays.asList(ba));
+        Span span = new Span(Arrays.asList(ba));
 
         URL result = span.url();
         assertNotNull(result);
@@ -46,11 +45,10 @@ public class SpanTest {
     @Test
     public void testPartialUrl() throws MalformedURLException {
         URL url = new URL("http://localhost:8080/my/path");
-        Span span = new Span();
         BinaryAnnotation ba = new BinaryAnnotation();
         ba.setKey("http.url");
         ba.setValue(url.getPath());
-        span.setBinaryAnnotations(Arrays.asList(ba));
+        Span span = new Span(Arrays.asList(ba));
 
         URL result = span.url();
         assertNotNull(result);

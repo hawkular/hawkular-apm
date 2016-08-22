@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.server.api.utils;
+package org.hawkular.apm.server.api.utils.zipkin;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public class SpanUniqueIdGeneratorTest {
     public void testToUnique() {
         String originalId = "064c292e02db027c";
 
-        Span span = new Span();
+        Span span = new Span(null);
         span.setAnnotations(Arrays.asList());
         span.setId(originalId);
         span.setAnnotations(annotations());
@@ -48,7 +48,7 @@ public class SpanUniqueIdGeneratorTest {
     public void testToOriginal() {
         String originalId = "064c292e02db027c22g";
 
-        Span span = new Span();
+        Span span = new Span(null);
         span.setAnnotations(Arrays.asList());
         span.setId(originalId);
         span.setAnnotations(annotations());
@@ -61,7 +61,7 @@ public class SpanUniqueIdGeneratorTest {
     public void testIllegalState() {
         String originalId = "064c292e02db027c22g";
 
-        Span span = new Span();
+        Span span = new Span(null);
         span.setAnnotations(Arrays.asList());
         span.setId(originalId);
         span.setAnnotations(annotations());

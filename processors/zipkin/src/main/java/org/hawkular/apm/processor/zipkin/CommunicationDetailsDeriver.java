@@ -17,14 +17,12 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
-import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.utils.EndpointUtil;
@@ -33,7 +31,7 @@ import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
-import org.hawkular.apm.server.api.utils.SpanDeriverUtil;
+import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
 
 /**
  * This class represents the zipkin communication details deriver.
@@ -125,8 +123,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 //ret.setInternal(consumer.getEndpointType() == null);
 
                 // Merge properties from consumer and producer
-                List<Property> spanProperties = item.properties();
-                ret.getProperties().addAll(spanProperties);
+                ret.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
                 ret.getProperties().addAll(pi.getProperties());
 
                 ret.setSourceFragmentId(pi.getFragmentId());
@@ -134,7 +131,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 ret.setSourceHostAddress(pi.getHostAddress());
                 ret.setTargetFragmentId(item.getId());
                 //ret.setTargetHostName(item.getHostName());
-                ret.setTargetHostAddress(Span.ipv4Address(spanProperties));
+                ret.setTargetHostAddress(item.ipv4());
                 //ret.setTargetFragmentDuration(item.calculateDuration());
 
                 // HWKBTM-349 Deal with timestamp and offset. Currently

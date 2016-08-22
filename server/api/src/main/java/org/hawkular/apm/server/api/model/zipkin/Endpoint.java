@@ -76,6 +76,15 @@ public class Endpoint {
     }
 
     @Override
+    public String toString() {
+        return "Endpoint{" +
+                "ipv4='" + ipv4 + '\'' +
+                ", port=" + port +
+                ", serviceName='" + serviceName + '\'' +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Endpoint)) return false;

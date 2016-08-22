@@ -33,7 +33,7 @@ import javax.jms.TextMessage;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
-import org.hawkular.apm.server.api.utils.SpanUniqueIdGenerator;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

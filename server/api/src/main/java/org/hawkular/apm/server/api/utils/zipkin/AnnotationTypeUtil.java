@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.server.api.utils;
+package org.hawkular.apm.server.api.utils.zipkin;
 
 import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.server.api.model.zipkin.AnnotationType;
