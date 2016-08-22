@@ -19,10 +19,13 @@ package org.hawkular.apm.api.model.trace;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -65,6 +68,9 @@ public abstract class Node {
 
     @JsonInclude(Include.NON_NULL)
     private String faultDescription;
+
+    @JsonInclude(Include.NON_EMPTY)
+    private Set<Property> properties = new HashSet<Property>();
 
     @JsonInclude(Include.NON_EMPTY)
     private Map<String, String> details = new HashMap<String, String>();
@@ -213,6 +219,26 @@ public abstract class Node {
     }
 
     /**
+     * @return the properties
+     */
+    public Set<Property> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     * @return The node
+     */
+    public Node setProperties(Set<Property> properties) {
+        if (details == null) {
+            throw new IllegalArgumentException("Null value not permitted");
+        }
+
+        this.properties = properties;
+        return this;
+    }
+
+    /**
      * This method returns the specific details about the node.
      *
      * @return the details
@@ -226,8 +252,44 @@ public abstract class Node {
      * @return The node
      */
     public Node setDetails(Map<String, String> details) {
+        if (details == null) {
+            throw new IllegalArgumentException("Null value not permitted");
+        }
+
         this.details = details;
         return this;
+    }
+
+    /**
+     * This method determines whether there is atleast one
+     * property with the supplied name.
+     *
+     * @param name The property name
+     * @return Whether a property of the supplied name is defined
+     */
+    public boolean hasProperty(String name) {
+        return this.properties.stream().filter(p -> p.getName().equals(name)).findFirst().isPresent();
+    }
+
+    /**
+     * This method returns the set of properties having the
+     * supplied property name.
+     *
+     * @param name The property name
+     * @return The set of properties with the supplied name
+     */
+    public Set<Property> getProperties(String name) {
+        return this.properties.stream().filter(property -> property.getName().equals(name)).collect(Collectors.toSet());
+    }
+
+    /**
+     * This method adds the properties for this node to the
+     * supplied set.
+     *
+     * @param allProperties The aggregated set of properties
+     */
+    protected void includeProperties(Set<Property> allProperties) {
+        allProperties.addAll(this.properties);
     }
 
     /**
@@ -394,6 +456,7 @@ public abstract class Node {
         result = prime * result + ((faultDescription == null) ? 0 : faultDescription.hashCode());
         result = prime * result + ((issues == null) ? 0 : issues.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
@@ -444,6 +507,11 @@ public abstract class Node {
             if (other.operation != null)
                 return false;
         } else if (!operation.equals(other.operation))
+            return false;
+        if (properties == null) {
+            if (other.properties != null)
+                return false;
+        } else if (!properties.equals(other.properties))
             return false;
         if (type != other.type)
             return false;

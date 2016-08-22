@@ -135,7 +135,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                     nd.setPrincipal(trace.getPrincipal());
                 }
 
-                nd.setProperties(trace.getProperties());
+                nd.setProperties(trace.allProperties());
                 nd.setTimestamp(trace.getStartTime() + diffms);
                 nd.setType(n.getType());
                 nd.setUri(n.getUri());

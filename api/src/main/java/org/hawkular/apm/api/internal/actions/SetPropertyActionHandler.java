@@ -86,7 +86,7 @@ public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
         if (super.process(trace, node, direction, headers, values)) {
             String value = getValue(trace, node, direction, headers, values);
             if (value != null && ((SetPropertyAction) getAction()).getName() != null) {
-                trace.getProperties().add(new Property(((SetPropertyAction) getAction()).getName(), value,
+                node.getProperties().add(new Property(((SetPropertyAction) getAction()).getName(), value,
                         ((SetPropertyAction) getAction()).getType()));
                 return true;
             }

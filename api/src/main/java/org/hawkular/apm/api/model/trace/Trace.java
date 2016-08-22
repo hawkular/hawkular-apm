@@ -17,6 +17,7 @@
 package org.hawkular.apm.api.model.trace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 public class Trace {
 
+    // NOTE: If any new fields are added to the Trace class, then the TraceServiceElasticsearch
+    // class will need to be updated to include the field in the custom serializer/deserializer
+    // implementations. These custom implementations are required to promote the node 'Property'
+    // objects to the top level, to enable them to be queried.
+
     @JsonInclude
     private String id;
 
@@ -60,9 +66,6 @@ public class Trace {
 
     @JsonInclude
     private List<Node> nodes = new ArrayList<Node>();
-
-    @JsonInclude(Include.NON_EMPTY)
-    private Set<Property> properties = new HashSet<Property>();
 
     public Trace() {
     }
@@ -180,21 +183,17 @@ public class Trace {
     }
 
     /**
-     * This method returns properties that can be used to search for
-     * the trace.
+     * This method returns all properties contained in the node hierarchy
+     * that can be used to search for the trace.
      *
-     * @return the properties
+     * @return Aggregated list of all the properties in the node hierarchy
      */
-    public Set<Property> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public Trace setProperties(Set<Property> properties) {
-        this.properties = properties;
-        return this;
+    public Set<Property> allProperties() {
+        Set<Property> properties = new HashSet<Property>();
+        for (Node n : nodes) {
+            n.includeProperties(properties);
+        }
+        return Collections.unmodifiableSet(properties);
     }
 
     /**
@@ -205,7 +204,7 @@ public class Trace {
      * @return Whether a property of the supplied name is defined
      */
     public boolean hasProperty(String name) {
-        for (Property property : this.properties) {
+        for (Property property : allProperties()) {
             if (property.getName().equals(name)) {
                 return true;
             }
@@ -222,7 +221,7 @@ public class Trace {
      */
     public Set<Property> getProperties(String name) {
         Set<Property> ret = new HashSet<Property>();
-        for (Property property : this.properties) {
+        for (Property property : allProperties()) {
             if (property.getName().equals(name)) {
                 ret.add(property);
             }
@@ -307,7 +306,6 @@ public class Trace {
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
         result = prime * result + ((principal == null) ? 0 : principal.hashCode());
-        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (startTime ^ (startTime >>> 32));
         return result;
     }
@@ -369,13 +367,6 @@ public class Trace {
         } else if (!principal.equals(other.principal)) {
             return false;
         }
-        if (properties == null) {
-            if (other.properties != null) {
-                return false;
-            }
-        } else if (!properties.equals(other.properties)) {
-            return false;
-        }
         if (startTime != other.startTime) {
             return false;
         }
@@ -389,8 +380,7 @@ public class Trace {
     public String toString() {
         return "Trace [id=" + id + ", startTime=" + startTime
                 + ", businessTransaction=" + businessTransaction + ", principal="
-                + principal + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", nodes=" + nodes
-                + ", properties=" + properties + "]";
+                + principal + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", nodes=" + nodes + "]";
     }
 
 }

@@ -53,12 +53,15 @@ public class SetPropertyActionHandlerTest {
         Consumer node = new Consumer();
 
         Trace trace = new Trace();
+        trace.getNodes().add(node);
 
         handler.process(trace, node, Direction.In, null, null);
 
-        assertEquals(1, trace.getProperties().size());
+        assertEquals(1, trace.allProperties().size());
         assertTrue(trace.hasProperty(TEST_NAME_1));
         assertEquals(TEST_VALUE_1, trace.getProperties(TEST_NAME_1).iterator().next().getValue());
+        assertTrue(node.hasProperty(TEST_NAME_1));
+        assertEquals(TEST_VALUE_1, node.getProperties(TEST_NAME_1).iterator().next().getValue());
 
         assertNull(handler.getIssues());
     }

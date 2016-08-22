@@ -100,12 +100,12 @@ public class Producer extends InteractionNode {
      */
     @Override
     public String toString() {
-        return "Producer [endpointType=" + endpointType + ", getOperation()=" + getOperation() + ", getIn()="
-                + getIn() + ", getOut()=" + getOut() + ", getNodes()=" + getNodes() + ", getType()=" + getType()
-                + ", getUri()=" + getUri() + ", getBaseTime()=" + getBaseTime() + ", getDuration()=" + getDuration()
-                + ", getFault()=" + getFault() + ", getFaultDescription()=" + getFaultDescription()
-                + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()="
-                + getIssues() + "]";
+        return "Producer [endpointType=" + endpointType + ", getIn()=" + getIn() + ", getOut()=" + getOut()
+                + ", getNodes()=" + getNodes() + ", getType()=" + getType() + ", getUri()=" + getUri()
+                + ", getOperation()=" + getOperation() + ", getBaseTime()=" + getBaseTime() + ", getDuration()="
+                + getDuration() + ", getFault()=" + getFault() + ", getFaultDescription()=" + getFaultDescription()
+                + ", getProperties()=" + getProperties() + ", getDetails()=" + getDetails() + ", getCorrelationIds()="
+                + getCorrelationIds() + ", getIssues()=" + getIssues() + "]";
     }
 
 }

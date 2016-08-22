@@ -856,7 +856,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     @Override
     public void setProperty(String location, String name, String value) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set business transaction property: location=" + location +
+            log.finest("Set property: location=" + location +
                     " name=" + name + " value=" + value);
         }
 
@@ -864,11 +864,8 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                if (value == null) {
-                    builder.getTrace().getProperties().remove(name);
-                } else {
-                    builder.getTrace().getProperties().add(new Property(name, value));
-                }
+                builder.getCurrentNode().getProperties().add(new Property(name, value));
+
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setProperty: No fragment builder for this thread", null);
             }

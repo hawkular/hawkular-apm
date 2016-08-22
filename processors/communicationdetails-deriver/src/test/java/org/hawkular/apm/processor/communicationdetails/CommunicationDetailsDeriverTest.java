@@ -263,7 +263,6 @@ public class CommunicationDetailsDeriverTest {
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
         trace1.setPrincipal("p1");
-        trace1.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -279,6 +278,7 @@ public class CommunicationDetailsDeriverTest {
         Producer p1 = new Producer();
         p1.setBaseTime(1000000);
         p1.setDuration(2000000000);
+        p1.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -299,11 +299,11 @@ public class CommunicationDetailsDeriverTest {
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
-        trace2.getProperties().add(new Property("prop2", "value2"));
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setDuration(1200000000);
+        c2.getProperties().add(new Property("prop2", "value2"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -403,12 +403,12 @@ public class CommunicationDetailsDeriverTest {
         trace2.setId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
-        trace2.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setDuration(1200000000);
         c2.getDetails().put(Consumer.DETAILS_PUBLISH, "true");
+        c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -473,11 +473,11 @@ public class CommunicationDetailsDeriverTest {
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
-        trace2.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c2 = new Consumer();
         c2.setUri("TheURI");
         c2.setDuration(1200000000);
+        c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -512,6 +512,90 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
         assertEquals("p1", details.getPrincipal());
+    }
+
+    @Test
+    public void testProcessSinglePropertyNullValue() {
+        TestProducerInfoCache cache=new TestProducerInfoCache();
+
+        CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
+        deriver.setProducerInfoCache(cache);
+
+        List<Trace> traces1 = new ArrayList<Trace>();
+
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000000);
+
+        traces1.add(trace1);
+
+        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setId("trace1");
+
+        Consumer c1 = new Consumer();
+        c1.setUri("FirstURI");
+        c1.setBaseTime(0);
+
+        CorrelationIdentifier cid1 = new CorrelationIdentifier();
+        cid1.setScope(Scope.Interaction);
+        cid1.setValue("cid1");
+        c1.getCorrelationIds().add(cid1);
+
+        trace1.getNodes().add(c1);
+
+        Producer p1 = new Producer();
+        p1.setBaseTime(1000000);
+        p1.setDuration(2000000000);
+        p1.getProperties().add(new Property("prop1", null));
+
+        CorrelationIdentifier pid1 = new CorrelationIdentifier();
+        pid1.setScope(Scope.Interaction);
+        pid1.setValue("pid1");
+        p1.getCorrelationIds().add(pid1);
+
+        c1.getNodes().add(p1);
+
+        List<Trace> traces2 = new ArrayList<Trace>();
+
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000000);
+
+        traces2.add(trace2);
+
+        trace2.setId("trace2");
+
+        Consumer c2 = new Consumer();
+        c2.setUri("SecondURI");
+        c2.setDuration(1200000000);
+        c2.getProperties().add(new Property("prop2", null));
+
+        CorrelationIdentifier cid2 = new CorrelationIdentifier();
+        cid2.setScope(Scope.Interaction);
+        cid2.setValue("pid1");
+        c2.getCorrelationIds().add(cid2);
+
+        trace2.getNodes().add(c2);
+
+        CommunicationDetails details = null;
+        try {
+            deriver.initialise(null, traces1);
+            deriver.initialise(null, traces2);
+            details = deriver.processOneToOne(null, trace2);
+        } catch (Exception e) {
+            fail("Failed to process: " + e);
+        }
+
+        assertNotNull(details);
+
+        assertEquals("pid1", details.getId());
+        assertEquals("FirstURI", details.getSource());
+        assertEquals("SecondURI", details.getTarget());
+
+        assertTrue(details.hasProperty("prop1"));
+        assertEquals(1, details.getProperties("prop1").size());
+        assertNull(details.getProperties("prop1").iterator().next().getValue());
+        assertTrue(details.hasProperty("prop2"));
+        assertEquals(1, details.getProperties("prop2").size());
+        assertNull(details.getProperties("prop2").iterator().next().getValue());
     }
 
 }

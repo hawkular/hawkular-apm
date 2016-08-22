@@ -23,9 +23,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -145,30 +147,77 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
+    public void testSearchFragments() {
+        Trace trace1 = new Trace();
+        trace1.setId("id1");
+        trace1.setStartTime(1000);
+
+        Consumer consumer1 = new Consumer();
+        consumer1.getProperties().add(new Property("prop1a", "value1a"));
+        consumer1.getProperties().add(new Property("prop1b", "value1b"));
+        trace1.getNodes().add(consumer1);
+
+        Component component1 = new Component();
+        component1.getProperties().add(new Property("prop2", "value2"));
+        consumer1.getNodes().add(component1);
+
+        Producer producer1 = new Producer();
+        producer1.getProperties().add(new Property("prop3", "value3"));
+        consumer1.getNodes().add(producer1);
+
+        try {
+            ts.storeFragments(null, Arrays.asList(trace1));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to store");
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(100);
+
+        Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
+        List<Trace> result1 = ts.searchFragments(null, criteria);
+
+        assertNotNull(result1);
+        assertEquals(1, result1.size());
+        assertEquals(trace1, result1.get(0));
+    }
+
+    @Test
     public void testQuerySinglePropertyAndValueIncluded() {
         List<Trace> traces = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().add(new Property("prop1", "value1"));
+
+        Consumer consumer1 = new Consumer();
+        consumer1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(consumer1);
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().add(new Property("prop2", "value2"));
+
+        Consumer consumer2 = new Consumer();
+        consumer2.getProperties().add(new Property("prop2", "value2"));
+        trace2.getNodes().add(consumer2);
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().add(new Property("prop1", "value3"));
+
+        Consumer consumer3 = new Consumer();
+        consumer3.getProperties().add(new Property("prop1", "value3"));
+        trace3.getNodes().add(consumer3);
         traces.add(trace3);
 
         try {
             ts.storeFragments(null, traces);
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Failed to store");
         }
 
@@ -191,19 +240,25 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().add(new Property("prop1", "value1"));
+        Consumer consumer1 = new Consumer();
+        consumer1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(consumer1);
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().add(new Property("prop2", "value2"));
+        Consumer consumer2 = new Consumer();
+        consumer2.getProperties().add(new Property("prop2", "value2"));
+        trace2.getNodes().add(consumer2);
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().add(new Property("prop1", "value3"));
+        Consumer consumer3 = new Consumer();
+        consumer3.getProperties().add(new Property("prop1", "value3"));
+        trace3.getNodes().add(consumer3);
         traces.add(trace3);
 
         try {
@@ -232,26 +287,34 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().add(new Property("prop1", "value1"));
+        Consumer consumer1 = new Consumer();
+        consumer1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(consumer1);
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().add(new Property("prop2", "value2"));
+        Consumer consumer2 = new Consumer();
+        consumer2.getProperties().add(new Property("prop2", "value2"));
+        trace2.getNodes().add(consumer2);
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().add(new Property("prop3", "value3"));
+        Consumer consumer3 = new Consumer();
+        consumer3.getProperties().add(new Property("prop3", "value3"));
+        trace3.getNodes().add(consumer3);
         traces.add(trace3);
 
         Trace trace4 = new Trace();
         trace4.setId("id4");
         trace4.setStartTime(4000);
-        trace4.getProperties().add(new Property("prop1", "value1"));
-        trace4.getProperties().add(new Property("prop3", "value3"));
+        Consumer consumer4 = new Consumer();
+        consumer4.getProperties().add(new Property("prop1", "value1"));
+        consumer4.getProperties().add(new Property("prop3", "value3"));
+        trace4.getNodes().add(consumer4);
         traces.add(trace4);
 
         try {
@@ -280,19 +343,25 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        trace1.getProperties().add(new Property("prop1", "value1"));
+        Consumer consumer1 = new Consumer();
+        consumer1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(consumer1);
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        trace2.getProperties().add(new Property("prop2", "value2"));
+        Consumer consumer2 = new Consumer();
+        consumer2.getProperties().add(new Property("prop2", "value2"));
+        trace2.getNodes().add(consumer2);
         traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        trace3.getProperties().add(new Property("prop1", "value3"));
+        Consumer consumer3 = new Consumer();
+        consumer3.getProperties().add(new Property("prop1", "value3"));
+        trace3.getNodes().add(consumer3);
         traces.add(trace3);
 
         try {
@@ -359,9 +428,9 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis());
-        trace1.getProperties().add(new Property("prop1","value1"));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
+        c1.getProperties().add(new Property("prop1","value1"));
         trace1.getNodes().add(c1);
         Producer p1_1 = new Producer();
         p1_1.addInteractionId("id1_1");
@@ -374,10 +443,10 @@ public class TraceServiceElasticsearchTest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setStartTime(System.currentTimeMillis());
-        trace2.getProperties().add(new Property("prop1","value1"));
-        trace2.getProperties().add(new Property("prop2","value2"));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
+        c2.getProperties().add(new Property("prop1","value1"));
+        c2.getProperties().add(new Property("prop2","value2"));
         c2.addInteractionId("id1_2");
         trace2.getNodes().add(c2);
         Producer p2_1 = new Producer();
@@ -413,7 +482,7 @@ public class TraceServiceElasticsearchTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, result.getProperties().size());
+        assertEquals(2, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
         assertEquals(Consumer.class, result.getNodes().get(0).getClass());
         assertEquals("uri1", result.getNodes().get(0).getUri());

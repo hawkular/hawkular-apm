@@ -1093,38 +1093,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     @Override
     public List<String> getHostNames(String tenantId, Criteria criteria) {
         List<String> ret = new ArrayList<String>();
-        String index = client.getIndex(tenantId);
 
         try {
-            RefreshRequestBuilder refreshRequestBuilder =
-                    client.getClient().admin().indices().prepareRefresh(index);
-            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
-
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction",
-                    Trace.class);
-
-            SearchRequestBuilder request = client.getClient().prepareSearch(index)
-                    .setTypes(TraceServiceElasticsearch.TRACE_TYPE)
-                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
-                    .setSize(criteria.getMaxResponseSize())
-                    .setQuery(query);
-
-            SearchResponse response = request.execute().actionGet();
-            if (response.isTimedOut()) {
-                msgLog.warnQueryTimedOut();
-            }
-
-            List<Trace> btxns = new ArrayList<Trace>();
-
-            for (SearchHit searchHitFields : response.getHits()) {
-                try {
-                    btxns.add(mapper.readValue(searchHitFields.getSourceAsString(),
-                            Trace.class));
-                } catch (Exception e) {
-                    msgLog.errorFailedToParse(e);
-                }
-            }
+            List<Trace> btxns = TraceServiceElasticsearch.internalQuery(client, tenantId, criteria);
 
             // Process the fragments to identify host names
             for (int i = 0; i < btxns.size(); i++) {
