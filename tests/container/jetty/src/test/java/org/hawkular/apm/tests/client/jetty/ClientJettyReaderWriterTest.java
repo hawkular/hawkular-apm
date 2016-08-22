@@ -42,6 +42,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -208,13 +209,7 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
             fail("Failed to perform get: " + e);
         }
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 2);
 
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();

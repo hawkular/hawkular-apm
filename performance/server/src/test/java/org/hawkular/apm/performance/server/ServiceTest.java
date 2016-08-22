@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 /**
@@ -54,13 +55,7 @@ public class ServiceTest {
         Message mesg = new Message("path1");
         serviceA.call(mesg, "1", null);
 
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Wait.until(() -> publisher.getTraces().size() == 2);
 
         // Check that two traces reported, both with transaction name
         assertEquals(2, publisher.getTraces().size());

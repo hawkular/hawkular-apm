@@ -40,10 +40,6 @@
     <hawkular.host>127.0.0.1</hawkular.host>
     <hawkular.port>8080</hawkular.port>
     <hawkular.uri>http://${hawkular.host}:${hawkular.port}</hawkular.uri>
-    <HAWKULAR_APM_URI>${hawkular.uri}</HAWKULAR_APM_URI>
-    <hawkular-apm.testapp.host>127.0.0.1</hawkular-apm.testapp.host>
-    <hawkular-apm.testapp.port>8180</hawkular-apm.testapp.port>
-    <hawkular-apm.testapp.uri>http://${hawkular-apm.testapp.host}:${hawkular-apm.testapp.port}</hawkular-apm.testapp.uri>
   </properties>
 
   <dependencies>
@@ -209,17 +205,13 @@
           <argLine>
               -javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar
               -DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig
-              -DHAWKULAR_APM_URI=http://localhost:8080
+              -DHAWKULAR_APM_URI=${hawkular.uri}
               -DHAWKULAR_APM_USERNAME=jdoe
               -DHAWKULAR_APM_PASSWORD=password
               -Djava.util.logging.config.file=${hawkular-apm.logging}
               -Dhawkular-apm.test.mode=true
               -DHAWKULAR_APM_LOG_LEVEL=INFO
           </argLine>
-          <systemPropertyVariables>
-            <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
-            <hawkular-apm.testapp.uri>${hawkular-apm.testapp.uri}</hawkular-apm.testapp.uri>
-          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>

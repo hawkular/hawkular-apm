@@ -32,6 +32,7 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.apm.api.model.config.btxn.Filter;
 import org.hawkular.apm.config.service.rest.client.ConfigurationServiceRESTClient;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -100,13 +101,7 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(3000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.getBusinessTransaction(null, BTXNCONFIG1) != null);
 
         // Check config was added
         BusinessTxnConfig btxnconfig2 = service.getBusinessTransaction(null, BTXNCONFIG1);
@@ -125,13 +120,7 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.getBusinessTransaction(null, BTXNCONFIG1) != null);
 
         // Check config was updated
         BusinessTxnConfig btxnconfig3 = service.getBusinessTransaction(null, BTXNCONFIG1);
@@ -148,13 +137,7 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.getBusinessTransaction(null, BTXNCONFIG1) == null);
 
         BusinessTxnConfig btxnconfig4 = service.getBusinessTransaction(null, BTXNCONFIG1);
 
@@ -186,13 +169,7 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(3000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.getCollector(null, null, null, null) != null);
 
         // Get the collector configuration
         CollectorConfiguration cc = service.getCollector(null, null, null, null);
@@ -211,13 +188,9 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(
+                () -> service.getBusinessTransaction(null, BTXNCONFIG1) == null
+                        && service.getBusinessTransaction(null, BTXNCONFIG2) == null);
 
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
@@ -244,6 +217,7 @@ public class ConfigurationServiceRESTTest {
         try {
             service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
 
+            // these waits are part of the business logic and shouldn't be changed
             synchronized (this) {
                 wait(1000);
             }
@@ -261,13 +235,7 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(3000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.getBusinessTransactionSummaries(null) != null);
 
         // Get the btxn names
         List<BusinessTxnSummary> btns = service.getBusinessTransactionSummaries(null);
@@ -305,13 +273,9 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(
+                () -> service.getBusinessTransaction(null, BTXNCONFIG1) == null
+                        && service.getBusinessTransaction(null, BTXNCONFIG2) == null);
 
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
@@ -345,13 +309,7 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(3000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(() -> service.getBusinessTransactionSummaries(null) != null);
 
         // Get the btxn names
         List<BusinessTxnSummary> btns = service.getBusinessTransactionSummaries(null);
@@ -381,13 +339,9 @@ public class ConfigurationServiceRESTTest {
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        Wait.until(
+                () -> service.getBusinessTransaction(null, BTXNCONFIG1) == null
+                        && service.getBusinessTransaction(null, BTXNCONFIG2) == null);
 
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));

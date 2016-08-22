@@ -17,7 +17,6 @@
 package org.hawkular.apm.tests.common;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -57,13 +56,6 @@ public abstract class ClientTestBase {
             apmMockServer.shutdown();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait after test close");
         }
     }
 

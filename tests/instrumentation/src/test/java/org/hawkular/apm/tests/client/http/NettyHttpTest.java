@@ -18,18 +18,21 @@ package org.hawkular.apm.tests.client.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,7 +69,7 @@ public class NettyHttpTest extends ClientTestBase {
 
     @Override
     public void init() {
-        server = HttpServer.newServer(8180)
+        server = HttpServer.newServer()
                 .enableWireLogging(LogLevel.DEBUG)
                 .start((req, resp) -> {
                     if (req.getHttpMethod() == HttpMethod.POST
@@ -74,44 +77,33 @@ public class NettyHttpTest extends ClientTestBase {
                         req.getContent().subscribe(bb -> System.out.println("DATA = " + bb.toString()));
                     }
                     return resp.writeString(Observable.just(HELLO_WORLD));
-                }
-                        );
-
+                });
         super.init();
     }
 
     @Override
     public void close() {
         server.shutdown();
-
+        server.awaitShutdown();
         super.close();
     }
 
     @Test
-    public void testGET() {
-        SocketAddress serverAddress = new InetSocketAddress("127.0.0.1", 8180);
+    public void testGET() throws InterruptedException, ExecutionException, TimeoutException {
+        SocketAddress serverAddress = new InetSocketAddress("127.0.0.1", server.getServerPort());
 
         /*Create a new client for the server address*/
         HttpClient<ByteBuf, ByteBuf> client = HttpClient.newClient(serverAddress);
         HttpClientRequest<ByteBuf, ByteBuf> req1 = client.createGet(PATH_1 + "?" + QUERY_1);
 
         Object result1 = req1
-                .flatMap((HttpClientResponse<ByteBuf> resp) ->
-                        resp.getContent()
-                                .map(bb -> bb.toString(Charset.defaultCharset()))
-                )
-                .toBlocking().single();
-
+                .flatMap((HttpClientResponse<ByteBuf> resp) -> resp.getContent()
+                        .map(bb -> bb.toString(Charset.defaultCharset())))
+                .single().toBlocking().toFuture().get(5, TimeUnit.SECONDS);
         assertEquals(HELLO_WORLD, result1);
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
-
+        // Check stored traces (including 1 for the test client)
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -122,13 +114,10 @@ public class NettyHttpTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
         NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
-
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);
@@ -140,8 +129,8 @@ public class NettyHttpTest extends ClientTestBase {
     }
 
     @Test
-    public void testPOST() {
-        SocketAddress serverAddress = new InetSocketAddress("127.0.0.1", 8180);
+    public void testPOST() throws InterruptedException, ExecutionException, TimeoutException {
+        SocketAddress serverAddress = new InetSocketAddress("127.0.0.1", server.getServerPort());
 
         /*Create a new client for the server address*/
         HttpClient<ByteBuf, ByteBuf> client = HttpClient.newClient(serverAddress);
@@ -149,22 +138,13 @@ public class NettyHttpTest extends ClientTestBase {
         req1.writeStringContent(Observable.just(HELLO_THERE));
 
         Object result1 = req1
-                .flatMap((HttpClientResponse<ByteBuf> resp) ->
-                        resp.getContent()
-                                .map(bb -> bb.toString(Charset.defaultCharset()))
-                )
-                .toBlocking().single();
-
+                .flatMap((HttpClientResponse<ByteBuf> resp) -> resp.getContent()
+                        .map(bb -> bb.toString(Charset.defaultCharset())))
+                .single().toBlocking().toFuture().get(5, TimeUnit.SECONDS);
         assertEquals(HELLO_WORLD, result1);
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
-
+        // Check stored traces (including 1 for the test client)
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -175,13 +155,10 @@ public class NettyHttpTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
         NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
-
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);
@@ -193,8 +170,8 @@ public class NettyHttpTest extends ClientTestBase {
     }
 
     @Test
-    public void testPUT() {
-        SocketAddress serverAddress = new InetSocketAddress("127.0.0.1", 8180);
+    public void testPUT() throws InterruptedException, ExecutionException, TimeoutException {
+        SocketAddress serverAddress = new InetSocketAddress("127.0.0.1", server.getServerPort());
 
         /*Create a new client for the server address*/
         HttpClient<ByteBuf, ByteBuf> client = HttpClient.newClient(serverAddress);
@@ -202,22 +179,13 @@ public class NettyHttpTest extends ClientTestBase {
         req1.writeStringContent(Observable.just(HELLO_THERE));
 
         Object result1 = req1
-                .flatMap((HttpClientResponse<ByteBuf> resp) ->
-                        resp.getContent()
-                                .map(bb -> bb.toString(Charset.defaultCharset()))
-                )
-                .toBlocking().single();
-
+                .flatMap((HttpClientResponse<ByteBuf> resp) -> resp.getContent()
+                        .map(bb -> bb.toString(Charset.defaultCharset())))
+                .single().toBlocking().toFuture().get(5, TimeUnit.SECONDS);
         assertEquals(HELLO_WORLD, result1);
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
-
+        // Check stored traces (including 1 for the test client)
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -228,13 +196,10 @@ public class NettyHttpTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
         NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
-
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);

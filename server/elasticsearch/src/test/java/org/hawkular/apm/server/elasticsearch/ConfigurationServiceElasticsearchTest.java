@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +32,12 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
 import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author gbrown
@@ -45,8 +49,8 @@ public class ConfigurationServiceElasticsearchTest {
 
     /**  */
     private static final String INVALID_DESCRIPTION = "Invalid description";
-
     private ConfigurationServiceElasticsearch cfgs;
+    private Clock clock = Mockito.mock(Clock.class);
 
     @BeforeClass
     public static void initClass() {
@@ -55,7 +59,7 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Before
     public void beforeTest() {
-        cfgs = new ConfigurationServiceElasticsearch();
+        cfgs = new ConfigurationServiceElasticsearch(clock);
     }
 
     @After
@@ -65,6 +69,10 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Test
     public void testGetBusinessTransactionsUpdated() {
+        long initialTime = clock.millis();
+        long midTime = initialTime + 1000;
+        when(clock.millis()).thenReturn(initialTime, midTime+1000, midTime+1000);
+
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription("btc1");
         btc1.setFilter(new Filter());
@@ -74,24 +82,6 @@ public class ConfigurationServiceElasticsearchTest {
             cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
-        }
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        long midtime = System.currentTimeMillis();
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
         }
 
         BusinessTxnConfig btc2 = new BusinessTxnConfig();
@@ -105,20 +95,14 @@ public class ConfigurationServiceElasticsearchTest {
             fail("Failed to update btc2: " + e);
         }
 
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
+        Wait.until(() -> cfgs.getBusinessTransactions(null, 0).size() == 2);
         Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(2, res1.size());
 
-        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midtime);
+        Wait.until(() -> cfgs.getBusinessTransactions(null, midTime).size() == 1);
+        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midTime);
 
         assertNotNull(res2);
         assertEquals(1, res2.size());
@@ -132,6 +116,9 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Test
     public void testGetBusinessTransactionsInvalid() {
+        long initialTime = clock.millis();
+        when(clock.millis()).thenReturn(initialTime, initialTime+1000);
+
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription("btc1");
 
@@ -140,14 +127,6 @@ public class ConfigurationServiceElasticsearchTest {
             cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
-        }
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
         }
 
         // Check invalid config can still be retrieved
@@ -169,6 +148,9 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Test
     public void testGetBusinessTransactionsValidThenInvalid() {
+        long initialTime = clock.millis();
+        when(clock.millis()).thenReturn(initialTime, initialTime+1000, initialTime+2000, initialTime+3000);
+
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription(VALID_DESCRIPTION);
         btc1.setFilter(new Filter());
@@ -184,14 +166,6 @@ public class ConfigurationServiceElasticsearchTest {
             fail("Failed to update btc1: " + e);
         }
 
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
         btc1.setDescription(INVALID_DESCRIPTION);
         btc1.setFilter(null);
 
@@ -200,14 +174,6 @@ public class ConfigurationServiceElasticsearchTest {
             cfgs.setBusinessTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
-        }
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
         }
 
         // Check invalid config can still be retrieved
@@ -242,14 +208,6 @@ public class ConfigurationServiceElasticsearchTest {
             fail("Failed to update btc1: " + e);
         }
 
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
         BusinessTxnConfig valid2 = cfgs.getBusinessTransaction(null, "btc1");
         assertNotNull(valid2);
 
@@ -258,6 +216,10 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Test
     public void testGetBusinessTransactionsAfterRemove() {
+        long initialTime = clock.millis();
+        long midTime = initialTime + 1000;
+        when(clock.millis()).thenReturn(initialTime, midTime+1000, midTime+2000);
+
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription("btc1");
         btc1.setFilter(new Filter());
@@ -270,35 +232,9 @@ public class ConfigurationServiceElasticsearchTest {
         }
 
         try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        long midtime = System.currentTimeMillis();
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        try {
             cfgs.removeBusinessTransaction(null, "btc2");
         } catch (Exception e) {
             fail("Failed to remove btc2: " + e);
-        }
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
         }
 
         Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
@@ -307,7 +243,7 @@ public class ConfigurationServiceElasticsearchTest {
         assertEquals(1, res1.size());
         assertTrue(res1.containsKey("btc1"));
 
-        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midtime);
+        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midTime);
 
         assertNotNull(res2);
         assertEquals(1, res2.size());
@@ -319,6 +255,9 @@ public class ConfigurationServiceElasticsearchTest {
 
     @Test
     public void testGetBusinessTransactionsAfterRemoveInvalid() {
+        long initialTime = clock.millis();
+        when(clock.millis()).thenReturn(initialTime, initialTime+1000, initialTime+2000);
+
         BusinessTxnConfig btc1 = new BusinessTxnConfig();
         btc1.setDescription("btc1");
 
@@ -329,25 +268,9 @@ public class ConfigurationServiceElasticsearchTest {
         }
 
         try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
-        try {
             cfgs.removeBusinessTransaction(null, "btc1");
         } catch (Exception e) {
             fail("Failed to remove btc1: " + e);
-        }
-
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
         }
 
         BusinessTxnConfig btc1again = cfgs.getBusinessTransaction(null, "btc1");

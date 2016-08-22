@@ -20,14 +20,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.utils.PropertyUtil;
+import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -47,14 +51,17 @@ public class ClientJavaMainTest {
     private static final String TEST_USERNAME = "jdoe";
 
     @BeforeClass
-    public static void waitForServer() {
-        try {
-            synchronized (baseUrl) {
-                baseUrl.wait(5000);
+    public static void waitForServer() throws MalformedURLException {
+        Wait.until(() -> {
+            URL url = new URL(baseUrl);
+            URLConnection connection = url.openConnection();
+            try {
+                connection.connect();
+            } catch (ConnectException ignored) {
+                return false;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            return true;
+        });
     }
 
     @Test
@@ -93,15 +100,6 @@ public class ClientJavaMainTest {
             fail("Failed to perform testOp: " + e);
         }
 
-        // Wait to ensure record persisted
-        try {
-            synchronized (this) {
-                wait(1000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
-
         TraceServiceRESTClient service = new TraceServiceRESTClient();
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
@@ -109,6 +107,10 @@ public class ClientJavaMainTest {
         // Retrieve stored business transaction
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime);
+
+        // Wait to ensure record persisted
+        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
+
         List<Trace> result = service.searchFragments(null, criteria);
 
         assertNotNull(result);

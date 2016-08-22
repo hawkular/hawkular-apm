@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.trace.publisher.rest.client;
 
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -93,7 +94,13 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
         os.flush();
         os.close();
 
-        int statusCode = connection.getResponseCode();
+        int statusCode;
+        try {
+            statusCode = connection.getResponseCode();
+        } catch (ConnectException exception) {
+            log.warning("Could not connect to server at " + connection.getURL());
+            throw exception;
+        }
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Status code is: " + statusCode);

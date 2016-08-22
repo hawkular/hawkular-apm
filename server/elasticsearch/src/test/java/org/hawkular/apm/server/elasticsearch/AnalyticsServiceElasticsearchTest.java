@@ -55,6 +55,7 @@ import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.FaultCriteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -120,14 +121,11 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to wait");
         }
 
+        Wait.until(() -> analytics.getUnboundEndpoints(null, 100, 0, false).size() == 2);
         java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
@@ -167,14 +165,11 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to wait");
         }
 
+        Wait.until(() -> analytics.getUnboundEndpoints(null, 100, 0, false).size() == 2);
         java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
@@ -219,14 +214,11 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
 
+        Wait.until(() -> analytics.getUnboundEndpoints(null, 100, 0, false).size() == 1);
         java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
 
         assertNotNull(uris);
@@ -249,10 +241,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             fail("Failed to store: "+e);
@@ -333,10 +321,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -438,14 +422,11 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to wait");
         }
 
+        Wait.until(() -> analytics.getBoundEndpoints(null, "trace1", 100, 0).size() == 3);
         java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "trace1", 100, 0);
 
         assertNotNull(uris1);
@@ -454,6 +435,7 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(uris1.contains(new EndpointInfo("uri2")));
         assertTrue(uris1.contains(new EndpointInfo("uri3")));
 
+        Wait.until(() -> analytics.getBoundEndpoints(null, "trace2", 100, 0).size() == 1);
         java.util.List<EndpointInfo> uris2 = analytics.getBoundEndpoints(null, "trace2", 100, 0);
 
         assertNotNull(uris2);
@@ -483,19 +465,16 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to wait");
         }
 
-        Criteria criteria=new Criteria()
+        Criteria criteria = new Criteria()
             .setBusinessTransaction("trace1")
             .setStartTime(100)
             .setEndTime(0);
 
+        Wait.until(() -> analytics.getPropertyInfo(null, criteria).size() == 3);
         java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
 
         assertNotNull(pis);
@@ -504,13 +483,14 @@ public class AnalyticsServiceElasticsearchTest {
         assertTrue(pis.get(1).getName().equals("prop2"));
         assertTrue(pis.get(2).getName().equals("prop3"));
 
-        criteria=new Criteria()
+        Criteria criteria2 =new Criteria()
             .setBusinessTransaction("trace1")
             .setPrincipal("p1")
             .setStartTime(100)
             .setEndTime(0);
 
-        pis = analytics.getPropertyInfo(null, criteria);
+        Wait.until(() -> analytics.getPropertyInfo(null, criteria2).size() == 2);
+        pis = analytics.getPropertyInfo(null, criteria2);
 
         assertNotNull(pis);
         assertEquals(2, pis.size());
@@ -535,10 +515,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to wait");
         }
@@ -548,6 +524,7 @@ public class AnalyticsServiceElasticsearchTest {
             .setStartTime(100)
             .setEndTime(0);
 
+        Wait.until(() -> analytics.getPrincipalInfo(null, criteria).size() == 1);
         java.util.List<PrincipalInfo> pis = analytics.getPrincipalInfo(null, criteria);
 
         assertNotNull(pis);
@@ -585,16 +562,13 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
 
         Criteria criteria = new Criteria().setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 3);
         List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
 
         assertNotNull(results);
@@ -630,16 +604,13 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
 
         Criteria criteria = new Criteria().setUri("uri1").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 2);
         List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
 
         assertNotNull(results);
@@ -675,16 +646,13 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
 
         Criteria criteria = new Criteria().setOperation("op1").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 2);
         List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
 
         assertNotNull(results);
@@ -707,10 +675,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -718,6 +682,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
@@ -737,10 +702,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -748,6 +709,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(1500);
 
+        Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
     }
 
@@ -768,10 +730,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -780,6 +738,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault", null));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
     }
 
@@ -806,10 +765,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -818,6 +773,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault1", Operator.HASNOT));
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
@@ -847,10 +803,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -859,6 +811,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setPrincipal("p1");
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
@@ -883,10 +836,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -895,37 +844,38 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.addProperty("num", "2", Operator.GTE);
         criteria.setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
 
-        criteria = new Criteria();
-        criteria.addProperty("num", "2", Operator.GT);
-        criteria.setStartTime(100).setEndTime(0);
+        Criteria criteria2 = new Criteria();
+        criteria2.addProperty("num", "2", Operator.GT);
+        criteria2.setStartTime(100).setEndTime(0);
 
-        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria2));
 
-        criteria = new Criteria();
-        criteria.addProperty("num", "2", Operator.LTE);
-        criteria.setStartTime(100).setEndTime(0);
+        Criteria criteria3 = new Criteria();
+        criteria3.addProperty("num", "2", Operator.LTE);
+        criteria3.setStartTime(100).setEndTime(0);
 
-        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria3));
 
-        criteria = new Criteria();
-        criteria.addProperty("num", "2", Operator.LT);
-        criteria.setStartTime(100).setEndTime(0);
+        Criteria criteria4 = new Criteria();
+        criteria4.addProperty("num", "2", Operator.LT);
+        criteria4.setStartTime(100).setEndTime(0);
 
-        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria4));
 
-        criteria = new Criteria();
-        criteria.addProperty("num", "2.0", Operator.EQ);
-        criteria.setStartTime(100).setEndTime(0);
+        Criteria criteria5 = new Criteria();
+        criteria5.addProperty("num", "2.0", Operator.EQ);
+        criteria5.setStartTime(100).setEndTime(0);
 
-        assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
+        assertEquals(1, analytics.getTraceCompletionCount(null, criteria5));
 
-        criteria = new Criteria();
-        criteria.addProperty("num", "2.0", Operator.NE);
-        criteria.setStartTime(100).setEndTime(0);
+        Criteria criteria6 = new Criteria();
+        criteria6.addProperty("num", "2.0", Operator.NE);
+        criteria6.setStartTime(100).setEndTime(0);
 
-        assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
+        assertEquals(2, analytics.getTraceCompletionCount(null, criteria6));
     }
 
     @Test
@@ -945,10 +895,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
@@ -956,6 +902,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
 
+        Wait.until(() -> analytics.getTraceCompletionFaultCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionFaultCount(null, criteria));
     }
 
@@ -983,10 +930,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -994,6 +937,9 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
+        );
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1042,10 +988,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1054,6 +996,9 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setLowerBound(200);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
+        );
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1102,10 +1047,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1114,6 +1055,9 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setUpperBound(400);
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
+        );
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1164,10 +1108,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1175,6 +1115,9 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
+        );
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1227,10 +1170,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1238,6 +1177,9 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 1
+        );
         List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1284,10 +1226,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1295,6 +1233,9 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 2
+        );
         List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
@@ -1339,10 +1280,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(2000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1351,6 +1288,9 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault", null));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
+        );
         List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
@@ -1383,10 +1323,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(2000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1395,6 +1331,9 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.getFaults().add(new FaultCriteria("TestFault", Operator.HASNOT));
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
+        );
         List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
@@ -1428,10 +1367,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(2000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1439,6 +1374,9 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
+        );
         List<Cardinality> cards1 = analytics.getTraceCompletionPropertyDetails(null, criteria,
                 "prop1");
 
@@ -1477,10 +1415,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1488,6 +1422,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 2 );
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards1);
@@ -1524,10 +1459,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1535,6 +1466,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards1);
@@ -1572,10 +1504,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeTraceCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1583,6 +1511,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction("testapp").setPrincipal("p2").setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
 
         assertNotNull(cards1);
@@ -1626,10 +1555,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeNodeDetails(null, nds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1637,6 +1562,9 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() ->
+            analytics.getNodeTimeseriesStatistics(null, criteria, 1000).size() == 2
+        );
         List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1699,10 +1627,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeNodeDetails(null, nds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1711,6 +1635,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setStartTime(1000).setEndTime(10000);
         criteria.setPrincipal("p1");
 
+        Wait.until(() -> analytics.getNodeTimeseriesStatistics(null, criteria, 1000).size() == 1);
         List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,
                 1000);
 
@@ -1776,10 +1701,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeNodeDetails(null, nds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1787,6 +1708,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 3);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
@@ -1875,10 +1797,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeNodeDetails(null, nds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1886,6 +1804,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("");
 
+        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 3);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
@@ -1975,10 +1894,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeNodeDetails(null, nds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -1986,6 +1901,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
 
+        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 2);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
@@ -2070,10 +1986,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeNodeDetails(null, nds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2081,6 +1993,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setPrincipal("p1");
 
+        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 2);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
@@ -2160,10 +2073,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeFragmentCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2215,10 +2124,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeCommunicationDetails(null, cds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2226,6 +2131,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 5);
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
                             criteria, false);
 
@@ -2354,10 +2260,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeFragmentCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2409,10 +2311,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeCommunicationDetails(null, cds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2420,6 +2318,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 5);
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
                                 criteria, false);
 
@@ -2556,10 +2455,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeFragmentCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2621,10 +2516,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeCommunicationDetails(null, cds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2632,6 +2523,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
+        Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 5);
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
                                 criteria, false);
 
@@ -2769,10 +2661,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeFragmentCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2829,10 +2717,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeCommunicationDetails(null, cds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2841,6 +2725,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setStartTime(1000).setEndTime(10000);
         criteria.setPrincipal("p1");
 
+        Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 3);
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
                                     criteria, false);
 
@@ -2914,10 +2799,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeFragmentCompletionTimes(null, cts);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2935,10 +2816,6 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             analytics.storeCommunicationDetails(null, cds);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store: " + e);
         }
@@ -2947,6 +2824,7 @@ public class AnalyticsServiceElasticsearchTest {
         criteria.setStartTime(1000).setEndTime(10000);
         criteria.setHostName("hostA");
 
+        Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 2);
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
                                     criteria, false);
 
@@ -3002,14 +2880,11 @@ public class AnalyticsServiceElasticsearchTest {
 
         try {
             bts.storeFragments(null, traces);
-
-            synchronized (this) {
-                wait(1000);
-            }
         } catch (Exception e) {
             fail("Failed to store");
         }
 
+        Wait.until(() -> analytics.getHostNames(null, new Criteria().setStartTime(100)).size() == 2);
         java.util.List<String> hostnames = analytics.getHostNames(null, new Criteria().setStartTime(100));
 
         assertNotNull(hostnames);

@@ -537,17 +537,11 @@ public class SpanServiceElasticsearchTest {
 
     private void storeAndWait(String tenant, List<Span> spans) throws StoreException, InterruptedException {
         spanService.storeSpan(tenant, spans);
-        synchronized (this) {
-            wait(1000);
-        }
     }
 
     private void storeAndWait(String tenant, List<Span> spans, Function<Span, String> idSupplier) throws StoreException,
             InterruptedException {
         spanService.storeSpan(tenant, spans, idSupplier);
-        synchronized (this) {
-            wait(1000);
-        }
     }
 
     private Endpoint createEndpoint(String ipv4, int port, String serviceName) {

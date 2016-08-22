@@ -30,6 +30,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -61,15 +62,8 @@ public class ClientCamelSplitterParallelTest extends ClientCamelTestBase {
 
     @Test
     public void testFileSplitNotParallel() {
-        try {
-            synchronized (this) {
-                wait(5000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
-
-        List<Trace> btxns= getApmMockServer().getTraces();
+        Wait.until(() -> getApmMockServer().getTraces().size() == 6);
+        List<Trace> btxns = getApmMockServer().getTraces();
 
         for (Trace trace : btxns) {
             ObjectMapper mapper = new ObjectMapper();
