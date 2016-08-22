@@ -48,6 +48,7 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.client.collector.internal.FragmentBuilder;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 /**
@@ -88,15 +89,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
 
         List<Trace> traces = traceService.getBusinessTransactions();
 
@@ -125,16 +118,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
         // Clear property
         System.getProperties().remove("HAWKULAR_APM_TENANTID");
 
@@ -161,16 +145,7 @@ public class DefaultTraceCollectorTest {
         collector.processOut(null, respHeaders);
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
@@ -206,15 +181,7 @@ public class DefaultTraceCollectorTest {
         collector.processIn(null, reqHeaders2);
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
 
         List<Trace> traces = traceService.getBusinessTransactions();
 
@@ -247,16 +214,7 @@ public class DefaultTraceCollectorTest {
         collector.processIn(null, reqHeaders);
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
@@ -283,16 +241,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
@@ -335,16 +284,6 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals(0, traces.size());
@@ -374,16 +313,6 @@ public class DefaultTraceCollectorTest {
         collector.consumerStart(null, "/test", null, "op", null);
 
         collector.consumerEnd(null, null, null, null);
-
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         List<Trace> traces = traceService.getBusinessTransactions();
 
@@ -416,16 +345,6 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals(0, traces.size());
@@ -457,16 +376,6 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals(0, traces.size());
@@ -496,16 +405,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals(1, traces.size());
@@ -535,16 +435,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        // Delay necessary as reporting the trace is performed in a separate
-        // thread
-        synchronized (this) {
-            try {
-                wait(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
         List<Trace> traces = traceService.getBusinessTransactions();
 
         assertEquals(1, traces.size());

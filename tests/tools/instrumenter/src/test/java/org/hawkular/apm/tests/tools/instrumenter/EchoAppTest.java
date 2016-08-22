@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.tools.instrumenter.InstrumenterUtil;
 import org.junit.Test;
 
@@ -78,13 +79,7 @@ public class EchoAppTest extends ClientTestBase {
 
         assertEquals(HELLO, result);
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for traces to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
 
         for (Trace trace : getApmMockServer().getTraces()) {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);

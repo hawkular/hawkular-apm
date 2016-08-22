@@ -19,10 +19,14 @@ package org.hawkular.apm.tests.client.vertx;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,8 +51,9 @@ public class ClientVertxEventBusTest extends ClientTestBase {
     }
 
     @Test
-    public void testEBPointToPointWithReply() {
+    public void testEBPointToPointWithReply() throws InterruptedException {
         EventBus eb = Vertx.vertx().eventBus();
+        CountDownLatch latch = new CountDownLatch(1);
 
         MessageConsumer<String> mc = eb.consumer("news.uk.sport");
         mc.handler(message -> {
@@ -64,21 +69,15 @@ public class ClientVertxEventBusTest extends ClientTestBase {
                     @Override
                     public void handle(AsyncResult<Message<String>> message) {
                         System.out.println("Received reply: " + message.result().body());
+                        latch.countDown();
                     }
                 });
-
             } else {
                 System.out.println("Registration failed!");
             }
         });
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        latch.await(2, TimeUnit.SECONDS);
 
         mc.unregister();
 
@@ -86,8 +85,9 @@ public class ClientVertxEventBusTest extends ClientTestBase {
     }
 
     @Test
-    public void testEBPointToPointWithoutReply() {
+    public void testEBPointToPointWithoutReply() throws InterruptedException {
         EventBus eb = Vertx.vertx().eventBus();
+        CountDownLatch latch = new CountDownLatch(1);
 
         MessageConsumer<String> mc = eb.consumer("news.uk.sport");
         mc.handler(message -> {
@@ -97,21 +97,14 @@ public class ClientVertxEventBusTest extends ClientTestBase {
         mc.completionHandler(res -> {
             if (res.succeeded()) {
                 System.out.println("The handler registration has reached all nodes");
-
                 eb.send("news.uk.sport", "Yay! Someone kicked a ball");
-
+                latch.countDown();
             } else {
                 System.out.println("Registration failed!");
             }
         });
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        latch.await(2, TimeUnit.SECONDS);
 
         mc.unregister();
 
@@ -119,8 +112,9 @@ public class ClientVertxEventBusTest extends ClientTestBase {
     }
 
     @Test
-    public void testEBPubSub() {
+    public void testEBPubSub() throws InterruptedException {
         EventBus eb = Vertx.vertx().eventBus();
+        CountDownLatch latch = new CountDownLatch(1);
 
         MessageConsumer<String> mc = eb.consumer("news.uk.sport.pubsub");
         mc.handler(message -> {
@@ -130,21 +124,14 @@ public class ClientVertxEventBusTest extends ClientTestBase {
         mc.completionHandler(res -> {
             if (res.succeeded()) {
                 System.out.println("The handler registration has reached all nodes");
-
                 eb.publish("news.uk.sport.pubsub", "Yay! Someone kicked a ball");
-
+                latch.countDown();
             } else {
                 System.out.println("Registration failed!");
             }
         });
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        latch.await(2, TimeUnit.SECONDS);
 
         mc.unregister();
 
@@ -153,6 +140,7 @@ public class ClientVertxEventBusTest extends ClientTestBase {
 
     protected void checkBTxnFragments() {
         // Check stored business transactions (including 1 for test client)
+        Wait.until(() -> getApmMockServer().getTraces().size() == 2);
         assertEquals(2, getApmMockServer().getTraces().size());
 
         Consumer consumer = null;

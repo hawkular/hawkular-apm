@@ -25,6 +25,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -124,13 +125,7 @@ public class ClientVertxHTTPTest extends ClientTestBase {
     }
 
     protected void evaluateBTxnFragments(boolean get, boolean qs) {
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 2);
 
         // Check stored business transactions (including 1 for test client)
         assertEquals(2, getApmMockServer().getTraces().size());

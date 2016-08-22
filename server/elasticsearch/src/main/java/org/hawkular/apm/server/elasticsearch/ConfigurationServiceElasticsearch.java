@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.server.elasticsearch;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,18 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     private long timeout = DEFAULT_TIMEOUT;
 
     private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
+
+    private final Clock clock;
+
+    public ConfigurationServiceElasticsearch(Clock clock) {
+        super();
+        this.clock = clock;
+    }
+
+    public ConfigurationServiceElasticsearch() {
+        super();
+        this.clock = Clock.systemDefaultZone();
+    }
 
     /**
      * This method gets the elasticsearch client.
@@ -152,7 +165,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         List<ConfigMessage> messages = validateBusinessTransaction(config);
 
         // Set last updated time
-        config.setLastUpdated(System.currentTimeMillis());
+        config.setLastUpdated(clock.millis());
 
         String index = (messages.isEmpty() ? BUSINESS_TXN_CONFIG_TYPE : BUSINESS_TXN_CONFIG_INVALID_TYPE);
 
@@ -379,7 +392,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     public void removeBusinessTransaction(String tenantId, String name) throws Exception {
         BusinessTxnConfig config = new BusinessTxnConfig();
         config.setDeleted(true);
-        config.setLastUpdated(System.currentTimeMillis());
+        config.setLastUpdated(clock.millis());
 
         // Remove valid version of the business transaction config
         IndexRequestBuilder builder = client.getClient().prepareIndex(client.getIndex(tenantId),

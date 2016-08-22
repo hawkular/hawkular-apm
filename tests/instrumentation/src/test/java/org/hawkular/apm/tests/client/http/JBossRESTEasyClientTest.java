@@ -19,7 +19,6 @@ package org.hawkular.apm.tests.client.http;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static io.undertow.Handlers.path;
 
@@ -37,6 +36,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -184,13 +184,10 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
             assertEquals(HELLO_WORLD, value);
         }
 
-        try {
-            synchronized (this) {
-                wait(2000);
-            }
-        } catch (Exception e) {
-            fail("Failed to wait for btxns to store");
-        }
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
+
+        // Check stored traces (including 1 for the test client)
+        assertEquals(1, getApmMockServer().getTraces().size());
 
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -202,9 +199,6 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
-        assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();
         NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
