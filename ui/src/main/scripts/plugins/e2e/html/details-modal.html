@@ -44,17 +44,11 @@
             <!--<th ng-click="sort('uri')">URL
               <span class="glyphicon sort-icon" ng-show="sortKey=='uri'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>-->
-            <th ng-click="sort('properties')" style="width: 40%">Properties
+            <th ng-click="sort('properties')" style="width: 50%">Properties
               <span class="glyphicon sort-icon" ng-show="sortKey=='properties'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
-            <th ng-click="sort('principal')">Principal
+            <th ng-click="sort('principal')" style="width: 15%">Principal
               <span class="glyphicon sort-icon" ng-show="sortKey=='principal'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-            </th>
-            <th ng-click="sort('hostname')">Host name
-              <span class="glyphicon sort-icon" ng-show="sortKey=='hostname'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
-            </th>
-            <th ng-click="sort('ip_address')">IP Address
-              <span class="glyphicon sort-icon" ng-show="sortKey=='ip_address'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
             <th ng-click="sort('duration')">Duration
               <span class="glyphicon sort-icon" ng-show="sortKey=='duration'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
@@ -73,13 +67,11 @@
               </span>
             </td>
             <td style="word-wrap: break-word">{{ tData.principal }}</td>
-            <td style="word-wrap: break-word">{{ tData.hostname }}</td>
-            <td style="word-wrap: break-word">{{ tData.ip_address }}</td>
             <td style="word-wrap: break-word">{{ tData.duration }}</td>
             <td class="show-details-cell" ng-click="showIVD(tData.id)"><i class="fa fa-sitemap"></i></td>
           </tr>
           <tr dir-paginate-end ng-if="selectedTx === tData.id">
-            <td colspan="7" class="details-row" instance-view-diagram nodes="instDetails"><svg id="idetails" class="graph"><g/></svg></td>
+            <td colspan="5" class="details-row" instance-view-diagram nodes="instDetails"><svg id="idetails" class="graph"><g/></svg></td>
           </tr>
         </tbody>
       </table>
