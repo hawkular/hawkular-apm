@@ -72,7 +72,7 @@ public class TraceCompletionInformationInitiator extends
                 ct.setDuration(item.calculateDuration());
                 ct.setPrincipal(item.getPrincipal());
                 ct.setFault(n.getFault());
-                ct.setProperties(item.getProperties());
+                ct.setProperties(item.allProperties());
                 ct.setTimestamp(item.getStartTime());
 
                 ci.setCompletionTime(ct);

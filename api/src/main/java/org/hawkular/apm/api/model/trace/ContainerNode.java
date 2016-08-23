@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hawkular.apm.api.model.Property;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -71,6 +73,18 @@ public abstract class ContainerNode extends Node {
      */
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
+    }
+
+    /**
+     * This method adds the properties for this node to the
+     * supplied set.
+     *
+     * @param allProperties The aggregated set of properties
+     */
+    @Override
+    protected void includeProperties(Set<Property> allProperties) {
+        super.includeProperties(allProperties);
+        nodes.forEach(n -> n.includeProperties(allProperties));
     }
 
     /**

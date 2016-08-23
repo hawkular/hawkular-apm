@@ -555,7 +555,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, trace.getProperties().size());
+        assertEquals(0, trace.allProperties().size());
     }
 
     @Test
@@ -594,7 +594,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, trace.getProperties().size());
+        assertEquals(0, trace.allProperties().size());
     }
 
     @Test
@@ -633,7 +633,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(1, trace.getProperties().size());
+        assertEquals(1, trace.allProperties().size());
         assertTrue(trace.hasProperty("result"));
     }
 
@@ -668,7 +668,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, trace.getProperties().size());
+        assertEquals(0, trace.allProperties().size());
     }
 
     @Test
@@ -704,7 +704,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, trace.getProperties().size());
+        assertEquals(0, trace.allProperties().size());
     }
 
     @Test
@@ -740,7 +740,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(1, trace.getProperties().size());
+        assertEquals(1, trace.allProperties().size());
         assertTrue(trace.hasProperty("result"));
     }
 

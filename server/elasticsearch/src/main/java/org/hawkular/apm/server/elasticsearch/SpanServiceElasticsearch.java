@@ -261,9 +261,6 @@ public class SpanServiceElasticsearch implements SpanService {
      */
     protected void processConnectedFragment(String tenantId, Trace root, Trace fragment, Producer producer) {
         if (producer != null) {
-            // Merge the properties associated with the fragment into the root
-            root.getProperties().addAll(fragment.getProperties());
-
             // Attach the fragment root nodes to the producer
             producer.getNodes().addAll(fragment.getNodes());
         }
@@ -330,7 +327,6 @@ public class SpanServiceElasticsearch implements SpanService {
         trace.setId(span.getId());
         trace.setStartTime(span.getTimestamp());
         trace.setHostAddress(span.ipv4());
-        trace.setProperties(new HashSet<>(span.binaryAnnotationMapping().getProperties()));
 
         return trace;
     }
@@ -349,6 +345,7 @@ public class SpanServiceElasticsearch implements SpanService {
         } else {
             node = new Component(url, null);
         }
+        node.setProperties(new HashSet<>(span.binaryAnnotationMapping().getProperties()));
 
         node.setBaseTime(TimeUnit.NANOSECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
         node.setDuration(TimeUnit.NANOSECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));

@@ -73,14 +73,15 @@ public class EvaluateURIActionHandlerTest {
         Trace trace = new Trace();
         Consumer consumer = new Consumer();
         consumer.setUri("/my/fred/and/5");
+        trace.getNodes().add(consumer);
 
         assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         assertEquals(action.getTemplate(), consumer.getUri());
-        assertTrue(trace.hasProperty("name"));
-        assertTrue(trace.hasProperty("num"));
-        assertEquals("fred", trace.getProperties("name").iterator().next().getValue());
-        assertEquals("5", trace.getProperties("num").iterator().next().getValue());
+        assertTrue(consumer.hasProperty("name"));
+        assertTrue(consumer.hasProperty("num"));
+        assertEquals("fred", consumer.getProperties("name").iterator().next().getValue());
+        assertEquals("5", consumer.getProperties("num").iterator().next().getValue());
 
         assertNull(handler.getIssues());
     }
@@ -96,15 +97,16 @@ public class EvaluateURIActionHandlerTest {
         Consumer consumer = new Consumer();
         consumer.setUri("/my/uri");
         consumer.getDetails().put("http_query", "num=5&another=value&name=hello%20world");
+        trace.getNodes().add(consumer);
 
         assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         assertFalse(NodeUtil.isURIRewritten(consumer));
 
-        assertTrue(trace.hasProperty("name"));
-        assertTrue(trace.hasProperty("num"));
-        assertEquals("hello world", trace.getProperties("name").iterator().next().getValue());
-        assertEquals("5", trace.getProperties("num").iterator().next().getValue());
+        assertTrue(consumer.hasProperty("name"));
+        assertTrue(consumer.hasProperty("num"));
+        assertEquals("hello world", consumer.getProperties("name").iterator().next().getValue());
+        assertEquals("5", consumer.getProperties("num").iterator().next().getValue());
 
         assertFalse(trace.hasProperty("another"));
 
@@ -122,18 +124,19 @@ public class EvaluateURIActionHandlerTest {
         Consumer consumer = new Consumer();
         consumer.setUri("/my/test%20param/uri");
         consumer.getDetails().put("http_query", "num=5&another=value&name=hello%20world");
+        trace.getNodes().add(consumer);
 
         assertTrue(handler.process(trace, consumer, Direction.In, null, null));
 
         // URI should now only be path part of template
         assertEquals("/my/{pathParam}/uri", consumer.getUri());
 
-        assertTrue(trace.hasProperty("pathParam"));
-        assertTrue(trace.hasProperty("name"));
-        assertTrue(trace.hasProperty("num"));
-        assertEquals("test param", trace.getProperties("pathParam").iterator().next().getValue());
-        assertEquals("hello world", trace.getProperties("name").iterator().next().getValue());
-        assertEquals("5", trace.getProperties("num").iterator().next().getValue());
+        assertTrue(consumer.hasProperty("pathParam"));
+        assertTrue(consumer.hasProperty("name"));
+        assertTrue(consumer.hasProperty("num"));
+        assertEquals("test param", consumer.getProperties("pathParam").iterator().next().getValue());
+        assertEquals("hello world", consumer.getProperties("name").iterator().next().getValue());
+        assertEquals("5", consumer.getProperties("num").iterator().next().getValue());
 
         assertFalse(trace.hasProperty("another"));
 

@@ -150,13 +150,11 @@ public class TraceTest {
         // Business transaction
         Trace trace = new Trace();
 
-        trace.getProperties().add(new Property(TEST_PROP1, TEST_VALUE1));
-        trace.getProperties().add(new Property(TEST_PROP2, TEST_VALUE2));
-
         // Top level (consumer) node
         Consumer c1 = new Consumer();
         trace.getNodes().add(c1);
 
+        c1.getProperties().add(new Property(TEST_PROP1, TEST_VALUE1));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID2"));
         c1.setDuration(1000);
@@ -180,6 +178,7 @@ public class TraceTest {
         Component s1 = new Component();
         c1.getNodes().add(s1);
 
+        s1.getProperties().add(new Property(TEST_PROP2, TEST_VALUE2));
         s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
         s1.setDuration(900);
         s1.setBaseTime(2);
@@ -260,4 +259,26 @@ public class TraceTest {
 
         assertEquals(1400, duration);
     }
+
+    @Test
+    public void testAllProperties() {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("testapp");
+
+        Consumer c1 = new Consumer();
+        c1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(c1);
+
+        Producer p1 = new Producer();
+        p1.getProperties().add(new Property("prop2", "value2"));
+        c1.getNodes().add(p1);
+
+        Component ct1 = new Component();
+        ct1.getProperties().add(new Property("prop3", "value3"));
+        c1.getNodes().add(ct1);
+
+        assertEquals(3, trace1.allProperties().size());
+    }
+
 }

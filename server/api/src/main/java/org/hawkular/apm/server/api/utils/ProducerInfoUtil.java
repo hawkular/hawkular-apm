@@ -126,7 +126,7 @@ public class ProducerInfoUtil {
                     pi.setHostName(trace.getHostName());
                     pi.setHostAddress(trace.getHostAddress());
                     pi.setMultipleConsumers(producer.multipleConsumers());
-                    pi.getProperties().addAll(trace.getProperties());
+                    pi.getProperties().addAll(producer.getProperties());
 
                     // TODO: HWKBTM-348: Should be configurable based on the wait interval plus
                     // some margin of error - primarily for cases where a job scheduler

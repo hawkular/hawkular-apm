@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
@@ -208,13 +209,13 @@ public class AnalyticsServiceRESTTest {
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().add(new Property("prop1", "value1"));
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
+        Consumer c1 = new Consumer();
+        c1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Arrays.asList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -328,15 +329,12 @@ public class AnalyticsServiceRESTTest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
+        c1.getProperties().add(new Property("prop2", "hello"));
         trace1.getNodes().add(c1);
-        trace1.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
-        trace1.getProperties().add(new Property("prop2", "hello"));
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Arrays.asList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -474,8 +472,8 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri1");
         c1.setFault(MY_FAULT);
+        c1.getProperties().add(new Property("prop2", "hello"));
         trace1.getNodes().add(c1);
-        trace1.getProperties().add(new Property("prop2", "hello"));
 
         Trace trace2 = new Trace();
         trace2.setId("2");
@@ -483,15 +481,11 @@ public class AnalyticsServiceRESTTest {
         trace2.setStartTime(System.currentTimeMillis() - 2000); // Within last hour
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
+        c2.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
         trace2.getNodes().add(c2);
-        trace2.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-        traces.add(trace2);
 
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Arrays.asList(trace1, trace2));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -622,18 +616,15 @@ public class AnalyticsServiceRESTTest {
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Arrays.asList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -663,18 +654,15 @@ public class AnalyticsServiceRESTTest {
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.getProperties().add(new Property("prop1", "value1"));
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
+        c1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Arrays.asList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }

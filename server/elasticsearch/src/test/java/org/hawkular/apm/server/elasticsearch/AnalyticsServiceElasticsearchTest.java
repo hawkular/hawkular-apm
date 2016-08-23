@@ -450,17 +450,21 @@ public class AnalyticsServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
-        trace1.getProperties().add(new Property("prop1", "value1"));
-        trace1.getProperties().add(new Property("prop2", "value2"));
         trace1.setPrincipal("p1");
+        Consumer consumer1 = new Consumer();
+        consumer1.getProperties().add(new Property("prop1", "value1"));
+        consumer1.getProperties().add(new Property("prop2", "value2"));
+        trace1.getNodes().add(consumer1);
         traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace1");
         trace2.setStartTime(2000);
-        trace2.getProperties().add(new Property("prop3", "value3"));
-        trace2.getProperties().add(new Property("prop2", "value2"));
         trace2.setPrincipal("p2");
+        Consumer consumer2 = new Consumer();
+        consumer2.getProperties().add(new Property("prop3", "value3"));
+        consumer2.getProperties().add(new Property("prop2", "value2"));
+        trace2.getNodes().add(consumer2);
         traces.add(trace2);
 
         try {

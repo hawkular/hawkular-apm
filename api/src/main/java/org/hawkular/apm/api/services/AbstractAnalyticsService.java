@@ -139,7 +139,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         for (int i = 0; i < fragments.size(); i++) {
             Trace trace = fragments.get(i);
 
-            for (Property property : trace.getProperties()) {
+            for (Property property : trace.allProperties()) {
                 if (!propertyNames.contains(property.getName())) {
                     propertyNames.add(property.getName());
                     PropertyInfo pi = new PropertyInfo();

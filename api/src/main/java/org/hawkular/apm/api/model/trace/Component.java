@@ -99,12 +99,12 @@ public class Component extends InteractionNode {
      */
     @Override
     public String toString() {
-        return "Component [componentType=" + componentType + ", getOperation()=" + getOperation() + ", getIn()="
-                + getIn() + ", getOut()=" + getOut() + ", getNodes()=" + getNodes() + ", getBaseTime()="
-                + getBaseTime() + ", getDuration()=" + getDuration() + ", getFault()=" + getFault()
-                + ", getFaultDescription()=" + getFaultDescription() + ", getDetails()=" + getDetails()
-                + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()=" + getIssues() + "]";
+        return "Component [componentType=" + componentType + ", getIn()=" + getIn() + ", getOut()=" + getOut()
+                + ", getNodes()=" + getNodes() + ", getType()=" + getType() + ", getUri()=" + getUri()
+                + ", getOperation()=" + getOperation() + ", getBaseTime()=" + getBaseTime() + ", getDuration()="
+                + getDuration() + ", getFault()=" + getFault() + ", getFaultDescription()=" + getFaultDescription()
+                + ", getProperties()=" + getProperties() + ", getDetails()=" + getDetails() + ", getCorrelationIds()="
+                + getCorrelationIds() + ", getIssues()=" + getIssues() + "]";
     }
-
 
 }

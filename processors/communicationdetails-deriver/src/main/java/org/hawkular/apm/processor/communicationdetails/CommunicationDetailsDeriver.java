@@ -129,7 +129,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setInternal(consumer.getEndpointType() == null);
 
                         // Merge properties from consumer and producer
-                        ret.getProperties().addAll(item.getProperties());
+                        ret.getProperties().addAll(consumer.getProperties());
                         ret.getProperties().addAll(pi.getProperties());
 
                         ret.setSourceFragmentId(pi.getFragmentId());

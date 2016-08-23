@@ -16,8 +16,10 @@
  */
 package org.hawkular.apm.server.elasticsearch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -34,6 +36,8 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
+import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
@@ -43,8 +47,16 @@ import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.server.api.services.SpanService;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * This class provides the Elasticsearch implementation of the Trace
@@ -57,6 +69,23 @@ public class TraceServiceElasticsearch implements TraceService {
     private static final MsgLogger msgLog = MsgLogger.LOGGER;
 
     /**  */
+    private static final String START_TIME_FIELD = "startTime";
+    /**  */
+    private static final String NODES_FIELD = "nodes";
+    /**  */
+    private static final String PRINCIPAL_FIELD = "principal";
+    /**  */
+    private static final String ID_FIELD = "id";
+    /**  */
+    private static final String HOST_NAME_FIELD = "hostName";
+    /**  */
+    private static final String HOST_ADDRESS_FIELD = "hostAddress";
+    /**  */
+    private static final String BUSINESS_TRANSACTION_FIELD = "businessTransaction";
+    /**  */
+    private static final String PROPERTIES_FIELD = "properties";
+
+    /**  */
     public static final String TRACE_TYPE = "trace";
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -66,6 +95,13 @@ public class TraceServiceElasticsearch implements TraceService {
     private ElasticsearchClient client = ElasticsearchClient.getSingleton();
 
     public TraceServiceElasticsearch() {}
+
+    static {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Trace.class, new TraceSerializer());
+        module.addDeserializer(Trace.class, new TraceDeserializer());
+        mapper.registerModule(module);
+    }
 
     @Inject
     public TraceServiceElasticsearch(SpanService spanService) {
@@ -153,9 +189,6 @@ public class TraceServiceElasticsearch implements TraceService {
      */
     protected void processConnectedFragment(String tenantId, Trace root, Trace fragment, Producer producer) {
         if (producer != null) {
-            // Merge the properties associated with the fragment into the root
-            root.getProperties().addAll(fragment.getProperties());
-
             // Attach the fragment root nodes to the producer
             producer.getNodes().addAll(fragment.getNodes());
         }
@@ -314,4 +347,84 @@ public class TraceServiceElasticsearch implements TraceService {
         }
     }
 
+    public static class TraceSerializer extends JsonSerializer<Trace> {
+
+        /* (non-Javadoc)
+         * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object,
+         *          com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
+         */
+        @Override
+        public void serialize(Trace trace, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException, JsonProcessingException {
+            jgen.writeStartObject();
+            jgen.writeStringField(BUSINESS_TRANSACTION_FIELD, trace.getBusinessTransaction());
+            jgen.writeStringField(HOST_ADDRESS_FIELD, trace.getHostAddress());
+            jgen.writeStringField(HOST_NAME_FIELD, trace.getHostName());
+            jgen.writeStringField(ID_FIELD, trace.getId());
+            jgen.writeStringField(PRINCIPAL_FIELD, trace.getPrincipal());
+            jgen.writeNumberField(START_TIME_FIELD, trace.getStartTime());
+            jgen.writeArrayFieldStart(NODES_FIELD);
+            for (Node n : trace.getNodes()) {
+                jgen.writeObject(n);
+            }
+            jgen.writeEndArray();
+            Set<Property> properties = trace.allProperties();
+            jgen.writeArrayFieldStart(PROPERTIES_FIELD);
+            for (Property p : properties) {
+                jgen.writeObject(p);
+            }
+            jgen.writeEndArray();
+            jgen.writeEndObject();
+        }
+    }
+
+    public static class TraceDeserializer extends JsonDeserializer<Trace> {
+
+        /* (non-Javadoc)
+         * @see com.fasterxml.jackson.databind.JsonDeserializer#deserialize(com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.databind.DeserializationContext)
+         */
+        @Override
+        public Trace deserialize(JsonParser parser, DeserializationContext context)
+                throws IOException, JsonProcessingException {
+            Trace trace = new Trace();
+            String field = parser.nextFieldName();
+            while (field != null) {
+                if (field.equals(PROPERTIES_FIELD)) {
+                    parser.nextValue(); // Consume START_ARRAY
+
+                    while (parser.nextValue() == JsonToken.START_OBJECT) {
+                        // Ignore, just consume Property instance, as Trace class does not
+                        // retain this field, it is only used for searching in Elasticsearch
+                        context.readValue(parser, Property.class);
+                    }
+
+                    parser.nextValue(); // Consume END_ARRAY
+                } else if (field.equals(BUSINESS_TRANSACTION_FIELD)) {
+                    trace.setBusinessTransaction(parser.nextTextValue());
+                } else if (field.equals(HOST_ADDRESS_FIELD)) {
+                    trace.setHostAddress(parser.nextTextValue());
+                } else if (field.equals(HOST_NAME_FIELD)) {
+                    trace.setHostName(parser.nextTextValue());
+                } else if (field.equals(ID_FIELD)) {
+                    trace.setId(parser.nextTextValue());
+                } else if (field.equals(PRINCIPAL_FIELD)) {
+                    trace.setPrincipal(parser.nextTextValue());
+                } else if (field.equals(NODES_FIELD)) {
+                    parser.nextValue(); // Consume START_ARRAY
+
+                    while (parser.nextValue() == JsonToken.START_OBJECT) {
+                        trace.getNodes().add(context.readValue(parser, Node.class));
+                    }
+
+                    parser.nextValue(); // Consume END_ARRAY
+                } else if (field.equals(START_TIME_FIELD)) {
+                    trace.setStartTime(parser.nextLongValue(0));
+                }
+                field = parser.nextFieldName();
+            }
+
+            return trace;
+        }
+
+    }
 }

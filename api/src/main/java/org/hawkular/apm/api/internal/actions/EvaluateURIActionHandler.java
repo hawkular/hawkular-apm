@@ -155,7 +155,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                     boolean processed = false;
 
                     if (props != null) {
-                        trace.getProperties().addAll(props);
+                        node.getProperties().addAll(props);
                         NodeUtil.rewriteURI(node, pathTemplate);
                         processed = true;
                     }
@@ -177,7 +177,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
 
     /**
      * This method processes the query parameters associated with the supplied node to extract
-     * templated named values as properties on the trace.
+     * templated named values as properties on the trace node.
      *
      * @param trace The trace
      * @param node The node
@@ -196,7 +196,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                 if (namevalue.length == 2) {
                     if (queryParameters.contains(namevalue[0])) {
                         try {
-                            trace.getProperties().add(new Property(namevalue[0],
+                            node.getProperties().add(new Property(namevalue[0],
                                     URLDecoder.decode(namevalue[1], "UTF-8")));
                             ret = true;
                         } catch (UnsupportedEncodingException e) {
