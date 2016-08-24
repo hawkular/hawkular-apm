@@ -39,6 +39,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.InteractionNode;
@@ -332,23 +334,25 @@ public class SpanServiceElasticsearch implements SpanService {
     }
 
     private InteractionNode spanToNode(Span span) {
-        String endpointType = "HTTP";
         String url = span.url() != null ? span.url().getPath() : null;
 
         InteractionNode node;
         if (span.serverSpan()) {
-            node = new Consumer(url, endpointType);
+            node = new Consumer(url, span.binaryAnnotationMapping().getEndpointType());
             node.addInteractionId(span.getId());
         }else if (span.clientSpan()) {
-            node = new Producer(url, endpointType);
+            node = new Producer(url, span.binaryAnnotationMapping().getEndpointType());
             node.addInteractionId(span.getId());
         } else {
-            node = new Component(url, null);
+            node = new Component(url, span.binaryAnnotationMapping().getComponentType());
         }
+
         node.setProperties(new HashSet<>(span.binaryAnnotationMapping().getProperties()));
+        node.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, span.service()));
 
         node.setBaseTime(TimeUnit.NANOSECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
         node.setDuration(TimeUnit.NANOSECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
+
         return node;
     }
 

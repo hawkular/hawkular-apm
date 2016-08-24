@@ -33,4 +33,8 @@ public class Constants {
      */
     public static final String URI_CLIENT_PREFIX = "client:";
 
+    /**
+     * Property key representing service name
+     */
+    public static final String PROP_SERVICE_NAME = "service";
 }

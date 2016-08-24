@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
@@ -77,6 +78,10 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Span, Compl
 
             ct.setHostAddress(item.ipv4());
             ct.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
+
+            if (item.service() != null) {
+                ct.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
+            }
 
             ct.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
 
