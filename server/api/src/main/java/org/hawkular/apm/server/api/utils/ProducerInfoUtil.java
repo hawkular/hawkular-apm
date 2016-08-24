@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
@@ -195,6 +196,10 @@ public class ProducerInfoUtil {
 
                 pi.getProperties().addAll(clientSpan.binaryAnnotationMapping().getProperties());
                 pi.setHostAddress(clientSpan.ipv4());
+
+                if (clientSpan.service() != null) {
+                    pi.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, clientSpan.service()));
+                }
 
                 pi.setId(clientSpan.getId());
                 pi.setMultipleConsumers(false);

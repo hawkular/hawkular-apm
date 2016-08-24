@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
@@ -76,6 +77,10 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<Span, Completi
 
             ct.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
             ct.setHostAddress(item.ipv4());
+
+            if (item.service() != null) {
+                ct.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
+            }
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("TraceCompletionTimeDeriver span=" + item + " completion time=" + ct);

@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -85,6 +87,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         nd.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
         nd.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
         nd.setHostAddress(item.ipv4());
+
+        if (item.service() != null) {
+            nd.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
+        }
 
         nd.setFault(SpanDeriverUtil.deriveFault(item));
         nd.setOperation(SpanDeriverUtil.deriveOperation(item));

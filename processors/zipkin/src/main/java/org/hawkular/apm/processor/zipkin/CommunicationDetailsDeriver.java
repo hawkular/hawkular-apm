@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.ProducerInfo;
 import org.hawkular.apm.api.utils.EndpointUtil;
@@ -98,8 +100,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 String op = SpanDeriverUtil.deriveOperation(item);
 
                 if (url != null) {
-                    ret.setTarget(EndpointUtil.encodeEndpoint(url.getPath(),
-                        op));
+                    ret.setTarget(EndpointUtil.encodeEndpoint(url.getPath(), op));
                 } else {
                     // TODO: ERRORS IN DATA???
                     log.warning("NO URL");
@@ -125,6 +126,10 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 // Merge properties from consumer and producer
                 ret.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
                 ret.getProperties().addAll(pi.getProperties());
+
+                if (item.service() != null) {
+                    ret.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
+                }
 
                 ret.setSourceFragmentId(pi.getFragmentId());
                 ret.setSourceHostName(pi.getHostName());
