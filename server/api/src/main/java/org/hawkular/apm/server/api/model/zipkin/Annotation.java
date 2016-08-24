@@ -16,11 +16,13 @@
  */
 package org.hawkular.apm.server.api.model.zipkin;
 
+import java.io.Serializable;
+
 /**
  * An annotation is similar to a log statement. It includes a host field which
  * allows these events to be attributed properly, and also aggregatable.
  */
-public class Annotation {
+public class Annotation implements Serializable {
 
     private long timestamp;
 
@@ -82,4 +84,24 @@ public class Annotation {
         return "Annotation [timestamp=" + timestamp + ", value=" + value + ", endpoint=" + endpoint + "]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Annotation)) return false;
+
+        Annotation that = (Annotation) o;
+
+        if (timestamp != that.timestamp) return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+        return endpoint != null ? endpoint.equals(that.endpoint) : that.endpoint == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (timestamp ^ (timestamp >>> 32));
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (endpoint != null ? endpoint.hashCode() : 0);
+        return result;
+    }
 }

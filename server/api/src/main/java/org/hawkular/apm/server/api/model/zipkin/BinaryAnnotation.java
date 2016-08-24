@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.api.model.zipkin;
 
+import java.io.Serializable;
+
 /**
  * Binary annotations are tags applied to a Span to give it context. For
  * example, a binary annotation of "http.url" could be the path to a resource in a
@@ -31,7 +33,7 @@ package org.hawkular.apm.server.api.model.zipkin;
  * rewriting, like "/api/v1/myresource" vs "/myresource. Via the host field,
  * you can see the different points of view, which often help in debugging.
  */
-public class BinaryAnnotation {
+public class BinaryAnnotation implements Serializable {
 
     private String key;
 
@@ -105,4 +107,26 @@ public class BinaryAnnotation {
         return "BinaryAnnotation [key=" + key + ", value=" + value + ", type=" + type + ", endpoint=" + endpoint + "]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BinaryAnnotation)) return false;
+
+        BinaryAnnotation that = (BinaryAnnotation) o;
+
+        if (key != null ? !key.equals(that.key) : that.key != null) return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+        if (type != that.type) return false;
+        return endpoint != null ? endpoint.equals(that.endpoint) : that.endpoint == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = key != null ? key.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (endpoint != null ? endpoint.hashCode() : 0);
+        return result;
+    }
 }

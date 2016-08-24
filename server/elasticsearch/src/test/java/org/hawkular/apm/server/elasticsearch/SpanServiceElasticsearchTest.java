@@ -96,7 +96,7 @@ public class SpanServiceElasticsearchTest {
         storeAndWait(null, Collections.singletonList(span));
         Span spanFromDb = spanService.getSpan(null, span.getId());
 
-        assertSpansEquals(span, spanFromDb);
+        Assert.assertEquals(span, spanFromDb);
     }
 
     @Test
@@ -159,10 +159,10 @@ public class SpanServiceElasticsearchTest {
         storeAndWait(null, Collections.singletonList(span), x -> x.getId());
 
         Span spanFromDb = spanService.getSpan(null, "foo");
-        assertSpansEquals(span, spanFromDb);
+        Assert.assertEquals(span, spanFromDb);
 
         spanFromDb = spanService.getSpan(null, "foo" + clientIdsuffix);
-        assertSpansEquals(clientSpan, spanFromDb);
+        Assert.assertEquals(clientSpan, spanFromDb);
     }
 
     @Test
@@ -549,53 +549,6 @@ public class SpanServiceElasticsearchTest {
         endpoint.setServiceName(serviceName);
 
         return endpoint;
-    }
-
-    private void assertSpansEquals(Span expected, Span actual) {
-        Assert.assertEquals(expected.getId(), actual.getId());
-        Assert.assertEquals(expected.getTraceId(), actual.getTraceId());
-        Assert.assertEquals(expected.getParentId(), actual.getParentId());
-        Assert.assertEquals(expected.getName(), actual.getName());
-        Assert.assertEquals(expected.getDuration(), actual.getDuration());
-        Assert.assertEquals(expected.getTimestamp(), actual.getTimestamp());
-        Assert.assertEquals(expected.getDebug(), actual.getDebug());
-
-        Assert.assertEquals(expected.getAnnotations().size(), actual.getAnnotations().size());
-        Assert.assertEquals(expected.getBinaryAnnotations().size(), actual.getBinaryAnnotations().size());
-
-        for (int i = 0; i < expected.getAnnotations().size(); i++) {
-            assertAnnotationsEquals(expected.getAnnotations().get(i), actual.getAnnotations().get(i));
-        }
-        for (int i = 0; i < expected.getBinaryAnnotations().size(); i++) {
-            assertBinaryAnnotationsEquals(expected.getBinaryAnnotations().get(i), actual.getBinaryAnnotations().get(i));
-        }
-    }
-
-    private void assertAnnotationsEquals(Annotation expected, Annotation actual) {
-        Assert.assertEquals(expected.getTimestamp(), actual.getTimestamp());
-        Assert.assertEquals(expected.getValue(), actual.getValue());
-
-        assertEndpointsEquals(expected.getEndpoint(), actual.getEndpoint());
-    }
-
-    private void assertBinaryAnnotationsEquals(BinaryAnnotation expected, BinaryAnnotation actual) {
-        Assert.assertEquals(expected.getValue(), actual.getValue());
-        Assert.assertEquals(expected.getKey(), actual.getKey());
-        Assert.assertEquals(expected.getType(), actual.getType());
-
-        assertEndpointsEquals(expected.getEndpoint(), actual.getEndpoint());
-    }
-
-    private void assertEndpointsEquals(Endpoint expected, Endpoint actual) {
-        if (expected == null && actual == null) {
-            return;
-        } else if (expected == null && actual != null || expected != null && actual == null) {
-            Assert.fail();
-        }
-
-        Assert.assertEquals(expected.getServiceName(), actual.getServiceName());
-        Assert.assertEquals(expected.getPort(), actual.getPort());
-        Assert.assertEquals(expected.getIpv4(), actual.getIpv4());
     }
 
     private List<Annotation> clientAnnotations() {

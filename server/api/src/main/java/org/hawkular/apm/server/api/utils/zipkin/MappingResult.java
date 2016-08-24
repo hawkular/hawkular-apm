@@ -17,6 +17,7 @@
 
 package org.hawkular.apm.server.api.utils.zipkin;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 /**
  * @author Pavol Loffay
  */
-public class MappingResult {
+public class MappingResult implements Serializable {
 
     /**
      * Mapping for component type {@link Component#componentType}
@@ -137,5 +138,29 @@ public class MappingResult {
         public MappingResult build() {
             return new MappingResult(componentType, endpointType, nodeDetails, properties);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MappingResult)) return false;
+
+        MappingResult that = (MappingResult) o;
+
+        if (componentType != null ? !componentType.equals(that.componentType) : that.componentType != null)
+            return false;
+        if (endpointType != null ? !endpointType.equals(that.endpointType) : that.endpointType != null) return false;
+        if (nodeDetails != null ? !nodeDetails.equals(that.nodeDetails) : that.nodeDetails != null) return false;
+        return properties != null ? properties.equals(that.properties) : that.properties == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = componentType != null ? componentType.hashCode() : 0;
+        result = 31 * result + (endpointType != null ? endpointType.hashCode() : 0);
+        result = 31 * result + (nodeDetails != null ? nodeDetails.hashCode() : 0);
+        result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        return result;
     }
 }
