@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.api.model.zipkin;
 
+import java.io.Serializable;
+
 /**
  * Indicates the network context of a service recording an annotation with two
  * exceptions.
@@ -25,7 +27,7 @@ package org.hawkular.apm.server.api.model.zipkin;
  * allows zipkin to display network context of uninstrumented services, or
  * clients such as web browsers.
  */
-public class Endpoint {
+public class Endpoint implements Serializable {
 
     private String ipv4;
 

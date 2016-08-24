@@ -50,7 +50,7 @@ public class BinaryAnnotationMappingStorage {
 
         String jbossConfigDir = System.getProperties().getProperty("jboss.server.config.dir");
         if (jbossConfigDir == null) {
-            log.errorf("Property jboss.server.config.dir is not set");
+            log.errorf("Property jboss.server.config.dir is not set, Binary Annotation mapping rules set to empty");
             keyBasedMappings = Collections.emptyMap();
             return;
         }

@@ -73,5 +73,7 @@ public class BinaryAnnotationMappingDeriverTest {
                     new AbstractMap.SimpleEntry<>("key.no.mapping", "no-mapping-value"),
                     new AbstractMap.SimpleEntry<>("bar", "bar-value"))),
                 mappingResult.getNodeDetails().entrySet());
+
+        BinaryAnnotationMappingDeriver.clearStorage();
     }
 }

@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.server.api.model.zipkin;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * usually the longest interval in the trace, starting with a SERVER_RECV
  * annotation and ending with a SERVER_SEND.
  */
-public class Span {
+public class Span implements Serializable {
 
     private static final Logger log = Logger.getLogger(Span.class.getName());
 
@@ -296,4 +297,47 @@ public class Span {
                 + ", timestamp=" + timestamp + ", duration=" + duration + "]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Span)) return false;
+
+        Span span = (Span) o;
+
+        if (timestamp != span.timestamp) return false;
+        if (duration != span.duration) return false;
+        if (traceId != null ? !traceId.equals(span.traceId) : span.traceId != null) return false;
+        if (name != null ? !name.equals(span.name) : span.name != null) return false;
+        if (id != null ? !id.equals(span.id) : span.id != null) return false;
+        if (parentId != null ? !parentId.equals(span.parentId) : span.parentId != null) return false;
+        if (annotations != null ? !annotations.equals(span.annotations) : span.annotations != null) return false;
+        if (binaryAnnotations != null ? !binaryAnnotations.equals(span.binaryAnnotations) :
+                span.binaryAnnotations != null)
+            return false;
+        if (debug != null ? !debug.equals(span.debug) : span.debug != null) return false;
+        if (mappingResult != null ? !mappingResult.equals(span.mappingResult) : span.mappingResult != null)
+            return false;
+        if (service != null ? !service.equals(span.service) : span.service != null) return false;
+        if (ipv4 != null ? !ipv4.equals(span.ipv4) : span.ipv4 != null) return false;
+        return url != null ? url.equals(span.url) : span.url == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = traceId != null ? traceId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (parentId != null ? parentId.hashCode() : 0);
+        result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
+        result = 31 * result + (binaryAnnotations != null ? binaryAnnotations.hashCode() : 0);
+        result = 31 * result + (debug != null ? debug.hashCode() : 0);
+        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = 31 * result + (int) (duration ^ (duration >>> 32));
+        result = 31 * result + (mappingResult != null ? mappingResult.hashCode() : 0);
+        result = 31 * result + (service != null ? service.hashCode() : 0);
+        result = 31 * result + (ipv4 != null ? ipv4.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        return result;
+    }
 }
