@@ -54,15 +54,7 @@ public abstract class AbstractDockerBasedEnvironment implements TestEnvironmentE
 
     @Override
     public void close() {
-        if (network != null) {
-            try {
-                log.info(String.format("Removing network: %s", network.getName()));
-                dockerClient.removeNetworkCmd(network.getId()).exec();
-            } catch (DockerException ex) {
-                log.severe(String.format("Could not remove network: %s", network));
-                throw new EnvironmentException("Could not remove network: " + network, ex);
-            }
-        }
+        removeNetwork();
 
         try {
             dockerClient.close();
@@ -78,6 +70,8 @@ public abstract class AbstractDockerBasedEnvironment implements TestEnvironmentE
      */
     @Override
     public void createNetwork() {
+        removeNetwork();
+
         String apmNetwork = apmBindAddress.substring(0, apmBindAddress.lastIndexOf(".")) + ".0/24";
 
         log.info(String.format("Creating network %s:", apmNetwork));
@@ -97,6 +91,18 @@ public abstract class AbstractDockerBasedEnvironment implements TestEnvironmentE
         } catch (DockerException ex) {
             log.severe(String.format("Could not create network: %s", createNetworkResponse));
             throw new EnvironmentException("Could not create network: " + createNetworkResponse, ex);
+        }
+    }
+
+    private void removeNetwork() {
+
+        String networkToRemove = network != null ? network.getName() : Constants.HOST_ADDED_TO_ETC_HOSTS;
+
+        try {
+            log.info(String.format("Removing network: %s", networkToRemove));
+            dockerClient.removeNetworkCmd(networkToRemove).exec();
+        } catch (DockerException ex) {
+            log.severe(String.format("Could not remove network: %s", networkToRemove));
         }
     }
 }

@@ -20,14 +20,13 @@ version: "2"
 services:
   ticket-monster:
     image: pavolloffay/jboss-ticket-monster
-
 # Hawkular APM specific
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
     env_file: ../../apm-env-variables.properties
     volumes:
-      - .:/opt/hawkular-apm-test
-      - ../..:/opt/hawkular-apm-agent
+      - .:/opt/hawkular-apm-test:ro,z
+      - ../..:/opt/hawkular-apm-agent:ro,z
 
 # Hwakular APM specific
 networks:
