@@ -32,7 +32,7 @@ import org.hawkular.apm.api.utils.SerializationUtil;
  *
  * @author gbrown
  */
-public class ProducerInfo implements Externalizable {
+public class ProducerInfo implements Externalizable, ApmEvent {
 
     private String id;
 
@@ -57,6 +57,7 @@ public class ProducerInfo implements Externalizable {
     /**
      * @return the id
      */
+    @Override
     public String getId() {
         return id;
     }

@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  *
  * @author gbrown
  */
-public class NodeDetails {
+public class NodeDetails implements ApmEvent {
 
     @JsonInclude
     private String id;
@@ -89,6 +89,7 @@ public class NodeDetails {
     /**
      * @return the id
      */
+    @Override
     public String getId() {
         return id;
     }

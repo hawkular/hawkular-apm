@@ -37,7 +37,7 @@ import org.hibernate.search.annotations.Indexed;
  * @author gbrown
  */
 @Indexed
-public class CommunicationDetails implements Externalizable {
+public class CommunicationDetails implements Externalizable, ApmEvent {
 
     @Field
     private String id;
@@ -85,6 +85,7 @@ public class CommunicationDetails implements Externalizable {
     /**
      * @return the id
      */
+    @Override
     public String getId() {
         return id;
     }
