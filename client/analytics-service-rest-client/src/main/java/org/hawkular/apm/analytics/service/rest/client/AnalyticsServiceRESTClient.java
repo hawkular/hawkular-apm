@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
@@ -63,6 +64,10 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
+            };
+
+    private static final TypeReference<java.util.Set<String>> STRING_SET =
+            new TypeReference<java.util.Set<String>>() {
             };
 
     private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
@@ -1231,7 +1236,7 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      *                      org.hawkular.apm.api.services.BaseCriteria)
      */
     @Override
-    public List<String> getHostNames(String tenantId, Criteria criteria) {
+    public Set<String> getHostNames(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get host names: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -1281,7 +1286,7 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
                 }
                 if (!resp.toString().trim().isEmpty()) {
                     try {
-                        return mapper.readValue(resp.toString(), STRING_LIST);
+                        return mapper.readValue(resp.toString(), STRING_SET);
                     } catch (Throwable t) {
                         log.log(Level.SEVERE, "Failed to deserialize", t);
                     }

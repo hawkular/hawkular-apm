@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.analytics.service.rest.client.AnalyticsServiceRESTClient;
@@ -1896,11 +1897,11 @@ public class AnalyticsServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
 
-        List<String> hosts = analytics.getHostNames(null, criteria);
+        Set<String> hosts = analytics.getHostNames(null, criteria);
 
         assertNotNull(hosts);
         assertEquals(1, hosts.size());
-        assertEquals("hostA", hosts.get(0));
+        assertTrue(hosts.contains("hostA"));
     }
 
     @Test

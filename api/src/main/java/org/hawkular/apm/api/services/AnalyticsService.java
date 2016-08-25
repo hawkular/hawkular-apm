@@ -18,6 +18,7 @@ package org.hawkular.apm.api.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
@@ -207,7 +208,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The list of host names
      */
-    List<String> getHostNames(String tenantId, Criteria criteria);
+    Set<String> getHostNames(String tenantId, Criteria criteria);
 
     /**
      * This method stores the supplied list of node details.

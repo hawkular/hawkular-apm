@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  *
  * @author gbrown
  */
-public class CompletionTime {
+public class CompletionTime implements ApmEvent {
 
     @JsonInclude
     private String id;
@@ -73,6 +73,7 @@ public class CompletionTime {
     /**
      * @return the id
      */
+    @Override
     public String getId() {
         return id;
     }

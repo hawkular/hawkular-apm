@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.inject.Inject;
@@ -1563,7 +1564,7 @@ public class AnalyticsHandler {
                 perfLog.finest("Performance: about to query host names (criteria hash=" + criteria.hashCode() + ")");
             }
 
-            List<String> hostnames = analyticsService.getHostNames(
+            Set<String> hostnames = analyticsService.getHostNames(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 
@@ -1611,7 +1612,7 @@ public class AnalyticsHandler {
                 perfLog.finest("Performance: about to query host names (criteria hash=" + criteria.hashCode() + ")");
             }
 
-            List<String> hostnames = analyticsService.getHostNames(
+            Set<String> hostnames = analyticsService.getHostNames(
                     securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
                     criteria);
 

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
@@ -2870,7 +2871,7 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testHostNames() {
-        List<Trace> traces = new ArrayList<Trace>();
+        List<Trace> traces = new ArrayList<>();
 
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
@@ -2889,13 +2890,13 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         Wait.until(() -> analytics.getHostNames(null, new Criteria().setStartTime(100)).size() == 2);
-        java.util.List<String> hostnames = analytics.getHostNames(null, new Criteria().setStartTime(100));
+        Set<String> hostnames = analytics.getHostNames(null, new Criteria().setStartTime(100));
 
         assertNotNull(hostnames);
         assertEquals(2, hostnames.size());
 
-        assertEquals("hostA", hostnames.get(0));
-        assertEquals("hostB", hostnames.get(1));
+        assertTrue(hostnames.contains("hostA"));
+        assertTrue(hostnames.contains("hostB"));
     }
 
 }
