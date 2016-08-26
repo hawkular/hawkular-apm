@@ -1,4 +1,4 @@
-= hawkular-apm
+= Hawkular-APM
 :source-language: java
 
 ifdef::env-github[]
@@ -7,34 +7,53 @@ image::https://travis-ci.org/hawkular/hawkular-apm.svg?branch=master[Build Statu
 endif::[]
 
 [.lead]
-*Hawkular APM* is the Application Performance Management (APM) module for Hawkular.
+is the *Application Performance Management* solution offering:
 
-The project will provide the capabilities to monitor the flow of invocations
-across servers, tiers, on-premises and in the cloud. It will also enable detailed
+* Distributed Tracing (e.g. for microservices)
+* Application Performance Management
+* Business Transaction Management (currently only using JVM javaagent based approach)
+
+Applications can be instrumented, using a non-intrusive Java agent approach for JVM based applications, or through
+http://zipkin.io/pages/existing_instrumentations.html[Zipkin client libraries] (for polyglot environment).
+
+In other words Hawkular APM provides the capabilities to monitor the flow of invocations
+across servers, tiers, on-premises and in the cloud. It also enables detailed
 performance analysis to be performed of the individual components that make up an
 application.
 
-== Build
+== Build & Run
 
-To build the project, run:
+To build and run execute:
 
 ```shell
-mvn clean install [ -Ptests ]
+$ mvn clean install -Pdev -DskipTests [-Ptests]
+$ dist/target/hawkular-apm-${version}/bin/standalone.sh [-Djboss.socket.binding.port-offset=1331]
+
+-> go to http://localhost:[8080|9411]/ and log in with jdoe:password
 ```
 
-The optional 'tests' profile will automatically run integration tests.
+The parameters to these commands are:
 
-The distribution (a preconfigured version of WildFly with APM installed) can be
-found here: _dist/target/hawkular-app-dist-<version>.zip_.
+* `-Djboss.socket.binding.port-offset=1331` - deploy application on http://zipkin.io/[Zipkin] 9411 port. Default
+ APM port is 8080.
+* `-Pdev` - create user jdoe:password
+* `-Ptests` - run integration tests
 
+Add non-intrusive Java instrumentation to instrument your application
+(https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/installation/JVMAGENT.html[doc]):
+```shell
+$ dist/target/hawkular-apm-dist-0.10.1.Final-SNAPSHOT/apm/setenv.sh <port>
+```
 
 == Documentation
+
+Project documentation can be found link:https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/[here].
 
 REST API documentation can be generated using *-Pdocgen* profile. +
 The doc is generated under *rest/target* folder.
 
 ```shell
-mvn clean install -Pdocgen
+$ mvn clean install -Pdocgen
 ```
 
 == Project Structure
