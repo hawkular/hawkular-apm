@@ -42,7 +42,9 @@ The parameters to these commands are:
 Add non-intrusive Java instrumentation to instrument your application
 (https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/installation/JVMAGENT.html[doc]):
 ```shell
-$ dist/target/hawkular-apm-dist-0.10.1.Final-SNAPSHOT/apm/setenv.sh <port>
+$ source dist/target/hawkular-apm-dist-0.10.1.Final-SNAPSHOT/apm/setenv.sh <port>
+
+-> restart your Java application
 ```
 
 == Documentation
