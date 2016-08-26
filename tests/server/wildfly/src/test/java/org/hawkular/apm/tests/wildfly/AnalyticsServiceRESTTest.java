@@ -1565,7 +1565,7 @@ public class AnalyticsServiceRESTTest {
         p1.setUri("testuri");
         p1.setEndpointType("endpoint");
         p1.setDuration(1000000);
-        p1.addInteractionId("interaction1");
+        p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
 
         trace1.getNodes().add(c1);
@@ -1579,7 +1579,7 @@ public class AnalyticsServiceRESTTest {
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
         c2.setDuration(500000);
-        c2.addInteractionId("interaction1");
+        c2.addInteractionCorrelationId("interaction1");
         trace2.getNodes().add(c2);
 
         List<Trace> traces = new ArrayList<Trace>();
@@ -1656,7 +1656,7 @@ public class AnalyticsServiceRESTTest {
         p1.setUri("testuri");
         p1.setEndpointType("endpoint");
         p1.setDuration(1000000);
-        p1.addInteractionId("interaction1");
+        p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
 
         trace1.getNodes().add(c1);
@@ -1670,7 +1670,7 @@ public class AnalyticsServiceRESTTest {
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
         c2.setDuration(500000);
-        c2.addInteractionId("interaction1");
+        c2.addInteractionCorrelationId("interaction1");
         trace2.getNodes().add(c2);
 
         List<Trace> traces = new ArrayList<Trace>();
@@ -1743,7 +1743,7 @@ public class AnalyticsServiceRESTTest {
         p1.setUri("testuri");
         p1.setEndpointType("endpoint");
         p1.setDuration(1000000);
-        p1.addInteractionId("interaction1");
+        p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
 
         trace1.getNodes().add(c1);
@@ -1757,7 +1757,7 @@ public class AnalyticsServiceRESTTest {
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
         c2.setDuration(500000);
-        c2.addInteractionId("interaction1");
+        c2.addInteractionCorrelationId("interaction1");
         trace2.getNodes().add(c2);
 
         List<Trace> traces = new ArrayList<Trace>();
@@ -2004,7 +2004,7 @@ public class AnalyticsServiceRESTTest {
         p1.setUri("testuri2");
         p1.setDuration(1000000000);
         c1.setBaseTime(1);
-        p1.addInteractionId("interaction2");
+        p1.addInteractionCorrelationId("interaction2");
         c1.getNodes().add(p1);
 
         trace1.getNodes().add(c1);
@@ -2018,7 +2018,7 @@ public class AnalyticsServiceRESTTest {
         c2.setUri("testuri2");
         c2.setDuration(500000000);
         c2.setBaseTime(1);
-        c2.addInteractionId("interaction2");
+        c2.addInteractionCorrelationId("interaction2");
 
         Component comp2 = new Component();
         comp2.setDuration(1500000000);

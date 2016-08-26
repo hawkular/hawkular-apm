@@ -46,11 +46,11 @@ public class TraceCompletionInformationUtil {
      * @param baseDuration The base duration (ms)
      * @param n The node
      */
-    public static void initialiseCommunications(TraceCompletionInformation ci, long fragmentBaseTime,
+    public static void initialiseLinks(TraceCompletionInformation ci, long fragmentBaseTime,
             long baseDuration, Node n) {
         if (n.getClass() == Producer.class) {
             // Get interaction id
-            List<CorrelationIdentifier> cids = n.getCorrelationIds(Scope.Interaction);
+            List<CorrelationIdentifier> cids = n.findCorrelationIds(Scope.Interaction, Scope.Association);
 
             if (!cids.isEmpty()) {
                 TraceCompletionInformation.Communication c = new TraceCompletionInformation.Communication();
@@ -76,7 +76,7 @@ public class TraceCompletionInformationUtil {
         } else if (n.containerNode()) {
             ContainerNode cn = (ContainerNode) n;
             for (int i = 0; i < cn.getNodes().size(); i++) {
-                initialiseCommunications(ci, fragmentBaseTime, baseDuration, cn.getNodes().get(i));
+                initialiseLinks(ci, fragmentBaseTime, baseDuration, cn.getNodes().get(i));
             }
         }
     }

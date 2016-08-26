@@ -309,12 +309,47 @@ public abstract class Node {
     }
 
     /**
-     * This method adds an interaction correlation id.
+     * This method adds an interaction scoped correlation id.
      *
      * @param id The id
+     * @return The node
      */
-    public void addInteractionId(String id) {
+    public Node addInteractionCorrelationId(String id) {
         this.correlationIds.add(new CorrelationIdentifier(Scope.Interaction, id));
+        return this;
+    }
+
+    /**
+     * This method adds an association scoped correlation id.
+     *
+     * @param id The id
+     * @return The node
+     */
+    public Node addAssociationCorrelationId(String id) {
+        this.correlationIds.add(new CorrelationIdentifier(Scope.Association, id));
+        return this;
+    }
+
+    /**
+     * This method adds a fragment scoped correlation id.
+     *
+     * @param id The id
+     * @return The node
+     */
+    public Node addFragmentCorrelationId(String id) {
+        this.correlationIds.add(new CorrelationIdentifier(Scope.Fragment, id));
+        return this;
+    }
+
+    /**
+     * This method adds a node scoped correlation id.
+     *
+     * @param id The id
+     * @return The node
+     */
+    public Node addNodeCorrelationId(String id) {
+        this.correlationIds.add(new CorrelationIdentifier(Scope.Fragment, id));
+        return this;
     }
 
     /**
@@ -324,16 +359,18 @@ public abstract class Node {
      * @param scope The scope
      * @return The subset of correlation ids that are associated with the scope
      */
-    public List<CorrelationIdentifier> getCorrelationIds(Scope scope) {
+    public List<CorrelationIdentifier> findCorrelationIds(Scope... scope) {
         List<CorrelationIdentifier> ret = null;
 
         for (int i=0; i < correlationIds.size(); i++) {
             CorrelationIdentifier cid = correlationIds.get(i);
-            if (cid.getScope() == scope) {
-                if (ret == null) {
-                    ret = new ArrayList<CorrelationIdentifier>();
+            for (int j=0; j < scope.length; j++) {
+                if (cid.getScope() == scope[j]) {
+                    if (ret == null) {
+                        ret = new ArrayList<CorrelationIdentifier>();
+                    }
+                    ret.add(cid);
                 }
-                ret.add(cid);
             }
         }
 

@@ -720,7 +720,7 @@ public class DefaultTraceCollectorTest {
         collector.activate("not relevant", null);
         collector.consumerStart(null, "not relevant", "HTTP", null, null);
         collector.getFragmentManager().getFragmentBuilder()
-            .getTrace().getNodes().get(0).addInteractionId("testId");
+            .getTrace().getNodes().get(0).addInteractionCorrelationId("testId");
 
         // Cause a fragment builder to be created
         collector.activate("/test", null);
@@ -906,8 +906,8 @@ public class DefaultTraceCollectorTest {
         assertEquals(OP, internalConsumer.getOperation());
 
         // Check that internal producer and consumer share common interaction id
-        List<CorrelationIdentifier> ipids = internalProducer.getCorrelationIds(Scope.Interaction);
-        List<CorrelationIdentifier> icids = internalConsumer.getCorrelationIds(Scope.Interaction);
+        List<CorrelationIdentifier> ipids = internalProducer.findCorrelationIds(Scope.Association);
+        List<CorrelationIdentifier> icids = internalConsumer.findCorrelationIds(Scope.Association);
 
         assertEquals(1, ipids.size());
         assertEquals(1, icids.size());
@@ -964,8 +964,8 @@ public class DefaultTraceCollectorTest {
         assertEquals(OP, internalConsumer.getOperation());
 
         // Check that internal producer and consumer share common interaction id
-        List<CorrelationIdentifier> ipids = internalProducer.getCorrelationIds(Scope.Interaction);
-        List<CorrelationIdentifier> icids = internalConsumer.getCorrelationIds(Scope.Interaction);
+        List<CorrelationIdentifier> ipids = internalProducer.findCorrelationIds(Scope.Association);
+        List<CorrelationIdentifier> icids = internalConsumer.findCorrelationIds(Scope.Association);
 
         assertEquals(1, ipids.size());
         assertEquals(1, icids.size());
@@ -1015,8 +1015,8 @@ public class DefaultTraceCollectorTest {
         assertEquals(OP, internalConsumer.getOperation());
 
         // Check that internal producer and consumer share common interaction id
-        List<CorrelationIdentifier> ipids = internalProducer.getCorrelationIds(Scope.Interaction);
-        List<CorrelationIdentifier> icids = internalConsumer.getCorrelationIds(Scope.Interaction);
+        List<CorrelationIdentifier> ipids = internalProducer.findCorrelationIds(Scope.Association);
+        List<CorrelationIdentifier> icids = internalConsumer.findCorrelationIds(Scope.Association);
 
         assertEquals(1, ipids.size());
         assertEquals(1, icids.size());

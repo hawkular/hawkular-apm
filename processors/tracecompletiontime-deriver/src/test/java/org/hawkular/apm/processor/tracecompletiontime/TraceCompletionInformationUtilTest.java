@@ -46,7 +46,7 @@ public class TraceCompletionInformationUtilTest {
 
         Producer p1 = new Producer();
         p1.setBaseTime(200000000);
-        p1.addInteractionId("p1id");
+        p1.addInteractionCorrelationId("p1id");
         consumer.getNodes().add(p1);
 
         Component comp1 = new Component();
@@ -59,11 +59,11 @@ public class TraceCompletionInformationUtilTest {
 
         Producer p3 = new Producer();
         p3.setBaseTime(450000000);
-        p3.addInteractionId("p3id");
+        p3.addInteractionCorrelationId("p3id");
         p3.getDetails().put(InteractionNode.DETAILS_PUBLISH, "true");
         comp1.getNodes().add(p3);
 
-        TraceCompletionInformationUtil.initialiseCommunications(ci, fragmentBaseTime, baseDuration, consumer);
+        TraceCompletionInformationUtil.initialiseLinks(ci, fragmentBaseTime, baseDuration, consumer);
 
         assertEquals(2, ci.getCommunications().size());
 

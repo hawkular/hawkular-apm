@@ -142,10 +142,10 @@ public class TraceServiceRESTTest {
         c1.getProperties().add(new Property("prop1","value1"));
         trace1.getNodes().add(c1);
         Producer p1_1 = new Producer();
-        p1_1.addInteractionId("id1_1");
+        p1_1.addInteractionCorrelationId("id1_1");
         c1.getNodes().add(p1_1);
         Producer p1_2 = new Producer();
-        p1_2.addInteractionId("id1_2");
+        p1_2.addInteractionCorrelationId("id1_2");
         p1_2.setUri("uri2");
         c1.getNodes().add(p1_2);
 
@@ -154,15 +154,15 @@ public class TraceServiceRESTTest {
         trace2.setStartTime(System.currentTimeMillis());
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
-        c2.addInteractionId("id1_2");
+        c2.addInteractionCorrelationId("id1_2");
         c2.getProperties().add(new Property("prop1","value1"));
         c2.getProperties().add(new Property("prop2","value2"));
         trace2.getNodes().add(c2);
         Producer p2_1 = new Producer();
-        p2_1.addInteractionId("id2_1");
+        p2_1.addInteractionCorrelationId("id2_1");
         c2.getNodes().add(p2_1);
         Producer p2_2 = new Producer();
-        p2_2.addInteractionId("id2_2");
+        p2_2.addInteractionCorrelationId("id2_2");
         c2.getNodes().add(p2_2);
 
         try {
@@ -449,7 +449,7 @@ public class TraceServiceRESTTest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
-        cid.setScope(Scope.Interaction);
+        cid.setScope(Scope.Association);
         cid.setValue("myid");
 
         Consumer c1 = new Consumer();
@@ -467,7 +467,7 @@ public class TraceServiceRESTTest {
 
         // Query stored trace
         Criteria criteria = new Criteria();
-        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "myid"));
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Association, "myid"));
         Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
 
         List<Trace> result = service.searchFragments(null, criteria);

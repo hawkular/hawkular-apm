@@ -339,10 +339,10 @@ public class SpanServiceElasticsearch implements SpanService {
         InteractionNode node;
         if (span.serverSpan()) {
             node = new Consumer(url, span.binaryAnnotationMapping().getEndpointType());
-            node.addInteractionId(span.getId());
+            node.addInteractionCorrelationId(span.getId());
         }else if (span.clientSpan()) {
             node = new Producer(url, span.binaryAnnotationMapping().getEndpointType());
-            node.addInteractionId(span.getId());
+            node.addInteractionCorrelationId(span.getId());
         } else {
             node = new Component(url, span.binaryAnnotationMapping().getComponentType());
         }

@@ -50,7 +50,7 @@ public class TraceCompletionInformationInitiatorTest {
     public void testProcessSingleConsumerWithInteractionId() {
         Trace trace = new Trace();
         Consumer c = new Consumer();
-        c.addInteractionId("myId");
+        c.addInteractionCorrelationId("myId");
         trace.getNodes().add(c);
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
@@ -151,12 +151,12 @@ public class TraceCompletionInformationInitiatorTest {
 
         Producer p1 = new Producer();
         p1.setUri("p1");
-        p1.addInteractionId("p1id");
+        p1.addInteractionCorrelationId("p1id");
         c.getNodes().add(p1);
 
         Producer p2 = new Producer();
         p2.setUri("p2");
-        p2.addInteractionId("p2id");
+        p2.addInteractionCorrelationId("p2id");
         c.getNodes().add(p2);
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
