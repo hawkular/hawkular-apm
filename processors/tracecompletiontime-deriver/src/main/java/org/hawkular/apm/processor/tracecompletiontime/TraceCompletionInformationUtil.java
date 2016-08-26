@@ -43,14 +43,12 @@ public class TraceCompletionInformationUtil {
      *
      * @param ci The information
      * @param fragmentBaseTime The base time for the fragment (ns)
-     * @param baseDuration The base duration (ms)
      * @param n The node
      */
-    public static void initialiseCommunications(TraceCompletionInformation ci, long fragmentBaseTime,
-            long baseDuration, Node n) {
+    public static void initialiseLinks(TraceCompletionInformation ci, long fragmentBaseTime, Node n) {
         if (n.getClass() == Producer.class) {
             // Get interaction id
-            List<CorrelationIdentifier> cids = n.getCorrelationIds(Scope.Interaction);
+            List<CorrelationIdentifier> cids = n.findCorrelationIds(Scope.Interaction, Scope.ControlFlow);
 
             if (!cids.isEmpty()) {
                 TraceCompletionInformation.Communication c = new TraceCompletionInformation.Communication();
@@ -62,7 +60,7 @@ public class TraceCompletionInformationUtil {
                 c.setMultipleConsumers(((Producer) n).multipleConsumers());
 
                 // Calculate the base duration for the communication
-                c.setBaseDuration(baseDuration + TimeUnit.MILLISECONDS.convert((n.getBaseTime() - fragmentBaseTime),
+                c.setBaseDuration(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - fragmentBaseTime),
                         TimeUnit.NANOSECONDS));
 
                 c.setExpire(System.currentTimeMillis() + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
@@ -76,7 +74,7 @@ public class TraceCompletionInformationUtil {
         } else if (n.containerNode()) {
             ContainerNode cn = (ContainerNode) n;
             for (int i = 0; i < cn.getNodes().size(); i++) {
-                initialiseCommunications(ci, fragmentBaseTime, baseDuration, cn.getNodes().get(i));
+                initialiseLinks(ci, fragmentBaseTime, cn.getNodes().get(i));
             }
         }
     }

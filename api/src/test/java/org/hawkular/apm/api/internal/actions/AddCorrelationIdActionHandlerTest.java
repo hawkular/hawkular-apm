@@ -36,8 +36,22 @@ public class AddCorrelationIdActionHandlerTest {
 
     @Test
     public void testInteractionCorrelationId() {
+        testCorrelationId(Scope.Interaction);
+    }
+
+    @Test
+    public void testControlFlowCorrelationId() {
+        testCorrelationId(Scope.ControlFlow);
+    }
+
+    @Test
+    public void testCausedByCorrelationId() {
+        testCorrelationId(Scope.CausedBy);
+    }
+
+    protected void testCorrelationId(Scope scope) {
         AddCorrelationIdAction action = new AddCorrelationIdAction();
-        action.setScope(Scope.Interaction);
+        action.setScope(scope);
         action.setExpression(new LiteralExpression().setValue(TEST_VALUE_1));
 
         AddCorrelationIdActionHandler handler = new AddCorrelationIdActionHandler(action);
@@ -50,6 +64,7 @@ public class AddCorrelationIdActionHandlerTest {
 
         assertEquals(1, node.getCorrelationIds().size());
         assertEquals(TEST_VALUE_1, node.getCorrelationIds().get(0).getValue());
+        assertEquals(scope, node.getCorrelationIds().get(0).getScope());
 
         assertNull(handler.getIssues());
     }

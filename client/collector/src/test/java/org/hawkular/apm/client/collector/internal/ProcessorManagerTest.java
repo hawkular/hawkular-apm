@@ -496,7 +496,7 @@ public class ProcessorManagerTest {
         AddCorrelationIdAction pa1 = new AddCorrelationIdAction();
         p1.getActions().add(pa1);
 
-        pa1.setScope(Scope.Interaction);
+        pa1.setScope(Scope.ControlFlow);
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
         expr.setKey("1");
@@ -516,7 +516,7 @@ public class ProcessorManagerTest {
 
         assertEquals(1, service.getCorrelationIds().size());
 
-        assertEquals(CorrelationIdentifier.Scope.Interaction, service.getCorrelationIds().get(0).getScope());
+        assertEquals(CorrelationIdentifier.Scope.ControlFlow, service.getCorrelationIds().get(0).getScope());
         assertEquals("second", service.getCorrelationIds().get(0).getValue());
     }
 

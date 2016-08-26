@@ -140,7 +140,7 @@ public class TraceTest {
         Trace trace = new Trace();
 
         Consumer c1 = new Consumer();
-        c1.addInteractionId("myid");
+        c1.addInteractionCorrelationId("myid");
         trace.getNodes().add(c1);
 
         assertFalse(trace.initialFragment());
@@ -156,7 +156,7 @@ public class TraceTest {
 
         c1.getProperties().add(new Property(TEST_PROP1, TEST_VALUE1));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID2"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, "CID2"));
         c1.setDuration(1000);
         c1.setBaseTime(1);
         c1.setEndpointType("JMS");
@@ -200,7 +200,7 @@ public class TraceTest {
         Component s2 = new Component();
         s1.getNodes().add(s2);
 
-        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID3"));
+        s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.ControlFlow, "CID3"));
         s2.setDuration(500);
         s2.setBaseTime(3);
         s2.setOperation("Op2");
@@ -210,8 +210,8 @@ public class TraceTest {
         Producer p1 = new Producer();
         s2.getNodes().add(p1);
 
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID3"));
-        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID4"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.ControlFlow, "CID3"));
+        c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, "CID4"));
         c1.setDuration(400);
         c1.setBaseTime(4);
         c1.setEndpointType("HTTP");
@@ -250,7 +250,7 @@ public class TraceTest {
         p1.setUri("testuri");
         p1.setDuration(1000000000);
         p1.setBaseTime(500000000);
-        p1.addInteractionId("interaction1");
+        p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
 
         trace1.getNodes().add(c1);

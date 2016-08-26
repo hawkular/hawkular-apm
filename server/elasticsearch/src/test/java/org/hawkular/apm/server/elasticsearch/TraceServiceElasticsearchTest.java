@@ -384,7 +384,16 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQueryCorrelationId() {
+    public void testQueryInteractionCorrelationId() {
+        testQueryCorrelationId(Scope.Interaction);
+    }
+
+    @Test
+    public void testQueryControlFlowCorrelationId() {
+        testQueryCorrelationId(Scope.ControlFlow);
+    }
+
+    protected void testQueryCorrelationId(Scope scope) {
         List<Trace> traces = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
@@ -393,7 +402,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace1);
 
         Consumer c1=new Consumer();
-        c1.addInteractionId("gid1");
+        c1.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid1"));
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
@@ -402,7 +411,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace2);
 
         Consumer c2=new Consumer();
-        c2.addInteractionId("gid2");
+        c2.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid2"));
         trace2.getNodes().add(c2);
 
         try {
@@ -413,7 +422,7 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "gid1"));
+        criteria.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid1"));
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
@@ -433,10 +442,10 @@ public class TraceServiceElasticsearchTest {
         c1.getProperties().add(new Property("prop1","value1"));
         trace1.getNodes().add(c1);
         Producer p1_1 = new Producer();
-        p1_1.addInteractionId("id1_1");
+        p1_1.addInteractionCorrelationId("id1_1");
         c1.getNodes().add(p1_1);
         Producer p1_2 = new Producer();
-        p1_2.addInteractionId("id1_2");
+        p1_2.addInteractionCorrelationId("id1_2");
         p1_2.setUri("uri2");
         c1.getNodes().add(p1_2);
 
@@ -447,13 +456,13 @@ public class TraceServiceElasticsearchTest {
         c2.setUri("uri2");
         c2.getProperties().add(new Property("prop1","value1"));
         c2.getProperties().add(new Property("prop2","value2"));
-        c2.addInteractionId("id1_2");
+        c2.addInteractionCorrelationId("id1_2");
         trace2.getNodes().add(c2);
         Producer p2_1 = new Producer();
-        p2_1.addInteractionId("id2_1");
+        p2_1.addInteractionCorrelationId("id2_1");
         c2.getNodes().add(p2_1);
         Producer p2_2 = new Producer();
-        p2_2.addInteractionId("id2_2");
+        p2_2.addInteractionCorrelationId("id2_2");
         c2.getNodes().add(p2_2);
 
         List<Trace> traces = new ArrayList<Trace>();

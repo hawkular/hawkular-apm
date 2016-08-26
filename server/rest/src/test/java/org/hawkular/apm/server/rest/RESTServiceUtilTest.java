@@ -160,7 +160,7 @@ public class RESTServiceUtilTest {
 
     @Test
     public void testDecodeCorrelationIdsMultiple() {
-        String encoded = "Interaction|world,Interaction|hello";
+        String encoded = "Interaction|world,ControlFlow|hello";
         Set<CorrelationIdentifier> correlations = new HashSet<CorrelationIdentifier>();
 
         RESTServiceUtil.decodeCorrelationIdentifiers(correlations, encoded);
@@ -172,7 +172,7 @@ public class RESTServiceUtilTest {
         cid1.setValue("world");
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
-        cid2.setScope(Scope.Interaction);
+        cid2.setScope(Scope.ControlFlow);
         cid2.setValue("hello");
 
         assertTrue(correlations.contains(cid1));

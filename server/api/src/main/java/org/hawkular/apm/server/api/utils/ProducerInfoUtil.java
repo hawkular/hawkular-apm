@@ -114,7 +114,7 @@ public class ProducerInfoUtil {
             long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
             long timestamp = trace.getStartTime() + diffms;
 
-            List<CorrelationIdentifier> cids = producer.getCorrelationIds(Scope.Interaction);
+            List<CorrelationIdentifier> cids = producer.findCorrelationIds(Scope.Interaction, Scope.ControlFlow);
             if (!cids.isEmpty()) {
                 for (int i = 0; i < cids.size(); i++) {
                     ProducerInfo pi = new ProducerInfo();
