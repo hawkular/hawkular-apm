@@ -200,7 +200,7 @@ public class CriteriaTest {
         criteria.getCorrelationIds().add(id1);
 
         CorrelationIdentifier id2 = new CorrelationIdentifier();
-        id2.setScope(Scope.Interaction);
+        id2.setScope(Scope.Association);
         id2.setValue("value2");
 
         criteria.getCorrelationIds().add(id2);
@@ -211,8 +211,8 @@ public class CriteriaTest {
 
         assertTrue(queryParameters.containsKey("correlations"));
 
-        assertTrue(queryParameters.get("correlations").equals("Interaction|value1,Interaction|value2")
-                || queryParameters.get("correlations").equals("Interaction|value2,Interaction|value1"));
+        assertTrue(queryParameters.get("correlations").equals("Interaction|value1,Association|value2")
+                || queryParameters.get("correlations").equals("Association|value2,Interaction|value1"));
     }
 
 }

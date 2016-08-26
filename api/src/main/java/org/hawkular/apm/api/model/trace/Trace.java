@@ -237,7 +237,7 @@ public class Trace {
      */
     public boolean initialFragment() {
         // Initial fragment, if the first node has no 'interaction' based correlation ids
-        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds(Scope.Interaction).isEmpty();
+        return !getNodes().isEmpty() && getNodes().get(0).findCorrelationIds(Scope.Interaction).isEmpty();
     }
 
     /**

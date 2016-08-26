@@ -1741,7 +1741,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         producer.setEndpointType(type);
         producer.setUri(uri);
         producer.setOperation(operation);
-        producer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
+        producer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Association, id));
 
         if (node != null && node.containerNode()) {
             initNode(producer);
@@ -1767,7 +1767,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         consumer.setEndpointType(type);
         consumer.setUri(uri);
         consumer.setOperation(operation);
-        consumer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, id));
+        consumer.getCorrelationIds().add(new CorrelationIdentifier(Scope.Association, id));
 
         push(location, spawnedBuilder, consumer);
 
