@@ -85,7 +85,6 @@
     <module>server/zipkin-war</module>
     <module>server/war</module>
     <module>tools/instrumenter</module>
-    <module>ui</module>
     <module>dist</module>
     <module>tests/common</module>
     <module>tests/server/mock</module>
@@ -593,6 +592,16 @@
   </build>
 
   <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>!noui</name>
+        </property>
+      </activation>
+      <modules>
+        <module>ui</module>
+      </modules>
+    </profile>
     <profile>
       <id>tests</id>
       <modules>

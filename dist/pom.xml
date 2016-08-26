@@ -64,12 +64,6 @@
       <type>war</type>
     </dependency>
 
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-ui</artifactId>
-      <type>war</type>
-    </dependency>
-
   </dependencies>
 
   <build>
@@ -180,6 +174,20 @@
   </build>
 
   <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>!noui</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.hawkular.apm</groupId>
+          <artifactId>hawkular-apm-ui</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>dev</id>
       <build>
