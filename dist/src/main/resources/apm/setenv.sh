@@ -22,12 +22,25 @@
 
 # Environment script for setting up the JAVA_OPTS property for client instrumentation
 
+if [ "$#" -ne 1 ]; then
+   echo "Wrong number of parameters, expected APM server port number"
+   exit 1
+else
+    number_re='^[0-9]+$'
+    if ! [[ "$1" =~ $number_re ]] ; then
+       echo "Port is not a number" && exit 1
+    fi
+fi
+
+APM_PORT=$1
+echo "APM port set to $APM_PORT"
+
 export HAWKULAR_APM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 export HAWKULAR_APM_AGENT_JAR_PATH=$HAWKULAR_APM_HOME/hawkular-apm-agent.jar
 
 # REST environment variables
-export HAWKULAR_APM_URI=http://localhost:8180
+export HAWKULAR_APM_URI=http://localhost:$APM_PORT
 export HAWKULAR_APM_USERNAME=jdoe
 export HAWKULAR_APM_PASSWORD=password
 
