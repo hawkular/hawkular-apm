@@ -39,10 +39,10 @@ The parameters to these commands are:
 * `-Pdev` - create user jdoe:password
 * `-Ptests` - run integration tests
 
-Add non-intrusive Java instrumentation to instrument your application
+Add non-intrusive Java instrumentation to instrument your applications
 (https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/installation/JVMAGENT.html[doc]):
 ```shell
-$ source dist/target/hawkular-apm-dist-0.10.1.Final-SNAPSHOT/apm/setenv.sh <port>
+$ source dist/target/hawkular-apm-${version}/apm/setenv.sh <APM server port>
 
 -> restart your Java applications
 ```
