@@ -37,6 +37,7 @@ import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.AccessMode;
 import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.SELContext;
 import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.core.command.PullImageResultCallback;
@@ -78,8 +79,10 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
 
 
         CreateContainerCmd containerBuilder = dockerClient.createContainerCmd(testEnvironment.getImage())
-                .withBinds(new Bind(hostOsMountDir, new Volume(Constants.HAWKULAR_APM_AGENT_DIRECTORY), AccessMode.ro),
-                    new Bind(scenarioDirectory, new Volume(Constants.HAWKULAR_APM_TEST_DIRECTORY)))
+                .withBinds(new Bind(hostOsMountDir, new Volume(Constants.HAWKULAR_APM_AGENT_DIRECTORY),
+                                AccessMode.ro, SELContext.shared),
+                    new Bind(scenarioDirectory, new Volume(Constants.HAWKULAR_APM_TEST_DIRECTORY),
+                            AccessMode.ro, SELContext.shared))
                 .withExtraHosts(Constants.HOST_ADDED_TO_ETC_HOSTS + ":" + apmBindAddress);
 
         if (userDefinedNetwork) {
@@ -148,7 +151,7 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
     }
 
     @Override
-    public void clean(String id) {
+    public void stopAndRemove(String id) {
         log.info(String.format("Cleaning environment %s", id));
         try {
             dockerClient.removeContainerCmd(id).withForce(true).exec();

@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -34,7 +33,6 @@ import org.junit.Test;
 public class InstrumentationTest {
 
     @Test
-    @Ignore
     public void testScenarios() throws IOException {
 
         // path to test/resources

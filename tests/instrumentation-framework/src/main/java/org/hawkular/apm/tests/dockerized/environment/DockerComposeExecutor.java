@@ -63,7 +63,7 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
     }
 
     @Override
-    public void clean(String dockerCompose) {
+    public void stopAndRemove(String dockerCompose) {
 
         String[] command;
         try {

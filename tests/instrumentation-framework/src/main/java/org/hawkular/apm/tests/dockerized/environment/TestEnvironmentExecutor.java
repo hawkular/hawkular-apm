@@ -34,10 +34,11 @@ public interface TestEnvironmentExecutor {
     String run(TestEnvironment testEnvironment);
 
     /**
-     * Cleans and removes environment
+     * Stop and remove environment
+     *
      * @param id Id of the environment
      */
-    void clean(String id);
+    void stopAndRemove(String id);
 
     /**
      * Frees all resources for accessing/creating environment

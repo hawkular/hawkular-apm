@@ -85,7 +85,7 @@ public class TestScenarioRunner {
                     ", but we expect only one of them to be defined!");
         }
 
-        log.info(String.format("Starting test scenario: %s", testScenario));
+        log.info(String.format("========================= Starting test scenario: %s", testScenario));
         int successfulTestCases = 0;
 
         for (TestCase test: testScenario.getTests()) {
@@ -101,11 +101,12 @@ public class TestScenarioRunner {
             } catch (TestFailException ex) {
                 log.severe(String.format("Test case failed: %s\n%s", ex.toString(), ex.getMessage()));
                 ex.printStackTrace();
+            } finally {
+                testEnvironmentExecutor.close();
             }
-
-            testEnvironmentExecutor.close();
         }
 
+        log.info(String.format("========================= Closing test scenario : %s", testScenario));
         return successfulTestCases;
     }
 
@@ -167,7 +168,7 @@ public class TestScenarioRunner {
             throw new TestFailException(testCase, ex);
         } finally {
             if (environmentId != null) {
-                testEnvironmentExecutor.clean(environmentId);
+                testEnvironmentExecutor.stopAndRemove(environmentId);
             }
 
             if (apmServer != null) {
