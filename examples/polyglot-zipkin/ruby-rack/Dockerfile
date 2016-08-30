@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -16,6 +15,19 @@
 # limitations under the License.
 #
 
+FROM ruby:2.3.1
 
-curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:8080/ticket-monster/rest/bookings' -d \
-    '{"ticketRequests":[{"ticketPrice":5,"quantity":1},{"ticketPrice":12,"quantity":2}],"email":"user@email.com","performance":"3"}'
+MAINTAINER Pavol Loffay <ploffay@redhat.com>
+
+ENV APP_HOME /app/
+
+COPY Gemfile* $APP_HOME
+ADD *.ru $APP_HOME
+ADD *.rb $APP_HOME
+
+WORKDIR $APP_HOME
+RUN bundle install
+
+EXPOSE 3002
+
+CMD ["bundle", "exec" ,"rackup", "-p", "3002", "--host", "0.0.0.0", "-s", "puma"]

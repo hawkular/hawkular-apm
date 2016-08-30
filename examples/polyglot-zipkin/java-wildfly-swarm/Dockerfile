@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -16,6 +15,18 @@
 # limitations under the License.
 #
 
+FROM maven:3.3.9-jdk-8
 
-curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:8080/ticket-monster/rest/bookings' -d \
-    '{"ticketRequests":[{"ticketPrice":5,"quantity":1},{"ticketPrice":12,"quantity":2}],"email":"user@email.com","performance":"3"}'
+MAINTAINER Pavol Loffay <ploffay@redhat.com>
+
+ENV APP_HOME /app/
+
+COPY pom.xml $APP_HOME
+COPY src $APP_HOME/src
+
+WORKDIR $APP_HOME
+RUN mvn package
+
+EXPOSE 3003
+
+CMD ["java", "-jar", "target/hawkular-apm-example-zipkin-wildfly-swarm.jar", "-Dswarm.http.port=3003"]

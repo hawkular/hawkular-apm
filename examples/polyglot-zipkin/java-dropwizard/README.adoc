@@ -1,0 +1,17 @@
+= Example application of Dropwizard with brave
+
+Dropwizard application instrumented with zipkin brave library.
+
+== Standalone Run & Build
+[source,shell]
+----
+$ mvn install
+$ java -jar target/hawkular-apm-example-zipkin-dropwizard.jar server app.yml
+----
+
+== Docker
+[source,shell]
+----
+$ docker build -t hawkular/apm-example-polyglot-zipkin-dropwizard .
+$ docker run -it --rm -e MAVEN_CONFIG=/home/app-user -p 3000:3000 --add-host tracing-server:$TRACING_SERVER -e TRACING_PORT=$TRACING_PORT hawkular/apm-example-polyglot-zipkin-dropwizard
+----

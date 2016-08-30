@@ -574,9 +574,13 @@
           <excludes combine.children="append">
             <exclude>**/*.data</exclude>
             <exclude>**/*.btm</exclude>
-            <exclude>**/*.sh</exclude>
             <exclude>**/*.deployed</exclude>
             <exclude>**/.babelrc</exclude>
+            <exclude>**/node_modules/**</exclude>
+            <exclude>**/Gemfile</exclude>
+            <exclude>**/Gemfile.lock</exclude>
+            <exclude>**/config.ru</exclude>
+            <exclude>**/*.dia</exclude>
           </excludes>
         </configuration>
       </plugin>

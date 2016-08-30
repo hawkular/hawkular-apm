@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -16,6 +15,27 @@
 # limitations under the License.
 #
 
+class MyApp < Roda
 
-curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:8080/ticket-monster/rest/bookings' -d \
-    '{"ticketRequests":[{"ticketPrice":5,"quantity":1},{"ticketPrice":12,"quantity":2}],"email":"user@email.com","performance":"3"}'
+  route do |r|
+
+    # GET /
+    r.root do
+      r.redirect "/roda/hello"
+    end
+
+    r.on "roda/hello" do
+      r.get do
+        "Hello from Roda! [Ruby]"
+      end
+    end
+
+    r.on "roda/users" do
+      r.get do
+        puts "User created!"
+        "Users created!"
+      end
+    end
+  end
+end
+
