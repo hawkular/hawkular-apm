@@ -129,10 +129,31 @@ public class CorrelationIdentifier {
     public enum Scope {
 
         /**
-         * The 'Interaction' scope means the identifier is only unique in relation
-         * to a specific exchange between two (or more) participants.
+         * This scope means the identifier's value is unique and shared between
+         * a source (Producer) and zero or more target (Consumer) nodes.
          */
-        Interaction
+        Interaction,
+
+        /**
+         * This scope means the identifier is a unique value shared between
+         * one source node and potentially zero or more target nodes. The
+         * value can be randomly generated (as in the case of establishing
+         * a link between concurrent fragments) or represent some application/
+         * business context (e.g. unique value based on order id). This value
+         * must be unique within and across all trace instances - otherwise it
+         * will be impossible to correctly associated with the source and target
+         * nodes.
+         */
+        ControlFlow,
+
+        /**
+         * This scope is used to reference a node within another fragment.
+         * Unlike the Interaction and ControlFlow scopes, which achieve correlation
+         * by sharing a common value between the source and target nodes,
+         * this scope is a "one-way" reference from the target node back to a
+         * source node.
+         */
+        CausedBy
 
     }
 }

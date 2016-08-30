@@ -94,7 +94,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         // interaction based correlation id
         if (item.getNodes().size() == 1 && item.getNodes().get(0).getClass() == Consumer.class) {
             Consumer consumer = (Consumer) item.getNodes().get(0);
-            List<CorrelationIdentifier> cids = consumer.getCorrelationIds(Scope.Interaction);
+            List<CorrelationIdentifier> cids = consumer.findCorrelationIds(Scope.Interaction, Scope.ControlFlow);
             if (!cids.isEmpty()) {
                 String lastId=null;
 

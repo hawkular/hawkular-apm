@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Consumer;
-import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
@@ -55,7 +54,7 @@ public class TraceCompletionInformationInitiator extends
         // Check whether the trace fragment is an initial fragment
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
-            if (n.getClass() != Consumer.class || n.getCorrelationIds(Scope.Interaction).isEmpty()) {
+            if (n.getClass() != Consumer.class || n.getCorrelationIds().isEmpty()) {
                 TraceCompletionInformation ci = new TraceCompletionInformation();
 
                 // Create the initial version of the completion time
@@ -78,8 +77,7 @@ public class TraceCompletionInformationInitiator extends
                 ci.setCompletionTime(ct);
 
                 // Initialise any communications that need to be further processed
-                TraceCompletionInformationUtil.initialiseCommunications(ci, item.getNodes().get(0).getBaseTime(),
-                        0, n);
+                TraceCompletionInformationUtil.initialiseLinks(ci, n.getBaseTime(), n);
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Creating initial completion time information = " + ci);

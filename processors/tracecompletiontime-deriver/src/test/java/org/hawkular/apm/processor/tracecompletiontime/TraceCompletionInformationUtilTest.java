@@ -35,10 +35,9 @@ import org.junit.Test;
 public class TraceCompletionInformationUtilTest {
 
     @Test
-    public void testInitialiseCommunications() {
+    public void testInitialiseLinks() {
         TraceCompletionInformation ci = new TraceCompletionInformation();
 
-        long baseDuration = 1000000;
         long fragmentBaseTime = 100000000;
 
         Consumer consumer = new Consumer();
@@ -46,7 +45,7 @@ public class TraceCompletionInformationUtilTest {
 
         Producer p1 = new Producer();
         p1.setBaseTime(200000000);
-        p1.addInteractionId("p1id");
+        p1.addInteractionCorrelationId("p1id");
         consumer.getNodes().add(p1);
 
         Component comp1 = new Component();
@@ -59,11 +58,11 @@ public class TraceCompletionInformationUtilTest {
 
         Producer p3 = new Producer();
         p3.setBaseTime(450000000);
-        p3.addInteractionId("p3id");
+        p3.addControlFlowCorrelationId("p3id");
         p3.getDetails().put(InteractionNode.DETAILS_PUBLISH, "true");
         comp1.getNodes().add(p3);
 
-        TraceCompletionInformationUtil.initialiseCommunications(ci, fragmentBaseTime, baseDuration, consumer);
+        TraceCompletionInformationUtil.initialiseLinks(ci, fragmentBaseTime, consumer);
 
         assertEquals(2, ci.getCommunications().size());
 
@@ -74,9 +73,9 @@ public class TraceCompletionInformationUtilTest {
         assertTrue(c2.getIds().contains("p3id"));
         assertFalse(c1.isMultipleConsumers());
         assertTrue(c2.isMultipleConsumers());
-        assertEquals(baseDuration + TimeUnit.MILLISECONDS.convert((p1.getBaseTime() - fragmentBaseTime),
+        assertEquals(TimeUnit.MILLISECONDS.convert((p1.getBaseTime() - fragmentBaseTime),
                 TimeUnit.NANOSECONDS), c1.getBaseDuration());
-        assertEquals(baseDuration + TimeUnit.MILLISECONDS.convert((p3.getBaseTime() - fragmentBaseTime),
+        assertEquals(TimeUnit.MILLISECONDS.convert((p3.getBaseTime() - fragmentBaseTime),
                 TimeUnit.NANOSECONDS), c2.getBaseDuration());
     }
 

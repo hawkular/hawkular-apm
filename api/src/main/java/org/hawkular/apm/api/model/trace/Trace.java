@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -236,8 +235,8 @@ public class Trace {
      * @return Whether this is the initial fragment
      */
     public boolean initialFragment() {
-        // Initial fragment, if the first node has no 'interaction' based correlation ids
-        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds(Scope.Interaction).isEmpty();
+        // Initial fragment, if the first node has no correlation ids
+        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds().isEmpty();
     }
 
     /**
