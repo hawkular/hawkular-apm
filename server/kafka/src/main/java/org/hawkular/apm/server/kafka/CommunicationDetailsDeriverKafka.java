@@ -23,7 +23,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.processor.communicationdetails.CommunicationDetailsDeriver;
 import org.hawkular.apm.server.api.services.CommunicationDetailsPublisher;
-import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.server.api.services.SourceInfoCache;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -44,12 +44,12 @@ public class CommunicationDetailsDeriverKafka extends AbstractRetryConsumerKafka
 
         CommunicationDetailsDeriver communicationDetailsDeriver = new CommunicationDetailsDeriver();
 
-        ProducerInfoCache cache = ServiceResolver.getSingletonService(ProducerInfoCache.class);
+        SourceInfoCache cache = ServiceResolver.getSingletonService(SourceInfoCache.class);
         if (cache == null) {
-            log.severe("Producer Info Cache not available - possibly not configured correctly");
+            log.severe("Source Info Cache not available - possibly not configured correctly");
             communicationDetailsDeriver = null;
         } else {
-            communicationDetailsDeriver.setProducerInfoCache(cache);
+            communicationDetailsDeriver.setSourceInfoCache(cache);
         }
 
         CommunicationDetailsPublisher publisher = ServiceResolver

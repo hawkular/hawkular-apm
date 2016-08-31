@@ -34,7 +34,7 @@ import org.junit.Test;
 /**
  * @author gbrown
  */
-public class ProducerInfoTest {
+public class SourceInfoTest {
 
     @Test
     public void testSerialize() {
@@ -51,25 +51,25 @@ public class ProducerInfoTest {
         prop2.setType(PropertyType.Number);
         props.add(prop2);
 
-        ProducerInfo pi = new ProducerInfo();
-        pi.setId("testId");
-        pi.setDuration(500);
-        pi.setFragmentId("fragId");
-        pi.setHostAddress("hostAddr");
-        pi.setHostName("hostName");
-        pi.setMultipleConsumers(true);
-        pi.setSourceOperation("sourceOp");
-        pi.setSourceUri("sourceUri");
-        pi.setProperties(props);
-        pi.setTimestamp(System.currentTimeMillis());
+        SourceInfo si = new SourceInfo();
+        si.setId("testId");
+        si.setDuration(500);
+        si.setFragmentId("fragId");
+        si.setHostAddress("hostAddr");
+        si.setHostName("hostName");
+        si.setMultipleConsumers(true);
+        si.setFragmentOperation("sourceOp");
+        si.setFragmentUri("sourceUri");
+        si.setProperties(props);
+        si.setTimestamp(System.currentTimeMillis());
 
-        ProducerInfo result = null;
+        SourceInfo result = null;
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
 
-            oos.writeObject(pi);
+            oos.writeObject(si);
 
             oos.flush();
             oos.close();
@@ -78,7 +78,7 @@ public class ProducerInfoTest {
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             ObjectInputStream ois = new ObjectInputStream(bais);
 
-            result = (ProducerInfo) ois.readObject();
+            result = (SourceInfo) ois.readObject();
 
             bais.close();
             ois.close();
@@ -89,7 +89,7 @@ public class ProducerInfoTest {
 
         assertNotNull(result);
 
-        assertEquals(result, pi);
+        assertEquals(result, si);
     }
 
     @Test
@@ -99,17 +99,17 @@ public class ProducerInfoTest {
         prop1.setType(PropertyType.Text);
         props.add(prop1);
 
-        ProducerInfo pi = new ProducerInfo();
-        pi.setProperties(props);
-        pi.setTimestamp(System.currentTimeMillis());
+        SourceInfo si = new SourceInfo();
+        si.setProperties(props);
+        si.setTimestamp(System.currentTimeMillis());
 
-        ProducerInfo result = null;
+        SourceInfo result = null;
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
 
-            oos.writeObject(pi);
+            oos.writeObject(si);
 
             oos.flush();
             oos.close();
@@ -118,7 +118,7 @@ public class ProducerInfoTest {
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             ObjectInputStream ois = new ObjectInputStream(bais);
 
-            result = (ProducerInfo) ois.readObject();
+            result = (SourceInfo) ois.readObject();
 
             bais.close();
             ois.close();
@@ -129,7 +129,7 @@ public class ProducerInfoTest {
 
         assertNotNull(result);
 
-        assertEquals(result, pi);
+        assertEquals(result, si);
     }
 
 }

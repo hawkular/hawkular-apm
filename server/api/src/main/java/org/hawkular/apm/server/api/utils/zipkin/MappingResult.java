@@ -28,7 +28,7 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.events.NodeDetails;
-import org.hawkular.apm.api.model.events.ProducerInfo;
+import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Node;
@@ -57,7 +57,7 @@ public class MappingResult implements Serializable {
      * {@link CommunicationDetails#properties},
      * {@link CompletionTime#properties},
      * {@link NodeDetails#properties},
-     * {@link ProducerInfo#properties}.
+     * {@link SourceInfo#properties}.
      */
     private final List<Property> properties;
 

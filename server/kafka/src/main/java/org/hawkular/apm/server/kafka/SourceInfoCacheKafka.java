@@ -20,40 +20,42 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.services.SourceInfoCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.Processor.ProcessorType;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
+import org.hawkular.apm.server.api.utils.SourceInfoUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author gbrown
  */
-public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
+public class SourceInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
 
-    private static final Logger log = Logger.getLogger(ProducerInfoCacheKafka.class.getName());
+    private static final Logger log = Logger.getLogger(SourceInfoCacheKafka.class.getName());
 
     /** Create a unique group id, to enable each separate instance of this processor to be
      * able to receive all messages stored on the topic (i.e. topic subscriber rather than
      * queue semantics) */
-    private static final String GROUP_ID = "ProducerInfoCache_" + UUID.randomUUID().toString();
+    private static final String GROUP_ID = "SourceInfoCache_" + UUID.randomUUID().toString();
 
     /**  */
     private static final String TOPIC = "Traces";
 
-    private ProducerInfoCache producerInfoCache;
+    private SourceInfoCache sourceInfoCache;
 
-    public ProducerInfoCacheKafka() {
+    public SourceInfoCacheKafka() {
         super(TOPIC, GROUP_ID);
 
-        producerInfoCache = ServiceResolver.getSingletonService(ProducerInfoCache.class);
+        sourceInfoCache = ServiceResolver.getSingletonService(SourceInfoCache.class);
 
-        if (producerInfoCache == null) {
-            log.severe("Producer Info Cache not found - possibly not configured correctly");
+        if (sourceInfoCache == null) {
+            log.severe("Source Info Cache not found - possibly not configured correctly");
         } else {
             setTypeReference(new TypeReference<Trace>() {
             });
@@ -63,7 +65,13 @@ public class ProducerInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
                 @Override
                 public List<Void> processManyToMany(String tenantId, List<Trace> items)
                         throws RetryAttemptException {
-                    ProducerInfoUtil.initialise(tenantId, items, producerInfoCache);
+                    List<SourceInfo> sourceInfoList = SourceInfoUtil.getSourceInfo(tenantId, items);
+
+                    try {
+                        sourceInfoCache.store(tenantId, sourceInfoList);
+                    } catch (CacheException e) {
+                        throw new RetryAttemptException(e);
+                    }
                     return null;
                 }
             });

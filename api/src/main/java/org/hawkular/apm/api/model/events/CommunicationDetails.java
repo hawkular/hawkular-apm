@@ -211,7 +211,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
     /**
      * @param consumerDuration the consumerDuration to set
      */
-    public void setConsumerDuration(long consumerDuration) {
+    public void setTargetDuration(long consumerDuration) {
         this.consumerDuration = consumerDuration;
     }
 
@@ -225,7 +225,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
     /**
      * @param producerDuration the producerDuration to set
      */
-    public void setProducerDuration(long producerDuration) {
+    public void setSourceDuration(long producerDuration) {
         this.producerDuration = producerDuration;
     }
 

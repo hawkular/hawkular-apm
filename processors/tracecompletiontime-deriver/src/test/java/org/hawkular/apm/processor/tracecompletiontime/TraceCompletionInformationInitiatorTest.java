@@ -20,12 +20,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation.Communication;
 import org.junit.Test;
 
 /**
@@ -89,7 +91,8 @@ public class TraceCompletionInformationInitiatorTest {
         }
 
         assertNotNull(ci);
-        assertEquals(0, ci.getCommunications().size());
+        assertEquals(1, ci.getCommunications().size());
+        assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
 
         assertEquals(trace.getId(), ci.getCompletionTime().getId());
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
@@ -127,7 +130,8 @@ public class TraceCompletionInformationInitiatorTest {
         }
 
         assertNotNull(ci);
-        assertEquals(0, ci.getCommunications().size());
+        assertEquals(1, ci.getCommunications().size());
+        assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
 
         assertEquals(trace.getId(), ci.getCompletionTime().getId());
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
@@ -170,11 +174,13 @@ public class TraceCompletionInformationInitiatorTest {
         }
 
         assertNotNull(ci);
-        assertEquals(2, ci.getCommunications().size());
+        assertEquals(5, ci.getCommunications().size());
 
-        assertEquals(1, ci.getCommunications().get(0).getIds().size());
-        assertEquals(1, ci.getCommunications().get(1).getIds().size());
-        assertEquals("p1id", ci.getCommunications().get(0).getIds().get(0));
-        assertEquals("p2id", ci.getCommunications().get(1).getIds().get(0));
+        for (Communication cm : ci.getCommunications()) {
+            assertEquals(1, cm.getIds().size());
+        }
+
+        assertEquals("p1id", ci.getCommunications().get(2).getIds().get(0));
+        assertEquals("p2id", ci.getCommunications().get(4).getIds().get(0));
     }
 }

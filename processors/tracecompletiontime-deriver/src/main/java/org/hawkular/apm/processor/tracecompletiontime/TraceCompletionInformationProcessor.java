@@ -94,11 +94,26 @@ public class TraceCompletionInformationProcessor extends
                         log.finest("Completion info " + item + ": communication expired = " + c);
                     }
 
+                    // If related to a Pub/Sub (multiple consumer) situation, then need to wait
+                    // until the expiration time, to ensure all possible consumer details are
+                    // located
+                    if (c.isMultipleConsumers()) {
+                        for (int j = 0; j < c.getIds().size(); j++) {
+                            List<CommunicationDetails> cds = communicationDetailsCache.getById(tenantId,
+                                    c.getIds().get(j));
+                            for (int k = 0; k < cds.size(); k++) {
+                                processCommunication(tenantId, item, c, cds.get(k));
+                            }
+                        }
+                    }
+
                     // Remove communication from remaining list to process
                     item.getCommunications().remove(i);
                     i--;
 
                 } else if (!c.isMultipleConsumers()) {
+                    // Point to Point communications dealt with as soon as the details are available
+
                     // Find communication details for communication id
                     CommunicationDetails cd = null;
 
@@ -114,44 +129,12 @@ public class TraceCompletionInformationProcessor extends
                     }
 
                     if (cd != null) {
-                        long targetFragmentBaseDuration = c.getBaseDuration() + cd.getLatency();
-
-                        // Check if target fragment duration increases overall time
-                        long durationWithTargetFragment = targetFragmentBaseDuration + cd.getTargetFragmentDuration();
-
-                        if (durationWithTargetFragment > item.getCompletionTime().getDuration()) {
-                            item.getCompletionTime().setDuration(durationWithTargetFragment);
-                        }
-
-                        // Merge properties
-                        if (!cd.getProperties().isEmpty()) {
-                            item.getCompletionTime().getProperties().addAll(cd.getProperties());
-                        }
-
-                        // Add any outbound comms from target
-                        for (int j = 0; j < cd.getOutbound().size(); j++) {
-                            CommunicationDetails.Outbound ob = cd.getOutbound().get(j);
-                            Communication newc = new Communication();
-                            newc.setIds(ob.getIds());
-                            newc.setMultipleConsumers(ob.isMultiConsumer());
-                            newc.setBaseDuration(targetFragmentBaseDuration + ob.getProducerOffset());
-                            newc.setExpire(System.currentTimeMillis()
-                                    + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
-
-                            if (log.isLoggable(Level.FINEST)) {
-                                log.finest("Completion info " + item + ": new communication = " + newc);
-                            }
-
-                            item.getCommunications().add(newc);
-                        }
+                        processCommunication(tenantId, item, c, cd);
 
                         // Remove communication from remaining list to process
                         item.getCommunications().remove(i);
                         i--;
                     }
-                } else {
-                    // TODO: HWKBTM-356 Deal with multiple consumers - query
-                    // for interaction id
                 }
             }
 
@@ -169,4 +152,41 @@ public class TraceCompletionInformationProcessor extends
         return null;
     }
 
+    protected void processCommunication(String tenantId, TraceCompletionInformation item,
+            Communication c, CommunicationDetails cd) {
+        long targetFragmentBaseDuration = c.getBaseDuration() + cd.getLatency();
+
+        // Check if target fragment duration increases overall time
+        long durationWithTargetFragment = targetFragmentBaseDuration + cd.getTargetFragmentDuration();
+
+        if (durationWithTargetFragment > item.getCompletionTime().getDuration()) {
+            item.getCompletionTime().setDuration(durationWithTargetFragment);
+        }
+
+        // Merge properties
+        if (!cd.getProperties().isEmpty()) {
+            item.getCompletionTime().getProperties().addAll(cd.getProperties());
+        }
+
+        // Add any outbound comms from target
+        for (int j = 0; j < cd.getOutbound().size(); j++) {
+            CommunicationDetails.Outbound ob = cd.getOutbound().get(j);
+            Communication newc = new Communication();
+            newc.setIds(ob.getIds());
+            newc.setMultipleConsumers(ob.isMultiConsumer());
+            newc.setBaseDuration(targetFragmentBaseDuration + ob.getProducerOffset());
+
+            // TODO: Need to derive expiration based on knowledge about the time
+            // different between the source and target linked fragments being
+            // reported
+            newc.setExpire(System.currentTimeMillis()
+                    + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Completion info " + item + ": new communication = " + newc);
+            }
+
+            item.getCommunications().add(newc);
+        }
+    }
 }

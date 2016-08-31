@@ -24,13 +24,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.api.model.events.ProducerInfo;
+import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -50,14 +51,15 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testInitialise() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
+        deriver.setSourceInfoCache(cache);
 
         List<Trace> traces = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
+        trace1.setId("trace1");
         trace1.setStartTime(System.currentTimeMillis());
 
         traces.add(trace1);
@@ -88,23 +90,20 @@ public class CommunicationDetailsDeriverTest {
             fail("Failed: "+e);
         }
 
-        assertNotNull(deriver.getProducerInfoCache().get(null, "pid1"));
-        assertNull(deriver.getProducerInfoCache().get(null, "cid1"));
+        assertNotNull(deriver.getSourceInfoCache().get(null, "pid1"));
+        assertNull(deriver.getSourceInfoCache().get(null, "cid1"));
     }
 
     @Test
     public void testInitialiseClientFragment() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
-
-        List<Trace> traces = new ArrayList<Trace>();
+        deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
+        trace1.setId("trace1");
         trace1.setStartTime(System.currentTimeMillis());
-
-        traces.add(trace1);
 
         Component c1 = new Component();
         trace1.getNodes().add(c1);
@@ -132,38 +131,35 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p2);
 
         try {
-            deriver.initialise(null, traces);
+            deriver.initialise(null, Collections.singletonList(trace1));
         } catch (RetryAttemptException e) {
             fail("Failed: "+e);
         }
 
-        ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
-        ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
+        SourceInfo si1 = deriver.getSourceInfoCache().get(null, "pid1");
+        SourceInfo si2 = deriver.getSourceInfoCache().get(null, "pid2");
 
-        assertNotNull(pi1);
-        assertNotNull(pi2);
+        assertNotNull(si1);
+        assertNotNull(si2);
 
-        assertEquals(Constants.URI_CLIENT_PREFIX + "p1", pi1.getSourceUri());
+        assertEquals(Constants.URI_CLIENT_PREFIX + "p1", si1.getFragmentUri());
 
-        // Check that producer info 2 has same origin URI as p1, as they
+        // Check that source info 2 has same origin URI as p1, as they
         // are from the same fragment (without a consumer) so are being identified
         // as a client of the first producer URI found (see HWKBTM-353).
-        assertEquals(Constants.URI_CLIENT_PREFIX + "p1", pi2.getSourceUri());
+        assertEquals(Constants.URI_CLIENT_PREFIX + "p1", si2.getFragmentUri());
     }
 
     @Test
     public void testInitialiseServerFragment() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
-
-        List<Trace> traces = new ArrayList<Trace>();
+        deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
+        trace1.setId("trace1");
         trace1.setStartTime(System.currentTimeMillis());
-
-        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("consumerURI");
@@ -192,27 +188,27 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p2);
 
         try {
-            deriver.initialise(null, traces);
+            deriver.initialise(null, Collections.singletonList(trace1));
         } catch (RetryAttemptException e) {
             fail("Failed: "+e);
         }
 
-        ProducerInfo pi1 = deriver.getProducerInfoCache().get(null, "pid1");
-        ProducerInfo pi2 = deriver.getProducerInfoCache().get(null, "pid2");
+        SourceInfo si1 = deriver.getSourceInfoCache().get(null, "pid1");
+        SourceInfo si2 = deriver.getSourceInfoCache().get(null, "pid2");
 
-        assertNotNull(pi1);
-        assertNotNull(pi2);
+        assertNotNull(si1);
+        assertNotNull(si2);
 
-        assertEquals("consumerURI", pi1.getSourceUri());
-        assertEquals("consumerURI", pi2.getSourceUri());
+        assertEquals("consumerURI", si1.getFragmentUri());
+        assertEquals("consumerURI", si2.getFragmentUri());
     }
 
     @Test
     public void testProcessSingleNoProducer() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
+        deriver.setSourceInfoCache(cache);
 
         List<Trace> traces = new ArrayList<Trace>();
 
@@ -246,17 +242,13 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingle() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
-
-        List<Trace> traces1 = new ArrayList<Trace>();
+        deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
         trace1.setStartTime(1000000);
-
-        traces1.add(trace1);
 
         trace1.setBusinessTransaction(BTXN_NAME);
         trace1.setId("trace1");
@@ -287,12 +279,8 @@ public class CommunicationDetailsDeriverTest {
 
         c1.getNodes().add(p1);
 
-        List<Trace> traces2 = new ArrayList<Trace>();
-
         Trace trace2 = new Trace();
         trace2.setStartTime(2000000);
-
-        traces2.add(trace2);
 
         trace2.setBusinessTransaction(BTXN_NAME);
         trace2.setId("trace2");
@@ -314,8 +302,8 @@ public class CommunicationDetailsDeriverTest {
 
         CommunicationDetails details = null;
         try {
-            deriver.initialise(null, traces1);
-            deriver.initialise(null, traces2);
+            deriver.initialise(null, Collections.singletonList(trace1));
+            deriver.initialise(null, Collections.singletonList(trace2));
             details = deriver.processOneToOne(null, trace2);
         } catch (Exception e) {
             fail("Failed to process: " + e);
@@ -352,10 +340,10 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingleMultiConsumer() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
+        deriver.setSourceInfoCache(cache);
 
         List<Trace> traces1 = new ArrayList<Trace>();
 
@@ -433,10 +421,10 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSingleWithClient() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
+        deriver.setSourceInfoCache(cache);
 
         List<Trace> traces1 = new ArrayList<Trace>();
 
@@ -516,10 +504,10 @@ public class CommunicationDetailsDeriverTest {
 
     @Test
     public void testProcessSinglePropertyNullValue() {
-        TestProducerInfoCache cache=new TestProducerInfoCache();
+        TestSourceInfoCache cache=new TestSourceInfoCache();
 
         CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
-        deriver.setProducerInfoCache(cache);
+        deriver.setSourceInfoCache(cache);
 
         List<Trace> traces1 = new ArrayList<Trace>();
 
@@ -596,6 +584,98 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(details.hasProperty("prop2"));
         assertEquals(1, details.getProperties("prop2").size());
         assertNull(details.getProperties("prop2").iterator().next().getValue());
+    }
+
+    @Test
+    public void testProcessSingleCausedBy() {
+        TestSourceInfoCache cache=new TestSourceInfoCache();
+
+        CommunicationDetailsDeriver deriver = new CommunicationDetailsDeriver();
+        deriver.setSourceInfoCache(cache);
+
+        Trace trace1 = new Trace();
+        trace1.setStartTime(1000000);
+
+        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setId("trace1");
+        trace1.setHostName("host1");
+        trace1.setHostAddress("addr1");
+        trace1.setPrincipal("p1");
+
+        Consumer c1 = new Consumer();
+        c1.setUri("FirstURI");
+        c1.setBaseTime(0);
+
+        CorrelationIdentifier cid1 = new CorrelationIdentifier();
+        cid1.setScope(Scope.Interaction);
+        cid1.setValue("cid1");
+        c1.getCorrelationIds().add(cid1);
+
+        trace1.getNodes().add(c1);
+
+        Component comp1 = new Component();
+        comp1.setBaseTime(1000000);
+        comp1.setDuration(2000000000);
+        comp1.getProperties().add(new Property("prop1", "value1"));
+
+        c1.getNodes().add(comp1);
+
+        Trace trace2 = new Trace();
+        trace2.setStartTime(2000000);
+
+        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setId("trace2");
+        trace2.setHostName("host2");
+        trace2.setHostAddress("addr2");
+        trace2.setPrincipal("p1");
+
+        Consumer c2 = new Consumer();
+        c2.setUri("SecondURI");
+        c2.setDuration(1200000000);
+        c2.getProperties().add(new Property("prop2", "value2"));
+
+        CorrelationIdentifier cid2 = new CorrelationIdentifier();
+        cid2.setScope(Scope.CausedBy);
+        cid2.setValue("trace1:0:0");
+        c2.getCorrelationIds().add(cid2);
+
+        trace2.getNodes().add(c2);
+
+        CommunicationDetails details = null;
+        try {
+            deriver.initialise(null, Collections.singletonList(trace1));
+            deriver.initialise(null, Collections.singletonList(trace2));
+            details = deriver.processOneToOne(null, trace2);
+        } catch (Exception e) {
+            fail("Failed to process: " + e);
+        }
+
+        assertNotNull(details);
+
+        assertEquals(BTXN_NAME, details.getBusinessTransaction());
+        assertEquals("FirstURI", details.getSource());
+        assertEquals("SecondURI", details.getTarget());
+
+        assertTrue(details.isMultiConsumer());
+
+        assertTrue(c2.getDuration() == details.getConsumerDuration());
+        assertTrue(comp1.getDuration() == details.getProducerDuration());
+        assertTrue(400 == details.getLatency());
+        assertTrue(details.hasProperty("prop1"));
+        assertTrue(details.hasProperty("prop2"));
+        assertEquals("trace1", details.getSourceFragmentId());
+        assertEquals("host1", details.getSourceHostName());
+        assertEquals("addr1", details.getSourceHostAddress());
+        assertEquals("trace2", details.getTargetFragmentId());
+        assertEquals("host2", details.getTargetHostName());
+        assertEquals("addr2", details.getTargetHostAddress());
+        assertEquals("p1", details.getPrincipal());
+
+        long timestamp = trace1.getStartTime() + TimeUnit.MILLISECONDS.convert(comp1.getBaseTime() -
+                c1.getBaseTime(), TimeUnit.NANOSECONDS);
+        assertEquals(timestamp, details.getTimestamp());
+
+        assertEquals(999599, details.getTimestampOffset());
     }
 
 }

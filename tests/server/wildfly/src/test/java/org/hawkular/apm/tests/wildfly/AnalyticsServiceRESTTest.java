@@ -55,7 +55,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -72,32 +71,6 @@ public class AnalyticsServiceRESTTest {
     private static final String TEST_PASSWORD = "password";
     /**  */
     private static final String TEST_USERNAME = "jdoe";
-
-    private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
-            new TypeReference<java.util.List<CompletionTimeseriesStatistics>>() {
-            };
-
-    private static final TypeReference<java.util.List<NodeTimeseriesStatistics>> NODE_TIMESERIES_STATISTICS_LIST =
-            new TypeReference<java.util.List<NodeTimeseriesStatistics>>() {
-            };
-
-    private static final TypeReference<java.util.List<NodeSummaryStatistics>> NODE_SUMMARY_STATISTICS_LIST =
-            new TypeReference<java.util.List<NodeSummaryStatistics>>() {
-            };
-
-    private static final TypeReference<java.util.List<CommunicationSummaryStatistics>> COMMS_SUMMARY_STATISTICS_LIST =
-            new TypeReference<java.util.List<CommunicationSummaryStatistics>>() {
-            };
-
-    private static final TypeReference<java.util.List<String>> STRING_LIST =
-            new TypeReference<java.util.List<String>>() {
-            };
-
-    private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
-            new TypeReference<java.util.List<Cardinality>>() {
-            };
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private static AnalyticsServiceRESTClient analytics;
 
@@ -147,6 +120,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -184,6 +160,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -219,6 +198,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -246,17 +228,20 @@ public class AnalyticsServiceRESTTest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setPrincipal("p1");
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
+        Consumer c1 = new Consumer();
+        trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -300,6 +285,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -309,6 +297,9 @@ public class AnalyticsServiceRESTTest {
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 1);
 
         // Get transaction count
         Long count = analytics.getTraceCompletionCount(null, criteria);
@@ -338,12 +329,18 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria().setStartTime(0).setEndTime(0)).size() == 1);
 
         // Get transaction count
         assertEquals(1, analytics.getTraceCompletionCount(null, new Criteria()
@@ -400,6 +397,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -409,6 +409,9 @@ public class AnalyticsServiceRESTTest {
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 1);
 
         // Get transaction count
         Long count = analytics.getTraceCompletionFaultCount(null, criteria);
@@ -439,12 +442,18 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -489,10 +498,16 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(2, result.size());
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 2);
 
         // Get trace completion times
         Criteria criteria = new Criteria()
@@ -535,12 +550,18 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -574,12 +595,18 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
         assertEquals("1", result.get(0).getId());
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -615,6 +642,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -624,6 +654,9 @@ public class AnalyticsServiceRESTTest {
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 1);
 
         List<Cardinality> cards = analytics.getTraceCompletionFaultDetails(null, criteria);
 
@@ -662,6 +695,9 @@ public class AnalyticsServiceRESTTest {
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -712,6 +748,9 @@ public class AnalyticsServiceRESTTest {
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -771,6 +810,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -819,6 +861,9 @@ public class AnalyticsServiceRESTTest {
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -889,6 +934,9 @@ public class AnalyticsServiceRESTTest {
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -981,6 +1029,9 @@ public class AnalyticsServiceRESTTest {
         // Wait to ensure record persisted, 10 seconds didn't seem enough :/
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2, 15, TimeUnit.SECONDS);
 
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
 
@@ -1030,17 +1081,20 @@ public class AnalyticsServiceRESTTest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         trace1.setHostName("hostA");
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
+        Consumer c1 = new Consumer();
+        trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, traces);
+            publisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -1115,6 +1169,9 @@ public class AnalyticsServiceRESTTest {
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
