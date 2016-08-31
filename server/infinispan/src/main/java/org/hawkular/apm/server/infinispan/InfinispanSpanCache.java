@@ -17,11 +17,12 @@
 
 package org.hawkular.apm.server.infinispan;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,7 @@ import org.infinispan.manager.CacheContainer;
 import org.infinispan.query.Search;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
+import org.jboss.logging.Logger;
 
 /**
  * @author Pavol Loffay
@@ -45,21 +47,26 @@ import org.infinispan.query.dsl.QueryFactory;
 @Singleton
 public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
 
-    private static final Logger log = Logger.getLogger(InfinispanSpanCache.class.getName());
+    private static final Logger log = Logger.getLogger(InfinispanSpanCache.class);
 
-    protected static final String CACHE_NAME = "span";
+    private static final String SPAN_CACHE = "span";
+    private static final String TRACE_CACHE = "spanTrace";
 
     @Resource(lookup = "java:jboss/infinispan/APM")
     private CacheContainer cacheContainer;
 
     private Cache<String, Span> spansCache;
+    /**
+     * key is trace and value set of spans which belongs to supplied trace
+     */
+    private Cache<String, Set<Span>> traceCache;
 
 
-    public InfinispanSpanCache() {
-    }
+    public InfinispanSpanCache() {}
 
-    public InfinispanSpanCache(Cache<String, Span> spanCache) {
+    public InfinispanSpanCache(Cache<String, Span> spanCache, Cache<String, Set<Span>> traceCache) {
         this.spansCache = spanCache;
+        this.traceCache = traceCache;
     }
 
     @Override
@@ -69,20 +76,8 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
             return;
         }
 
-        // If cache container not already provisions, then must be running outside of a JEE
-        // environment, so create a default cache container
-        if (cacheContainer == null) {
-            if (log.isLoggable(Level.FINER)) {
-                log.fine("Using default cache");
-            }
-            spansCache = InfinispanCacheManager.getDefaultCache(CACHE_NAME);
-        } else {
-            if (log.isLoggable(Level.FINER)) {
-                log.fine("Using container provided cache");
-            }
-            spansCache = cacheContainer.getCache(CACHE_NAME);
-        }
-
+        spansCache = createCache(SPAN_CACHE);
+        traceCache = createCache(TRACE_CACHE);
     }
 
     /**
@@ -90,13 +85,8 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
      */
     @Override
     public Span get(String tenantId, String id) {
-
         Span span = spansCache.get(id);
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get span [id=" + id + "] = " + span);
-        }
-
+        log.debugf("Get span [id=%s] = %s", id, span);
         return span;
     }
 
@@ -114,12 +104,18 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
         }
 
         for (Span span : spans) {
-
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("Store span [id=" + span.getId() + "]: " + span);
-            }
+            log.debugf("Store span [%s]" + span);
 
             spansCache.put(cacheKeyEntrySupplier.apply(span), span, 1, TimeUnit.MINUTES);
+
+            if (span.getTraceId() != null) {
+                Set<Span> trace = traceCache.get(span.getTraceId());
+                if (trace == null) {
+                    trace = new HashSet<>();
+                }
+                trace.add(span);
+                traceCache.put(span.getTraceId(), trace);
+            }
         }
 
         if (cacheContainer != null) {
@@ -145,5 +141,26 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
         return query.<Span>list().stream()
                 .filter(span -> !span.serverSpan())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<Span> getTrace(String tenant, String id) {
+        if (id == null) {
+            throw new NullPointerException("Id should not be null!");
+        }
+
+        Set<Span> trace = traceCache.get(id);
+
+        return trace == null ? null : Collections.unmodifiableSet(trace);
+    }
+
+    private <K, V> Cache<K, V> createCache(String name) {
+        Function<String, Cache<K, V>> creator = cacheContainer == null ?
+                InfinispanCacheManager::getDefaultCache :
+                cacheContainer::getCache;
+
+        log.debugf("Using %s cache manager, for %s cache", cacheContainer == null ? "default" : "container", name);
+
+        return creator.apply(name);
     }
 }

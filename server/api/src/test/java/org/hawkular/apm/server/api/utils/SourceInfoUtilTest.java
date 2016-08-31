@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.hawkular.apm.api.model.Constants;
@@ -293,6 +294,11 @@ public class SourceInfoUtilTest {
          */
         @Override
         public List<Span> getChildren(String tenant, String id) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Set<Span> getTrace(String tenant, String id) {
             throw new UnsupportedOperationException();
         }
 

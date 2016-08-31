@@ -33,24 +33,30 @@ public class CompletionTimeUtil {
 
     private CompletionTimeUtil() {}
 
-    public static CompletionTime spanToCompletionTime(Span item) {
+    /**
+     * Convert span to CompletionTime object
+     *
+     * @param span the span
+     * @return completion time derived from the supplied span
+     */
+    public static CompletionTime spanToCompletionTime(Span span) {
         CompletionTime completionTime = new CompletionTime();
-        completionTime.setId(item.getId());
+        completionTime.setId(span.getId());
 
-        completionTime.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
-        completionTime.setDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
+        completionTime.setTimestamp(TimeUnit.MILLISECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
+        completionTime.setDuration(TimeUnit.MILLISECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
 
-        completionTime.setOperation(SpanDeriverUtil.deriveOperation(item));
-        completionTime.setFault(SpanDeriverUtil.deriveFault(item));
+        completionTime.setOperation(SpanDeriverUtil.deriveOperation(span));
+        completionTime.setFault(SpanDeriverUtil.deriveFault(span));
 
-        completionTime.setHostAddress(item.ipv4());
-        if (item.service() != null) {
-            completionTime.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
+        completionTime.setHostAddress(span.ipv4());
+        if (span.service() != null) {
+            completionTime.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, span.service()));
         }
 
-        URL url = item.url();
+        URL url = span.url();
         if (url != null) {
-            String clientPrefix = item.clientSpan() ? Constants.URI_CLIENT_PREFIX : "";
+            String clientPrefix = span.clientSpan() ? Constants.URI_CLIENT_PREFIX : "";
 
             completionTime.setUri(clientPrefix + url.getPath());
             completionTime.setEndpointType(url.getProtocol() == null ? null : url.getProtocol().toUpperCase());
@@ -58,7 +64,7 @@ public class CompletionTimeUtil {
             completionTime.setEndpointType("Unknown");
         }
 
-        completionTime.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
+        completionTime.getProperties().addAll(span.binaryAnnotationMapping().getProperties());
 
         return completionTime;
     }

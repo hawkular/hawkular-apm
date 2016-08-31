@@ -16,45 +16,35 @@
  */
 package org.hawkular.apm.processor.zipkin;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.jboss.logging.Logger;
 
 /**
- * This class represents the zipkin trace completion time deriver.
+ * This class initiates deriving completion tine from zipkin spans.
  *
  * @author gbrown
+ * @author Pavol Loffay
  */
-public class TraceCompletionTimeDeriver extends AbstractProcessor<Span, CompletionTime> {
+public class CompletionTimeDeriverInitiator extends AbstractProcessor<Span, CompletionTimeProcessing> {
 
-    private static final Logger log = Logger.getLogger(TraceCompletionTimeDeriver.class.getName());
+    private static final Logger log = Logger.getLogger(CompletionTimeDeriverInitiator.class);
 
-    /**
-     * The default constructor.
-     */
-    public TraceCompletionTimeDeriver() {
+
+    public CompletionTimeDeriverInitiator() {
         super(ProcessorType.OneToOne);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
-     */
     @Override
-    public CompletionTime processOneToOne(String tenantId, Span item) throws RetryAttemptException {
+    public CompletionTimeProcessing processOneToOne(String tenantId, Span span) throws RetryAttemptException {
 
-        if (item.topLevelSpan()) {
+        if (span.topLevelSpan()) {
 
-            CompletionTime ct = CompletionTimeUtil.spanToCompletionTime(item);
+            log.debugf("Initiating deriving of trace completion time of span[%s]", span);
 
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("TraceCompletionTimeDeriver span=" + item + " completion time=" + ct);
-            }
-
-            return ct;
+            return new CompletionTimeProcessing(span);
         }
 
         return null;

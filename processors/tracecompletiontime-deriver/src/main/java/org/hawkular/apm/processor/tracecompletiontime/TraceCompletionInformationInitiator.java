@@ -16,7 +16,6 @@
  */
 package org.hawkular.apm.processor.tracecompletiontime;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,15 +93,6 @@ public class TraceCompletionInformationInitiator extends
             log.finest("No completion information initiated for trace fragment = " + item);
         }
 
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.String,java.lang.Object)
-     */
-    @Override
-    public List<TraceCompletionInformation> processOneToMany(String tenantId,
-            Trace item) throws RetryAttemptException {
         return null;
     }
 }

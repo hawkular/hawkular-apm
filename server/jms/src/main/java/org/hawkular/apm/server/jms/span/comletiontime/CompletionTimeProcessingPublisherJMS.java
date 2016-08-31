@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.server.infinispan;
+package org.hawkular.apm.server.jms.span.comletiontime;
 
-import org.infinispan.configuration.cache.Configuration;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.manager.DefaultCacheManager;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.hawkular.apm.processor.zipkin.CompletionTimeProcessing;
+import org.hawkular.apm.processor.zipkin.CompletionTimeProcessingPublisher;
+import org.hawkular.apm.server.jms.AbstractPublisherJMS;
 
 /**
  * @author Pavol Loffay
  */
-public abstract class AbstractInfinispanTest {
+public class CompletionTimeProcessingPublisherJMS extends AbstractPublisherJMS<CompletionTimeProcessing>
+        implements CompletionTimeProcessingPublisher {
 
-    protected static DefaultCacheManager cacheManager;
-
-    @BeforeClass
-    public static void initClass() {
-        Configuration configuration = new ConfigurationBuilder().invocationBatching().enable().build();
-        cacheManager = new DefaultCacheManager(configuration);
-    }
-
-    @AfterClass
-    public static void voidDestroyClass() {
-        cacheManager.stop();
+    @Override
+    protected String getDestinationURI() {
+        return "java:/SpanTraceCompletionTimeProcessing";
     }
 }
