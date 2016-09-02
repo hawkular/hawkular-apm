@@ -125,8 +125,8 @@ module FilterSidebar {
         scope.$watch('selPropName', (newValue, oldValue) => {
           if (newValue && newValue !== oldValue) {
             scope.propertyValues = [];
-            let propVal = this.$http.post('/hawkular/apm/analytics/trace/completion/property/' + newValue.name,
-              this.$rootScope.sbFilter.criteria);
+            let propVal = this.$http.get('/hawkular/apm/analytics/trace/completion/property/' + newValue.name +
+              '?criteria=' + encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria)));
             propVal.then((resp) => {
               scope.propertyValues = resp.data;
             });
@@ -145,7 +145,8 @@ module FilterSidebar {
       }
 
       if (scope.fsb.showHosts) {
-        this.$http.post('/hawkular/apm/analytics/hostnames', this.$rootScope.sbFilter.criteria).then((resp) => {
+        this.$http.get('/hawkular/apm/analytics/hostnames?criteria=' +
+            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.hostNames = resp.data || [];
         }, (error) => {
           console.log('Failed to get host names: ' + JSON.stringify(error));
@@ -153,7 +154,8 @@ module FilterSidebar {
       }
 
       if (scope.fsb.showProps) {
-        this.$http.post('/hawkular/apm/analytics/properties', this.$rootScope.sbFilter.criteria).then((resp) => {
+        this.$http.get('/hawkular/apm/analytics/properties?criteria=' +
+            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.properties = resp.data || [];
         }, (error) => {
             console.log('Failed to get properties: ' + JSON.stringify(error));
@@ -161,8 +163,8 @@ module FilterSidebar {
       }
 
       if (scope.fsb.showFaults) {
-        this.$http.post('/hawkular/apm/analytics/trace/completion/faults',
-            this.$rootScope.sbFilter.criteria).then((resp) => {
+        this.$http.get('/hawkular/apm/analytics/trace/completion/faults?criteria=' +
+            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.faults = resp.data || [];
         }, (error) => {
             console.log('Failed to get faults: ' + JSON.stringify(error));
