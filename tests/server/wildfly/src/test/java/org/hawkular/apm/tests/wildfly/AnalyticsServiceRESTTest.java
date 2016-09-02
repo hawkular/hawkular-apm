@@ -18,18 +18,13 @@ package org.hawkular.apm.tests.wildfly;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -80,27 +75,27 @@ public class AnalyticsServiceRESTTest {
 
     private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
             new TypeReference<java.util.List<CompletionTimeseriesStatistics>>() {
-    };
+            };
 
     private static final TypeReference<java.util.List<NodeTimeseriesStatistics>> NODE_TIMESERIES_STATISTICS_LIST =
             new TypeReference<java.util.List<NodeTimeseriesStatistics>>() {
-    };
+            };
 
     private static final TypeReference<java.util.List<NodeSummaryStatistics>> NODE_SUMMARY_STATISTICS_LIST =
             new TypeReference<java.util.List<NodeSummaryStatistics>>() {
-    };
+            };
 
     private static final TypeReference<java.util.List<CommunicationSummaryStatistics>> COMMS_SUMMARY_STATISTICS_LIST =
             new TypeReference<java.util.List<CommunicationSummaryStatistics>>() {
-    };
+            };
 
     private static final TypeReference<java.util.List<String>> STRING_LIST =
             new TypeReference<java.util.List<String>>() {
-    };
+            };
 
     private static final TypeReference<java.util.List<Cardinality>> CARDINALITY_LIST =
             new TypeReference<java.util.List<Cardinality>>() {
-    };
+            };
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -232,9 +227,9 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("trace1")
-            .setStartTime(0)
-            .setEndTime(0);
+                .setBusinessTransaction("trace1")
+                .setStartTime(0)
+                .setEndTime(0);
 
         List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
 
@@ -271,9 +266,9 @@ public class AnalyticsServiceRESTTest {
         assertEquals("1", result.get(0).getId());
 
         Criteria criteria=new Criteria()
-            .setBusinessTransaction("trace1")
-            .setStartTime(0)
-            .setEndTime(0);
+                .setBusinessTransaction("trace1")
+                .setStartTime(0)
+                .setEndTime(0);
 
         List<PrincipalInfo> pis = analytics.getPrincipalInfo(null, criteria);
 
@@ -555,60 +550,6 @@ public class AnalyticsServiceRESTTest {
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
-
-        // Get transaction count
-        List<CompletionTimeseriesStatistics> statsPOST = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/statistics?interval=1000");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)
-                    .setStartTime(0).setEndTime(0)));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                statsPOST = mapper.readValue(builder.toString(), COMPLETION_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send statistics request: " + e);
-        }
-
-        assertNotNull(statsPOST);
-        assertEquals(1, statsPOST.size());
     }
 
     @Test
@@ -625,7 +566,7 @@ public class AnalyticsServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Arrays.asList(trace1));
+            publisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -644,88 +585,6 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1");
-
-        assertNotNull(cards);
-        assertEquals(1, cards.size());
-    }
-
-    @Test
-    public void testGetCompletionPropertyDetailsPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        c1.getProperties().add(new Property("prop1", "value1"));
-        trace1.getNodes().add(c1);
-
-        try {
-            publisher.publish(null, Arrays.asList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
-
-        List<Cardinality> cards = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/property/prop1");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                cards = mapper.readValue(builder.toString(), CARDINALITY_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send property details request: " + e);
-        }
 
         assertNotNull(cards);
         assertEquals(1, cards.size());
@@ -767,91 +626,6 @@ public class AnalyticsServiceRESTTest {
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analytics.getTraceCompletionFaultDetails(null, criteria);
-
-        assertNotNull(cards);
-        assertEquals(1, cards.size());
-    }
-
-    @Test
-    public void testGetCompletionFaultDetailsPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        c1.setFault("fault1");
-        trace1.getNodes().add(c1);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
-
-        List<Cardinality> cards = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/trace/completion/faults");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria().setBusinessTransaction(TESTAPP)));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                cards = mapper.readValue(builder.toString(), CARDINALITY_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send fault details request: " + e);
-        }
 
         assertNotNull(cards);
         assertEquals(1, cards.size());
@@ -901,99 +675,6 @@ public class AnalyticsServiceRESTTest {
 
         // Get transaction count
         List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria, 1000);
-
-        assertNotNull(stats);
-        assertEquals(1, stats.size());
-    }
-
-    @Test
-    public void testGetNodeTimeseriesStatisticsPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        c1.setEndpointType("HTTP");
-        trace1.getNodes().add(c1);
-
-        Component comp1 = new Component();
-        comp1.setComponentType("Database");
-        comp1.setUri("jdbc:h2:hello");
-        comp1.setOperation("query");
-        comp1.setDuration(600000);
-        c1.getNodes().add(comp1);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
-
-        // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/node/statistics?interval=1000");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria()));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), NODE_TIMESERIES_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send node timeseries statistics request: " + e);
-        }
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
@@ -1059,151 +740,6 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetNodeTimeseriesStatisticsPOSTHostName() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.setHostName("hostA");
-
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        c1.setEndpointType("HTTP");
-        trace1.getNodes().add(c1);
-
-        Component comp1 = new Component();
-        comp1.setComponentType("Database");
-        comp1.setUri("jdbc:h2:hello");
-        comp1.setOperation("query");
-        comp1.setDuration(600000);
-        c1.getNodes().add(comp1);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
-
-        // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/node/statistics?interval=1000");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria().setHostName("hostA")));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), NODE_TIMESERIES_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send node timeseries statistics request: " + e);
-        }
-
-        assertNotNull(stats);
-        assertEquals(1, stats.size());
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/node/statistics?interval=1000");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria().setHostName("hostB")));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            assertEquals(200, connection.getResponseCode());
-
-            stats = mapper.readValue(builder.toString(), NODE_TIMESERIES_STATISTICS_LIST);
-
-        } catch (Exception e) {
-            fail("Failed to send node timeseries statistics request: " + e);
-        }
-
-        assertNotNull(stats);
-        assertEquals(0, stats.size());
-    }
-
-    @Test
     public void testGetNodeSummaryStatistics() {
         Trace trace1 = new Trace();
         trace1.setId("1");
@@ -1246,99 +782,6 @@ public class AnalyticsServiceRESTTest {
         criteria.setStartTime(0).setEndTime(0);
 
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
-
-        assertNotNull(stats);
-        assertEquals(2, stats.size());
-    }
-
-    @Test
-    public void testGetNodeSummaryStatisticsPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        c1.setEndpointType("HTTP");
-        trace1.getNodes().add(c1);
-
-        Component comp1 = new Component();
-        comp1.setComponentType("Database");
-        comp1.setUri("jdbc:h2:hello");
-        comp1.setOperation("query");
-        comp1.setDuration(600000);
-        c1.getNodes().add(comp1);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
-
-        // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/node/summary");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria()));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), NODE_SUMMARY_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send node summary statistics request: " + e);
-        }
 
         assertNotNull(stats);
         assertEquals(2, stats.size());
@@ -1402,154 +845,6 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetNodeSummaryStatisticsPOSTHostName() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.setHostName("hostA");
-
-        Consumer c1 = new Consumer();
-        c1.setUri("testuri");
-        c1.setDuration(1000000);
-        c1.setEndpointType("HTTP");
-        trace1.getNodes().add(c1);
-
-        Component comp1 = new Component();
-        comp1.setComponentType("Database");
-        comp1.setUri("jdbc:h2:hello");
-        comp1.setOperation("query");
-        comp1.setDuration(600000);
-        c1.getNodes().add(comp1);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/node/summary");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            Criteria criteria = new Criteria();
-            criteria.setHostName("hostA");
-
-            os.write(mapper.writeValueAsBytes(criteria));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), NODE_SUMMARY_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send node summary statistics request: " + e);
-        }
-
-        assertNotNull(stats);
-        assertEquals(2, stats.size());
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/node/summary");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            Criteria criteria = new Criteria();
-            criteria.setHostName("hostB");
-
-            os.write(mapper.writeValueAsBytes(criteria));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), NODE_SUMMARY_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send node summary statistics request: " + e);
-        }
-
-        assertNotNull(stats);
-        assertEquals(0, stats.size());
-    }
-
-    @Test
     public void testGetCommunicationSummaryStatisticsFlat() {
         Trace trace1 = new Trace();
         trace1.setId("1");
@@ -1604,7 +899,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setStartTime(0).setEndTime(0);
 
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
-                                    criteria, false);
+                criteria, false);
 
         assertNotNull(stats);
         assertEquals(2, stats.size());
@@ -1695,7 +990,7 @@ public class AnalyticsServiceRESTTest {
         criteria.setStartTime(0).setEndTime(0);
 
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
-                                    criteria, true);
+                criteria, true);
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
@@ -1725,146 +1020,6 @@ public class AnalyticsServiceRESTTest {
         assertEquals(first.getOutbound().keySet().iterator().next(), second.getId());
         assertEquals("originuri", first.getId());
         assertEquals("testuri", second.getId());
-    }
-
-    @Test
-    public void testGetCommunicationSummaryStatisticsPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-
-        Consumer c1 = new Consumer();
-        c1.setUri("originuri");
-        c1.setEndpointType("endpoint");
-        c1.setDuration(1200000);
-
-        Producer p1 = new Producer();
-        p1.setUri("testuri");
-        p1.setEndpointType("endpoint");
-        p1.setDuration(1000000);
-        p1.addInteractionCorrelationId("interaction1");
-        c1.getNodes().add(p1);
-
-        trace1.getNodes().add(c1);
-
-        Trace trace2 = new Trace();
-        trace2.setId("2");
-        trace2.setBusinessTransaction(TESTAPP);
-        trace2.setStartTime(System.currentTimeMillis() - 3000); // Within last hour
-
-        Consumer c2 = new Consumer();
-        c2.setUri("testuri");
-        c2.setEndpointType("endpoint");
-        c2.setDuration(500000);
-        c2.addInteractionCorrelationId("interaction1");
-        trace2.getNodes().add(c2);
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-        traces.add(trace2);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(2, result.size());
-
-        // Get transaction count
-        List<CommunicationSummaryStatistics> stats = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/communication/summary");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(new Criteria()));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                stats = mapper.readValue(builder.toString(), COMMS_SUMMARY_STATISTICS_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send node summary statistics request: " + e);
-        }
-
-        assertNotNull(stats);
-        assertEquals(2, stats.size());
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        try {
-            System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        CommunicationSummaryStatistics first = null;
-        CommunicationSummaryStatistics second = null;
-
-        for (CommunicationSummaryStatistics css : stats) {
-            if (css.getId().equals("originuri")) {
-                first = css;
-            } else if (css.getId().equals("testuri")) {
-                second = css;
-            } else {
-                fail("Unknown uri: " + css.getId());
-            }
-        }
-
-        assertNotNull(first);
-        assertNotNull(second);
-
-        assertEquals("originuri", first.getUri());
-        assertNull(first.getOperation());
-        assertEquals("testuri", second.getUri());
-        assertNull(second.getOperation());
-
-        assertEquals(1, first.getOutbound().size());
-        assertEquals(0, second.getOutbound().size());
-
-        assertEquals(first.getOutbound().keySet().iterator().next(), second.getId());
     }
 
     @Test
@@ -1902,88 +1057,6 @@ public class AnalyticsServiceRESTTest {
         assertNotNull(hosts);
         assertEquals(1, hosts.size());
         assertTrue(hosts.contains("hostA"));
-    }
-
-    @Test
-    public void testGetHostNamesPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-        trace1.setHostName("hostA");
-
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        // Get transaction count
-        List<String> hosts = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/analytics/hostnames");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            Criteria criteria = new Criteria();
-
-            os.write(mapper.writeValueAsBytes(criteria));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                hosts = mapper.readValue(builder.toString(), STRING_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send host names request: " + e);
-        }
-
-        assertNotNull(hosts);
-        assertEquals(1, hosts.size());
-        assertEquals("hostA", hosts.get(0));
     }
 
     @Test
