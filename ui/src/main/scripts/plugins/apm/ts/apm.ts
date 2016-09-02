@@ -75,8 +75,9 @@ module APM {
     $scope.reloadData = function() {
       $rootScope.updateCriteriaTimeSpan();
 
-      $http.post('/hawkular/apm/analytics/node/statistics?interval=' +
-        $scope.config.interval, $rootScope.sbFilter.criteria).then(function(resp) {
+      $http.get('/hawkular/apm/analytics/node/statistics?interval=' +
+        $scope.config.interval + '&criteria=' + encodeURI(JSON.stringify($rootScope.sbFilter.criteria)))
+          .then(function(resp) {
 
         // get all component keys
         let components = {};
@@ -123,7 +124,8 @@ module APM {
         console.log('Failed to get node timeseries statistics: ' + JSON.stringify(resp));
       });
 
-      $http.post('/hawkular/apm/analytics/node/summary', $rootScope.sbFilter.criteria).then(function(resp) {
+      $http.get('/hawkular/apm/analytics/node/summary?criteria=' +
+          encodeURI(JSON.stringify($rootScope.sbFilter.criteria))).then(function(resp) {
         $scope.summaries = resp.data;
 
         $scope.max = 0;

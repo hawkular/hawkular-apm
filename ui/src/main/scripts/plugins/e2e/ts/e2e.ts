@@ -28,8 +28,8 @@ module E2E {
 
       $rootScope.updateCriteriaTimeSpan();
 
-      let commPromise = $http.post('/hawkular/apm/analytics/communication/summary?tree=true',
-                                   $rootScope.sbFilter.criteria);
+      let commPromise = $http.get('/hawkular/apm/analytics/communication/summary?tree=true&criteria=' +
+                                   encodeURI(JSON.stringify($rootScope.sbFilter.criteria)));
       commPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.findTopLevels();
@@ -55,7 +55,7 @@ module E2E {
         localCriteria.operation = $scope.operations[nodeIndex];
       }
 
-      $http.post('/hawkular/apm/analytics/trace/completion/count', localCriteria).
+      $http.get('/hawkular/apm/analytics/trace/completion/count?criteria=' + encodeURI(JSON.stringify(localCriteria))).
         then((resp) => {
         $scope.instanceCount = resp.data || 0;
       }, (error) => {
@@ -132,8 +132,8 @@ module E2E {
         localCriteria.operation = operations[nodeIndex];
       }
 
-      let instDetails = $http.post('/hawkular/apm/analytics/trace/completion/times',
-                                   localCriteria);
+      let instDetails = $http.get('/hawkular/apm/analytics/trace/completion/times?criteria=' +
+                                   encodeURI(JSON.stringify(localCriteria)));
 
       instDetails.then(function(resp) {
         $scope.timesData = resp.data;
