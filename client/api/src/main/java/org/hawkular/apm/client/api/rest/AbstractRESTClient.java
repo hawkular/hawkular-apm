@@ -16,11 +16,28 @@
  */
 package org.hawkular.apm.client.api.rest;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Base64;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.hawkular.apm.api.logging.Logger;
+import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.ServiceStatus;
 import org.hawkular.apm.api.utils.PropertyUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides the abstract based class for REST client implementations.
@@ -28,8 +45,9 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  * @author gbrown
  */
 public class AbstractRESTClient implements ServiceStatus {
-
+    private static final Logger log = Logger.getLogger(AbstractRESTClient.class.getName());
     private static final String HAWKULAR_TENANT = "Hawkular-Tenant";
+    protected static final ObjectMapper mapper = new ObjectMapper();
 
     private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
     private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
@@ -134,4 +152,166 @@ public class AbstractRESTClient implements ServiceStatus {
         }
     }
 
+    public URL getUrl(String path, Object... args) {
+        return getUrl(String.format(path, args));
+    }
+
+    public URL getUrl(String path) {
+        try {
+            return new URL(getUri() + "hawkular/apm/" + path);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T> T withContext(String tenantId, URL url, Function<HttpURLConnection, T> function) {
+        HttpURLConnection connection = null;
+        try {
+            connection = getConnectionForGetRequest(tenantId, url);
+            return function.apply(connection);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    public <T> T getResultsForUrl(String tenantId, TypeReference<T> typeReference, String path, Object... parameters) {
+        return withContext(tenantId, getUrl(path, parameters), (connection) -> parseResultsIntoJson(connection, typeReference));
+    }
+
+    public <T> T parseResultsIntoJson(HttpURLConnection connection, TypeReference<T> typeReference) {
+        try {
+            String response = getResponse(connection);
+            if (connection.getResponseCode() == 200) {
+                if (log.isLoggable(Logger.Level.FINEST)) {
+                    log.finest("Returned json=[" + response + "]");
+                }
+                if (!response.trim().isEmpty()) {
+                    try {
+                        return mapper.readValue(response, typeReference);
+                    } catch (Throwable t) {
+                        log.log(Logger.Level.SEVERE, "Failed to deserialize", t);
+                    }
+                }
+            } else {
+                if (log.isLoggable(Logger.Level.FINEST)) {
+                    log.finest("Failed to get results: status=["
+                            + connection.getResponseCode() + "]:"
+                            + connection.getResponseMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Logger.Level.SEVERE, "Failed to get results", e);
+        }
+        return null;
+    }
+
+    public <T> T getResultsForUrl(String tenantId, TypeReference<T> typeReference, String path, Criteria criteria) {
+        return getResultsForUrl(tenantId, typeReference, path, encodedCriteria(criteria));
+    }
+    public <T> T getResultsForUrl(String tenantId, TypeReference<T> typeReference, String path, Criteria criteria, Object arg) {
+        return getResultsForUrl(tenantId, typeReference, path, encodedCriteria(criteria), arg);
+    }
+
+    public String encodedCriteria(Criteria criteria) {
+        try {
+            return URLEncoder.encode(mapper.writeValueAsString(criteria), "UTF-8");
+        } catch (UnsupportedEncodingException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HttpURLConnection getConnectionForGetRequest(String tenantId, URL url) throws IOException {
+        return getConnectionForRequest(tenantId, url, "GET");
+    }
+
+    public HttpURLConnection getConnectionForRequest(String tenantId, URL url, String method) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setRequestMethod(method);
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        addHeaders(connection, tenantId);
+        return connection;
+    }
+
+    public String getResponse(HttpURLConnection connection) throws IOException {
+        InputStream is = connection.getInputStream();
+        String response;
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(is))) {
+            response = buffer.lines().collect(Collectors.joining("\n"));
+        }
+        return response;
+    }
+
+    public int postAsJsonTo(String tenantId, String path, Object toSerialize) {
+        URL url = getUrl(path);
+        return withJsonPayloadAndResults("POST", tenantId, url, toSerialize, (connection) -> {
+            try {
+                return connection.getResponseCode();
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.log(Logger.Level.SEVERE, String.format("Failed to post to [%s]", url), e);
+            }
+            return 0;
+        });
+    }
+
+    public <T> T withJsonPayloadAndResults(String method, String tenantId, URL url, Object toSerialize, Function<HttpURLConnection, T> function) {
+        return withContext(tenantId, url, (connection) -> {
+            try {
+                connection.setRequestMethod(method);
+
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setUseCaches(false);
+                connection.setAllowUserInteraction(false);
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                OutputStream os = connection.getOutputStream();
+                os.write(mapper.writeValueAsBytes(toSerialize));
+                os.flush();
+                os.close();
+
+                return function.apply(connection);
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.log(Logger.Level.SEVERE, String.format("Failed to post to [%s]", url), e);
+            }
+            return null;
+        });
+    }
+
+    public void clear(String tenantId, String path) {
+        if (log.isLoggable(Logger.Level.FINEST)) {
+            log.finest(String.format("Clear service at path [%s] for tenant [%s]", path, tenantId));
+        }
+
+        URL url = getUrl(path);
+        withContext(tenantId, url, (connection) -> {
+            try {
+                connection.setRequestMethod("DELETE");
+                if (connection.getResponseCode() == 200) {
+                    if (log.isLoggable(Logger.Level.FINEST)) {
+                        log.finest(String.format("Service at [%s] cleared", path));
+                    }
+                } else {
+                    if (log.isLoggable(Logger.Level.FINEST)) {
+                        log.warning("Failed to clear analytics: status=["
+                                + connection.getResponseCode() + "]:"
+                                + connection.getResponseMessage());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.log(Logger.Level.SEVERE, String.format("Failed to send 'clear' request to service [%s]", path), e);
+            }
+            return null;
+        });
+    }
 }

@@ -16,14 +16,12 @@
  */
 package org.hawkular.apm.config.service.rest.client;
 
-import java.net.HttpURLConnection;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
-import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
@@ -34,7 +32,6 @@ import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides the REST client implementation for the Configuration Service
@@ -43,21 +40,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author gbrown
  */
 public class ConfigurationServiceRESTClient extends AbstractRESTClient implements ConfigurationService {
-
     private static final Logger log = Logger.getLogger(ConfigurationServiceRESTClient.class.getName());
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final TypeReference<java.util.List<BusinessTxnSummary>> BTXN_SUMMARY_LIST =
-            new TypeReference<java.util.List<BusinessTxnSummary>>() {
+    private static final TypeReference<CollectorConfiguration> COLLECTOR_CONFIGURATION_TYPE_REFERENCE = new TypeReference<CollectorConfiguration>() {
     };
-
-    private static final TypeReference<java.util.Map<String, BusinessTxnConfig>> BUSINESS_TXN_MAP =
-            new TypeReference<java.util.Map<String, BusinessTxnConfig>>() {
+    private static final TypeReference<BusinessTxnConfig> BUSINESS_TXN_CONFIG_TYPE_REFERENCE = new TypeReference<BusinessTxnConfig>() {
     };
-
-    private static final TypeReference<java.util.List<ConfigMessage>> CONFIG_MESSAGE_LIST =
-            new TypeReference<java.util.List<ConfigMessage>>() {
+    private static final TypeReference<List<BusinessTxnSummary>> BTXN_SUMMARY_LIST = new TypeReference<List<BusinessTxnSummary>>() {
+    };
+    private static final TypeReference<Map<String, BusinessTxnConfig>> BUSINESS_TXN_MAP = new TypeReference<Map<String, BusinessTxnConfig>>() {
+    };
+    private static final TypeReference<List<ConfigMessage>> CONFIG_MESSAGE_LIST = new TypeReference<List<ConfigMessage>>() {
     };
 
     public ConfigurationServiceRESTClient() {
@@ -70,115 +63,37 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get collector configuration: tenantId=[" + tenantId + "] type=[" + type + "] host=[" + host
-                    + "] server=[" + server + "]");
-        }
 
-        // Check if configuration provided locally
         if (PropertyUtil.getProperty(ConfigurationLoader.HAWKULAR_APM_CONFIG) != null) {
             CollectorConfiguration ret = ConfigurationLoader.getConfiguration(type);
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 try {
-                    log.finest("Collector configuration [local] = " + (ret == null ? null :
-                                    mapper.writeValueAsString(ret)));
+                    log.finest("Collector configuration [local] = " + (ret == null ? null : mapper.writeValueAsString(ret)));
                 } catch (Throwable t) {
-                    log.finest("Collector configuration [local]: failed to serialize as json: "+t);
+                    log.finest("Collector configuration [local]: failed to serialize as json: " + t);
                 }
             }
             return ret;
         }
 
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return null;
         }
 
-        StringBuilder builder = new StringBuilder().append(getUri()).append("hawkular/apm/config/collector");
-
-        if (host != null) {
-            builder.append("?host=");
-            builder.append(host);
+        StringBuilder parametersBuilder = new StringBuilder();
+        if (null != type) parametersBuilder.append("type=").append(type).append("&");
+        if (null != host) parametersBuilder.append("host=").append(host).append("&");
+        if (null != server) parametersBuilder.append("server=").append(server).append("&");
+        String parameters = parametersBuilder.toString();
+        if (parameters.length() > 0) {
+            parameters = parameters.substring(0, parameters.length()-1);
         }
 
-        if (server != null) {
-            if (host == null) {
-                builder.append('?');
-            } else {
-                builder.append('&');
-            }
-            builder.append("server=");
-            builder.append(server);
-        }
-
-        if (type != null) {
-            if (host == null && server == null) {
-                builder.append('?');
-            } else {
-                builder.append('&');
-            }
-            builder.append("type=");
-            builder.append(type);
-        }
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                try {
-                    CollectorConfiguration ret = mapper.readValue(resp.toString(), CollectorConfiguration.class);
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Collector configuration [remote] = " + (ret == null ? null :
-                                        mapper.writeValueAsString(ret)));
-                    }
-                    return ret;
-                } catch (Throwable t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get collector configuration: status=[" + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, "Failed to send 'get' collector configuration request", e);
-            }
-        }
-
-        return null;
+        String url = "config/collector?" + parameters;
+        return getResultsForUrl(tenantId, COLLECTOR_CONFIGURATION_TYPE_REFERENCE, url);
     }
 
     /* (non-Javadoc)
@@ -187,163 +102,27 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set busioess transaction configuration: tenantId=[" + tenantId + "] name=[" + name
-                    + "] config=[" + config + "]");
-        }
-
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/config/businesstxn/full/")
-                .append(name);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("PUT");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(config));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Set business transaction [" + name + "] configuration: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                log.severe("Failed to set business transaction [" + name + "] configuration: status=["
-                        + connection.getResponseCode() + "]:"
-                        + connection.getResponseMessage());
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to set business transaction  [" + name + "] configuration", e);
-        }
-
-        return Collections.emptyList();
+        return withJsonPayloadAndResults(
+                "PUT",
+                tenantId,
+                getUrl("config/businesstxn/full/%s", name),
+                config,
+                (connection) -> parseResultsIntoJson(connection, CONFIG_MESSAGE_LIST)
+        );
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
      */
     @Override
-    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
-            throws Exception {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set busioess transaction configurations: tenantId=[" + tenantId
-                    + "] configs=[" + configs + "]");
-        }
-
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/config/businesstxn/full");
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(configs));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Set business transaction configurations: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                log.severe("Failed to set business transaction configurations: status=["
-                        + connection.getResponseCode() + "]:"
-                        + connection.getResponseMessage());
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to set business transaction configurations", e);
-        }
-
-        return Collections.emptyList();
+    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs) {
+        return withJsonPayloadAndResults(
+                "POST",
+                tenantId,
+                getUrl("config/businesstxn/full"),
+                configs,
+                (connection) -> parseResultsIntoJson(connection, CONFIG_MESSAGE_LIST)
+        );
     }
 
     /* (non-Javadoc)
@@ -352,86 +131,20 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Validate busioess transaction configuration: config=[" + config + "]");
-        }
-
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return null;
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/config/businesstxn/validate");
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, null);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(config));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Validate business transaction configuration: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), CONFIG_MESSAGE_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                log.severe("Failed to validate business transaction configuration: status=["
-                        + connection.getResponseCode() + "]:"
-                        + connection.getResponseMessage());
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to validate business transaction configuration", e);
-        }
-
-        return Collections.emptyList();
+        return withJsonPayloadAndResults(
+                "POST",
+                null,
+                getUrl("config/businesstxn/validate"),
+                config,
+                (connection) -> parseResultsIntoJson(connection, CONFIG_MESSAGE_LIST)
+        );
     }
 
     /* (non-Javadoc)
@@ -440,78 +153,15 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction configuration: tenantId=[" + tenantId + "] name=["
-                    + name + "]");
-        }
-
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return null;
         }
 
-        StringBuilder builder = new StringBuilder()
-            .append(getUri())
-            .append("hawkular/apm/config/businesstxn/full/")
-            .append(name);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), BusinessTxnConfig.class);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get business transaction [" + name + "] configuration: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get business transaction [" + name + "] configuration", e);
-        }
-
-        return null;
+        String url = "config/businesstxn/full/%s";
+        return getResultsForUrl(tenantId, BUSINESS_TXN_CONFIG_TYPE_REFERENCE, url, name);
     }
 
     /* (non-Javadoc)
@@ -519,76 +169,15 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction summaries: tenantId=[" + tenantId + "]");
-        }
-
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return null;
         }
 
-        StringBuilder builder = new StringBuilder()
-            .append(getUri())
-            .append("hawkular/apm/config/businesstxn/summary");
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), BTXN_SUMMARY_LIST);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get business transaction summaries: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to get business transaction summaries", e);
-        }
-
-        return null;
+        String url = "config/businesstxn/summary";
+        return getResultsForUrl(tenantId, BTXN_SUMMARY_LIST, url);
     }
 
     /* (non-Javadoc)
@@ -596,80 +185,15 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction configurations: tenantId=[" + tenantId
-                    + "] updated=[" + updated + "]");
-        }
-
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return null;
         }
 
-        StringBuilder builder = new StringBuilder()
-            .append(getUri())
-            .append("hawkular/apm/config/businesstxn/full?updated=")
-            .append(updated);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            StringBuilder resp = new StringBuilder();
-            byte[] b = new byte[10000];
-
-            while (true) {
-                int len = is.read(b);
-
-                if (len == -1) {
-                    break;
-                }
-
-                resp.append(new String(b, 0, len));
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + resp.toString() + "]");
-                }
-                if (!resp.toString().trim().isEmpty()) {
-                    try {
-                        return mapper.readValue(resp.toString(), BUSINESS_TXN_MAP);
-                    } catch (Throwable t) {
-                        log.log(Level.SEVERE, "Failed to deserialize", t);
-                    }
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get business transaction configurations: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, "Failed to get business transaction configurations", e);
-            }
-        }
-
-        return null;
+        String url = "config/businesstxn/full?updated=%d";
+        return getResultsForUrl(tenantId, BUSINESS_TXN_MAP, url, updated);
     }
 
     /* (non-Javadoc)
@@ -678,48 +202,34 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public void removeBusinessTransaction(String tenantId, String name) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Update busioess transaction configuration: tenantId=[" + tenantId + "] name=["
-                    + name + "]]");
-        }
-
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return;
         }
 
-        StringBuilder builder = new StringBuilder()
-                .append(getUri())
-                .append("hawkular/apm/config/businesstxn/full/")
-                .append(name);
-
-        try {
-            URL url = new URL(builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("DELETE");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            connection.getResponseCode();
-
-            if (log.isLoggable(Level.FINEST)) {
-                log.finest("Remove business transaction [" + name + "] configuration: status=["
-                        + connection.getResponseCode() + "]:"
-                        + connection.getResponseMessage());
+        URL url = getUrl("config/businesstxn/full/%s", name);
+        withContext(tenantId, url, (connection) -> {
+            try {
+                connection.setRequestMethod("DELETE");
+                if (connection.getResponseCode() == 200) {
+                    if (log.isLoggable(Logger.Level.FINEST)) {
+                        log.finest(String.format("Business transaction [%s] removed", name));
+                    }
+                } else {
+                    if (log.isLoggable(Logger.Level.FINEST)) {
+                        log.warning("Failed to remove business transaction: status=["
+                                + connection.getResponseCode() + "]:"
+                                + connection.getResponseMessage());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.log(Logger.Level.SEVERE, String.format("Failed to remove business transaction [%s]", name), e);
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to remove business transaction  [" + name + "] configuration", e);
-        }
+            return null;
+        });
     }
 
     /* (non-Javadoc)
@@ -727,46 +237,13 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
      */
     @Override
     public void clear(String tenantId) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Clear business transaction configurations: tenantId=[" + tenantId + "]");
-        }
-
         if (!isAvailable()) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
             }
             return;
         }
 
-        try {
-            URL url = new URL(new StringBuilder().append(getUri()).append("hawkular/apm/config").toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("DELETE");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Business transaction configs cleared");
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to clear business transaction configurations: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to send 'clear' business transaction config request", e);
-        }
+        clear(tenantId, "config");
     }
-
 }

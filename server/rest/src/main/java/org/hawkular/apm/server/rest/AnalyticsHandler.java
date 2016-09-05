@@ -20,10 +20,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
 
 import javax.inject.Inject;
 import javax.ws.rs.BeanParam;
@@ -41,8 +38,6 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.services.AnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
-import org.hawkular.apm.server.api.security.SecurityProvider;
-import org.hawkular.apm.server.api.security.SecurityProviderException;
 import org.hawkular.apm.server.rest.entity.BoundEndpointsRequest;
 import org.hawkular.apm.server.rest.entity.CriteriaRequest;
 import org.hawkular.apm.server.rest.entity.IntervalCriteriaRequest;
@@ -66,11 +61,8 @@ import io.swagger.annotations.ApiResponses;
 @Path("analytics")
 @Produces(APPLICATION_JSON)
 @Api(value = "analytics", description = "Analytics")
-public class AnalyticsHandler {
+public class AnalyticsHandler extends BaseHandler {
     private static final Logger log = Logger.getLogger(AnalyticsHandler.class);
-
-    @Inject
-    SecurityProvider securityProvider;
 
     @Inject
     AnalyticsService analyticsService;
@@ -313,53 +305,9 @@ public class AnalyticsHandler {
     @DELETE
     @Path("/")
     public Response clear(@BeanParam TenantRequest request) {
-        return withErrorHandler(() -> {
-            if (System.getProperties().containsKey("hawkular-apm.testmode")) {
-                analyticsService.clear(getTenant(request));
-                return Response
-                        .status(Response.Status.OK)
-                        .type(APPLICATION_JSON_TYPE)
-                        .build();
-            } else {
-                return Response
-                        .status(Response.Status.FORBIDDEN)
-                        .type(APPLICATION_JSON_TYPE)
-                        .build();
-            }
-        });
-    }
-
-    private Response withErrorHandler(Callable<Response> callable) {
-        try {
-            return callable.call();
-        } catch (Throwable t) {
-            log.debug(t.getMessage(), t);
-            return Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Collections.singletonMap("errorMsg", "Internal Error: " + t.getMessage()))
-                    .type(APPLICATION_JSON_TYPE)
-                    .build();
-        }
-    }
-
-    private String getTenant(TenantRequest request) throws SecurityProviderException {
-        return securityProvider.validate(request.getTenantId(), request.getContext().getUserPrincipal().getName());
-    }
-
-    private <T> Response withCriteria(CriteriaRequest request, BiFunction<Criteria, String, T> function) {
-        return withErrorHandler(() -> {
-            String tenant = getTenant(request);
-            Criteria criteria = request.toCriteria();
-            log.tracef("Get results for criteria [%s]", criteria);
-            T entity = function.apply(request.toCriteria(), tenant);
-            log.tracef("Got results for criteria [%s] = %s", criteria, entity);
-
-            return Response
-                    .status(Response.Status.OK)
-                    .entity(entity)
-                    .type(APPLICATION_JSON_TYPE)
-                    .build();
-
+        return clearRequest(() -> {
+            analyticsService.clear(getTenant(request));
+            return null;
         });
     }
 }

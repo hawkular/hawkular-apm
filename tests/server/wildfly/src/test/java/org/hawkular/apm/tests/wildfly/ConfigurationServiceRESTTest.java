@@ -70,7 +70,21 @@ public class ConfigurationServiceRESTTest {
     }
 
     @Test
-    public void testGetCollectorConfiguration() {
+    public void testGetJvmCollectorConfiguration() {
+        try {
+            CollectorConfiguration cc = service.getCollector(null, "jvm", null, null);
+
+            assertNotNull(cc);
+
+            assertNotEquals(0, cc.getInstrumentation().size());
+
+        } catch (Exception e1) {
+            fail("Failed to get configuration: " + e1);
+        }
+    }
+
+    @Test
+    public void testGetDefaultCollectorConfiguration() {
         try {
             CollectorConfiguration cc = service.getCollector(null, null, null, null);
 

@@ -19,34 +19,26 @@ package org.hawkular.apm.server.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
-import org.hawkular.apm.server.api.security.SecurityProvider;
+import org.hawkular.apm.server.rest.entity.CriteriaRequest;
+import org.hawkular.apm.server.rest.entity.GetByIdRequest;
+import org.hawkular.apm.server.rest.entity.TenantRequest;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -65,17 +57,12 @@ import io.swagger.annotations.ApiResponses;
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Api(value = "traces", description = "Report/Query trace fragments")
-public class TraceHandler {
-
+public class TraceHandler extends BaseHandler {
     private static final Logger log = Logger.getLogger(TraceHandler.class);
-
-    @Inject
-    SecurityProvider securityProvider;
+    TracePublisher tracePublisher;
 
     @Inject
     TraceService traceService;
-
-    TracePublisher tracePublisher;
 
     @PostConstruct
     public void init() {
@@ -91,220 +78,87 @@ public class TraceHandler {
     @ApiOperation(value = "Add a list of trace fragments")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Adding traces succeeded."),
-            @ApiResponse(code = 500, message =
-                    "Unexpected error happened while storing the trace fragments") })
-    public void addTraces(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response,
-            @ApiParam(value = "List of traces", required = true) List<Trace> traces) {
-
-        try {
-            tracePublisher.publish(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), traces);
-
-            response.resume(Response.status(Response.Status.OK).build());
-
-        } catch (Throwable t) {
-            log.debug(t.getMessage(), t);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + t.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
+            @ApiResponse(code = 500, message = "Unexpected error happened while storing the trace fragments") })
+    public Response addTraces(@BeanParam TenantRequest request,
+                              @ApiParam(value = "List of traces", required = true) List<Trace> traces) {
+        return withErrorHandler(() -> {
+            tracePublisher.publish(getTenant(request), traces);
+            return Response.status(Response.Status.OK).build();
+        });
     }
 
     @GET
     @Path("fragments/{id}")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Retrieve trace fragment for specified id",
-            response = Trace.class)
+    @ApiOperation(value = "Retrieve trace fragment for specified id", response = Trace.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success, trace found and returned"),
             @ApiResponse(code = 500, message = "Internal server error"),
             @ApiResponse(code = 404, message = "Unknown fragment id") })
-    public void getFragment(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response,
-            @ApiParam(required = true, value = "id of required trace fragment") @PathParam("id") String id) {
-
-        try {
-            Trace trace = traceService.getFragment(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
-                    id);
+    public Response getFragment(@BeanParam GetByIdRequest request) {
+        return withErrorHandler(() -> {
+            Trace trace = traceService.getFragment(getTenant(request), request.getId());
 
             if (trace == null) {
-                log.tracef("Trace fragment '" + id + "' not found");
-                response.resume(Response.status(Response.Status.NOT_FOUND).type(APPLICATION_JSON_TYPE).build());
+                log.tracef("Trace fragment [%s] not found", request.getId());
+                return Response
+                        .status(Response.Status.NOT_FOUND)
+                        .type(APPLICATION_JSON_TYPE)
+                        .build();
             } else {
-                log.tracef("Trace fragment '" + id + "' found");
-                response.resume(Response.status(Response.Status.OK).entity(trace).type(APPLICATION_JSON_TYPE)
-                        .build());
+                log.tracef("Trace fragment [%s] found", request.getId());
+                return Response
+                        .status(Response.Status.OK)
+                        .entity(trace)
+                        .type(APPLICATION_JSON_TYPE)
+                        .build();
             }
-        } catch (Throwable e) {
-            log.debug(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
-
+        });
     }
 
     @GET
     @Path("complete/{id}")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Retrieve end to end trace for specified id",
-            response = Trace.class)
+    @ApiOperation(value = "Retrieve end to end trace for specified id", response = Trace.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success, trace found and returned"),
             @ApiResponse(code = 500, message = "Internal server error"),
             @ApiResponse(code = 404, message = "Unknown trace id") })
-    public void getTrace(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response,
-            @ApiParam(required = true, value = "id of required trace") @PathParam("id") String id) {
-
-        try {
-            Trace trace = traceService.getTrace(securityProvider.validate(tenantId, context.getUserPrincipal().getName()),
-                    id);
+    public Response getTrace(@BeanParam GetByIdRequest request) {
+        return withErrorHandler(() -> {
+            Trace trace = traceService.getTrace(getTenant(request), request.getId());
 
             if (trace == null) {
-                log.tracef("Trace '" + id + "' not found");
-                response.resume(Response.status(Response.Status.NOT_FOUND).type(APPLICATION_JSON_TYPE).build());
+                log.tracef("Trace [%s] not found", request.getId());
+                return Response
+                        .status(Response.Status.NOT_FOUND)
+                        .type(APPLICATION_JSON_TYPE)
+                        .build();
             } else {
-                log.tracef("Trace '" + id + "' found");
-                response.resume(Response.status(Response.Status.OK).entity(trace).type(APPLICATION_JSON_TYPE)
-                        .build());
+                log.tracef("Trace [%s] found", request.getId());
+                return Response
+                        .status(Response.Status.OK)
+                        .entity(trace)
+                        .type(APPLICATION_JSON_TYPE)
+                        .build();
             }
-        } catch (Throwable e) {
-            log.debug(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
-
+        });
     }
 
     @GET
     @Path("fragments/search")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Query trace fragments associated with criteria",
-            response = Trace.class)
+    @ApiOperation(value = "Query trace fragments associated with criteria", response = Trace.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public void queryFragments(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response,
-            @ApiParam(required = false,
-                    value = "trace name") @QueryParam("businessTransaction") String businessTransaction,
-            @ApiParam(required = false,
-            value = "retrieve traces after this time,"
-                    + " millisecond since epoch") @DefaultValue("0") @QueryParam("startTime") long startTime,
-            @ApiParam(required = false,
-                    value = "retrieve traces before this time, "
-                            + "millisecond since epoch") @DefaultValue("0") @QueryParam("endTime") long endTime,
-            @ApiParam(required = false,
-                            value = "retrieve traces with these properties, defined as a comma "
-                                    + "separated list of name|value "
-                                    + "pairs") @DefaultValue("") @QueryParam("properties") String properties,
-            @ApiParam(required = false,
-                      value = "retrieve traces with these correlation identifiers, defined as a comma "
-                                    + "separated list of scope|value "
-                                    + "pairs") @DefaultValue("") @QueryParam("correlations") String correlations) {
-
-        try {
-            Criteria criteria = new Criteria();
-            criteria.setBusinessTransaction(businessTransaction);
-            criteria.setStartTime(startTime);
-            criteria.setEndTime(endTime);
-
-            RESTServiceUtil.decodeProperties(criteria.getProperties(), properties);
-
-            RESTServiceUtil.decodeCorrelationIdentifiers(criteria.getCorrelationIds(), correlations);
-
-            log.tracef("Query trace fragments for criteria [%s]", criteria);
-
-            List<Trace> btxns = traceService.searchFragments(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
-
-            log.tracef("Queried trace fragments for criteria [%s] = %s", criteria, btxns);
-
-            response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
-                    .build());
-
-        } catch (Throwable e) {
-            log.debug(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
-
-    }
-
-    @POST
-    @Path("fragments/search")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Query trace fragments associated with criteria",
-            response = Trace.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 500, message = "Internal server error") })
-    public void queryFragmentsWithCriteria(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response,
-            @ApiParam(required = true,
-                    value = "query criteria") Criteria criteria) {
-
-        try {
-            log.tracef("Query trace fragments for criteria [%s]", criteria);
-
-            List<Trace> btxns = traceService.searchFragments(securityProvider.validate(tenantId, context.getUserPrincipal().getName()), criteria);
-
-            log.tracef("Queried trace fragments for criteria [%s] = %s", criteria, btxns);
-
-            response.resume(Response.status(Response.Status.OK).entity(btxns).type(APPLICATION_JSON_TYPE)
-                    .build());
-
-        } catch (Throwable e) {
-            log.debug(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
-
+    public Response queryFragments(@BeanParam CriteriaRequest request) {
+        return withCriteria(request, (criteria, tenant) -> traceService.searchFragments(tenant, criteria));
     }
 
     @DELETE
     @Path("/")
-    @Produces(APPLICATION_JSON)
-    public void clear(
-            @Context SecurityContext context, @HeaderParam("Hawkular-Tenant") String tenantId,
-            @Suspended final AsyncResponse response) {
-
-        try {
-            if (System.getProperties().containsKey("hawkular-apm.testmode")) {
-                traceService.clear(securityProvider.validate(tenantId, context.getUserPrincipal().getName()));
-
-                response.resume(Response.status(Response.Status.OK).type(APPLICATION_JSON_TYPE)
-                        .build());
-            } else {
-                response.resume(Response.status(Response.Status.FORBIDDEN).type(APPLICATION_JSON_TYPE)
-                        .build());
-            }
-
-        } catch (Throwable e) {
-            log.debug(e.getMessage(), e);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + e.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
-        }
-
+    public Response clear(@BeanParam TenantRequest request) {
+        return clearRequest(() -> {
+            traceService.clear(getTenant(request));
+            return null;
+        });
     }
-
 }

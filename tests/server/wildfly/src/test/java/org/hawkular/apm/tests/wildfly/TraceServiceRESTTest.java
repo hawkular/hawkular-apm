@@ -21,13 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -219,7 +215,7 @@ public class TraceServiceRESTTest {
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
 
-        List<Trace> traces = new ArrayList<Trace>();
+        List<Trace> traces = new ArrayList<>();
         traces.add(trace1);
 
         try {
@@ -248,7 +244,7 @@ public class TraceServiceRESTTest {
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
+        List<Trace> traces = new ArrayList<>();
         traces.add(trace1);
 
         try {
@@ -278,7 +274,7 @@ public class TraceServiceRESTTest {
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
+        List<Trace> traces = new ArrayList<>();
         traces.add(trace1);
 
         try {
@@ -307,7 +303,7 @@ public class TraceServiceRESTTest {
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
+        List<Trace> traces = new ArrayList<>();
         traces.add(trace1);
 
         try {
@@ -337,7 +333,7 @@ public class TraceServiceRESTTest {
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
+        List<Trace> traces = new ArrayList<>();
         traces.add(trace1);
 
         try {
@@ -368,7 +364,7 @@ public class TraceServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Arrays.asList(trace1));
+            publisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -396,7 +392,7 @@ public class TraceServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Arrays.asList(trace1));
+            publisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -415,6 +411,7 @@ public class TraceServiceRESTTest {
 
     @Test
     public void testStoreAndQueryPropertiesExclude() {
+        service.clear(null);
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -424,7 +421,7 @@ public class TraceServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Arrays.asList(trace1));
+            publisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -511,82 +508,5 @@ public class TraceServiceRESTTest {
         List<Trace> result = service.searchFragments(null, criteria);
 
         assertEquals(0, result.size());
-    }
-
-    @Test
-    public void testSearchPOST() {
-        Trace trace1 = new Trace();
-        trace1.setId("1");
-        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
-
-        Consumer c1 = new Consumer();
-        c1.getProperties().add(new Property("hello", "world"));
-        trace1.getNodes().add(c1);
-
-        try {
-            publisher.publish(null, Arrays.asList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
-
-        Wait.until(() -> service.getTrace(null, "1") != null);
-
-        // Query stored trace
-        Criteria criteria = new Criteria();
-        criteria.addProperty("hello", "world", null);
-
-        List<Trace> result = null;
-
-        try {
-            URL url = new URL(service.getUri() + "hawkular/apm/traces/fragments/search");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            String authString = TEST_USERNAME + ":" + TEST_PASSWORD;
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String authorization = "Basic " + encoded;
-
-            connection.setRequestProperty("Authorization", authorization);
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(mapper.writeValueAsBytes(criteria));
-
-            os.flush();
-            os.close();
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                result = mapper.readValue(builder.toString(), TRACE_LIST);
-            }
-        } catch (Exception e) {
-            fail("Failed to send 'query' trace request: " + e);
-        }
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
-
     }
 }

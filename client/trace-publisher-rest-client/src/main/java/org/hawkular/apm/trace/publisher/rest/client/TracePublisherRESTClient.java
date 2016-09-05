@@ -16,9 +16,7 @@
  */
 package org.hawkular.apm.trace.publisher.rest.client;
 
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.time.Clock;
 import java.util.List;
 
 import org.hawkular.apm.api.logging.Logger;
@@ -29,8 +27,6 @@ import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * This class provides the REST client implementation for the Trace Publisher
  * API.
@@ -38,12 +34,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author gbrown
  */
 public class TracePublisherRESTClient extends AbstractRESTClient implements TracePublisher {
-
     private static final Logger log = Logger.getLogger(TracePublisherRESTClient.class.getName());
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     private PublisherMetricHandler<Trace> handler = null;
+    private Clock clock = Clock.systemUTC();
 
     public TracePublisherRESTClient() {
         super(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER);
@@ -62,59 +55,21 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
      */
     @Override
     public void publish(String tenantId, List<Trace> traces) throws Exception {
-
-        URL url = new URL(getUri() + "hawkular/apm/traces/fragments");
-
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Publish traces [tenant=" + tenantId + "][url=" + url + "]: " + traces);
-        }
-
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        connection.setRequestMethod("POST");
-
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setUseCaches(false);
-        connection.setAllowUserInteraction(false);
-        connection.setRequestProperty("Content-Type",
-                "application/json");
-
-        addHeaders(connection, tenantId);
-
-        long startTime = 0;
-        if (handler != null) {
-            startTime = System.currentTimeMillis();
-        }
-
-        java.io.OutputStream os = connection.getOutputStream();
-
-        os.write(mapper.writeValueAsBytes(traces));
-
-        os.flush();
-        os.close();
-
-        int statusCode;
-        try {
-            statusCode = connection.getResponseCode();
-        } catch (ConnectException exception) {
-            log.warning("Could not connect to server at " + connection.getURL());
-            throw exception;
-        }
-
+        long startTime = clock.millis();
+        int statusCode = postAsJsonTo(tenantId, "traces/fragments", traces);
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Status code is: " + statusCode);
         }
 
         if (handler != null) {
-            handler.published(tenantId, traces, (System.currentTimeMillis() - startTime));
+            handler.published(tenantId, traces, (clock.millis() - startTime));
         }
 
         if (statusCode != 200) {
             if (log.isLoggable(Level.FINER)) {
                 log.finer("Failed to publish trace fragments: status=[" + statusCode + "]");
             }
-            throw new Exception(connection.getResponseMessage());
+            throw new Exception("Failed to publish trace fragments: status=[" + statusCode + "]");
         }
     }
 
@@ -122,18 +77,16 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
      * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
      */
     @Override
-    public void publish(String tenantId, List<Trace> items, int retryCount, long delay)
-                            throws Exception {
-        throw new java.lang.UnsupportedOperationException("Cannot set the retry count and delay");
+    public void publish(String tenantId, List<Trace> items, int retryCount, long delay) throws Exception {
+        throw new UnsupportedOperationException("Cannot set the retry count and delay");
     }
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
      */
     @Override
-    public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay)
-            throws Exception {
-        throw new java.lang.UnsupportedOperationException("Cannot retry");
+    public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay) throws Exception {
+        throw new UnsupportedOperationException("Cannot retry");
     }
 
     /* (non-Javadoc)

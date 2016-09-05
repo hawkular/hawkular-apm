@@ -57,6 +57,7 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
 
     @Test
     public void testFileSplitNotParallel() {
+        getApmMockServer().getTraces();
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
 
         for (Trace trace : getApmMockServer().getTraces()) {
