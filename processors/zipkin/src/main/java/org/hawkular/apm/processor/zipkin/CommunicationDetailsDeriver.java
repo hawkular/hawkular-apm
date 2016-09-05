@@ -26,13 +26,13 @@ import javax.inject.Inject;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.api.model.events.ProducerInfo;
+import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
+import org.hawkular.apm.server.api.utils.SourceInfoUtil;
 import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
 
 /**
@@ -88,13 +88,13 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
         // Check if trace has a Consumer top level node with an
         // interaction based correlation id
         if (item.serverSpan()) {
-            ProducerInfo pi = ProducerInfoUtil.getProducerInfo(tenantId, item, spanCache);
-            if (pi != null) {
+            SourceInfo si = SourceInfoUtil.getSourceInfo(tenantId, item, spanCache);
+            if (si != null) {
                 ret = new CommunicationDetails();
                 ret.setId(item.getId());
 
-                ret.setSource(EndpointUtil.encodeEndpoint(pi.getSourceUri(),
-                        pi.getSourceOperation()));
+                ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
+                        si.getFragmentOperation()));
 
                 URL url = item.url();
                 String op = SpanDeriverUtil.deriveOperation(item);
@@ -107,7 +107,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 }
 
                 // Calculate difference in milliseconds
-                long diff = pi.getDuration() - TimeUnit.MILLISECONDS.convert(item.getDuration(),
+                long diff = si.getDuration() - TimeUnit.MILLISECONDS.convert(item.getDuration(),
                         TimeUnit.MICROSECONDS);
                 if (diff > 0) {
                     ret.setLatency(diff / 2);
@@ -117,23 +117,23 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                     }
                 }
 
-                ret.setProducerDuration(pi.getDuration());
-                ret.setConsumerDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
+                ret.setSourceDuration(si.getDuration());
+                ret.setTargetDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
-                ret.setMultiConsumer(pi.isMultipleConsumers());
+                ret.setMultiConsumer(si.isMultipleConsumers());
                 //ret.setInternal(consumer.getEndpointType() == null);
 
                 // Merge properties from consumer and producer
                 ret.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
-                ret.getProperties().addAll(pi.getProperties());
+                ret.getProperties().addAll(si.getProperties());
 
                 if (item.service() != null) {
                     ret.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
                 }
 
-                ret.setSourceFragmentId(pi.getFragmentId());
-                ret.setSourceHostName(pi.getHostName());
-                ret.setSourceHostAddress(pi.getHostAddress());
+                ret.setSourceFragmentId(si.getFragmentId());
+                ret.setSourceHostName(si.getHostName());
+                ret.setSourceHostAddress(si.getHostAddress());
                 ret.setTargetFragmentId(item.getId());
                 //ret.setTargetHostName(item.getHostName());
                 ret.setTargetHostAddress(item.ipv4());
@@ -141,9 +141,9 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
 
                 // HWKBTM-349 Deal with timestamp and offset. Currently
                 // just copying timestamp as-is from producer fragment
-                ret.setTimestamp(pi.getTimestamp());
+                ret.setTimestamp(si.getTimestamp());
 
-                long timestampOffset = item.getTimestamp() - pi.getTimestamp() - ret.getLatency();
+                long timestampOffset = item.getTimestamp() - si.getTimestamp() - ret.getLatency();
 
                 ret.setTimestampOffset(timestampOffset);
             } else {
@@ -151,7 +151,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                     log.finest("WARNING: Producer information not available [id checked = " + item.getId() + "]");
                 }
 
-                // Need to retry, as the producer information is not currently available
+                // Need to retry, as the source information is not currently available
                 throw new RetryAttemptException("Producer information not available [id checked = "
                                         + item.getId() + "]");
             }

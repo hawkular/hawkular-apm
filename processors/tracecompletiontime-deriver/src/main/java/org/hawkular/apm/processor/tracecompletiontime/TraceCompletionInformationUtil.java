@@ -45,13 +45,36 @@ public class TraceCompletionInformationUtil {
      * @param fragmentBaseTime The base time for the fragment (ns)
      * @param n The node
      */
-    public static void initialiseLinks(TraceCompletionInformation ci, long fragmentBaseTime, Node n) {
+    public static void initialiseLinks(TraceCompletionInformation ci, long fragmentBaseTime, Node n,
+            StringBuilder nodeId) {
+        // Add Communication to represent a potential 'CausedBy' link from one or more fragments back to
+        // this node
+        TraceCompletionInformation.Communication c = new TraceCompletionInformation.Communication();
+
+        c.getIds().add(nodeId.toString());
+
+        // Define a a multi-consumer as potentially multiple CausedBy correlations may be created
+        // back to this node
+        c.setMultipleConsumers(true);
+
+        // Calculate the base duration for the communication
+        c.setBaseDuration(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - fragmentBaseTime),
+                TimeUnit.NANOSECONDS));
+
+        c.setExpire(System.currentTimeMillis() + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Adding communication to completion information: ci=" + ci + " comms=" + c);
+        }
+
+        ci.getCommunications().add(c);
+
         if (n.getClass() == Producer.class) {
-            // Get interaction id
+            // Get correlation ids
             List<CorrelationIdentifier> cids = n.findCorrelationIds(Scope.Interaction, Scope.ControlFlow);
 
             if (!cids.isEmpty()) {
-                TraceCompletionInformation.Communication c = new TraceCompletionInformation.Communication();
+                c = new TraceCompletionInformation.Communication();
 
                 for (int i = 0; i < cids.size(); i++) {
                     c.getIds().add(cids.get(i).getValue());
@@ -74,7 +97,13 @@ public class TraceCompletionInformationUtil {
         } else if (n.containerNode()) {
             ContainerNode cn = (ContainerNode) n;
             for (int i = 0; i < cn.getNodes().size(); i++) {
-                initialiseLinks(ci, fragmentBaseTime, cn.getNodes().get(i));
+                int len = nodeId.length();
+                nodeId.append(':');
+                nodeId.append(i);
+                initialiseLinks(ci, fragmentBaseTime, cn.getNodes().get(i), nodeId);
+
+                // Remove this child's specific path, so that next iteration will add a different path number
+                nodeId.delete(len, nodeId.length());
             }
         }
     }

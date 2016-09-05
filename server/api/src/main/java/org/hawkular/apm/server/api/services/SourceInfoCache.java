@@ -16,13 +16,13 @@
  */
 package org.hawkular.apm.server.api.services;
 
-import org.hawkular.apm.api.model.events.ProducerInfo;
+import org.hawkular.apm.api.model.events.SourceInfo;
 
 /**
- * This interface represents a cache for producer info.
+ * This interface represents a cache for source info.
  *
  * @author gbrown
  */
-public interface ProducerInfoCache extends Cache<ProducerInfo> {
+public interface SourceInfoCache extends Cache<SourceInfo> {
 
 }

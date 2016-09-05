@@ -42,7 +42,8 @@ public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanT
     @Before
     public void before() {
         cdc = new InfinispanCommunicationDetailsCache(
-                cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME));
+                cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME),
+                cacheManager.getCache(InfinispanCommunicationDetailsCache.MULTI_CONSUMER_CACHE_NAME));
     }
 
     @After

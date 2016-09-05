@@ -20,31 +20,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.apm.api.model.events.ProducerInfo;
-import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.api.model.events.SourceInfo;
+import org.hawkular.apm.server.api.services.SourceInfoCache;
 
 /**
  * @author gbrown
  */
-public class TestProducerInfoCache implements ProducerInfoCache {
+public class TestSourceInfoCache implements SourceInfoCache {
 
-    private Map<String,ProducerInfo> producerInfoCache = new HashMap<String,ProducerInfo>();
+    private Map<String,SourceInfo> sourceInfoCache = new HashMap<String,SourceInfo>();
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.ProducerInfoCache#get(java.lang.String, java.lang.String)
+     * @see org.hawkular.apm.processor.communicationdetails.SourceInfoCache#get(java.lang.String, java.lang.String)
      */
     @Override
-    public ProducerInfo get(String tenantId, String id) {
-        return producerInfoCache.get(id);
+    public SourceInfo get(String tenantId, String id) {
+        return sourceInfoCache.get(id);
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.ProducerInfoCache#store(java.lang.String, java.util.List)
+     * @see org.hawkular.apm.processor.communicationdetails.SourceInfoCache#store(java.lang.String, java.util.List)
      */
     @Override
-    public void store(String tenantId, List<ProducerInfo> producerInfoList) {
-        for (int i=0; i < producerInfoList.size(); i++) {
-            producerInfoCache.put(producerInfoList.get(i).getId(), producerInfoList.get(i));
+    public void store(String tenantId, List<SourceInfo> sourceInfoList) {
+        for (int i=0; i < sourceInfoList.size(); i++) {
+            SourceInfo si = sourceInfoList.get(i);
+            sourceInfoCache.put(si.getId(), si);
         }
     }
 

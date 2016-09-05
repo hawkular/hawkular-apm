@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.server.jms.trace;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,19 +24,23 @@ import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.server.api.services.ProducerInfoCache;
-import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
+import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.services.SourceInfoCache;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.SourceInfoUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This MDB is provided to populate the ProducerInfoCache with Producer Information derived from the
+ * This MDB is provided to populate the SourceInfoCache with Source Information derived from the
  * received trace fragments. Each clustered APM server node will receive the trace data, so each cache
  * is expected to only be a local cache.
  *
@@ -44,19 +49,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author gbrown
  */
-@MessageDriven(name = "Trace_ProducerInfoCache", messageListenerInterface = MessageListener.class, activationConfig = {
+@MessageDriven(name = "Trace_SourceInfoCache", messageListenerInterface = MessageListener.class, activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "Traces"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
         @ActivationConfigProperty(propertyName = "clientID", propertyValue = "apm-${jboss.node.name}"),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "ProducerInfoCache")
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "SourceInfoCache")
 })
-public class ProducerInfoCacheMDB implements MessageListener {
+public class SourceInfoCacheMDB implements MessageListener {
 
-    private static final Logger log = Logger.getLogger(ProducerInfoCacheMDB.class.getName());
+    private static final Logger log = Logger.getLogger(SourceInfoCacheMDB.class.getName());
 
     @Inject
-    private ProducerInfoCache producerInfoCache;
+    private SourceInfoCache sourceInfoCache;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -79,11 +84,12 @@ public class ProducerInfoCacheMDB implements MessageListener {
 
             List<Trace> items = mapper.readValue(data, typeRef);
 
-            ProducerInfoUtil.initialise(tenantId, items, producerInfoCache);
+            List<SourceInfo> sourceInfoList = SourceInfoUtil.getSourceInfo(tenantId, items);
 
-        } catch (Exception e) {
-            // TODO: Handle nak of JMS message?
-            e.printStackTrace();
+            sourceInfoCache.store(tenantId, sourceInfoList);
+
+        } catch (JMSException | IOException | CacheException | RetryAttemptException e) {
+            log.log(Level.SEVERE, "Failed to handle message", e);
         }
     }
 

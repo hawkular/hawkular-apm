@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
-import org.hawkular.apm.api.model.events.ProducerInfo;
+import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -33,10 +33,11 @@ import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.EndpointUtil;
-import org.hawkular.apm.server.api.services.ProducerInfoCache;
+import org.hawkular.apm.server.api.services.CacheException;
+import org.hawkular.apm.server.api.services.SourceInfoCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
-import org.hawkular.apm.server.api.utils.ProducerInfoUtil;
+import org.hawkular.apm.server.api.utils.SourceInfoUtil;
 
 /**
  * This class represents the communication details deriver.
@@ -48,7 +49,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class.getName());
 
     @Inject
-    private ProducerInfoCache producerInfoCache;
+    private SourceInfoCache sourceInfoCache;
 
     /**
      * The default constructor.
@@ -58,17 +59,17 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     }
 
     /**
-     * @return the producerInfoCache
+     * @return the sourceInfoCache
      */
-    public ProducerInfoCache getProducerInfoCache() {
-        return producerInfoCache;
+    public SourceInfoCache getSourceInfoCache() {
+        return sourceInfoCache;
     }
 
     /**
-     * @param producerInfoCache the producerInfoCache to set
+     * @param sourceInfoCache the sourceInfoCache to set
      */
-    public void setProducerInfoCache(ProducerInfoCache producerInfoCache) {
-        this.producerInfoCache = producerInfoCache;
+    public void setSourceInfoCache(SourceInfoCache sourceInfoCache) {
+        this.sourceInfoCache = sourceInfoCache;
     }
 
     /* (non-Javadoc)
@@ -76,7 +77,13 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
      */
     @Override
     public void initialise(String tenantId, List<Trace> items) throws RetryAttemptException {
-        ProducerInfoUtil.initialise(tenantId, items, producerInfoCache);
+        List<SourceInfo> sourceInfoList = SourceInfoUtil.getSourceInfo(tenantId, items);
+
+        try {
+            sourceInfoCache.store(tenantId, sourceInfoList);
+        } catch (CacheException e) {
+            throw new RetryAttemptException(e);
+        }
     }
 
     /* (non-Javadoc)
@@ -90,29 +97,28 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
             log.finest("Derive communication details for trace fragment: " + item);
         }
 
-        // Check if trace has a Consumer top level node with an
-        // interaction based correlation id
+        // Check if trace has a Consumer top level node with a correlation id
         if (item.getNodes().size() == 1 && item.getNodes().get(0).getClass() == Consumer.class) {
             Consumer consumer = (Consumer) item.getNodes().get(0);
-            List<CorrelationIdentifier> cids = consumer.findCorrelationIds(Scope.Interaction, Scope.ControlFlow);
+            List<CorrelationIdentifier> cids = consumer.getCorrelationIds();
             if (!cids.isEmpty()) {
                 String lastId=null;
 
                 for (int i = 0; ret == null && i < cids.size(); i++) {
                     String id = cids.get(i).getValue();
-                    ProducerInfo pi = producerInfoCache.get(tenantId, id);
-                    if (pi != null) {
+                    SourceInfo si = sourceInfoCache.get(tenantId, id);
+                    if (si != null) {
                         ret = new CommunicationDetails();
                         ret.setId(id);
                         ret.setBusinessTransaction(item.getBusinessTransaction());
 
-                        ret.setSource(EndpointUtil.encodeEndpoint(pi.getSourceUri(),
-                                pi.getSourceOperation()));
+                        ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
+                                si.getFragmentOperation()));
 
                         ret.setTarget(EndpointUtil.encodeEndpoint(consumer.getUri(),
                                 consumer.getOperation()));
 
-                        long diff = TimeUnit.MILLISECONDS.convert(pi.getDuration() - consumer.getDuration(),
+                        long diff = TimeUnit.MILLISECONDS.convert(si.getDuration() - consumer.getDuration(),
                                 TimeUnit.NANOSECONDS);
                         if (diff > 0) {
                             ret.setLatency(diff / 2);
@@ -122,19 +128,19 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                             }
                         }
 
-                        ret.setProducerDuration(pi.getDuration());
-                        ret.setConsumerDuration(consumer.getDuration());
+                        ret.setSourceDuration(si.getDuration());
+                        ret.setTargetDuration(consumer.getDuration());
 
-                        ret.setMultiConsumer(pi.isMultipleConsumers());
+                        ret.setMultiConsumer(si.isMultipleConsumers());
                         ret.setInternal(consumer.getEndpointType() == null);
 
                         // Merge properties from consumer and producer
                         ret.getProperties().addAll(consumer.getProperties());
-                        ret.getProperties().addAll(pi.getProperties());
+                        ret.getProperties().addAll(si.getProperties());
 
-                        ret.setSourceFragmentId(pi.getFragmentId());
-                        ret.setSourceHostName(pi.getHostName());
-                        ret.setSourceHostAddress(pi.getHostAddress());
+                        ret.setSourceFragmentId(si.getFragmentId());
+                        ret.setSourceHostName(si.getHostName());
+                        ret.setSourceHostAddress(si.getHostAddress());
                         ret.setTargetFragmentId(item.getId());
                         ret.setTargetHostName(item.getHostName());
                         ret.setTargetHostAddress(item.getHostAddress());
@@ -143,9 +149,9 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
 
                         // HWKBTM-349 Deal with timestamp and offset. Currently
                         // just copying timestamp as-is from producer fragment
-                        ret.setTimestamp(pi.getTimestamp());
+                        ret.setTimestamp(si.getTimestamp());
 
-                        long timestampOffset = item.getStartTime() - pi.getTimestamp() - ret.getLatency();
+                        long timestampOffset = item.getStartTime() - si.getTimestamp() - ret.getLatency();
 
                         ret.setTimestampOffset(timestampOffset);
 
@@ -160,7 +166,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         log.finest("WARNING: Producer information not available [last id checked = " + lastId + "]");
                     }
 
-                    // Need to retry, as the producer information is not currently available
+                    // Need to retry, as the source information is not currently available
                     throw new RetryAttemptException("Producer information not available [last id checked = "
                                             + lastId + "]");
                 }

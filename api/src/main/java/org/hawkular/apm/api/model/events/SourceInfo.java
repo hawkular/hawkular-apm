@@ -27,18 +27,18 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.utils.SerializationUtil;
 
 /**
- * This class represents information cached about a producer, to enable it to be
+ * This class represents information cached about a source node, to enable it to be
  * correlated to a consumer.
  *
  * @author gbrown
  */
-public class ProducerInfo implements Externalizable, ApmEvent {
+public class SourceInfo implements Externalizable, ApmEvent {
 
     private String id;
 
-    private String sourceUri;
+    private String fragmentUri;
 
-    private String sourceOperation;
+    private String fragmentOperation;
 
     private long timestamp = 0;
 
@@ -55,9 +55,33 @@ public class ProducerInfo implements Externalizable, ApmEvent {
     private Set<Property> properties = new HashSet<Property>();
 
     /**
+     * The default constructor.
+     */
+    public SourceInfo() {
+    }
+
+    /**
+     * The copy constructor.
+     *
+     * Note: This operation just references the same properties, to avoid any
+     * unnecessary object creation and copying.
+     */
+    public SourceInfo(SourceInfo si) {
+        this.id = si.id;
+        this.fragmentUri = si.fragmentUri;
+        this.fragmentOperation = si.fragmentOperation;
+        this.timestamp = si.timestamp;
+        this.duration = si.duration;
+        this.fragmentId = si.fragmentId;
+        this.hostName = si.hostName;
+        this.hostAddress = si.hostAddress;
+        this.multipleConsumers = si.multipleConsumers;
+        this.properties = si.properties;  // Don't copy, just reference
+    }
+
+    /**
      * @return the id
      */
-    @Override
     public String getId() {
         return id;
     }
@@ -70,31 +94,31 @@ public class ProducerInfo implements Externalizable, ApmEvent {
     }
 
     /**
-     * @return the sourceUri
+     * @return the fragmentUri
      */
-    public String getSourceUri() {
-        return sourceUri;
+    public String getFragmentUri() {
+        return fragmentUri;
     }
 
     /**
-     * @param sourceUri the sourceUri to set
+     * @param fragmentUri the fragmentUri to set
      */
-    public void setSourceUri(String sourceUri) {
-        this.sourceUri = sourceUri;
+    public void setFragmentUri(String fragmentUri) {
+        this.fragmentUri = fragmentUri;
     }
 
     /**
-     * @return the sourceOperation
+     * @return the fragmentOperation
      */
-    public String getSourceOperation() {
-        return sourceOperation;
+    public String getFragmentOperation() {
+        return fragmentOperation;
     }
 
     /**
-     * @param sourceOperation the sourceOperation to set
+     * @param fragmentOperation the fragmentOperation to set
      */
-    public void setSourceOperation(String sourceOperation) {
-        this.sourceOperation = sourceOperation;
+    public void setFragmentOperation(String fragmentOperation) {
+        this.fragmentOperation = fragmentOperation;
     }
 
     /**
@@ -233,7 +257,7 @@ public class ProducerInfo implements Externalizable, ApmEvent {
      */
     @Override
     public String toString() {
-        return "ProducerInfo [id=" + id + ", sourceUri=" + sourceUri + ", sourceOperation=" + sourceOperation
+        return "SourceInfo [id=" + id + ", fragmentUri=" + fragmentUri + ", fragmentOperation=" + fragmentOperation
                 + ", timestamp=" + timestamp + ", duration=" + duration + ", fragmentId=" + fragmentId + ", hostName="
                 + hostName + ", hostAddress=" + hostAddress + ", multipleConsumers=" + multipleConsumers
                 + ", properties=" + properties + "]";
@@ -248,13 +272,13 @@ public class ProducerInfo implements Externalizable, ApmEvent {
         int result = 1;
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
+        result = prime * result + ((fragmentOperation == null) ? 0 : fragmentOperation.hashCode());
+        result = prime * result + ((fragmentUri == null) ? 0 : fragmentUri.hashCode());
         result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + (multipleConsumers ? 1231 : 1237);
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
-        result = prime * result + ((sourceOperation == null) ? 0 : sourceOperation.hashCode());
-        result = prime * result + ((sourceUri == null) ? 0 : sourceUri.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
@@ -270,13 +294,23 @@ public class ProducerInfo implements Externalizable, ApmEvent {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ProducerInfo other = (ProducerInfo) obj;
+        SourceInfo other = (SourceInfo) obj;
         if (duration != other.duration)
             return false;
         if (fragmentId == null) {
             if (other.fragmentId != null)
                 return false;
         } else if (!fragmentId.equals(other.fragmentId))
+            return false;
+        if (fragmentOperation == null) {
+            if (other.fragmentOperation != null)
+                return false;
+        } else if (!fragmentOperation.equals(other.fragmentOperation))
+            return false;
+        if (fragmentUri == null) {
+            if (other.fragmentUri != null)
+                return false;
+        } else if (!fragmentUri.equals(other.fragmentUri))
             return false;
         if (hostAddress == null) {
             if (other.hostAddress != null)
@@ -300,16 +334,6 @@ public class ProducerInfo implements Externalizable, ApmEvent {
                 return false;
         } else if (!properties.equals(other.properties))
             return false;
-        if (sourceOperation == null) {
-            if (other.sourceOperation != null)
-                return false;
-        } else if (!sourceOperation.equals(other.sourceOperation))
-            return false;
-        if (sourceUri == null) {
-            if (other.sourceUri != null)
-                return false;
-        } else if (!sourceUri.equals(other.sourceUri))
-            return false;
         if (timestamp != other.timestamp)
             return false;
         return true;
@@ -323,8 +347,8 @@ public class ProducerInfo implements Externalizable, ApmEvent {
         ois.readInt(); // Read version
 
         id = SerializationUtil.deserializeString(ois);
-        sourceUri = SerializationUtil.deserializeString(ois);
-        sourceOperation = SerializationUtil.deserializeString(ois);
+        fragmentUri = SerializationUtil.deserializeString(ois);
+        fragmentOperation = SerializationUtil.deserializeString(ois);
         timestamp = ois.readLong();
         duration = ois.readLong();
         fragmentId = SerializationUtil.deserializeString(ois);
@@ -346,8 +370,8 @@ public class ProducerInfo implements Externalizable, ApmEvent {
         oos.writeInt(1); // Write version
 
         SerializationUtil.serializeString(oos, id);
-        SerializationUtil.serializeString(oos, sourceUri);
-        SerializationUtil.serializeString(oos, sourceOperation);
+        SerializationUtil.serializeString(oos, fragmentUri);
+        SerializationUtil.serializeString(oos, fragmentOperation);
         oos.writeLong(timestamp);
         oos.writeLong(duration);
         SerializationUtil.serializeString(oos, fragmentId);

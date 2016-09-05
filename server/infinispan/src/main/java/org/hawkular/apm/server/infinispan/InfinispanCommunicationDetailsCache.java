@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.infinispan;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -31,9 +33,6 @@ import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.CommunicationDetailsCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
-import org.infinispan.query.Search;
-import org.infinispan.query.dsl.Query;
-import org.infinispan.query.dsl.QueryFactory;
 
 /**
  * This class provides the infinispan based implementation of the communication details cache.
@@ -48,16 +47,22 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
     /**  */
     protected static final String CACHE_NAME = "communicationdetails";
 
+    /**  */
+    protected static final String MULTI_CONSUMER_CACHE_NAME = "communicationdetailsmulticonsumer";
+
     @Resource(lookup = "java:jboss/infinispan/APM")
     private CacheContainer container;
 
     private Cache<String, CommunicationDetails> communicationDetails;
 
+    private Cache<String, List<CommunicationDetails>> communicationDetailsMultiConsumers;
 
     public InfinispanCommunicationDetailsCache() {}
 
-    public InfinispanCommunicationDetailsCache(Cache<String, CommunicationDetails> cache) {
+    public InfinispanCommunicationDetailsCache(Cache<String, CommunicationDetails> cache,
+            Cache<String, List<CommunicationDetails>> multiConsumerCache) {
         this.communicationDetails = cache;
+        this.communicationDetailsMultiConsumers = multiConsumerCache;
     }
 
     @PostConstruct
@@ -73,11 +78,13 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
                 log.fine("Using default cache");
             }
             communicationDetails = InfinispanCacheManager.getDefaultCache(CACHE_NAME);
+            communicationDetailsMultiConsumers = InfinispanCacheManager.getDefaultCache(MULTI_CONSUMER_CACHE_NAME);
         } else {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
             communicationDetails = container.getCache(CACHE_NAME);
+            communicationDetailsMultiConsumers = container.getCache(MULTI_CONSUMER_CACHE_NAME);
         }
     }
 
@@ -104,14 +111,12 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
     public void store(String tenantId, List<CommunicationDetails> details) throws CacheException {
         if (container != null) {
             communicationDetails.startBatch();
+            communicationDetailsMultiConsumers.startBatch();
         }
 
         for (int i = 0; i < details.size(); i++) {
             CommunicationDetails cd = details.get(i);
             String id = cd.getId();
-            if (cd.isMultiConsumer()) {
-                id = cd.getTargetFragmentId();
-            }
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Store communication details [id="+id+"]: "+cd);
@@ -124,11 +129,24 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
             // of the process into a more concise representation which is retained?
             // Or possibly it is not a problem as those short term bits are only
             // created after the long wait anyway.
-            communicationDetails.put(id, cd, 1, TimeUnit.MINUTES);
+
+            if (cd.isMultiConsumer()) {
+                synchronized (communicationDetailsMultiConsumers) {
+                    List<CommunicationDetails> list = communicationDetailsMultiConsumers.get(id);
+                    if (list == null) {
+                        list = new ArrayList<CommunicationDetails>();
+                    }
+                    list.add(cd);
+                    communicationDetailsMultiConsumers.put(id, list, 1, TimeUnit.MINUTES);
+                }
+            } else {
+                communicationDetails.put(id, cd, 1, TimeUnit.MINUTES);
+            }
         }
 
         if (container != null) {
             communicationDetails.endBatch(true);
+            communicationDetailsMultiConsumers.endBatch(true);
         }
     }
 
@@ -138,12 +156,7 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
             throw new NullPointerException("Id should not be null!");
         }
 
-        QueryFactory<?> queryFactory = Search.getQueryFactory(communicationDetails);
-        Query query = queryFactory.from(CommunicationDetails.class)
-                .having("id")
-                .eq(id)
-                .toBuilder().build();
-
-        return query.list();
+        return communicationDetailsMultiConsumers.containsKey(id) ? communicationDetailsMultiConsumers.get(id)
+                : Collections.emptyList();
     }
 }

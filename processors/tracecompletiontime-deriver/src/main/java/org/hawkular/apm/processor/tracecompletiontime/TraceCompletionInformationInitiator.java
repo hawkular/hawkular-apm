@@ -77,7 +77,10 @@ public class TraceCompletionInformationInitiator extends
                 ci.setCompletionTime(ct);
 
                 // Initialise any communications that need to be further processed
-                TraceCompletionInformationUtil.initialiseLinks(ci, n.getBaseTime(), n);
+                StringBuilder nodeId = new StringBuilder(item.getId());
+                nodeId.append(":0");
+
+                TraceCompletionInformationUtil.initialiseLinks(ci, n.getBaseTime(), n, nodeId);
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Creating initial completion time information = " + ci);

@@ -78,7 +78,7 @@ public class TraceCompletionInformation {
     public static class Communication {
 
         /**  */
-        public static final int DEFAULT_EXPIRY_WINDOW = 60000;
+        public static final int DEFAULT_EXPIRY_WINDOW = 4000;
 
         private List<String> ids = new ArrayList<String>();
         private boolean multipleConsumers = false;
