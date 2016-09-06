@@ -385,20 +385,13 @@ public abstract class Node {
 
     /**
      * This method calculates the end time of this node based on the
-     * base time and duration. An end time will only be returned if
-     * the base time has been set.
+     * base time and duration.
      *
      * @return The end time (in nanoseconds), based on base time and duration, or 0 if
      *                  not known
      */
     protected long endTime() {
-        long ret = 0;
-
-        if (baseTime > 0) {
-            ret = baseTime + duration;
-        }
-
-        return ret;
+        return baseTime + duration;
     }
 
     /**
@@ -417,19 +410,12 @@ public abstract class Node {
      * This method calculates the duration when all work initiated by this node
      * has been completed. Where async execution is performed, this could
      * mean the work continues beyond the scope of the node that initiates
-     * the work. This will only be calculated where a base time (in nanoseconds)
-     * has been set.
+     * the work.
      *
      * @return The completed duration (ns)
      */
     protected long completedDuration() {
-        long ret = 0;
-
-        if (baseTime > 0) {
-            ret = overallEndTime() - baseTime;
-        }
-
-        return ret;
+        return overallEndTime() - baseTime;
     }
 
     /**

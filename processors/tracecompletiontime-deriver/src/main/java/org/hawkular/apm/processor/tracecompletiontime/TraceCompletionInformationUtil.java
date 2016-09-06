@@ -44,6 +44,7 @@ public class TraceCompletionInformationUtil {
      * @param ci The information
      * @param fragmentBaseTime The base time for the fragment (ns)
      * @param n The node
+     * @param nodeId The path id for the node
      */
     public static void initialiseLinks(TraceCompletionInformation ci, long fragmentBaseTime, Node n,
             StringBuilder nodeId) {

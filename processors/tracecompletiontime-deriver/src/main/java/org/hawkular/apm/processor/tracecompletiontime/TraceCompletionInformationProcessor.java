@@ -179,8 +179,9 @@ public class TraceCompletionInformationProcessor extends
             // TODO: Need to derive expiration based on knowledge about the time
             // different between the source and target linked fragments being
             // reported
-            newc.setExpire(System.currentTimeMillis()
-                    + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+            long baseTimeStamp = ob.isMultiConsumer() ? cd.getTimestamp() : System.currentTimeMillis();
+            newc.setExpire(baseTimeStamp
+                        + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Completion info " + item + ": new communication = " + newc);
