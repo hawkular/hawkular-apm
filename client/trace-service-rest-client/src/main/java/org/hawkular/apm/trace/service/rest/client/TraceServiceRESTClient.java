@@ -16,16 +16,8 @@
  */
 package org.hawkular.apm.trace.service.rest.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
-import org.hawkular.apm.api.logging.Logger;
-import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
@@ -33,10 +25,7 @@ import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides the REST client implementation for the Trace Service
@@ -45,14 +34,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author gbrown
  */
 public class TraceServiceRESTClient extends AbstractRESTClient implements TraceService {
-
-    private static final Logger log = Logger.getLogger(TraceServiceRESTClient.class.getName());
-
-    private static final TypeReference<java.util.List<Trace>> TRACE_LIST =
-            new TypeReference<java.util.List<Trace>>() {
+    private static final TypeReference<List<Trace>> TRACE_LIST =
+            new TypeReference<List<Trace>>() {
     };
-
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final TypeReference<Trace> TRACE =
+            new TypeReference<Trace>() {
+    };
 
     public TraceServiceRESTClient() {
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
@@ -63,58 +50,7 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
      */
     @Override
     public Trace getFragment(String tenantId, String id) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get trace fragment: tenantId=[" + tenantId + "] id=[" + id + "]");
-        }
-
-        try {
-            URL url = new URL(getUri() + "hawkular/apm/traces/fragments/" + id);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            byte[] b = new byte[is.available()];
-
-            int count = is.read(b);
-            if (count != b.length) {
-                log.warning("Incomplete data read");
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + new String(b) + "]");
-                }
-                try {
-                    return mapper.readValue(b, Trace.class);
-                } catch (JsonMappingException|JsonParseException t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                } catch (IOException t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get trace fragment: status=[" + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to send 'get' trace fragment request", e);
-        }
-
-        return null;
+        return getResultsForUrl(tenantId, TRACE, "traces/fragments/%s", id);
     }
 
     /* (non-Javadoc)
@@ -122,58 +58,7 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
      */
     @Override
     public Trace getTrace(String tenantId, String id) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get trace: tenantId=[" + tenantId + "] id=[" + id + "]");
-        }
-
-        try {
-            URL url = new URL(getUri() + "hawkular/apm/traces/complete/" + id);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            byte[] b = new byte[is.available()];
-
-            int count = is.read(b);
-            if (count != b.length) {
-                log.warning("Incomplete data read");
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + new String(b) + "]");
-                }
-                try {
-                    return mapper.readValue(b, Trace.class);
-                } catch (JsonMappingException|JsonParseException t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                } catch (IOException t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to get trace: status=[" + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to send 'get' trace request", e);
-        }
-
-        return null;
+        return getResultsForUrl(tenantId, TRACE, "traces/complete/%s", id);
     }
 
     /* (non-Javadoc)
@@ -182,92 +67,8 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
      */
     @Override
     public List<Trace> searchFragments(String tenantId, Criteria criteria) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Search trace fragments: tenantId=[" + tenantId + "] criteria=[" + criteria + "]");
-        }
-
-        try {
-            URL url = new URL(getSearchURL(criteria));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            java.io.InputStream is = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            StringBuilder builder = new StringBuilder();
-            String str = null;
-
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Returned json=[" + builder.toString() + "]");
-                }
-                try {
-                    return mapper.readValue(builder.toString(), TRACE_LIST);
-                } catch (JsonMappingException|JsonParseException t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                } catch (IOException t) {
-                    log.log(Level.SEVERE, "Failed to deserialize", t);
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to search trace fragments: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to send search trace fragment request", e);
-        }
-
-        return null;
-    }
-
-    /**
-     * This method returns a search URL associated with the supplied
-     * criteria.
-     *
-     * @param criteria The criteria
-     * @return The search URL
-     */
-    protected String getSearchURL(Criteria criteria) {
-        Map<String, String> queryParams = criteria.parameters();
-
-        StringBuilder builder = new StringBuilder().append(getUri()).append("hawkular/apm/traces/fragments/search");
-
-        if (!queryParams.isEmpty()) {
-            builder.append('?');
-
-            boolean first = true;
-            for (Map.Entry<String, String> stringStringEntry : queryParams.entrySet()) {
-                if (!first) {
-                    builder.append('&');
-                }
-                String value = stringStringEntry.getValue();
-                builder.append(stringStringEntry.getKey());
-                builder.append('=');
-                builder.append(value);
-                first = false;
-            }
-        }
-
-        return builder.toString();
+        String path = "traces/fragments/search?criteria=%s";
+        return getResultsForUrl(tenantId, TRACE_LIST, path, criteria);
     }
 
     /* (non-Javadoc)
@@ -275,8 +76,7 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
      *                              java.util.List)
      */
     @Override
-    public void storeFragments(String tenantId, List<Trace> traces)
-            throws StoreException {
+    public void storeFragments(String tenantId, List<Trace> traces) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
@@ -285,39 +85,7 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
      */
     @Override
     public void clear(String tenantId) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Clear trace fragments: tenantId=[" + tenantId + "]");
-        }
-
-        try {
-            URL url = new URL(new StringBuilder().append(getUri()).append("hawkular/apm/traces").toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("DELETE");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            addHeaders(connection, tenantId);
-
-            if (connection.getResponseCode() == 200) {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Trace fragments cleared");
-                }
-            } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Failed to clear trace fragments: status=["
-                            + connection.getResponseCode() + "]:"
-                            + connection.getResponseMessage());
-                }
-            }
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to send 'query' trace request", e);
-        }
+        clear(tenantId, "traces");
     }
 
 }

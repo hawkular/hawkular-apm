@@ -16,20 +16,9 @@
  */
 package org.hawkular.apm.analytics.service.rest.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
@@ -51,9 +40,7 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.rest.AbstractRESTClient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides the REST client implementation for the Analytics Service
@@ -62,10 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author gbrown
  */
 public class AnalyticsServiceRESTClient extends AbstractRESTClient implements AnalyticsService {
-
     private static final Logger log = Logger.getLogger(AnalyticsServiceRESTClient.class.getName());
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final TypeReference<java.util.List<EndpointInfo>> URIINFO_LIST =
             new TypeReference<java.util.List<EndpointInfo>>() {
@@ -396,127 +380,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
      */
     @Override
     public void clear(String tenantId) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Clear analytics: tenantId=[" + tenantId + "]");
-        }
-
-        URL url = getUrl("analytics");
-        withContext(tenantId, url, (connection) -> {
-            try {
-                connection.setRequestMethod("DELETE");
-                if (connection.getResponseCode() == 200) {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Analytics cleared");
-                    }
-                } else {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.warning("Failed to clear analytics: status=["
-                                + connection.getResponseCode() + "]:"
-                                + connection.getResponseMessage());
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.log(Level.SEVERE, "Failed to send 'clear' analytics request", e);
-            }
-            return null;
-        });
-    }
-
-    private URL getUrl(String path, Object... args) {
-        return getUrl(String.format(path, args));
-    }
-
-    private URL getUrl(String path) {
-        try {
-            return new URL(getUri() + "hawkular/apm/" + path);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private <T> T withContext(String tenantId, URL url, Function<HttpURLConnection, T> function) {
-        HttpURLConnection connection = null;
-        try {
-            connection = getConnectionForGetRequest(tenantId, url);
-            return function.apply(connection);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
-    private <T, E> T getResultsForUrl(String tenantId, TypeReference<E> typeReference, String path, Object... parameters) {
-        return withContext(tenantId, getUrl(path, parameters), (connection) -> {
-            try {
-                String response = getResponse(connection);
-
-                if (connection.getResponseCode() == 200) {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Returned json=[" + response + "]");
-                    }
-                    if (!response.trim().isEmpty()) {
-                        try {
-                            return mapper.readValue(response, typeReference);
-                        } catch (Throwable t) {
-                            log.log(Level.SEVERE, "Failed to deserialize", t);
-                        }
-                    }
-                } else {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Failed to get results: status=["
-                                + connection.getResponseCode() + "]:"
-                                + connection.getResponseMessage());
-                    }
-                }
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Failed to get results", e);
-            }
-
-            return null;
-        });
-    }
-
-    private <T, E> T getResultsForUrl(String tenantId, TypeReference<E> typeReference, String path, Criteria criteria) {
-        return getResultsForUrl(tenantId, typeReference, path, encodedCriteria(criteria));
-    }
-    private <T, E> T getResultsForUrl(String tenantId, TypeReference<E> typeReference, String path, Criteria criteria, Object arg) {
-        return getResultsForUrl(tenantId, typeReference, path, encodedCriteria(criteria), arg);
-    }
-
-    private String encodedCriteria(Criteria criteria) {
-        try {
-            return URLEncoder.encode(mapper.writeValueAsString(criteria), "UTF-8");
-        } catch (UnsupportedEncodingException | JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private HttpURLConnection getConnectionForGetRequest(String tenantId, URL url) throws IOException {
-        return getConnectionForRequest(tenantId, url, "GET");
-    }
-
-    private HttpURLConnection getConnectionForRequest(String tenantId, URL url, String method) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        connection.setRequestMethod(method);
-        connection.setDoOutput(true);
-        connection.setUseCaches(false);
-        connection.setAllowUserInteraction(false);
-        addHeaders(connection, tenantId);
-        return connection;
-    }
-
-    private String getResponse(HttpURLConnection connection) throws IOException {
-        InputStream is = connection.getInputStream();
-        String response;
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(is))) {
-            response = buffer.lines().collect(Collectors.joining("\n"));
-        }
-        return response;
+        clear(tenantId, "analytics");
     }
 }
