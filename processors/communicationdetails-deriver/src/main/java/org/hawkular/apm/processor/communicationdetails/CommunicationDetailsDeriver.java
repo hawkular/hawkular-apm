@@ -118,15 +118,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setTarget(EndpointUtil.encodeEndpoint(consumer.getUri(),
                                 consumer.getOperation()));
 
-                        long diff = TimeUnit.MILLISECONDS.convert(si.getDuration() - consumer.getDuration(),
-                                TimeUnit.NANOSECONDS);
-                        if (diff > 0) {
-                            ret.setLatency(diff / 2);
-                        } else if (diff < 0) {
-                            if (log.isLoggable(Level.FINEST)) {
-                                log.finest("WARNING: Negative latency for consumer = " + consumer);
-                            }
-                        }
+                        ret.setLatency(calculateLatency(si, item, consumer));
 
                         ret.setSourceDuration(si.getDuration());
                         ret.setTargetDuration(consumer.getDuration());
@@ -181,6 +173,46 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         }
 
         return ret;
+    }
+
+    protected static long calculateLatency(SourceInfo si, Trace trace, Consumer consumer) {
+        long latency = 0;
+
+        if (!si.isMultipleConsumers()) {
+            long diff = TimeUnit.MILLISECONDS.convert(si.getDuration() - consumer.getDuration(),
+                    TimeUnit.NANOSECONDS);
+            if (diff > 0) {
+                // Latency is being calculated as half the difference between the producer and consumer
+                // durations - so is an approximation of the latency based on the assumption that
+                // the request and response delivery is the same. This may not always be the case,
+                // but is the best approximation in an environment where clock synchronization between
+                // remote servers cannot be guaranteed.
+                latency = diff >> 1;
+            } else if (diff < 0) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("WARNING: Negative latency based on source/target duration, consumer trace = " + trace);
+                }
+                latency = calculateTimestampLatency(si, trace);
+            }
+        } else {
+            latency = calculateTimestampLatency(si, trace);
+        }
+
+        return latency;
+    }
+
+    private static long calculateTimestampLatency(SourceInfo si, Trace trace) {
+        long latency = 0;
+
+        latency = trace.getStartTime() - si.getTimestamp();
+        if (latency < 0) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("WARNING: Negative latency based on timestamps, consumer trace = " + trace);
+            }
+            latency = 0;
+        }
+
+        return latency;
     }
 
     /**
