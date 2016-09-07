@@ -796,7 +796,11 @@ public class CommunicationDetailsDeriverTest {
 
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(comp1.getDuration() == details.getProducerDuration());
-        assertTrue(400 == details.getLatency());
+
+        long latency = trace2.getStartTime() - (trace1.getStartTime()
+                + TimeUnit.MILLISECONDS.convert(comp1.getBaseTime(),  TimeUnit.NANOSECONDS));
+
+        assertEquals(latency, details.getLatency());
         assertTrue(details.hasProperty("prop1"));
         assertTrue(details.hasProperty("prop2"));
         assertEquals("trace1", details.getSourceFragmentId());
@@ -899,6 +903,57 @@ public class CommunicationDetailsDeriverTest {
         assertEquals(1, details.getOutbound().get(2).getProducerOffset());
         assertEquals(1, details.getOutbound().get(3).getProducerOffset());
         assertEquals(1, details.getOutbound().get(4).getProducerOffset());
+    }
+
+    @Test
+    public void testCalculateP2PLatency() {
+        SourceInfo si = new SourceInfo();
+        si.setDuration(TimeUnit.NANOSECONDS.convert(2000, TimeUnit.MILLISECONDS));
+
+        Trace item = new Trace();
+
+        Consumer consumer = new Consumer();
+        consumer.setDuration(TimeUnit.NANOSECONDS.convert(1000, TimeUnit.MILLISECONDS));
+        item.getNodes().add(consumer);
+
+        long latency = TimeUnit.MILLISECONDS.convert(si.getDuration() - consumer.getDuration(), TimeUnit.NANOSECONDS) / 2;
+
+        assertEquals(latency, CommunicationDetailsDeriver.calculateLatency(si, item, consumer));
+    }
+
+    @Test
+    public void testCalculateP2PAsyncLatency() {
+        SourceInfo si = new SourceInfo();
+        si.setTimestamp(1000);
+        si.setDuration(TimeUnit.NANOSECONDS.convert(2000, TimeUnit.MILLISECONDS));
+
+        Trace item = new Trace();
+        item.setStartTime(2000);
+
+        Consumer consumer = new Consumer();
+        consumer.setDuration(TimeUnit.NANOSECONDS.convert(3000, TimeUnit.MILLISECONDS));
+        item.getNodes().add(consumer);
+
+        long latency = item.getStartTime() - si.getTimestamp();
+
+        assertEquals(latency, CommunicationDetailsDeriver.calculateLatency(si, item, consumer));
+    }
+
+    @Test
+    public void testCalculateMultiConsumerLatency() {
+        SourceInfo si = new SourceInfo();
+        si.setMultipleConsumers(true);
+        si.setTimestamp(1000);
+
+        Trace item = new Trace();
+        item.setStartTime(2000);
+
+        Consumer consumer = new Consumer();
+        item.getNodes().add(consumer);
+
+        long latency = item.getStartTime() - si.getTimestamp();
+
+        assertEquals(latency, CommunicationDetailsDeriver.calculateLatency(si, item, consumer));
     }
 
 }
