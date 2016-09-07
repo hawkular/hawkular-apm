@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -36,9 +35,7 @@ import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
-import org.infinispan.query.Search;
-import org.infinispan.query.dsl.Query;
-import org.infinispan.query.dsl.QueryFactory;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.logging.Logger;
 
 /**
@@ -51,6 +48,7 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
 
     private static final String SPAN_CACHE = "span";
     private static final String TRACE_CACHE = "spanTrace";
+    private static final String CHILDREN_CACHE = "spanChildren";
 
     @Resource(lookup = "java:jboss/infinispan/APM")
     private CacheContainer cacheContainer;
@@ -61,22 +59,24 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
      */
     private Cache<String, Set<Span>> traceCache;
 
+    private Cache<String, Set<Span>> childrenCache;
 
     public InfinispanSpanCache() {}
 
-    public InfinispanSpanCache(Cache<String, Span> spanCache, Cache<String, Set<Span>> traceCache) {
-        this.spansCache = spanCache;
-        this.traceCache = traceCache;
+    public InfinispanSpanCache(CacheContainer cacheContainer) {
+        this.cacheContainer = cacheContainer;
+        init();
     }
 
     @Override
     @PostConstruct
     public void init() {
-        if (spansCache != null) {
+        if (spansCache != null && childrenCache != null && traceCache != null) {
             return;
         }
 
         spansCache = createCache(SPAN_CACHE);
+        childrenCache = createCache(CHILDREN_CACHE);
         traceCache = createCache(TRACE_CACHE);
     }
 
@@ -101,6 +101,8 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
 
         if (cacheContainer != null) {
             spansCache.startBatch();
+            childrenCache.startBatch();
+            traceCache.startBatch();
         }
 
         for (Span span : spans) {
@@ -116,10 +118,22 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
                 trace.add(span);
                 traceCache.put(span.getTraceId(), trace);
             }
+            if (span.getParentId() != null && !span.serverSpan()) {
+                Set<Span> children = childrenCache.get(span.getParentId());
+                if (children == null) {
+                    children = new HashSet<>();
+                }
+                children.add(span);
+                childrenCache.put(span.getParentId(), children);
+            }
         }
 
+        EmbeddedCacheManager embeddedCacheManager;
         if (cacheContainer != null) {
             spansCache.endBatch(true);
+            childrenCache.endBatch(true);
+            traceCache.endBatch(true);
+
         }
     }
 
@@ -127,20 +141,14 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
      * Note that method assumes that id was changed with {@link SpanUniqueIdGenerator#toUnique(Span)}.
      */
     @Override
-    public List<Span> getChildren(String tenant, String id) {
+    public Set<Span> getChildren(String tenant, String id) {
         if (id == null) {
             throw new NullPointerException("Id should not be null!");
         }
 
-        QueryFactory<?> queryFactory = Search.getQueryFactory(spansCache);
-        Query query = queryFactory.from(Span.class)
-                .having("parentId")
-                .eq(id)
-                .toBuilder().build();
+        Set<Span> children = childrenCache.get(id);
 
-        return query.<Span>list().stream()
-                .filter(span -> !span.serverSpan())
-                .collect(Collectors.toList());
+        return children == null ? null : Collections.unmodifiableSet(children);
     }
 
     @Override

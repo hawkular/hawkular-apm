@@ -36,7 +36,7 @@ public interface SpanCache extends Cache<Span> {
      * @param id Id of the span.
      * @return Children spans of a given span.
      */
-    List<Span> getChildren(String tenant, String id);
+    Set<Span> getChildren(String tenant, String id);
 
     /**
      * Get all spans which belongs to the trace.

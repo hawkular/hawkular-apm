@@ -45,21 +45,22 @@ public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecy
     private static final Logger log = Logger.getLogger(InfinispanSourceInfoCache.class.getName());
 
     @Resource(lookup = "java:jboss/infinispan/APM")
-    private CacheContainer container;
+    private CacheContainer cacheContainer;
 
     private Cache<String, SourceInfo> sourceInfo;
 
     public InfinispanSourceInfoCache() {}
 
-    public InfinispanSourceInfoCache(Cache<String, SourceInfo> cache) {
-        this.sourceInfo = cache;
+    public InfinispanSourceInfoCache(CacheContainer cacheContainer) {
+        this.cacheContainer = cacheContainer;
+        init();
     }
 
     @PostConstruct
     public void init() {
         // If cache container not already provisions, then must be running outside of a JEE
         // environment, so create a default cache container
-        if (container == null) {
+        if (cacheContainer == null) {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using default cache");
             }
@@ -68,7 +69,7 @@ public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecy
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
-            sourceInfo = container.getCache(CACHE_NAME);
+            sourceInfo = cacheContainer.getCache(CACHE_NAME);
         }
     }
 
@@ -91,7 +92,7 @@ public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecy
      */
     @Override
     public void store(String tenantId, List<SourceInfo> sourceInfoList) {
-        if (container != null) {
+        if (cacheContainer != null) {
             sourceInfo.startBatch();
         }
 
@@ -105,7 +106,7 @@ public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecy
             sourceInfo.put(si.getId(), si, 1, TimeUnit.MINUTES);
         }
 
-        if (container != null) {
+        if (cacheContainer != null) {
             sourceInfo.endBatch(true);
         }
     }

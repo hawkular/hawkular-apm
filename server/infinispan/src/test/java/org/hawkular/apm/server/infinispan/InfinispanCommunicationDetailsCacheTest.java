@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.server.api.services.CacheException;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,14 +40,7 @@ public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanT
 
     @Before
     public void before() {
-        cdc = new InfinispanCommunicationDetailsCache(
-                cacheManager.getCache(InfinispanCommunicationDetailsCache.CACHE_NAME),
-                cacheManager.getCache(InfinispanCommunicationDetailsCache.MULTI_CONSUMER_CACHE_NAME));
-    }
-
-    @After
-    public void after() {
-        cacheManager.removeCache(InfinispanCommunicationDetailsCache.CACHE_NAME);
+        cdc = new InfinispanCommunicationDetailsCache(cacheManager);
     }
 
     @Test

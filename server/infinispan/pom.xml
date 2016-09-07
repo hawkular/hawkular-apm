@@ -46,18 +46,6 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-query</artifactId>
-      <version>${version.org.infinispan.infinispan-query}</version>
-      <exclusions>
-        <!-- collide with with elasticsearch 1.7 -->
-        <exclusion>
-          <artifactId>lucene-backward-codecs</artifactId>
-          <groupId>org.apache.lucene</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
     <dependency>
       <groupId>org.jboss.logging</groupId>

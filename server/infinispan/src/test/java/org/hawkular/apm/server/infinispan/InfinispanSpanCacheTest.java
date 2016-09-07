@@ -26,7 +26,6 @@ import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.SpanCache;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,12 +39,7 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Before
     public void before() {
-        spanCache = new InfinispanSpanCache(cacheManager.getCache("spans"), cacheManager.getCache("trace"));
-    }
-
-    @After
-    public void after() {
-        cacheManager.removeCache(InfinispanCommunicationDetailsCache.CACHE_NAME);
+        spanCache = new InfinispanSpanCache(cacheManager);
     }
 
     @Test
@@ -95,9 +89,8 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testGetChildrenEmpty() {
-        Assert.assertTrue(spanCache.getChildren(null, "id").isEmpty());
+        Assert.assertNull(spanCache.getChildren(null, "id"));
     }
-
 
     @Test
     public void testCacheKeyEntryGenerator() throws CacheException {
