@@ -452,9 +452,6 @@ public class AnalyticsServiceRESTTest {
 
         assertEquals("1", result.get(0).getId());
 
-        // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
-
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 

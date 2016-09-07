@@ -156,7 +156,10 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setTimestampOffset(timestampOffset);
 
                         // Build outbound information
-                        initialiseOutbound(consumer.getNodes(), item.getNodes().get(0).getBaseTime(), ret);
+                        StringBuilder nodeId = new StringBuilder(item.getId());
+                        nodeId.append(":0");
+
+                        initialiseOutbound(consumer, item.getNodes().get(0).getBaseTime(), ret, nodeId);
                     } else {
                         lastId = id;
                     }
@@ -184,32 +187,46 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
      * This method initialises the outbound information from the consumer's nodes in the supplied
      * communication details.
      *
-     * @param consumerNodes The consumer nodes
+     * @param n The node
      * @param baseTime The fragment's base time (ns)
      * @param cd The communication details
+     * @param nodeId The path id for the node
      */
-    protected static void initialiseOutbound(List<Node> consumerNodes, long baseTime, CommunicationDetails cd) {
-        for (int i = 0; i < consumerNodes.size(); i++) {
-            Node n = consumerNodes.get(i);
-            if (n.getClass() == Producer.class) {
-                CommunicationDetails.Outbound ob = new CommunicationDetails.Outbound();
-                for (int j = 0; j < ((Producer) n).getCorrelationIds().size(); j++) {
-                    CorrelationIdentifier ci = ((Producer) n).getCorrelationIds().get(j);
-                    if (ci.getScope() == Scope.Interaction) {
-                        ob.getIds().add(ci.getValue());
-                    }
-                }
-                // Only record if outbound ids found
-                if (!ob.getIds().isEmpty()) {
-                    // Check if pub/sub
-                    ob.setMultiConsumer(((Producer) n).multipleConsumers());
+    protected static void initialiseOutbound(Node n, long baseTime, CommunicationDetails cd,
+            StringBuilder nodeId) {
+        CommunicationDetails.Outbound ob = new CommunicationDetails.Outbound();
+        ob.getIds().add(nodeId.toString());
+        ob.setMultiConsumer(true);
+        ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
+                    TimeUnit.NANOSECONDS));
+        cd.getOutbound().add(ob);
 
-                    ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
-                            TimeUnit.NANOSECONDS));
-                    cd.getOutbound().add(ob);
+        if (n.getClass() == Producer.class) {
+            ob = new CommunicationDetails.Outbound();
+            for (int j = 0; j < n.getCorrelationIds().size(); j++) {
+                CorrelationIdentifier ci = n.getCorrelationIds().get(j);
+                if (ci.getScope() == Scope.Interaction || ci.getScope() == Scope.ControlFlow) {
+                    ob.getIds().add(ci.getValue());
                 }
-            } else if (n.containerNode()) {
-                initialiseOutbound(((ContainerNode) n).getNodes(), baseTime, cd);
+            }
+            // Only record if outbound ids found
+            if (!ob.getIds().isEmpty()) {
+                // Check if pub/sub
+                ob.setMultiConsumer(((Producer) n).multipleConsumers());
+
+                ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
+                        TimeUnit.NANOSECONDS));
+                cd.getOutbound().add(ob);
+            }
+        } else if (n.containerNode()) {
+            for (int i = 0; i < ((ContainerNode)n).getNodes().size(); i++) {
+                int len = nodeId.length();
+                nodeId.append(':');
+                nodeId.append(i);
+                initialiseOutbound(((ContainerNode) n).getNodes().get(i), baseTime, cd, nodeId);
+
+                // Remove this child's specific path, so that next iteration will add a different path number
+                nodeId.delete(len, nodeId.length());
             }
         }
     }
