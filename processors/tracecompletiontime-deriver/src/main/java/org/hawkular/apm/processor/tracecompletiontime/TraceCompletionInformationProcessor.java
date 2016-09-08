@@ -57,7 +57,7 @@ public class TraceCompletionInformationProcessor extends
     @Override
     public long getDeliveryDelay(List<TraceCompletionInformation> results) {
         // TODO: Just return default 500msec delay for now, but when supporting long running
-        // processes HWKBTM-348, then will need to detect delivery delay on a
+        // processes HWKAPM-348, then will need to detect delivery delay on a
         // per result basis, in case some long delays are required
         return DEFAULT_DELAY;
     }

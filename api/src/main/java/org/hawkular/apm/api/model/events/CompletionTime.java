@@ -142,14 +142,14 @@ public class CompletionTime implements ApmEvent {
     }
 
     /**
-     * @return the timestamp
+     * @return the timestamp in milliseconds
      */
     public long getTimestamp() {
         return timestamp;
     }
 
     /**
-     * @param timestamp the timestamp to set
+     * @param timestamp the timestamp in milliseconds to set
      */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;

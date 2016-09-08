@@ -267,10 +267,7 @@ public class Span implements Serializable {
 
         for (BinaryAnnotation binaryAnnotation : binaryAnnotations) {
             if (binaryAnnotation.getEndpoint() != null) {
-                Endpoint endpoint = binaryAnnotation.getEndpoint();
-
-
-                endpoints.add(endpoint);
+                endpoints.add(binaryAnnotation.getEndpoint());
             }
         }
 
@@ -284,8 +281,6 @@ public class Span implements Serializable {
             service = endpoint.getServiceName();
         }
     }
-
-
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
