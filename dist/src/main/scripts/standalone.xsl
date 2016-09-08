@@ -73,9 +73,11 @@
     <xsl:variable name="newCacheContainer">
       <cache-container name="apm" jndi-name="infinispan/APM">
         <local-cache name="communicationdetails"/>
+        <local-cache name="communicationdetailsMulticonsumer"/>
         <local-cache name="producerinfo"/>
         <local-cache name="span" />
         <local-cache name="spanTrace" />
+        <local-cache name="spanChildren"/>
       </cache-container>
     </xsl:variable>
 

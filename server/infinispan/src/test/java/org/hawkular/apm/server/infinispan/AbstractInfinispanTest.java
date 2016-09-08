@@ -20,6 +20,7 @@ package org.hawkular.apm.server.infinispan;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -39,5 +40,10 @@ public abstract class AbstractInfinispanTest {
     @AfterClass
     public static void voidDestroyClass() {
         cacheManager.stop();
+    }
+
+    @After
+    public void after() {
+        cacheManager.getCacheNames().forEach(cacheManager::removeCache);
     }
 }

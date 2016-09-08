@@ -48,10 +48,10 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
     protected static final String CACHE_NAME = "communicationdetails";
 
     /**  */
-    protected static final String MULTI_CONSUMER_CACHE_NAME = "communicationdetailsmulticonsumer";
+    protected static final String MULTI_CONSUMER_CACHE_NAME = "communicationdetailsMulticonsumer";
 
     @Resource(lookup = "java:jboss/infinispan/APM")
-    private CacheContainer container;
+    private CacheContainer cacheContainer;
 
     private Cache<String, CommunicationDetails> communicationDetails;
 
@@ -59,21 +59,20 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
     public InfinispanCommunicationDetailsCache() {}
 
-    public InfinispanCommunicationDetailsCache(Cache<String, CommunicationDetails> cache,
-            Cache<String, List<CommunicationDetails>> multiConsumerCache) {
-        this.communicationDetails = cache;
-        this.communicationDetailsMultiConsumers = multiConsumerCache;
+    public InfinispanCommunicationDetailsCache(CacheContainer cacheContainer) {
+        this.cacheContainer = cacheContainer;
+        init();
     }
 
     @PostConstruct
     public void init() {
-        if (communicationDetails != null) {
+        if (communicationDetails != null && communicationDetailsMultiConsumers != null) {
             return;
         }
 
         // If cache container not already provisions, then must be running outside of a JEE
         // environment, so create a default cache container
-        if (container == null) {
+        if (cacheContainer == null) {
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using default cache");
             }
@@ -83,8 +82,8 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
             if (log.isLoggable(Level.FINER)) {
                 log.fine("Using container provided cache");
             }
-            communicationDetails = container.getCache(CACHE_NAME);
-            communicationDetailsMultiConsumers = container.getCache(MULTI_CONSUMER_CACHE_NAME);
+            communicationDetails = cacheContainer.getCache(CACHE_NAME);
+            communicationDetailsMultiConsumers = cacheContainer.getCache(MULTI_CONSUMER_CACHE_NAME);
         }
     }
 
@@ -109,7 +108,7 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
      */
     @Override
     public void store(String tenantId, List<CommunicationDetails> details) throws CacheException {
-        if (container != null) {
+        if (cacheContainer != null) {
             communicationDetails.startBatch();
             communicationDetailsMultiConsumers.startBatch();
         }
@@ -144,7 +143,7 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
             }
         }
 
-        if (container != null) {
+        if (cacheContainer != null) {
             communicationDetails.endBatch(true);
             communicationDetailsMultiConsumers.endBatch(true);
         }

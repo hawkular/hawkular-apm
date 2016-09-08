@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.server.api.services.CacheException;
 import org.hawkular.apm.server.api.services.Property;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +34,7 @@ public class InfinispanPropertyCacheTest extends AbstractInfinispanTest {
 
     @Before
     public void before() {
-        propertyCache = new InfinispanPropertyCache(cacheManager.getCache(InfinispanPropertyCache.CACHE_NAME));
-    }
-
-    @After
-    public void after() {
-        cacheManager.removeCache(InfinispanPropertyCache.CACHE_NAME);
+        propertyCache = new InfinispanPropertyCache(cacheManager);
     }
 
     @Test

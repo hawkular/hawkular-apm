@@ -65,10 +65,10 @@ public class InfinispanPropertyCache implements PropertyService, ServiceLifecycl
         this.eventListener = new CacheEventListener();
     }
 
-    public InfinispanPropertyCache(Cache<String, Property<?>> cache) {
+    public InfinispanPropertyCache(CacheContainer cacheContainer) {
         this();
-        this.propertyCache = cache;
-        this.propertyCache.addListener(eventListener);
+        this.cacheContainer = cacheContainer;
+        init();
     }
 
     @Override

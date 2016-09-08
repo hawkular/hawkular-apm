@@ -293,7 +293,7 @@ public class SourceInfoUtilTest {
          * @see org.hawkular.apm.server.api.services.SpanCache#getChildren(java.lang.String, java.lang.String)
          */
         @Override
-        public List<Span> getChildren(String tenant, String id) {
+        public Set<Span> getChildren(String tenant, String id) {
             throw new UnsupportedOperationException();
         }
 
