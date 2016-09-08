@@ -83,4 +83,13 @@
 
   </xsl:template>
 
+  <xsl:template match="//*[*[local-name()='root-logger']]">
+    <xsl:copy>
+      <xsl:copy-of select="node()|@*"/>
+      <logger category="org.hawkular.apm">
+        <level name="${{hawkular.log.apm:INFO}}" />
+      </logger>
+    </xsl:copy>
+  </xsl:template>
+
 </xsl:stylesheet>
