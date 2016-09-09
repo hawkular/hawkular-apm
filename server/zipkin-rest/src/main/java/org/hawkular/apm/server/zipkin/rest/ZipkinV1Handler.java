@@ -19,20 +19,15 @@ package org.hawkular.apm.server.zipkin.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanPublisher;
@@ -60,11 +55,7 @@ public class ZipkinV1Handler {
 
     @POST
     @Path("spans")
-    public void addSpans(
-            @Context SecurityContext context,
-            @Suspended final AsyncResponse response,
-            List<Span> spans) {
-
+    public Response addSpans(List<Span> spans) {
         try {
             if (log.isTraceEnabled()) {
                 log.trace("Span = " + mapper.writeValueAsString(spans));
@@ -72,14 +63,17 @@ public class ZipkinV1Handler {
 
             spanPublisher.publish(null, spans);
 
-            response.resume(Response.status(Response.Status.OK).build());
+            return Response
+                    .status(Response.Status.ACCEPTED)
+                    .build();
 
         } catch (Throwable t) {
             log.errorf(t.getMessage(), t);
-            Map<String, String> errors = new HashMap<String, String>();
-            errors.put("errorMsg", "Internal Error: " + t.getMessage());
-            response.resume(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errors).type(APPLICATION_JSON_TYPE).build());
+            return Response
+                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Collections.singletonMap("errorMsg", "Internal Error: " + t.getMessage()))
+                    .type(APPLICATION_JSON_TYPE)
+                    .build();
         }
     }
 
