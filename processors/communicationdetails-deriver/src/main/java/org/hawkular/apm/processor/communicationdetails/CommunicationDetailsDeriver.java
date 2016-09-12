@@ -17,6 +17,7 @@
 package org.hawkular.apm.processor.communicationdetails;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,7 +110,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                     SourceInfo si = sourceInfoCache.get(tenantId, id);
                     if (si != null) {
                         ret = new CommunicationDetails();
-                        ret.setId(id);
+                        ret.setId(UUID.randomUUID().toString());
+                        ret.setLinkId(id);
                         ret.setBusinessTransaction(item.getBusinessTransaction());
 
                         ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
@@ -227,7 +229,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     protected static void initialiseOutbound(Node n, long baseTime, CommunicationDetails cd,
             StringBuilder nodeId) {
         CommunicationDetails.Outbound ob = new CommunicationDetails.Outbound();
-        ob.getIds().add(nodeId.toString());
+        ob.getLinkIds().add(nodeId.toString());
         ob.setMultiConsumer(true);
         ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
                     TimeUnit.NANOSECONDS));
@@ -238,11 +240,11 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
             for (int j = 0; j < n.getCorrelationIds().size(); j++) {
                 CorrelationIdentifier ci = n.getCorrelationIds().get(j);
                 if (ci.getScope() == Scope.Interaction || ci.getScope() == Scope.ControlFlow) {
-                    ob.getIds().add(ci.getValue());
+                    ob.getLinkIds().add(ci.getValue());
                 }
             }
             // Only record if outbound ids found
-            if (!ob.getIds().isEmpty()) {
+            if (!ob.getLinkIds().isEmpty()) {
                 // Check if pub/sub
                 ob.setMultiConsumer(((Producer) n).multipleConsumers());
 

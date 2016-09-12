@@ -17,6 +17,7 @@
 package org.hawkular.apm.processor.zipkin;
 
 import java.net.URL;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,7 +92,8 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
             SourceInfo si = SourceInfoUtil.getSourceInfo(tenantId, item, spanCache);
             if (si != null) {
                 ret = new CommunicationDetails();
-                ret.setId(item.getId());
+                ret.setId(UUID.randomUUID().toString());
+                ret.setLinkId(item.getId());
 
                 ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
                         si.getFragmentOperation()));

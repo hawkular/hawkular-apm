@@ -108,7 +108,7 @@ public class TraceCompletionInformationProcessorTest {
         List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("id1");
+        cd1.setLinkId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
         cd1.getProperties().add(new Property("prop1", "value0"));
@@ -170,7 +170,7 @@ public class TraceCompletionInformationProcessorTest {
         List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("id1");
+        cd1.setLinkId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
 
@@ -224,12 +224,12 @@ public class TraceCompletionInformationProcessorTest {
         List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("id1");
+        cd1.setLinkId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
 
         CommunicationDetails.Outbound ob1 = new CommunicationDetails.Outbound();
-        ob1.getIds().add("id2");
+        ob1.getLinkIds().add("id2");
         ob1.setProducerOffset(12);
         cd1.getOutbound().add(ob1);
 
@@ -282,17 +282,17 @@ public class TraceCompletionInformationProcessorTest {
         List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("id1");
+        cd1.setLinkId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
 
         CommunicationDetails.Outbound ob1 = new CommunicationDetails.Outbound();
-        ob1.getIds().add("id2");
+        ob1.getLinkIds().add("id2");
         ob1.setProducerOffset(12);
         cd1.getOutbound().add(ob1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("id2");
+        cd2.setLinkId("id2");
         cd2.setLatency(33);
         cd2.setTargetFragmentDuration(345);
 
@@ -345,31 +345,31 @@ public class TraceCompletionInformationProcessorTest {
         List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("id1");
+        cd1.setLinkId("id1");
         cd1.setLatency(40);
         cd1.setTargetFragmentDuration(370);
 
         cds.add(cd1);
 
         CommunicationDetails.Outbound ob1 = new CommunicationDetails.Outbound();
-        ob1.getIds().add("id2");
+        ob1.getLinkIds().add("id2");
         ob1.setProducerOffset(12);
         cd1.getOutbound().add(ob1);
 
         CommunicationDetails.Outbound ob2 = new CommunicationDetails.Outbound();
-        ob2.getIds().add("id3");
+        ob2.getLinkIds().add("id3");
         ob2.setProducerOffset(17);
         cd1.getOutbound().add(ob2);
 
         CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("id2");
+        cd2.setLinkId("id2");
         cd2.setLatency(33);
         cd2.setTargetFragmentDuration(345);
 
         cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
-        cd3.setId("id3");
+        cd3.setLinkId("id3");
         cd3.setLatency(44);
         cd3.setTargetFragmentDuration(371);
 

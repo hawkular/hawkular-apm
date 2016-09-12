@@ -101,6 +101,10 @@ public class TraceCompletionInformationProcessor extends
                         for (int j = 0; j < c.getIds().size(); j++) {
                             List<CommunicationDetails> cds = communicationDetailsCache.getById(tenantId,
                                     c.getIds().get(j));
+                            if (log.isLoggable(Level.FINEST)) {
+                                log.finest("Multiconsumer comms details: id = " + c.getIds().get(j)
+                                        + " communication details = " + cds);
+                            }
                             for (int k = 0; k < cds.size(); k++) {
                                 processCommunication(tenantId, item, c, cds.get(k));
                             }
@@ -172,7 +176,7 @@ public class TraceCompletionInformationProcessor extends
         for (int j = 0; j < cd.getOutbound().size(); j++) {
             CommunicationDetails.Outbound ob = cd.getOutbound().get(j);
             Communication newc = new Communication();
-            newc.setIds(ob.getIds());
+            newc.setIds(ob.getLinkIds());
             newc.setMultipleConsumers(ob.isMultiConsumer());
             newc.setBaseDuration(targetFragmentBaseDuration + ob.getProducerOffset());
 

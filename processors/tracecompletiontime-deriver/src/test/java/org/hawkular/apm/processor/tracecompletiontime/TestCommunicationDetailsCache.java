@@ -49,12 +49,12 @@ public class TestCommunicationDetailsCache implements CommunicationDetailsCache 
         for (int i=0; i < details.size(); i++) {
             CommunicationDetails cd=details.get(i);
             if (!cd.isMultiConsumer()) {
-                singleConsumer.put(cd.getId(), cd);
+                singleConsumer.put(cd.getLinkId(), cd);
             } else {
-                List<CommunicationDetails> list = multipleConsumers.get(cd.getId());
+                List<CommunicationDetails> list = multipleConsumers.get(cd.getLinkId());
                 if (list == null) {
                     list = new ArrayList<CommunicationDetails>();
-                    multipleConsumers.put(cd.getId(), list);
+                    multipleConsumers.put(cd.getLinkId(), list);
                 }
                 list.add(cd);
             }

@@ -42,6 +42,8 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
     @Field
     private String id;
 
+    private String linkId;
+
     private String businessTransaction;
 
     private String source;
@@ -95,6 +97,20 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the linkId
+     */
+    public String getLinkId() {
+        return linkId;
+    }
+
+    /**
+     * @param linkId the linkId to set
+     */
+    public void setLinkId(String linkId) {
+        this.linkId = linkId;
     }
 
     /**
@@ -427,14 +443,15 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
      */
     @Override
     public String toString() {
-        return "CommunicationDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", source=" + source
-                + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal=" + internal + ", timestamp="
-                + timestamp + ", latency=" + latency + ", consumerDuration=" + consumerDuration + ", producerDuration="
-                + producerDuration + ", timestampOffset=" + timestampOffset + ", sourceFragmentId=" + sourceFragmentId
-                + ", sourceHostName=" + sourceHostName + ", sourceHostAddress=" + sourceHostAddress
-                + ", targetFragmentId=" + targetFragmentId + ", targetHostName=" + targetHostName
-                + ", targetHostAddress=" + targetHostAddress + ", targetFragmentDuration=" + targetFragmentDuration
-                + ", principal=" + principal + ", properties=" + properties + ", outbound=" + outbound + "]";
+        return "CommunicationDetails [id=" + id + ", linkId=" + linkId + ", businessTransaction=" + businessTransaction
+                + ", source=" + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal="
+                + internal + ", timestamp=" + timestamp + ", latency=" + latency + ", consumerDuration="
+                + consumerDuration + ", producerDuration=" + producerDuration + ", timestampOffset=" + timestampOffset
+                + ", sourceFragmentId=" + sourceFragmentId + ", sourceHostName=" + sourceHostName
+                + ", sourceHostAddress=" + sourceHostAddress + ", targetFragmentId=" + targetFragmentId
+                + ", targetHostName=" + targetHostName + ", targetHostAddress=" + targetHostAddress
+                + ", targetFragmentDuration=" + targetFragmentDuration + ", principal=" + principal + ", properties="
+                + properties + ", outbound=" + outbound + "]";
     }
 
     /* (non-Javadoc)
@@ -449,6 +466,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + (internal ? 1231 : 1237);
         result = prime * result + (int) (latency ^ (latency >>> 32));
+        result = prime * result + ((linkId == null) ? 0 : linkId.hashCode());
         result = prime * result + (multiConsumer ? 1231 : 1237);
         result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
         result = prime * result + ((principal == null) ? 0 : principal.hashCode());
@@ -495,6 +513,11 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         if (internal != other.internal)
             return false;
         if (latency != other.latency)
+            return false;
+        if (linkId == null) {
+            if (other.linkId != null)
+                return false;
+        } else if (!linkId.equals(other.linkId))
             return false;
         if (multiConsumer != other.multiConsumer)
             return false;
@@ -572,6 +595,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         ois.readInt(); // Version
 
         id = SerializationUtil.deserializeString(ois);
+        linkId = SerializationUtil.deserializeString(ois);
         businessTransaction = SerializationUtil.deserializeString(ois);
         source = SerializationUtil.deserializeString(ois);
         target = SerializationUtil.deserializeString(ois);
@@ -610,6 +634,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         oos.writeInt(1); // Version
 
         SerializationUtil.serializeString(oos, id);
+        SerializationUtil.serializeString(oos, linkId);
         SerializationUtil.serializeString(oos, businessTransaction);
         SerializationUtil.serializeString(oos, source);
         SerializationUtil.serializeString(oos, target);
@@ -649,22 +674,22 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
      */
     public static class Outbound implements Externalizable {
 
-        private List<String> ids = new ArrayList<String>();
+        private List<String> linkIds = new ArrayList<String>();
         private boolean multiConsumer = false;
         private long producerOffset = 0;
 
         /**
-         * @return the ids
+         * @return the link ids
          */
-        public List<String> getIds() {
-            return ids;
+        public List<String> getLinkIds() {
+            return linkIds;
         }
 
         /**
-         * @param ids the ids to set
+         * @param linkIds the linkIds to set
          */
-        public void setIds(List<String> ids) {
-            this.ids = ids;
+        public void setLinkIds(List<String> linkIds) {
+            this.linkIds = linkIds;
         }
 
         /**
@@ -702,7 +727,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((ids == null) ? 0 : ids.hashCode());
+            result = prime * result + ((linkIds == null) ? 0 : linkIds.hashCode());
             result = prime * result + (multiConsumer ? 1231 : 1237);
             result = prime * result + (int) (producerOffset ^ (producerOffset >>> 32));
             return result;
@@ -723,11 +748,11 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
                 return false;
             }
             Outbound other = (Outbound) obj;
-            if (ids == null) {
-                if (other.ids != null) {
+            if (linkIds == null) {
+                if (other.linkIds != null) {
                     return false;
                 }
-            } else if (!ids.equals(other.ids)) {
+            } else if (!linkIds.equals(other.linkIds)) {
                 return false;
             }
             if (multiConsumer != other.multiConsumer) {
@@ -744,7 +769,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
          */
         @Override
         public String toString() {
-            return "Outbound [ids=" + ids + ", multiConsumer=" + multiConsumer + ", producerOffset=" + producerOffset
+            return "Outbound [linkIds=" + linkIds + ", multiConsumer=" + multiConsumer + ", producerOffset=" + producerOffset
                     + "]";
         }
 
@@ -757,7 +782,7 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
 
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
-                ids.add(in.readUTF());
+                linkIds.add(in.readUTF());
             }
 
             multiConsumer = in.readBoolean();
@@ -771,9 +796,9 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         public void writeExternal(ObjectOutput out) throws IOException {
             out.writeInt(1); // Version
 
-            out.writeInt(ids.size());
-            for (int i = 0; i < ids.size(); i++) {
-                out.writeUTF(ids.get(i));
+            out.writeInt(linkIds.size());
+            for (int i = 0; i < linkIds.size(); i++) {
+                out.writeUTF(linkIds.get(i));
             }
 
             out.writeBoolean(multiConsumer);
