@@ -93,7 +93,13 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         }
 
         String url = "config/collector?" + parameters;
-        return getResultsForUrl(tenantId, COLLECTOR_CONFIGURATION_TYPE_REFERENCE, url);
+        CollectorConfiguration cc = getResultsForUrl(tenantId, COLLECTOR_CONFIGURATION_TYPE_REFERENCE, url);
+
+        if (cc == null) {
+            log.warning("Unable to obtain APM configuration from " + getUrl(url) + ", will retry ...");
+        }
+
+        return cc;
     }
 
     /* (non-Javadoc)
