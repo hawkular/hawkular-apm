@@ -31,10 +31,14 @@ public class PropertyUtil {
     /**  */
     public static final String HAWKULAR_TENANT = "HAWKULAR_TENANT";
 
-    /**  */
+    /**
+     * The location of the APM server
+     */
     public static final String HAWKULAR_APM_URI = "HAWKULAR_APM_URI";
 
-    /**  */
+    /**
+     * The location of the remote APM REST services
+     */
     public static final String HAWKULAR_APM_URI_SERVICES = "HAWKULAR_APM_URI_SERVICES";
 
     /**  */
@@ -118,6 +122,21 @@ public class PropertyUtil {
 
     /** The URI prefix to denote use of Kafka */
     public static final String KAFKA_PREFIX = "kafka:";
+
+    /**
+     * Location of the Hawkular Services Server.
+     */
+    public static final String HAWKULAR_SERVER = "HAWKULAR_SERVER";
+
+    /**
+     * Username for authentication against the Hawkular Server
+     */
+    public static final String HAWKULAR_SERVER_USERNAME = "HAWKULAR_SERVER_USERNAME";
+
+    /**
+     * Password for authentication against the Hawkular Server
+     */
+    public static final String HAWKULAR_SERVER_PASSWORD = "HAWKULAR_SERVER_PASSWORD";
 
     /**
      * This method determines whether a property exists, as a system property
