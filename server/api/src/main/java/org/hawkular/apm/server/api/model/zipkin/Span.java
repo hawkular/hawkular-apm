@@ -248,6 +248,12 @@ public class Span implements Serializable {
 
     private void initUrl() {
         BinaryAnnotation httpUrl = getBinaryAnnotation("http.url");
+        if (httpUrl == null) {
+            httpUrl = getBinaryAnnotation("http.uri");
+        }
+        if (httpUrl == null) {
+            httpUrl = getBinaryAnnotation("http.path");
+        }
         if (httpUrl != null) {
             try {
                 url = new URL(httpUrl.getValue());
@@ -272,7 +278,7 @@ public class Span implements Serializable {
         }
 
         if (endpoints.size() > 1) {
-            log.severe("Multiple different Endpoints within one Span: " + endpoints);
+            log.finest("Multiple different Endpoints within one Span: " + endpoints);
         }
 
         Endpoint endpoint = endpoints.size() > 0 ? endpoints.iterator().next() : null;

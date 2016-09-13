@@ -71,12 +71,36 @@ public class SpanTest {
     }
 
     @Test
+    public void testUrlFromUri() throws MalformedURLException {
+        URL url = new URL("http://localhost:8080/my/path");
+        BinaryAnnotation ba = new BinaryAnnotation();
+        ba.setKey("http.uri");
+        ba.setValue(url.toString());
+
+        Span span = new Span(Arrays.asList(ba));
+
+        URL spanURL = span.url();
+        assertEquals(url, spanURL);
+    }
+
+    @Test
+    public void testUrlFromPath() throws MalformedURLException {
+        URL url = new URL("http://localhost:8080/my/path");
+        BinaryAnnotation ba = new BinaryAnnotation();
+        ba.setKey("http.path");
+        ba.setValue(url.getPath());
+
+        Span span = new Span(Arrays.asList(ba));
+
+        URL spanURL = span.url();
+        assertEquals(url.getPath(), spanURL.getPath());
+    }
+
+    @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
         BinaryAnnotationMappingDeriver.clearStorage();
         String testResourcesPath = getClass().getClassLoader().getResource(".").getPath();
-        BinaryAnnotationMappingDeriver mappingDeriver =
-                BinaryAnnotationMappingDeriver.getInstance(testResourcesPath + "test-binary-annotations-mapping.json");
-
+        BinaryAnnotationMappingDeriver.getInstance(testResourcesPath + "test-binary-annotations-mapping.json");
 
         BinaryAnnotation stringAnnotation = new BinaryAnnotation();
         stringAnnotation.setKey("http.method");
