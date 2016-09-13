@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.collector;
+package org.hawkular.apm.client.collector.internal;
 
 import java.util.List;
 import java.util.Map;
@@ -47,14 +47,9 @@ import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.apm.client.api.SessionManager;
-import org.hawkular.apm.client.api.TraceCollector;
-import org.hawkular.apm.client.collector.internal.FilterManager;
-import org.hawkular.apm.client.collector.internal.FilterProcessor;
-import org.hawkular.apm.client.collector.internal.FragmentBuilder;
-import org.hawkular.apm.client.collector.internal.FragmentManager;
-import org.hawkular.apm.client.collector.internal.ProcessorManager;
-import org.hawkular.apm.client.collector.internal.TraceReporter;
+import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
+import org.hawkular.apm.client.collector.SessionManager;
+import org.hawkular.apm.client.collector.TraceCollector;
 
 /**
  * @author gbrown
@@ -74,7 +69,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     private ConfigurationService configurationService;
 
-    private TraceReporter reporter = new TraceReporter();
+    private BatchTraceReporter reporter = new BatchTraceReporter();
 
     private Map<String, FragmentBuilder> correlations = new ConcurrentHashMap<String, FragmentBuilder>();
 

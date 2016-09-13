@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
-import org.hawkular.apm.client.api.HeadersAccessor;
 
 /**
  * The headers accessor implementation for javax JMS.

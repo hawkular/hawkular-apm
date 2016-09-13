@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.client.api.TraceCollector;
+import org.hawkular.apm.client.collector.TraceCollector;
 
 /**
  * This class provides an instrumented proxy for an input stream.

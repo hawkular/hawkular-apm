@@ -41,6 +41,10 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-client-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-collector</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.byteman</groupId>

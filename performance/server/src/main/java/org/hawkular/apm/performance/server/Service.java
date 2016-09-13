@@ -19,14 +19,15 @@ package org.hawkular.apm.performance.server;
 import java.util.Map;
 import java.util.UUID;
 
-import org.hawkular.apm.client.collector.DefaultTraceCollector;
+import org.hawkular.apm.client.collector.TraceCollector;
+import org.hawkular.apm.client.collector.internal.DefaultTraceCollector;
 
 /**
  * @author gbrown
  */
 public class Service {
 
-    private DefaultTraceCollector collector = new DefaultTraceCollector();
+    private TraceCollector collector = new DefaultTraceCollector();
 
     private String uri;
 
@@ -51,14 +52,14 @@ public class Service {
     /**
      * @return the collector
      */
-    public DefaultTraceCollector getCollector() {
+    public TraceCollector getCollector() {
         return collector;
     }
 
     /**
      * @param collector the collector to set
      */
-    public void setCollector(DefaultTraceCollector collector) {
+    public void setCollector(TraceCollector collector) {
         this.collector = collector;
     }
 
@@ -140,7 +141,7 @@ public class Service {
      * @param btxnName The optional business txn name
      */
     public void call(Message mesg, String interactionId, String btxnName) {
-        boolean activated = collector.activate(uri, null, interactionId);
+        boolean activated = collector.session().activate(uri, null, interactionId);
 
         if (activated) {
             collector.consumerStart(null, uri, "Test", null, interactionId);

@@ -18,7 +18,7 @@ package org.hawkular.apm.instrumenter;
 
 import java.util.Map;
 
-import org.hawkular.apm.client.api.HeadersAccessor;
+import org.hawkular.apm.instrumenter.headers.HeadersAccessor;
 
 /**
  * @author gbrown
@@ -34,7 +34,7 @@ public class TestHeadersAccessor implements HeadersAccessor {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.headers.HeadersFactory#getHeaders(java.lang.Object)
+     * @see org.hawkular.apm.instrumenter.headers.HeadersAccessor#getHeaders(java.lang.Object)
      */
     @Override
     public Map<String, String> getHeaders(Object target) {
