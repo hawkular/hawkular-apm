@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,12 +34,14 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -67,31 +68,22 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQueryBTxnName() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testQueryBTxnName() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setBusinessTransaction("trace2");
         trace2.setStartTime(2000);
-        traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        traces.add(trace3);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -107,31 +99,22 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQueryNoBTxnName() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testQueryNoBTxnName() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setBusinessTransaction("trace2");
         trace2.setStartTime(2000);
-        traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
         trace3.setStartTime(3000);
-        traces.add(trace3);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -147,7 +130,7 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testSearchFragments() {
+    public void testSearchFragments() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
@@ -165,12 +148,7 @@ public class TraceServiceElasticsearchTest {
         producer1.getProperties().add(new Property("prop3", "value3"));
         consumer1.getNodes().add(producer1);
 
-        try {
-            ts.storeFragments(null, Arrays.asList(trace1));
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -184,9 +162,7 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQuerySinglePropertyAndValueIncluded() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testQuerySinglePropertyAndValueIncluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
@@ -194,7 +170,6 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
@@ -203,7 +178,6 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
-        traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
@@ -212,14 +186,8 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
         trace3.getNodes().add(consumer3);
-        traces.add(trace3);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -234,16 +202,13 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQuerySinglePropertyAndValueExcluded() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testQuerySinglePropertyAndValueExcluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
@@ -251,7 +216,6 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
-        traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
@@ -259,13 +223,8 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
         trace3.getNodes().add(consumer3);
-        traces.add(trace3);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -281,16 +240,13 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQuerySinglePropertyAndMultiValueIncluded() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testQuerySinglePropertyAndMultiValueIncluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
@@ -298,7 +254,6 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
-        traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
@@ -306,7 +261,6 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop3", "value3"));
         trace3.getNodes().add(consumer3);
-        traces.add(trace3);
 
         Trace trace4 = new Trace();
         trace4.setId("id4");
@@ -315,13 +269,8 @@ public class TraceServiceElasticsearchTest {
         consumer4.getProperties().add(new Property("prop1", "value1"));
         consumer4.getProperties().add(new Property("prop3", "value3"));
         trace4.getNodes().add(consumer4);
-        traces.add(trace4);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3, trace4));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -337,16 +286,13 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQuerySinglePropertyAndMultiValueExcluded() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testQuerySinglePropertyAndMultiValueExcluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
@@ -354,7 +300,6 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
-        traces.add(trace2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
@@ -362,13 +307,8 @@ public class TraceServiceElasticsearchTest {
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
         trace3.getNodes().add(consumer3);
-        traces.add(trace3);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -384,22 +324,19 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testQueryInteractionCorrelationId() {
+    public void testQueryInteractionCorrelationId() throws StoreException {
         testQueryCorrelationId(Scope.Interaction);
     }
 
     @Test
-    public void testQueryControlFlowCorrelationId() {
+    public void testQueryControlFlowCorrelationId() throws StoreException {
         testQueryCorrelationId(Scope.ControlFlow);
     }
 
-    protected void testQueryCorrelationId(Scope scope) {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    protected void testQueryCorrelationId(Scope scope) throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Consumer c1=new Consumer();
         c1.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid1"));
@@ -408,17 +345,12 @@ public class TraceServiceElasticsearchTest {
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setStartTime(2000);
-        traces.add(trace2);
 
         Consumer c2=new Consumer();
         c2.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid2"));
         trace2.getNodes().add(c2);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
@@ -433,7 +365,7 @@ public class TraceServiceElasticsearchTest {
     }
 
     @Test
-    public void testStoreAndRetrieveComplexTraceById() {
+    public void testStoreAndRetrieveInteractionTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis());
@@ -447,6 +379,7 @@ public class TraceServiceElasticsearchTest {
         Producer p1_2 = new Producer();
         p1_2.addInteractionCorrelationId("id1_2");
         p1_2.setUri("uri2");
+        p1_2.setEndpointType("HTTP");
         c1.getNodes().add(p1_2);
 
         Trace trace2 = new Trace();
@@ -454,6 +387,7 @@ public class TraceServiceElasticsearchTest {
         trace2.setStartTime(System.currentTimeMillis());
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
+        c2.setEndpointType("HTTP");
         c2.getProperties().add(new Property("prop1","value1"));
         c2.getProperties().add(new Property("prop2","value2"));
         c2.addInteractionCorrelationId("id1_2");
@@ -469,11 +403,7 @@ public class TraceServiceElasticsearchTest {
         traces.add(trace1);
         traces.add(trace2);
 
-        try {
-            ts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        ts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         // Retrieve stored trace
         Wait.until(() -> ts.getTrace(null, "1") != null);
@@ -484,12 +414,7 @@ public class TraceServiceElasticsearchTest {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        try {
-            System.out.println("TRACE=" + mapper.writeValueAsString(result));
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        System.out.println("TRACE(testStoreAndRetrieveInteractionTraceById)=" + mapper.writeValueAsString(result));
 
         assertEquals(2, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
@@ -505,6 +430,104 @@ public class TraceServiceElasticsearchTest {
                 .get(0).getClass());
         assertEquals("uri2", ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes()
                 .get(0).getUri());
+    }
+
+    @Test
+    public void testStoreAndRetrieveCausedByTraceById() throws StoreException, JsonProcessingException {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis());
+        Consumer c1 = new Consumer();
+        c1.setUri("uri1");
+        c1.getProperties().add(new Property("prop1","value1"));
+        trace1.getNodes().add(c1);
+        Component comp1 = new Component();
+        comp1.setUri("comp1");
+        c1.getNodes().add(comp1);
+
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setStartTime(System.currentTimeMillis());
+        Consumer c2 = new Consumer();
+        c2.setUri("uri2");
+        c2.getProperties().add(new Property("prop1","value1"));
+        c2.getProperties().add(new Property("prop2","value2"));
+        c2.addCausedByCorrelationId(trace1.getId()+":0:0");
+        trace2.getNodes().add(c2);
+        Component comp2 = new Component();
+        comp2.setUri("comp2");
+        c2.getNodes().add(comp2);
+
+        Trace trace3 = new Trace();
+        trace3.setId("3");
+        trace3.setStartTime(System.currentTimeMillis());
+        Consumer c3 = new Consumer();
+        c3.setUri("uri3");
+        c3.getProperties().add(new Property("prop3","value3"));
+        c3.addCausedByCorrelationId(trace1.getId()+":0:0");
+        trace3.getNodes().add(c3);
+        Component comp3 = new Component();
+        comp3.setUri("comp3");
+        c3.getNodes().add(comp3);
+
+        ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
+
+        // Retrieve stored trace
+        Wait.until(() -> ts.getTrace(null, "1") != null);
+        Trace result = ts.getTrace(null, "1");
+
+        assertNotNull(result);
+        assertEquals("1", result.getId());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        System.out.println("TRACE(testStoreAndRetrieveSingleCausedByTraceById)=" + mapper.writeValueAsString(result));
+
+        assertEquals(3, result.allProperties().size());
+        assertEquals(1, result.getNodes().size());
+        assertEquals(Consumer.class, result.getNodes().get(0).getClass());
+
+        Consumer resultconsumer1 = (Consumer) result.getNodes().get(0);
+
+        assertEquals("uri1", resultconsumer1.getUri());
+        assertEquals(1, resultconsumer1.getNodes().size());
+        assertEquals(Component.class, resultconsumer1.getNodes().get(0).getClass());
+
+        Component resultcomp1 = (Component)resultconsumer1.getNodes().get(0);
+
+        assertEquals(2, resultcomp1.getNodes().size());
+        assertEquals(Producer.class, resultcomp1.getNodes().get(0).getClass());
+
+        Producer resultproducer1 = (Producer)resultcomp1.getNodes().get(0);
+
+        assertEquals(1, resultproducer1.getNodes().size());
+        assertEquals(Consumer.class, resultproducer1.getNodes().get(0).getClass());
+
+        Consumer resultconsumer2 = (Consumer) resultproducer1.getNodes().get(0);
+
+        assertEquals("uri2", resultconsumer2.getUri());
+        assertEquals(1, resultconsumer2.getNodes().size());
+        assertEquals(Component.class, resultconsumer2.getNodes().get(0).getClass());
+
+        Component resultcomp2 = (Component)resultconsumer2.getNodes().get(0);
+
+        assertTrue(resultcomp2.getNodes().isEmpty());
+
+        assertEquals(Producer.class, resultcomp1.getNodes().get(1).getClass());
+
+        Producer resultproducer2 = (Producer)resultcomp1.getNodes().get(1);
+
+        assertEquals(Consumer.class, resultproducer2.getNodes().get(0).getClass());
+
+        Consumer resultconsumer3 = (Consumer) resultproducer2.getNodes().get(0);
+
+        assertEquals("uri3", resultconsumer3.getUri());
+        assertEquals(1, resultconsumer3.getNodes().size());
+        assertEquals(Component.class, resultconsumer3.getNodes().get(0).getClass());
+
+        Component resultcomp3 = (Component)resultconsumer3.getNodes().get(0);
+
+        assertTrue(resultcomp3.getNodes().isEmpty());
     }
 
 }

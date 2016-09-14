@@ -115,10 +115,9 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
         for (int i = 0; i < details.size(); i++) {
             CommunicationDetails cd = details.get(i);
-            String id = cd.getId();
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Store communication details [id="+id+"]: "+cd);
+                log.finest("Store communication details [link id="+cd.getLinkId()+"]: "+cd);
             }
 
             // TODO: HWKBTM-348 How long should details be cached if related to long running
@@ -131,15 +130,21 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
 
             if (cd.isMultiConsumer()) {
                 synchronized (communicationDetailsMultiConsumers) {
-                    List<CommunicationDetails> list = communicationDetailsMultiConsumers.get(id);
+                    List<CommunicationDetails> list = communicationDetailsMultiConsumers.get(cd.getLinkId());
                     if (list == null) {
                         list = new ArrayList<CommunicationDetails>();
                     }
                     list.add(cd);
-                    communicationDetailsMultiConsumers.put(id, list, 1, TimeUnit.MINUTES);
+
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Store multiconsumer communication details list [link id="
+                                +cd.getLinkId()+"]: "+list);
+                    }
+
+                    communicationDetailsMultiConsumers.put(cd.getLinkId(), list, 1, TimeUnit.MINUTES);
                 }
             } else {
-                communicationDetails.put(id, cd, 1, TimeUnit.MINUTES);
+                communicationDetails.put(cd.getLinkId(), cd, 1, TimeUnit.MINUTES);
             }
         }
 

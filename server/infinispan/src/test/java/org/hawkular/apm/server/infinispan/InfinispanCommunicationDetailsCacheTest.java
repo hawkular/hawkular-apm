@@ -52,7 +52,7 @@ public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanT
     public void testSingleConsumerFound() {
         List<CommunicationDetails> details = new ArrayList<CommunicationDetails>();
         CommunicationDetails cd = new CommunicationDetails();
-        cd.setId("id1");
+        cd.setLinkId("id1");
         details.add(cd);
 
         try {
@@ -67,17 +67,17 @@ public class InfinispanCommunicationDetailsCacheTest extends AbstractInfinispanT
     @Test
     public void testGetByIdMultiple() throws CacheException {
         CommunicationDetails cdMultipleConsumer1 = new CommunicationDetails();
-        cdMultipleConsumer1.setId("id1");
+        cdMultipleConsumer1.setLinkId("id1");
         cdMultipleConsumer1.setTargetFragmentId("fragmentId1");
         cdMultipleConsumer1.setMultiConsumer(true);
 
         CommunicationDetails cdMultipleConsumer2 = new CommunicationDetails();
-        cdMultipleConsumer2.setId("id1");
+        cdMultipleConsumer2.setLinkId("id1");
         cdMultipleConsumer2.setTargetFragmentId("fragmentId2");
         cdMultipleConsumer2.setMultiConsumer(true);
 
         CommunicationDetails cd3 = new CommunicationDetails();
-        cd3.setId("id2");
+        cd3.setLinkId("id2");
 
         cdc.store(null, Arrays.asList(cdMultipleConsumer1, cdMultipleConsumer2, cd3));
 

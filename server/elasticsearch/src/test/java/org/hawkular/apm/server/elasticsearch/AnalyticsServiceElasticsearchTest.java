@@ -2083,7 +2083,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("cd1");
+        cd1.setLinkId("cd1");
         cd1.setBusinessTransaction("testapp");
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
@@ -2092,7 +2092,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("cd2");
+        cd2.setLinkId("cd2");
         cd2.setBusinessTransaction("testapp");
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
@@ -2101,7 +2101,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
-        cd3.setId("cd3");
+        cd3.setLinkId("cd3");
         cd3.setBusinessTransaction("testapp");
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
@@ -2110,7 +2110,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd3);
 
         CommunicationDetails cd4 = new CommunicationDetails();
-        cd4.setId("cd4");
+        cd4.setLinkId("cd4");
         cd4.setBusinessTransaction("testapp");
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
@@ -2119,7 +2119,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd4);
 
         CommunicationDetails cd5 = new CommunicationDetails();
-        cd5.setId("cd5");
+        cd5.setLinkId("cd5");
         cd5.setBusinessTransaction("testapp");
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
@@ -2270,7 +2270,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("cd1");
+        cd1.setLinkId("cd1");
         cd1.setBusinessTransaction("testapp");
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
@@ -2279,7 +2279,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("cd2");
+        cd2.setLinkId("cd2");
         cd2.setBusinessTransaction("testapp");
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
@@ -2288,7 +2288,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
-        cd3.setId("cd3");
+        cd3.setLinkId("cd3");
         cd3.setBusinessTransaction("testapp");
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
@@ -2297,7 +2297,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd3);
 
         CommunicationDetails cd4 = new CommunicationDetails();
-        cd4.setId("cd4");
+        cd4.setLinkId("cd4");
         cd4.setBusinessTransaction("testapp");
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
@@ -2306,7 +2306,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd4);
 
         CommunicationDetails cd5 = new CommunicationDetails();
-        cd5.setId("cd5");
+        cd5.setLinkId("cd5");
         cd5.setBusinessTransaction("testapp");
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
@@ -2465,7 +2465,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         CommunicationDetails cd1internal = new CommunicationDetails();
-        cd1internal.setId("cd1internal");
+        cd1internal.setLinkId("cd1internal");
         cd1internal.setBusinessTransaction("testapp");
         cd1internal.setTimestamp(1500);
         cd1internal.setLatency(50);
@@ -2475,7 +2475,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd1internal);
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("cd1");
+        cd1.setLinkId("cd1");
         cd1.setBusinessTransaction("testapp");
         cd1.setTimestamp(1550);
         cd1.setLatency(100);
@@ -2484,7 +2484,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("cd2");
+        cd2.setLinkId("cd2");
         cd2.setBusinessTransaction("testapp");
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
@@ -2493,7 +2493,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
-        cd3.setId("cd3");
+        cd3.setLinkId("cd3");
         cd3.setBusinessTransaction("testapp");
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
@@ -2502,7 +2502,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd3);
 
         CommunicationDetails cd4 = new CommunicationDetails();
-        cd4.setId("cd4");
+        cd4.setLinkId("cd4");
         cd4.setBusinessTransaction("testapp");
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
@@ -2511,7 +2511,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd4);
 
         CommunicationDetails cd5 = new CommunicationDetails();
-        cd5.setId("cd5");
+        cd5.setLinkId("cd5");
         cd5.setBusinessTransaction("testapp");
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
@@ -2671,7 +2671,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("cd1");
+        cd1.setLinkId("cd1");
         cd1.setBusinessTransaction("testapp");
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
@@ -2681,7 +2681,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
-        cd2.setId("cd2");
+        cd2.setLinkId("cd2");
         cd2.setBusinessTransaction("testapp");
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
@@ -2691,7 +2691,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
-        cd3.setId("cd3");
+        cd3.setLinkId("cd3");
         cd3.setBusinessTransaction("testapp");
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
@@ -2701,7 +2701,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd3);
 
         CommunicationDetails cd4 = new CommunicationDetails();
-        cd4.setId("cd4");
+        cd4.setLinkId("cd4");
         cd4.setBusinessTransaction("testapp");
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
@@ -2711,7 +2711,7 @@ public class AnalyticsServiceElasticsearchTest {
         cds.add(cd4);
 
         CommunicationDetails cd5 = new CommunicationDetails();
-        cd5.setId("cd5");
+        cd5.setLinkId("cd5");
         cd5.setBusinessTransaction("testapp");
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
@@ -2809,7 +2809,7 @@ public class AnalyticsServiceElasticsearchTest {
         }
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setId("cd1");
+        cd1.setLinkId("cd1");
         cd1.setBusinessTransaction("testapp");
         cd1.setTimestamp(1500);
         cd1.setLatency(100);

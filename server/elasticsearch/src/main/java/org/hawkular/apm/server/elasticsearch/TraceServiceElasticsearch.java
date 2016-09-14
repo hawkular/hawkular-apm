@@ -37,13 +37,15 @@ import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.trace.ContainerNode;
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TraceService;
-import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.server.api.services.SpanService;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
 
@@ -160,7 +162,10 @@ public class TraceServiceElasticsearch implements TraceService {
         Trace ret = getFragment(tenantId, id);
 
         if (ret != null) {
-            processConnectedFragment(tenantId, ret, ret, null);
+            for (int i=0; i < ret.getNodes().size(); i++) {
+                Node node = ret.getNodes().get(i);
+                processConnectedNode(tenantId, node, new StringBuilder(ret.getId()).append(':').append(i));
+            }
         }
 
         if (msgLog.isTraceEnabled()) {
@@ -175,36 +180,56 @@ public class TraceServiceElasticsearch implements TraceService {
     }
 
     /**
-     * This method aggregates enhances the root trace, representing the
-     * complete end to end instance view, with the details available from
-     * a linked trace fragment that should be attached to the supplied
-     * Producer node. If the producer node is null then don't merge
-     * (as fragment is root) and just recursively process the fragment
-     * to identify additional linked fragments.
+     * This method recursively processes the supplied node to identify
+     * other trace fragments that are related, building up the end to
+     * end trace as it goes.
      *
      * @param tenantId The tenant id
-     * @param root The root trace
-     * @param fragment The fragment to be processed
-     * @param producer The producer node, or null if processing the top level fragment
+     * @param root The node
+     * @param nodePath The node's path
      */
-    protected void processConnectedFragment(String tenantId, Trace root, Trace fragment, Producer producer) {
-        if (producer != null) {
-            // Attach the fragment root nodes to the producer
-            producer.getNodes().addAll(fragment.getNodes());
+    protected void processConnectedNode(String tenantId, Node node, StringBuilder nodePath) {
+
+        if (node.containerNode()) {
+
+            for (int i=0; i < ((ContainerNode)node).getNodes().size(); i++) {
+                Node n = ((ContainerNode)node).getNodes().get(i);
+                processConnectedNode(tenantId, n, new StringBuilder(nodePath).append(':').append(i));
+            }
+
+            // Check if node has been referenced by one or more 'caused by' links
+            Criteria criteria = new Criteria().setStartTime(100);
+            criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, nodePath.toString()));
+            List<Trace> fragments = searchFragments(tenantId, criteria);
+
+            ContainerNode anchor = (ContainerNode)node;
+
+            for (Trace tf : fragments) {
+                for (int i=0; i < tf.getNodes().size(); i++) {
+                    Node n = tf.getNodes().get(i);
+                    if (anchor.getClass() != Producer.class) {
+                        Producer p=new Producer();
+                        anchor.getNodes().add(p);
+                        p.getNodes().add(n);
+                    } else {
+                        anchor.getNodes().add(n);
+                    }
+                    processConnectedNode(tenantId, n, new StringBuilder(tf.getId()).append(':').append(i));
+                }
+            }
         }
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(fragment.getNodes(), Producer.class, producers);
+        if (node.getClass() == Producer.class && !node.getCorrelationIds().isEmpty()) {
+            // Enable unrestricted time search for now - may need to restrict if becomes too inefficient
+            Criteria criteria = new Criteria().setStartTime(100);
+            criteria.getCorrelationIds().addAll(node.getCorrelationIds());
+            List<Trace> fragments = searchFragments(tenantId, criteria);
 
-        for (Producer p : producers) {
-            if (!p.getCorrelationIds().isEmpty()) {
-                // Enable unrestricted time search for now - may need to restrict if becomes too inefficient
-                Criteria criteria = new Criteria().setStartTime(100);
-                criteria.getCorrelationIds().addAll(p.getCorrelationIds());
-                List<Trace> fragments = searchFragments(tenantId, criteria);
-
-                for (Trace tf : fragments) {
-                    processConnectedFragment(tenantId, root, tf, p);
+            for (Trace tf : fragments) {
+                for (int i=0; i < tf.getNodes().size(); i++) {
+                    Node n = tf.getNodes().get(i);
+                    ((Producer)node).getNodes().add(n);
+                    processConnectedNode(tenantId, n, new StringBuilder(tf.getId()).append(':').append(i));
                 }
             }
         }

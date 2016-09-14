@@ -53,7 +53,10 @@ public class TraceCompletionInformationInitiator extends
         // Check whether the trace fragment is an initial fragment
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
-            if (n.getClass() != Consumer.class || n.getCorrelationIds().isEmpty()) {
+
+            // If node has no correlation ids, then it is a candidate for the start
+            // of a trace
+            if (n.getCorrelationIds().isEmpty()) {
                 TraceCompletionInformation ci = new TraceCompletionInformation();
 
                 // Create the initial version of the completion time

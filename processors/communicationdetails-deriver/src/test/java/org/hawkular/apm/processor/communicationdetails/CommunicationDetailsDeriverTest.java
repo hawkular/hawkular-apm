@@ -294,7 +294,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertNotNull(details);
 
-        assertEquals("pid1", details.getId());
+        assertEquals("pid1", details.getLinkId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
@@ -389,7 +389,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertNotNull(details);
 
-        assertEquals("pid1", details.getId());
+        assertEquals("pid1", details.getLinkId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
@@ -631,7 +631,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertNotNull(details);
 
-        assertEquals("pid1", details.getId());
+        assertEquals("pid1", details.getLinkId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
         assertEquals(Constants.URI_CLIENT_PREFIX + "TheURI", details.getSource());
         assertEquals("TheURI", details.getTarget());
@@ -715,7 +715,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertNotNull(details);
 
-        assertEquals("pid1", details.getId());
+        assertEquals("pid1", details.getLinkId());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
 
@@ -888,11 +888,11 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(details);
 
         assertEquals(5, details.getOutbound().size());
-        assertTrue(details.getOutbound().get(0).getIds().contains("trace2:0"));
-        assertTrue(details.getOutbound().get(1).getIds().contains("trace2:0:0"));
-        assertTrue(details.getOutbound().get(2).getIds().contains("pid2"));
-        assertTrue(details.getOutbound().get(3).getIds().contains("trace2:0:1"));
-        assertTrue(details.getOutbound().get(4).getIds().contains("pid3"));
+        assertTrue(details.getOutbound().get(0).getLinkIds().contains("trace2:0"));
+        assertTrue(details.getOutbound().get(1).getLinkIds().contains("trace2:0:0"));
+        assertTrue(details.getOutbound().get(2).getLinkIds().contains("pid2"));
+        assertTrue(details.getOutbound().get(3).getLinkIds().contains("trace2:0:1"));
+        assertTrue(details.getOutbound().get(4).getLinkIds().contains("pid3"));
         assertTrue(details.getOutbound().get(0).isMultiConsumer());
         assertTrue(details.getOutbound().get(1).isMultiConsumer());
         assertFalse(details.getOutbound().get(2).isMultiConsumer());
