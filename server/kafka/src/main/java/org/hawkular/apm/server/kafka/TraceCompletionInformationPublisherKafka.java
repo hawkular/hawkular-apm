@@ -17,8 +17,8 @@
 package org.hawkular.apm.server.kafka;
 
 import org.hawkular.apm.client.kafka.AbstractPublisherKafka;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationPublisher;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformationPublisher;
 
 /**
  * This class provides the Kafka based TraceCompletionInformationPublisher implementation.

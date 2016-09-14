@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.processor.fragmentcompletiontime.FragmentCompletionTimeDeriver;
 import org.hawkular.apm.server.api.services.FragmentCompletionTimePublisher;
+import org.hawkular.apm.server.processor.fragmentcompletiontime.FragmentCompletionTimeDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

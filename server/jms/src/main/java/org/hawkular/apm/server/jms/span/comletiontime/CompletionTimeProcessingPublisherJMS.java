@@ -17,9 +17,9 @@
 
 package org.hawkular.apm.server.jms.span.comletiontime;
 
-import org.hawkular.apm.processor.zipkin.CompletionTimeProcessing;
-import org.hawkular.apm.processor.zipkin.CompletionTimeProcessingPublisher;
 import org.hawkular.apm.server.jms.AbstractPublisherJMS;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessing;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessingPublisher;
 
 /**
  * @author Pavol Loffay

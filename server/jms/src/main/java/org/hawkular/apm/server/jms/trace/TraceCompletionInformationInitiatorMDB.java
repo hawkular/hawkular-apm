@@ -23,9 +23,9 @@ import javax.inject.Inject;
 import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationInitiator;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformationInitiator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

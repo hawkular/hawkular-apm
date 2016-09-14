@@ -20,9 +20,9 @@ import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionTimeDeriver;
 import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionTimeDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

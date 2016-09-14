@@ -43,28 +43,12 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-fragmentcompletiontime-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-notification-deriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
+      <artifactId>hawkular-apm-server-processors</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-processors-zipkin</artifactId>
+      <artifactId>hawkular-apm-server-processors-zipkin</artifactId>
     </dependency>
 
     <dependency>

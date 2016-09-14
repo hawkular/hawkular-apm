@@ -26,10 +26,10 @@ import javax.inject.Inject;
 import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
-import org.hawkular.apm.processor.zipkin.CompletionTimeDeriver;
-import org.hawkular.apm.processor.zipkin.CompletionTimeProcessing;
 import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeDeriver;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessing;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

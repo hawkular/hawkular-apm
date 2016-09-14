@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.NodeDetails;
-import org.hawkular.apm.processor.zipkin.NodeDetailsDeriver;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.jms.NodeDetailsPublisherJMS;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
+import org.hawkular.apm.server.processor.zipkin.NodeDetailsDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

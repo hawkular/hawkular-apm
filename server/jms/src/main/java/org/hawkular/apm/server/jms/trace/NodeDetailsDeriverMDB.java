@@ -24,9 +24,9 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.processor.nodedetails.NodeDetailsDeriver;
 import org.hawkular.apm.server.jms.NodeDetailsPublisherJMS;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
+import org.hawkular.apm.server.processor.nodedetails.NodeDetailsDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
