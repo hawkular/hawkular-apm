@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.collector;
+package org.hawkular.apm.client.collector.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,7 +47,6 @@ import org.hawkular.apm.api.services.PublisherMetricHandler;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.services.TraceService;
-import org.hawkular.apm.client.collector.internal.FragmentBuilder;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 

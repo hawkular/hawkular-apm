@@ -50,4 +50,4 @@ export HAWKULAR_APM_CONFIG_REFRESH=10
 export JAVA_OPTS="-javaagent:$HAWKULAR_APM_AGENT_JAR_PATH"
 
 # Wildfly specific
-export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api"
+export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.collector"

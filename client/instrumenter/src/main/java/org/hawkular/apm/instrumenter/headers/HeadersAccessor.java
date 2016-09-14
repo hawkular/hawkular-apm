@@ -14,22 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.api;
+package org.hawkular.apm.instrumenter.headers;
 
-import org.hawkular.apm.api.model.config.CollectorConfiguration;
+import java.util.Map;
 
 /**
- * This interface represents the client side configuration manager.
+ * This class provides a factory for obtaining header information from a target object.
  *
  * @author gbrown
  */
-public interface ConfigurationManager {
+public interface HeadersAccessor {
 
     /**
-     * This method returns the collector configuration.
+     * This method returns the target type associated with this factory.
      *
-     * @return The collection configuration
+     * @return The target type
      */
-    CollectorConfiguration getConfiguration();
+    String getTargetType();
+
+    /**
+     * This method returns the headers associated with the supplied target instance.
+     *
+     * @param target The target instance
+     * @return The headers associated with the target instance
+     */
+    Map<String, String> getHeaders(Object target);
 
 }

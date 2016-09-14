@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.collector.internal;
+package org.hawkular.apm.client.api.reporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.PropertyUtil;
+import org.hawkular.apm.client.api.TraceReporter;
 
 /**
  * This class is responsible for managing a set of traces and
@@ -38,7 +39,7 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  *
  * @author gbrown
  */
-public class TraceReporter {
+public class BatchTraceReporter implements TraceReporter {
 
     /**  */
     private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
@@ -46,7 +47,7 @@ public class TraceReporter {
     /**  */
     private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANTID";
 
-    private static final Logger log = Logger.getLogger(TraceReporter.class.getName());
+    private static final Logger log = Logger.getLogger(BatchTraceReporter.class.getName());
 
     /**  */
     private static final int DEFAULT_BATCH_TIME = 500;
@@ -169,11 +170,10 @@ public class TraceReporter {
         this.tenantId = tenantId;
     }
 
-    /**
-     * This method reports the trace to the server.
-     *
-     * @param trace The trace
+    /* (non-Javadoc)
+     * @see org.hawkular.apm.client.api.TraceReporter#report(org.hawkular.apm.api.model.trace.Trace)
      */
+    @Override
     public void report(Trace trace) {
         if (tracePublisher != null) {
             try {
@@ -213,4 +213,5 @@ public class TraceReporter {
             });
         }
     }
+
 }

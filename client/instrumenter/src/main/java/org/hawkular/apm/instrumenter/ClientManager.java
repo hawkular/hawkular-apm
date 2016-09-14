@@ -32,7 +32,7 @@ import org.hawkular.apm.api.model.config.instrumentation.Instrumentation;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.apm.client.api.TraceCollector;
+import org.hawkular.apm.client.collector.TraceCollector;
 import org.hawkular.apm.instrumenter.rules.RuleTransformer;
 import org.jboss.byteman.agent.Retransformer;
 

@@ -310,7 +310,7 @@
         <configuration>
           <jboss-home>${hawkular.home}</jboss-home>
           <javaOpts>
-            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api</javaOpt>
+            <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.collector</javaOpt>
           </javaOpts>
         </configuration>
         <executions>
@@ -335,7 +335,7 @@
                 <javaOpt>-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_USERNAME=jdoe</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_PASSWORD=password</javaOpt>
-                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.api</javaOpt>
+                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.collector</javaOpt>
                 <javaOpt>-DHAWKULAR_APM_LOG_LEVEL=INFO</javaOpt>
               </javaOpts>
               <startup-timeout>180</startup-timeout>

@@ -16,28 +16,20 @@
  */
 package org.hawkular.apm.client.api;
 
-import java.util.Map;
+import org.hawkular.apm.api.model.trace.Trace;
 
 /**
- * This class provides a factory for obtaining header information from a target object.
+ * This interface represents a component for reporting Trace fragments.
  *
  * @author gbrown
  */
-public interface HeadersAccessor {
+public interface TraceReporter {
 
     /**
-     * This method returns the target type associated with this factory.
+     * This method reports a trace fragment.
      *
-     * @return The target type
+     * @param trace The trace fragment
      */
-    String getTargetType();
-
-    /**
-     * This method returns the headers associated with the supplied target instance.
-     *
-     * @param target The target instance
-     * @return The headers associated with the target instance
-     */
-    Map<String, String> getHeaders(Object target);
+    void report(Trace trace);
 
 }
