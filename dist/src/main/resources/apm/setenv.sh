@@ -24,11 +24,12 @@
 
 if [ "$#" -ne 1 ]; then
    echo "Wrong number of parameters, expected APM server port number"
-   exit 1
+   return 1
 else
     number_re='^[0-9]+$'
     if ! [[ "$1" =~ $number_re ]] ; then
-       echo "Port is not a number" && exit 1
+       echo "Port is not a number"
+       return 1
     fi
 fi
 
