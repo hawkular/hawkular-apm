@@ -29,15 +29,14 @@ To build and run execute:
 
 ```shell
 $ mvn clean install -Pdev -DskipTests [-Ptests]
-$ dist/target/hawkular-apm-${version}/bin/standalone.sh [-Djboss.socket.binding.port-offset=1331]
+$ dist/target/hawkular-apm-${version}/bin/standalone.sh [-Djboss.http.port=9411]
 
 -> go to http://localhost:[8080|9411]/ and log in with jdoe:password
 ```
 
 The parameters to these commands are:
 
-* `-Djboss.socket.binding.port-offset=1331` - deploy application on http://zipkin.io/[Zipkin] 9411 port. Default
- APM port is 8080.
+* `-Djboss.http.port=9411` - bind APM port to http://zipkin.io/[Zipkin] 9411 port. Default APM port is 8080.
 * `-Pdev` - create user jdoe:password
 * `-Ptests` - run integration tests
 
