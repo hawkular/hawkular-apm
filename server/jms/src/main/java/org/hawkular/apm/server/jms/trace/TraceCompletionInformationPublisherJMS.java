@@ -16,9 +16,9 @@
  */
 package org.hawkular.apm.server.jms.trace;
 
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformationPublisher;
 import org.hawkular.apm.server.jms.AbstractPublisherJMS;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformationPublisher;
 
 /**
  * This class represents the trace completion information JMS publisher.

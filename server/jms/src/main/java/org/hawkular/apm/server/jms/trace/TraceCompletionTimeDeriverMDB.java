@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionInformation;
-import org.hawkular.apm.processor.tracecompletiontime.TraceCompletionTimeDeriver;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
 import org.hawkular.apm.server.jms.TraceCompletionTimePublisherJMS;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation;
+import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionTimeDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

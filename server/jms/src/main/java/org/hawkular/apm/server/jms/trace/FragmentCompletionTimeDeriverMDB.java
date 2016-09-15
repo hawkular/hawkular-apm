@@ -24,9 +24,9 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.processor.fragmentcompletiontime.FragmentCompletionTimeDeriver;
 import org.hawkular.apm.server.jms.FragmentCompletionTimePublisherJMS;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
+import org.hawkular.apm.server.processor.fragmentcompletiontime.FragmentCompletionTimeDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

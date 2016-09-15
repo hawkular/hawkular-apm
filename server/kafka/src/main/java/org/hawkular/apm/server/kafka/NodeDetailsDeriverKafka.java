@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.processor.nodedetails.NodeDetailsDeriver;
 import org.hawkular.apm.server.api.services.NodeDetailsPublisher;
+import org.hawkular.apm.server.processor.nodedetails.NodeDetailsDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

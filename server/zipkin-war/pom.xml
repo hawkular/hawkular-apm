@@ -40,7 +40,7 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-processors-zipkin</artifactId>
+      <artifactId>hawkular-apm-server-processors-zipkin</artifactId>
       <scope>provided</scope>
     </dependency>
 

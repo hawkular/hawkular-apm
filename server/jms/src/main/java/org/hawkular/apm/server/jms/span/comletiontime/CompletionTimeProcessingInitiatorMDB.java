@@ -23,12 +23,12 @@ import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
-import org.hawkular.apm.processor.zipkin.CompletionTimeDeriverInitiator;
-import org.hawkular.apm.processor.zipkin.CompletionTimeProcessing;
-import org.hawkular.apm.processor.zipkin.CompletionTimeProcessingPublisher;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
 import org.hawkular.apm.server.jms.span.SpanPublisherJMS;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeDeriverInitiator;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessing;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessingPublisher;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

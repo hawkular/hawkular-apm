@@ -68,17 +68,13 @@
     <module>client/kafka</module>
     <module>client/trace-publisher-rest-client</module>
     <module>client/trace-service-rest-client</module>
-    <module>processors/communicationdetails-deriver</module>
-    <module>processors/tracecompletiontime-deriver</module>
-    <module>processors/fragmentcompletiontime-deriver</module>
-    <module>processors/notification-deriver</module>
-    <module>processors/nodedetails-deriver</module>
-    <module>processors/zipkin</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
     <module>server/infinispan</module>
     <module>server/jms</module>
     <module>server/kafka</module>
+    <module>server/processors</module>
+    <module>server/processors-zipkin</module>
     <module>server/rest</module>
     <module>server/security-jaas</module>
     <module>server/zipkin-rest</module>
@@ -213,33 +209,13 @@
       <!-- APM Processors -->
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-communicationdetails-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-tracecompletiontime-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-fragmentcompletiontime-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-notification-deriver</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-nodedetails-deriver</artifactId>
+        <artifactId>hawkular-apm-server-processors</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-processors-zipkin</artifactId>
+        <artifactId>hawkular-apm-server-processors-zipkin</artifactId>
         <version>${project.version}</version>
       </dependency>
 

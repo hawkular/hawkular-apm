@@ -21,9 +21,9 @@ import java.util.logging.Logger;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.processor.communicationdetails.CommunicationDetailsDeriver;
 import org.hawkular.apm.server.api.services.CommunicationDetailsPublisher;
 import org.hawkular.apm.server.api.services.SourceInfoCache;
+import org.hawkular.apm.server.processor.communicationdetails.CommunicationDetailsDeriver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
