@@ -5,7 +5,7 @@ ifdef::env-github[]
 [link=https://travis-ci.org/hawkular/hawkular-apm]
 image::https://travis-ci.org/hawkular/hawkular-apm.svg?branch=master[Build Status]
 [link=https://issues.jboss.org/projects/HWKAPM/issues]
-image::https://img.shields.io/badge/Jira-issues-blue.svg[Build Status]
+image::https://img.shields.io/badge/Jira-issues-blue.svg[Jira Issues]
 endif::[]
 
 [.lead]
