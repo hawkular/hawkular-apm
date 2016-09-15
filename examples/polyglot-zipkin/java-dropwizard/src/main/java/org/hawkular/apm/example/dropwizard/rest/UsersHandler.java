@@ -48,7 +48,8 @@ import com.github.kristofa.brave.BraveExecutorService;
 @Produces(APPLICATION_JSON)
 public class UsersHandler {
 
-    static final String RUBY_SERVICE_HOST = "ruby:3002";
+    static final int RUBY_SERVICE_PORT = 3002;
+    static final String RUBY_SERVICE_HOST = "ruby";
 
     private UserDAO userDAO;
 
@@ -93,7 +94,7 @@ public class UsersHandler {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            client.target("http://" + RUBY_SERVICE_HOST + "/roda/users").request().get();
+            client.target("http://" + RUBY_SERVICE_HOST + ":" + RUBY_SERVICE_PORT + "/roda/users").request().get();
         });
     }
 }
