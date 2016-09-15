@@ -60,6 +60,10 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-processors</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-processors-alerts-publisher</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.logging</groupId>

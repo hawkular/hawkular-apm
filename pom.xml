@@ -74,6 +74,7 @@
     <module>server/jms</module>
     <module>server/kafka</module>
     <module>server/processors</module>
+    <module>server/processors-alerts-publisher</module>
     <module>server/processors-zipkin</module>
     <module>server/rest</module>
     <module>server/security-jaas</module>
@@ -126,6 +127,7 @@
     <version.org.mvel>2.2.6.Final</version.org.mvel>
     <version.org.slf4j>1.7.5</version.org.slf4j> <!-- Align with version used by camel -->
     <version.org.tuckey>4.0.3</version.org.tuckey>
+    <version.netflix.feign>8.15.1</version.netflix.feign>
   </properties>
 
   <dependencyManagement>
@@ -210,6 +212,12 @@
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-server-processors</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-server-processors-alerts-publisher</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -533,6 +541,27 @@
         <version>${version.org.codehaus.groovy}</version>
       </dependency>
 
+      <!-- Feign dependencies -->
+      <dependency>
+        <groupId>com.netflix.feign</groupId>
+        <artifactId>feign-core</artifactId>
+        <version>${version.netflix.feign}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.feign</groupId>
+        <artifactId>feign-hystrix</artifactId>
+        <version>${version.netflix.feign}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.feign</groupId>
+        <artifactId>feign-httpclient</artifactId>
+        <version>${version.netflix.feign}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.feign</groupId>
+        <artifactId>feign-jackson</artifactId>
+        <version>${version.netflix.feign}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
