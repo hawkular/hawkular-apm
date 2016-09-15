@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -16,6 +15,25 @@
 # limitations under the License.
 #
 
+FROM maven:3.3.9-jdk-8
 
-curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:8080/ticket-monster/rest/bookings' -d \
-    '{"ticketRequests":[{"ticketPrice":5,"quantity":1},{"ticketPrice":12,"quantity":2}],"email":"user@email.com","performance":"3"}'
+MAINTAINER Pavol Loffay <ploffay@redhat.com>
+
+ENV APP_HOME /app/
+
+COPY pom.xml $APP_HOME
+COPY src $APP_HOME/src
+COPY app.yml $APP_HOME
+COPY init.sql $APP_HOME
+
+WORKDIR $APP_HOME
+RUN mvn package
+
+# create user (mysql should not run as root)
+RUN useradd -m app-user
+RUN chown -R app-user $APP_HOME
+USER app-user
+
+EXPOSE 3000
+
+CMD ["java", "-jar", "target/hawkular-apm-example-zipkin-dropwizard.jar", "server", "app.yml"]

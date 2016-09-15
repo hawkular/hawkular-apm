@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -16,6 +15,14 @@
 # limitations under the License.
 #
 
+FROM cassandra:3.7
 
-curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:8080/ticket-monster/rest/bookings' -d \
-    '{"ticketRequests":[{"ticketPrice":5,"quantity":1},{"ticketPrice":12,"quantity":2}],"email":"user@email.com","performance":"3"}'
+MAINTAINER Pavol Loffay <ploffay@redhat.com>
+
+ENV APP_HOME /app/
+ENV CASSANDRA_HOME /usr/share/cassandra/lib/
+ENV CASSANDRA_CLUSTER_NAME cassandra-wildfly-swarm
+
+ADD target/lib/*.jar $CASSANDRA_HOME
+
+EXPOSE 9042 9160 7000 7001

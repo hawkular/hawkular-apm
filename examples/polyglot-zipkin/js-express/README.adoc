@@ -1,0 +1,17 @@
+= Example application using zipkin-js
+
+Javascript example application instrumented with zipkin-js library.
+
+== Standalone Run & Build
+[source,shell]
+----
+$ npm install
+$ npm start
+----
+
+== Docker
+[source,shell]
+----
+$ docker build -t hawkular/apm-example-polyglot-zipkin-js .
+$ docker run -it --rm -p 3001:3001 --add-host tracing-server:$TRACING_SERVER -e TRACING_PORT=$TRACING_PORT hawkular/apm-example-polyglot-zipkin-js
+----

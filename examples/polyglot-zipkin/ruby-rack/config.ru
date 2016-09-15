@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -16,6 +15,22 @@
 # limitations under the License.
 #
 
+# Rack configuration file
 
-curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:8080/ticket-monster/rest/bookings' -d \
-    '{"ticketRequests":[{"ticketPrice":5,"quantity":1},{"ticketPrice":12,"quantity":2}],"email":"user@email.com","performance":"3"}'
+require 'roda'
+require 'zipkin-tracer'
+
+require_relative 'app'
+
+zipkin_config = {
+    service_name: 'roda',
+    service_port: 3002,
+    sample_rate: 1,
+    log_tracing: true,
+    json_api_host: 'http://tracing-server:' + ENV['TRACING_PORT']
+    }
+
+use ZipkinTracer::RackHandler, zipkin_config
+
+run MyApp
+

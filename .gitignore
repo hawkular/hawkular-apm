@@ -43,3 +43,7 @@ defs.d.ts
 
 *.log
 
+# Dia diagrams 
+*.dia~
+
+npm-debug.log
