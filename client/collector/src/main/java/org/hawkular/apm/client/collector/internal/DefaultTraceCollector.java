@@ -821,19 +821,19 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     /* (non-Javadoc)
      * @see org.hawkular.apm.client.api.TraceCollector#setFault(java.lang.String,
-     *                  java.lang.String, java.lang.String)
+     *                  java.lang.String)
      */
     @Override
-    public void setFault(String location, String value, String description) {
+    public void setFault(String location, String value) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set fault: location=[" + location + "] value=" + value + " description=" + description);
+            log.finest("Set fault: location=[" + location + "] value=" + value);
         }
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.getCurrentNode().setFault(value).setFaultDescription(description);
+                builder.getCurrentNode().setFault(value);
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setFault: No fragment builder for this thread", null);
             }

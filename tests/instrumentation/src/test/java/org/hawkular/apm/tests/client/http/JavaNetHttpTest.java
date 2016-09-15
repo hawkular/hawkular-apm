@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
@@ -323,7 +324,7 @@ public class JavaNetHttpTest extends ClientTestBase {
 
         if (fault) {
             assertEquals("401", testProducer.getFault());
-            assertEquals("Unauthorized", testProducer.getFaultDescription());
+            assertEquals("Unauthorized", testProducer.getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
         } else {
 
             if (isProcessContent()) {

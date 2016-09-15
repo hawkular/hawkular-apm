@@ -76,8 +76,11 @@
           "idExpression": "\"java.net-async-\"+hashCode($0)"
         },{
           "type": "SetFault",
-          "nameExpression": "simpleClassName($^)",
-          "descriptionExpression": "$^.getMessage()"
+          "valueExpression": "simpleClassName($^)"
+        },{
+          "type": "SetDetail",
+          "name": "fault.description",
+          "valueExpression": "$^.getMessage()"
         },{
           "type": "InstrumentProducer",
           "direction": "Out",
@@ -252,8 +255,11 @@
         "condition": "isActive() && $! >= 400",
         "actions": [{
           "type": "SetFault",
-          "nameExpression": "$!",
-          "descriptionExpression": "$0.responseMessage"
+          "valueExpression": "$!"
+        },{
+          "type": "SetDetail",
+          "name": "fault.description",
+          "valueExpression": "$0.responseMessage"
         },{
           "type": "InstrumentProducer",
           "direction": "Out",

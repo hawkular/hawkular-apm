@@ -37,4 +37,10 @@ public class Constants {
      * Property key representing service name
      */
     public static final String PROP_SERVICE_NAME = "service";
+
+    /**
+     * Details key representing a description of a fault.
+     */
+    public static final String DETAIL_FAULT_DESCRIPTION = "fault.description";
+
 }

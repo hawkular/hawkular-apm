@@ -26,37 +26,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class SetFault extends InstrumentAction {
 
     @JsonInclude
-    private String nameExpression;
-
-    @JsonInclude
-    private String descriptionExpression;
+    private String valueExpression;
 
     /**
-     * @return the nameExpression
+     * This method returns the expression used to extract the fault.
+     *
+     * @return the valueExpression
      */
-    public String getNameExpression() {
-        return nameExpression;
+    public String getValueExpression() {
+        return valueExpression;
     }
 
     /**
-     * @param nameExpression the nameExpression to set
+     * This method sets the expression used to extract the fault from the
+     * application data.
+     *
+     * @param valueExpression the valueExpression to set
      */
-    public void setNameExpression(String nameExpression) {
-        this.nameExpression = nameExpression;
-    }
-
-    /**
-     * @return the descriptionExpression
-     */
-    public String getDescriptionExpression() {
-        return descriptionExpression;
-    }
-
-    /**
-     * @param descriptionExpression the descriptionExpression to set
-     */
-    public void setDescriptionExpression(String descriptionExpression) {
-        this.descriptionExpression = descriptionExpression;
+    public void setValueExpression(String valueExpression) {
+        this.valueExpression = valueExpression;
     }
 
 }

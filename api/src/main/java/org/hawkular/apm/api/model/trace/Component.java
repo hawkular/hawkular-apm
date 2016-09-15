@@ -102,9 +102,9 @@ public class Component extends InteractionNode {
         return "Component [componentType=" + componentType + ", getIn()=" + getIn() + ", getOut()=" + getOut()
                 + ", getNodes()=" + getNodes() + ", getType()=" + getType() + ", getUri()=" + getUri()
                 + ", getOperation()=" + getOperation() + ", getBaseTime()=" + getBaseTime() + ", getDuration()="
-                + getDuration() + ", getFault()=" + getFault() + ", getFaultDescription()=" + getFaultDescription()
-                + ", getProperties()=" + getProperties() + ", getDetails()=" + getDetails() + ", getCorrelationIds()="
-                + getCorrelationIds() + ", getIssues()=" + getIssues() + "]";
+                + getDuration() + ", getFault()=" + getFault() + ", getProperties()=" + getProperties()
+                + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()="
+                + getIssues() + "]";
     }
 
 }

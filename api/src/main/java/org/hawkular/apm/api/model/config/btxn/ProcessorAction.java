@@ -34,13 +34,11 @@ import io.swagger.annotations.ApiModel;
 @JsonSubTypes({ @Type(value = SetPropertyAction.class, name = "SetProperty"),
         @Type(value = SetDetailAction.class, name = "SetDetail"),
         @Type(value = SetFaultAction.class, name = "SetFault"),
-        @Type(value = SetFaultDescriptionAction.class, name = "SetFaultDescription"),
         @Type(value = AddContentAction.class, name = "AddContent"),
         @Type(value = AddCorrelationIdAction.class, name = "AddCorrelationId"),
         @Type(value = EvaluateURIAction.class, name = "EvaluateURI") })
 @ApiModel(subTypes = { SetPropertyAction.class, SetDetailAction.class, SetFaultAction.class,
-        SetFaultDescriptionAction.class, AddContentAction.class, AddCorrelationIdAction.class,
-        EvaluateURIAction.class },
+        AddContentAction.class, AddCorrelationIdAction.class, EvaluateURIAction.class },
         discriminator = "actionType")
 public abstract class ProcessorAction {
 

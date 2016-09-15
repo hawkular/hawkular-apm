@@ -66,9 +66,6 @@ public abstract class Node {
     @JsonInclude(Include.NON_NULL)
     private String fault;
 
-    @JsonInclude(Include.NON_NULL)
-    private String faultDescription;
-
     @JsonInclude(Include.NON_EMPTY)
     private Set<Property> properties = new HashSet<Property>();
 
@@ -199,22 +196,6 @@ public abstract class Node {
      */
     public Node setFault(String fault) {
         this.fault = fault;
-        return this;
-    }
-
-    /**
-     * @return the faultDescription
-     */
-    public String getFaultDescription() {
-        return faultDescription;
-    }
-
-    /**
-     * @param faultDescription the faultDescription to set
-     * @return The node
-     */
-    public Node setFaultDescription(String faultDescription) {
-        this.faultDescription = faultDescription;
         return this;
     }
 
@@ -468,7 +449,6 @@ public abstract class Node {
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((fault == null) ? 0 : fault.hashCode());
-        result = prime * result + ((faultDescription == null) ? 0 : faultDescription.hashCode());
         result = prime * result + ((issues == null) ? 0 : issues.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
@@ -507,11 +487,6 @@ public abstract class Node {
             if (other.fault != null)
                 return false;
         } else if (!fault.equals(other.fault))
-            return false;
-        if (faultDescription == null) {
-            if (other.faultDescription != null)
-                return false;
-        } else if (!faultDescription.equals(other.faultDescription))
             return false;
         if (issues == null) {
             if (other.issues != null)
