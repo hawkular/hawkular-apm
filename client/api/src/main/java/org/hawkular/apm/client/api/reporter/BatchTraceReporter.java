@@ -31,7 +31,6 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.apm.client.api.TraceReporter;
 
 /**
  * This class is responsible for managing a set of traces and
