@@ -20,12 +20,13 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.server.api.utils.zipkin.BinaryAnnotationMappingDeriver;
 import org.hawkular.apm.server.api.utils.zipkin.MappingResult;
 
@@ -70,19 +71,37 @@ public class Span implements Serializable {
     private URL url;
 
     public Span() {
-        this(Collections.emptyList());
+        this(null, null);
     }
 
     @JsonCreator
-    public Span(@JsonProperty("binaryAnnotations") List<BinaryAnnotation> binaryAnnotations) {
-        if (binaryAnnotations == null) {
-            binaryAnnotations = Collections.emptyList();
-        }
-
-        this.binaryAnnotations = Collections.unmodifiableList(binaryAnnotations);
+    public Span(@JsonProperty("binaryAnnotations") List<BinaryAnnotation> binaryAnnotations,
+                @JsonProperty("annotations") List<Annotation> annotations) {
+        this.binaryAnnotations = Collections.unmodifiableList(binaryAnnotations == null ?
+                Collections.emptyList() : binaryAnnotations);
+        this.annotations = Collections.unmodifiableList(annotations == null ?
+                Collections.emptyList() : annotations);
         this.mappingResult = BinaryAnnotationMappingDeriver.getInstance().mappingResult(binaryAnnotations);
         initUrl();
         initIpv4AndService();
+    }
+
+    /**
+     * Copy construct, with ability to specify binary annotations and annotations.
+     *
+     * @param span span to be copied
+     * @param binaryAnnotations binary annotations of the span
+     * @param annotations annotations of the span
+     */
+    public Span(Span span, List<BinaryAnnotation> binaryAnnotations, List<Annotation> annotations) {
+        this(binaryAnnotations, annotations);
+        this.id = span.getId();
+        this.traceId = span.getTraceId();
+        this.parentId = span.getParentId();
+        this.timestamp = span.getTimestamp();
+        this.duration = span.getDuration();
+        this.debug = span.getDebug();
+        this.name = span.getName();
     }
 
     /**
@@ -149,13 +168,6 @@ public class Span implements Serializable {
     }
 
     /**
-     * @param annotations the annotations to set
-     */
-    public void setAnnotations(List<Annotation> annotations) {
-        this.annotations = annotations;
-    }
-
-    /**
      * @return the binaryAnnotations
      */
     public List<BinaryAnnotation> getBinaryAnnotations() {
@@ -209,15 +221,39 @@ public class Span implements Serializable {
     }
 
     public boolean clientSpan() {
-        return annotations.size() == 2
-                && annotations.get(0).getValue().equals("cs")
-                && annotations.get(1).getValue().equals("cr");
+        boolean csPresent = false;
+        boolean crPresent = false;
+        for (int i = 0; i < annotations.size(); i++) {
+            if (annotations.get(i).getValue().equals("cs")) {
+                csPresent = true;
+            } else if (annotations.get(i).getValue().equals("cr")) {
+                crPresent = true;
+            }
+
+            if (csPresent && crPresent) {
+                break;
+            }
+        }
+
+        return csPresent && crPresent;
     }
 
     public boolean serverSpan() {
-        return annotations.size() == 2
-                && annotations.get(0).getValue().equals("sr")
-                && annotations.get(1).getValue().equals("ss");
+        boolean srPresent = false;
+        boolean ssPresent = false;
+        for (int i = 0; i < annotations.size(); i++) {
+            if (annotations.get(i).getValue().equals("sr")) {
+                srPresent = true;
+            } else if (annotations.get(i).getValue().equals("ss")) {
+                ssPresent = true;
+            }
+
+            if (srPresent && ssPresent) {
+                break;
+            }
+        }
+
+        return srPresent && ssPresent;
     }
 
     public BinaryAnnotation getBinaryAnnotation(String key) {
@@ -247,12 +283,12 @@ public class Span implements Serializable {
     }
 
     private void initUrl() {
-        BinaryAnnotation httpUrl = getBinaryAnnotation("http.url");
+        BinaryAnnotation httpUrl = getBinaryAnnotation(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         if (httpUrl == null) {
-            httpUrl = getBinaryAnnotation("http.uri");
+            httpUrl = getBinaryAnnotation(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URI);
         }
         if (httpUrl == null) {
-            httpUrl = getBinaryAnnotation("http.path");
+            httpUrl = getBinaryAnnotation(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_PATH);
         }
         if (httpUrl != null) {
             try {
@@ -269,13 +305,14 @@ public class Span implements Serializable {
     }
 
     private void initIpv4AndService() {
-        Set<Endpoint> endpoints = new HashSet<>();
-
-        for (BinaryAnnotation binaryAnnotation : binaryAnnotations) {
-            if (binaryAnnotation.getEndpoint() != null) {
-                endpoints.add(binaryAnnotation.getEndpoint());
-            }
+        if (annotations == null) {
+            return;
         }
+
+        Set<Endpoint> endpoints = annotations.stream()
+                .filter(annotation -> annotation.getEndpoint() != null)
+                .map(Annotation::getEndpoint)
+                .collect(Collectors.toSet());
 
         if (endpoints.size() > 1) {
             log.finest("Multiple different Endpoints within one Span: " + endpoints);
@@ -288,9 +325,6 @@ public class Span implements Serializable {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Span [traceId=" + traceId + ", name=" + name + ", id=" + id + ", parentId=" + parentId

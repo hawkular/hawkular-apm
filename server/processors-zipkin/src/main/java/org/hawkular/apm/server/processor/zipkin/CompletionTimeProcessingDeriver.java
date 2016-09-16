@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Annotation;
@@ -32,25 +29,23 @@ import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
+import org.jboss.logging.Logger;
 
 /**
  * Processing deriver of completion time of trace reported by zipkin instrumentation.
  *
  * @author Pavol Loffay
  */
-@Singleton
 public class CompletionTimeProcessingDeriver extends AbstractProcessor<CompletionTimeProcessing, CompletionTimeProcessing>{
 
-    private SpanCache spanCache;
+    private static final Logger log = Logger.getLogger(CompletionTimeProcessingDeriver.class);
+
+    private final SpanCache spanCache;
 
 
-    public CompletionTimeProcessingDeriver() {
-        super(ProcessorType.OneToOne);
-    }
-
-    @Inject
     public CompletionTimeProcessingDeriver(SpanCache spanCache) {
-        this();
+        super(ProcessorType.OneToOne);
         this.spanCache = spanCache;
     }
 
@@ -92,7 +87,19 @@ public class CompletionTimeProcessingDeriver extends AbstractProcessor<Completio
             return completionTimeProcessing;
         }
 
-        CompletionTime completionTime = CompletionTimeUtil.spanToCompletionTime(rootSpan);
+        CompletionTime completionTime = CompletionTimeUtil.spanToCompletionTime(spanCache, rootSpan);
+        if (completionTime == null) {
+            log.warnf("NO URL, span = %s", rootSpan);
+            return null;
+        }
+
+        if (completionTime.getUri() == null) {
+            if (rootSpan.serverSpan() &&
+                    spanCache.get(null, SpanUniqueIdGenerator.getClientId(rootSpan.getId())) == null) {
+                throw new RetryAttemptException("URL is null, span id = " + rootSpan.getId());
+            }
+        }
+
         completionTime.setProperties(extractProperties(trace));
         completionTime.setDuration(getTraceDuration(rootSpan, lastAnnotation.getTimestamp()));
 
@@ -102,13 +109,13 @@ public class CompletionTimeProcessingDeriver extends AbstractProcessor<Completio
 
     @Override
     public long getRetryDelay(List<CompletionTimeProcessing> completionTimeProcessings, int retryCount) {
-        // TODO HWKAMP-348
+        // TODO HWKAPM-348
         return 5000;
     }
 
     @Override
     public long getDeliveryDelay(List<CompletionTimeProcessing> completionTimeProcessings) {
-        // TODO HWKAMP-348
+        // TODO HWKAPM-348
         return 5000;
     }
 

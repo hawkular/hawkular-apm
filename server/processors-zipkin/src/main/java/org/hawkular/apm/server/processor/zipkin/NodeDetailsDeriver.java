@@ -25,7 +25,6 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
-import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
@@ -55,8 +54,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
     @Override
     public NodeDetails processOneToOne(String tenantId, Span item) throws RetryAttemptException {
 
-        NodeDetails nd = new NodeDetails();
-
+        NodeDetails nd = createTypedNodeDetails(item);
         nd.setId(item.getId());
 
         URL url = item.url();
@@ -64,27 +62,11 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
             nd.setUri(url.getPath());
         }
 
-        if (item.clientSpan()) {
-            // Need to qualify id, as same id used for both client and server
-            nd.setId(SpanUniqueIdGenerator.toUnique(item));
-            nd.setType(NodeType.Producer);
-            nd.setComponentType("Producer");
-            nd.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, item.getId()));
-        } else if (item.serverSpan()) {
-            nd.setType(NodeType.Consumer);
-            nd.setComponentType("Consumer");
-            nd.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, item.getId()));
-        } else {
-            nd.setType(NodeType.Component);
-            nd.setComponentType(item.binaryAnnotationMapping().getComponentType());
-        }
-
+        nd.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
         nd.setElapsed(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
-
         // TODO: How to calculate actual - i.e. would need to know child times???
         nd.setActual(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
 
-        nd.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
         nd.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
         nd.setHostAddress(item.ipv4());
 
@@ -102,4 +84,26 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
     }
 
 
+    private NodeDetails createTypedNodeDetails(Span span) {
+        NodeDetails nd = new NodeDetails();
+
+        nd.setType(NodeType.Component);
+        nd.setComponentType(span.binaryAnnotationMapping().getComponentType());
+
+        if (span.binaryAnnotationMapping().getComponentType() == null) {
+            if (span.clientSpan()) {
+//             Need to qualify id, as same id used for both client and server
+                nd.setId(SpanUniqueIdGenerator.toUnique(span));
+                nd.setType(NodeType.Producer);
+                nd.setComponentType("Producer");
+                nd.getCorrelationIds().add(new CorrelationIdentifier(CorrelationIdentifier.Scope.Interaction, span.getId()));
+            } else if (span.serverSpan()) {
+                nd.setType(NodeType.Consumer);
+                nd.setComponentType("Consumer");
+                nd.getCorrelationIds().add(new CorrelationIdentifier(CorrelationIdentifier.Scope.Interaction, span.getId()));
+            }
+        }
+
+        return nd;
+    }
 }

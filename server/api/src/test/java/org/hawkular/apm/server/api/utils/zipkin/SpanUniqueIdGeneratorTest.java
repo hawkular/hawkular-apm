@@ -35,10 +35,8 @@ public class SpanUniqueIdGeneratorTest {
     public void testToUnique() {
         String originalId = "064c292e02db027c";
 
-        Span span = new Span(null);
-        span.setAnnotations(Arrays.asList());
+        Span span = new Span(null, clientAnnotations());
         span.setId(originalId);
-        span.setAnnotations(annotations());
 
         String uniqueID = SpanUniqueIdGenerator.toUnique(span);
         Assert.assertEquals(originalId + SpanUniqueIdGenerator.CLIENT_ID_SUFFIX, uniqueID);
@@ -48,10 +46,8 @@ public class SpanUniqueIdGeneratorTest {
     public void testToOriginal() {
         String originalId = "064c292e02db027c22g";
 
-        Span span = new Span(null);
-        span.setAnnotations(Arrays.asList());
+        Span span = new Span(null, clientAnnotations());
         span.setId(originalId);
-        span.setAnnotations(annotations());
 
         span.setId(span.getId() + SpanUniqueIdGenerator.CLIENT_ID_SUFFIX);
         Assert.assertEquals(originalId, SpanUniqueIdGenerator.toOriginal(span));
@@ -61,10 +57,8 @@ public class SpanUniqueIdGeneratorTest {
     public void testIllegalState() {
         String originalId = "064c292e02db027c22g";
 
-        Span span = new Span(null);
-        span.setAnnotations(Arrays.asList());
+        Span span = new Span(null, clientAnnotations());
         span.setId(originalId);
-        span.setAnnotations(annotations());
 
         String uniqueID = SpanUniqueIdGenerator.toUnique(span);
         span.setId(uniqueID);
@@ -72,7 +66,7 @@ public class SpanUniqueIdGeneratorTest {
         SpanUniqueIdGenerator.toUnique(span);
     }
 
-    private List<Annotation> annotations() {
+    private List<Annotation> clientAnnotations() {
         Annotation csAnnotation = new Annotation();
         csAnnotation.setValue("cs");
         Annotation crAnnotation = new Annotation();

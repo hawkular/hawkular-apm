@@ -59,4 +59,4 @@ services:
     extra_hosts:
       - "tracing-server:${TRACING_SERVER}"
     environment:
-      - JVM_OPTS=-Dcassandra.custom_tracing_class=com.thelastpickle.cassandra.tracing.ZipkinTracing,-Dcassandra.custom_query_handler_class=org.apache.cassandra.cql3.CustomPayloadMirroringQueryHandler,-DZipkinTracing.httpCollectorHost=tracing-server,-DZipkinTracing.httpCollectorPort=${TRACING_PORT}
+      - JVM_OPTS=-Dcassandra.custom_tracing_class=com.thelastpickle.cassandra.tracing.ZipkinTracing -Dcassandra.custom_query_handler_class=org.apache.cassandra.cql3.CustomPayloadMirroringQueryHandler -DZipkinTracing.httpCollectorHost=tracing-server -DZipkinTracing.httpCollectorPort=${TRACING_PORT}

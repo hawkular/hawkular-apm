@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.client.opentracing;
 
+import org.hawkular.apm.api.model.Constants;
+
 import io.opentracing.APMTracer;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
@@ -46,7 +48,7 @@ public class SyncService extends AbstractService {
         // Top level, so create Tracer and root span
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
-                .withTag("http.url", "http://localhost:8080/inbound?orderId=123&verbose=true")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
                 .withTag(APMTracer.TRANSACTION_NAME, SYNC_BTXN_NAME_1)
                 .withTag(ORDER_ID_NAME, ORDER_ID_VALUE)
                 .start();
@@ -71,7 +73,7 @@ public class SyncService extends AbstractService {
         // Top level, so create Tracer and root span
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
-                .withTag("http.url", "http://localhost:8080/inbound?orderId=123&verbose=true")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
                 .withTag(ORDER_ID_NAME, ORDER_ID_VALUE)
                 .start();
 
@@ -93,7 +95,7 @@ public class SyncService extends AbstractService {
         try (Span componentSpan = getTracer().buildSpan("Component")
                 .asChildOf(span)
                 .withTag("sql", "INSERT order INTO Orders")
-                .withTag("component", "database")
+                .withTag("component", Constants.COMPONENT_DATABASE)
                 .start()) {
 
             delay(500);
@@ -107,7 +109,7 @@ public class SyncService extends AbstractService {
 
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
-                .withTag("http.url", "http://localhost:8080/outbound")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
                 .withTag(APMTracer.TRANSACTION_NAME, SYNC_BTXN_NAME_2)
                 .asChildOf(span).start()) {
             Message mesg = createMessage();

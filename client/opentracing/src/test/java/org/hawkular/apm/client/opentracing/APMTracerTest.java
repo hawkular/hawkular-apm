@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -138,7 +139,7 @@ public class APMTracerTest {
 
         // Get producer invoking a remote service
         assertEquals(1, component.getNodes().size());
-        assertEquals("database", component.getComponentType());
+        assertEquals(Constants.COMPONENT_DATABASE, component.getComponentType());
         assertTrue(component.getProperties("sql").size() > 0);
         assertEquals(Producer.class, component.getNodes().get(0).getClass());
 
@@ -193,7 +194,7 @@ public class APMTracerTest {
 
         // Get producer invoking a remote service
         assertEquals(1, component.getNodes().size());
-        assertEquals("database", component.getComponentType());
+        assertEquals(Constants.COMPONENT_DATABASE, component.getComponentType());
         assertTrue(component.getProperties("sql").size() > 0);
         assertEquals(Producer.class, component.getNodes().get(0).getClass());
 
@@ -252,7 +253,7 @@ public class APMTracerTest {
 
         // Get producer invoking a remote service
         assertEquals(1, component.getNodes().size());
-        assertEquals("database", component.getComponentType());
+        assertEquals(Constants.COMPONENT_DATABASE, component.getComponentType());
         assertTrue(component.getProperties("sql").size() > 0);
         assertEquals(Producer.class, component.getNodes().get(0).getClass());
 

@@ -66,16 +66,14 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
         parent.setId("parent");
         storeOne(spanCache, parent);
 
-        Span childServerSpan = new Span();
+        Span childServerSpan = new Span(null, serverAnnotations());
         childServerSpan.setId("child1");
         childServerSpan.setParentId("parent");
-        childServerSpan.setAnnotations(serverAnnotations());
         storeOne(spanCache, childServerSpan);
 
-        Span childClientSpan = new Span();
+        Span childClientSpan = new Span(null, clientAnnotations());
         childClientSpan.setId("child2");
         childClientSpan.setParentId("parent");
-        childClientSpan.setAnnotations(clientAnnotations());
         storeOne(spanCache, childClientSpan);
 
         Span childClientSpan2 = new Span();
@@ -94,9 +92,8 @@ public class InfinispanSpanCacheTest extends AbstractInfinispanTest {
 
     @Test
     public void testCacheKeyEntryGenerator() throws CacheException {
-        Span span = new Span();
+        Span span = new Span(null, clientAnnotations());
         span.setId("parent");
-        span.setAnnotations(clientAnnotations());
 
         spanCache.store(null, Arrays.asList(span), x -> x.getId() + "-foo");
         Assert.assertEquals(span, spanCache.get(null, span.getId() + "-foo"));

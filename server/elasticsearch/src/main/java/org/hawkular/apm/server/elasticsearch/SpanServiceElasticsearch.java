@@ -49,6 +49,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanService;
 import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
@@ -91,6 +92,22 @@ public class SpanServiceElasticsearch implements SpanService {
         if (!response.isSourceEmpty()) {
             try {
                 span = deserialize(response.getSourceAsString(), Span.class);
+
+                /**
+                 * Enrich server span with client span annotations
+                 */
+                if (span.serverSpan() && span.url() == null) {
+                    Span clientSpan = getSpan(tenantId, SpanUniqueIdGenerator.getClientId(span.getId()));
+                    if (clientSpan != null && clientSpan.url() != null) {
+                        BinaryAnnotation httpURLAnnotation = new BinaryAnnotation();
+                        httpURLAnnotation.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
+                        httpURLAnnotation.setValue(clientSpan.url().toString());
+
+                        List<BinaryAnnotation> binaryAnnotationsWithURL = new ArrayList<>(span.getBinaryAnnotations());
+                        binaryAnnotationsWithURL.add(httpURLAnnotation);
+                        span = new Span(span, binaryAnnotationsWithURL, span.getAnnotations());
+                    }
+                }
             } catch (IOException ex) {
                 log.errorFailedToParse(ex);
             }
@@ -242,7 +259,7 @@ public class SpanServiceElasticsearch implements SpanService {
         Trace trace = getTraceFragment(tenantId, id);
 
         if (trace != null) {
-            processConnectedFragment(tenantId, trace, trace, null);
+            processConnectedFragment(tenantId, trace);
         }
 
         return trace;
@@ -257,27 +274,23 @@ public class SpanServiceElasticsearch implements SpanService {
      * to identify additional linked fragments.
      *
      * @param tenantId The tenant id
-     * @param root The root trace
      * @param fragment The fragment to be processed
-     * @param producer The producer node, or null if processing the top level fragment
      */
-    protected void processConnectedFragment(String tenantId, Trace root, Trace fragment, Producer producer) {
-        if (producer != null) {
-            // Attach the fragment root nodes to the producer
-            producer.getNodes().addAll(fragment.getNodes());
-        }
+    protected void processConnectedFragment(String tenantId, Trace fragment) {
 
         List<Producer> producers = new ArrayList<>();
         NodeUtil.findNodes(fragment.getNodes(), Producer.class, producers);
 
-        for (Producer p : producers) {
-            if (!p.getCorrelationIds().isEmpty()) {
-                List<Trace> fragments = getTraceFragments(tenantId, p.getCorrelationIds().stream()
+        for (Producer producer : producers) {
+            if (!producer.getCorrelationIds().isEmpty()) {
+                List<Trace> fragments = getTraceFragments(tenantId, producer.getCorrelationIds().stream()
                         .map(correlationIdentifier -> correlationIdentifier.getValue())
                         .collect(Collectors.toList()));
 
-                for (Trace tf : fragments) {
-                    processConnectedFragment(tenantId, root, tf, p);
+                for (Trace descendant : fragments) {
+                    // Attach the fragment root nodes to the producer
+                    producer.getNodes().addAll(descendant.getNodes());
+                    processConnectedFragment(tenantId, descendant);
                 }
             }
         }
@@ -337,14 +350,16 @@ public class SpanServiceElasticsearch implements SpanService {
         String url = span.url() != null ? span.url().getPath() : null;
 
         InteractionNode node;
-        if (span.serverSpan()) {
+        if (span.binaryAnnotationMapping().getComponentType() != null) {
+            node = new Component(url, span.binaryAnnotationMapping().getComponentType());
+        } else if (span.serverSpan()) {
             node = new Consumer(url, span.binaryAnnotationMapping().getEndpointType());
             node.addInteractionCorrelationId(span.getId());
         }else if (span.clientSpan()) {
             node = new Producer(url, span.binaryAnnotationMapping().getEndpointType());
             node.addInteractionCorrelationId(span.getId());
         } else {
-            node = new Component(url, span.binaryAnnotationMapping().getComponentType());
+            node = new Component(url, null);
         }
 
         node.setProperties(new HashSet<>(span.binaryAnnotationMapping().getProperties()));

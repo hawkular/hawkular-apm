@@ -19,6 +19,8 @@ package org.hawkular.apm.client.opentracing;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
+import org.hawkular.apm.api.model.Constants;
+
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -41,7 +43,7 @@ public class ForkJoinService extends AbstractService {
         // Top level, so create Tracer and root span
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
-                .withTag("http.url", "http://localhost:8080/inbound?orderId=123&verbose=true")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
                 .withTag("orderId", "1243343456455")
                 .start();
 

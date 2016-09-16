@@ -107,7 +107,7 @@
                   <mainClass>org.hawkular.apm.example.dropwizard.App</mainClass>
                 </transformer>
               </transformers>
-              <finalName>${artifactId}</finalName>
+              <finalName>${project.artifactId}</finalName>
             </configuration>
           </execution>
         </executions>

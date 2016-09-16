@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.api.model.analytics.Cardinality;
@@ -1534,28 +1535,28 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction("testapp");
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
-        ct1_1.setComponentType("Database");
+        ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setBusinessTransaction("testapp");
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
-        ct1_2.setComponentType("Database");
+        ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setBusinessTransaction("testapp");
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
-        ct1_3.setComponentType("EJB");
+        ct1_3.setComponentType(Constants.COMPONENT_EJB);
         nds.add(ct1_3);
 
         NodeDetails ct2 = new NodeDetails();
         ct2.setBusinessTransaction("testapp");
         ct2.setTimestamp(2100);
         ct2.setActual(500);
-        ct2.setComponentType("Database");
+        ct2.setComponentType(Constants.COMPONENT_DATABASE);
         nds.add(ct2);
 
         try {
@@ -1582,16 +1583,16 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(2, stats.get(0).getComponentTypes().size());
         assertEquals(1, stats.get(1).getComponentTypes().size());
 
-        assertTrue(stats.get(0).getComponentTypes().containsKey("Database"));
-        assertTrue(stats.get(0).getComponentTypes().containsKey("EJB"));
-        assertTrue(stats.get(1).getComponentTypes().containsKey("Database"));
+        assertTrue(stats.get(0).getComponentTypes().containsKey(Constants.COMPONENT_DATABASE));
+        assertTrue(stats.get(0).getComponentTypes().containsKey(Constants.COMPONENT_EJB));
+        assertTrue(stats.get(1).getComponentTypes().containsKey(Constants.COMPONENT_DATABASE));
 
-        assertTrue(stats.get(0).getComponentTypes().get("Database").getDuration() == 200);
-        assertTrue(stats.get(0).getComponentTypes().get("Database").getCount() == 2);
-        assertTrue(stats.get(0).getComponentTypes().get("EJB").getDuration() == 150);
-        assertTrue(stats.get(0).getComponentTypes().get("EJB").getCount() == 1);
-        assertTrue(stats.get(1).getComponentTypes().get("Database").getDuration() == 500);
-        assertTrue(stats.get(1).getComponentTypes().get("Database").getCount() == 1);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_DATABASE).getDuration() == 200);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_DATABASE).getCount() == 2);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_EJB).getDuration() == 150);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_EJB).getCount() == 1);
+        assertTrue(stats.get(1).getComponentTypes().get(Constants.COMPONENT_DATABASE).getDuration() == 500);
+        assertTrue(stats.get(1).getComponentTypes().get(Constants.COMPONENT_DATABASE).getCount() == 1);
     }
 
     @Test
@@ -1602,7 +1603,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction("testapp");
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
-        ct1_1.setComponentType("Database");
+        ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setPrincipal("p1");
         nds.add(ct1_1);
 
@@ -1610,7 +1611,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setBusinessTransaction("testapp");
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
-        ct1_2.setComponentType("Database");
+        ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setPrincipal("p1");
         nds.add(ct1_2);
 
@@ -1618,7 +1619,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setBusinessTransaction("testapp");
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
-        ct1_3.setComponentType("EJB");
+        ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setPrincipal("p1");
         nds.add(ct1_3);
 
@@ -1626,7 +1627,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setBusinessTransaction("testapp");
         ct2.setTimestamp(2100);
         ct2.setActual(500);
-        ct2.setComponentType("Database");
+        ct2.setComponentType(Constants.COMPONENT_DATABASE);
         ct2.setPrincipal("p2");
         nds.add(ct2);
 
@@ -1651,13 +1652,13 @@ public class AnalyticsServiceElasticsearchTest {
 
         assertEquals(2, stats.get(0).getComponentTypes().size());
 
-        assertTrue(stats.get(0).getComponentTypes().containsKey("Database"));
-        assertTrue(stats.get(0).getComponentTypes().containsKey("EJB"));
+        assertTrue(stats.get(0).getComponentTypes().containsKey(Constants.COMPONENT_DATABASE));
+        assertTrue(stats.get(0).getComponentTypes().containsKey(Constants.COMPONENT_EJB));
 
-        assertTrue(stats.get(0).getComponentTypes().get("Database").getDuration() == 200);
-        assertTrue(stats.get(0).getComponentTypes().get("Database").getCount() == 2);
-        assertTrue(stats.get(0).getComponentTypes().get("EJB").getDuration() == 150);
-        assertTrue(stats.get(0).getComponentTypes().get("EJB").getCount() == 1);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_DATABASE).getDuration() == 200);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_DATABASE).getCount() == 2);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_EJB).getDuration() == 150);
+        assertTrue(stats.get(0).getComponentTypes().get(Constants.COMPONENT_EJB).getCount() == 1);
     }
 
     @Test
@@ -1679,7 +1680,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
         ct1_1.setType(NodeType.Component);
-        ct1_1.setComponentType("Database");
+        ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         nds.add(ct1_1);
 
@@ -1689,7 +1690,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
         ct1_2.setType(NodeType.Component);
-        ct1_2.setComponentType("Database");
+        ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         nds.add(ct1_2);
 
@@ -1699,7 +1700,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
         ct1_3.setType(NodeType.Component);
-        ct1_3.setComponentType("EJB");
+        ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         nds.add(ct1_3);
@@ -1724,9 +1725,9 @@ public class AnalyticsServiceElasticsearchTest {
         NodeSummaryStatistics consumerstat = null;
 
         for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
                 dbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase("EJB")) {
+            } else if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_EJB)) {
                 ejbstat = nss;
             } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
                 consumerstat = nss;
@@ -1772,7 +1773,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
         ct1_1.setType(NodeType.Component);
-        ct1_1.setComponentType("Database");
+        ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
         nds.add(ct1_1);
@@ -1783,7 +1784,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
         ct1_2.setType(NodeType.Component);
-        ct1_2.setComponentType("Database");
+        ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
         nds.add(ct1_2);
@@ -1794,7 +1795,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
         ct1_3.setType(NodeType.Component);
-        ct1_3.setComponentType("EJB");
+        ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
@@ -1820,22 +1821,22 @@ public class AnalyticsServiceElasticsearchTest {
         NodeSummaryStatistics consumerstat = null;
 
         for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
                 dbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase("EJB")) {
+            } else if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_EJB)) {
                 ejbstat = nss;
             } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
                 consumerstat = nss;
             }
         }
 
-        assertTrue(dbstat.getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(dbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE));
         assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
         assertNull(dbstat.getOperation());
         assertEquals(2, dbstat.getCount());
         assertTrue(dbstat.getActual() == 200.0);
         assertTrue(dbstat.getElapsed() == 400.0);
-        assertTrue(ejbstat.getComponentType().equalsIgnoreCase("EJB"));
+        assertTrue(ejbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_EJB));
         assertTrue(ejbstat.getUri().equalsIgnoreCase("BookingService"));
         assertTrue(ejbstat.getOperation().equalsIgnoreCase("createBooking"));
         assertEquals(1, ejbstat.getCount());
@@ -1869,7 +1870,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
         ct1_1.setType(NodeType.Component);
-        ct1_1.setComponentType("Database");
+        ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
         nds.add(ct1_1);
@@ -1880,7 +1881,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
         ct1_2.setType(NodeType.Component);
-        ct1_2.setComponentType("Database");
+        ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
         nds.add(ct1_2);
@@ -1891,7 +1892,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
         ct1_3.setType(NodeType.Component);
-        ct1_3.setComponentType("EJB");
+        ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
@@ -1916,14 +1917,14 @@ public class AnalyticsServiceElasticsearchTest {
         NodeSummaryStatistics consumerstat = null;
 
         for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
                 dbstat = nss;
             } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
                 consumerstat = nss;
             }
         }
 
-        assertTrue(dbstat.getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(dbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE));
         assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
         assertNull(dbstat.getOperation());
         assertEquals(1, dbstat.getCount());
@@ -1958,7 +1959,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
         ct1_1.setType(NodeType.Component);
-        ct1_1.setComponentType("Database");
+        ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
         ct1_1.setPrincipal("p1");
@@ -1970,7 +1971,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
         ct1_2.setType(NodeType.Component);
-        ct1_2.setComponentType("Database");
+        ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
         ct1_2.setPrincipal("p2");
@@ -1982,7 +1983,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
         ct1_3.setType(NodeType.Component);
-        ct1_3.setComponentType("EJB");
+        ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
@@ -2008,14 +2009,14 @@ public class AnalyticsServiceElasticsearchTest {
         NodeSummaryStatistics consumerstat = null;
 
         for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase("Database")) {
+            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
                 dbstat = nss;
             } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
                 consumerstat = nss;
             }
         }
 
-        assertTrue(dbstat.getComponentType().equalsIgnoreCase("Database"));
+        assertTrue(dbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE));
         assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
         assertNull(dbstat.getOperation());
         assertEquals(1, dbstat.getCount());

@@ -27,13 +27,11 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.ClientTracer;
 import com.github.kristofa.brave.SpanId;
@@ -60,41 +58,51 @@ public class UserDAO {
     }
 
     private void init() {
-        PreparedStatement preparedStatement = session.prepare("DROP KEYSPACE IF EXISTS " + KEYSPACE).enableTracing();
-        executeWithClientSpan(preparedStatement.bind());
+        BoundStatement boundStatement = session.prepare("DROP KEYSPACE IF EXISTS " + KEYSPACE).bind();
+        executeWithClientSpan(boundStatement);
 
-        preparedStatement = session.prepare("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE + " WITH REPLICATION = " +
-                "{'class' : 'SimpleStrategy', 'replication_factor' : 1}").enableTracing();
-        executeWithClientSpan(preparedStatement.bind());
+        boundStatement = session.prepare("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE + " WITH REPLICATION = " +
+                "{'class' : 'SimpleStrategy', 'replication_factor' : 1}").bind();
+        executeWithClientSpan(boundStatement);
 
-        preparedStatement = session.prepare("USE " + KEYSPACE).enableTracing();
-        executeWithClientSpan(preparedStatement.bind());
+        boundStatement = session.prepare("USE " + KEYSPACE).bind();
+        executeWithClientSpan(boundStatement);
 
-        preparedStatement = session.prepare("CREATE TABLE " + KEYSPACE + "." + TABLE +
-                "(id text PRIMARY KEY, name text)").enableTracing();
-        executeWithClientSpan(preparedStatement.bind());
+        boundStatement = session.prepare("CREATE TABLE " + KEYSPACE + "." + TABLE +
+                "(id text PRIMARY KEY, name text)").bind();
+        executeWithClientSpan(boundStatement);
     }
 
     public User createUser(User user) {
         user.setId(UUID.randomUUID().toString());
 
-        Statement statement = QueryBuilder.insertInto(KEYSPACE, TABLE)
-                .value("id", user.getId())
-                .value("name", user.getName())
-                .enableTracing();
+        /**
+         * With query builder tracing is not reported in C*, but
+         * it shows complete query with parameters when calling statement.toString();
+         */
+//        Statement statement = QueryBuilder.insertInto(KEYSPACE, TABLE)
+//                .value("id", user.getId())
+//                .value("name", user.getName())
+//                .enableTracing();
 
-        executeWithClientSpan(statement);
+        BoundStatement boundStatement = session.prepare("INSERT INTO " + KEYSPACE + "." + TABLE + " (id, name)" +
+                " VALUES(?, ?)").bind(user.getId(), user.getName());
+
+        executeWithClientSpan(boundStatement);
 
         return user;
     }
 
     public User getUser(String id) {
-        Statement statement = QueryBuilder.select()
-                .from(KEYSPACE, TABLE)
-                .where(QueryBuilder.eq("id", id))
-                .enableTracing();
+//        Statement statement = QueryBuilder.select()
+//                .from(KEYSPACE, TABLE)
+//                .where(QueryBuilder.eq("id", id))
+//                .enableTracing();
 
-        ResultSet resultSet = executeWithClientSpan(statement);
+        BoundStatement boundStatement = session.prepare("SELECT * FROM " + KEYSPACE + "." + TABLE +
+                " WHERE id = ?").bind(id);
+
+        ResultSet resultSet = executeWithClientSpan(boundStatement);
 
         User user = null;
         for (Row row: resultSet) {
@@ -105,11 +113,13 @@ public class UserDAO {
     }
 
     public Collection<User> getAllUsers() {
-        Statement statement = QueryBuilder.select()
-                .from(KEYSPACE, TABLE)
-                .enableTracing();
+//        Statement statement = QueryBuilder.select()
+//                .from(KEYSPACE, TABLE)
+//                .enableTracing();
 
-        ResultSet resultSet = executeWithClientSpan(statement);
+        BoundStatement boundStatement = session.prepare("SELECT * FROM " + KEYSPACE + "." + TABLE).bind();
+
+        ResultSet resultSet = executeWithClientSpan(boundStatement);
 
         List<User> users = new ArrayList<>();
 
@@ -120,17 +130,18 @@ public class UserDAO {
         return users;
     }
 
-    private ResultSet executeWithClientSpan(Statement statement) {
+    private ResultSet executeWithClientSpan(BoundStatement boundStatement) {
 
         ClientTracer clientTracer = brave.clientTracer();
-        SpanId spanId = clientTracer.startNewSpan(statement.toString());
+
+        SpanId spanId = clientTracer.startNewSpan("query");
+        clientTracer.submitBinaryAnnotation("sql.query", boundStatement.preparedStatement().getQueryString());
 
         ByteBuffer traceHeaders = ByteBuffer.wrap(spanId.bytes());
-        statement.setOutgoingPayload(Collections.singletonMap("zipkin", traceHeaders));
+        boundStatement.setOutgoingPayload(Collections.singletonMap("zipkin", traceHeaders));
 
-//        clientTracer.set(serviceName);
         clientTracer.setClientSent();
-        ResultSet resultSet = session.execute(statement);
+        ResultSet resultSet = session.execute(boundStatement.enableTracing());
         clientTracer.setClientReceived();
 
         return resultSet;

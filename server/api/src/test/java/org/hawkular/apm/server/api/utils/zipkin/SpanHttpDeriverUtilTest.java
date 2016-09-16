@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.junit.Assert;
 import org.junit.Test;
@@ -82,7 +83,7 @@ public class SpanHttpDeriverUtilTest {
 
     public BinaryAnnotation createHttpCodeBinaryAnnotation(String code) {
         BinaryAnnotation httpCodeBinaryAnnotation = new BinaryAnnotation();
-        httpCodeBinaryAnnotation.setKey(SpanHttpDeriverUtil.ZIPKIN_HTTP_CODE_KEY);
+        httpCodeBinaryAnnotation.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_STATUS_CODE);
         httpCodeBinaryAnnotation.setValue(code);
         return httpCodeBinaryAnnotation;
     }
