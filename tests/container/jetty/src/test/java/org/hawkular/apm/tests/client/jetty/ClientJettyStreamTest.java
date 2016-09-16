@@ -48,6 +48,7 @@ import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.security.Constraint;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
@@ -226,7 +227,7 @@ public class ClientJettyStreamTest extends ClientTestBase {
 
         assertEquals(path, testProducer.getUri());
         assertEquals("ConnectException", producers.get(0).getFault());
-        assertEquals("Connection refused", producers.get(0).getFaultDescription());
+        assertEquals("Connection refused", producers.get(0).getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
     }
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
@@ -363,7 +364,7 @@ public class ClientJettyStreamTest extends ClientTestBase {
 
         if (fault) {
             assertEquals("401", testProducer.getFault());
-            assertEquals("Unauthorized", testProducer.getFaultDescription());
+            assertEquals("Unauthorized", testProducer.getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
         } else {
 
             if (isProcessContent()) {

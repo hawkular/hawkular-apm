@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
@@ -268,7 +269,7 @@ public class ClientJettyReaderWriterTest extends ClientTestBase {
 
         if (fault) {
             assertEquals("401", testProducer.getFault());
-            assertEquals("Unauthorized", testProducer.getFaultDescription());
+            assertEquals("Unauthorized", testProducer.getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
         } else {
 
             if (isProcessContent()) {

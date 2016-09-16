@@ -28,7 +28,6 @@ import org.hawkular.apm.api.model.config.btxn.EvaluateURIAction;
 import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
 import org.hawkular.apm.api.model.config.btxn.SetDetailAction;
 import org.hawkular.apm.api.model.config.btxn.SetFaultAction;
-import org.hawkular.apm.api.model.config.btxn.SetFaultDescriptionAction;
 import org.hawkular.apm.api.model.config.btxn.SetPropertyAction;
 
 /**
@@ -50,7 +49,6 @@ public class ProcessorActionHandlerFactory {
         handlers.put(EvaluateURIAction.class, EvaluateURIActionHandler.class);
         handlers.put(SetDetailAction.class, SetDetailActionHandler.class);
         handlers.put(SetFaultAction.class, SetFaultActionHandler.class);
-        handlers.put(SetFaultDescriptionAction.class, SetFaultDescriptionActionHandler.class);
         handlers.put(SetPropertyAction.class, SetPropertyActionHandler.class);
     }
 

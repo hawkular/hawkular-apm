@@ -192,9 +192,8 @@ public interface TraceCollector {
      *
      * @param location The instrumentation location
      * @param value The fault value
-     * @param description The optional fault description
      */
-    void setFault(String location, String value, String description);
+    void setFault(String location, String value);
 
     /**
      * This method sets a property on the trace.

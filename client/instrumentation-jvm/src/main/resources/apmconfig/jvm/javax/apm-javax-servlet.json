@@ -90,7 +90,7 @@
         "condition": "isActive() && !$1.isAsyncStarted() && resp.getStatus() >= 400",
         "actions": [{
           "type": "SetFault",
-          "nameExpression": "resp.getStatus()"
+          "valueExpression": "resp.getStatus()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer End Sync",
@@ -378,7 +378,7 @@
         "condition": "isActive() && resp.getStatus() >= 400",
         "actions": [{
           "type": "SetFault",
-          "nameExpression": "resp.getStatus()"
+          "valueExpression": "resp.getStatus()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer Complete Async Context",

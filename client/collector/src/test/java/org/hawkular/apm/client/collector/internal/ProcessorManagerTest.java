@@ -34,7 +34,6 @@ import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.apm.api.model.config.btxn.Processor;
 import org.hawkular.apm.api.model.config.btxn.SetDetailAction;
 import org.hawkular.apm.api.model.config.btxn.SetFaultAction;
-import org.hawkular.apm.api.model.config.btxn.SetFaultDescriptionAction;
 import org.hawkular.apm.api.model.config.btxn.SetPropertyAction;
 import org.hawkular.apm.api.model.config.btxn.TextExpression;
 import org.hawkular.apm.api.model.trace.Component;
@@ -366,39 +365,6 @@ public class ProcessorManagerTest {
         pm.process(trace, service, Direction.In, null, "first", "second");
 
         assertEquals("second", service.getFault());
-    }
-
-    @Test
-    public void testNodeTypeInNoURIFilterSetFaultDescription() {
-        CollectorConfiguration cc = new CollectorConfiguration();
-
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
-
-        Processor p1 = new Processor();
-        btc.getProcessors().add(p1);
-
-        p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.In);
-
-        SetFaultDescriptionAction pa1 = new SetFaultDescriptionAction();
-        p1.getActions().add(pa1);
-
-        TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Content);
-        expr.setKey("1");
-        pa1.setExpression(expr);
-
-        ProcessorManager pm = new ProcessorManager(cc);
-
-        Trace trace = new Trace();
-        Component service = new Component();
-        trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
-
-        pm.process(trace, service, Direction.In, null, "first", "second");
-
-        assertEquals("second", service.getFaultDescription());
     }
 
     @Test

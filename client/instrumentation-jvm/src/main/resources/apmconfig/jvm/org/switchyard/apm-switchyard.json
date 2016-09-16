@@ -146,8 +146,11 @@
         "condition": "isActive()",
         "actions": [{
           "type": "SetFault",
-          "nameExpression": "faultName(content)",
-          "descriptionExpression": "faultDescription(content)"
+          "valueExpression": "faultName(content)"
+        },{
+          "type": "SetDetail",
+          "name": "fault.description",
+          "valueExpression": "faultDescription(content)"
         },{
           "type": "ProcessContent",
           "direction": "Out",
