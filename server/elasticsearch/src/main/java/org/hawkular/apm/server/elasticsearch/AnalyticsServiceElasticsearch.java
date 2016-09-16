@@ -71,6 +71,7 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
+import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.events.ApmEvent;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
@@ -103,6 +104,39 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     @Override
     protected List<Trace> getFragments(String tenantId, Criteria criteria) {
         return TraceServiceElasticsearch.internalQuery(client, tenantId, criteria);
+    }
+
+    @Override
+    public List<TransactionInfo> getTransactionInfo(String tenantId, Criteria criteria) {
+        String index = client.getIndex(tenantId);
+        if (!refresh(index)) {
+            return null;
+        }
+
+        if (criteria.getBusinessTransaction() != null) {
+            // Copy criteria and clear the business transaction field to ensure all
+            // business transactions are returned related to the other filter criteria
+            criteria = new Criteria(criteria);
+            criteria.setBusinessTransaction(null);
+        }
+
+        TermsBuilder cardinalityBuilder = AggregationBuilders
+                .terms("cardinality")
+                .field("businessTransaction")
+                .order(Order.aggregation("_count", false))
+                .size(criteria.getMaxResponseSize());
+
+        BoolQueryBuilder query = buildQuery(criteria, "startTime", "businessTransaction", Trace.class);
+        SearchRequestBuilder request = getBaseSearchRequestBuilder(TRACE_TYPE, index, criteria, query, 0)
+                .addAggregation(cardinalityBuilder);
+
+        SearchResponse response = getSearchResponse(request);
+
+        Terms terms = response.getAggregations().get("cardinality");
+        return terms.getBuckets().stream()
+                .map(AnalyticsServiceElasticsearch::toTransactionInfo)
+                .sorted((one, another) -> one.getName().compareTo(another.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -803,6 +837,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             msgLog.errorFailedToParse(e);
             return null;
         }
+    }
+
+    private static TransactionInfo toTransactionInfo(Terms.Bucket bucket) {
+        TransactionInfo ti = new TransactionInfo();
+        ti.setName(bucket.getKey());
+        ti.setCount(bucket.getDocCount());
+        return ti;
     }
 
     private static PrincipalInfo toPrincipalInfo(Terms.Bucket bucket) {

@@ -29,6 +29,7 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.events.NodeDetails;
@@ -63,6 +64,17 @@ public interface AnalyticsService {
      * @return The bound endpoints
      */
     List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime);
+
+    /**
+     * This method returns the business transactions associated with the specified
+     * criteria. Note: the 'business transaction' property in the criteria will be
+     * ignored for this method.
+     *
+     * @param tenantId The optional tenant id
+     * @param criteria The criteria
+     * @return The list of transaction info
+     */
+    List<TransactionInfo> getTransactionInfo(String tenantId, Criteria criteria);
 
     /**
      * This method returns the properties associated with the specified

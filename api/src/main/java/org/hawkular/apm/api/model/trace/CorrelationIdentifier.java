@@ -37,6 +37,11 @@ public class CorrelationIdentifier {
     public CorrelationIdentifier() {
     }
 
+    public CorrelationIdentifier(CorrelationIdentifier cid) {
+        this.value = cid.value;
+        this.scope = cid.scope;
+    }
+
     public CorrelationIdentifier(Scope scope, String value) {
         this.value = value;
         this.scope = scope;
