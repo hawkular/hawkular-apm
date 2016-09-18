@@ -82,7 +82,6 @@
     <module>server/zipkin-rest</module>
     <module>server/zipkin-war</module>
     <module>server/war</module>
-    <module>tools/instrumenter</module>
     <module>dist</module>
     <module>tests/common</module>
     <module>tests/server/mock</module>
@@ -637,7 +636,6 @@
         <module>tests/container/vertx</module>
         <module>tests/container/wildfly</module>
         <module>tests/server/wildfly</module>
-        <module>tests/tools/instrumenter</module>
         <module>tests/instrumentation-framework</module>
       </modules>
     </profile>
