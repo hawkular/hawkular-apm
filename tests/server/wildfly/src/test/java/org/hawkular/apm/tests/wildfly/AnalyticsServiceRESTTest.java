@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.analytics.service.rest.client.AnalyticsServiceRESTClient;
 import org.hawkular.apm.api.model.Property;
@@ -40,6 +39,7 @@ import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
@@ -54,7 +54,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -100,7 +99,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetUnboundEndpoints() {
+    public void testGetUnboundEndpoints() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -111,11 +110,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -139,7 +134,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetBoundEndpoints() {
+    public void testGetBoundEndpoints() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
@@ -151,11 +146,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -179,7 +170,43 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetPropertyInfo() {
+    public void testGetTransactionInfo() throws Exception {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setBusinessTransaction("trace1");
+        trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Component c1 = new Component();
+        c1.getProperties().add(new Property("prop1", "value1"));
+        trace1.getNodes().add(c1);
+
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction("trace2");
+        trace2.setStartTime(System.currentTimeMillis() - 2000); // Within last hour
+
+        Component c2 = new Component();
+        c2.getProperties().add(new Property("prop2", "value2"));
+        trace2.getNodes().add(c2);
+
+        publisher.publish(null, Arrays.asList(trace1, trace2));
+
+        // Wait to ensure record persisted
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+
+        List<TransactionInfo> tis = analytics.getTransactionInfo(null, new Criteria());
+
+        assertNotNull(tis);
+        assertEquals(2, tis.size());
+        assertEquals("trace1", tis.get(0).getName());
+        assertEquals("trace2", tis.get(1).getName());
+    }
+
+    @Test
+    public void testGetPropertyInfo() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
@@ -189,11 +216,7 @@ public class AnalyticsServiceRESTTest {
         c1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(c1);
 
-        try {
-            publisher.publish(null, Arrays.asList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, Arrays.asList(trace1));
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -221,7 +244,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetPrincipalInfo() {
+    public void testGetPrincipalInfo() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
@@ -231,11 +254,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        try {
-            publisher.publish(null, Collections.singletonList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, Collections.singletonList(trace1));
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -264,7 +283,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionCount() {
+    public void testGetCompletionCount() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -276,11 +295,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -309,7 +324,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionCountWithPropertyFilter() {
+    public void testGetCompletionCountWithPropertyFilter() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -320,11 +335,7 @@ public class AnalyticsServiceRESTTest {
         c1.getProperties().add(new Property("prop2", "hello"));
         trace1.getNodes().add(c1);
 
-        try {
-            publisher.publish(null, Arrays.asList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, Arrays.asList(trace1));
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -375,7 +386,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionFaultCount() {
+    public void testGetCompletionFaultCount() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -388,11 +399,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -421,7 +428,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionTimes() {
+    public void testGetCompletionTimes() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -433,11 +440,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -466,7 +469,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionTimesWithPropertyFilter() {
+    public void testGetCompletionTimesWithPropertyFilter() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -486,11 +489,7 @@ public class AnalyticsServiceRESTTest {
         c2.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
         trace2.getNodes().add(c2);
 
-        try {
-            publisher.publish(null, Arrays.asList(trace1, trace2));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, Arrays.asList(trace1, trace2));
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
@@ -525,7 +524,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionTimeseriesStatistics() {
+    public void testGetCompletionTimeseriesStatistics() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -538,17 +537,10 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
-
-        // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = service.searchFragments(null, new Criteria());
@@ -571,7 +563,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionPropertyDetails() {
+    public void testGetCompletionPropertyDetails() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -583,11 +575,7 @@ public class AnalyticsServiceRESTTest {
         c1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(c1);
 
-        try {
-            publisher.publish(null, Collections.singletonList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, Collections.singletonList(trace1));
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -615,7 +603,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionFaultDetails() {
+    public void testGetCompletionFaultDetails() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -630,11 +618,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -662,7 +646,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetNodeTimeseriesStatistics() {
+    public void testGetNodeTimeseriesStatistics() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -684,11 +668,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -714,7 +694,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetNodeTimeseriesStatisticsHostName() {
+    public void testGetNodeTimeseriesStatisticsHostName() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -737,11 +717,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -776,7 +752,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetNodeSummaryStatistics() {
+    public void testGetNodeSummaryStatistics() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -798,11 +774,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -827,7 +799,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetNodeSummaryStatisticsHostName() {
+    public void testGetNodeSummaryStatisticsHostName() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -850,11 +822,7 @@ public class AnalyticsServiceRESTTest {
         List<Trace> traces = new ArrayList<Trace>();
         traces.add(trace1);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -887,7 +855,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticsFlat() {
+    public void testGetCommunicationSummaryStatisticsFlat() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -923,11 +891,7 @@ public class AnalyticsServiceRESTTest {
         traces.add(trace1);
         traces.add(trace2);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
@@ -951,12 +915,7 @@ public class AnalyticsServiceRESTTest {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        try {
-            System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
 
         CommunicationSummaryStatistics first = null;
         CommunicationSummaryStatistics second = null;
@@ -981,7 +940,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticsTree() {
+    public void testGetCommunicationSummaryStatisticsTree() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -1017,14 +976,10 @@ public class AnalyticsServiceRESTTest {
         traces.add(trace1);
         traces.add(trace2);
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted, 10 seconds didn't seem enough :/
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2, 15, TimeUnit.SECONDS);
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
         Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
@@ -1045,12 +1000,8 @@ public class AnalyticsServiceRESTTest {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        try {
-            System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
 
         CommunicationSummaryStatistics first = stats.iterator().next();
 
@@ -1071,7 +1022,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetHostNames() {
+    public void testGetHostNames() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
@@ -1081,11 +1032,7 @@ public class AnalyticsServiceRESTTest {
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        try {
-            publisher.publish(null, Collections.singletonList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, Collections.singletonList(trace1));
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
@@ -1111,7 +1058,7 @@ public class AnalyticsServiceRESTTest {
     }
 
     @Test
-    public void testGetCompletionTimeMultiFragment() {
+    public void testGetCompletionTimeMultiFragment() throws Exception {
         long baseTime=System.currentTimeMillis() - 4000;
 
         Trace trace1 = new Trace();
@@ -1158,11 +1105,7 @@ public class AnalyticsServiceRESTTest {
         assertEquals(1000, trace1.calculateDuration());
         assertEquals(1500, trace2.calculateDuration());
 
-        try {
-            publisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        publisher.publish(null, traces);
 
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);

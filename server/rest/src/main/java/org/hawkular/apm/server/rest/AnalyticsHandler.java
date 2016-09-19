@@ -119,6 +119,16 @@ public class AnalyticsHandler extends BaseHandler {
     }
 
     @GET
+    @Path("transactions")
+    @ApiOperation(value = "Get transaction information", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public Response getTransactionInfo(@BeanParam CriteriaRequest request) {
+        return withCriteria(request, (criteria, tenant) -> analyticsService.getTransactionInfo(tenant, criteria));
+    }
+
+    @GET
     @Path("properties")
     @ApiOperation(value = "Get property information", response = List.class)
     @ApiResponses(value = {
@@ -127,7 +137,6 @@ public class AnalyticsHandler extends BaseHandler {
     public Response getPropertyInfo(@BeanParam CriteriaRequest request) {
         return withCriteria(request, (criteria, tenant) -> analyticsService.getPropertyInfo(tenant, criteria));
     }
-
 
     @GET
     @Path("principals")

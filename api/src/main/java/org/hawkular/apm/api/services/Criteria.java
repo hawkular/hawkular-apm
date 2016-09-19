@@ -58,6 +58,33 @@ public class Criteria {
     private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
 
     /**
+     * Default constructor.
+     */
+    public Criteria() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param criteria The criteria to copy
+     */
+    public Criteria(Criteria criteria) {
+        this.startTime = criteria.startTime;
+        this.endTime = criteria.endTime;
+        this.businessTransaction = criteria.businessTransaction;
+        this.hostName = criteria.hostName;
+        this.upperBound = criteria.upperBound;
+        this.lowerBound = criteria.lowerBound;
+        this.principal = criteria.principal;
+        this.uri = criteria.uri;
+        this.operation = criteria.operation;
+
+        criteria.properties.forEach(pc -> this.properties.add(new PropertyCriteria(pc)));
+        criteria.correlationIds.forEach(cid -> this.correlationIds.add(new CorrelationIdentifier(cid)));
+        criteria.faults.forEach(fc -> this.faults.add(new FaultCriteria(fc)));
+    }
+
+    /**
      * @return the startTime, or 0 meaning 1 hours ago
      */
     public long getStartTime() {
@@ -508,6 +535,17 @@ public class Criteria {
         }
 
         /**
+         * The copy constructor.
+         *
+         * @param pc The property criteria
+         */
+        public PropertyCriteria(PropertyCriteria pc) {
+            this.name = pc.name;
+            this.value = pc.value;
+            this.operator = pc.operator;
+        }
+
+        /**
          * This constructor initialises the fields.
          *
          * @param name The name
@@ -606,6 +644,16 @@ public class Criteria {
          * This is the default constructor.
          */
         public FaultCriteria() {
+        }
+
+        /**
+         * This is the copy constructor.
+         *
+         * @param fc The fault criteria
+         */
+        public FaultCriteria(FaultCriteria fc) {
+            this.value = fc.value;
+            this.operator = fc.operator;
         }
 
         /**

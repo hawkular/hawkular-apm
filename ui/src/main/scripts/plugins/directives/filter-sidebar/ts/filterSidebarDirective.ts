@@ -137,10 +137,11 @@ module FilterSidebar {
 
     private updateSidebarData(scope) {
       if (scope.fsb.showBtxns) {
-        this.$http.get('/hawkular/apm/config/businesstxn/summary').then((resp) => {
+        this.$http.get('/hawkular/apm/analytics/transactions?criteria=' +
+            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
         }, (error) => {
-          console.log('Failed to get business txn summaries: ' + JSON.stringify(error));
+          console.log('Failed to get transactions: ' + JSON.stringify(error));
         });
       }
 
