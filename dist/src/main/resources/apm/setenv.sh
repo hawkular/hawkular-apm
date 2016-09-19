@@ -47,6 +47,8 @@ export HAWKULAR_APM_PASSWORD=password
 
 # General environment variables
 export HAWKULAR_APM_CONFIG_REFRESH=10
+# Agent logging level: FINEST, INFO, SEVERE
+export HAWKULAR_APM_LOG_LEVEL=INFO
 
 export JAVA_OPTS="-javaagent:$HAWKULAR_APM_AGENT_JAR_PATH"
 
