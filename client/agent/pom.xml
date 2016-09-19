@@ -154,36 +154,52 @@
             </goals>
             <configuration>
               <relocations>
-                <!-- HWKAPM-284
+                <relocation>
+                  <pattern>org.hawkular.apm.api</pattern>
+                  <shadedPattern>shaded.org.hawkular.apm.api</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.hawkular.apm.server</pattern>
+                  <shadedPattern>shaded.org.hawkular.apm.server</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.hawkular.apm.client.api</pattern>
+                  <shadedPattern>shaded.org.hawkular.apm.client.api</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.hawkular.apm.client.kafka</pattern>
+                  <shadedPattern>shaded.org.hawkular.apm.client.kafka</shadedPattern>
+                </relocation>
                 <relocation>
                   <pattern>com.fasterxml</pattern>
-                  <shadedPattern>org.hawkular.apm.shaded.com.fasterxml</shadedPattern>
+                  <shadedPattern>shaded.com.fasterxml</shadedPattern>
                 </relocation>
-                -->
                 <relocation>
                   <pattern>com.jayway</pattern>
-                  <shadedPattern>org.hawkular.apm.shaded.com.jayway</shadedPattern>
+                  <shadedPattern>shaded.com.jayway</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>net.minidev</pattern>
-                  <shadedPattern>org.hawkular.apm.shaded.net.minidev</shadedPattern>
+                  <shadedPattern>shaded.net.minidev</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.mvel2</pattern>
-                  <shadedPattern>org.hawkular.apm.shaded.org.mvel2</shadedPattern>
+                  <shadedPattern>shaded.org.mvel2</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objectweb</pattern>
-                  <shadedPattern>org.hawkular.apm.shaded.org.objectweb</shadedPattern>
+                  <shadedPattern>shaded.org.objectweb</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.slf4j</pattern>
-                  <shadedPattern>org.hawkular.apm.shaded.org.slf4j</shadedPattern>
+                  <shadedPattern>shaded.org.slf4j</shadedPattern>
                 </relocation>
               </relocations>
+              <!-- Commented out as part of HWKAPM-284
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>
+              -->
             </configuration>
           </execution>
         </executions>
