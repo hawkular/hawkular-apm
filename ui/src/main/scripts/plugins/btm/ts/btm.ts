@@ -49,8 +49,14 @@ module BTM {
       }
     };
 
+    $scope.criteria = {
+      startTime: -3600000
+    };
+
     $scope.reload = function() {
-      $http.get('/hawkular/apm/config/businesstxn/summary').then(function(resp) {
+
+      $http.get('/hawkular/apm/analytics/transactions?criteria='
+          + encodeURI(JSON.stringify($scope.criteria))).then(function(resp) {
 
         let allPromises = [];
         _.each(resp.data, (btxn: any) => {
@@ -83,7 +89,11 @@ module BTM {
     $scope.getBusinessTxnDetails = function(btxn) {
       let promises = [];
 
-      let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?businessTransaction=' + btxn.name);
+      let btxncriteria = angular.copy($scope.criteria);
+      btxncriteria.businessTransaction = btxn.name;
+
+      let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?criteria='
+          + encodeURI(JSON.stringify(btxncriteria)));
       promises.push(countPromise);
       countPromise.then(function(resp) {
         btxn.count = resp.data;
@@ -92,7 +102,8 @@ module BTM {
       });
 
       let pct95Promise =
-        $http.get('/hawkular/apm/analytics/trace/completion/percentiles?businessTransaction=' + btxn.name);
+        $http.get('/hawkular/apm/analytics/trace/completion/percentiles?criteria='
+          + encodeURI(JSON.stringify(btxncriteria)));
       promises.push(pct95Promise);
       pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
@@ -105,7 +116,8 @@ module BTM {
       });
 
       let faultsPromise =
-        $http.get('/hawkular/apm/analytics/trace/completion/faultcount?businessTransaction=' + btxn.name);
+        $http.get('/hawkular/apm/analytics/trace/completion/faultcount?criteria='
+          + encodeURI(JSON.stringify(btxncriteria)));
       promises.push(faultsPromise);
       faultsPromise.then(function(resp) {
         btxn.faultcount = resp.data;

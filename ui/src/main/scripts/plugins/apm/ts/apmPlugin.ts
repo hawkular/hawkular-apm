@@ -85,8 +85,9 @@ module APM {
             return $http.get('/hawkular/apm/config/businesstxn/full/' +
               $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
-                $location.path('/hawkular-ui/apm/btm');
-                toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+                resp.data = {
+                  level: 'All'
+                };
               }
               return resp.data;
             }, function(resp) {

@@ -79,7 +79,7 @@
             <div class="card-pf-title">
               <span tooltip="No data being collected for this service. Activate it to collect." ng-show="btxn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
               <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}">{{btxn.name}}</a>
-              <span class="hk-settings pull-right">
+              <span class="hk-settings pull-right" ng-show="btxn.staticConfig">
                 <a href="/hawkular-ui/apm/btm/config/{{btxn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
                 <a href="#" ng-click="deleteBusinessTxn(btxn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
               </span>

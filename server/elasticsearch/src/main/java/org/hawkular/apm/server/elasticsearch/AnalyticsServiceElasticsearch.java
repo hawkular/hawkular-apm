@@ -23,11 +23,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -72,12 +76,14 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics.NodeCompone
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
+import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.events.ApmEvent;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.AbstractAnalyticsService;
+import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.EndpointUtil;
@@ -100,6 +106,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private static final String FRAGMENT_COMPLETION_TIME_TYPE = "fragmentcompletiontime";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static ElasticsearchClient client = ElasticsearchClient.getSingleton();
+
+    @Inject
+    private ConfigurationService configService;
 
     @Override
     protected List<Trace> getFragments(String tenantId, Criteria criteria) {
@@ -133,10 +142,38 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         SearchResponse response = getSearchResponse(request);
 
         Terms terms = response.getAggregations().get("cardinality");
-        return terms.getBuckets().stream()
+        List<TransactionInfo> txnInfo = terms.getBuckets().stream()
                 .map(AnalyticsServiceElasticsearch::toTransactionInfo)
-                .sorted((one, another) -> one.getName().compareTo(another.getName()))
                 .collect(Collectors.toList());
+
+        // If config service available, check if there is a business txn config for the list of
+        // transactions being returned
+        if (configService != null) {
+            Map<String,BusinessTxnConfig> btcs = configService.getBusinessTransactions(tenantId, 0);
+
+            txnInfo.forEach(ti -> {
+                BusinessTxnConfig btc = btcs.get(ti.getName());
+                if (btc != null) {
+                    ti.setLevel(btc.getLevel());
+                    ti.setStaticConfig(true);
+                    btcs.remove(ti.getName());
+                }
+            });
+
+            // Add entry for remaining business txn configs
+            btcs.forEach((k,v) -> txnInfo.add(new TransactionInfo().setName(k).setLevel(v.getLevel()).setStaticConfig(true)));
+        }
+
+        // Sort the list by transaction name
+        Collections.sort(txnInfo, new Comparator<TransactionInfo>() {
+            @Override
+            public int compare(TransactionInfo ti1, TransactionInfo ti2) {
+                return ti1.getName().compareTo(ti2.getName());
+            }
+
+        });
+
+        return txnInfo;
     }
 
     @Override
