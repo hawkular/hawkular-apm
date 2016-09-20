@@ -43,7 +43,6 @@ import org.hawkular.apm.server.rest.entity.CollectorConfigurationRequest;
 import org.hawkular.apm.server.rest.entity.NamedBusinessTransactionRequest;
 import org.hawkular.apm.server.rest.entity.TenantRequest;
 import org.hawkular.apm.server.rest.entity.UpdatedBusinessTxnConfigurationsRequest;
-import org.hawkular.apm.server.rest.entity.ValidateBusinessTxnRequest;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -216,10 +215,10 @@ public class ConfigurationHandler extends BaseHandler {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public Response validateBusinessTxnConfiguration(@BeanParam ValidateBusinessTxnRequest request) {
+    public Response validateBusinessTxnConfiguration(@BeanParam TenantRequest request, BusinessTxnConfig config) {
         return withErrorHandler(() -> {
-            log.tracef("Validate business transaction configuration=[%s]", request.getConfig());
-            List<ConfigMessage> messages = configService.validateBusinessTransaction(request.getConfig());
+            log.tracef("Validate business transaction configuration=[%s]", config);
+            List<ConfigMessage> messages = configService.validateBusinessTransaction(config);
             log.tracef("Validated business transaction configuration: messages=[%s]", messages);
 
             return Response
