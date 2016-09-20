@@ -17,6 +17,7 @@
 package org.hawkular.apm.tests.wildfly;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -40,6 +41,9 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
+import org.hawkular.apm.api.model.config.ReportingLevel;
+import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.apm.api.model.config.btxn.Filter;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
@@ -47,6 +51,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.config.service.rest.client.ConfigurationServiceRESTClient;
 import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.trace.publisher.rest.client.TracePublisherRESTClient;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
@@ -77,6 +82,8 @@ public class AnalyticsServiceRESTTest {
 
     private static TracePublisherRESTClient publisher;
 
+    private static ConfigurationServiceRESTClient configService;
+
     @BeforeClass
     public static void initClass() {
         analytics = new AnalyticsServiceRESTClient();
@@ -90,6 +97,10 @@ public class AnalyticsServiceRESTTest {
         publisher = new TracePublisherRESTClient();
         publisher.setUsername(TEST_USERNAME);
         publisher.setPassword(TEST_PASSWORD);
+
+        configService = new ConfigurationServiceRESTClient();
+        configService.setUsername(TEST_USERNAME);
+        configService.setPassword(TEST_PASSWORD);
     }
 
     @Before
@@ -191,6 +202,13 @@ public class AnalyticsServiceRESTTest {
 
         publisher.publish(null, Arrays.asList(trace1, trace2));
 
+        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        btxnconfig1.setLevel(ReportingLevel.Ignore);
+        btxnconfig1.setFilter(new Filter());
+        btxnconfig1.getFilter().getInclusions().add("myfilter");
+
+        configService.setBusinessTransaction(null, "btxn1", btxnconfig1);
+
         // Wait to ensure record persisted
         Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
 
@@ -200,9 +218,16 @@ public class AnalyticsServiceRESTTest {
         List<TransactionInfo> tis = analytics.getTransactionInfo(null, new Criteria());
 
         assertNotNull(tis);
-        assertEquals(2, tis.size());
-        assertEquals("trace1", tis.get(0).getName());
-        assertEquals("trace2", tis.get(1).getName());
+        assertEquals(3, tis.size());
+        assertEquals("btxn1", tis.get(0).getName());
+        assertEquals(ReportingLevel.Ignore, tis.get(0).getLevel());
+        assertTrue(tis.get(0).isStaticConfig());
+        assertEquals("trace1", tis.get(1).getName());
+        assertEquals(ReportingLevel.All, tis.get(1).getLevel());
+        assertFalse(tis.get(1).isStaticConfig());
+        assertEquals("trace2", tis.get(2).getName());
+        assertEquals(ReportingLevel.All, tis.get(2).getLevel());
+        assertFalse(tis.get(2).isStaticConfig());
     }
 
     @Test

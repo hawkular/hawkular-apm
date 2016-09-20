@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.api.model.analytics;
 
+import org.hawkular.apm.api.model.config.ReportingLevel;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -32,6 +34,12 @@ public class TransactionInfo {
     @JsonInclude
     private long count;
 
+    @JsonInclude
+    private ReportingLevel level = ReportingLevel.All;
+
+    @JsonInclude
+    private boolean staticConfig = false;
+
     /**
      * @return the name
      */
@@ -41,9 +49,11 @@ public class TransactionInfo {
 
     /**
      * @param name the name to set
+     * @return The transaction info
      */
-    public void setName(String name) {
+    public TransactionInfo setName(String name) {
         this.name = name;
+        return this;
     }
 
     /**
@@ -55,25 +65,71 @@ public class TransactionInfo {
 
     /**
      * @param count the count to set
+     * @return The transaction info
      */
-    public void setCount(long count) {
+    public TransactionInfo setCount(long count) {
         this.count = count;
+        return this;
     }
 
+    /**
+     * @return the level
+     */
+    public ReportingLevel getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     * @return The transaction info
+     */
+    public TransactionInfo setLevel(ReportingLevel level) {
+        this.level = level;
+        return this;
+    }
+
+    /**
+     * @return the staticConfig
+     */
+    public boolean isStaticConfig() {
+        return staticConfig;
+    }
+
+    /**
+     * @param staticConfig the staticConfig to set
+     * @return The transaction info
+     */
+    public TransactionInfo setStaticConfig(boolean staticConfig) {
+        this.staticConfig = staticConfig;
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "TransactionInfo [name=" + name + ", count=" + count + "]";
+        return "TransactionInfo [name=" + name + ", count=" + count + ", level=" + level + ", staticConfig="
+                + staticConfig + "]";
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (count ^ (count >>> 32));
+        result = prime * result + ((level == null) ? 0 : level.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (staticConfig ? 1231 : 1237);
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -85,10 +141,14 @@ public class TransactionInfo {
         TransactionInfo other = (TransactionInfo) obj;
         if (count != other.count)
             return false;
+        if (level != other.level)
+            return false;
         if (name == null) {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (staticConfig != other.staticConfig)
             return false;
         return true;
     }
