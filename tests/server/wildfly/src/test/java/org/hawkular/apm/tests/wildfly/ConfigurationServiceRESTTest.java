@@ -21,15 +21,16 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
+import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
 import org.hawkular.apm.api.model.config.btxn.Filter;
 import org.hawkular.apm.config.service.rest.client.ConfigurationServiceRESTClient;
 import org.hawkular.apm.tests.common.Wait;
@@ -42,17 +43,17 @@ import org.junit.Test;
  */
 public class ConfigurationServiceRESTTest {
 
-    /**  */
+
     private static final String DESCRIPTION1 = "Description 1";
-    /**  */
+
     private static final String DESCRIPTION2 = "Description 2";
-    /**  */
+
     private static final String BTXNCONFIG1 = "btxnconfig1";
-    /**  */
+
     private static final String BTXNCONFIG2 = "btxnconfig2";
-    /**  */
+
     private static final String TEST_PASSWORD = "password";
-    /**  */
+
     private static final String TEST_USERNAME = "jdoe";
 
     private static ConfigurationServiceRESTClient service;
@@ -71,30 +72,20 @@ public class ConfigurationServiceRESTTest {
 
     @Test
     public void testGetJvmCollectorConfiguration() {
-        try {
-            CollectorConfiguration cc = service.getCollector(null, "jvm", null, null);
+        CollectorConfiguration cc = service.getCollector(null, "jvm", null, null);
 
-            assertNotNull(cc);
+        assertNotNull(cc);
 
-            assertNotEquals(0, cc.getInstrumentation().size());
-
-        } catch (Exception e1) {
-            fail("Failed to get configuration: " + e1);
-        }
+        assertNotEquals(0, cc.getInstrumentation().size());
     }
 
     @Test
     public void testGetDefaultCollectorConfiguration() {
-        try {
-            CollectorConfiguration cc = service.getCollector(null, null, null, null);
+        CollectorConfiguration cc = service.getCollector(null, null, null, null);
 
-            assertNotNull(cc);
+        assertNotNull(cc);
 
-            assertNotEquals(0, cc.getInstrumentation().size());
-
-        } catch (Exception e1) {
-            fail("Failed to get configuration: " + e1);
-        }
+        assertNotEquals(0, cc.getInstrumentation().size());
     }
 
     @Test
@@ -107,11 +98,7 @@ public class ConfigurationServiceRESTTest {
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        try {
-            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
-        } catch (Exception e1) {
-            fail("Failed to add btxnconfig1: " + e1);
-        }
+        service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -126,11 +113,7 @@ public class ConfigurationServiceRESTTest {
         // Update description
         btxnconfig2.setDescription(DESCRIPTION2);
 
-        try {
-            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig2);
-        } catch (Exception e1) {
-            fail("Failed to update btxnconfig1: " + e1);
-        }
+        service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -143,11 +126,7 @@ public class ConfigurationServiceRESTTest {
         assertEquals(DESCRIPTION2, btxnconfig3.getDescription());
 
         // Remove the config
-        try {
-            service.removeBusinessTransaction(null, BTXNCONFIG1);
-        } catch (Exception e1) {
-            fail("Failed to remove btxnconfig1: " + e1);
-        }
+        service.removeBusinessTransaction(null, BTXNCONFIG1);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -174,12 +153,8 @@ public class ConfigurationServiceRESTTest {
         btxnconfig2.setFilter(new Filter());
         btxnconfig2.getFilter().getInclusions().add("myfilter");
 
-        try {
-            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
-            service.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
-        } catch (Exception e1) {
-            fail("Failed to add btxnconfigs: " + e1);
-        }
+        service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+        service.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -193,12 +168,8 @@ public class ConfigurationServiceRESTTest {
         assertNotNull(cc.getBusinessTransactions().get(BTXNCONFIG2));
 
         // Remove the config
-        try {
-            service.removeBusinessTransaction(null, BTXNCONFIG1);
-            service.removeBusinessTransaction(null, BTXNCONFIG2);
-        } catch (Exception e1) {
-            fail("Failed to remove btxnconfigs: " + e1);
-        }
+        service.removeBusinessTransaction(null, BTXNCONFIG1);
+        service.removeBusinessTransaction(null, BTXNCONFIG2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -211,7 +182,7 @@ public class ConfigurationServiceRESTTest {
     }
 
     @Test
-    public void testGetBusinessTxnConfigurations() {
+    public void testGetBusinessTxnConfigurations() throws InterruptedException {
         // Check config not already defined
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
@@ -228,24 +199,20 @@ public class ConfigurationServiceRESTTest {
 
         long midtime = 0;
 
-        try {
-            service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+        service.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
 
-            // these waits are part of the business logic and shouldn't be changed
-            synchronized (this) {
-                wait(1000);
-            }
-
-            midtime = System.currentTimeMillis();
-
-            synchronized (this) {
-                wait(1000);
-            }
-
-            service.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
-        } catch (Exception e1) {
-            fail("Failed to add btxnconfigs: " + e1);
+        // these waits are part of the business logic and shouldn't be changed
+        synchronized (this) {
+            wait(1000);
         }
+
+        midtime = System.currentTimeMillis();
+
+        synchronized (this) {
+            wait(1000);
+        }
+
+        service.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -278,12 +245,8 @@ public class ConfigurationServiceRESTTest {
         assertTrue(btcs2.containsKey(BTXNCONFIG2));
 
         // Remove the config
-        try {
-            service.removeBusinessTransaction(null, BTXNCONFIG1);
-            service.removeBusinessTransaction(null, BTXNCONFIG2);
-        } catch (Exception e1) {
-            fail("Failed to remove btxnconfigs: " + e1);
-        }
+        service.removeBusinessTransaction(null, BTXNCONFIG1);
+        service.removeBusinessTransaction(null, BTXNCONFIG2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -315,11 +278,7 @@ public class ConfigurationServiceRESTTest {
         configs.put(BTXNCONFIG1, btxnconfig1);
         configs.put(BTXNCONFIG2, btxnconfig2);
 
-        try {
-            service.setBusinessTransactions(null, configs);
-        } catch (Exception e1) {
-            fail("Failed to add btxnconfigs: " + e1);
-        }
+        service.setBusinessTransactions(null, configs);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -344,12 +303,8 @@ public class ConfigurationServiceRESTTest {
         assertTrue(btcs.containsKey(BTXNCONFIG2));
 
         // Remove the config
-        try {
-            service.removeBusinessTransaction(null, BTXNCONFIG1);
-            service.removeBusinessTransaction(null, BTXNCONFIG2);
-        } catch (Exception e1) {
-            fail("Failed to remove btxnconfigs: " + e1);
-        }
+        service.removeBusinessTransaction(null, BTXNCONFIG1);
+        service.removeBusinessTransaction(null, BTXNCONFIG2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -359,5 +314,25 @@ public class ConfigurationServiceRESTTest {
 
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG1));
         assertNull(service.getBusinessTransaction(null, BTXNCONFIG2));
+    }
+
+    @Test
+    public void testValidateBusinessTxnConfiguration() {
+        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        btxnconfig1.setDescription(DESCRIPTION1);
+        btxnconfig1.setFilter(new Filter());
+        btxnconfig1.getFilter().getInclusions().add("myfilter");
+
+        BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
+        btxnconfig2.setDescription(DESCRIPTION2);
+
+        List<ConfigMessage> messages1 = service.validateBusinessTransaction(btxnconfig1);
+        assertNotNull(messages1);
+        assertEquals(0, messages1.size());
+
+        List<ConfigMessage> messages2 = service.validateBusinessTransaction(btxnconfig2);
+        assertNotNull(messages2);
+        assertEquals(1, messages2.size());
+        assertEquals(Severity.Error, messages2.get(0).getSeverity());
     }
 }
