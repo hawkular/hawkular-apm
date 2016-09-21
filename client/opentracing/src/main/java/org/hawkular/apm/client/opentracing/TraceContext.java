@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 
 /**
@@ -64,6 +65,8 @@ public class TraceContext {
         trace = new Trace();
         trace.setId(UUID.randomUUID().toString());
         trace.setStartTime(startTime);
+        trace.setHostName(PropertyUtil.getHostName());
+        trace.setHostAddress(PropertyUtil.getHostAddress());
 
         // Initialise the root node's path
         rootNode.setNodePath(String.format("%s:0", trace.getId()));
