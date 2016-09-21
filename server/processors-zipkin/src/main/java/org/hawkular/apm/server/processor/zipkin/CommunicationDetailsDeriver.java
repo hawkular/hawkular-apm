@@ -87,7 +87,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                     ret.setTarget(EndpointUtil.encodeEndpoint(url.getPath(), operation));
                 } else {
                     // TODO: ERRORS IN DATA???
-                    log.warnf("NO URL, span = %s", item);
+                    log.debugf("NO URL, span = %s", item);
                 }
 
                 // Calculate difference in milliseconds

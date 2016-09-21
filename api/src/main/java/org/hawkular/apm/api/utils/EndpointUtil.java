@@ -32,7 +32,10 @@ public class EndpointUtil {
      * @return The endpoint descriptor
      */
     public static String encodeEndpoint(String uri, String operation) {
-        StringBuilder buf=new StringBuilder(uri);
+        StringBuilder buf=new StringBuilder();
+        if (uri != null && !uri.trim().isEmpty()) {
+            buf.append(uri);
+        }
         if (operation != null && !operation.trim().isEmpty()) {
             buf.append('[');
             buf.append(operation);

@@ -24,9 +24,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -336,7 +338,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                 log.finest("getCommunicationSummaryStatistics (before tree) = " + ret);
             }
 
-            ret = CommunicationSummaryTreeBuilder.buildCommunicationSummaryTree(ret);
+            ret = CommunicationSummaryTreeBuilder.buildCommunicationSummaryTree(ret, getEndpoints(tenantId, criteria));
 
             if (!criteria.transactionWide()) {
                 // Scan the trees to see whether node specific queries are relevant
@@ -360,6 +362,11 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         }
 
         return ret;
+    }
+
+    protected Set<String> getEndpoints(String tenantId, Criteria criteria) {
+        return getTraceCompletionTimes(tenantId, criteria).stream()
+                .map(ct -> EndpointUtil.encodeEndpoint(ct.getUri(), ct.getOperation())).collect(Collectors.toSet());
     }
 
     /**

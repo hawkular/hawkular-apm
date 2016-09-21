@@ -203,18 +203,18 @@ public class AnalyticsServiceRESTTest {
 
         publisher.publish(null, Arrays.asList(trace1, trace2));
 
+        // Wait to ensure record persisted
+        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
+
+        // Wait to result derived
+        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+
         BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
         btxnconfig1.setLevel(ReportingLevel.Ignore);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
         configService.setBusinessTransaction(null, "btxn1", btxnconfig1);
-
-        // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
-
-        // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 2);
 
         List<TransactionInfo> tis = analytics.getTransactionInfo(null, new Criteria());
 
