@@ -78,14 +78,22 @@ module E2E {
       $scope.operations = [];
 
       _.each($scope.e2eData, (node) => {
-        $scope.topLevel.push(node.id);
+        $scope.topLevel.push($scope.idWithServiceName(node));
         $scope.uris.push(node.uri);
         $scope.operations.push(node.operation);
       });
     };
 
+    $scope.idWithServiceName = function (node) {
+      let serviceName = '';
+      if (node.serviceName) {
+        serviceName = node.serviceName + ': ';
+      }
+      return serviceName + node.id;
+    };
+
     $scope.compareNodes = function(a, b) {
-      return a.id > b.id;
+      return $scope.idWithServiceName(a) > $scope.idWithServiceName(b);
     };
 
     $scope.addPropertyToFilter = function(pName, pValue, operator) {
@@ -117,7 +125,7 @@ module E2E {
     $scope.filterByTopLevel = function(nodeId) {
       if (nodeId) {
         let branch = _.find($scope.e2eData, (node: any) => {
-          return node.id === nodeId;
+          return $scope.idWithServiceName(node) === nodeId;
         });
         $scope.filteredNodes = branch ? [branch] : [];
       }

@@ -68,7 +68,11 @@ module DagreD3 {
         nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
         let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
           'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
+        if (d.serviceName == null) {
+          d.serviceName = '&zwnj;';
+        }
         html += '<span class="status"></span>';
+        html += '<span class="name service-name">' + d.serviceName + '</span>';
         html += '<span class="name">' + d.id + '</span>';
         html += '<span class="stats">';
         html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' + d.averageDuration + 'ms</span>';
