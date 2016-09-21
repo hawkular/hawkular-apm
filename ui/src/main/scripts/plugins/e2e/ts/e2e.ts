@@ -78,6 +78,7 @@ module E2E {
 
       _.each($scope.e2eData, (node) => {
         $scope.topLevel.push(node.id);
+        $scope.topLevel.sort();
         $scope.uris.push(node.uri);
         $scope.operations.push(node.operation);
       });
