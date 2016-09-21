@@ -18,8 +18,6 @@ package org.hawkular.apm.client.collector.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +34,7 @@ import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
+import org.hawkular.apm.api.utils.PropertyUtil;
 
 /**
  * This class represents the builder for a trace fragment. NOTE: This
@@ -66,9 +65,6 @@ public class FragmentBuilder {
 
     private boolean suppress = false;
 
-    private static String hostName;
-    private static String hostAddress;
-
     private ReportingLevel level = ReportingLevel.All;
 
     private int inHashCode = 0;
@@ -78,26 +74,12 @@ public class FragmentBuilder {
 
     private AtomicInteger threadCount = new AtomicInteger();
 
-    static {
-        try {
-            hostName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            log.severe("Unable to determine host name");
-        }
-
-        try {
-            hostAddress = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            log.severe("Unable to determine host address");
-        }
-    }
-
     {
         trace = new Trace()
                 .setId(UUID.randomUUID().toString())
                 .setStartTime(System.currentTimeMillis())
-                .setHostName(hostName)
-                .setHostAddress(hostAddress);
+                .setHostName(PropertyUtil.getHostName())
+                .setHostAddress(PropertyUtil.getHostAddress());
     }
 
     /**
