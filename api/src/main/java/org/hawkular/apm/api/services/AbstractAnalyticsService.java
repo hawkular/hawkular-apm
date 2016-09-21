@@ -280,12 +280,14 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      */
     protected static void initEndpointInfo(EndpointInfo endpoint) {
         endpoint.setRegex(createRegex(endpoint.getEndpoint(), endpoint.metaURI()));
-        endpoint.setUriRegex(createRegex(EndpointUtil.decodeEndpointURI(endpoint.getEndpoint()), endpoint.metaURI()));
 
-        if (endpoint.metaURI()) {
+        String uri = EndpointUtil.decodeEndpointURI(endpoint.getEndpoint());
+        if (uri != null) {
+            endpoint.setUriRegex(createRegex(uri, endpoint.metaURI()));
+        }
+
+        if (uri != null && endpoint.metaURI()) {
             StringBuilder template = new StringBuilder();
-
-            String uri = EndpointUtil.decodeEndpointURI(endpoint.getEndpoint());
 
             String[] parts = uri.split("/");
 

@@ -20,14 +20,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
@@ -57,6 +59,8 @@ import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.FaultCriteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
+import org.hawkular.apm.api.services.StoreException;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
 import org.junit.Before;
@@ -67,6 +71,31 @@ import org.junit.Test;
  * @author gbrown
  */
 public class AnalyticsServiceElasticsearchTest {
+
+    private static final String BTXN = "testapp";
+
+    private static final String OP2_1 = "op2.1";
+    private static final String OUT2_1 = "out2.1";
+    private static final String OP2 = "op2";
+    private static final String IN2 = "in2";
+    private static final String OP1_2 = "op1.2";
+    private static final String OUT1_2 = "out1.2";
+    private static final String OP1_1 = "op1.1";
+    private static final String OUT1_1 = "out1.1";
+    private static final String OP1 = "op1";
+    private static final String IN1 = "in1";
+
+    private static final String EP_INOP1 = EndpointUtil.encodeEndpoint(IN1,OP1);
+    private static final String EP_INOP2 = EndpointUtil.encodeEndpoint(IN2,OP2);
+    private static final String EP_OUTOP1_1 = EndpointUtil.encodeEndpoint(OUT1_1,OP1_1);
+    private static final String EP_OUTOP1_2 = EndpointUtil.encodeEndpoint(OUT1_2,OP1_2);
+    private static final String EP_OUTOP2_1 = EndpointUtil.encodeEndpoint(OUT2_1,OP2_1);
+
+    private static final String EP_IN1_OP = EndpointUtil.encodeEndpoint(null, IN1);
+    private static final String EP_IN2_OP = EndpointUtil.encodeEndpoint(null, IN2);
+    private static final String EP_OUT1_1_OP = EndpointUtil.encodeEndpoint(null, OUT1_1);
+    private static final String EP_OUT1_2_OP = EndpointUtil.encodeEndpoint(null, OUT1_2);
+    private static final String EP_OUT2_1_OP = EndpointUtil.encodeEndpoint(null, OUT2_1);
 
     private TraceServiceElasticsearch bts;
 
@@ -89,8 +118,8 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testAllDistinctUnboundEndpointsConsumer() {
-        List<Trace> traces = new ArrayList<Trace>();
+    public void testAllDistinctUnboundEndpointsConsumer() throws StoreException {
+        List<Trace> traces = new ArrayList<>();
 
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
@@ -121,11 +150,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         trace2.getNodes().add(c2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        bts.storeFragments(null, traces);
 
         Wait.until(() -> analytics.getUnboundEndpoints(null, 100, 0, false).size() == 2);
         java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
@@ -138,12 +163,9 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testAllDistinctUnboundEndpointsProducer() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testAllDistinctUnboundEndpointsProducer() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Component c1 = new Component();
         c1.setUri("uri1");
@@ -165,11 +187,7 @@ public class AnalyticsServiceElasticsearchTest {
         p2.setUri("uri5");
         t2.getNodes().add(p2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        bts.storeFragments(null, Collections.singletonList(trace1));
 
         Wait.until(() -> analytics.getUnboundEndpoints(null, 100, 0, false).size() == 2);
         java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
@@ -182,12 +200,9 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testAllDuplicationUnboundEndpoints() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testAllDuplicationUnboundEndpoints() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Component c1 = new Component();
         c1.setUri("uri1");
@@ -207,18 +222,13 @@ public class AnalyticsServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setStartTime(2000);
-        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri3");
 
         trace2.getNodes().add(c2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        bts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Wait.until(() -> analytics.getUnboundEndpoints(null, 100, 0, false).size() == 1);
         java.util.List<EndpointInfo> uris = analytics.getUnboundEndpoints(null, 100, 0, false);
@@ -230,23 +240,15 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testUnboundEndpointsExcludeBTxnConfig() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testUnboundEndpointsExcludeBTxnConfig() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
         trace1.getNodes().add(c1);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to store: "+e);
-        }
+        bts.storeFragments(null, Collections.singletonList(trace1));
 
         analytics.setConfigurationService(new ConfigurationService() {
             @Override
@@ -274,7 +276,7 @@ public class AnalyticsServiceElasticsearchTest {
 
             @Override
             public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-                Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
+                Map<String, BusinessTxnConfig> ret = new HashMap<>();
                 BusinessTxnConfig btc = new BusinessTxnConfig();
                 btc.setFilter(new Filter());
                 btc.getFilter().getInclusions().add("uri1");
@@ -310,22 +312,15 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testUnboundEndpointsExcludeBTxnConfigRegex() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testUnboundEndpointsExcludeBTxnConfigRegex() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("{myns}ns");
         trace1.getNodes().add(c1);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        bts.storeFragments(null, Collections.singletonList(trace1));
 
         analytics.setConfigurationService(new ConfigurationService() {
             @Override
@@ -352,7 +347,7 @@ public class AnalyticsServiceElasticsearchTest {
 
             @Override
             public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-                Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
+                Map<String, BusinessTxnConfig> ret = new HashMap<>();
                 BusinessTxnConfig btc = new BusinessTxnConfig();
                 btc.setFilter(new Filter());
                 btc.getFilter().getInclusions().add("^\\{myns\\}ns$");
@@ -388,13 +383,10 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testBoundEndpoints() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testBoundEndpoints() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
-        traces.add(trace1);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
@@ -415,18 +407,13 @@ public class AnalyticsServiceElasticsearchTest {
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace2");
         trace2.setStartTime(2000);
-        traces.add(trace2);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri4");
 
         trace2.getNodes().add(c2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        bts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Wait.until(() -> analytics.getBoundEndpoints(null, "trace1", 100, 0).size() == 3);
         java.util.List<EndpointInfo> uris1 = analytics.getBoundEndpoints(null, "trace1", 100, 0);
@@ -446,9 +433,7 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testPropertyInfo() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testPropertyInfo() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
@@ -457,7 +442,6 @@ public class AnalyticsServiceElasticsearchTest {
         consumer1.getProperties().add(new Property("prop1", "value1"));
         consumer1.getProperties().add(new Property("prop2", "value2"));
         trace1.getNodes().add(consumer1);
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace1");
@@ -467,13 +451,8 @@ public class AnalyticsServiceElasticsearchTest {
         consumer2.getProperties().add(new Property("prop3", "value3"));
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
-        traces.add(trace2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        bts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Criteria criteria = new Criteria()
             .setBusinessTransaction("trace1")
@@ -505,25 +484,17 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testPrincipalInfo() {
-        List<Trace> traces = new ArrayList<Trace>();
-
+    public void testPrincipalInfo() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
         trace1.setStartTime(1000);
         trace1.setPrincipal("p1");
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace1");
         trace2.setStartTime(2000);
-        traces.add(trace2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to wait");
-        }
+        bts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Criteria criteria=new Criteria()
             .setBusinessTransaction("trace1")
@@ -540,37 +511,28 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimes() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimes() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
         ct1.setPrincipal("p1");
         ct1.setUri("uri1");
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
         ct2.setFault("TestFault1");
         ct2.setUri("uri2");
-        cts.add(ct2);
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction("testapp");
+        ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
         ct3.setFault("TestFault2");
         ct3.setUri("uri1");
-        cts.add(ct3);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria().setStartTime(100).setEndTime(0);
 
@@ -582,37 +544,28 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimesForUri() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimesForUri() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
         ct1.setPrincipal("p1");
         ct1.setUri("uri1");
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
         ct2.setFault("TestFault1");
         ct2.setUri("uri2");
-        cts.add(ct2);
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction("testapp");
+        ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
         ct3.setFault("TestFault2");
         ct3.setUri("uri1");
-        cts.add(ct3);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria().setUri("uri1").setStartTime(100).setEndTime(0);
 
@@ -624,39 +577,30 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimesForOperation() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimesForOperation() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
         ct1.setPrincipal("p1");
-        ct1.setOperation("op1");
-        cts.add(ct1);
+        ct1.setOperation(OP1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
         ct2.setFault("TestFault1");
-        ct2.setOperation("op2");
-        cts.add(ct2);
+        ct2.setOperation(OP2);
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction("testapp");
+        ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
         ct3.setFault("TestFault2");
-        ct3.setOperation("op1");
-        cts.add(ct3);
+        ct3.setOperation(OP1);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
-        Criteria criteria = new Criteria().setOperation("op1").setStartTime(100).setEndTime(0);
+        Criteria criteria = new Criteria().setOperation(OP1).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 2);
         List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
@@ -666,185 +610,134 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionCount() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionCount() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+        criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
-    public void testGetCompletionCount2() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionCount2() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(1500);
+        criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(1500);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
-    public void testGetCompletionCountForFault() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionCountForFault() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setFault("TestFault");
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", null));
-        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+        criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
-    public void testGetCompletionCountForNotFault() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionCountForNotFault() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setFault("TestFault1");
-        cts.add(ct2);
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction("testapp");
+        ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setFault("TestFault2");
-        cts.add(ct3);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault1", Operator.HASNOT));
-        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+        criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
-    public void testGetCompletionCountForPrincipal() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionCountForPrincipal() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
         ct1.setPrincipal("p1");
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
         ct2.setFault("TestFault1");
-        cts.add(ct2);
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction("testapp");
+        ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
         ct3.setFault("TestFault2");
-        cts.add(ct3);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
         criteria.setPrincipal("p1");
-        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+        criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
     }
 
     @Test
-    public void testGetCompletionCountForPropertyNum() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionCountForPropertyNum() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
         ct1.setTimestamp(1000);
         ct1.getProperties().add(new Property("num", "1.5", PropertyType.Number));
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property("num", "2.0", PropertyType.Number));
-        cts.add(ct2);
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property("num", "3.7", PropertyType.Number));
-        cts.add(ct3);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
         criteria.addProperty("num", "2", Operator.GTE);
@@ -885,63 +778,46 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionFaultCount() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionFaultCount() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
         ct1.setFault("Failed");
-        cts.add(ct1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(100).setEndTime(0);
+        criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionFaultCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionFaultCount(null, criteria));
     }
 
     @Test
-    public void testGetCompletionTimeseriesStatistics() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimeseriesStatistics() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -971,36 +847,27 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimeseriesStatisticsWithLowerBound() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimeseriesStatisticsWithLowerBound() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setLowerBound(200);
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -1030,36 +897,27 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimeseriesStatisticsWithUpperBound() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimeseriesStatisticsWithUpperBound() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(500);
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(300);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setUpperBound(400);
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -1089,37 +947,28 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimeseriesStatisticsWithFaults() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimeseriesStatisticsWithFaults() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setFault("fault1");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
         ct2.setFault("fault2");
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -1149,39 +998,30 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionTimeseriesStatisticsForPrincipal() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionTimeseriesStatisticsForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setPrincipal("p1");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setPrincipal("p1");
         ct1_2.setFault("fault1");
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(1700);
         ct2.setDuration(500);
         ct2.setPrincipal("p2");
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setPrincipal("p1").setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 1
@@ -1204,40 +1044,31 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionPropertyDetails() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionPropertyDetails() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property("prop1", "value1"));
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property("prop1", "value2"));
         ct1_2.getProperties().add(new Property("prop2", "value3"));
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
         ct2.getProperties().add(new Property("prop1", "value2"));
         ct2.getProperties().add(new Property("prop2", "value4"));
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 2
@@ -1266,33 +1097,25 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionPropertyDetailsForFault() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionPropertyDetailsForFault() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property("prop1", "value1"));
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setFault("TestFault");
         ct1_2.getProperties().add(new Property("prop1", "value2"));
-        cts.add(ct1_2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", null));
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
@@ -1305,37 +1128,28 @@ public class AnalyticsServiceElasticsearchTest {
 
         assertEquals("value2", cards1.get(0).getValue());
         assertEquals(1, cards1.get(0).getCount());
-
     }
 
     @Test
-    public void testGetCompletionPropertyDetailsForExcludedFault() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionPropertyDetailsForExcludedFault() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property("prop1", "value1"));
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setFault("TestFault");
         ct1_2.getProperties().add(new Property("prop1", "value2"));
-        cts.add(ct1_2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
         criteria.getFaults().add(new FaultCriteria("TestFault", Operator.HASNOT));
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
@@ -1348,37 +1162,28 @@ public class AnalyticsServiceElasticsearchTest {
 
         assertEquals("value1", cards1.get(0).getValue());
         assertEquals(1, cards1.get(0).getCount());
-
     }
 
     @Test
-    public void testGetCompletionPropertyDetailsForPrincipal() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionPropertyDetailsForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setPrincipal("p1");
         ct1_1.getProperties().add(new Property("prop1", "value1"));
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setPrincipal("p2");
         ct1_2.getProperties().add(new Property("prop1", "value2"));
-        cts.add(ct1_2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setPrincipal("p1").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setPrincipal("p1").setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
@@ -1395,38 +1200,29 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionFaultDetails() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionFaultDetails() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setFault("fault1");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setFault("fault2");
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
         ct2.setFault("fault2");
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 2 );
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
@@ -1441,36 +1237,27 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionFaultDetailsNotAllFaults() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionFaultDetailsNotAllFaults() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setFault("fault1");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
@@ -1483,39 +1270,30 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetCompletionFaultDetailsForPrincipal() {
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCompletionFaultDetailsForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setFault("fault1");
         ct1_1.setPrincipal("p1");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setFault("fault2");
         ct1_2.setPrincipal("p2");
-        cts.add(ct1_2);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        cts.add(ct2);
 
-        try {
-            analytics.storeTraceCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction("testapp").setPrincipal("p2").setStartTime(1000).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).setPrincipal("p2").setStartTime(1000).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
@@ -1528,42 +1306,32 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetNodeTimeseriesStatistics() {
-        List<NodeDetails> nds = new ArrayList<NodeDetails>();
-
+    public void testGetNodeTimeseriesStatistics() throws StoreException {
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
-        nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
-        nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setComponentType(Constants.COMPONENT_EJB);
-        nds.add(ct1_3);
 
         NodeDetails ct2 = new NodeDetails();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setActual(500);
         ct2.setComponentType(Constants.COMPONENT_DATABASE);
-        nds.add(ct2);
 
-        try {
-            analytics.storeNodeDetails(null, nds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -1596,46 +1364,36 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetNodeTimeseriesStatisticsPrincipalFilter() {
-        List<NodeDetails> nds = new ArrayList<NodeDetails>();
-
+    public void testGetNodeTimeseriesStatisticsPrincipalFilter() throws StoreException {
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setPrincipal("p1");
-        nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setPrincipal("p1");
-        nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setPrincipal("p1");
-        nds.add(ct1_3);
 
         NodeDetails ct2 = new NodeDetails();
-        ct2.setBusinessTransaction("testapp");
+        ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setActual(500);
         ct2.setComponentType(Constants.COMPONENT_DATABASE);
         ct2.setPrincipal("p2");
-        nds.add(ct2);
 
-        try {
-            analytics.storeNodeDetails(null, nds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -1662,40 +1420,35 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetNodeSummaryStatistics() {
-        List<NodeDetails> nds = new ArrayList<NodeDetails>();
-
+    public void testGetNodeSummaryStatistics() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setBusinessTransaction(BTXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
         ct1_0.setType(NodeType.Consumer);
         ct1_0.setUri("hello");
-        nds.add(ct1_0);
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
         ct1_1.setType(NodeType.Component);
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
-        nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
         ct1_2.setType(NodeType.Component);
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
-        nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1703,72 +1456,67 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
-        nds.add(ct1_3);
 
-        try {
-            analytics.storeNodeDetails(null, nds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        NodeDetails ct1_4 = new NodeDetails();
+        ct1_4.setBusinessTransaction(BTXN);
+        ct1_4.setTimestamp(1800);
+        ct1_4.setActual(170);
+        ct1_4.setElapsed(200);
+        ct1_4.setType(NodeType.Component);
+        ct1_4.setComponentType("OtherComponent");
+        ct1_4.setOperation("onlyOp");
+
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_0, ct1_1, ct1_2, ct1_3, ct1_4));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
 
-        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 3);
+        Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 4);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
 
         assertNotNull(stats);
-        assertEquals(3, stats.size());
+        assertEquals(4, stats.size());
 
-        NodeSummaryStatistics dbstat = null;
-        NodeSummaryStatistics ejbstat = null;
-        NodeSummaryStatistics consumerstat = null;
+        Map<String,NodeSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getComponentType(), x -> x));
 
-        for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
-                dbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_EJB)) {
-                ejbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
-                consumerstat = nss;
-            }
-        }
+        assertEquals("jdbc", results.get(Constants.COMPONENT_DATABASE).getUri());
+        assertNull(results.get(Constants.COMPONENT_DATABASE).getOperation());
+        assertEquals(2, results.get(Constants.COMPONENT_DATABASE).getCount());
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getActual() == 200.0);
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getElapsed() == 400.0);
 
-        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
-        assertNull(dbstat.getOperation());
-        assertEquals(2, dbstat.getCount());
-        assertTrue(dbstat.getActual() == 200.0);
-        assertTrue(dbstat.getElapsed() == 400.0);
+        assertEquals("BookingService", results.get(Constants.COMPONENT_EJB).getUri());
+        assertEquals("createBooking", results.get(Constants.COMPONENT_EJB).getOperation());
+        assertEquals(1, results.get(Constants.COMPONENT_EJB).getCount());
+        assertTrue(results.get(Constants.COMPONENT_EJB).getActual() == 150.0);
+        assertTrue(results.get(Constants.COMPONENT_EJB).getElapsed() == 300.0);
 
-        assertTrue(ejbstat.getUri().equalsIgnoreCase("BookingService"));
-        assertTrue(ejbstat.getOperation().equalsIgnoreCase("createBooking"));
-        assertEquals(1, ejbstat.getCount());
-        assertTrue(ejbstat.getActual() == 150.0);
-        assertTrue(ejbstat.getElapsed() == 300.0);
+        assertEquals("hello", results.get("Consumer").getUri());
+        assertNull(results.get("Consumer").getOperation());
+        assertEquals(1, results.get("Consumer").getCount());
+        assertTrue(results.get("Consumer").getActual() == 100.0);
+        assertTrue(results.get("Consumer").getElapsed() == 200.0);
 
-        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
-        assertNull(consumerstat.getOperation());
-        assertEquals(1, consumerstat.getCount());
-        assertTrue(consumerstat.getActual() == 100.0);
-        assertTrue(consumerstat.getElapsed() == 200.0);
+        assertEquals("onlyOp", results.get("OtherComponent").getOperation());
+        assertEquals(1, results.get("OtherComponent").getCount());
+        assertTrue(results.get("OtherComponent").getActual() == 170.0);
+        assertTrue(results.get("OtherComponent").getElapsed() == 200.0);
     }
 
     @Test
-    public void testGetNodeSummaryStatisticsWithBlankHostNameFilter() {
-        List<NodeDetails> nds = new ArrayList<NodeDetails>();
-
+    public void testGetNodeSummaryStatisticsWithBlankHostNameFilter() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setBusinessTransaction(BTXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
         ct1_0.setType(NodeType.Consumer);
         ct1_0.setUri("hello");
         ct1_0.setHostName("hostA");
-        nds.add(ct1_0);
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1776,10 +1524,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
-        nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1787,10 +1534,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
-        nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1799,13 +1545,8 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
-        nds.add(ct1_3);
 
-        try {
-            analytics.storeNodeDetails(null, nds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_0, ct1_1, ct1_2, ct1_3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("");
@@ -1816,56 +1557,41 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(3, stats.size());
 
-        NodeSummaryStatistics dbstat = null;
-        NodeSummaryStatistics ejbstat = null;
-        NodeSummaryStatistics consumerstat = null;
+        Map<String,NodeSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getComponentType(), x -> x));
 
-        for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
-                dbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_EJB)) {
-                ejbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
-                consumerstat = nss;
-            }
-        }
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getUri().equalsIgnoreCase("jdbc"));
+        assertNull(results.get(Constants.COMPONENT_DATABASE).getOperation());
+        assertEquals(2, results.get(Constants.COMPONENT_DATABASE).getCount());
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getActual() == 200.0);
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getElapsed() == 400.0);
 
-        assertTrue(dbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE));
-        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
-        assertNull(dbstat.getOperation());
-        assertEquals(2, dbstat.getCount());
-        assertTrue(dbstat.getActual() == 200.0);
-        assertTrue(dbstat.getElapsed() == 400.0);
-        assertTrue(ejbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_EJB));
-        assertTrue(ejbstat.getUri().equalsIgnoreCase("BookingService"));
-        assertTrue(ejbstat.getOperation().equalsIgnoreCase("createBooking"));
-        assertEquals(1, ejbstat.getCount());
-        assertTrue(ejbstat.getActual() == 150.0);
-        assertTrue(ejbstat.getElapsed() == 300.0);
-        assertTrue(consumerstat.getComponentType().equalsIgnoreCase("Consumer"));
-        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
-        assertNull(consumerstat.getOperation());
-        assertEquals(1, consumerstat.getCount());
-        assertTrue(consumerstat.getActual() == 100.0);
-        assertTrue(consumerstat.getElapsed() == 200.0);
+        assertTrue(results.get(Constants.COMPONENT_EJB).getUri().equalsIgnoreCase("BookingService"));
+        assertTrue(results.get(Constants.COMPONENT_EJB).getOperation().equalsIgnoreCase("createBooking"));
+        assertEquals(1, results.get(Constants.COMPONENT_EJB).getCount());
+        assertTrue(results.get(Constants.COMPONENT_EJB).getActual() == 150.0);
+        assertTrue(results.get(Constants.COMPONENT_EJB).getElapsed() == 300.0);
+
+        assertTrue(results.get("Consumer").getUri().equalsIgnoreCase("hello"));
+        assertNull(results.get("Consumer").getOperation());
+        assertEquals(1, results.get("Consumer").getCount());
+        assertTrue(results.get("Consumer").getActual() == 100.0);
+        assertTrue(results.get("Consumer").getElapsed() == 200.0);
     }
 
     @Test
-    public void testGetNodeSummaryStatisticsWithHostNameFilter() {
-        List<NodeDetails> nds = new ArrayList<NodeDetails>();
-
+    public void testGetNodeSummaryStatisticsWithHostNameFilter() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setBusinessTransaction(BTXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
         ct1_0.setType(NodeType.Consumer);
         ct1_0.setUri("hello");
         ct1_0.setHostName("hostA");
-        nds.add(ct1_0);
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1873,10 +1599,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
-        nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1884,10 +1609,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
-        nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1896,13 +1620,8 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
-        nds.add(ct1_3);
 
-        try {
-            analytics.storeNodeDetails(null, nds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_0, ct1_1, ct1_2, ct1_3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setHostName("hostA");
@@ -1913,37 +1632,26 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        NodeSummaryStatistics dbstat = null;
-        NodeSummaryStatistics consumerstat = null;
+        Map<String,NodeSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getComponentType(), x -> x));
 
-        for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
-                dbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
-                consumerstat = nss;
-            }
-        }
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getUri().equalsIgnoreCase("jdbc"));
+        assertNull(results.get(Constants.COMPONENT_DATABASE).getOperation());
+        assertEquals(1, results.get(Constants.COMPONENT_DATABASE).getCount());
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getActual() == 100.0);
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getElapsed() == 200.0);
 
-        assertTrue(dbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE));
-        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
-        assertNull(dbstat.getOperation());
-        assertEquals(1, dbstat.getCount());
-        assertTrue(dbstat.getActual() == 100.0);
-        assertTrue(dbstat.getElapsed() == 200.0);
-        assertTrue(consumerstat.getComponentType().equalsIgnoreCase("Consumer"));
-        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
-        assertNull(consumerstat.getOperation());
-        assertEquals(1, consumerstat.getCount());
-        assertTrue(consumerstat.getActual() == 100.0);
-        assertTrue(consumerstat.getElapsed() == 200.0);
+        assertTrue(results.get("Consumer").getUri().equalsIgnoreCase("hello"));
+        assertNull(results.get("Consumer").getOperation());
+        assertEquals(1, results.get("Consumer").getCount());
+        assertTrue(results.get("Consumer").getActual() == 100.0);
+        assertTrue(results.get("Consumer").getElapsed() == 200.0);
     }
 
     @Test
-    public void testGetNodeSummaryStatisticsWithPrincipalFilter() {
-        List<NodeDetails> nds = new ArrayList<NodeDetails>();
-
+    public void testGetNodeSummaryStatisticsWithPrincipalFilter() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction("testapp");
+        ct1_0.setBusinessTransaction(BTXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
@@ -1951,10 +1659,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_0.setUri("hello");
         ct1_0.setHostName("hostA");
         ct1_0.setPrincipal("p1");
-        nds.add(ct1_0);
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1963,10 +1670,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
         ct1_1.setPrincipal("p1");
-        nds.add(ct1_1);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1975,10 +1681,9 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
         ct1_2.setPrincipal("p2");
-        nds.add(ct1_2);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1988,13 +1693,8 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
         ct1_3.setPrincipal("p2");
-        nds.add(ct1_3);
 
-        try {
-            analytics.storeNodeDetails(null, nds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_0, ct1_1, ct1_2, ct1_3));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000).setPrincipal("p1");
@@ -2005,134 +1705,103 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        NodeSummaryStatistics dbstat = null;
-        NodeSummaryStatistics consumerstat = null;
+        Map<String,NodeSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getComponentType(), x -> x));
 
-        for (NodeSummaryStatistics nss : stats) {
-            if (nss.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE)) {
-                dbstat = nss;
-            } else if (nss.getComponentType().equalsIgnoreCase("Consumer")) {
-                consumerstat = nss;
-            }
-        }
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getUri().equalsIgnoreCase("jdbc"));
+        assertNull(results.get(Constants.COMPONENT_DATABASE).getOperation());
+        assertEquals(1, results.get(Constants.COMPONENT_DATABASE).getCount());
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getActual() == 100.0);
+        assertTrue(results.get(Constants.COMPONENT_DATABASE).getElapsed() == 200.0);
 
-        assertTrue(dbstat.getComponentType().equalsIgnoreCase(Constants.COMPONENT_DATABASE));
-        assertTrue(dbstat.getUri().equalsIgnoreCase("jdbc"));
-        assertNull(dbstat.getOperation());
-        assertEquals(1, dbstat.getCount());
-        assertTrue(dbstat.getActual() == 100.0);
-        assertTrue(dbstat.getElapsed() == 200.0);
-        assertTrue(consumerstat.getComponentType().equalsIgnoreCase("Consumer"));
-        assertTrue(consumerstat.getUri().equalsIgnoreCase("hello"));
-        assertNull(consumerstat.getOperation());
-        assertEquals(1, consumerstat.getCount());
-        assertTrue(consumerstat.getActual() == 100.0);
-        assertTrue(consumerstat.getElapsed() == 200.0);
+        assertTrue(results.get("Consumer").getUri().equalsIgnoreCase("hello"));
+        assertNull(results.get("Consumer").getOperation());
+        assertEquals(1, results.get("Consumer").getCount());
+        assertTrue(results.get("Consumer").getActual() == 100.0);
+        assertTrue(results.get("Consumer").getElapsed() == 200.0);
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticsWithoutOps() {
-        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCommunicationSummaryStatisticsWithoutOps() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setUri("in1");
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setUri(IN1);
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setUri("out1.1");
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setUri(OUT1_1);
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct1_3 = new CompletionTime();
-        ct1_3.setUri("out1.2");
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setUri(OUT1_2);
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
-        cts.add(ct1_3);
 
         CompletionTime ct2_1 = new CompletionTime();
-        ct2_1.setUri("in2");
-        ct2_1.setBusinessTransaction("testapp");
+        ct2_1.setUri(IN2);
+        ct2_1.setBusinessTransaction(BTXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
-        cts.add(ct2_1);
 
         CompletionTime ct2_2 = new CompletionTime();
-        ct2_2.setUri("out2.1");
-        ct2_2.setBusinessTransaction("testapp");
+        ct2_2.setUri(OUT2_1);
+        ct2_2.setBusinessTransaction(BTXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
-        cts.add(ct2_2);
 
         CompletionTime ct2_3 = new CompletionTime();
-        ct2_3.setUri("in2");
-        ct2_3.setBusinessTransaction("testapp");
+        ct2_3.setUri(IN2);
+        ct2_3.setBusinessTransaction(BTXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
-        cts.add(ct2_3);
 
-        try {
-            analytics.storeFragmentCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction("testapp");
+        cd1.setBusinessTransaction(BTXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
-        cd1.setSource("in1");
-        cd1.setTarget("out1.1");
-        cds.add(cd1);
+        cd1.setSource(IN1);
+        cd1.setTarget(OUT1_1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction("testapp");
+        cd2.setBusinessTransaction(BTXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
-        cd2.setSource("in1");
-        cd2.setTarget("out1.2");
-        cds.add(cd2);
+        cd2.setSource(IN1);
+        cd2.setTarget(OUT1_2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction("testapp");
+        cd3.setBusinessTransaction(BTXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
-        cd3.setSource("in2");
-        cd3.setTarget("out2.1");
-        cds.add(cd3);
+        cd3.setSource(IN2);
+        cd3.setTarget(OUT2_1);
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction("testapp");
+        cd4.setBusinessTransaction(BTXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
-        cd4.setSource("in1");
-        cd4.setTarget("out1.2");
-        cds.add(cd4);
+        cd4.setSource(IN1);
+        cd4.setTarget(OUT1_2);
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction("testapp");
+        cd5.setBusinessTransaction(BTXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
-        cd5.setSource("in2");
-        cd5.setTarget("out2.1");
-        cds.add(cd5);
+        cd5.setSource(IN2);
+        cd5.setTarget(OUT2_1);
 
-        try {
-            analytics.storeCommunicationDetails(null, cds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1, cd2, cd3, cd4, cd5));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -2144,182 +1813,296 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(5, stats.size());
 
-        CommunicationSummaryStatistics in1 = null;
-        CommunicationSummaryStatistics in2 = null;
-        CommunicationSummaryStatistics out1_1 = null;
-        CommunicationSummaryStatistics out1_2 = null;
-        CommunicationSummaryStatistics out2_1 = null;
+        Map<String,CommunicationSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        for (CommunicationSummaryStatistics css : stats) {
-            if (css.getId().equals("in1")) {
-                in1 = css;
-            } else if (css.getId().equals("in2")) {
-                in2 = css;
-            } else if (css.getId().equals("out1.1")) {
-                out1_1 = css;
-            } else if (css.getId().equals("out1.2")) {
-                out1_2 = css;
-            } else if (css.getId().equals("out2.1")) {
-                out2_1 = css;
-            } else {
-                fail("Unexpected uri: " + css.getId());
-            }
-        }
+        assertTrue(results.containsKey(IN1));
+        assertTrue(results.containsKey(IN2));
+        assertTrue(results.containsKey(OUT1_1));
+        assertTrue(results.containsKey(OUT1_2));
+        assertTrue(results.containsKey(OUT2_1));
 
-        assertNotNull(in1);
-        assertNotNull(in2);
-        assertNotNull(out1_1);
-        assertNotNull(out1_2);
-        assertNotNull(out2_1);
+        assertEquals(IN1, results.get(IN1).getUri());
+        assertNull(results.get(IN1).getOperation());
 
-        assertEquals("in1", in1.getUri());
-        assertNull(in1.getOperation());
-
-        assertEquals(1, in1.getCount());
-        assertEquals(2, in2.getCount());
-        assertEquals(1, out1_1.getCount());
-        assertEquals(1, out1_2.getCount());
-        assertEquals(1, out2_1.getCount());
+        assertEquals(1, results.get(IN1).getCount());
+        assertEquals(2, results.get(IN2).getCount());
+        assertEquals(1, results.get(OUT1_1).getCount());
+        assertEquals(1, results.get(OUT1_2).getCount());
+        assertEquals(1, results.get(OUT2_1).getCount());
 
         // Only check in2 node, as others only have single completion time
-        assertTrue(500 == in2.getMinimumDuration());
-        assertTrue(550 == in2.getAverageDuration());
-        assertTrue(600 == in2.getMaximumDuration());
+        assertTrue(500 == results.get(IN2).getMinimumDuration());
+        assertTrue(550 == results.get(IN2).getAverageDuration());
+        assertTrue(600 == results.get(IN2).getMaximumDuration());
 
-        assertEquals(2, in1.getOutbound().size());
-        assertEquals(1, in2.getOutbound().size());
-        assertEquals(0, out1_1.getOutbound().size());
-        assertEquals(0, out1_2.getOutbound().size());
-        assertEquals(0, out2_1.getOutbound().size());
+        assertEquals(2, results.get(IN1).getOutbound().size());
+        assertEquals(1, results.get(IN2).getOutbound().size());
+        assertEquals(0, results.get(OUT1_1).getOutbound().size());
+        assertEquals(0, results.get(OUT1_2).getOutbound().size());
+        assertEquals(0, results.get(OUT2_1).getOutbound().size());
 
-        assertTrue(in1.getOutbound().containsKey("out1.1"));
-        assertTrue(in1.getOutbound().containsKey("out1.2"));
-        assertTrue(in2.getOutbound().containsKey("out2.1"));
+        assertTrue(results.get(IN1).getOutbound().containsKey(OUT1_1));
+        assertTrue(results.get(IN1).getOutbound().containsKey(OUT1_2));
+        assertTrue(results.get(IN2).getOutbound().containsKey(OUT2_1));
 
-        assertTrue(100 == in1.getOutbound().get("out1.1").getMinimumLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1").getAverageLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1").getMaximumLatency());
-        assertTrue(200 == in1.getOutbound().get("out1.2").getMinimumLatency());
-        assertTrue(250 == in1.getOutbound().get("out1.2").getAverageLatency());
-        assertTrue(300 == in1.getOutbound().get("out1.2").getMaximumLatency());
-        assertTrue(300 == in2.getOutbound().get("out2.1").getMinimumLatency());
-        assertTrue(400 == in2.getOutbound().get("out2.1").getAverageLatency());
-        assertTrue(500 == in2.getOutbound().get("out2.1").getMaximumLatency());
+        assertTrue(100 == results.get(IN1).getOutbound().get(OUT1_1).getMinimumLatency());
+        assertTrue(100 == results.get(IN1).getOutbound().get(OUT1_1).getAverageLatency());
+        assertTrue(100 == results.get(IN1).getOutbound().get(OUT1_1).getMaximumLatency());
+        assertTrue(200 == results.get(IN1).getOutbound().get(OUT1_2).getMinimumLatency());
+        assertTrue(250 == results.get(IN1).getOutbound().get(OUT1_2).getAverageLatency());
+        assertTrue(300 == results.get(IN1).getOutbound().get(OUT1_2).getMaximumLatency());
+        assertTrue(300 == results.get(IN2).getOutbound().get(OUT2_1).getMinimumLatency());
+        assertTrue(400 == results.get(IN2).getOutbound().get(OUT2_1).getAverageLatency());
+        assertTrue(500 == results.get(IN2).getOutbound().get(OUT2_1).getMaximumLatency());
 
-        assertEquals(1, in1.getOutbound().get("out1.1").getCount());
-        assertEquals(2, in1.getOutbound().get("out1.2").getCount());
-        assertEquals(2, in2.getOutbound().get("out2.1").getCount());
+        assertEquals(1, results.get(IN1).getOutbound().get(OUT1_1).getCount());
+        assertEquals(2, results.get(IN1).getOutbound().get(OUT1_2).getCount());
+        assertEquals(2, results.get(IN2).getOutbound().get(OUT2_1).getCount());
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticsWithOps() {
-        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCommunicationSummaryStatisticsWithoutUri() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setUri("in1");
-        ct1_1.setOperation("op1");
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setOperation(IN1);
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setUri("out1.1");
-        ct1_2.setOperation("op1.1");
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setOperation(OUT1_1);
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct1_3 = new CompletionTime();
-        ct1_3.setUri("out1.2");
-        ct1_3.setOperation("op1.2");
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setOperation(OUT1_2);
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
-        cts.add(ct1_3);
 
         CompletionTime ct2_1 = new CompletionTime();
-        ct2_1.setUri("in2");
-        ct2_1.setOperation("op2");
-        ct2_1.setBusinessTransaction("testapp");
+        ct2_1.setOperation(IN2);
+        ct2_1.setBusinessTransaction(BTXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
-        cts.add(ct2_1);
 
         CompletionTime ct2_2 = new CompletionTime();
-        ct2_2.setUri("out2.1");
-        ct2_2.setOperation("op2.1");
-        ct2_2.setBusinessTransaction("testapp");
+        ct2_2.setOperation(OUT2_1);
+        ct2_2.setBusinessTransaction(BTXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
-        cts.add(ct2_2);
 
         CompletionTime ct2_3 = new CompletionTime();
-        ct2_3.setUri("in2");
-        ct2_3.setOperation("op2");
-        ct2_3.setBusinessTransaction("testapp");
+        ct2_3.setOperation(IN2);
+        ct2_3.setBusinessTransaction(BTXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
-        cts.add(ct2_3);
 
-        try {
-            analytics.storeFragmentCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction("testapp");
+        cd1.setBusinessTransaction(BTXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
-        cd1.setSource("in1[op1]");
-        cd1.setTarget("out1.1[op1.1]");
-        cds.add(cd1);
+        cd1.setSource(EP_IN1_OP);
+        cd1.setTarget(EP_OUT1_1_OP);
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction("testapp");
+        cd2.setBusinessTransaction(BTXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
-        cd2.setSource("in1[op1]");
-        cd2.setTarget("out1.2[op1.2]");
-        cds.add(cd2);
+        cd2.setSource(EP_IN1_OP);
+        cd2.setTarget(EP_OUT1_2_OP);
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction("testapp");
+        cd3.setBusinessTransaction(BTXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
-        cd3.setSource("in2[op2]");
-        cd3.setTarget("out2.1[op2.1]");
-        cds.add(cd3);
+        cd3.setSource(EP_IN2_OP);
+        cd3.setTarget(EP_OUT2_1_OP);
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction("testapp");
+        cd4.setBusinessTransaction(BTXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
-        cd4.setSource("in1[op1]");
-        cd4.setTarget("out1.2[op1.2]");
-        cds.add(cd4);
+        cd4.setSource(EP_IN1_OP);
+        cd4.setTarget(EP_OUT1_2_OP);
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction("testapp");
+        cd5.setBusinessTransaction(BTXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
-        cd5.setSource("in2[op2]");
-        cd5.setTarget("out2.1[op2.1]");
-        cds.add(cd5);
+        cd5.setSource(EP_IN2_OP);
+        cd5.setTarget(EP_OUT2_1_OP);
 
-        try {
-            analytics.storeCommunicationDetails(null, cds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1, cd2, cd3, cd4, cd5));
+
+        Criteria criteria = new Criteria();
+        criteria.setStartTime(1000).setEndTime(10000);
+
+        Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 5);
+        Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,
+                            criteria, false);
+
+        assertNotNull(stats);
+        assertEquals(5, stats.size());
+
+        Map<String,CommunicationSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+
+        assertTrue(results.containsKey(EP_IN1_OP));
+        assertTrue(results.containsKey(EP_IN2_OP));
+        assertTrue(results.containsKey(EP_OUT1_1_OP));
+        assertTrue(results.containsKey(EP_OUT1_2_OP));
+        assertTrue(results.containsKey(EP_OUT2_1_OP));
+
+        assertEquals(IN1, results.get(EP_IN1_OP).getOperation());
+        assertNull(results.get(EP_IN1_OP).getUri());
+
+        assertEquals(1, results.get(EP_IN1_OP).getCount());
+        assertEquals(2, results.get(EP_IN2_OP).getCount());
+        assertEquals(1, results.get(EP_OUT1_1_OP).getCount());
+        assertEquals(1, results.get(EP_OUT1_2_OP).getCount());
+        assertEquals(1, results.get(EP_OUT2_1_OP).getCount());
+
+        // Only check in2 node, as others only have single completion time
+        assertTrue(500 == results.get(EP_IN2_OP).getMinimumDuration());
+        assertTrue(550 == results.get(EP_IN2_OP).getAverageDuration());
+        assertTrue(600 == results.get(EP_IN2_OP).getMaximumDuration());
+
+        assertEquals(2, results.get(EP_IN1_OP).getOutbound().size());
+        assertEquals(1, results.get(EP_IN2_OP).getOutbound().size());
+        assertEquals(0, results.get(EP_OUT1_1_OP).getOutbound().size());
+        assertEquals(0, results.get(EP_OUT1_2_OP).getOutbound().size());
+        assertEquals(0, results.get(EP_OUT2_1_OP).getOutbound().size());
+
+        assertTrue(results.get(EP_IN1_OP)
+                .getOutbound().containsKey(EP_OUT1_1_OP));
+        assertTrue(results.get(EP_IN1_OP)
+                .getOutbound().containsKey(EP_OUT1_2_OP));
+        assertTrue(results.get(EP_IN2_OP)
+                .getOutbound().containsKey(EP_OUT2_1_OP));
+
+        assertTrue(100 == results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_1_OP).getMinimumLatency());
+        assertTrue(100 == results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_1_OP).getAverageLatency());
+        assertTrue(100 == results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_1_OP).getMaximumLatency());
+        assertTrue(200 == results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_2_OP).getMinimumLatency());
+        assertTrue(250 == results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_2_OP).getAverageLatency());
+        assertTrue(300 == results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_2_OP).getMaximumLatency());
+        assertTrue(300 == results.get(EP_IN2_OP)
+                .getOutbound().get(EP_OUT2_1_OP).getMinimumLatency());
+        assertTrue(400 == results.get(EP_IN2_OP)
+                .getOutbound().get(EP_OUT2_1_OP).getAverageLatency());
+        assertTrue(500 == results.get(EP_IN2_OP)
+                .getOutbound().get(EP_OUT2_1_OP).getMaximumLatency());
+
+        assertEquals(1, results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_1_OP).getCount());
+        assertEquals(2, results.get(EP_IN1_OP)
+                .getOutbound().get(EP_OUT1_2_OP).getCount());
+        assertEquals(2, results.get(EP_IN2_OP)
+                .getOutbound().get(EP_OUT2_1_OP).getCount());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticsWithOps() throws StoreException {
+        CompletionTime ct1_1 = new CompletionTime();
+        ct1_1.setUri(IN1);
+        ct1_1.setOperation(OP1);
+        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTimestamp(1500);
+        ct1_1.setDuration(100);
+
+        CompletionTime ct1_2 = new CompletionTime();
+        ct1_2.setUri(OUT1_1);
+        ct1_2.setOperation(OP1_1);
+        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTimestamp(1600);
+        ct1_2.setDuration(300);
+
+        CompletionTime ct1_3 = new CompletionTime();
+        ct1_3.setUri(OUT1_2);
+        ct1_3.setOperation(OP1_2);
+        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTimestamp(1600);
+        ct1_3.setDuration(200);
+
+        CompletionTime ct2_1 = new CompletionTime();
+        ct2_1.setUri(IN2);
+        ct2_1.setOperation(OP2);
+        ct2_1.setBusinessTransaction(BTXN);
+        ct2_1.setTimestamp(1600);
+        ct2_1.setDuration(500);
+
+        CompletionTime ct2_2 = new CompletionTime();
+        ct2_2.setUri(OUT2_1);
+        ct2_2.setOperation(OP2_1);
+        ct2_2.setBusinessTransaction(BTXN);
+        ct2_2.setTimestamp(1700);
+        ct2_2.setDuration(400);
+
+        CompletionTime ct2_3 = new CompletionTime();
+        ct2_3.setUri(IN2);
+        ct2_3.setOperation(OP2);
+        ct2_3.setBusinessTransaction(BTXN);
+        ct2_3.setTimestamp(1700);
+        ct2_3.setDuration(600);
+
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
+
+        CommunicationDetails cd1 = new CommunicationDetails();
+        cd1.setLinkId("cd1");
+        cd1.setBusinessTransaction(BTXN);
+        cd1.setTimestamp(1500);
+        cd1.setLatency(100);
+        cd1.setSource(EP_INOP1);
+        cd1.setTarget(EP_OUTOP1_1);
+
+        CommunicationDetails cd2 = new CommunicationDetails();
+        cd2.setLinkId("cd2");
+        cd2.setBusinessTransaction(BTXN);
+        cd2.setTimestamp(1500);
+        cd2.setLatency(200);
+        cd2.setSource(EP_INOP1);
+        cd2.setTarget(EP_OUTOP1_2);
+
+        CommunicationDetails cd3 = new CommunicationDetails();
+        cd3.setLinkId("cd3");
+        cd3.setBusinessTransaction(BTXN);
+        cd3.setTimestamp(1500);
+        cd3.setLatency(300);
+        cd3.setSource(EP_INOP2);
+        cd3.setTarget(EP_OUTOP2_1);
+
+        CommunicationDetails cd4 = new CommunicationDetails();
+        cd4.setLinkId("cd4");
+        cd4.setBusinessTransaction(BTXN);
+        cd4.setTimestamp(1600);
+        cd4.setLatency(300);
+        cd4.setSource(EP_INOP1);
+        cd4.setTarget(EP_OUTOP1_2);
+
+        CommunicationDetails cd5 = new CommunicationDetails();
+        cd5.setLinkId("cd5");
+        cd5.setBusinessTransaction(BTXN);
+        cd5.setTimestamp(1600);
+        cd5.setLatency(500);
+        cd5.setSource(EP_INOP2);
+        cd5.setTarget(EP_OUTOP2_1);
+
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1, cd2, cd3, cd4, cd5));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -2331,200 +2114,158 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(5, stats.size());
 
-        CommunicationSummaryStatistics in1 = null;
-        CommunicationSummaryStatistics in2 = null;
-        CommunicationSummaryStatistics out1_1 = null;
-        CommunicationSummaryStatistics out1_2 = null;
-        CommunicationSummaryStatistics out2_1 = null;
+        Map<String,CommunicationSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        for (CommunicationSummaryStatistics css : stats) {
-            if (css.getId().equals("in1[op1]")) {
-                in1 = css;
-            } else if (css.getId().equals("in2[op2]")) {
-                in2 = css;
-            } else if (css.getId().equals("out1.1[op1.1]")) {
-                out1_1 = css;
-            } else if (css.getId().equals("out1.2[op1.2]")) {
-                out1_2 = css;
-            } else if (css.getId().equals("out2.1[op2.1]")) {
-                out2_1 = css;
-            } else {
-                fail("Unexpected id: " + css.getId());
-            }
-        }
+        assertTrue(results.containsKey(EP_INOP1));
+        assertTrue(results.containsKey(EP_INOP2));
+        assertTrue(results.containsKey(EP_OUTOP1_1));
+        assertTrue(results.containsKey(EP_OUTOP1_2));
+        assertTrue(results.containsKey(EP_OUTOP2_1));
 
-        assertNotNull(in1);
-        assertNotNull(in2);
-        assertNotNull(out1_1);
-        assertNotNull(out1_2);
-        assertNotNull(out2_1);
+        assertEquals(IN1, results.get(EP_INOP1).getUri());
+        assertEquals(OP1, results.get(EP_INOP1).getOperation());
 
-        assertEquals("in1", in1.getUri());
-        assertEquals("op1", in1.getOperation());
-
-        assertEquals(1, in1.getCount());
-        assertEquals(2, in2.getCount());
-        assertEquals(1, out1_1.getCount());
-        assertEquals(1, out1_2.getCount());
-        assertEquals(1, out2_1.getCount());
+        assertEquals(1, results.get(EP_INOP1).getCount());
+        assertEquals(2, results.get(EP_INOP2).getCount());
+        assertEquals(1, results.get(EP_OUTOP1_1).getCount());
+        assertEquals(1, results.get(EP_OUTOP1_2).getCount());
+        assertEquals(1, results.get(EP_OUTOP2_1).getCount());
 
         // Only check in2 node, as others only have single completion time
-        assertTrue(500 == in2.getMinimumDuration());
-        assertTrue(550 == in2.getAverageDuration());
-        assertTrue(600 == in2.getMaximumDuration());
+        assertTrue(500 == results.get(EP_INOP2).getMinimumDuration());
+        assertTrue(550 == results.get(EP_INOP2).getAverageDuration());
+        assertTrue(600 == results.get(EP_INOP2).getMaximumDuration());
 
-        assertEquals(2, in1.getOutbound().size());
-        assertEquals(1, in2.getOutbound().size());
-        assertEquals(0, out1_1.getOutbound().size());
-        assertEquals(0, out1_2.getOutbound().size());
-        assertEquals(0, out2_1.getOutbound().size());
+        assertEquals(2, results.get(EP_INOP1).getOutbound().size());
+        assertEquals(1, results.get(EP_INOP2).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_1).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_2).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP2_1).getOutbound().size());
 
-        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
-        assertTrue(in1.getOutbound().containsKey("out1.2[op1.2]"));
-        assertTrue(in2.getOutbound().containsKey("out2.1[op2.1]"));
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_1));
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_2));
+        assertTrue(results.get(EP_INOP2).getOutbound().containsKey(EP_OUTOP2_1));
 
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
-        assertTrue(200 == in1.getOutbound().get("out1.2[op1.2]").getMinimumLatency());
-        assertTrue(250 == in1.getOutbound().get("out1.2[op1.2]").getAverageLatency());
-        assertTrue(300 == in1.getOutbound().get("out1.2[op1.2]").getMaximumLatency());
-        assertTrue(300 == in2.getOutbound().get("out2.1[op2.1]").getMinimumLatency());
-        assertTrue(400 == in2.getOutbound().get("out2.1[op2.1]").getAverageLatency());
-        assertTrue(500 == in2.getOutbound().get("out2.1[op2.1]").getMaximumLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getMinimumLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getAverageLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getMaximumLatency());
+        assertTrue(200 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getMinimumLatency());
+        assertTrue(250 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getAverageLatency());
+        assertTrue(300 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getMaximumLatency());
+        assertTrue(300 == results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getMinimumLatency());
+        assertTrue(400 == results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getAverageLatency());
+        assertTrue(500 == results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getMaximumLatency());
 
-        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
-        assertEquals(2, in1.getOutbound().get("out1.2[op1.2]").getCount());
-        assertEquals(2, in2.getOutbound().get("out2.1[op2.1]").getCount());
+        assertEquals(1, results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getCount());
+        assertEquals(2, results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getCount());
+        assertEquals(2, results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getCount());
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticsWithOpsAndInternalLinks() {
-        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCommunicationSummaryStatisticsWithOpsAndInternalLinks() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setUri("in1");
-        ct1_1.setOperation("op1");
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setUri(IN1);
+        ct1_1.setOperation(OP1);
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(50);
-        cts.add(ct1_1);
 
         CompletionTime ct1_1_internal = new CompletionTime();
-        ct1_1_internal.setUri("in1");
-        ct1_1_internal.setOperation("op1");
-        ct1_1_internal.setBusinessTransaction("testapp");
+        ct1_1_internal.setUri(IN1);
+        ct1_1_internal.setOperation(OP1);
+        ct1_1_internal.setBusinessTransaction(BTXN);
         ct1_1_internal.setTimestamp(1550);
         ct1_1_internal.setDuration(100);
-        cts.add(ct1_1_internal);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setUri("out1.1");
-        ct1_2.setOperation("op1.1");
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setUri(OUT1_1);
+        ct1_2.setOperation(OP1_1);
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        cts.add(ct1_2);
 
         CompletionTime ct1_3 = new CompletionTime();
-        ct1_3.setUri("out1.2");
-        ct1_3.setOperation("op1.2");
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setUri(OUT1_2);
+        ct1_3.setOperation(OP1_2);
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
-        cts.add(ct1_3);
 
         CompletionTime ct2_1 = new CompletionTime();
-        ct2_1.setUri("in2");
-        ct2_1.setOperation("op2");
-        ct2_1.setBusinessTransaction("testapp");
+        ct2_1.setUri(IN2);
+        ct2_1.setOperation(OP2);
+        ct2_1.setBusinessTransaction(BTXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
-        cts.add(ct2_1);
 
         CompletionTime ct2_2 = new CompletionTime();
-        ct2_2.setUri("out2.1");
-        ct2_2.setOperation("op2.1");
-        ct2_2.setBusinessTransaction("testapp");
+        ct2_2.setUri(OUT2_1);
+        ct2_2.setOperation(OP2_1);
+        ct2_2.setBusinessTransaction(BTXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
-        cts.add(ct2_2);
 
         CompletionTime ct2_3 = new CompletionTime();
-        ct2_3.setUri("in2");
-        ct2_3.setOperation("op2");
-        ct2_3.setBusinessTransaction("testapp");
+        ct2_3.setUri(IN2);
+        ct2_3.setOperation(OP2);
+        ct2_3.setBusinessTransaction(BTXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
-        cts.add(ct2_3);
 
-        try {
-            analytics.storeFragmentCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_1_internal,
+                ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1internal = new CommunicationDetails();
         cd1internal.setLinkId("cd1internal");
-        cd1internal.setBusinessTransaction("testapp");
+        cd1internal.setBusinessTransaction(BTXN);
         cd1internal.setTimestamp(1500);
         cd1internal.setLatency(50);
-        cd1internal.setSource("in1[op1]");
-        cd1internal.setTarget("in1[op1]");
+        cd1internal.setSource(EP_INOP1);
+        cd1internal.setTarget(EP_INOP1);
         cd1internal.setInternal(true);
-        cds.add(cd1internal);
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction("testapp");
+        cd1.setBusinessTransaction(BTXN);
         cd1.setTimestamp(1550);
         cd1.setLatency(100);
-        cd1.setSource("in1[op1]");
-        cd1.setTarget("out1.1[op1.1]");
-        cds.add(cd1);
+        cd1.setSource(EP_INOP1);
+        cd1.setTarget(EP_OUTOP1_1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction("testapp");
+        cd2.setBusinessTransaction(BTXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
-        cd2.setSource("in1[op1]");
-        cd2.setTarget("out1.2[op1.2]");
-        cds.add(cd2);
+        cd2.setSource(EP_INOP1);
+        cd2.setTarget(EP_OUTOP1_2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction("testapp");
+        cd3.setBusinessTransaction(BTXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
-        cd3.setSource("in2[op2]");
-        cd3.setTarget("out2.1[op2.1]");
-        cds.add(cd3);
+        cd3.setSource(EP_INOP2);
+        cd3.setTarget(EP_OUTOP2_1);
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction("testapp");
+        cd4.setBusinessTransaction(BTXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
-        cd4.setSource("in1[op1]");
-        cd4.setTarget("out1.2[op1.2]");
-        cds.add(cd4);
+        cd4.setSource(EP_INOP1);
+        cd4.setTarget(EP_OUTOP1_2);
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction("testapp");
+        cd5.setBusinessTransaction(BTXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
-        cd5.setSource("in2[op2]");
-        cd5.setTarget("out2.1[op2.1]");
-        cds.add(cd5);
+        cd5.setSource(EP_INOP2);
+        cd5.setTarget(EP_OUTOP2_1);
 
-        try {
-            analytics.storeCommunicationDetails(null, cds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1internal, cd1, cd2, cd3, cd4, cd5));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -2536,33 +2277,14 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(5, stats.size());
 
-        CommunicationSummaryStatistics in1 = null;
-        CommunicationSummaryStatistics in2 = null;
-        CommunicationSummaryStatistics out1_1 = null;
-        CommunicationSummaryStatistics out1_2 = null;
-        CommunicationSummaryStatistics out2_1 = null;
+        Map<String,CommunicationSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        for (CommunicationSummaryStatistics css : stats) {
-            if (css.getId().equals("in1[op1]")) {
-                in1 = css;
-            } else if (css.getId().equals("in2[op2]")) {
-                in2 = css;
-            } else if (css.getId().equals("out1.1[op1.1]")) {
-                out1_1 = css;
-            } else if (css.getId().equals("out1.2[op1.2]")) {
-                out1_2 = css;
-            } else if (css.getId().equals("out2.1[op2.1]")) {
-                out2_1 = css;
-            } else {
-                fail("Unexpected id: " + css.getId());
-            }
-        }
-
-        assertNotNull(in1);
-        assertNotNull(in2);
-        assertNotNull(out1_1);
-        assertNotNull(out1_2);
-        assertNotNull(out2_1);
+        assertTrue(results.containsKey(EP_INOP1));
+        assertTrue(results.containsKey(EP_INOP2));
+        assertTrue(results.containsKey(EP_OUTOP1_1));
+        assertTrue(results.containsKey(EP_OUTOP1_2));
+        assertTrue(results.containsKey(EP_OUTOP2_1));
 
         // NOTE: Although only called once, because an internal component was called with the
         // same source URL (to propagate it through to fragments externally communicating),
@@ -2570,162 +2292,140 @@ public class AnalyticsServiceElasticsearchTest {
         // stats across the top level and internal fragments - but at this stage would be difficult
         // to accumulate all spawned fragments for a single call to the service, to get an
         // overall value.
-        assertEquals(2, in1.getCount());
-        assertEquals(2, in2.getCount());
-        assertEquals(1, out1_1.getCount());
-        assertEquals(1, out1_2.getCount());
-        assertEquals(1, out2_1.getCount());
+        assertEquals(2, results.get(EP_INOP1).getCount());
+        assertEquals(2, results.get(EP_INOP2).getCount());
+        assertEquals(1, results.get(EP_OUTOP1_1).getCount());
+        assertEquals(1, results.get(EP_OUTOP1_2).getCount());
+        assertEquals(1, results.get(EP_OUTOP2_1).getCount());
 
         // Only check in2 node, as others only have single completion time
-        assertTrue(500 == in2.getMinimumDuration());
-        assertTrue(550 == in2.getAverageDuration());
-        assertTrue(600 == in2.getMaximumDuration());
+        assertTrue(500 == results.get(EP_INOP2).getMinimumDuration());
+        assertTrue(550 == results.get(EP_INOP2).getAverageDuration());
+        assertTrue(600 == results.get(EP_INOP2).getMaximumDuration());
 
-        assertEquals(2, in1.getOutbound().size());
-        assertEquals(1, in2.getOutbound().size());
-        assertEquals(0, out1_1.getOutbound().size());
-        assertEquals(0, out1_2.getOutbound().size());
-        assertEquals(0, out2_1.getOutbound().size());
+        assertEquals(2, results.get(EP_INOP1).getOutbound().size());
+        assertEquals(1, results.get(EP_INOP2).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_1).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_2).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP2_1).getOutbound().size());
 
-        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
-        assertTrue(in1.getOutbound().containsKey("out1.2[op1.2]"));
-        assertTrue(in2.getOutbound().containsKey("out2.1[op2.1]"));
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_1));
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_2));
+        assertTrue(results.get(EP_INOP2).getOutbound().containsKey(EP_OUTOP2_1));
 
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
-        assertTrue(200 == in1.getOutbound().get("out1.2[op1.2]").getMinimumLatency());
-        assertTrue(250 == in1.getOutbound().get("out1.2[op1.2]").getAverageLatency());
-        assertTrue(300 == in1.getOutbound().get("out1.2[op1.2]").getMaximumLatency());
-        assertTrue(300 == in2.getOutbound().get("out2.1[op2.1]").getMinimumLatency());
-        assertTrue(400 == in2.getOutbound().get("out2.1[op2.1]").getAverageLatency());
-        assertTrue(500 == in2.getOutbound().get("out2.1[op2.1]").getMaximumLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getMinimumLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getAverageLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getMaximumLatency());
+        assertTrue(200 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getMinimumLatency());
+        assertTrue(250 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getAverageLatency());
+        assertTrue(300 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getMaximumLatency());
+        assertTrue(300 == results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getMinimumLatency());
+        assertTrue(400 == results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getAverageLatency());
+        assertTrue(500 == results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getMaximumLatency());
 
-        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
-        assertEquals(2, in1.getOutbound().get("out1.2[op1.2]").getCount());
-        assertEquals(2, in2.getOutbound().get("out2.1[op2.1]").getCount());
+        assertEquals(1, results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getCount());
+        assertEquals(2, results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getCount());
+        assertEquals(2, results.get(EP_INOP2).getOutbound().get(EP_OUTOP2_1).getCount());
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticForPrincipal() {
-        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCommunicationSummaryStatisticForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setUri("in1");
-        ct1_1.setOperation("op1");
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setUri(IN1);
+        ct1_1.setOperation(OP1);
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setPrincipal("p1");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setUri("out1.1");
-        ct1_2.setOperation("op1.1");
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setUri(OUT1_1);
+        ct1_2.setOperation(OP1_1);
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setPrincipal("p1");
-        cts.add(ct1_2);
 
         CompletionTime ct1_3 = new CompletionTime();
-        ct1_3.setUri("out1.2");
-        ct1_3.setOperation("op1.2");
-        ct1_3.setBusinessTransaction("testapp");
+        ct1_3.setUri(OUT1_2);
+        ct1_3.setOperation(OP1_2);
+        ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
         ct1_3.setPrincipal("p1");
-        cts.add(ct1_3);
 
         CompletionTime ct2_1 = new CompletionTime();
-        ct2_1.setUri("in2");
-        ct2_1.setOperation("op2");
-        ct2_1.setBusinessTransaction("testapp");
+        ct2_1.setUri(IN2);
+        ct2_1.setOperation(OP2);
+        ct2_1.setBusinessTransaction(BTXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
         ct2_1.setPrincipal("p2");
-        cts.add(ct2_1);
 
         CompletionTime ct2_2 = new CompletionTime();
-        ct2_2.setUri("out2.1");
-        ct2_2.setOperation("op2.1");
-        ct2_2.setBusinessTransaction("testapp");
+        ct2_2.setUri(OUT2_1);
+        ct2_2.setOperation(OP2_1);
+        ct2_2.setBusinessTransaction(BTXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
         ct2_2.setPrincipal("p2");
-        cts.add(ct2_2);
 
         CompletionTime ct2_3 = new CompletionTime();
-        ct2_3.setUri("in2");
-        ct2_3.setOperation("op2");
-        ct2_3.setBusinessTransaction("testapp");
+        ct2_3.setUri(IN2);
+        ct2_3.setOperation(OP2);
+        ct2_3.setBusinessTransaction(BTXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
         ct2_3.setPrincipal("p2");
-        cts.add(ct2_3);
 
-        try {
-            analytics.storeFragmentCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction("testapp");
+        cd1.setBusinessTransaction(BTXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
-        cd1.setSource("in1[op1]");
-        cd1.setTarget("out1.1[op1.1]");
+        cd1.setSource(EP_INOP1);
+        cd1.setTarget(EP_OUTOP1_1);
         cd1.setPrincipal("p1");
-        cds.add(cd1);
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction("testapp");
+        cd2.setBusinessTransaction(BTXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
-        cd2.setSource("in1[op1]");
-        cd2.setTarget("out1.2[op1.2]");
+        cd2.setSource(EP_INOP1);
+        cd2.setTarget(EP_OUTOP1_2);
         cd2.setPrincipal("p1");
-        cds.add(cd2);
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction("testapp");
+        cd3.setBusinessTransaction(BTXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
-        cd3.setSource("in2[op2]");
-        cd3.setTarget("out2.1[op2.1]");
+        cd3.setSource(EP_INOP2);
+        cd3.setTarget(EP_OUTOP2_1);
         cd3.setPrincipal("p2");
-        cds.add(cd3);
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction("testapp");
+        cd4.setBusinessTransaction(BTXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
-        cd4.setSource("in1[op1]");
-        cd4.setTarget("out1.2[op1.2]");
+        cd4.setSource(EP_INOP1);
+        cd4.setTarget(EP_OUTOP1_2);
         cd4.setPrincipal("p1");
-        cds.add(cd4);
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction("testapp");
+        cd5.setBusinessTransaction(BTXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
-        cd5.setSource("in2[op2]");
-        cd5.setTarget("out2.1[op2.1]");
+        cd5.setSource(EP_INOP2);
+        cd5.setTarget(EP_OUTOP2_1);
         cd5.setPrincipal("p2");
-        cds.add(cd5);
 
-        try {
-            analytics.storeCommunicationDetails(null, cds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1, cd2, cd3, cd4, cd5));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -2738,93 +2438,66 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(3, stats.size());
 
-        CommunicationSummaryStatistics in1 = null;
-        CommunicationSummaryStatistics out1_1 = null;
-        CommunicationSummaryStatistics out1_2 = null;
+        Map<String,CommunicationSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        for (CommunicationSummaryStatistics css : stats) {
-            if (css.getId().equals("in1[op1]")) {
-                in1 = css;
-            } else if (css.getId().equals("out1.1[op1.1]")) {
-                out1_1 = css;
-            } else if (css.getId().equals("out1.2[op1.2]")) {
-                out1_2 = css;
-            } else {
-                fail("Unexpected id: " + css.getId());
-            }
-        }
+        assertTrue(results.containsKey(EP_INOP1));
+        assertTrue(results.containsKey(EP_OUTOP1_1));
+        assertTrue(results.containsKey(EP_OUTOP1_2));
 
-        assertNotNull(in1);
-        assertNotNull(out1_1);
-        assertNotNull(out1_2);
+        assertEquals(1, results.get(EP_INOP1).getCount());
+        assertEquals(1, results.get(EP_OUTOP1_1).getCount());
+        assertEquals(1, results.get(EP_OUTOP1_2).getCount());
 
-        assertEquals(1, in1.getCount());
-        assertEquals(1, out1_1.getCount());
-        assertEquals(1, out1_2.getCount());
+        assertEquals(2, results.get(EP_INOP1).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_1).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_2).getOutbound().size());
 
-        assertEquals(2, in1.getOutbound().size());
-        assertEquals(0, out1_1.getOutbound().size());
-        assertEquals(0, out1_2.getOutbound().size());
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_1));
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_2));
 
-        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
-        assertTrue(in1.getOutbound().containsKey("out1.2[op1.2]"));
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getMinimumLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getAverageLatency());
+        assertTrue(100 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getMaximumLatency());
+        assertTrue(200 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getMinimumLatency());
+        assertTrue(250 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getAverageLatency());
+        assertTrue(300 == results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getMaximumLatency());
 
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
-        assertTrue(200 == in1.getOutbound().get("out1.2[op1.2]").getMinimumLatency());
-        assertTrue(250 == in1.getOutbound().get("out1.2[op1.2]").getAverageLatency());
-        assertTrue(300 == in1.getOutbound().get("out1.2[op1.2]").getMaximumLatency());
-
-        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
-        assertEquals(2, in1.getOutbound().get("out1.2[op1.2]").getCount());
+        assertEquals(1, results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_1).getCount());
+        assertEquals(2, results.get(EP_INOP1).getOutbound().get(EP_OUTOP1_2).getCount());
     }
 
     @Test
-    public void testGetCommunicationSummaryStatisticForHost() {
-        List<CommunicationDetails> cds = new ArrayList<CommunicationDetails>();
-        List<CompletionTime> cts = new ArrayList<CompletionTime>();
-
+    public void testGetCommunicationSummaryStatisticForHost() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setUri("in1");
-        ct1_1.setOperation("op1");
-        ct1_1.setBusinessTransaction("testapp");
+        ct1_1.setUri(IN1);
+        ct1_1.setOperation(OP1);
+        ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setHostName("hostA");
-        cts.add(ct1_1);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setUri("out1.1");
-        ct1_2.setOperation("op1.1");
-        ct1_2.setBusinessTransaction("testapp");
+        ct1_2.setUri(OUT1_1);
+        ct1_2.setOperation(OP1_1);
+        ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setHostName("hostB");
-        cts.add(ct1_2);
 
-        try {
-            analytics.storeFragmentCompletionTimes(null, cts);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction("testapp");
+        cd1.setBusinessTransaction(BTXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
-        cd1.setSource("in1[op1]");
-        cd1.setTarget("out1.1[op1.1]");
+        cd1.setSource(EP_INOP1);
+        cd1.setTarget(EP_OUTOP1_1);
         cd1.setSourceHostName("hostA");
         cd1.setTargetHostName("hostB");
-        cds.add(cd1);
 
-        try {
-            analytics.storeCommunicationDetails(null, cds);
-        } catch (Exception e) {
-            fail("Failed to store: " + e);
-        }
+        analytics.storeCommunicationDetails(null, Collections.singletonList(cd1));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1000).setEndTime(10000);
@@ -2837,58 +2510,32 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        CommunicationSummaryStatistics in1 = null;
-        CommunicationSummaryStatistics out1_1 = null;
+        Map<String,CommunicationSummaryStatistics> results=
+                stats.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        for (CommunicationSummaryStatistics css : stats) {
-            if (css.getId().equals("in1[op1]")) {
-                in1 = css;
-            } else if (css.getId().equals("out1.1[op1.1]")) {
-                out1_1 = css;
-            } else {
-                fail("Unexpected id: " + css.getId());
-            }
-        }
+        assertTrue(results.containsKey(EP_INOP1));
+        assertTrue(results.containsKey(EP_OUTOP1_1));
 
-        assertNotNull(in1);
-        assertNotNull(out1_1);
+        assertEquals(1, results.get(EP_INOP1).getCount());
+        assertEquals(0, results.get(EP_OUTOP1_1).getCount());
 
-        assertEquals(1, in1.getCount());
-        assertEquals(0, out1_1.getCount());
+        assertEquals(1, results.get(EP_INOP1).getOutbound().size());
+        assertEquals(0, results.get(EP_OUTOP1_1).getOutbound().size());
 
-        assertEquals(1, in1.getOutbound().size());
-        assertEquals(0, out1_1.getOutbound().size());
-
-        assertTrue(in1.getOutbound().containsKey("out1.1[op1.1]"));
-
-        /* TODO: Currently not including connections
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMinimumLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getAverageLatency());
-        assertTrue(100 == in1.getOutbound().get("out1.1[op1.1]").getMaximumLatency());
-
-        assertEquals(1, in1.getOutbound().get("out1.1[op1.1]").getCount());
-        */
+        assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_1));
     }
 
     @Test
-    public void testHostNames() {
-        List<Trace> traces = new ArrayList<>();
-
+    public void testHostNames() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);
         trace1.setHostName("hostA");
-        traces.add(trace1);
 
         Trace trace2 = new Trace();
         trace2.setStartTime(2000);
         trace2.setHostName("hostB");
-        traces.add(trace2);
 
-        try {
-            bts.storeFragments(null, traces);
-        } catch (Exception e) {
-            fail("Failed to store");
-        }
+        bts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Wait.until(() -> analytics.getHostNames(null, new Criteria().setStartTime(100)).size() == 2);
         Set<String> hostnames = analytics.getHostNames(null, new Criteria().setStartTime(100));

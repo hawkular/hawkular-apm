@@ -433,11 +433,18 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(operationsBuilder)
                 .subAggregation(missingOperationBuilder);
 
+        MissingBuilder missingUrisBuilder = AggregationBuilders
+                .missing("missingUri")
+                .field("uri")
+                .subAggregation(operationsBuilder)
+                .subAggregation(missingOperationBuilder);
+
         TermsBuilder componentsBuilder = AggregationBuilders
                 .terms("components")
                 .field("componentType")
                 .size(criteria.getMaxResponseSize())
-                .subAggregation(urisBuilder);
+                .subAggregation(urisBuilder)
+                .subAggregation(missingUrisBuilder);
 
         TermsBuilder interactionUrisBuilder = AggregationBuilders
                 .terms("uris")
@@ -505,6 +512,25 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
                             stats.add(stat);
                         }
+                    }
+                }
+
+                Missing missingUri = componentBucket.getAggregations().get("missingUri");
+                if (missingUri.getDocCount() > 0) {
+                    Terms operations = missingUri.getAggregations().get("operations");
+
+                    for (Terms.Bucket operationBucket : operations.getBuckets()) {
+                        Avg actual = operationBucket.getAggregations().get("actual");
+                        Avg elapsed = operationBucket.getAggregations().get("elapsed");
+
+                        NodeSummaryStatistics stat = new NodeSummaryStatistics();
+                        stat.setComponentType(getComponentTypeForBucket(typeBucket, componentBucket));
+                        stat.setOperation(operationBucket.getKey());
+                        stat.setActual((long)actual.getValue());
+                        stat.setElapsed((long)elapsed.getValue());
+                        stat.setCount(operationBucket.getDocCount());
+
+                        stats.add(stat);
                     }
                 }
             }
@@ -656,8 +682,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(operationsBuilder2)
                 .subAggregation(missingOperationBuilder2);
 
+        MissingBuilder missingUriBuilder2 = AggregationBuilders
+                .missing("missingUri")
+                .field("uri")
+                .subAggregation(operationsBuilder2)
+                .subAggregation(missingOperationBuilder2);
+
         SearchRequestBuilder request2 = getBaseSearchRequestBuilder(FRAGMENT_COMPLETION_TIME_TYPE, index, criteria, query, 0);
-        request2.addAggregation(urisBuilder2);
+        request2.addAggregation(urisBuilder2).addAggregation(missingUriBuilder2);
 
         SearchResponse response2 = getSearchResponse(request2);
         Terms completions = response2.getAggregations().get("uris");
@@ -700,6 +732,30 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
                 if (addMetrics) {
                     doAddMetrics(css, duration, missingOp.getDocCount());
+                }
+            }
+        }
+
+        Missing missingUri = response2.getAggregations().get("missingUri");
+
+        if (missingUri.getDocCount() > 0) {
+            Terms operations = missingUri.getAggregations().get("operations");
+
+            for (Terms.Bucket operationBucket : operations.getBuckets()) {
+                Stats duration = operationBucket.getAggregations().get("duration");
+                String id = EndpointUtil.encodeEndpoint(null,
+                        operationBucket.getKey());
+
+                CommunicationSummaryStatistics css = stats.get(id);
+                if (css == null) {
+                    css = new CommunicationSummaryStatistics();
+                    css.setId(id);
+                    css.setOperation(operationBucket.getKey());
+                    stats.put(id, css);
+                }
+
+                if (addMetrics) {
+                    doAddMetrics(css, duration, operationBucket.getDocCount());
                 }
             }
         }
