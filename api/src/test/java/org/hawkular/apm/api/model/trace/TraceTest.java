@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.junit.Test;
@@ -192,7 +193,7 @@ public class TraceTest {
         cp1.setDuration(400);
         cp1.setBaseTime(3);
         cp1.setUri("jdbc:TestDB");
-        cp1.setComponentType("Database");
+        cp1.setComponentType(Constants.COMPONENT_DATABASE);
         cp1.setOperation("select X from Y");
 
         // Third level (component) node - this represents the service proxy

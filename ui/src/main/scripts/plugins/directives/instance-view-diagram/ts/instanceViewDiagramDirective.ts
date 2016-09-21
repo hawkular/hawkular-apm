@@ -164,8 +164,16 @@ render.shapes().component = function(parent, bbox, node) {
           }
         }
         if (!skip) {
+          // if there is no uri show service name
+          let uri = d.uri;
+          if (uri == null) {
+            let prop: any = _.find(d.properties, {name: 'service'});
+            if (prop) {
+              uri = 'service: ' + prop.value;
+            }
+          }
 
-          let label = '<div class="name" style="color: #eee;">' + d.uri + '</div>';
+          let label = '<div class="name" style="color: #eee;">' + uri + '</div>';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt" style="color: #ddd; font-size: 2.5em; margin: 0.2em;"></i></div>';
           } else if (d.componentType === 'Database') {

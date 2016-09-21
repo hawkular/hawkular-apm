@@ -4,6 +4,10 @@
     "nodeDetails": {
       "ignore": true
     }
+  },
+  "sql.query": {
+    "componentType": "Database"
   }
 }
+
 

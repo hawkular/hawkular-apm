@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hawkular.apm.analytics.service.rest.client.AnalyticsServiceRESTClient;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.api.model.analytics.Cardinality;
@@ -684,7 +685,7 @@ public class AnalyticsServiceRESTTest {
         trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
-        comp1.setComponentType("Database");
+        comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
         comp1.setDuration(600000);
@@ -733,7 +734,7 @@ public class AnalyticsServiceRESTTest {
         trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
-        comp1.setComponentType("Database");
+        comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
         comp1.setDuration(600000);
@@ -790,7 +791,7 @@ public class AnalyticsServiceRESTTest {
         trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
-        comp1.setComponentType("Database");
+        comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
         comp1.setDuration(600000);
@@ -838,7 +839,7 @@ public class AnalyticsServiceRESTTest {
         trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
-        comp1.setComponentType("Database");
+        comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
         comp1.setDuration(600000);

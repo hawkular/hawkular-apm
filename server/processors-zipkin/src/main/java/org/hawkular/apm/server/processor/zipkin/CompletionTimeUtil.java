@@ -24,7 +24,9 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
+import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
+import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 
 /**
  * @author Pavol Loffay
@@ -37,9 +39,11 @@ public class CompletionTimeUtil {
      * Convert span to CompletionTime object
      *
      * @param span the span
-     * @return completion time derived from the supplied span
+     * @param spanCache span cache
+     * @return completion time derived from the supplied span, if the uri of the completion time
+     * cannot be derived (span is server span and client span also does not contain url) it returns null
      */
-    public static CompletionTime spanToCompletionTime(Span span) {
+    public static CompletionTime spanToCompletionTime(SpanCache spanCache, Span span) {
         CompletionTime completionTime = new CompletionTime();
         completionTime.setId(span.getId());
 
@@ -54,7 +58,12 @@ public class CompletionTimeUtil {
             completionTime.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, span.service()));
         }
 
-        URL url = span.url();
+        URL url = getUrl(spanCache, span);
+        if (url == null &&
+                span.serverSpan() && spanCache.get(null, SpanUniqueIdGenerator.getClientId(span.getId())) != null) {
+            return null;
+        }
+
         if (url != null) {
             String clientPrefix = span.clientSpan() ? Constants.URI_CLIENT_PREFIX : "";
 
@@ -67,5 +76,14 @@ public class CompletionTimeUtil {
         completionTime.getProperties().addAll(span.binaryAnnotationMapping().getProperties());
 
         return completionTime;
+    }
+
+    static URL getUrl(SpanCache spanCache, Span span) {
+        if (span.url() != null) {
+            return span.url();
+        }
+
+        Span clientSpan = spanCache.get(null, SpanUniqueIdGenerator.getClientId(span.getId()));
+        return clientSpan != null ? clientSpan.url() : null;
     }
 }

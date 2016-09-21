@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.server.api.utils.zipkin.BinaryAnnotationMappingDeriver;
@@ -48,9 +49,9 @@ public class SpanTest {
     public void testFullUrl() throws MalformedURLException {
         URL url = new URL("http://localhost:8080/my/path");
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.url");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         ba.setValue(url.toString());
-        Span span = new Span(Arrays.asList(ba));
+        Span span = new Span(Arrays.asList(ba), null);
 
         URL result = span.url();
         assertNotNull(result);
@@ -61,9 +62,9 @@ public class SpanTest {
     public void testPartialUrl() throws MalformedURLException {
         URL url = new URL("http://localhost:8080/my/path");
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.url");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         ba.setValue(url.getPath());
-        Span span = new Span(Arrays.asList(ba));
+        Span span = new Span(Arrays.asList(ba), null);
 
         URL result = span.url();
         assertNotNull(result);
@@ -74,10 +75,10 @@ public class SpanTest {
     public void testUrlFromUri() throws MalformedURLException {
         URL url = new URL("http://localhost:8080/my/path");
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.uri");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URI);
         ba.setValue(url.toString());
 
-        Span span = new Span(Arrays.asList(ba));
+        Span span = new Span(Arrays.asList(ba), null);
 
         URL spanURL = span.url();
         assertEquals(url, spanURL);
@@ -87,10 +88,10 @@ public class SpanTest {
     public void testUrlFromPath() throws MalformedURLException {
         URL url = new URL("http://localhost:8080/my/path");
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.path");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_PATH);
         ba.setValue(url.getPath());
 
-        Span span = new Span(Arrays.asList(ba));
+        Span span = new Span(Arrays.asList(ba), null);
 
         URL spanURL = span.url();
         assertEquals(url.getPath(), spanURL.getPath());
@@ -114,8 +115,7 @@ public class SpanTest {
         binaryAnnotationWithMapping.setEndpoint(createEndpoint("bonjour2", "127.0.1.2", 8090));
         binaryAnnotationWithMapping.setType(AnnotationType.DOUBLE);
 
-        Span span = new Span(Arrays.asList(stringAnnotation, binaryAnnotationWithMapping));
-        span.setAnnotations(serverAnnotations());
+        Span span = new Span(Arrays.asList(stringAnnotation, binaryAnnotationWithMapping), serverAnnotations());
 
         Span deserializedSpan = (Span)deserialize(serialize(span));
 
@@ -130,6 +130,58 @@ public class SpanTest {
 
         Assert.assertEquals("foo.modified", deserializedSpan.binaryAnnotationMapping().getComponentType());
         Assert.assertEquals("foo.endpoint", deserializedSpan.binaryAnnotationMapping().getEndpointType());
+    }
+
+    @Test
+    public void testIsServerSpan() {
+        Annotation sr = new Annotation();
+        sr.setValue("sr");
+        Annotation ss = new Annotation();
+        ss.setValue("ss");
+
+        Span span = new Span(null, Arrays.asList(sr, ss));
+        Assert.assertTrue(span.serverSpan());
+
+        span = new Span(null, Arrays.asList(ss, sr));
+        Assert.assertTrue(span.serverSpan());
+
+        span = new Span(null, null);
+        Assert.assertFalse(span.serverSpan());
+        span = new Span(null, Arrays.asList(ss));
+        Assert.assertFalse(span.serverSpan());
+
+        Annotation cr = new Annotation();
+        cr.setValue("cr");
+        Annotation cs = new Annotation();
+        cs.setValue("cs");
+        span = new Span(null, Arrays.asList(cr, cs, ss , sr));
+        Assert.assertTrue(span.serverSpan());
+    }
+
+    @Test
+    public void testIsClientSpan() {
+        Annotation cr = new Annotation();
+        cr.setValue("cr");
+        Annotation cs = new Annotation();
+        cs.setValue("cs");
+
+        Span span = new Span(null, Arrays.asList(cr, cs));
+        Assert.assertTrue(span.clientSpan());
+
+        span = new Span(null, Arrays.asList(cs, cr));
+        Assert.assertTrue(span.clientSpan());
+
+        span = new Span(null, null);
+        Assert.assertFalse(span.serverSpan());
+        span = new Span(null, Arrays.asList(cs));
+        Assert.assertFalse(span.clientSpan());
+
+        Annotation sr = new Annotation();
+        sr.setValue("sr");
+        Annotation ss = new Annotation();
+        ss.setValue("ss");
+        span = new Span(null, Arrays.asList(sr, ss, cs , cr));
+        Assert.assertTrue(span.clientSpan());
     }
 
     private List<Annotation> serverAnnotations() {

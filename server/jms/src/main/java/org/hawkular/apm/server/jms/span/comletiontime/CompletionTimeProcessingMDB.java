@@ -25,6 +25,7 @@ import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.MessageListener;
 
+import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
 import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessing;
 import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessingDeriver;
@@ -52,7 +53,7 @@ public class CompletionTimeProcessingMDB extends RetryCapableMDB<CompletionTimeP
     public static final String SUBSCRIBER = "SpanTraceCompletionTimeProcessingDeriver";
 
     @Inject
-    private CompletionTimeProcessingDeriver completionTimeProcessingDeriver;
+    private SpanCache spanCache;
 
     @Inject
     private CompletionTimeProcessingPublisher traceCompletionTimePublisher;
@@ -66,7 +67,7 @@ public class CompletionTimeProcessingMDB extends RetryCapableMDB<CompletionTimeP
 
     @PostConstruct
     public void init() {
-        setProcessor(completionTimeProcessingDeriver);
+        setProcessor(new CompletionTimeProcessingDeriver(spanCache));
         setRetryPublisher(processingPublisherJMS);
         setPublisher(traceCompletionTimePublisher);
         setTypeReference(new TypeReference<List<CompletionTimeProcessing>>() {

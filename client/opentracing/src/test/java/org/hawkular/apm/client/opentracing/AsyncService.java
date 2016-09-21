@@ -19,6 +19,8 @@ package org.hawkular.apm.client.opentracing;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.hawkular.apm.api.model.Constants;
+
 import io.opentracing.APMTracer;
 import io.opentracing.References;
 import io.opentracing.Span;
@@ -44,7 +46,7 @@ public class AsyncService extends AbstractService {
         // Top level, so create Tracer and root span
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
-                .withTag("http.url", "http://localhost:8080/inbound?orderId=123&verbose=true")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
                 .withTag("orderId", "1243343456455")
                 .start();
 
@@ -78,7 +80,7 @@ public class AsyncService extends AbstractService {
         try (Span component2Span = getTracer().buildSpan("Component2")
                 .addReference(References.FOLLOWS_FROM, span.context())
                 .withTag("sql", "INSERT order INTO Orders")
-                .withTag("component", "database")
+                .withTag("component", Constants.COMPONENT_DATABASE)
                 .start()) {
 
             delay(500);
@@ -91,7 +93,7 @@ public class AsyncService extends AbstractService {
 
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
-                .withTag("http.url", "http://localhost:8080/outbound")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
                 .withTag(APMTracer.TRANSACTION_NAME, "AnotherTxnName")     // Should not overwrite the existing name
                 .asChildOf(span).start()) {
             Message mesg = createMessage();

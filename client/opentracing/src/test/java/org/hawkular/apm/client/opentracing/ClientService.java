@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.client.opentracing;
 
+import org.hawkular.apm.api.model.Constants;
+
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -52,7 +54,7 @@ public class ClientService extends AbstractService {
 
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
-                .withTag("http.url", "http://localhost:8080/outbound")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
                 .asChildOf(span).start()) {
             Message mesg = createMessage();
             getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,

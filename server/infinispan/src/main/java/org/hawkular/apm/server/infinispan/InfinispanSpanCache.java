@@ -35,7 +35,6 @@ import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.utils.zipkin.SpanUniqueIdGenerator;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
-import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.logging.Logger;
 
 /**
@@ -128,7 +127,6 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
             }
         }
 
-        EmbeddedCacheManager embeddedCacheManager;
         if (cacheContainer != null) {
             spansCache.endBatch(true);
             childrenCache.endBatch(true);

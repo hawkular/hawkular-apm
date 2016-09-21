@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.ReportingLevel;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
@@ -651,7 +652,7 @@ public class DefaultTraceCollectorTest {
 
         // Create top level node
         collector.activate("not relevant", null);
-        collector.componentStart(null, "not relevant", "Database", "query");
+        collector.componentStart(null, "not relevant", Constants.COMPONENT_DATABASE, "query");
 
         // Cause a fragment builder to be created
         collector.activate("/test", null);
@@ -685,7 +686,7 @@ public class DefaultTraceCollectorTest {
 
         // Create top level node
         collector.activate("not relevant", null);
-        collector.componentStart(null, "not relevant", "Database", "query");
+        collector.componentStart(null, "not relevant", Constants.COMPONENT_DATABASE, "query");
 
         // Cause a fragment builder to be created
         collector.activate("/test", "op");

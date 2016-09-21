@@ -24,6 +24,7 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.server.api.model.zipkin.Span;
+import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.jms.FragmentCompletionTimePublisherJMS;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
 import org.hawkular.apm.server.processor.zipkin.FragmentCompletionTimeDeriver;
@@ -51,6 +52,9 @@ public class FragmentCompletionTimeDeriverMDB extends RetryCapableMDB<Span, Comp
     private SpanPublisherJMS spanPublisher;
 
     @Inject
+    private SpanCache spanCache;
+
+    @Inject
     private FragmentCompletionTimePublisherJMS fragmentCompletionTimePublisher;
 
     /**  */
@@ -62,7 +66,7 @@ public class FragmentCompletionTimeDeriverMDB extends RetryCapableMDB<Span, Comp
 
     @PostConstruct
     public void init() {
-        setProcessor(new FragmentCompletionTimeDeriver());
+        setProcessor(new FragmentCompletionTimeDeriver(spanCache));
         setRetryPublisher(spanPublisher);
         setPublisher(fragmentCompletionTimePublisher);
         setTypeReference(new TypeReference<java.util.List<Span>>() {

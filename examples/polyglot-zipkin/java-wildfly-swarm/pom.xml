@@ -34,7 +34,7 @@
     <failOnMissingWebXml>false</failOnMissingWebXml>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.io.zipkin.brave>3.9.1</version.io.zipkin.brave>
+    <version.io.zipkin.brave>3.10.0</version.io.zipkin.brave>
     <version.wildfly.swarm>2016.9</version.wildfly.swarm>
     <version.com.datastax.cassandra-cassandra-driver-core>3.1.0</version.com.datastax.cassandra-cassandra-driver-core>
   </properties>

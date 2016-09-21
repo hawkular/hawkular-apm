@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.InteractionNode;
@@ -83,7 +84,7 @@ public class SpanServiceElasticsearchTest {
         binaryAnnotation.setKey("foo key");
         binaryAnnotation.setType(AnnotationType.I64);
 
-        Span span = new Span(Arrays.asList(binaryAnnotation));
+        Span span = new Span(Arrays.asList(binaryAnnotation), Arrays.asList(annotation));
         span.setId("id");
         span.setTraceId("traceId");
         span.setParentId("parentId");
@@ -91,7 +92,6 @@ public class SpanServiceElasticsearchTest {
         span.setDebug(true);
         span.setTimestamp(1234456L);
         span.setDuration(55468L);
-        span.setAnnotations(Arrays.asList(annotation));
 
         storeAndWait(null, Collections.singletonList(span));
         Span spanFromDb = spanService.getSpan(null, span.getId());
@@ -118,7 +118,7 @@ public class SpanServiceElasticsearchTest {
         binaryAnnotation.setKey("foo key");
         binaryAnnotation.setType(AnnotationType.I64);
 
-        Span span = new Span(Arrays.asList(binaryAnnotation));
+        Span span = new Span(Arrays.asList(binaryAnnotation), Arrays.asList(annotation));
         span.setId("id1");
         span.setTraceId("traceId");
         span.setParentId("parent");
@@ -126,7 +126,6 @@ public class SpanServiceElasticsearchTest {
         span.setDebug(true);
         span.setTimestamp(1234456L);
         span.setDuration(55468L);
-        span.setAnnotations(Arrays.asList(annotation));
 
         storeAndWait(null, Collections.singletonList(span));
 
@@ -145,10 +144,9 @@ public class SpanServiceElasticsearchTest {
     public void testStoreWithIdSupplier() throws StoreException, InterruptedException {
         final String clientIdsuffix = "-client";
 
-        Span clientSpan = new Span();
+        Span clientSpan = new Span(null, clientAnnotations());
         clientSpan.setId("foo");
         clientSpan.setDuration(111);
-        clientSpan.setAnnotations(clientAnnotations());
 
         storeAndWait(null, Collections.singletonList(clientSpan), x -> x.getId() + clientIdsuffix);
 
@@ -186,34 +184,29 @@ public class SpanServiceElasticsearchTest {
 
     @Test
     public void testGetTraceFragmentRootServerSpan() throws StoreException, InterruptedException {
-        Span rootServerSpan = new Span();
+        Span rootServerSpan = new Span(null, serverAnnotations());
         rootServerSpan.setId("root");
         rootServerSpan.setTraceId("root");
-        rootServerSpan.setAnnotations(serverAnnotations());
 
-        Span clientDescendant = new Span();
+        Span clientDescendant = new Span(null, clientAnnotations());
         clientDescendant.setId("descendant");
         clientDescendant.setParentId("root");
         clientDescendant.setTraceId("root");
-        clientDescendant.setAnnotations(clientAnnotations());
 
-        Span clientDescendant2 = new Span();
+        Span clientDescendant2 = new Span(null, clientAnnotations());
         clientDescendant2.setId("descendant2");
         clientDescendant2.setParentId("root");
         clientDescendant2.setTraceId("root");
-        clientDescendant2.setAnnotations(clientAnnotations());
 
-        Span serverDescendantOfDescendant2 = new Span();
+        Span serverDescendantOfDescendant2 = new Span(null, serverAnnotations());
         serverDescendantOfDescendant2.setId("descendant2");
         serverDescendantOfDescendant2.setParentId("root");
         serverDescendantOfDescendant2.setTraceId("root");
-        serverDescendantOfDescendant2.setAnnotations(serverAnnotations());
 
-        Span serverDescendantOfDescendant = new Span();
+        Span serverDescendantOfDescendant = new Span(null, serverAnnotations());
         serverDescendantOfDescendant.setId("descendant");
         serverDescendantOfDescendant.setParentId("root");
         serverDescendantOfDescendant.setTraceId("root");
-        serverDescendantOfDescendant.setAnnotations(serverAnnotations());
 
         storeAndWait(null, Arrays.asList(rootServerSpan,
                 clientDescendant,
@@ -249,28 +242,24 @@ public class SpanServiceElasticsearchTest {
 
     @Test
     public void testGetTraceFragmentClientRoot() throws StoreException, InterruptedException {
-        Span rootClientSpan = new Span();
+        Span rootClientSpan = new Span(null, clientAnnotations());
         rootClientSpan.setId("root");
         rootClientSpan.setTraceId("root");
         rootClientSpan.setName("rootClientSpan");
-        rootClientSpan.setAnnotations(clientAnnotations());
 
-        Span serverSpan = new Span();
+        Span serverSpan = new Span(null, serverAnnotations());
         serverSpan.setId("root");
         serverSpan.setTraceId("root");
-        serverSpan.setAnnotations(serverAnnotations());
 
-        Span clientSpanDescendantRoot = new Span();
-        serverSpan.setId("root2");
-        serverSpan.setParentId("root");
-        serverSpan.setTraceId("root");
-        serverSpan.setAnnotations(clientAnnotations());
+        Span clientSpanDescendantRoot = new Span(null, clientAnnotations());
+        clientSpanDescendantRoot.setId("root2");
+        clientSpanDescendantRoot.setParentId("root");
+        clientSpanDescendantRoot.setTraceId("root");
 
-        Span serverSpanOfClientDescendantRoot = new Span();
+        Span serverSpanOfClientDescendantRoot = new Span(null, serverAnnotations());
         serverSpanOfClientDescendantRoot.setId("root2");
         serverSpanOfClientDescendantRoot.setParentId("root");
         serverSpanOfClientDescendantRoot.setTraceId("root");
-        serverSpanOfClientDescendantRoot.setAnnotations(serverAnnotations());
 
         storeAndWait(null, Arrays.asList(
                 rootClientSpan,
@@ -292,40 +281,35 @@ public class SpanServiceElasticsearchTest {
 
     @Test
     public void testGetTraceFragmentComponent() throws StoreException, InterruptedException {
-        Span rootServerSpan = new Span();
+        Span rootServerSpan = new Span(null, serverAnnotations());
         rootServerSpan.setId("root");
         rootServerSpan.setTraceId("root");
-        rootServerSpan.setAnnotations(serverAnnotations());
 
         Span componentSpan = new Span();
         componentSpan.setId("component");
         componentSpan.setParentId("root");
         componentSpan.setTraceId("root");
-        componentSpan.setName("ejb");
+        componentSpan.setName(Constants.COMPONENT_EJB);
 
-        Span clientComponentSpan = new Span();
+        Span clientComponentSpan = new Span(null, clientAnnotations());
         clientComponentSpan.setId("clientComponent");
         clientComponentSpan.setParentId("component");
         clientComponentSpan.setTraceId("root");
-        clientComponentSpan.setAnnotations(clientAnnotations());
 
-        Span clientComponentSpan2 = new Span();
+        Span clientComponentSpan2 = new Span(null, clientAnnotations());
         clientComponentSpan2.setId("clientComponent2");
         clientComponentSpan2.setParentId("component");
         clientComponentSpan2.setTraceId("root");
-        clientComponentSpan2.setAnnotations(clientAnnotations());
 
-        Span descendant = new Span();
+        Span descendant = new Span(null, clientAnnotations());
         descendant.setId("descendant");
         descendant.setParentId("root");
         descendant.setTraceId("root");
-        descendant.setAnnotations(clientAnnotations());
 
-        Span descendantServer = new Span();
+        Span descendantServer = new Span(null, serverAnnotations());
         descendantServer.setId("descendant");
         descendantServer.setParentId("root");
         descendantServer.setTraceId("root");
-        descendantServer.setAnnotations(serverAnnotations());
 
         storeAndWait(null, Arrays.asList(
                 rootServerSpan,
@@ -364,34 +348,29 @@ public class SpanServiceElasticsearchTest {
 
     @Test
     public void testGetEndToEndTrace() throws StoreException, InterruptedException {
-        Span rootServerSpan = new Span();
+        Span rootServerSpan = new Span(null, serverAnnotations());
         rootServerSpan.setId("root");
         rootServerSpan.setTraceId("root");
-        rootServerSpan.setAnnotations(serverAnnotations());
 
-        Span clientDescendant = new Span();
+        Span clientDescendant = new Span(null, clientAnnotations());
         clientDescendant.setId("descendant");
         clientDescendant.setParentId("root");
         clientDescendant.setTraceId("root");
-        clientDescendant.setAnnotations(clientAnnotations());
 
-        Span clientDescendant2 = new Span();
+        Span clientDescendant2 = new Span(null, clientAnnotations());
         clientDescendant2.setId("descendant2");
         clientDescendant2.setParentId("root");
         clientDescendant2.setTraceId("root");
-        clientDescendant2.setAnnotations(clientAnnotations());
 
-        Span serverDescendantOfDescendant2 = new Span();
+        Span serverDescendantOfDescendant2 = new Span(null, serverAnnotations());
         serverDescendantOfDescendant2.setId("descendant2");
         serverDescendantOfDescendant2.setParentId("root");
         serverDescendantOfDescendant2.setTraceId("root");
-        serverDescendantOfDescendant2.setAnnotations(serverAnnotations());
 
-        Span serverDescendantOfDescendant = new Span();
+        Span serverDescendantOfDescendant = new Span(null, serverAnnotations());
         serverDescendantOfDescendant.setId("descendant");
         serverDescendantOfDescendant.setParentId("root");
         serverDescendantOfDescendant.setTraceId("root");
-        serverDescendantOfDescendant.setAnnotations(serverAnnotations());
 
         storeAndWait(null, Arrays.asList(rootServerSpan,
                 clientDescendant,
@@ -439,39 +418,33 @@ public class SpanServiceElasticsearchTest {
 
     @Test
     public void testGetEndToEndTraceClientRoot() throws StoreException, InterruptedException {
-        Span rootClientSpan = new Span();
+        Span rootClientSpan = new Span(null, clientAnnotations());
         rootClientSpan.setId("root");
         rootClientSpan.setTraceId("root");
-        rootClientSpan.setAnnotations(clientAnnotations());
 
-        Span rootServerSpan = new Span();
+        Span rootServerSpan = new Span(null, serverAnnotations());
         rootServerSpan.setId("root");
         rootServerSpan.setTraceId("root");
-        rootServerSpan.setAnnotations(serverAnnotations());
 
-        Span clientDescendant = new Span();
+        Span clientDescendant = new Span(null, clientAnnotations());
         clientDescendant.setId("descendant");
         clientDescendant.setParentId("root");
         clientDescendant.setTraceId("root");
-        clientDescendant.setAnnotations(clientAnnotations());
 
-        Span clientDescendant2 = new Span();
+        Span clientDescendant2 = new Span(null, clientAnnotations());
         clientDescendant2.setId("descendant2");
         clientDescendant2.setParentId("root");
         clientDescendant2.setTraceId("root");
-        clientDescendant2.setAnnotations(clientAnnotations());
 
-        Span serverDescendantOfDescendant2 = new Span();
+        Span serverDescendantOfDescendant2 = new Span(null, serverAnnotations());
         serverDescendantOfDescendant2.setId("descendant2");
         serverDescendantOfDescendant2.setParentId("root");
         serverDescendantOfDescendant2.setTraceId("root");
-        serverDescendantOfDescendant2.setAnnotations(serverAnnotations());
 
-        Span serverDescendantOfDescendant = new Span();
+        Span serverDescendantOfDescendant = new Span(null, serverAnnotations());
         serverDescendantOfDescendant.setId("descendant");
         serverDescendantOfDescendant.setParentId("root");
         serverDescendantOfDescendant.setTraceId("root");
-        serverDescendantOfDescendant.setAnnotations(serverAnnotations());
 
         storeAndWait(null, Arrays.asList(rootClientSpan,
                 rootServerSpan,
@@ -561,11 +534,11 @@ public class SpanServiceElasticsearchTest {
     }
 
     private List<Annotation> serverAnnotations() {
-        Annotation csAnnotation = new Annotation();
-        csAnnotation.setValue("sr");
-        Annotation crAnnotation = new Annotation();
-        crAnnotation.setValue("ss");
+        Annotation srAnnotation = new Annotation();
+        srAnnotation.setValue("sr");
+        Annotation ssAnnotation = new Annotation();
+        ssAnnotation.setValue("ss");
 
-        return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
+        return Collections.unmodifiableList(Arrays.asList(srAnnotation, ssAnnotation));
     }
 }

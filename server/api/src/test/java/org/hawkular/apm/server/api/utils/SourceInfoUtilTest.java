@@ -148,7 +148,7 @@ public class SourceInfoUtilTest {
     public void testGetSourceInfoNoClient() throws CacheException {
         SpanCache spanCache = new TestSpanCache();
 
-        Span serverSpan = new Span(null);
+        Span serverSpan = new Span(null, null);
         serverSpan.setId("1");
         serverSpan.setParentId("1");
 
@@ -161,18 +161,16 @@ public class SourceInfoUtilTest {
     public void testGetSourceInfoJustClient() throws CacheException {
         SpanCache spanCache = new TestSpanCache();
 
-        Span serverSpan = new Span(null);
+        Span serverSpan = new Span(null, serverAnnotations());
         serverSpan.setId("1");
         serverSpan.setParentId("1");
-        serverSpan.setAnnotations(serverAnnotations());
 
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.url");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         ba.setValue("http://myhost:8080/myuri");
-        Span clientSpan = new Span(Arrays.asList(ba));
+        Span clientSpan = new Span(Arrays.asList(ba), clientAnnotations());
         clientSpan.setId("1");
         clientSpan.setParentId("1");
-        clientSpan.setAnnotations(clientAnnotations());
 
         spanCache.store(null, Arrays.asList(serverSpan, clientSpan),
                     SpanUniqueIdGenerator::toUnique);
@@ -187,18 +185,16 @@ public class SourceInfoUtilTest {
     public void testGetSourceInfoPartialClient() throws CacheException {
         SpanCache spanCache = new TestSpanCache();
 
-        Span serverSpan = new Span();
+        Span serverSpan = new Span(null, serverAnnotations());
         serverSpan.setId("2");
         serverSpan.setParentId("1");
-        serverSpan.setAnnotations(serverAnnotations());
 
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.url");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         ba.setValue("http://myhost:8080/myuri");
-        Span clientSpan = new Span(Arrays.asList(ba));
+        Span clientSpan = new Span(Arrays.asList(ba), clientAnnotations());
         clientSpan.setId("2");
         clientSpan.setParentId("1");
-        clientSpan.setAnnotations(clientAnnotations());
 
         Span parentSpan = new Span();
         parentSpan.setId("1");
@@ -217,30 +213,27 @@ public class SourceInfoUtilTest {
     public void testGetSourceInfoCompleteClient() throws CacheException {
         SpanCache spanCache = new TestSpanCache();
 
-        Span serverSpan = new Span();
+        Span serverSpan = new Span(null, serverAnnotations());
         serverSpan.setId("3");
         serverSpan.setParentId("2");
-        serverSpan.setAnnotations(serverAnnotations());
 
         BinaryAnnotation ba = new BinaryAnnotation();
-        ba.setKey("http.url");
+        ba.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         ba.setValue("http://myhost:8080/myuri");
-        Span clientSpan = new Span(Arrays.asList(ba));
+        Span clientSpan = new Span(Arrays.asList(ba), clientAnnotations());
         clientSpan.setId("3");
         clientSpan.setParentId("2");
-        clientSpan.setAnnotations(clientAnnotations());
 
         Span midSpan = new Span();
         midSpan.setId("2");
         midSpan.setParentId("1");
 
         BinaryAnnotation ba2 = new BinaryAnnotation();
-        ba2.setKey("http.url");
+        ba2.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
         ba2.setValue("http://myhost:8080/originaluri");
-        Span topServerSpan = new Span(Arrays.asList(ba2));
+        Span topServerSpan = new Span(Arrays.asList(ba2), serverAnnotations());
         topServerSpan.setId("1");
         topServerSpan.setParentId("1");
-        topServerSpan.setAnnotations(serverAnnotations());
 
         spanCache.store(null, Arrays.asList(serverSpan, clientSpan, midSpan, topServerSpan),
                     SpanUniqueIdGenerator::toUnique);
@@ -273,25 +266,16 @@ public class SourceInfoUtilTest {
 
         private Map<String, Span> cache = new HashMap<String, Span>();
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.server.api.services.Cache#get(java.lang.String, java.lang.String)
-         */
         @Override
         public Span get(String tenantId, String id) {
             return cache.get(id);
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.server.api.services.Cache#store(java.lang.String, java.util.List)
-         */
         @Override
         public void store(String tenantId, List<Span> spans) throws CacheException {
             spans.forEach(s -> cache.put(s.getId(), s));
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.server.api.services.SpanCache#getChildren(java.lang.String, java.lang.String)
-         */
         @Override
         public Set<Span> getChildren(String tenant, String id) {
             throw new UnsupportedOperationException();
@@ -302,9 +286,6 @@ public class SourceInfoUtilTest {
             throw new UnsupportedOperationException();
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.server.api.services.SpanCache#store(java.lang.String, java.util.List, java.util.function.Function)
-         */
         @Override
         public void store(String tenantId, List<Span> spans, Function<Span, String> cacheKeyEntrySupplier)
                 throws CacheException {

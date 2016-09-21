@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 
@@ -40,9 +41,6 @@ public class SpanHttpDeriverUtil {
     private static final Set<String> HTTP_METHODS = Collections.unmodifiableSet(
             new HashSet<>(Arrays.asList("GET", "PUT", "POST", "DELETE", "HEAD", "TRACE", "OPTIONS")));
 
-    protected static final String ZIPKIN_HTTP_URL_KEY = "http.url";
-
-    protected static final String ZIPKIN_HTTP_CODE_KEY = "http.status_code";
 
     private SpanHttpDeriverUtil() {}
 
@@ -60,7 +58,7 @@ public class SpanHttpDeriverUtil {
         List<HttpCode> httpCodes = new ArrayList<>();
 
         for (BinaryAnnotation binaryAnnotation: binaryAnnotations) {
-            if (ZIPKIN_HTTP_CODE_KEY.equals(binaryAnnotation.getKey()) &&
+            if (Constants.ZIPKIN_BIN_ANNOTATION_HTTP_STATUS_CODE.equals(binaryAnnotation.getKey()) &&
                     binaryAnnotation.getValue() != null) {
 
                 String strHttpCode = binaryAnnotation.getValue();
@@ -120,7 +118,7 @@ public class SpanHttpDeriverUtil {
      * @return Whether HTTP based
      */
     public static boolean isHttp(Span span) {
-        return span.getBinaryAnnotation(ZIPKIN_HTTP_URL_KEY) != null;
+        return span.getBinaryAnnotation(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL) != null;
     }
 
     /**

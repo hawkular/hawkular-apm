@@ -19,10 +19,6 @@ package org.hawkular.apm.server.processor.zipkin;
 import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
@@ -35,6 +31,7 @@ import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.hawkular.apm.server.api.utils.SourceInfoUtil;
 import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
+import org.jboss.logging.Logger;
 
 /**
  * This class represents the zipkin communication details deriver.
@@ -43,31 +40,21 @@ import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
  */
 public class CommunicationDetailsDeriver extends AbstractProcessor<Span, CommunicationDetails> {
 
-    private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class.getName());
+    private static final Logger log = Logger.getLogger(CommunicationDetailsDeriver.class);
 
-    @Inject
-    private SpanCache spanCache;
+    private final SpanCache spanCache;
 
-    /**
-     * The default constructor.
-     */
-    public CommunicationDetailsDeriver() {
-        super(ProcessorType.OneToOne);
-    }
 
     /**
      * This constructor initialises the span cache.
      *
-     * @param cache The span cache
+     * @param spanCache The span cache
      */
-    public CommunicationDetailsDeriver(SpanCache cache) {
-        this();
-        spanCache = cache;
+    public CommunicationDetailsDeriver(SpanCache spanCache) {
+        super(ProcessorType.OneToOne);
+        this.spanCache = spanCache;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isReportRetryExpirationAsWarning()
-     */
     @Override
     public boolean isReportRetryExpirationAsWarning() {
         // We don't want to report a warning, as server spans with no matching client span
@@ -75,16 +62,11 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
-     */
     @Override
     public CommunicationDetails processOneToOne(String tenantId, Span item) throws RetryAttemptException {
         CommunicationDetails ret = null;
 
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Derive communication details for span: " + item);
-        }
+        log.debugf("Derive communication details for span: %s", item);
 
         // Check if trace has a Consumer top level node with an
         // interaction based correlation id
@@ -98,14 +80,14 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
                         si.getFragmentOperation()));
 
-                URL url = item.url();
-                String op = SpanDeriverUtil.deriveOperation(item);
+                URL url = CompletionTimeUtil.getUrl(spanCache, item);
+                String operation = SpanDeriverUtil.deriveOperation(item);
 
                 if (url != null) {
-                    ret.setTarget(EndpointUtil.encodeEndpoint(url.getPath(), op));
+                    ret.setTarget(EndpointUtil.encodeEndpoint(url.getPath(), operation));
                 } else {
                     // TODO: ERRORS IN DATA???
-                    log.warning("NO URL");
+                    log.warnf("NO URL, span = %s", item);
                 }
 
                 // Calculate difference in milliseconds
@@ -114,9 +96,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 if (diff > 0) {
                     ret.setLatency(diff / 2);
                 } else if (diff < 0) {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("WARNING: Negative latency for consumer = " + item);
-                    }
+                    log.debugf("WARNING: Negative latency for consumer = %s", item);
                 }
 
                 ret.setSourceDuration(si.getDuration());
@@ -149,21 +129,15 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
 
                 ret.setTimestampOffset(timestampOffset);
             } else {
-                if (log.isLoggable(Level.FINEST)) {
-                    log.finest("WARNING: Producer information not available [id checked = " + item.getId() + "]");
-                }
-
+                log.debugf("WARNING: Producer information not available [id checked = %s]", item.getId());
                 // Need to retry, as the source information is not currently available
                 throw new RetryAttemptException("Producer information not available [id checked = "
                                         + item.getId() + "]");
             }
         }
 
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Derived communication details: " + ret);
-        }
+        log.debugf("Derived communication details: %s", ret);
 
         return ret;
     }
-
 }

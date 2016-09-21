@@ -53,7 +53,7 @@ public class MappingResult implements Serializable {
      */
     private final Map<String, String> nodeDetails;
     /**
-     * Mapping for property {@link Trace#properties}, and its derived objects e.g.
+     * Mapping for property {@link Trace#allProperties()}, and its derived objects e.g.
      * {@link CommunicationDetails#properties},
      * {@link CompletionTime#properties},
      * {@link NodeDetails#properties},
