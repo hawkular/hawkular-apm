@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
@@ -107,7 +108,7 @@ public class ConfigurationLoader {
         }
 
         if (uri != null) {
-            String[] uriParts = uri.split(java.io.File.separator);
+            String[] uriParts = uri.split(Matcher.quoteReplacement(File.separator));
             int startIndex = 0;
 
             // Remove any file prefix
