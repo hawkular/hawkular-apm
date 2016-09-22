@@ -136,12 +136,16 @@ public class APMSpan extends AbstractSpan {
             // Check for passed state
             if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_ID)) {
                 setInteractionId(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_ID).toString(), NodeType.Consumer);
-            }
-            if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_BT_NAME)) {
-                traceContext.setBusinessTransaction(parentBuilder.getState().get(APMTracer.HAWKULAR_BT_NAME).toString());
-            }
-            if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_LEVEL)) {
-                traceContext.setReportingLevel(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_LEVEL).toString());
+                if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_BT_NAME)) {
+                    traceContext.setBusinessTransaction(parentBuilder.getState().get(APMTracer.HAWKULAR_BT_NAME).toString());
+                }
+                if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_LEVEL)) {
+                    traceContext.setReportingLevel(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_LEVEL).toString());
+                }
+            } else {
+                // Assume top level consumer, even though no state was provider, as span context
+                // as passed using a 'child of' relationship
+                getNodeBuilder().setNodeType(NodeType.Consumer);
             }
         } else {
             log.severe("Unknown parent type = " + ref.getReferredTo());

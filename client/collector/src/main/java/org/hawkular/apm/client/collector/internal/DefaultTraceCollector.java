@@ -117,7 +117,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             configLastUpdated = System.currentTimeMillis();
 
             filterManager = new FilterManager(config);
-            reporter.init(config);
             try {
                 processorManager = new ProcessorManager(config);
             } catch (Throwable t) {
