@@ -105,7 +105,7 @@
     <version.com.github.eirslett.frontend-maven-plugin>1.0</version.com.github.eirslett.frontend-maven-plugin>
 
     <version.com.fasterxml.jackson.core>2.6.0</version.com.fasterxml.jackson.core>
-    <version.com.github.docker-java.docker-java>3.0.0</version.com.github.docker-java.docker-java>
+    <version.com.github.docker-java.docker-java>3.0.6</version.com.github.docker-java.docker-java>
     <version.com.jayway.jsonpath>2.2.0</version.com.jayway.jsonpath>
     <version.commons-io>2.1</version.commons-io>
     <version.io.opentracing>0.15.0</version.io.opentracing>
