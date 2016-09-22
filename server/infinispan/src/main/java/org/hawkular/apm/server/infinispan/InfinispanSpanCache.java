@@ -18,9 +18,9 @@
 package org.hawkular.apm.server.infinispan;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -110,20 +110,24 @@ public class InfinispanSpanCache implements SpanCache, ServiceLifecycle {
             spansCache.put(cacheKeyEntrySupplier.apply(span), span, 1, TimeUnit.MINUTES);
 
             if (span.getTraceId() != null) {
-                Set<Span> trace = traceCache.get(span.getTraceId());
-                if (trace == null) {
-                    trace = new HashSet<>();
+                synchronized (traceCache) {
+                    Set<Span> trace = traceCache.get(span.getTraceId());
+                    if (trace == null) {
+                        trace = new CopyOnWriteArraySet<>();
+                    }
+                    trace.add(span);
+                    traceCache.put(span.getTraceId(), trace);
                 }
-                trace.add(span);
-                traceCache.put(span.getTraceId(), trace);
             }
             if (span.getParentId() != null && !span.serverSpan()) {
-                Set<Span> children = childrenCache.get(span.getParentId());
-                if (children == null) {
-                    children = new HashSet<>();
+                synchronized (childrenCache) {
+                    Set<Span> children = childrenCache.get(span.getParentId());
+                    if (children == null) {
+                        children = new CopyOnWriteArraySet<>();
+                    }
+                    children.add(span);
+                    childrenCache.put(span.getParentId(), children);
                 }
-                children.add(span);
-                childrenCache.put(span.getParentId(), children);
             }
         }
 

@@ -16,9 +16,9 @@
  */
 package org.hawkular.apm.server.infinispan;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -132,7 +132,7 @@ public class InfinispanCommunicationDetailsCache implements CommunicationDetails
                 synchronized (communicationDetailsMultiConsumers) {
                     List<CommunicationDetails> list = communicationDetailsMultiConsumers.get(cd.getLinkId());
                     if (list == null) {
-                        list = new ArrayList<CommunicationDetails>();
+                        list = new CopyOnWriteArrayList<>();
                     }
                     list.add(cd);
 
