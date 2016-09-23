@@ -63,6 +63,7 @@ import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -115,6 +116,7 @@ public class AnalyticsServiceElasticsearchTest {
     @After
     public void afterTest() {
         bts.clear(null);
+        analytics.clear(null);
     }
 
     @Test
@@ -2523,6 +2525,64 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(0, results.get(EP_OUTOP1_1).getOutbound().size());
 
         assertTrue(results.get(EP_INOP1).getOutbound().containsKey(EP_OUTOP1_1));
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticsServiceName() throws StoreException {
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("testapp");
+        ct1.setUri("in1");
+        ct1.setOperation("op1");
+        ct1.getProperties().add(new Property("prop", "val"));
+        ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
+
+        CommunicationDetails cd1 = new CommunicationDetails();
+        cd1.setBusinessTransaction("testapp");
+        cd1.setSource("in1[op1]");
+        cd1.setTarget("out1.1[op1.1]");
+
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1));
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1));
+
+        Criteria criteria = new Criteria()
+                .setStartTime(0)
+                .setEndTime(100000)
+                .setBusinessTransaction("testapp");
+
+        Collection<CommunicationSummaryStatistics> communicationSummaryStatisticsList =
+                analytics.getCommunicationSummaryStatistics(null, criteria, false);
+
+        Assert.assertEquals(1, communicationSummaryStatisticsList.size());
+        CommunicationSummaryStatistics communicationSummaryStatistics =
+                communicationSummaryStatisticsList.iterator().next();
+
+        Assert.assertEquals("wildfly", communicationSummaryStatistics.getServiceName());
+        Assert.assertEquals(1, communicationSummaryStatistics.getOutbound().size());
+    }
+
+    @Test
+    public void testGetCommunicationSummaryStatisticsServiceNameMissingOperation() throws StoreException {
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setUri("in1");
+        ct1.setBusinessTransaction("testapp");
+        ct1.getProperties().add(new Property("prop", "val"));
+        ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
+
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1));
+
+        Criteria criteria = new Criteria()
+                .setStartTime(0)
+                .setEndTime(100000)
+                .setBusinessTransaction("testapp");
+
+        Collection<CommunicationSummaryStatistics> communicationSummaryStatisticsList =
+                analytics.getCommunicationSummaryStatistics(null, criteria, false);
+
+        Assert.assertEquals(1, communicationSummaryStatisticsList.size());
+        CommunicationSummaryStatistics communicationSummaryStatistics =
+                communicationSummaryStatisticsList.iterator().next();
+
+        Assert.assertEquals("wildfly", communicationSummaryStatistics.getServiceName());
     }
 
     @Test

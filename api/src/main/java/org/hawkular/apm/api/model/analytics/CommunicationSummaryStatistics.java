@@ -43,7 +43,12 @@ public class CommunicationSummaryStatistics {
 
     private String operation;
 
-    private Map<String, ConnectionStatistics> outbound = new HashMap<String, ConnectionStatistics>();
+    /**
+     * Service name reported by instrumentation agent
+     */
+    private String serviceName;
+
+    private Map<String, ConnectionStatistics> outbound = new HashMap<>();
 
     /**
      * The default constructor.
@@ -65,6 +70,7 @@ public class CommunicationSummaryStatistics {
         this.severity = node.severity;
         this.uri = node.uri;
         this.operation = node.operation;
+        this.serviceName = node.getServiceName();
         for (Map.Entry<String, ConnectionStatistics> entry: node.getOutbound().entrySet()) {
             this.outbound.put(entry.getKey(), new ConnectionStatistics(entry.getValue()));
         }
@@ -196,20 +202,22 @@ public class CommunicationSummaryStatistics {
         this.outbound = outbound;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     @Override
     public String toString() {
         return "CommunicationSummaryStatistics [id=" + id + ", minimumDuration=" + minimumDuration
                 + ", averageDuration=" + averageDuration + ", maximumDuration=" + maximumDuration + ", count=" + count
-                + ", severity=" + severity + ", uri=" + uri + ", operation=" + operation + ", outbound=" + outbound
-                + "]";
+                + ", severity=" + severity + ", uri=" + uri + ", operation=" + operation + " , serviceName="
+                + serviceName + ", outbound=" + outbound + "]";
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -220,15 +228,13 @@ public class CommunicationSummaryStatistics {
         result = prime * result + (int) (maximumDuration ^ (maximumDuration >>> 32));
         result = prime * result + (int) (minimumDuration ^ (minimumDuration >>> 32));
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
+        result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
         result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
         result = prime * result + severity;
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -255,6 +261,11 @@ public class CommunicationSummaryStatistics {
             if (other.operation != null)
                 return false;
         } else if (!operation.equals(other.operation))
+            return false;
+        if (serviceName == null) {
+            if (other.serviceName != null)
+                return false;
+        } else if (!serviceName.equals(other.serviceName))
             return false;
         if (outbound == null) {
             if (other.outbound != null)
@@ -397,9 +408,6 @@ public class CommunicationSummaryStatistics {
             this.node = node;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "ConnectionStatistics [minimumLatency=" + minimumLatency + ", averageLatency=" + averageLatency
@@ -407,9 +415,6 @@ public class CommunicationSummaryStatistics {
                     + node + "]";
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -423,9 +428,6 @@ public class CommunicationSummaryStatistics {
             return result;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
         @Override
         public boolean equals(Object obj) {
             if (this == obj)
