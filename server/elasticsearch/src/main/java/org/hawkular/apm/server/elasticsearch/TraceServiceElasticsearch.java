@@ -164,7 +164,7 @@ public class TraceServiceElasticsearch implements TraceService {
         if (ret != null) {
             for (int i=0; i < ret.getNodes().size(); i++) {
                 Node node = ret.getNodes().get(i);
-                processConnectedNode(tenantId, node, new StringBuilder(ret.getId()).append(':').append(i));
+                processConnectedNode(tenantId, ret, node, new StringBuilder(ret.getId()).append(':').append(i));
             }
         }
 
@@ -185,16 +185,17 @@ public class TraceServiceElasticsearch implements TraceService {
      * end trace as it goes.
      *
      * @param tenantId The tenant id
+     * @param trace The trace being constructed
      * @param root The node
      * @param nodePath The node's path
      */
-    protected void processConnectedNode(String tenantId, Node node, StringBuilder nodePath) {
+    protected void processConnectedNode(String tenantId, Trace trace, Node node, StringBuilder nodePath) {
 
         if (node.containerNode()) {
 
             for (int i=0; i < ((ContainerNode)node).getNodes().size(); i++) {
                 Node n = ((ContainerNode)node).getNodes().get(i);
-                processConnectedNode(tenantId, n, new StringBuilder(nodePath).append(':').append(i));
+                processConnectedNode(tenantId, trace, n, new StringBuilder(nodePath).append(':').append(i));
             }
 
             // Check if node has been referenced by one or more 'caused by' links
@@ -214,7 +215,7 @@ public class TraceServiceElasticsearch implements TraceService {
                     } else {
                         anchor.getNodes().add(n);
                     }
-                    processConnectedNode(tenantId, n, new StringBuilder(tf.getId()).append(':').append(i));
+                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getId()).append(':').append(i));
                 }
             }
         }
@@ -226,10 +227,11 @@ public class TraceServiceElasticsearch implements TraceService {
             List<Trace> fragments = searchFragments(tenantId, criteria);
 
             for (Trace tf : fragments) {
-                for (int i=0; i < tf.getNodes().size(); i++) {
+                // Ensure we don't process top level trace again, if contains just a Producer
+                for (int i=0; !tf.getId().equals(trace.getId()) && i < tf.getNodes().size(); i++) {
                     Node n = tf.getNodes().get(i);
                     ((Producer)node).getNodes().add(n);
-                    processConnectedNode(tenantId, n, new StringBuilder(tf.getId()).append(':').append(i));
+                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getId()).append(':').append(i));
                 }
             }
         }
