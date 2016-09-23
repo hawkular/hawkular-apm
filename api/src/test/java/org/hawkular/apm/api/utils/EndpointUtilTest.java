@@ -19,6 +19,7 @@ package org.hawkular.apm.api.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.hawkular.apm.api.model.Constants;
 import org.junit.Test;
 
 /**
@@ -71,6 +72,21 @@ public class EndpointUtilTest {
     public void testDecodeEndpointOpNull() {
         String result = EndpointUtil.encodeEndpoint(URI, null);
         assertNull(EndpointUtil.decodeEndpointOperation(result,false));
+    }
+
+    @Test
+    public void testEncodeClientURI() {
+        assertEquals(Constants.URI_CLIENT_PREFIX + URI, EndpointUtil.encodeClientURI(URI));
+    }
+
+    @Test
+    public void testDecodeClientURI() {
+        assertEquals(URI, EndpointUtil.decodeClientURI(Constants.URI_CLIENT_PREFIX + URI));
+    }
+
+    @Test
+    public void testDecodeNonClientURI() {
+        assertEquals(URI, EndpointUtil.decodeClientURI(URI));
     }
 
 }

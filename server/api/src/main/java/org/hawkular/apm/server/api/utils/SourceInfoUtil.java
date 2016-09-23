@@ -32,6 +32,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
@@ -118,7 +119,7 @@ public class SourceInfoUtil {
                 origin.setUri(node.getUri());
                 origin.setOperation(node.getOperation());
             } else if (node.getClass() == Producer.class) {
-                origin.setUri(Constants.URI_CLIENT_PREFIX + node.getUri());
+                origin.setUri(EndpointUtil.encodeClientURI(node.getUri()));
                 origin.setOperation(node.getOperation());
             }
         }
@@ -246,7 +247,7 @@ public class SourceInfoUtil {
                 if (rootOrServerSpan.serverSpan()) {
                     si.setFragmentUri(rootOrServerSpan.url().getPath());
                 } else {
-                    si.setFragmentUri(Constants.URI_CLIENT_PREFIX + clientSpan.url().getPath());
+                    si.setFragmentUri(EndpointUtil.encodeClientURI(clientSpan.url().getPath()));
                 }
 
                 return si;

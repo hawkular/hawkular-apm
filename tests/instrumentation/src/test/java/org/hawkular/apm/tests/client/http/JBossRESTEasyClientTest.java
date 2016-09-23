@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static io.undertow.Handlers.path;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -200,8 +199,7 @@ public class JBossRESTEasyClientTest extends ClientTestBase {
             }
         }
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

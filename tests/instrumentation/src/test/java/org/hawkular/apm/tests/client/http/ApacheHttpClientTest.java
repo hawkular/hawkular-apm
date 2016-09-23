@@ -26,7 +26,6 @@ import static io.undertow.Handlers.path;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -218,8 +217,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
         // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 
@@ -353,8 +351,7 @@ public class ApacheHttpClientTest extends ClientTestBase {
             }
         }
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

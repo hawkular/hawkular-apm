@@ -28,7 +28,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -296,8 +295,7 @@ public class JavaNetHttpTest extends ClientTestBase {
         // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

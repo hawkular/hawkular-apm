@@ -278,8 +278,7 @@ public class SpanServiceElasticsearch implements SpanService {
      */
     protected void processConnectedFragment(String tenantId, Trace fragment) {
 
-        List<Producer> producers = new ArrayList<>();
-        NodeUtil.findNodes(fragment.getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(fragment.getNodes(), Producer.class);
 
         for (Producer producer : producers) {
             if (!producer.getCorrelationIds().isEmpty()) {

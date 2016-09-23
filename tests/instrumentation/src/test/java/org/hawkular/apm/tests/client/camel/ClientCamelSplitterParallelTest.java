@@ -84,11 +84,9 @@ public class ClientCamelSplitterParallelTest extends ClientCamelTestBase {
         List<Trace> spawned=new ArrayList<Trace>();
 
         for (Trace trace : btxns) {
-            List<Consumer> consumers = new ArrayList<Consumer>();
-            NodeUtil.findNodes(trace.getNodes(), Consumer.class, consumers);
+            List<Consumer> consumers = NodeUtil.findNodes(trace.getNodes(), Consumer.class);
 
-            List<Producer> producers = new ArrayList<Producer>();
-            NodeUtil.findNodes(trace.getNodes(), Producer.class, producers);
+            List<Producer> producers = NodeUtil.findNodes(trace.getNodes(), Producer.class);
 
             if (consumers.isEmpty()) {
                 if (producers.isEmpty()) {

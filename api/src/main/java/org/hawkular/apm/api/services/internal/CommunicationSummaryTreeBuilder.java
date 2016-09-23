@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
+import org.hawkular.apm.api.utils.EndpointUtil;
 
 /**
  * This class provides a utility for building communication summary trees
@@ -57,8 +58,14 @@ public class CommunicationSummaryTreeBuilder {
 
         List<CommunicationSummaryStatistics> ret = new ArrayList<>();
         for (String endpoint : endpoints) {
-            if (nodeMap.containsKey(endpoint)) {
-                CommunicationSummaryStatistics rootNode = new CommunicationSummaryStatistics(nodeMap.get(endpoint));
+            // Check if a 'client' node also exists for the endpoint, and if so, use this as the
+            // initial endpoint
+            CommunicationSummaryStatistics n = nodeMap.get(EndpointUtil.encodeClientURI(endpoint));
+            if (n == null) {
+                n = nodeMap.get(endpoint);
+            }
+            if (n != null) {
+                CommunicationSummaryStatistics rootNode = new CommunicationSummaryStatistics(n);
                 initCommunicationSummaryTreeNode(rootNode, nodeMap,
                         new HashSet<>(Collections.singleton(rootNode.getId())));
                 ret.add(rootNode);

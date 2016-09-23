@@ -19,7 +19,6 @@ package org.hawkular.apm.tests.client.camel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -76,13 +75,11 @@ public class ClientCamelSplitterNotParallelTest extends ClientCamelTestBase {
 
         Trace trace = getApmMockServer().getTraces().get(0);
 
-        List<Consumer> consumers = new ArrayList<Consumer>();
-        NodeUtil.findNodes(trace.getNodes(), Consumer.class, consumers);
+        List<Consumer> consumers = NodeUtil.findNodes(trace.getNodes(), Consumer.class);
 
         assertTrue("Should be no consumers", consumers.isEmpty());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(trace.getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(trace.getNodes(), Producer.class);
 
         assertTrue("Should be no producers", producers.isEmpty());
     }
