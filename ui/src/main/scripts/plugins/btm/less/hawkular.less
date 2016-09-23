@@ -2575,7 +2575,7 @@ body {
   background-color: white;
   bottom: 0;
   left: 0;
-  min-height: 100%;
+  min-height: calc(~"100% - 90px");
   position: absolute;
   top: 0;
   width: 20em;
@@ -2643,6 +2643,10 @@ body {
         font-weight: bold;
       }
     }
+  }
+
+  .pull-right + .hk-filter-v-block {
+    padding-top: 0;
   }
 }
 
