@@ -22,20 +22,34 @@ module APM {
   export var _module = angular.module(APM.pluginName,
     ['xeditable','ui.bootstrap','angularUtils.directives.dirPagination','hawkularapm-templates']);
 
-  let tab = undefined;
+  let apmTab = undefined;
+  let trcTab = undefined;
+  let btmTab = undefined;
 
   _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
-    tab = builder.create()
+    apmTab = builder.create()
       .id(APM.pluginName)
-      .title(() => 'Application Performance')
-      .href(() => '/hawkular-ui/apm')
-      .subPath('Components', 'components', builder.join(APM.templatePath, 'apm.html'))
-      .subPath('Distributed Tracing', 'tracing', builder.join(E2E.templatePath, 'e2e.html'))
-      .subPath('Business Transactions', 'btm', builder.join(BTM.templatePath, 'btm.html'))
+      .title(() => 'Components')
+      .href(() => '/hawkular-ui/apm/components')
       .rank(30)
       .build();
-    builder.configureRouting($routeProvider, tab);
+    trcTab = builder.create()
+      .id('tracing')
+      .title(() => 'Distributed Tracing')
+      .href(() => '/hawkular-ui/apm/tracing')
+      .rank(20)
+      .build();
+    btmTab = builder.create()
+      .id('btm')
+      .title(() => 'Business Transactions')
+      .href(() => '/hawkular-ui/apm/btm')
+      .rank(10)
+      .build();
+
+    builder.configureRouting($routeProvider, apmTab);
+    builder.configureRouting($routeProvider, trcTab);
+    builder.configureRouting($routeProvider, btmTab);
     $locationProvider.html5Mode(true);
     $routeProvider.
       when('/hawkular-ui/apm/components', {
@@ -104,7 +118,9 @@ module APM {
   });
 
   _module.run(['HawtioNav', (HawtioNav: HawtioMainNav.Registry) => {
-    HawtioNav.add(tab);
+    HawtioNav.add(apmTab);
+    HawtioNav.add(trcTab);
+    HawtioNav.add(btmTab);
     log.debug('loaded');
   }]);
 
