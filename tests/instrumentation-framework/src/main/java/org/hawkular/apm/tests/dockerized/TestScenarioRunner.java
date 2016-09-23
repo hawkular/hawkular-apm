@@ -125,8 +125,9 @@ public class TestScenarioRunner {
 
         String environmentId = null;
         ApmMockServer apmServer = new ApmMockServer();
-        apmServer.setHost("0.0.0.0");
         apmServer.setPort(apmServerPort);
+        // TODO Jenkins torii
+        apmServer.setHost("0.0.0.0");
         // disable shut down timer
         apmServer.setShutdownTimer(60*60*1000);
         try {
