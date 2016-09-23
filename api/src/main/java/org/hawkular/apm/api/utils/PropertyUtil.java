@@ -16,6 +16,9 @@
  */
 package org.hawkular.apm.api.utils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 
@@ -37,29 +40,45 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_URI = "HAWKULAR_APM_URI";
 
     /**
-     * The location of the remote APM REST services
+     * If specified, the value for this property will override the HAWKULAR_APM_URI value
+     * when accessing the services.
      */
     public static final String HAWKULAR_APM_URI_SERVICES = "HAWKULAR_APM_URI_SERVICES";
 
-    /**  */
+    /**
+     * If specified, the value for this property will override the HAWKULAR_APM_URI value
+     * when publishing trace fragments.
+     */
     public static final String HAWKULAR_APM_URI_PUBLISHER = "HAWKULAR_APM_URI_PUBLISHER";
 
-    /**  */
+    /**
+     * The username to use for accessing the APM server.
+     */
     public static final String HAWKULAR_APM_USERNAME = "HAWKULAR_APM_USERNAME";
 
-    /**  */
+    /**
+     * The password to use for accessing the APM server.
+     */
     public static final String HAWKULAR_APM_PASSWORD = "HAWKULAR_APM_PASSWORD";
 
-    /**  */
+    /**
+     * The retry interval used by an application attempting to obtain the collector configuration.
+     */
     public static final String HAWKULAR_APM_CONFIG_RETRY_INTERVAL = "HAWKULAR_APM_CONFIG_RETRY_INTERVAL";
 
-    /**  */
+    /**
+     * The refresh interval to check for updates to the business transaction configuration.
+     */
     public static final String HAWKULAR_APM_CONFIG_REFRESH = "HAWKULAR_APM_CONFIG_REFRESH";
 
-    /**  */
+    /**
+     * Client side logging level.
+     */
     public static final String HAWKULAR_APM_LOG_LEVEL = "HAWKULAR_APM_LOG_LEVEL";
 
-    /**  */
+    /**
+     * Client side boolean property to indicate whether to log to java.util.logging.
+     */
     public static final String HAWKULAR_APM_LOG_JUL = "HAWKULAR_APM_LOG_JUL";
 
     /**
@@ -139,6 +158,31 @@ public class PropertyUtil {
     public static final String HAWKULAR_SERVER_PASSWORD = "HAWKULAR_SERVER_PASSWORD";
 
     /**
+     * Environment variable representing the container's host name.
+     */
+    private static final String ENV_HOSTNAME = "HOSTNAME";
+
+    private static String hostName;
+    private static String hostAddress;
+
+    static {
+        hostName = System.getenv(ENV_HOSTNAME);
+        if (hostName == null) {
+            try {
+                hostName = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                LOG.severe("Unable to determine host name");
+            }
+        }
+
+        try {
+            hostAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            LOG.severe("Unable to determine host address");
+        }
+    }
+
+    /**
      * This method determines whether a property exists, as a system property
      * or environment variable.
      *
@@ -216,6 +260,24 @@ public class PropertyUtil {
             return true;
         }
         return false;
+    }
+
+    /**
+     * This method returns the hostname on which the application is running.
+     *
+     * @return The host name
+     */
+    public static String getHostName() {
+        return hostName;
+    }
+
+    /**
+     * This method returns the host IP address on which the application is running.
+     *
+     * @return The host IP address
+     */
+    public static String getHostAddress() {
+        return hostAddress;
     }
 
 }

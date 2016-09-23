@@ -43,10 +43,11 @@ public class CommunicationSummaryTreeBuilder {
      * This method returns the supplied list of flat nodes as a set of tree structures with related nodes.
      *
      * @param nodes The collection of nodes represented as a flat list
+     * @param endpoints The initial endpoints
      * @return The nodes returns as a collection of independent tree structures
      */
     public static Collection<CommunicationSummaryStatistics> buildCommunicationSummaryTree(
-            Collection<CommunicationSummaryStatistics> nodes) {
+            Collection<CommunicationSummaryStatistics> nodes, Set<String> endpoints) {
         Map<String, CommunicationSummaryStatistics> nodeMap = new HashMap<String, CommunicationSummaryStatistics>();
 
         // Create a map of nodes
@@ -54,20 +55,17 @@ public class CommunicationSummaryTreeBuilder {
             nodeMap.put(css.getId(), css);
         }
 
-        Collection<CommunicationSummaryStatistics> rootNodes = getRootCommunicationSummaryNodes(nodeMap);
-
-        if (rootNodes != null) {
-            List<CommunicationSummaryStatistics> ret = new ArrayList<>();
-            for (CommunicationSummaryStatistics css : rootNodes) {
-                CommunicationSummaryStatistics rootNode = new CommunicationSummaryStatistics(css);
+        List<CommunicationSummaryStatistics> ret = new ArrayList<>();
+        for (String endpoint : endpoints) {
+            if (nodeMap.containsKey(endpoint)) {
+                CommunicationSummaryStatistics rootNode = new CommunicationSummaryStatistics(nodeMap.get(endpoint));
                 initCommunicationSummaryTreeNode(rootNode, nodeMap,
                         new HashSet<>(Collections.singleton(rootNode.getId())));
                 ret.add(rootNode);
             }
-            return ret;
         }
 
-        return null;
+        return ret;
     }
 
     /**
@@ -97,27 +95,6 @@ public class CommunicationSummaryTreeBuilder {
                 initCommunicationSummaryTreeNode(copy, nodeMap, usedIds);
             }
         }
-    }
-
-    /**
-     * This method returns the subset of supplied nodes that are root nodes.
-     *
-     * @param nodeMap The map of all nodes
-     * @return The list of root nodes
-     */
-    protected static Collection<CommunicationSummaryStatistics> getRootCommunicationSummaryNodes(
-            Map<String, CommunicationSummaryStatistics> nodeMap) {
-        Map<String, CommunicationSummaryStatistics> nodeMapCopy = new HashMap<String, CommunicationSummaryStatistics>(
-                nodeMap);
-
-        for (CommunicationSummaryStatistics css : nodeMap.values()) {
-            for (String linkId : css.getOutbound().keySet()) {
-                // Remove linked node from copy map
-                nodeMapCopy.remove(linkId);
-            }
-        }
-
-        return nodeMapCopy.values();
     }
 
 }

@@ -32,6 +32,7 @@ module E2E {
                                    encodeURI(JSON.stringify($rootScope.sbFilter.criteria)));
       commPromise.then(function(resp) {
         $scope.e2eData = resp.data;
+        $scope.e2eData.sort($scope.compareNodes);
         $scope.findTopLevels();
         $scope.rootNode = _.indexOf($scope.topLevel, $scope.rootNode) > -1 ? $scope.rootNode : _.first($scope.topLevel);
         $scope.filterByTopLevel($scope.rootNode, true);
@@ -81,6 +82,10 @@ module E2E {
         $scope.uris.push(node.uri);
         $scope.operations.push(node.operation);
       });
+    };
+
+    $scope.compareNodes = function(a, b) {
+      return a.id > b.id;
     };
 
     $scope.addPropertyToFilter = function(pName, pValue, operator) {

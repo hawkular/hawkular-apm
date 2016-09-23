@@ -32,7 +32,10 @@ public class EndpointUtil {
      * @return The endpoint descriptor
      */
     public static String encodeEndpoint(String uri, String operation) {
-        StringBuilder buf=new StringBuilder(uri);
+        StringBuilder buf=new StringBuilder();
+        if (uri != null && !uri.trim().isEmpty()) {
+            buf.append(uri);
+        }
         if (operation != null && !operation.trim().isEmpty()) {
             buf.append('[');
             buf.append(operation);
@@ -45,11 +48,13 @@ public class EndpointUtil {
      * This method returns the URI part of the supplied endpoint.
      *
      * @param endpoint The endpoint
-     * @return The URI
+     * @return The URI, or null if endpoint starts with '[' (operation prefix)
      */
     public static String decodeEndpointURI(String endpoint) {
         int ind=endpoint.indexOf('[');
-        if (ind != -1) {
+        if (ind == 0) {
+            return null;
+        } else if (ind != -1) {
             return endpoint.substring(0, ind);
         }
         return endpoint;
