@@ -54,9 +54,9 @@ public class TraceCompletionInformationInitiator extends
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
 
-            // If node has no correlation ids, then it is a candidate for the start
-            // of a trace
-            if (n.getCorrelationIds().isEmpty()) {
+            // If not a consumer, or consumer has no correlation ids, then it is
+            // a candidate for the start of a trace
+            if (n.getClass() != Consumer.class || n.getCorrelationIds().isEmpty()) {
                 TraceCompletionInformation ci = new TraceCompletionInformation();
 
                 // Create the initial version of the completion time

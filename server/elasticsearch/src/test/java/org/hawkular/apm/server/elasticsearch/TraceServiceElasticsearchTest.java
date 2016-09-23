@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -399,10 +398,6 @@ public class TraceServiceElasticsearchTest {
         p2_2.addInteractionCorrelationId("id2_2");
         c2.getNodes().add(p2_2);
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-        traces.add(trace2);
-
         ts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         // Retrieve stored trace
@@ -528,6 +523,44 @@ public class TraceServiceElasticsearchTest {
         Component resultcomp3 = (Component)resultconsumer3.getNodes().get(0);
 
         assertTrue(resultcomp3.getNodes().isEmpty());
+    }
+
+    @Test
+    public void testGetTraceByIdJustProducerConsumer() throws StoreException, JsonProcessingException {
+        Trace trace1 = new Trace();
+        trace1.setId("1");
+        trace1.setStartTime(System.currentTimeMillis());
+        Producer producer = new Producer();
+        producer.setUri("uri");
+        producer.addInteractionCorrelationId("id1");
+        trace1.getNodes().add(producer);
+
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setStartTime(System.currentTimeMillis());
+        Consumer consumer = new Consumer();
+        consumer.setUri("uri");
+        consumer.addInteractionCorrelationId("id1");
+        trace2.getNodes().add(consumer);
+
+        ts.storeFragments(null, Arrays.asList(trace1, trace2));
+
+        // Retrieve stored trace
+        Wait.until(() -> ts.getTrace(null, "1") != null);
+        Trace result = ts.getTrace(null, "1");
+
+        assertNotNull(result);
+        assertEquals("1", result.getId());
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        System.out.println("TRACE(testGetTraceByIdJustProducerConsumer)=" + mapper.writeValueAsString(result));
+
+        assertEquals(1, result.getNodes().size());
+        assertEquals(Producer.class, result.getNodes().get(0).getClass());
+        assertEquals(1, ((Producer)result.getNodes().get(0)).getNodes().size());
+        assertEquals(Consumer.class, ((Producer)result.getNodes().get(0)).getNodes().get(0).getClass());
+        assertTrue(((Consumer)((Producer)result.getNodes().get(0)).getNodes().get(0)).getNodes().isEmpty());
     }
 
 }
