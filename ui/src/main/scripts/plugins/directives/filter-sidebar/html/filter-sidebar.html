@@ -76,7 +76,7 @@
         <div class="sb-prop-input">
           <div class="input-group">
             <span class="input-group-addon">Name</span>
-            <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
+            <select pf-select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
               ng-change="getPropertyValues(selPropName)"></select>
           </div>
           <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
@@ -125,7 +125,7 @@
 
         <div class="radio" style="margin-left: 0px;">
           <div class="input-group">
-            <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
+            <select pf-select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
             <div class="input-group-btn">
               <button type="button" class="btn btn-default" ng-disabled="!selFault"
                 ng-click="addFaultToFilter(selFault.value, 'HAS')">
