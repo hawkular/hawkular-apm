@@ -33,7 +33,6 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.apm.api.model.Property;
@@ -360,18 +359,11 @@ public class TraceServiceElasticsearch implements TraceService {
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#clear(java.lang.String)
+     * @see org.hawkular.apm.api.services.AnalyticsService#clearTenant(java.lang.String)
      */
     @Override
     public void clear(String tenantId) {
-        String index = client.getIndex(tenantId);
-
-        try {
-            client.getClient().admin().indices().prepareDelete(index).execute().actionGet();
-            client.clear(tenantId);
-        } catch (IndexMissingException ime) {
-            // Ignore
-        }
+        client.clearTenant(tenantId);
     }
 
     public static class TraceSerializer extends JsonSerializer<Trace> {

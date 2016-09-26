@@ -46,12 +46,11 @@
     <hawkular.data>${hawkular.home}/standalone/data</hawkular.data>
     <hawkular.deployments>${hawkular.home}/standalone/deployments</hawkular.deployments>
     <hawkular.lib>${hawkular.home}/standalone/lib</hawkular.lib>
-
     <server.config>standalone.xml</server.config>
+    <hawkular.log.apm>FINEST</hawkular.log.apm>
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-api</artifactId>
@@ -84,11 +83,6 @@
       <artifactId>hawkular-apm-analytics-service-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-instrumenter</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
@@ -98,16 +92,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-example-servlet-rest-tomcat</artifactId>
-      <type>war</type>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.byteman</groupId>
-      <artifactId>byteman</artifactId>
-      <scope>test</scope>
+      <groupId>com.squareup.okhttp</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${version.com.squareup.okhttp}</version>
     </dependency>
 
     <dependency>
@@ -131,7 +118,6 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -141,16 +127,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes combine.children="append">
-            <exclude>**/*.data</exclude>
-            <exclude>**/*.apm</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -166,28 +142,7 @@
             <configuration>
               <includeGroupIds>org.hawkular.apm</includeGroupIds>
               <includeArtifactIds>hawkular-apm-dist</includeArtifactIds>
-              <outputDirectory>
-                ${hawkular.home}
-              </outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>update-hawkular-apm</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.camel</groupId>
-                  <artifactId>camel-example-servlet-rest-tomcat</artifactId>
-                  <type>war</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular.deployments}</outputDirectory>
-                  <destFileName>camel-example-servlet-rest-tomcat.war</destFileName>
-                </artifactItem>
-              </artifactItems>
+              <outputDirectory>${hawkular.home}</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -201,6 +156,7 @@
             <hawkular.port>${hawkular.port}</hawkular.port>
             <hawkular.uri>${hawkular.uri}</hawkular.uri>
             <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
+            <jboss.server.config.dir>${hawkular.configuration}</jboss.server.config.dir>
           </systemPropertyVariables>
         </configuration>
         <executions>
@@ -211,7 +167,7 @@
             </goals>
             <configuration>
               <includes>
-                <include>**/*Test.java</include>
+                <include>**/*ITest.java</include>
               </includes>
             </configuration>
           </execution>
@@ -293,6 +249,9 @@
             <goals>
               <goal>shutdown</goal>
             </goals>
+            <configuration>
+              <timeout>200</timeout>
+            </configuration>
           </execution>
         </executions>
       </plugin>
