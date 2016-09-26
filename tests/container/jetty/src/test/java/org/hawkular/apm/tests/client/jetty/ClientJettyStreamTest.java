@@ -218,8 +218,7 @@ public class ClientJettyStreamTest extends ClientTestBase {
         // Check stored business transactions (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

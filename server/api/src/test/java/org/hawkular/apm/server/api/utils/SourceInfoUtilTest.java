@@ -34,6 +34,7 @@ import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
@@ -132,11 +133,11 @@ public class SourceInfoUtilTest {
         SourceInfo si4 = sourceInfoList.get(3);
         SourceInfo si5 = sourceInfoList.get(4);
 
-        assertEquals("client:uri1", si1.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("uri1"), si1.getFragmentUri());
         assertEquals("op1", si1.getFragmentOperation());
-        assertEquals("client:uri1", si2.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("uri1"), si2.getFragmentUri());
         assertEquals("op1", si2.getFragmentOperation());
-        assertEquals("client:uri1", si3.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("uri1"), si3.getFragmentUri());
         assertEquals("op1", si3.getFragmentOperation());
         assertEquals("uri1", si4.getFragmentUri());
         assertEquals("op1", si4.getFragmentOperation());
@@ -178,7 +179,7 @@ public class SourceInfoUtilTest {
         SourceInfo si = SourceInfoUtil.getSourceInfo(null, serverSpan, spanCache);
 
         assertNotNull(si);
-        assertEquals(Constants.URI_CLIENT_PREFIX + "/myuri", si.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("/myuri"), si.getFragmentUri());
     }
 
     @Test
@@ -206,7 +207,7 @@ public class SourceInfoUtilTest {
         SourceInfo si = SourceInfoUtil.getSourceInfo(null, serverSpan, spanCache);
 
         assertNotNull(si);
-        assertEquals(Constants.URI_CLIENT_PREFIX + "/myuri", si.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("/myuri"), si.getFragmentUri());
     }
 
     @Test

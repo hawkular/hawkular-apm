@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -116,8 +115,7 @@ public class NettyHttpTest extends ClientTestBase {
         }
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);
@@ -157,8 +155,7 @@ public class NettyHttpTest extends ClientTestBase {
         }
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);
@@ -198,8 +195,7 @@ public class NettyHttpTest extends ClientTestBase {
         }
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);

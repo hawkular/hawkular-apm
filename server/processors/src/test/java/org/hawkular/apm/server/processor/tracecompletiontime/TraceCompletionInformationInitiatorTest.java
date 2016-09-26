@@ -27,6 +27,7 @@ import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation.Communication;
 import org.junit.Test;
 
@@ -136,7 +137,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertEquals(trace.getId(), ci.getCompletionTime().getId());
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
         assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
-        assertEquals(c.getUri(), ci.getCompletionTime().getUri());
+        assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
         assertEquals(200, ci.getCompletionTime().getDuration());
         assertEquals(c.getFault(), ci.getCompletionTime().getFault());
     }
