@@ -76,7 +76,7 @@ module APM {
       $rootScope.updateCriteriaTimeSpan();
 
       $http.get('/hawkular/apm/analytics/node/statistics?interval=' +
-        $scope.config.interval + '&criteria=' + encodeURI(JSON.stringify($rootScope.sbFilter.criteria)))
+        $scope.config.interval + '&criteria=' + encodeURI(angular.toJson($rootScope.sbFilter.criteria)))
           .then(function(resp) {
 
         // get all component keys
@@ -121,11 +121,11 @@ module APM {
         $scope.redrawAreaChart();
 
       },function(resp) {
-        console.log('Failed to get node timeseries statistics: ' + JSON.stringify(resp));
+        console.log('Failed to get node timeseries statistics: ' + angular.toJson(resp));
       });
 
       $http.get('/hawkular/apm/analytics/node/summary?criteria=' +
-          encodeURI(JSON.stringify($rootScope.sbFilter.criteria))).then(function(resp) {
+          encodeURI(angular.toJson($rootScope.sbFilter.criteria))).then(function(resp) {
         $scope.summaries = resp.data;
 
         $scope.max = 0;
@@ -136,7 +136,7 @@ module APM {
           }
         }
       },function(resp) {
-        console.log('Failed to get node summary statistics: ' + JSON.stringify(resp));
+        console.log('Failed to get node summary statistics: ' + angular.toJson(resp));
       });
 
       // this informs the sidebar directive, so it'll update it's data as well

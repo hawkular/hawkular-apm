@@ -56,7 +56,7 @@ module BTM {
     $scope.reload = function() {
 
       $http.get('/hawkular/apm/analytics/transactions?criteria='
-          + encodeURI(JSON.stringify($scope.criteria))).then(function(resp) {
+          + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
 
         let allPromises = [];
         _.each(resp.data, (btxn: any) => {
@@ -71,13 +71,13 @@ module BTM {
           $scope.reloadFaultCountGraph();
         });
       },function(resp) {
-        console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
+        console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
       });
 
       $http.get('/hawkular/apm/analytics/unboundendpoints').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
-        console.log('Failed to get candidate count: ' + JSON.stringify(resp));
+        console.log('Failed to get candidate count: ' + angular.toJson(resp));
       });
     };
 
@@ -93,17 +93,17 @@ module BTM {
       btxncriteria.businessTransaction = btxn.name;
 
       let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?criteria='
-          + encodeURI(JSON.stringify(btxncriteria)));
+          + encodeURI(angular.toJson(btxncriteria)));
       promises.push(countPromise);
       countPromise.then(function(resp) {
         btxn.count = resp.data;
       }, function(resp) {
-        console.log('Failed to get count: ' + JSON.stringify(resp));
+        console.log('Failed to get count: ' + angular.toJson(resp));
       });
 
       let pct95Promise =
         $http.get('/hawkular/apm/analytics/trace/completion/percentiles?criteria='
-          + encodeURI(JSON.stringify(btxncriteria)));
+          + encodeURI(angular.toJson(btxncriteria)));
       promises.push(pct95Promise);
       pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
@@ -112,17 +112,17 @@ module BTM {
           btxn.percentile95 = 0;
         }
       },function(resp) {
-        console.log('Failed to get completion percentiles: ' + JSON.stringify(resp));
+        console.log('Failed to get completion percentiles: ' + angular.toJson(resp));
       });
 
       let faultsPromise =
         $http.get('/hawkular/apm/analytics/trace/completion/faultcount?criteria='
-          + encodeURI(JSON.stringify(btxncriteria)));
+          + encodeURI(angular.toJson(btxncriteria)));
       promises.push(faultsPromise);
       faultsPromise.then(function(resp) {
         btxn.faultcount = resp.data;
       },function(resp) {
-        console.log('Failed to get fault count: ' + JSON.stringify(resp));
+        console.log('Failed to get fault count: ' + angular.toJson(resp));
       });
 
       return promises;
@@ -134,7 +134,7 @@ module BTM {
           console.log('Deleted: ' + btxn.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {
-          console.log('Failed to delete business txn \'' + btxn.name + '\': ' + JSON.stringify(resp));
+          console.log('Failed to delete business txn \'' + btxn.name + '\': ' + angular.toJson(resp));
         });
       }
     };
