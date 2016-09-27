@@ -64,7 +64,7 @@
           <li class="sb-prop" ng-repeat="prop in value" ng-click="toggleExcludeInclude(prop)">
             <span class="hk-cursor-pointer">
               <i class="fa-li fa" aria-hidden="true"
-                ng-class="prop.operator === 'HASNOT' ? 'fa-angle-down sb-toggle-exc' : 'fa-angle-right sb-toggle-inc'"></i>
+ -              ng-class="prop.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
             </span>
             {{ prop.value }}
             <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remPropertyFromFilter(prop)">
@@ -76,13 +76,13 @@
         <div class="sb-prop-input">
           <div class="input-group">
             <span class="input-group-addon">Name</span>
-            <select pf-select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
+            <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
               ng-change="getPropertyValues(selPropName)"></select>
           </div>
           <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
             ng-model="$root.testFilter">
           </select-->
-          <div ng-show="selPropName">
+          <div ng-show="selPropName" class="hk-properties-value">
             <label> Value </label>
             <div class="input-group">
               <!-- <span class="input-group-addon">Value</span> -->
@@ -114,7 +114,7 @@
           <li class="sb-prop" ng-click="toggleExcludeInclude(fault)">
             <span class="hk-cursor-pointer">
               <i class="fa-li fa" aria-hidden="true"
-                ng-class="fault.operator === 'HASNOT' ? 'fa-angle-down sb-toggle-exc' : 'fa-angle-right sb-toggle-inc'"></i>
+ -              ng-class="fault.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
             </span>
             {{ fault.value }}
             <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remFaultFromFilter(fault)">
@@ -125,7 +125,7 @@
 
         <div class="radio" style="margin-left: 0px;">
           <div class="input-group">
-            <select pf-select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
+            <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
             <div class="input-group-btn">
               <button type="button" class="btn btn-default" ng-disabled="!selFault"
                 ng-click="addFaultToFilter(selFault.value, 'HAS')">
