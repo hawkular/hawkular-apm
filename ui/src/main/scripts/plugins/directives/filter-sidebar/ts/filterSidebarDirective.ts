@@ -126,7 +126,7 @@ module FilterSidebar {
           if (newValue && newValue !== oldValue) {
             scope.propertyValues = [];
             let propVal = this.$http.get('/hawkular/apm/analytics/trace/completion/property/' + newValue.name +
-              '?criteria=' + encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria)));
+              '?criteria=' + encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria)));
             propVal.then((resp) => {
               scope.propertyValues = resp.data;
             });
@@ -138,37 +138,37 @@ module FilterSidebar {
     private updateSidebarData(scope) {
       if (scope.fsb.showBtxns) {
         this.$http.get('/hawkular/apm/analytics/transactions?criteria=' +
-            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
+            encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.businessTransactions = _.map(resp.data, function(o: any){ return o.name; });
         }, (error) => {
-          console.log('Failed to get transactions: ' + JSON.stringify(error));
+          console.log('Failed to get transactions: ' + angular.toJson(error));
         });
       }
 
       if (scope.fsb.showHosts) {
         this.$http.get('/hawkular/apm/analytics/hostnames?criteria=' +
-            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
+            encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.hostNames = resp.data || [];
         }, (error) => {
-          console.log('Failed to get host names: ' + JSON.stringify(error));
+          console.log('Failed to get host names: ' + angular.toJson(error));
         });
       }
 
       if (scope.fsb.showProps) {
         this.$http.get('/hawkular/apm/analytics/properties?criteria=' +
-            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
+            encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.properties = resp.data || [];
         }, (error) => {
-            console.log('Failed to get properties: ' + JSON.stringify(error));
+            console.log('Failed to get properties: ' + angular.toJson(error));
         });
       }
 
       if (scope.fsb.showFaults) {
         this.$http.get('/hawkular/apm/analytics/trace/completion/faults?criteria=' +
-            encodeURI(JSON.stringify(this.$rootScope.sbFilter.criteria))).then((resp) => {
+            encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.faults = resp.data || [];
         }, (error) => {
-            console.log('Failed to get faults: ' + JSON.stringify(error));
+            console.log('Failed to get faults: ' + angular.toJson(error));
         });
       }
 
