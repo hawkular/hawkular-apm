@@ -499,6 +499,27 @@ public class SpanServiceElasticsearchTest {
         Assert.assertEquals(0, descendant2ConsumerNode.getNodes().size());
     }
 
+
+    @Test
+    public void testGetEndToEndTraceClientOnly() throws StoreException, InterruptedException {
+        Span rootClientSpan = new Span(null, clientAnnotations());
+        rootClientSpan.setId("root");
+        rootClientSpan.setTraceId("root");
+
+        storeAndWait(null, Collections.singletonList(rootClientSpan),
+                SpanUniqueIdGenerator::toUnique);
+
+        Trace trace = spanService.getTrace(null, "root");
+        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals(1, trace.getNodes().size());
+
+        InteractionNode rootProducerNode = ((InteractionNode) trace.getNodes().get(0));
+        Assert.assertThat(rootProducerNode, instanceOf(Producer.class));
+        Assert.assertEquals(1, rootProducerNode.getCorrelationIds().size());
+        Assert.assertEquals("root", rootProducerNode.getCorrelationIds().get(0).getValue());
+        Assert.assertEquals(0, rootProducerNode.getNodes().size());
+    }
+
     private Set<String> extractCorrelationIds(List<Node> nodes) {
         return new HashSet<>(nodes.stream()
                 .filter(node -> node.getType() != NodeType.Component)

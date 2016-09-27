@@ -246,7 +246,7 @@ public class SpanServiceElasticsearch implements SpanService {
     @Override
     public Trace getTrace(String tenantId, String id) {
         Span span = getSpan(tenantId, id);
-        if (span != null && span.serverSpan()) {
+        if (span == null || span.serverSpan()) {
             // We need to check if there is a client span for the same id
             String clientId = SpanUniqueIdGenerator.getClientId(id);
             if (getSpan(tenantId, clientId) != null) {
