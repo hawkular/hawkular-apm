@@ -26,7 +26,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
-import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
@@ -79,6 +78,13 @@ public class BatchTraceReporter implements TraceReporter {
     }
 
     /**
+     * The default constructor.
+     */
+    public BatchTraceReporter() {
+        init();
+    }
+
+    /**
      * This method sets the trace publisher.
      *
      * @param tp The trace publisher
@@ -95,33 +101,25 @@ public class BatchTraceReporter implements TraceReporter {
     }
 
     /**
-     * This method initialises the reporter with the collector configuration.
-     *
-     * @param config The configuration
+     * This method initialises the reporter.
      */
-    public void init(CollectorConfiguration config) {
-        if (config != null) {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Initializing TraceReporter with collector configuration");
-            }
+    protected void init() {
+        // Get properties
+        String size = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHSIZE, null);
+        if (size != null) {
+            batchSize = Integer.parseInt(size);
+        }
 
-            // Get properties
-            String size = config.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHSIZE, null);
-            if (size != null) {
-                batchSize = Integer.parseInt(size);
-            }
+        String time = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTIME, null);
+        if (time != null) {
+            batchTime = Integer.parseInt(time);
+        }
 
-            String time = config.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTIME, null);
-            if (time != null) {
-                batchTime = Integer.parseInt(time);
-            }
+        tenantId = PropertyUtil.getProperty(HAWKULAR_APM_TENANT_ID, null);
 
-            tenantId = config.getProperty(HAWKULAR_APM_TENANT_ID, null);
-
-            String pool = config.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTHREADS, null);
-            if (pool != null) {
-                executor = Executors.newFixedThreadPool(Integer.parseInt(pool));
-            }
+        String pool = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTHREADS, null);
+        if (pool != null) {
+            executor = Executors.newFixedThreadPool(Integer.parseInt(pool));
         }
 
         // Create scheduled task

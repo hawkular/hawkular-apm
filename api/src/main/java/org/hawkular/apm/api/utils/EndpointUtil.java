@@ -95,6 +95,9 @@ public class EndpointUtil {
      * @return The client side version of the URI
      */
     public static String encodeClientURI(String uri) {
+        if (uri == null) {
+            return Constants.URI_CLIENT_PREFIX;
+        }
         return Constants.URI_CLIENT_PREFIX + uri;
     }
 

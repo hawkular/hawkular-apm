@@ -22,6 +22,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.trace.NodeType;
+import org.hawkular.apm.api.services.ServiceResolver;
+import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 
 import io.opentracing.propagation.Format;
@@ -51,6 +53,10 @@ public class APMTracer extends AbstractTracer {
     public static final String TRANSACTION_NAME = "transaction.name";
 
     private TraceReporter reporter;
+
+    public APMTracer() {
+        this.reporter = new BatchTraceReporter();
+    }
 
     public APMTracer(TraceReporter reporter) {
         this.reporter = reporter;

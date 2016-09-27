@@ -86,7 +86,7 @@ public class TraceContext {
      * the trace will be reported.
      */
     public void endProcessingNode() {
-        if (nodeCount.decrementAndGet() == 0) {
+        if (nodeCount.decrementAndGet() == 0 && reporter != null) {
             Node node = rootNode.build();
 
             trace.setBusinessTransaction(getBusinessTransaction());
