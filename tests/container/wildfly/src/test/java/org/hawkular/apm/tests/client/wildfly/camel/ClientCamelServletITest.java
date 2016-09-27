@@ -17,13 +17,13 @@
 package org.hawkular.apm.tests.client.wildfly.camel;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Trace;
@@ -41,25 +41,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author gbrown
  */
-public class ClientCamelCXFTest extends ClientTestBase {
-
-    private static final String REQUEST = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n"
-            +
-            "<soap:Body>\r\n" +
-            "    <ns1:reportIncident xmlns:ns1=\"http://incident.cxf.example.camel.apache.org/\">\r\n" +
-            "        <arg0>\r\n" +
-            "            <details>blah blah</details>\r\n" +
-            "            <email>davsclaus@apache.org</email>\r\n" +
-            "            <familyName>Smith</familyName>\r\n" +
-            "            <givenName>Bob</givenName>\r\n" +
-            "            <incidentDate>2011-11-25</incidentDate>\r\n" +
-            "            <incidentId>123</incidentId>\r\n" +
-            "            <phone>123-456-7890</phone>\r\n" +
-            "            <summary>blah blah summary</summary>\r\n" +
-            "        </arg0>\r\n" +
-            "    </ns1:reportIncident>\r\n" +
-            "</soap:Body>\r\n" +
-            "</soap:Envelope>";
+public class ClientCamelServletITest extends ClientTestBase {
 
     @Override
     public int getPort() {
@@ -67,30 +49,23 @@ public class ClientCamelCXFTest extends ClientTestBase {
     }
 
     @Test
-    public void testInvokeCamelCXFService() {
+    public void testInvokeCamelRESTService() {
         // Delay to avoid picking up previously reported txns
         Wait.until(() -> getApmMockServer().getTraces().size() == 0);
 
         try {
             URL url = new URL(System.getProperty("test.uri")
-                    + "/camel-example-cxftomcat/webservices/incident");
+                    + "/camel-example-servlet-rest-tomcat/rest" + "/user/123");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("GET");
 
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setUseCaches(false);
             connection.setAllowUserInteraction(false);
             connection.setRequestProperty("Content-Type",
-                    "application/soap+xml");
-
-            java.io.OutputStream os = connection.getOutputStream();
-
-            os.write(REQUEST.getBytes());
-
-            os.flush();
-            os.close();
+                    "application/json");
 
             java.io.InputStream is = connection.getInputStream();
 
@@ -102,19 +77,26 @@ public class ClientCamelCXFTest extends ClientTestBase {
 
             assertEquals(200, connection.getResponseCode());
 
-            String resp = new String(b);
+            String user = new String(b);
 
-            System.out.println(">>> RESP = " + resp);
-
-            assertTrue("Response should contain '<code>OK;123</code>'",
-                    resp.contains("<code>OK;123</code>"));
+            assertTrue("Response should contain user with name 'John Doe'", user.contains("John Doe"));
         } catch (Exception e) {
-            fail("Failed to get cxf response: " + e);
+            fail("Failed to get user details: " + e);
         }
 
-        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
+        // Need to wait for trace fragment to be reported to server
+        Wait.until(() -> getApmMockServer().getTraces().size() == 1, 2, TimeUnit.SECONDS);
 
         // Check if trace fragments have been reported
+        /*
+        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
+        service.setUsername(TEST_USERNAME);
+        service.setPassword(TEST_PASSWORD);
+
+        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
+
+        List<BusinessTransaction> btxns = service.query(null, criteria);
+         */
         List<Trace> btxns = getApmMockServer().getTraces();
 
         for (Trace trace : btxns) {
@@ -131,18 +113,6 @@ public class ClientCamelCXFTest extends ClientTestBase {
 
         // Check top level node is a Consumer associated with the servlet
         assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());
-
-        // Check that there is request and response message content
-        Consumer consumer = (Consumer) btxns.get(0).getNodes().get(0);
-
-        assertNotNull(consumer.getIn());
-        assertNotNull(consumer.getOut());
-        assertTrue(consumer.getIn().getContent().containsKey("all"));
-        assertTrue(consumer.getOut().getContent().containsKey("all"));
-        assertNotNull(consumer.getIn().getContent().get("all").getValue());
-        assertNotNull(consumer.getOut().getContent().get("all").getValue());
-        assertTrue(consumer.getIn().getContent().get("all").getValue().length() > 0);
-        assertTrue(consumer.getOut().getContent().get("all").getValue().length() > 0);
     }
 
 }

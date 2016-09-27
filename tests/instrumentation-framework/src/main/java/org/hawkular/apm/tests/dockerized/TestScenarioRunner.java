@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.tests.common.ApmMockServer;
 import org.hawkular.apm.tests.dockerized.environment.DockerComposeExecutor;
 import org.hawkular.apm.tests.dockerized.environment.DockerImageExecutor;
 import org.hawkular.apm.tests.dockerized.environment.TestEnvironmentExecutor;
@@ -32,7 +33,6 @@ import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 import org.hawkular.apm.tests.dockerized.model.TestCase;
 import org.hawkular.apm.tests.dockerized.model.TestScenario;
 import org.hawkular.apm.tests.dockerized.model.Type;
-import org.hawkular.apm.tests.server.ApmMockServer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;

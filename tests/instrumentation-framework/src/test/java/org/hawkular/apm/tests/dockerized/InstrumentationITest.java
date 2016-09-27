@@ -30,7 +30,7 @@ import org.junit.Test;
  *
  * @author Pavol Loffay
  */
-public class InstrumentationTest {
+public class InstrumentationITest {
 
     @Test
     public void testScenarios() throws IOException {

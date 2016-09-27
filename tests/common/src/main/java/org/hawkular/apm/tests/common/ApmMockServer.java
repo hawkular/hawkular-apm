@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.tests.server;
+
+package org.hawkular.apm.tests.common;
 
 import static io.undertow.Handlers.path;
 
@@ -47,16 +48,9 @@ import io.undertow.util.Methods;
  */
 public class ApmMockServer {
 
-    /**  */
     private static final String HAWKULAR_APM_TEST_SERVER_HOST = "hawkular-apm.test.server.host";
-
-    /**  */
     private static final String HAWKULAR_APM_TEST_SERVER_PORT = "hawkular-apm.test.server.port";
-
-    /**  */
     private static final String HAWKULAR_APM_TEST_SERVER_SHUTDOWN = "hawkular-apm.test.server.shutdown";
-
-    /**  */
     private static final int DEFAULT_SHUTDOWN_TIMER = 30000;
 
     private static final Logger log = Logger.getLogger(ApmMockServer.class.getName());
@@ -247,7 +241,7 @@ public class ApmMockServer {
                         log.info("Config request received: " + exchange);
 
                         if (exchange.getRequestMethod() == Methods.GET) {
-                            CollectorConfiguration config=ConfigurationLoader.getConfiguration(null);
+                            CollectorConfiguration config= ConfigurationLoader.getConfiguration(null);
 
                             if (testConfig != null) {
                                 config.merge(testConfig, true);
@@ -303,8 +297,8 @@ public class ApmMockServer {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         StringBuilder builder = new StringBuilder();
-        String str = null;
 
+        String str;
         while ((str = reader.readLine()) != null) {
             builder.append(str);
         }

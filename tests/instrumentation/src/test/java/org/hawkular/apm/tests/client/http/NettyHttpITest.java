@@ -18,7 +18,6 @@ package org.hawkular.apm.tests.client.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -41,7 +40,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
@@ -52,18 +50,14 @@ import rx.Observable;
 /**
  * @author gbrown
  */
-public class NettyNoResponseHttpTest extends ClientTestBase {
+public class NettyHttpITest extends ClientTestBase {
 
-    /**  */
     private static final String HELLO_THERE = "Hello there";
-    /**  */
     private static final String QUERY_1 = "name=value";
-    /**  */
     private static final String PATH_1 = "/hello";
-    /**  */
     private static final String PATH_2 = "/world";
-    /**  */
     private static final String PATH_3 = "/space";
+    private  final String HELLO_WORLD = "Hello World!";
 
     private HttpServer<ByteBuf, ByteBuf> server;
 
@@ -76,11 +70,8 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
                             || req.getHttpMethod() == HttpMethod.PUT) {
                         req.getContent().subscribe(bb -> System.out.println("DATA = " + bb.toString()));
                     }
-                    resp.setStatus(HttpResponseStatus.OK);
-                    return resp;
-                }
-                );
-
+                    return resp.writeString(Observable.just(HELLO_WORLD));
+                });
         super.init();
     }
 
@@ -102,10 +93,10 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
         Object result1 = req1
                 .flatMap((HttpClientResponse<ByteBuf> resp) -> resp.getContent()
                         .map(bb -> bb.toString(Charset.defaultCharset())))
-                .singleOrDefault(null).toBlocking().toFuture().get(5, TimeUnit.SECONDS);
+                .single().toBlocking().toFuture().get(5, TimeUnit.SECONDS);
+        assertEquals(HELLO_WORLD, result1);
 
-        assertNull(result1);
-
+        // Check stored traces (including 1 for the test client)
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -117,12 +108,9 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
-
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);
@@ -145,10 +133,10 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
         Object result1 = req1
                 .flatMap((HttpClientResponse<ByteBuf> resp) -> resp.getContent()
                         .map(bb -> bb.toString(Charset.defaultCharset())))
-                .singleOrDefault(null).toBlocking().toFuture().get(5, TimeUnit.SECONDS);
+                .single().toBlocking().toFuture().get(5, TimeUnit.SECONDS);
+        assertEquals(HELLO_WORLD, result1);
 
-        assertNull(result1);
-
+        // Check stored traces (including 1 for the test client)
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -160,12 +148,9 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
-
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);
@@ -188,10 +173,10 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
         Object result1 = req1
                 .flatMap((HttpClientResponse<ByteBuf> resp) -> resp.getContent()
                         .map(bb -> bb.toString(Charset.defaultCharset())))
-                .singleOrDefault(null).toBlocking().toFuture().get(5, TimeUnit.SECONDS);
+                .single().toBlocking().toFuture().get(5, TimeUnit.SECONDS);
+        assertEquals(HELLO_WORLD, result1);
 
-        assertNull(result1);
-
+        // Check stored traces (including 1 for the test client)
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
         for (Trace trace : getApmMockServer().getTraces()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -203,12 +188,9 @@ public class NettyNoResponseHttpTest extends ClientTestBase {
                 e.printStackTrace();
             }
         }
-
-        // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
         List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
-
         assertEquals("Expecting 1 producers", 1, producers.size());
 
         Producer testProducer = producers.get(0);

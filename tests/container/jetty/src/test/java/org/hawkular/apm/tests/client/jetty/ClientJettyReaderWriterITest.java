@@ -55,19 +55,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientJettyReaderWriterTest extends ClientTestBase {
+public class ClientJettyReaderWriterITest extends ClientTestBase {
 
-    /**  */
     private static final String GREETINGS_REQUEST = "Greetings";
-    /**  */
     private static final String TEST_HEADER = "test-header";
-    /**  */
     private static final String HELLO_URL = "http://localhost:8180/hello";
-    /**  */
     private static final String QUERY_STRING = "to=me";
-    /**  */
     private static final String HELLO_URL_WITH_QS = HELLO_URL + "?" + QUERY_STRING;
-    /**  */
     private static final String HELLO_WORLD_RESPONSE = "<h1>HELLO WORLD</h1>";
 
     private static Server server = null;

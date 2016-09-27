@@ -54,21 +54,12 @@ import io.undertow.util.Headers;
 /**
  * @author gbrown
  */
-public class JavaNetHttpTest extends ClientTestBase {
+public class JavaNetHttpITest extends ClientTestBase {
 
-    /**  */
     private static final String SAY_HELLO_URL = "http://localhost:8180/sayHello";
-
-    /**  */
     private static final String QUERY_STRING = "to=me";
-
-    /**  */
     private static final String SAY_HELLO_URL_WITH_QS = SAY_HELLO_URL + "?" + QUERY_STRING;
-
-    /**  */
     private static final String SAY_HELLO = "Say Hello";
-
-    /**  */
     private static final String HELLO_WORLD = "Hello World";
 
     private Undertow server = null;
