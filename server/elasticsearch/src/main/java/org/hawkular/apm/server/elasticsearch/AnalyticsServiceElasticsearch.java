@@ -49,6 +49,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
@@ -66,6 +67,7 @@ import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
@@ -587,7 +589,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      * @param criteria The criteria
      * @param addMetrics Whether to add metrics on the nodes/links
      */
-    private void buildCommunicationSummaryStatistics(Map<String, CommunicationSummaryStatistics> stats, String index, Criteria criteria, boolean addMetrics) {
+    private void buildCommunicationSummaryStatistics(Map<String, CommunicationSummaryStatistics> stats, String index,
+                                                     Criteria criteria, boolean addMetrics) {
         if (!refresh(index)) {
             return;
         }
@@ -618,14 +621,11 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         SearchRequestBuilder request = getBaseSearchRequestBuilder(COMMUNICATION_DETAILS_TYPE, index, criteria, query, 0)
                 .addAggregation(sourceBuilder);
         SearchResponse response = getSearchResponse(request);
-        Terms sources = response.getAggregations().get("source");
 
-        for (Terms.Bucket sourceBucket : sources.getBuckets()) {
+        for (Terms.Bucket sourceBucket : response.getAggregations().<Terms>get("source").getBuckets()) {
             Terms targets = sourceBucket.getAggregations().get("target");
 
-            String id = sourceBucket.getKey();
-
-            CommunicationSummaryStatistics css = stats.get(id);
+            CommunicationSummaryStatistics css = stats.get(sourceBucket.getKey());
 
             if (css == null) {
                 css = new CommunicationSummaryStatistics();
@@ -664,16 +664,33 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .stats("duration")
                 .field("duration");
 
+        TermsBuilder serviceTerm = AggregationBuilders
+                .terms("serviceTerm")
+                .field("properties.value");
+
+        FilterAggregationBuilder propertiesServiceFilter = AggregationBuilders
+                .filter("propertiesServiceFilter")
+                .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("properties.name", Constants.PROP_SERVICE_NAME))))
+                .subAggregation(serviceTerm);
+
+        NestedBuilder nestedProperties = AggregationBuilders
+                .nested("nestedProperties")
+                .path("properties")
+                .subAggregation(propertiesServiceFilter);
+
         TermsBuilder operationsBuilder2 = AggregationBuilders
                 .terms("operations")
                 .field("operation")
                 .size(criteria.getMaxResponseSize())
-                .subAggregation(durationBuilder);
+                .subAggregation(durationBuilder)
+                .subAggregation(nestedProperties);
 
         MissingBuilder missingOperationBuilder2 = AggregationBuilders
                 .missing("missingOperation")
                 .field("operation")
-                .subAggregation(durationBuilder);
+                .subAggregation(durationBuilder)
+                .subAggregation(nestedProperties);
 
         TermsBuilder urisBuilder2 = AggregationBuilders
                 .terms("uris")
@@ -695,9 +712,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         Terms completions = response2.getAggregations().get("uris");
 
         for (Terms.Bucket urisBucket : completions.getBuckets()) {
-            Terms operations = urisBucket.getAggregations().get("operations");
-
-            for (Terms.Bucket operationBucket : operations.getBuckets()) {
+            for (Terms.Bucket operationBucket : urisBucket.getAggregations().<Terms>get("operations").getBuckets()) {
                 Stats duration = operationBucket.getAggregations().get("duration");
                 String id = EndpointUtil.encodeEndpoint(urisBucket.getKey(),
                         operationBucket.getKey());
@@ -714,11 +729,17 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 if (addMetrics) {
                     doAddMetrics(css, duration, operationBucket.getDocCount());
                 }
+
+                String serviceName = serviceName(operationBucket.getAggregations()
+                        .<Nested>get("nestedProperties").getAggregations()
+                        .<Filter>get("propertiesServiceFilter")
+                        .getAggregations().get("serviceTerm"));
+                css.setServiceName(serviceName);
             }
 
             Missing missingOp = urisBucket.getAggregations().get("missingOperation");
 
-            if (missingOp != null && missingOp.getDocCount() > 0) {
+            if (missingOp.getDocCount() > 0) {
                 Stats duration = missingOp.getAggregations().get("duration");
                 String id = urisBucket.getKey();
 
@@ -727,6 +748,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     css = new CommunicationSummaryStatistics();
                     css.setId(id);
                     css.setUri(id);
+
+                    String serviceName = serviceName(missingOp.getAggregations()
+                            .<Nested>get("nestedProperties").getAggregations()
+                            .<Filter>get("propertiesServiceFilter")
+                            .getAggregations().get("serviceTerm"));
+                    css.setServiceName(serviceName);
+
                     stats.put(id, css);
                 }
 
@@ -761,10 +789,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getHostNames(java.lang.String,
-     *                      org.hawkular.apm.api.services.BaseCriteria)
-     */
     @Override
     public Set<String> getHostNames(String tenantId, Criteria criteria) {
         String index = client.getIndex(tenantId);
@@ -780,34 +804,21 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .collect(Collectors.toSet());
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
-     */
     @Override
     public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails) throws StoreException {
         bulkStoreApmEvents(tenantId, communicationDetails, COMMUNICATION_DETAILS_TYPE);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
-     */
     @Override
     public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws StoreException {
         bulkStoreApmEvents(tenantId, nodeDetails, NODE_DETAILS_TYPE);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
-     */
     @Override
     public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         bulkStoreApmEvents(tenantId, completionTimes, TRACE_COMPLETION_TIME_TYPE);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
-     *                                      java.util.List)
-     */
     @Override
     public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         bulkStoreApmEvents(tenantId, completionTimes, FRAGMENT_COMPLETION_TIME_TYPE);
@@ -845,9 +856,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#clear(java.lang.String)
-     */
     @Override
     public void clear(String tenantId) {
         String index = client.getIndex(tenantId);
@@ -1011,4 +1019,16 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .setQuery(query);
     }
 
+    private String serviceName(Terms serviceTerm) {
+        if (serviceTerm == null) {
+            return null;
+        }
+
+        String serviceName = null;
+        if (serviceTerm.getBuckets().size() > 0) {
+            serviceName = serviceTerm.getBuckets().iterator().next().getKey();
+        }
+
+        return serviceName;
+    }
 }

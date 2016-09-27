@@ -29,7 +29,7 @@ module E2E {
       $rootScope.updateCriteriaTimeSpan();
 
       let commPromise = $http.get('/hawkular/apm/analytics/communication/summary?tree=true&criteria=' +
-                                   encodeURI(JSON.stringify($rootScope.sbFilter.criteria)));
+                                   encodeURI(angular.toJson($rootScope.sbFilter.criteria)));
       commPromise.then(function(resp) {
         $scope.e2eData = resp.data;
         $scope.e2eData.sort($scope.compareNodes);
@@ -37,7 +37,7 @@ module E2E {
         $scope.rootNode = _.indexOf($scope.topLevel, $scope.rootNode) > -1 ? $scope.rootNode : _.first($scope.topLevel);
         $scope.filterByTopLevel($scope.rootNode, true);
       }, function(resp) {
-        console.log('Failed to get end-to-end data: ' + JSON.stringify(resp));
+        console.log('Failed to get end-to-end data: ' + angular.toJson(resp));
       });
 
       $scope.updateInstanceCount();
@@ -48,7 +48,7 @@ module E2E {
 
     $scope.updateInstanceCount = function() {
 
-      let localCriteria = JSON.parse(JSON.stringify($rootScope.sbFilter.criteria));
+      let localCriteria = JSON.parse(angular.toJson($rootScope.sbFilter.criteria));
       let nodeIndex = _.indexOf($scope.topLevel, $scope.rootNode);
 
       if (nodeIndex > -1) {
@@ -56,11 +56,11 @@ module E2E {
         localCriteria.operation = $scope.operations[nodeIndex];
       }
 
-      $http.get('/hawkular/apm/analytics/trace/completion/count?criteria=' + encodeURI(JSON.stringify(localCriteria))).
+      $http.get('/hawkular/apm/analytics/trace/completion/count?criteria=' + encodeURI(angular.toJson(localCriteria))).
         then((resp) => {
         $scope.instanceCount = resp.data || 0;
       }, (error) => {
-        console.log('Failed to get instance count: ' + JSON.stringify(error));
+        console.log('Failed to get instance count: ' + angular.toJson(error));
       });
     };
 
@@ -78,14 +78,22 @@ module E2E {
       $scope.operations = [];
 
       _.each($scope.e2eData, (node) => {
-        $scope.topLevel.push(node.id);
+        $scope.topLevel.push($scope.idWithServiceName(node));
         $scope.uris.push(node.uri);
         $scope.operations.push(node.operation);
       });
     };
 
+    $scope.idWithServiceName = function (node) {
+      let serviceName = '';
+      if (node.serviceName) {
+        serviceName = node.serviceName + ': ';
+      }
+      return serviceName + node.id;
+    };
+
     $scope.compareNodes = function(a, b) {
-      return a.id > b.id;
+      return $scope.idWithServiceName(a) > $scope.idWithServiceName(b);
     };
 
     $scope.addPropertyToFilter = function(pName, pValue, operator) {
@@ -117,7 +125,7 @@ module E2E {
     $scope.filterByTopLevel = function(nodeId) {
       if (nodeId) {
         let branch = _.find($scope.e2eData, (node: any) => {
-          return node.id === nodeId;
+          return $scope.idWithServiceName(node) === nodeId;
         });
         $scope.filteredNodes = branch ? [branch] : [];
       }
@@ -129,7 +137,7 @@ module E2E {
         'uri': rootNode
       };
 
-      let localCriteria = JSON.parse(JSON.stringify($rootScope.sbFilter.criteria));
+      let localCriteria = JSON.parse(angular.toJson($rootScope.sbFilter.criteria));
       let nodeIndex = _.indexOf(topLevel, rootNode);
 
       if (nodeIndex > -1) {
@@ -138,7 +146,7 @@ module E2E {
       }
 
       let instDetails = $http.get('/hawkular/apm/analytics/trace/completion/times?criteria=' +
-                                   encodeURI(JSON.stringify(localCriteria)));
+                                   encodeURI(angular.toJson(localCriteria)));
 
       instDetails.then(function(resp) {
         $scope.timesData = resp.data;

@@ -148,19 +148,19 @@ module BTM {
 
     $scope.reload = function() {
       $http.get('/hawkular/apm/analytics/trace/completion/statistics?interval=' + $scope.config.interval +
-          '&criteria=' + encodeURI(JSON.stringify($scope.criteria))).then(function(resp) {
+          '&criteria=' + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
         $scope.statistics = resp.data;
         $scope.updatedBounds();
         $scope.redrawLineChart();
       },function(resp) {
-        console.log('Failed to get statistics: ' + JSON.stringify(resp));
+        console.log('Failed to get statistics: ' + angular.toJson(resp));
       });
 
       let faultCriteria = angular.copy($scope.criteria);
       faultCriteria.maxResponseSize = $scope.config.maxFaultValues;
 
       $http.get('/hawkular/apm/analytics/trace/completion/faults?criteria=' +
-          encodeURI(JSON.stringify(faultCriteria))).then(function(resp) {
+          encodeURI(angular.toJson(faultCriteria))).then(function(resp) {
         let removeFaultValues = angular.copy($scope.faultValues || []);
         $scope.faults = resp.data;
 
@@ -189,15 +189,16 @@ module BTM {
           $scope.ctFaultChartConfig.data.columns = faultdata;
         }
       },function(resp) {
-        console.log('Failed to get statistics: ' + JSON.stringify(resp));
+        console.log('Failed to get statistics: ' + angular.toJson(resp));
       });
 
-      $http.get('/hawkular/apm/analytics/properties?criteria=' + encodeURI(JSON.stringify($scope.criteria))).then(
+      $http.get('/hawkular/apm/analytics/properties?criteria=' +
+          encodeURI(angular.toJson($scope.criteria))).then(
       function(resp) {
         $scope.properties = resp.data;
       },
       function(resp) {
-        console.log('Failed to get property info: ' + JSON.stringify(resp));
+        console.log('Failed to get property info: ' + angular.toJson(resp));
       });
 
       if ($scope.config.selectedProperty !== undefined) {
@@ -214,7 +215,7 @@ module BTM {
       propertyCriteria.maxResponseSize = $scope.config.maxPropertyValues;
 
       $http.get('/hawkular/apm/analytics/trace/completion/property/' + $scope.config.selectedProperty +
-          '?criteria=' + encodeURI(JSON.stringify(propertyCriteria))).then(function(resp) {
+          '?criteria=' + encodeURI(angular.toJson(propertyCriteria))).then(function(resp) {
         let removePropValues = angular.copy($scope.propertyValues || []);
         $scope.propertyDetails = resp.data;
 
@@ -243,7 +244,7 @@ module BTM {
 
       },function(resp) {
         console.log('Failed to get property details for \'' + $scope.config.selectedProperty + '\': ' +
-          JSON.stringify(resp));
+          angular.toJson(resp));
       });
     };
 

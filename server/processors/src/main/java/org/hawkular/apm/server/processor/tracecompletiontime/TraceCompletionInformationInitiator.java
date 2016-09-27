@@ -23,6 +23,7 @@ import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 
@@ -62,7 +63,7 @@ public class TraceCompletionInformationInitiator extends
                 // Create the initial version of the completion time
                 CompletionTime ct = new CompletionTime();
                 ct.setId(item.getId());
-                ct.setUri(n.getUri());
+                ct.setUri(EndpointUtil.getSourceUri(item));
                 ct.setOperation(n.getOperation());
 
                 if (n.getClass() == Consumer.class) {
@@ -98,4 +99,5 @@ public class TraceCompletionInformationInitiator extends
 
         return null;
     }
+
 }

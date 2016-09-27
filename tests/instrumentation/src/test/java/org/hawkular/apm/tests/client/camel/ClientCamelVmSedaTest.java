@@ -24,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -159,8 +158,7 @@ public class ClientCamelVmSedaTest extends ClientCamelTestBase {
         assertNotNull("checkStock null", checkStock);
         assertNotNull("createOrder null", createOrder);
 
-        List<Producer> producers = new ArrayList<Producer>();
-        NodeUtil.findNodes(createOrder.getNodes(), Producer.class, producers);
+        List<Producer> producers = NodeUtil.findNodes(createOrder.getNodes(), Producer.class);
 
         assertEquals("Expecting 2 producers", 2, producers.size());
 

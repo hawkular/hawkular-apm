@@ -170,6 +170,8 @@ render.shapes().component = function(parent, bbox, node) {
             let prop: any = _.find(d.properties, {name: 'service'});
             if (prop) {
               uri = 'service: ' + prop.value;
+            } else {
+              uri = '';
             }
           }
 

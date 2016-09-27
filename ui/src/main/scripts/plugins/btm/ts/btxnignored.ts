@@ -29,13 +29,13 @@ module BTM {
         $scope.businessTransactions = resp.data;
         $scope.businessTransactions.$resolved = true;
       },function(resp) {
-        console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
+        console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
       });
 
       $http.get('/hawkular/apm/analytics/unboundendpoints').then(function(resp) {
         $scope.candidateCount = Object.keys(resp.data).length;
       },function(resp) {
-        console.log('Failed to get candidate count: ' + JSON.stringify(resp));
+        console.log('Failed to get candidate count: ' + angular.toJson(resp));
       });
     };
 
@@ -47,7 +47,7 @@ module BTM {
           console.log('Deleted: ' + btxn.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {
-          console.log('Failed to delete business txn \'' + btxn.name + '\': ' + JSON.stringify(resp));
+          console.log('Failed to delete business txn \'' + btxn.name + '\': ' + angular.toJson(resp));
         });
       }
     };

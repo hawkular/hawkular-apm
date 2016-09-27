@@ -39,10 +39,10 @@ module BTM {
         $scope.messages = resp.data;
       },function(resp) {
         console.log('Failed to validate business txn \'' + $scope.businessTransactionName + '\': ' +
-          JSON.stringify(resp));
+          angular.toJson(resp));
       });
     },function(resp) {
-      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
+      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + angular.toJson(resp));
     });
 
     $http.get('/hawkular/apm/analytics/unboundendpoints?compress=true').then(function(resp) {
@@ -53,7 +53,7 @@ module BTM {
         }
       }
     },function(resp) {
-      console.log('Failed to get unbound URIs: ' + JSON.stringify(resp));
+      console.log('Failed to get unbound URIs: ' + angular.toJson(resp));
     });
 
     $scope.reload = function() {
@@ -66,7 +66,7 @@ module BTM {
         }
       },function(resp) {
         console.log('Failed to get bound URIs for business txn \'' + $scope.businessTransactionName + '\': ' +
-          JSON.stringify(resp));
+          angular.toJson(resp));
       });
     };
 
@@ -209,11 +209,11 @@ module BTM {
         $scope.original = angular.copy($scope.businessTransaction);
         $scope.dirty = false;
       },function(resp) {
-        console.log('Failed to save business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
+        console.log('Failed to save business txn \'' + $scope.businessTransactionName + '\': ' + angular.toJson(resp));
         let message = {
           severity: Error,
           message: 'Failed to save \'' + $scope.businessTransactionName + '\'',
-          details: JSON.stringify(resp.data)
+          details: angular.toJson(resp.data)
         };
         $scope.messages.add(message);
       });
@@ -223,7 +223,7 @@ module BTM {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
     },function(resp) {
-      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + JSON.stringify(resp));
+      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + angular.toJson(resp));
     });
 
     $scope.closeMessage = function(index) {

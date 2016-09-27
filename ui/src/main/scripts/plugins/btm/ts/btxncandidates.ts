@@ -29,7 +29,7 @@ module BTM {
     $http.get('/hawkular/apm/config/businesstxn/summary').then(function(resp) {
       $scope.businessTransactions = resp.data;
     },function(resp) {
-      console.log('Failed to get business txn summaries: ' + JSON.stringify(resp));
+      console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
     });
 
     $scope.reload = function() {
@@ -48,7 +48,7 @@ module BTM {
           }
         }
       },function(resp) {
-        console.log('Failed to get unbound URIs: ' + JSON.stringify(resp));
+        console.log('Failed to get unbound URIs: ' + angular.toJson(resp));
       });
     };
 
@@ -82,7 +82,7 @@ module BTM {
       $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
         $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
       },function(resp) {
-        console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
+        console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + angular.toJson(resp));
       });
     };
 
@@ -113,7 +113,7 @@ module BTM {
       $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
         $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
       },function(resp) {
-        console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + JSON.stringify(resp));
+        console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + angular.toJson(resp));
       });
     };
 
@@ -126,13 +126,13 @@ module BTM {
           }
         }
         $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
-          console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
+          console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
           $location.path('/hawkular-ui/apm/btm/config/' + $scope.existingBTxnName);
         },function(resp) {
-          console.log('Failed to save business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
+          console.log('Failed to save business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
         });
       },function(resp) {
-        console.log('Failed to get business txn \'' + $scope.existingBTxnName + '\': ' + JSON.stringify(resp));
+        console.log('Failed to get business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
       });
     };
 

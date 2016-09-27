@@ -52,12 +52,10 @@
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-client-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

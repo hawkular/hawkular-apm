@@ -16,6 +16,15 @@
  */
 package org.hawkular.apm.api.utils;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.trace.Consumer;
+import org.hawkular.apm.api.model.trace.Node;
+import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.model.trace.Trace;
+
 /**
  * This class provides endpoint utility functions.
  *
@@ -76,6 +85,60 @@ public class EndpointUtil {
             return endpoint.substring(ind);
         }
         return null;
+    }
+
+    /**
+     * This method provides a client based encoding of an URI. This is required to identify
+     * the client node invoking a service using a particular URI.
+     *
+     * @param uri The original URI
+     * @return The client side version of the URI
+     */
+    public static String encodeClientURI(String uri) {
+        if (uri == null) {
+            return Constants.URI_CLIENT_PREFIX;
+        }
+        return Constants.URI_CLIENT_PREFIX + uri;
+    }
+
+    /**
+     * This method provides a decoding of a client based URI.
+     *
+     * @param clientUri The client URI
+     * @return The original URI
+     */
+    public static String decodeClientURI(String clientUri) {
+        return clientUri.startsWith(Constants.URI_CLIENT_PREFIX)
+                ? clientUri.substring(Constants.URI_CLIENT_PREFIX.length()): clientUri;
+    }
+
+    /**
+     * This method determines the source URI that should be attributed to the supplied
+     * fragment. If the fragment is not initiated with a Consumer, then it will
+     * be treated as a 'client' of either the first Producer's URI, or the root
+     * node's URI.
+     *
+     * @param fragment The trace fragment
+     * @return The source URI
+     */
+    public static String getSourceUri(Trace fragment) {
+        Node rootNode = fragment.getNodes().isEmpty() ? null : fragment.getNodes().get(0);
+        if (rootNode == null) {
+            return null;
+        } else if (rootNode.getClass() == Consumer.class) {
+            // Consumer root node, so just return its uri
+            return rootNode.getUri();
+        }
+
+        // Check for first producer, and if found, use its URI as the basis
+        // for identifying the fragment as a client of that URI
+        List<Producer> producers = NodeUtil.findNodes(Collections.singletonList(rootNode), Producer.class);
+        if (!producers.isEmpty()) {
+            return EndpointUtil.encodeClientURI(producers.get(0).getUri());
+        }
+
+        // Identify the fragment URI as being a client of the root node's URI
+        return EndpointUtil.encodeClientURI(rootNode.getUri());
     }
 
 }

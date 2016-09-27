@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.api.utils.zipkin.SpanDeriverUtil;
@@ -65,9 +66,9 @@ public class CompletionTimeUtil {
         }
 
         if (url != null) {
-            String clientPrefix = span.clientSpan() ? Constants.URI_CLIENT_PREFIX : "";
+            String uri = span.clientSpan() ? EndpointUtil.encodeClientURI(url.getPath()) : url.getPath();
 
-            completionTime.setUri(clientPrefix + url.getPath());
+            completionTime.setUri(uri);
             completionTime.setEndpointType(url.getProtocol() == null ? null : url.getProtocol().toUpperCase());
         } else {
             completionTime.setEndpointType("Unknown");

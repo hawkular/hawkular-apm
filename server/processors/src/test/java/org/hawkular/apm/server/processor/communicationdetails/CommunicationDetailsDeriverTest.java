@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.SourceInfo;
@@ -38,6 +37,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.junit.Test;
 
@@ -134,12 +134,12 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(si1);
         assertNotNull(si2);
 
-        assertEquals(Constants.URI_CLIENT_PREFIX + "p1", si1.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("p1"), si1.getFragmentUri());
 
         // Check that source info 2 has same origin URI as p1, as they
         // are from the same fragment (without a consumer) so are being identified
         // as a client of the first producer URI found (see HWKBTM-353).
-        assertEquals(Constants.URI_CLIENT_PREFIX + "p1", si2.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("p1"), si2.getFragmentUri());
     }
 
     @Test
@@ -633,7 +633,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertEquals("pid1", details.getLinkId());
         assertEquals(BTXN_NAME, details.getBusinessTransaction());
-        assertEquals(Constants.URI_CLIENT_PREFIX + "TheURI", details.getSource());
+        assertEquals(EndpointUtil.encodeClientURI("TheURI"), details.getSource());
         assertEquals("TheURI", details.getTarget());
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
