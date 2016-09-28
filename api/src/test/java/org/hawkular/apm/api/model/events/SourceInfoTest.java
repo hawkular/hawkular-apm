@@ -58,8 +58,7 @@ public class SourceInfoTest {
         si.setHostAddress("hostAddr");
         si.setHostName("hostName");
         si.setMultipleConsumers(true);
-        si.setFragmentOperation("sourceOp");
-        si.setFragmentUri("sourceUri");
+        si.setEndpoint(new EndpointRef("sourceUri", "sourceOp", false));
         si.setProperties(props);
         si.setTimestamp(System.currentTimeMillis());
 

@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
@@ -133,16 +134,16 @@ public class SourceInfoUtilTest {
         SourceInfo si4 = sourceInfoList.get(3);
         SourceInfo si5 = sourceInfoList.get(4);
 
-        assertEquals(EndpointUtil.encodeClientURI("uri1"), si1.getFragmentUri());
-        assertEquals("op1", si1.getFragmentOperation());
-        assertEquals(EndpointUtil.encodeClientURI("uri1"), si2.getFragmentUri());
-        assertEquals("op1", si2.getFragmentOperation());
-        assertEquals(EndpointUtil.encodeClientURI("uri1"), si3.getFragmentUri());
-        assertEquals("op1", si3.getFragmentOperation());
-        assertEquals("uri1", si4.getFragmentUri());
-        assertEquals("op1", si4.getFragmentOperation());
-        assertEquals("uri1", si5.getFragmentUri());
-        assertEquals("op1", si5.getFragmentOperation());
+        assertEquals(EndpointUtil.encodeClientURI("uri1"), si1.getEndpoint().getUri());
+        assertEquals("op1", si1.getEndpoint().getOperation());
+        assertEquals(EndpointUtil.encodeClientURI("uri1"), si2.getEndpoint().getUri());
+        assertEquals("op1", si2.getEndpoint().getOperation());
+        assertEquals(EndpointUtil.encodeClientURI("uri1"), si3.getEndpoint().getUri());
+        assertEquals("op1", si3.getEndpoint().getOperation());
+        assertEquals("uri1", si4.getEndpoint().getUri());
+        assertEquals("op1", si4.getEndpoint().getOperation());
+        assertEquals("uri1", si5.getEndpoint().getUri());
+        assertEquals("op1", si5.getEndpoint().getOperation());
     }
 
     @Test
@@ -179,7 +180,7 @@ public class SourceInfoUtilTest {
         SourceInfo si = SourceInfoUtil.getSourceInfo(null, serverSpan, spanCache);
 
         assertNotNull(si);
-        assertEquals(EndpointUtil.encodeClientURI("/myuri"), si.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("/myuri"), si.getEndpoint().getUri());
     }
 
     @Test
@@ -198,6 +199,7 @@ public class SourceInfoUtilTest {
         clientSpan.setParentId("1");
 
         Span parentSpan = new Span();
+        parentSpan.setName("Parent");
         parentSpan.setId("1");
         parentSpan.setParentId("1");
 
@@ -207,7 +209,7 @@ public class SourceInfoUtilTest {
         SourceInfo si = SourceInfoUtil.getSourceInfo(null, serverSpan, spanCache);
 
         assertNotNull(si);
-        assertEquals(EndpointUtil.encodeClientURI("/myuri"), si.getFragmentUri());
+        assertEquals(new EndpointRef(null, parentSpan.getName(), true), si.getEndpoint());
     }
 
     @Test
@@ -242,7 +244,7 @@ public class SourceInfoUtilTest {
         SourceInfo si = SourceInfoUtil.getSourceInfo(null, serverSpan, spanCache);
 
         assertNotNull(si);
-        assertEquals("/originaluri", si.getFragmentUri());
+        assertEquals("/originaluri", si.getEndpoint().getUri());
     }
 
     private List<Annotation> clientAnnotations() {

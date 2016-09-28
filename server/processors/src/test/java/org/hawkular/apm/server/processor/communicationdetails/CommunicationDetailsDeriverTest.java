@@ -134,12 +134,12 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(si1);
         assertNotNull(si2);
 
-        assertEquals(EndpointUtil.encodeClientURI("p1"), si1.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("p1"), si1.getEndpoint().getUri());
 
         // Check that source info 2 has same origin URI as p1, as they
         // are from the same fragment (without a consumer) so are being identified
         // as a client of the first producer URI found (see HWKBTM-353).
-        assertEquals(EndpointUtil.encodeClientURI("p1"), si2.getFragmentUri());
+        assertEquals(EndpointUtil.encodeClientURI("p1"), si2.getEndpoint().getUri());
     }
 
     @Test
@@ -187,8 +187,8 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(si1);
         assertNotNull(si2);
 
-        assertEquals("consumerURI", si1.getFragmentUri());
-        assertEquals("consumerURI", si2.getFragmentUri());
+        assertEquals("consumerURI", si1.getEndpoint().getUri());
+        assertEquals("consumerURI", si2.getEndpoint().getUri());
     }
 
     @Test

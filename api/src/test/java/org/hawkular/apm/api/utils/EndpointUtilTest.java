@@ -17,9 +17,15 @@
 package org.hawkular.apm.api.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.events.EndpointRef;
+import org.hawkular.apm.api.model.trace.Component;
+import org.hawkular.apm.api.model.trace.Consumer;
+import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.model.trace.Trace;
 import org.junit.Test;
 
 /**
@@ -89,4 +95,68 @@ public class EndpointUtilTest {
         assertEquals(URI, EndpointUtil.decodeClientURI(URI));
     }
 
+    @Test
+    public void testGetSourceEndpointConsumer() {
+        Trace trace = new Trace();
+        Consumer consumer = new Consumer();
+        consumer.setUri(URI);
+        consumer.setOperation(OPERATION);
+        trace.getNodes().add(consumer);
+
+        EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
+
+        assertNotNull(ep);
+        assertEquals(new EndpointRef(URI, OPERATION, false), ep);
+    }
+
+    @Test
+    public void testGetSourceEndpointClientProducer() {
+        Trace trace = new Trace();
+        Producer producer = new Producer();
+        producer.setUri(URI);
+        producer.setOperation(OPERATION);
+        trace.getNodes().add(producer);
+
+        EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
+
+        assertNotNull(ep);
+        assertEquals(new EndpointRef(URI, OPERATION, true), ep);
+    }
+
+    @Test
+    public void testGetSourceEndpointClientComponent() {
+        Trace trace = new Trace();
+        Component component = new Component();
+        component.setUri(URI);
+        component.setOperation(OPERATION);
+        trace.getNodes().add(component);
+
+        EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
+
+        assertNotNull(ep);
+        assertEquals(new EndpointRef(URI, OPERATION, true), ep);
+    }
+
+    @Test
+    public void testGetSourceEndpointClientComponentProducer() {
+
+        // Currently the 'source endpoint' for this fragment will be based on the producer
+        // URI and operation, although this may be changed following discussion in HWKAPM-660
+
+        Trace trace = new Trace();
+        Component component = new Component();
+        component.setUri("otheruri");
+        component.setOperation("otherop");
+        trace.getNodes().add(component);
+
+        Producer producer = new Producer();
+        producer.setUri(URI);
+        producer.setOperation(OPERATION);
+        component.getNodes().add(producer);
+
+        EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
+
+        assertNotNull(ep);
+        assertEquals(new EndpointRef(URI, OPERATION, true), ep);
+    }
 }

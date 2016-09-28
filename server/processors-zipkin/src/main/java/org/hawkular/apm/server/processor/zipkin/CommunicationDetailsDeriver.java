@@ -77,8 +77,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 ret.setId(UUID.randomUUID().toString());
                 ret.setLinkId(item.getId());
 
-                ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
-                        si.getFragmentOperation()));
+                ret.setSource(si.getEndpoint().toString());
 
                 URL url = CompletionTimeUtil.getUrl(spanCache, item);
                 String operation = SpanDeriverUtil.deriveOperation(item);
