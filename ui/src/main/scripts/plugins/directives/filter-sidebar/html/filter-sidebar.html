@@ -44,60 +44,62 @@
     </div>
 
     <div class="hk-filter-v-block" ng-if="fsb.showBtxns">
-      <button class="btn-link" ng-click="showSearchBtxn = !showSearchBtxn"><i class="fa" ng-class="showSearchBtxn ? 'fa-plus-square' : 'fa-minus-square'"></i> Business Transaction </button>
+      <label><button class="btn-link" ng-click="showSearchBtxn = !showSearchBtxn"><i class="fa" ng-class="showSearchBtxn ? 'fa-angle-right' : 'fa-angle-down'"></i>Business Transaction</button></label>
       <div collapse="showSearchBtxn">
-      <div class="radio">
-        <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.businessTransaction" value="" checked> All </label>
-      </div>
-      <div class="radio" ng-repeat="btxn in $root.sbFilter.data.businessTransactions">
-        <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.businessTransaction" value="{{btxn}}"> {{btxn}} </label>
-      </div>
+        <div class="radio">
+          <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.businessTransaction" value="" checked> All </label>
+        </div>
+        <div class="radio" ng-repeat="btxn in $root.sbFilter.data.businessTransactions">
+          <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.businessTransaction" value="{{btxn}}"> {{btxn}} </label>
+        </div>
       </div>
     </div>
 
     <div class="hk-filter-v-block" ng-show="fsb.showProps">
-      <label><button class="btn-link" ng-click="showSearchProp = !showSearchProp"><i class="fa" ng-class="showSearchProp ? 'fa-plus-square' : 'fa-minus-square'"></i> Properties </button></label>
+      <label><button class="btn-link" ng-click="showSearchProp = !showSearchProp"><i class="fa" ng-class="showSearchProp ? 'fa-angle-right' : 'fa-angle-down'"></i>Properties</button></label>
+      <div collapse="showSearchProp">
 
-      <ul ng-repeat="(type, value) in $root.sbFilter.criteria.properties | groupBy: 'name'" class="fa-ul">
-        <label class="sb-prop-title">{{ type }}</label>
-        <li class="sb-prop" ng-repeat="prop in value" ng-click="toggleExcludeInclude(prop)">
-          <span class="hk-cursor-pointer">
-            <i class="fa-li fa" aria-hidden="true"
-              ng-class="prop.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
-          </span>
-          {{ prop.value }}
-          <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remPropertyFromFilter(prop)">
-            <i class="fa fa-remove"></i>
-          </span>
-        </li>
-      </ul>
-      <hr class="sb-prop-hr" ng-show="$root.sbFilter.criteria.properties.length">
-      <div class="sb-prop-input">
-        <div class="input-group">
-          <span class="input-group-addon">Name</span>
-          <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
-            ng-change="getPropertyValues(selPropName)"></select>
-        </div>
-        <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
-          ng-model="$root.testFilter">
-        </select-->
-        <div ng-show="selPropName">
-          <label> Value </label>
+        <ul ng-repeat="(type, value) in $root.sbFilter.criteria.properties | groupBy: 'name'" class="fa-ul">
+          <label class="sb-prop-title">{{ type }}</label>
+          <li class="sb-prop" ng-repeat="prop in value" ng-click="toggleExcludeInclude(prop)">
+            <span class="hk-cursor-pointer">
+              <i class="fa-li fa" aria-hidden="true"
+                ng-class="prop.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
+            </span>
+            {{ prop.value }}
+            <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remPropertyFromFilter(prop)">
+              <i class="fa fa-remove"></i>
+            </span>
+          </li>
+        </ul>
+        <hr class="sb-prop-hr" ng-show="$root.sbFilter.criteria.properties.length">
+        <div class="sb-prop-input">
           <div class="input-group">
-            <!-- <span class="input-group-addon">Value</span> -->
-            <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
-              ng-model="selPropValue" ng-model-options="{ updateOn: 'default blur' }"
-              placeholder="Type '{{selPropName.name}}' value" typeahead-editable="false"
-              typeahead="propValue.value for propValue in propertyValues | filter:$viewValue | limitTo:12" />
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
-                ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HAS')">
-                <i class="fa fa-plus sb-prop-incexc"></i>
-              </button>
-              <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
-                ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HASNOT')">
-                <i class="fa fa-minus sb-prop-incexc"></i>
-              </button>
+            <span class="input-group-addon">Name</span>
+            <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
+              ng-change="getPropertyValues(selPropName)"></select>
+          </div>
+          <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
+            ng-model="$root.testFilter">
+          </select-->
+          <div ng-show="selPropName" class="hk-properties-value">
+            <label> Value </label>
+            <div class="input-group">
+              <!-- <span class="input-group-addon">Value</span> -->
+              <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
+                ng-model="selPropValue" ng-model-options="{ updateOn: 'default blur' }"
+                placeholder="Type '{{selPropName.name}}' value" typeahead-editable="false"
+                typeahead="propValue.value for propValue in propertyValues | filter:$viewValue | limitTo:12" />
+              <div class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
+                  ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HAS')">
+                  <i class="fa fa-plus sb-prop-incexc"></i>
+                </button>
+                <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
+                  ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HASNOT')">
+                  <i class="fa fa-minus sb-prop-incexc"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -105,33 +107,35 @@
     </div>
 
     <div class="hk-filter-v-block" ng-if="fsb.showFaults">
-      <label><button class="btn-link" ng-click="showSearchFault = !showSearchFault"><i class="fa" ng-class="showSearchFault ? 'fa-plus-square' : 'fa-minus-square'"></i> Faults </button></label>
+      <label><button class="btn-link" ng-click="showSearchFault = !showSearchFault"><i class="fa" ng-class="showSearchFault ? 'fa-angle-right' : 'fa-angle-down'"></i>Faults</button></label>
+      <div collapse="showSearchFault">
 
-      <ul ng-repeat="fault in $root.sbFilter.criteria.faults" class="fa-ul">
-        <li class="sb-prop" ng-click="toggleExcludeInclude(fault)">
-          <span class="hk-cursor-pointer">
-            <i class="fa-li fa" aria-hidden="true"
-              ng-class="fault.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
-          </span>
-          {{ fault.value }}
-          <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remFaultFromFilter(fault)">
-            <i class="fa fa-remove"></i>
-          </span>
-        </li>
-      </ul>
+        <ul ng-repeat="fault in $root.sbFilter.criteria.faults" class="fa-ul">
+          <li class="sb-prop" ng-click="toggleExcludeInclude(fault)">
+            <span class="hk-cursor-pointer">
+              <i class="fa-li fa" aria-hidden="true"
+                ng-class="fault.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
+            </span>
+            {{ fault.value }}
+            <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remFaultFromFilter(fault)">
+              <i class="fa fa-remove"></i>
+            </span>
+          </li>
+        </ul>
 
-      <div class="radio" style="margin-left: 0px;">
-        <div class="input-group">
-          <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-disabled="!selFault"
-              ng-click="addFaultToFilter(selFault.value, 'HAS')">
-              <i class="fa fa-plus sb-prop-incexc"></i>
-            </button>
-            <button type="button" class="btn btn-default" ng-disabled="!selFault"
-              ng-click="addFaultToFilter(selFault.value, 'HASNOT')">
-              <i class="fa fa-minus sb-prop-incexc"></i>
-            </button>
+        <div class="radio" style="margin-left: 0px;">
+          <div class="input-group">
+            <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-disabled="!selFault"
+                ng-click="addFaultToFilter(selFault.value, 'HAS')">
+                <i class="fa fa-plus sb-prop-incexc"></i>
+              </button>
+              <button type="button" class="btn btn-default" ng-disabled="!selFault"
+                ng-click="addFaultToFilter(selFault.value, 'HASNOT')">
+                <i class="fa fa-minus sb-prop-incexc"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -143,7 +147,7 @@
     </div>
 
     <div class="hk-filter-v-block" ng-if="fsb.showHosts">
-      <label><button class="btn-link" ng-click="showSearchHost = !showSearchHost"><i class="fa" ng-class="showSearchHost ? 'fa-plus-square' : 'fa-minus-square'"></i> Host Name </button></label>
+      <label><button class="btn-link" ng-click="showSearchHost = !showSearchHost"><i class="fa" ng-class="showSearchHost ? 'fa-angle-right' : 'fa-angle-down'"></i>Host Name</button></label>
       <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
          ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
          placeholder="Enter a host name" typeahead-editable="false"

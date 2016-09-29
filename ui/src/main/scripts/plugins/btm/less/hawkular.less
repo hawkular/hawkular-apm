@@ -2575,7 +2575,7 @@ body {
   background-color: white;
   bottom: 0;
   left: 0;
-  min-height: 100%;
+  min-height: calc(~"100% - 90px");
   position: absolute;
   top: 0;
   width: 20em;
@@ -2643,6 +2643,10 @@ body {
         font-weight: bold;
       }
     }
+  }
+
+  .pull-right + .hk-filter-v-block {
+    padding-top: 0;
   }
 }
 
@@ -2954,4 +2958,24 @@ section {
 
 .hk-tokens .row-cards-pf {
   margin-top: @grid-gutter-width/2;
+}
+
+// APM Specific
+
+.hk-aggregation-interval {
+  label {
+    margin-right: 5px;
+  }
+
+  .bootstrap-select.form-control:not([class*="col-"]) {
+    width: 140px;
+  }
+}
+
+.hk-btm-ignored .panel .alert {
+  margin-bottom: 0;
+}
+
+.hk-properties-value {
+  margin-top: 10px;
 }

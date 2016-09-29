@@ -37,10 +37,11 @@
         </div>
 
         <!-- No BTxns matching filter slate -->
-        <div class="hk-txn-item col-md-12" ng-show="ignoredBT.length && !filteredIgnBT.length">
-          <div class="card-pf">
-            <div class="card-pf-body">
-              <h2><i class="fa fa-info-circle"></i> No Ignored Business Transactions matching the filter criteria.</h2>
+        <div class="panel panel-default hk-txn-heading" ng-show="ignoredBT.length && !filteredIgnBT.length">
+          <div class="panel-body">
+            <div class="alert alert-info">
+              <span class="pficon pficon-info"></span>
+              No Ignored Business Transactions matching the filter criteria.
             </div>
           </div>
         </div>
