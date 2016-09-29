@@ -2,12 +2,13 @@
   <button type="button" class="close" ng-click="close()">
     <span class="pficon pficon-close"></span>
   </button>
-  <h4 class="modal-title">Instance Details for {{ rootNode.uri }} ({{filteredData.length}} entries shown)</h4>
+  <h4 class="modal-title" ng-hide="selectedTx">Instance Details for {{ rootNode.uri }} ({{filteredData.length}} entries shown)</h4>
+  <h4 class="modal-title" ng-show="selectedTx">Instance Details Diagram</h4>
 </div>
 <div class="modal-body">
   <div class="row">
     <div class="col-md-12">
-      <form class="form-inline">
+      <form class="form-inline" ng-show="!selectedTx">
         <div class="form-group">
           <label for="txtFilter">Text</label>
           <input type="text" class="form-control" id="txtFilter" placeholder="Filter" ng-model="tableFilter">
@@ -30,6 +31,11 @@
       </form>
     </div>
   </div>
+  <div class="row" ng-show="selectedTx">
+    <div class="col-md-12">
+      <a href="" ng-click="selectedTx = ''">&laquo; Back to full table ({{filteredData.length}} entries)</a>
+    </div>
+  </div>
   <div class="row">
     &nbsp;
   </div>
@@ -38,7 +44,7 @@
       <table class="datatable table table-striped table-bordered" style="table-layout: fixed">
         <thead>
           <tr>
-            <th ng-click="sort('timestamp')">Timestamp
+            <th ng-click="sort('timestamp')" style="width: 180px;">Timestamp
               <span class="glyphicon sort-icon" ng-show="sortKey=='timestamp'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
             <!--<th ng-click="sort('uri')">URL
@@ -58,7 +64,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr dir-paginate-start="tData in filteredData = (timesData | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage">
+          <tr dir-paginate-start="tData in filteredData = (timesData | filter:tableFilter | filter:durationRange | orderBy:sortKey:reverse) | itemsPerPage:numPerPage" ng-show="!selectedTx || selectedTx === tData.id">
             <td>{{ tData.timestamp | date:'medium' }}</td>
             <!--<td>{{ tData.uri }}</td>-->
             <td style="overflow: hidden">
@@ -71,7 +77,9 @@
             <td class="show-details-cell" ng-click="showIVD(tData.id)"><i class="fa fa-sitemap"></i></td>
           </tr>
           <tr dir-paginate-end ng-if="selectedTx === tData.id">
-            <td colspan="5" class="details-row" instance-view-diagram nodes="instDetails"><svg id="idetails" class="graph"><g/></svg></td>
+            <td colspan="5" class="details-row" instance-view-diagram nodes="instDetails">
+              <svg id="idetails" class="graph" style="height: 600px;"><g/></svg>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -79,7 +87,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <dir-pagination-controls class="pull-right" max-size="numPerPage" direction-links="true" boundary-links="true" />
+      <dir-pagination-controls class="pull-right" max-size="numPerPage" direction-links="true" boundary-links="true" ng-show="!selectedTx" />
     </div>
   </div>
 </div>

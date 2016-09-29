@@ -178,9 +178,9 @@ render.shapes().component = function(parent, bbox, node) {
           let label = '<div class="name" style="color: #eee;">' + uri + '</div>';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt" style="color: #ddd; font-size: 2.5em; margin: 0.2em;"></i></div>';
-          } else if (d.componentType === 'Database') {
+          } else if (d.componentType && d.componentType.toLowerCase() === 'database') {
             label = '<div><i class="fa fa-database" style="color: #eee"></i></div>';
-          } else if (d.componentType === 'EJB') {
+          } else if (d.componentType && d.componentType.toLowerCase() === 'ejb') {
             label = '<div><i class="fa fa-coffee" style="color: #eee"></i></div>';
           }
 
