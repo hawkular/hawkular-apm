@@ -1,1 +1,1 @@
-io.opentracing.APMTracer
+org.hawkular.apm.client.opentracing.APMTracer

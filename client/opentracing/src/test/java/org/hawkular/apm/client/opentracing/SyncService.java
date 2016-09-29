@@ -18,7 +18,6 @@ package org.hawkular.apm.client.opentracing;
 
 import org.hawkular.apm.api.model.Constants;
 
-import io.opentracing.APMTracer;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
