@@ -23,7 +23,6 @@ import java.util.Map;
 import org.hawkular.apm.api.model.Property;
 
 import io.opentracing.APMSpan;
-import io.opentracing.APMTracer;
 
 /**
  * This node processor implementation provides the default mapping behaviour from

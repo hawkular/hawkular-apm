@@ -22,18 +22,16 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.trace.NodeType;
-import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
+import org.hawkular.apm.client.opentracing.APMTracer;
 
 import io.opentracing.propagation.Format;
 
 /**
- * The opentracing compatible Tracer implementation for Hawkular APM.
- *
  * @author gbrown
  */
-public class APMTracer extends AbstractTracer {
+public abstract class AbstractAPMTracer extends AbstractTracer {
 
     private static final Logger log = Logger.getLogger(APMTracer.class.getName());
 
@@ -54,11 +52,11 @@ public class APMTracer extends AbstractTracer {
 
     private TraceReporter reporter;
 
-    public APMTracer() {
+    public AbstractAPMTracer() {
         this.reporter = new BatchTraceReporter();
     }
 
-    public APMTracer(TraceReporter reporter) {
+    public AbstractAPMTracer(TraceReporter reporter) {
         this.reporter = reporter;
     }
 
@@ -82,7 +80,7 @@ public class APMTracer extends AbstractTracer {
         if (spanContext instanceof APMSpan) {
             APMSpan span = (APMSpan) spanContext;
             if (span.getInteractionId() != null) {
-                ret.put(APMTracer.HAWKULAR_APM_ID, span.getInteractionId());
+                ret.put(AbstractAPMTracer.HAWKULAR_APM_ID, span.getInteractionId());
             } else {
                 // Not sure if issue - but just logging as warning for now
                 log.warning("No id available to include in trace state for context = " + spanContext);
@@ -98,14 +96,15 @@ public class APMTracer extends AbstractTracer {
 
             // If transaction name defined on trace context, then propagate it
             if (span.getTraceContext().getBusinessTransaction() != null) {
-                ret.put(APMTracer.HAWKULAR_BT_NAME, span.getTraceContext().getBusinessTransaction());
+                ret.put(AbstractAPMTracer.HAWKULAR_BT_NAME, span.getTraceContext().getBusinessTransaction());
             }
 
             if (span.getTraceContext().getReportingLevel() != null) {
-                ret.put(APMTracer.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
+                ret.put(AbstractAPMTracer.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
             }
         }
 
         return ret;
     }
+
 }
