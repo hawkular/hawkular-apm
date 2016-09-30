@@ -193,7 +193,7 @@ module E2E {
       $modal.open({
         templateUrl: 'plugins/e2e/html/details-modal.html',
         controller: ModalInstanceCtrl,
-        size: 'lg',
+        size: 'xl',
         resolve: {
           rootNode: function () {
             return $scope.rootNode;
