@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.client.opentracing;
 
+import javax.inject.Singleton;
+
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 
 import io.opentracing.AbstractAPMTracer;
@@ -25,6 +27,7 @@ import io.opentracing.AbstractAPMTracer;
  *
  * @author gbrown
  */
+@Singleton
 public class APMTracer extends AbstractAPMTracer {
 
     public APMTracer() {
