@@ -34,7 +34,6 @@ public class DefaultNodeProcessor implements NodeProcessor {
     public void process(TraceContext context, APMSpan span, NodeBuilder nodeBuilder) {
         for (Map.Entry<String, Object> entry : span.getTags().entrySet()) {
             if (entry.getKey() != null && entry.getValue() != null) {
-                nodeBuilder.addProperty(new Property(entry.getKey(), entry.getValue().toString()));
 
                 if (TagUtil.isUriKey(entry.getKey())) {
                     nodeBuilder.setUri(TagUtil.getUriPath(entry.getValue().toString()));
@@ -43,13 +42,15 @@ public class DefaultNodeProcessor implements NodeProcessor {
                     nodeBuilder.setComponentType(type);
                 } else if (entry.getKey().equals("component")) {
                     nodeBuilder.setComponentType(entry.getValue().toString());
-                } else if (entry.getKey().contains("fault")) {
+                } else if (entry.getKey().equals("fault")) {
                     nodeBuilder.setFault(entry.getValue().toString());
-                } else if (entry.getKey().contains(APMTracer.TRANSACTION_NAME)) {
+                } else if (entry.getKey().equals(APMTracer.TRANSACTION_NAME)) {
                     // Check if business transaction name already defined - if not then set on the trace context
                     if (context.getBusinessTransaction() == null) {
                         context.setBusinessTransaction(entry.getValue().toString());
                     }
+                } else {
+                    nodeBuilder.addProperty(new Property(entry.getKey(), entry.getValue().toString()));
                 }
             }
         }
