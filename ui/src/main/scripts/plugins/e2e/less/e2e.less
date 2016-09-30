@@ -52,12 +52,33 @@ th {
     i {
         margin-right: -1.6em;
     }
- }
+}
 
- .hk-content-sidebar-expanded {
+.hk-content-sidebar-expanded {
     @media (min-width: @screen-sm-min) {
         margin-left: 2em !important;
         width: calc(100% - 2em) !important;
+    }
+}
+
+.dt-card {
+    min-height: calc(~"100vh - 110px");
+    position: absolute;
+    margin-top: 90px;
+    top: 0;
+    width: calc(~"100% - 22em");
+
+    .card-pf-body {
+        min-height: calc(~"100vh - 220px");
+        position: absolute;
+        top: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 10px;
+
+        .dt {
+            height: calc(~"100vh - 220px");
+        }
     }
 }
 
