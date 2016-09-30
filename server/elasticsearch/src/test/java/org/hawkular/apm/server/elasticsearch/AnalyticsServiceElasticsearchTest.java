@@ -436,25 +436,50 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testPropertyInfo() throws StoreException {
-        Trace trace1 = new Trace();
-        trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(1000);
-        trace1.setPrincipal("p1");
-        Consumer consumer1 = new Consumer();
-        consumer1.getProperties().add(new Property("prop1", "value1"));
-        consumer1.getProperties().add(new Property("prop2", "value2"));
-        trace1.getNodes().add(consumer1);
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setTimestamp(1000);
+        ct1.getProperties().add(new Property("prop1", "value1"));
+        ct1.getProperties().add(new Property("prop2", "value2"));
 
-        Trace trace2 = new Trace();
-        trace2.setBusinessTransaction("trace1");
-        trace2.setStartTime(2000);
-        trace2.setPrincipal("p2");
-        Consumer consumer2 = new Consumer();
-        consumer2.getProperties().add(new Property("prop3", "value3"));
-        consumer2.getProperties().add(new Property("prop2", "value2"));
-        trace2.getNodes().add(consumer2);
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("trace1");
+        ct2.setTimestamp(2000);
+        ct2.getProperties().add(new Property("prop3", "value3"));
+        ct2.getProperties().add(new Property("prop2", "value2"));
 
-        bts.storeFragments(null, Arrays.asList(trace1, trace2));
+        analytics.storeTraceCompletionTimes(null,  Arrays.asList(ct1, ct2));
+
+        Criteria criteria = new Criteria()
+            .setStartTime(100)
+            .setEndTime(0);
+
+        Wait.until(() -> analytics.getPropertyInfo(null, criteria).size() == 3);
+        java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
+
+        assertNotNull(pis);
+        assertEquals(3, pis.size());
+        assertTrue(pis.get(0).getName().equals("prop1"));
+        assertTrue(pis.get(1).getName().equals("prop2"));
+        assertTrue(pis.get(2).getName().equals("prop3"));
+    }
+
+    @Test
+    public void testPropertyInfoWithTxn() throws StoreException {
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setBusinessTransaction("trace1");
+        ct1.setTimestamp(1000);
+        ct1.setPrincipal("p1");
+        ct1.getProperties().add(new Property("prop1", "value1"));
+        ct1.getProperties().add(new Property("prop2", "value2"));
+
+        CompletionTime ct2 = new CompletionTime();
+        ct2.setBusinessTransaction("trace1");
+        ct2.setTimestamp(2000);
+        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property("prop3", "value3"));
+        ct2.getProperties().add(new Property("prop2", "value2"));
+
+        analytics.storeTraceCompletionTimes(null,  Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria()
             .setBusinessTransaction("trace1")

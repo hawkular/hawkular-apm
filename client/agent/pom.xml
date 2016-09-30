@@ -31,6 +31,11 @@
   <packaging>jar</packaging>
   <name>Hawkular APM::Client::Agent</name>
 
+  <properties>
+    <hawkular-apm.lib>${project.build.directory}/lib</hawkular-apm.lib>
+    <hawkular-apm.instrumentation>${project.basedir}/target/test-classes/instrumentation</hawkular-apm.instrumentation>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -204,6 +209,90 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>get-client-all</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.apm</groupId>
+                  <artifactId>hawkular-apm-agent</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${hawkular-apm.lib}</outputDirectory>
+                  <destFileName>hawkular-apm-agent.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.apm</groupId>
+                  <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${hawkular-apm.instrumentation}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <threadCount>1</threadCount>
+          <threadCountClasses>1</threadCountClasses>
+          <argLine>
+              -javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar
+              -DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig
+              -DHAWKULAR_APM_URI=http://localhost:8080
+              -DHAWKULAR_APM_USERNAME=jdoe
+              -DHAWKULAR_APM_PASSWORD=password
+          </argLine>
+          <classpathDependencyScopeExclude>runtime</classpathDependencyScopeExclude>
+        </configuration>
+        <executions>
+          <execution>
+            <id>exec-standalone-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>**/*Test.java</include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>final-verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 

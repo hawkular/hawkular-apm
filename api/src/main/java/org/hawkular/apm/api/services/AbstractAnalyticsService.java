@@ -32,11 +32,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
-import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
@@ -122,41 +120,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
             Trace trace = fragments.get(i);
             obtainEndpoints(trace.getNodes(), ret);
         }
-
-        return ret;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getPropertyInfo(java.lang.String,
-     *                  org.hawkular.apm.api.services.Criteria)
-     */
-    @Override
-    public List<PropertyInfo> getPropertyInfo(String tenantId, Criteria criteria) {
-        List<PropertyInfo> ret = new ArrayList<PropertyInfo>();
-        List<String> propertyNames = new ArrayList<String>();
-
-        List<Trace> fragments = getFragments(tenantId, criteria);
-
-        // Process the fragments to identify which URIs are no used in any trace
-        for (int i = 0; i < fragments.size(); i++) {
-            Trace trace = fragments.get(i);
-
-            for (Property property : trace.allProperties()) {
-                if (!propertyNames.contains(property.getName())) {
-                    propertyNames.add(property.getName());
-                    PropertyInfo pi = new PropertyInfo();
-                    pi.setName(property.getName());
-                    ret.add(pi);
-                }
-            }
-        }
-
-        Collections.sort(ret, new Comparator<PropertyInfo>() {
-            @Override
-            public int compare(PropertyInfo arg0, PropertyInfo arg1) {
-                return arg0.getName().compareTo(arg1.getName());
-            }
-        });
 
         return ret;
     }

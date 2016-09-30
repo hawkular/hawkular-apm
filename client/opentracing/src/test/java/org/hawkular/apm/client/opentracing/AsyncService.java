@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 
 import org.hawkular.apm.api.model.Constants;
 
-import io.opentracing.APMTracer;
 import io.opentracing.References;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
