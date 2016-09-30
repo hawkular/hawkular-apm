@@ -17,13 +17,16 @@
 package org.hawkular.apm.client.opentracing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -44,10 +47,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class APMTracerTest {
 
-    /**  */
+    private static final String MY_VALUE = "myValue";
+    private static final String MY_TAG = "myTag";
     private static final String TEST_BTXN = "TestBTxn";
-
-    /**  */
     private static final String TEST_APM_ID = "abcd";
     private static ObjectMapper mapper;
 
@@ -62,7 +64,7 @@ public class APMTracerTest {
         TestTraceReporter reporter = new TestTraceReporter();
         APMTracer tracer = new APMTracer(reporter);
 
-        ClientService service = new ClientService(tracer);
+        ClientService service = new ClientService(tracer, MY_VALUE);
 
         service.handle();
 
@@ -92,8 +94,44 @@ public class APMTracerTest {
         assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
 
+        Set<Property> props=producer.getProperties(MY_TAG);
+
+        assertFalse(props.isEmpty());
+        assertEquals(MY_VALUE, props.iterator().next().getValue());
+
         assertEquals(ClientService.ORDER_ID_VALUE,
                 component.getProperties(ClientService.ORDER_ID_NAME).iterator().next().getValue());
+    }
+
+    @Test
+    public void testClientNullTag() throws JsonProcessingException, InterruptedException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        ClientService service = new ClientService(tracer, null);
+
+        service.handle();
+
+        assertEquals(1, reporter.getTraces().size());
+
+        for (Trace trace : reporter.getTraces()) {
+            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
+        }
+
+        Trace trace = reporter.getTraces().get(0);
+        assertEquals(1, trace.getNodes().size());
+        assertEquals(Component.class, trace.getNodes().get(0).getClass());
+
+        Component component = (Component) trace.getNodes().get(0);
+
+        // Get producer invoking a remote service
+        assertEquals(1, component.getNodes().size());
+        assertEquals(Producer.class, component.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) component.getNodes().get(0);
+        Set<Property> props=producer.getProperties(MY_TAG);
+
+        assertTrue(props.isEmpty());
     }
 
     @Test
