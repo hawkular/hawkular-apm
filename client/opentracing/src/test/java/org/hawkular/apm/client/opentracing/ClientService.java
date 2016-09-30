@@ -28,14 +28,15 @@ import io.opentracing.propagation.TextMapInjectAdapter;
  */
 public class ClientService extends AbstractService {
 
-    /**  */
     public static final String ORDER_ID_NAME = "orderId";
 
-    /**  */
     public static final String ORDER_ID_VALUE = "1243343456455";
 
-    public ClientService(Tracer tracer) {
+    private String myTag;
+
+    public ClientService(Tracer tracer, String myTag) {
         super(tracer);
+        this.myTag = myTag;
     }
 
     public void handle() {
@@ -55,6 +56,7 @@ public class ClientService extends AbstractService {
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
                 .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
+                .withTag("myTag", myTag)
                 .asChildOf(span).start()) {
             Message mesg = createMessage();
             getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,
