@@ -45,7 +45,9 @@ public class DefaultNodeProcessor implements NodeProcessor {
                     } catch (MalformedURLException e) {
                         nodeBuilder.setUri(entry.getValue().toString());
                     }
-                    nodeBuilder.setEndpointType(entry.getKey().substring(0, entry.getKey().length() - 4));
+                    String type=entry.getKey().substring(0, entry.getKey().length() - 4);
+                    nodeBuilder.setEndpointType(type);
+                    nodeBuilder.setComponentType(type);
                 } else if (entry.getKey().equals("component")) {
                     nodeBuilder.setComponentType(entry.getValue().toString());
                 } else if (entry.getKey().contains("fault")) {
