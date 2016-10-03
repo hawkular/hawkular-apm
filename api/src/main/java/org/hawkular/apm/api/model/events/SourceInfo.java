@@ -36,9 +36,7 @@ public class SourceInfo implements Externalizable, ApmEvent {
 
     private String id;
 
-    private String fragmentUri;
-
-    private String fragmentOperation;
+    private EndpointRef endpoint;
 
     private long timestamp = 0;
 
@@ -68,8 +66,7 @@ public class SourceInfo implements Externalizable, ApmEvent {
      */
     public SourceInfo(SourceInfo si) {
         this.id = si.id;
-        this.fragmentUri = si.fragmentUri;
-        this.fragmentOperation = si.fragmentOperation;
+        this.endpoint = si.endpoint;
         this.timestamp = si.timestamp;
         this.duration = si.duration;
         this.fragmentId = si.fragmentId;
@@ -94,31 +91,17 @@ public class SourceInfo implements Externalizable, ApmEvent {
     }
 
     /**
-     * @return the fragmentUri
+     * @return the endpoint
      */
-    public String getFragmentUri() {
-        return fragmentUri;
+    public EndpointRef getEndpoint() {
+        return endpoint;
     }
 
     /**
-     * @param fragmentUri the fragmentUri to set
+     * @param endpoint the endpoint to set
      */
-    public void setFragmentUri(String fragmentUri) {
-        this.fragmentUri = fragmentUri;
-    }
-
-    /**
-     * @return the fragmentOperation
-     */
-    public String getFragmentOperation() {
-        return fragmentOperation;
-    }
-
-    /**
-     * @param fragmentOperation the fragmentOperation to set
-     */
-    public void setFragmentOperation(String fragmentOperation) {
-        this.fragmentOperation = fragmentOperation;
+    public void setEndpoint(EndpointRef endpoint) {
+        this.endpoint = endpoint;
     }
 
     /**
@@ -252,28 +235,20 @@ public class SourceInfo implements Externalizable, ApmEvent {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
-        return "SourceInfo [id=" + id + ", fragmentUri=" + fragmentUri + ", fragmentOperation=" + fragmentOperation
-                + ", timestamp=" + timestamp + ", duration=" + duration + ", fragmentId=" + fragmentId + ", hostName="
-                + hostName + ", hostAddress=" + hostAddress + ", multipleConsumers=" + multipleConsumers
-                + ", properties=" + properties + "]";
+        return "SourceInfo [id=" + id + ", endpoint=" + endpoint + ", timestamp=" + timestamp + ", duration="
+                + duration + ", fragmentId=" + fragmentId + ", hostName=" + hostName + ", hostAddress=" + hostAddress
+                + ", multipleConsumers=" + multipleConsumers + ", properties=" + properties + "]";
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + ((endpoint == null) ? 0 : endpoint.hashCode());
         result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
-        result = prime * result + ((fragmentOperation == null) ? 0 : fragmentOperation.hashCode());
-        result = prime * result + ((fragmentUri == null) ? 0 : fragmentUri.hashCode());
         result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -283,9 +258,6 @@ public class SourceInfo implements Externalizable, ApmEvent {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -297,20 +269,15 @@ public class SourceInfo implements Externalizable, ApmEvent {
         SourceInfo other = (SourceInfo) obj;
         if (duration != other.duration)
             return false;
+        if (endpoint == null) {
+            if (other.endpoint != null)
+                return false;
+        } else if (!endpoint.equals(other.endpoint))
+            return false;
         if (fragmentId == null) {
             if (other.fragmentId != null)
                 return false;
         } else if (!fragmentId.equals(other.fragmentId))
-            return false;
-        if (fragmentOperation == null) {
-            if (other.fragmentOperation != null)
-                return false;
-        } else if (!fragmentOperation.equals(other.fragmentOperation))
-            return false;
-        if (fragmentUri == null) {
-            if (other.fragmentUri != null)
-                return false;
-        } else if (!fragmentUri.equals(other.fragmentUri))
             return false;
         if (hostAddress == null) {
             if (other.hostAddress != null)
@@ -339,16 +306,12 @@ public class SourceInfo implements Externalizable, ApmEvent {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
-     */
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
 
         id = SerializationUtil.deserializeString(ois);
-        fragmentUri = SerializationUtil.deserializeString(ois);
-        fragmentOperation = SerializationUtil.deserializeString(ois);
+        endpoint = (EndpointRef)ois.readObject();
         timestamp = ois.readLong();
         duration = ois.readLong();
         fragmentId = SerializationUtil.deserializeString(ois);
@@ -370,8 +333,7 @@ public class SourceInfo implements Externalizable, ApmEvent {
         oos.writeInt(1); // Write version
 
         SerializationUtil.serializeString(oos, id);
-        SerializationUtil.serializeString(oos, fragmentUri);
-        SerializationUtil.serializeString(oos, fragmentOperation);
+        oos.writeObject(endpoint);
         oos.writeLong(timestamp);
         oos.writeLong(duration);
         SerializationUtil.serializeString(oos, fragmentId);

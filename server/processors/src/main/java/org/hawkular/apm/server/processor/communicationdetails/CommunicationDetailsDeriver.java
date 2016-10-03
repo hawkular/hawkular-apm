@@ -114,8 +114,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setLinkId(id);
                         ret.setBusinessTransaction(item.getBusinessTransaction());
 
-                        ret.setSource(EndpointUtil.encodeEndpoint(si.getFragmentUri(),
-                                si.getFragmentOperation()));
+                        ret.setSource(si.getEndpoint().toString());
 
                         ret.setTarget(EndpointUtil.encodeEndpoint(consumer.getUri(),
                                 consumer.getOperation()));

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
@@ -121,24 +122,25 @@ public class EndpointUtil {
      * @param fragment The trace fragment
      * @return The source URI
      */
-    public static String getSourceUri(Trace fragment) {
+    public static EndpointRef getSourceEndpoint(Trace fragment) {
         Node rootNode = fragment.getNodes().isEmpty() ? null : fragment.getNodes().get(0);
         if (rootNode == null) {
             return null;
         } else if (rootNode.getClass() == Consumer.class) {
             // Consumer root node, so just return its uri
-            return rootNode.getUri();
+            return new EndpointRef(rootNode.getUri(), rootNode.getOperation(), false);
         }
 
         // Check for first producer, and if found, use its URI as the basis
         // for identifying the fragment as a client of that URI
         List<Producer> producers = NodeUtil.findNodes(Collections.singletonList(rootNode), Producer.class);
         if (!producers.isEmpty()) {
-            return EndpointUtil.encodeClientURI(producers.get(0).getUri());
+            Producer producer = producers.get(0);
+            return new EndpointRef(producer.getUri(), producer.getOperation(), true);
         }
 
         // Identify the fragment URI as being a client of the root node's URI
-        return EndpointUtil.encodeClientURI(rootNode.getUri());
+        return new EndpointRef(rootNode.getUri(), rootNode.getOperation(), true);
     }
 
 }
