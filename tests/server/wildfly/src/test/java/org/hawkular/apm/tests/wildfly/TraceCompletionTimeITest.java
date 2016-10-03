@@ -44,38 +44,31 @@ import org.junit.Test;
 /**
  * @author gbrown
  */
-public class TraceCompletionTimeTest {
+public class TraceCompletionTimeITest extends AbstractITest {
 
-    /**  */
-    private static final String TEST_PASSWORD = "password";
-    /**  */
-    private static final String TEST_USERNAME = "jdoe";
-
-    private static AnalyticsServiceRESTClient analytics;
-
-    private static TraceServiceRESTClient service;
-
-    private static TracePublisherRESTClient publisher;
+    private static AnalyticsServiceRESTClient analyticsService;
+    private static TraceServiceRESTClient traceService;
+    private static TracePublisherRESTClient tracePublisher;
 
     @BeforeClass
     public static void initClass() {
-        analytics = new AnalyticsServiceRESTClient();
-        analytics.setUsername(TEST_USERNAME);
-        analytics.setPassword(TEST_PASSWORD);
+        analyticsService = new AnalyticsServiceRESTClient();
+        analyticsService.setUsername(HAWKULAR_APM_USERNAME);
+        analyticsService.setPassword(HAWKULAR_APM_PASSWORD);
 
-        service = new TraceServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
+        traceService = new TraceServiceRESTClient();
+        traceService.setUsername(HAWKULAR_APM_USERNAME);
+        traceService.setPassword(HAWKULAR_APM_PASSWORD);
 
-        publisher = new TracePublisherRESTClient();
-        publisher.setUsername(TEST_USERNAME);
-        publisher.setPassword(TEST_PASSWORD);
+        tracePublisher = new TracePublisherRESTClient();
+        tracePublisher.setUsername(HAWKULAR_APM_USERNAME);
+        tracePublisher.setPassword(HAWKULAR_APM_PASSWORD);
     }
 
     @Before
     public void initTest() {
-        analytics.clear(null);
-        service.clear(null);
+        analyticsService.clear(null);
+        traceService.clear(null);
     }
 
     @Test
@@ -88,16 +81,16 @@ public class TraceCompletionTimeTest {
         c1.setDuration(TimeUnit.NANOSECONDS.convert(1234, TimeUnit.MILLISECONDS));
         trace1.getNodes().add(c1);
 
-        publisher.publish(null, Collections.singletonList(trace1));
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -132,16 +125,16 @@ public class TraceCompletionTimeTest {
         c2.addInteractionCorrelationId("cid1_2ip2psync");
         trace2.getNodes().add(c2);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -177,16 +170,16 @@ public class TraceCompletionTimeTest {
         c2.addInteractionCorrelationId("cid1_2ip2pasync");
         trace2.getNodes().add(c2);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 2);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -247,16 +240,16 @@ public class TraceCompletionTimeTest {
         c3.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         trace3.getNodes().add(c3);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2, trace3));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2, trace3));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 3);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 3);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -317,16 +310,16 @@ public class TraceCompletionTimeTest {
         c3.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         trace3.getNodes().add(c3);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2, trace3));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2, trace3));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 3);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 3);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -389,17 +382,17 @@ public class TraceCompletionTimeTest {
         c3.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         trace3.getNodes().add(c3);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2, trace3));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2, trace3));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 3);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 3);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1,
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1,
                 15, TimeUnit.SECONDS);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -456,17 +449,17 @@ public class TraceCompletionTimeTest {
         c3.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, trace2.getId()+":0:0"));
         trace3.getNodes().add(c3);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2, trace3));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2, trace3));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 3);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 3);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1,
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1,
                 15, TimeUnit.SECONDS);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -518,17 +511,17 @@ public class TraceCompletionTimeTest {
         comp3.setUri("comp3");
         c3.getNodes().add(comp3);
 
-        publisher.publish(null, Arrays.asList(trace1, trace2, trace3));
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2, trace3));
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 3);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 3);
 
         // Wait to result derived
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, new Criteria()).size() == 1,
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1,
                 15, TimeUnit.SECONDS);
 
         // Get trace completion times
-        List<CompletionTime> times = analytics.getTraceCompletionTimes(null, new Criteria());
+        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, new Criteria());
 
         assertNotNull(times);
         assertEquals(1, times.size());

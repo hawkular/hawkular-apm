@@ -892,13 +892,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
     @Override
     public void clear(String tenantId) {
-        String index = client.getIndex(tenantId);
-        try {
-            client.getClient().admin().indices().prepareDelete(index).execute().actionGet();
-            client.clear(tenantId);
-        } catch (IndexMissingException ime) {
-            // Ignore
-        }
+        client.clearTenant(tenantId);
     }
 
     private static String toJson(Object ct) {

@@ -34,6 +34,7 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuild
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -91,7 +92,7 @@ public class ElasticsearchClient {
 
     private static ElasticsearchEmbeddedNode node = null;
 
-    private static Set<String> knownTenants = new HashSet<>();
+    private static Set<String> knownIndices = new HashSet<>();
 
     private static ElasticsearchClient singleton;
 
@@ -197,10 +198,11 @@ public class ElasticsearchClient {
 
     @SuppressWarnings("unchecked")
     public void initTenant(String tenantId) throws StoreException {
+        String index = getIndex(tenantId);
 
-        if (!knownTenants.contains(tenantId)) {
-            synchronized (knownTenants) {
-                if (!knownTenants.contains(tenantId)) {
+        if (!knownIndices.contains(index)) {
+            synchronized (knownIndices) {
+                if (!knownIndices.contains(index)) {
                     if (log.isLoggable(Level.FINE)) {
                         log.fine("Initialise mappings for tenantId = " + tenantId);
                     }
@@ -213,8 +215,6 @@ public class ElasticsearchClient {
 
                     if (s != null) {
                         try {
-                            String index = getIndex(tenantId);
-
                             String jsonDefaultUserIndex = IOUtils.toString(s);
                             if (log.isLoggable(Level.FINEST)) {
                                 log.finest("Mapping [" + jsonDefaultUserIndex + "]");
@@ -240,7 +240,7 @@ public class ElasticsearchClient {
                             // once per server session, for a particular index (i.e. tenant)
                             prepareMapping(index, (Map<String, Object>) dataMap.get(MAPPINGS));
 
-                            knownTenants.add(tenantId);
+                            knownIndices.add(index);
                         } catch (IOException ioe) {
                             throw new StoreException(ioe);
                         }
@@ -343,13 +343,28 @@ public class ElasticsearchClient {
     }
 
     /**
-     * This method returns the tenant.
+     * Removes all data associated with tenant.
      *
-     * @param tenantId The tenant id
+     * @param tenantId index
      */
-    protected void clear(String tenantId) {
-        synchronized (knownTenants) {
-            knownTenants.remove(tenantId);
+    public void clearTenant(String tenantId) {
+        String index = getIndex(tenantId);
+
+        synchronized (knownIndices) {
+            IndicesAdminClient indices = client.admin().indices();
+
+            boolean indexExists = indices.prepareExists(index)
+                    .execute()
+                    .actionGet()
+                    .isExists();
+
+            if (indexExists) {
+                indices.prepareDelete(index)
+                        .execute()
+                        .actionGet();
+            }
+
+            knownIndices.remove(index);
         }
     }
 

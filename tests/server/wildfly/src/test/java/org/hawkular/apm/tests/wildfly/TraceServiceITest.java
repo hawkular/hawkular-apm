@@ -38,48 +38,45 @@ import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.trace.publisher.rest.client.TracePublisherRESTClient;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author gbrown
  */
-public class TraceServiceRESTTest {
+public class TraceServiceITest extends AbstractITest {
 
-    /**  */
-    private static final String TEST_PASSWORD = "password";
-    /**  */
-    private static final String TEST_USERNAME = "jdoe";
-
-    private static final TypeReference<java.util.List<Trace>> TRACE_LIST =
-            new TypeReference<java.util.List<Trace>>() {
-            };
-
-    private static TraceServiceRESTClient service;
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static TracePublisherRESTClient publisher;
+    private static TraceServiceRESTClient traceService;
+    private static TracePublisherRESTClient tracePublisher;
 
     @BeforeClass
     public static void initClass() {
-        service = new TraceServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
+        traceService = new TraceServiceRESTClient();
+        traceService.setUsername(HAWKULAR_APM_USERNAME);
+        traceService.setPassword(HAWKULAR_APM_PASSWORD);
 
-        publisher = new TracePublisherRESTClient();
-        publisher.setUsername(TEST_USERNAME);
-        publisher.setPassword(TEST_PASSWORD);
+        tracePublisher = new TracePublisherRESTClient();
+        tracePublisher.setUsername(HAWKULAR_APM_USERNAME);
+        tracePublisher.setPassword(HAWKULAR_APM_PASSWORD);
+    }
+
+    @AfterClass
+    public static void cleanupClass() throws InterruptedException {
+        // Crude solution to prevent derived 'trace completion times' from these tests affecting
+        // other integration tests
+        synchronized (traceService) {
+            traceService.wait(10000);
+        }
     }
 
     @Before
     public void initTest() {
-        service.clear(null);
+        traceService.clear(null);
     }
 
     @Test
@@ -91,15 +88,15 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
-        Wait.until(() -> service.getFragment(null, "1") != null);
+        Wait.until(() -> traceService.getFragment(null, "1") != null);
 
         // Retrieve stored trace
-        Trace result = service.getFragment(null, "1");
+        Trace result = traceService.getFragment(null, "1");
 
         assertNotNull(result);
         assertEquals("1", result.getId());
@@ -114,15 +111,15 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
-        Wait.until(() -> service.getTrace(null, "1") != null);
+        Wait.until(() -> traceService.getTrace(null, "1") != null);
 
         // Retrieve stored trace
-        Trace result = service.getTrace(null, "1");
+        Trace result = traceService.getTrace(null, "1");
 
         assertNotNull(result);
         assertEquals("1", result.getId());
@@ -162,7 +159,7 @@ public class TraceServiceRESTTest {
         c2.getNodes().add(p2_2);
 
         try {
-            publisher.publish(null, Arrays.asList(trace1, trace2));
+            tracePublisher.publish(null, Arrays.asList(trace1, trace2));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -171,7 +168,7 @@ public class TraceServiceRESTTest {
         Wait.until(() -> {
             try {
                 // see https://issues.jboss.org/browse/HWKAPM-584
-                Trace t = service.getTrace(null, "1");
+                Trace t = traceService.getTrace(null, "1");
                 return t != null;
             } catch (Throwable t) {
                 return false;
@@ -179,7 +176,7 @@ public class TraceServiceRESTTest {
         });
 
         // Retrieve stored trace
-        Trace result = service.getTrace(null, "1");
+        Trace result = traceService.getTrace(null, "1");
 
         assertNotNull(result);
         assertEquals("1", result.getId());
@@ -219,16 +216,16 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
         // Wait to ensure record persisted
-        Wait.until(() -> service.searchFragments(null, new Criteria()).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Query stored trace
-        List<Trace> result = service.searchFragments(null, new Criteria());
+        List<Trace> result = traceService.searchFragments(null, new Criteria());
 
         assertEquals(1, result.size());
 
@@ -248,7 +245,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -257,8 +254,8 @@ public class TraceServiceRESTTest {
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
 
-        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
-        List<Trace> result = service.searchFragments(null, criteria);
+        Wait.until(() -> traceService.searchFragments(null, criteria).size() == 1);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -278,7 +275,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -286,10 +283,10 @@ public class TraceServiceRESTTest {
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setStartTime(100);
-        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteria).size() == 1);
 
         criteria.setStartTime(1100);
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(0, result.size());
     }
@@ -307,7 +304,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -315,9 +312,9 @@ public class TraceServiceRESTTest {
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setEndTime(2000);
-        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteria).size() == 1);
 
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -337,7 +334,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -345,10 +342,10 @@ public class TraceServiceRESTTest {
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.setEndTime(1500);
-        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteria).size() == 1);
 
         criteria.setEndTime(1100);
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(0, result.size());
     }
@@ -364,7 +361,7 @@ public class TraceServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Collections.singletonList(trace1));
+            tracePublisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -372,9 +369,9 @@ public class TraceServiceRESTTest {
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", null);
-        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteria).size() == 1);
 
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -392,7 +389,7 @@ public class TraceServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Collections.singletonList(trace1));
+            tracePublisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -400,18 +397,18 @@ public class TraceServiceRESTTest {
         // Query stored trace
         Criteria criteriaToWait = new Criteria();
         criteriaToWait.addProperty("hello", "world", null);
-        Wait.until(() -> service.searchFragments(null, criteriaToWait).size() > 0, 1, TimeUnit.SECONDS);
+        Wait.until(() -> traceService.searchFragments(null, criteriaToWait).size() > 0, 1, TimeUnit.SECONDS);
 
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "fred", null);
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void testStoreAndQueryPropertiesExclude() {
-        service.clear(null);
+        traceService.clear(null);
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
@@ -421,20 +418,20 @@ public class TraceServiceRESTTest {
         trace1.getNodes().add(c1);
 
         try {
-            publisher.publish(null, Collections.singletonList(trace1));
+            tracePublisher.publish(null, Collections.singletonList(trace1));
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
         Criteria criteriaToWait = new Criteria();
         criteriaToWait.addProperty("hello", "world", null);
-        Wait.until(() -> service.searchFragments(null, criteriaToWait).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteriaToWait).size() == 1);
 
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.addProperty("hello", "world", Operator.HASNOT);
 
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(0, result.size());
     }
@@ -457,7 +454,7 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
@@ -465,9 +462,9 @@ public class TraceServiceRESTTest {
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.ControlFlow, "myid"));
-        Wait.until(() -> service.searchFragments(null, criteria).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteria).size() == 1);
 
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(1, result.size());
 
@@ -492,20 +489,20 @@ public class TraceServiceRESTTest {
         traces.add(trace1);
 
         try {
-            publisher.publish(null, traces);
+            tracePublisher.publish(null, traces);
         } catch (Exception e1) {
             fail("Failed to store: " + e1);
         }
 
         Criteria criteriaToWait = new Criteria();
         criteriaToWait.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "myid"));
-        Wait.until(() -> service.searchFragments(null, criteriaToWait).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, criteriaToWait).size() == 1);
 
         // Query stored trace
         Criteria criteria = new Criteria();
         criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "notmyid"));
 
-        List<Trace> result = service.searchFragments(null, criteria);
+        List<Trace> result = traceService.searchFragments(null, criteria);
 
         assertEquals(0, result.size());
     }
