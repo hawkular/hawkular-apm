@@ -53,9 +53,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
      */
     @Override
     public NodeDetails processOneToOne(String tenantId, Span item) throws RetryAttemptException {
-
         NodeDetails nd = createTypedNodeDetails(item);
-        nd.setId(item.getId());
 
         URL url = item.url();
         if (url != null) {
@@ -86,6 +84,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
 
     private NodeDetails createTypedNodeDetails(Span span) {
         NodeDetails nd = new NodeDetails();
+        nd.setId(span.getId());
 
         nd.setType(NodeType.Component);
         nd.setComponentType(span.binaryAnnotationMapping().getComponentType());

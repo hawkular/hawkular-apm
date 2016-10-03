@@ -16,6 +16,7 @@
  */
 package org.hawkular.apm.server.api.utils;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +25,8 @@ import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.events.SourceInfo;
-import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -69,7 +70,6 @@ public class SourceInfoUtil {
         // This method initialises the deriver with a list of trace fragments
         // that will need to be referenced when correlating a consumer with a producer
         for (int i = 0; i < items.size(); i++) {
-            Origin origin = new Origin();
 
             // Need to check for Producer nodes
             Trace trace = items.get(i);
@@ -79,7 +79,7 @@ public class SourceInfoUtil {
                 Node node = trace.getNodes().get(j);
                 int len = nodeId.length();
 
-                initialiseSourceInfo(sourceInfoList, tenantId, trace, origin, nodeId, j,
+                initialiseSourceInfo(sourceInfoList, tenantId, trace, nodeId, j,
                         node);
 
                 // Trim the node id for use with next node
@@ -87,10 +87,10 @@ public class SourceInfoUtil {
             }
 
             // Apply origin information to the source info
+            EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
             for (int j=curpos; j < sourceInfoList.size(); j++) {
                 SourceInfo si = sourceInfoList.get(j);
-                si.setFragmentUri(origin.getUri());
-                si.setFragmentOperation(origin.getOperation());
+                si.setEndpoint(ep);
             }
 
             curpos = sourceInfoList.size();
@@ -105,24 +105,11 @@ public class SourceInfoUtil {
      * @param sourceInfoList The source info list
      * @param tenantId The tenant id
      * @param trace The trace
-     * @param origin The origin node information
      * @param parentNodeId The parent node id
      * @param node The node
      */
     protected static void initialiseSourceInfo(List<SourceInfo> sourceInfoList, String tenantId,
-            Trace trace, Origin origin, StringBuffer parentNodeId, int pos, Node node) {
-        // Check if origin URI has already been set - if not
-        // identify based on being a client of the URI associated
-        // with the node
-        if (origin.getUri() == null) {
-            if (node.getClass() == Consumer.class) {
-                origin.setUri(node.getUri());
-                origin.setOperation(node.getOperation());
-            } else if (node.getClass() == Producer.class) {
-                origin.setUri(EndpointUtil.encodeClientURI(node.getUri()));
-                origin.setOperation(node.getOperation());
-            }
-        }
+            Trace trace, StringBuffer parentNodeId, int pos, Node node) {
 
         // Calculate the timestamp for the node
         long diffns = node.getBaseTime() - trace.getNodes().get(0).getBaseTime();
@@ -176,12 +163,8 @@ public class SourceInfoUtil {
         if (node instanceof ContainerNode) {
             int nodeIdLen = parentNodeId.length();
 
-            if (origin.getUri() == null && node.getClass() == Consumer.class) {
-                origin.setUri(node.getUri());
-                origin.setOperation(node.getOperation());
-            }
             for (int j = 0; j < ((ContainerNode) node).getNodes().size(); j++) {
-                initialiseSourceInfo(sourceInfoList, tenantId, trace, origin, parentNodeId, j,
+                initialiseSourceInfo(sourceInfoList, tenantId, trace, parentNodeId, j,
                         ((ContainerNode) node).getNodes().get(j));
 
                 // Restore parent node id
@@ -242,13 +225,9 @@ public class SourceInfoUtil {
                 si.setId(clientSpan.getId());
                 si.setMultipleConsumers(false);
 
-                si.setFragmentOperation(SpanDeriverUtil.deriveOperation(rootOrServerSpan));
-
-                if (rootOrServerSpan.serverSpan()) {
-                    si.setFragmentUri(rootOrServerSpan.url().getPath());
-                } else {
-                    si.setFragmentUri(EndpointUtil.encodeClientURI(clientSpan.url().getPath()));
-                }
+                URL url = rootOrServerSpan.url();
+                si.setEndpoint(new EndpointRef((url != null ? url.getPath() : null),
+                        SpanDeriverUtil.deriveOperation(rootOrServerSpan), !rootOrServerSpan.serverSpan()));
 
                 return si;
             }
@@ -257,43 +236,4 @@ public class SourceInfoUtil {
         return null;
     }
 
-    /**
-     * Container for details about the origin node.
-     *
-     * @author gbrown
-     */
-    public static class Origin {
-
-        private String uri;
-        private String operation;
-
-        /**
-         * @return the uri
-         */
-        public String getUri() {
-            return uri;
-        }
-
-        /**
-         * @param uri the uri to set
-         */
-        public void setUri(String uri) {
-            this.uri = uri;
-        }
-
-        /**
-         * @return the operation
-         */
-        public String getOperation() {
-            return operation;
-        }
-
-        /**
-         * @param operation the operation to set
-         */
-        public void setOperation(String operation) {
-            this.operation = operation;
-        }
-
-    }
 }

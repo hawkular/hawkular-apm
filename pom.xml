@@ -154,11 +154,6 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-base-service-rest-client</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-config-service-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -189,17 +184,7 @@
       </dependency>
       <dependency>
         <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-tools-instrumenter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-agent</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-config-manager-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -215,13 +200,11 @@
         <artifactId>hawkular-apm-server-processors</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-server-processors-alerts-publisher</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-server-processors-zipkin</artifactId>

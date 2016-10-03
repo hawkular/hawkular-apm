@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
@@ -63,8 +64,10 @@ public class TraceCompletionInformationInitiator extends
                 // Create the initial version of the completion time
                 CompletionTime ct = new CompletionTime();
                 ct.setId(item.getId());
-                ct.setUri(EndpointUtil.getSourceUri(item));
-                ct.setOperation(n.getOperation());
+
+                EndpointRef ep = EndpointUtil.getSourceEndpoint(item);
+                ct.setUri(ep.getUri());
+                ct.setOperation(ep.getOperation());
 
                 if (n.getClass() == Consumer.class) {
                     ct.setEndpointType(((Consumer) n).getEndpointType());

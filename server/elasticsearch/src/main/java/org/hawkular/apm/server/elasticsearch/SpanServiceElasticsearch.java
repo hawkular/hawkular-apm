@@ -34,7 +34,6 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
@@ -208,22 +207,7 @@ public class SpanServiceElasticsearch implements SpanService {
 
     @Override
     public void clear(String tenantId) {
-        String index = client.getIndex(tenantId);
-
-        IndicesAdminClient indices = client.getClient().admin().indices();
-
-        boolean indexExists = indices.prepareExists(index)
-                .execute()
-                .actionGet()
-                .isExists();
-
-        if (indexExists) {
-            indices.prepareDelete(index)
-                    .execute()
-                    .actionGet();
-
-            client.clear(tenantId);
-        }
+        client.clearTenant(tenantId);
     }
 
     @Override

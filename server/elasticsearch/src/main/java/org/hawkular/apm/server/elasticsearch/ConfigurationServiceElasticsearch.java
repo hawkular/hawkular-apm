@@ -30,7 +30,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
@@ -413,18 +412,11 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     }
 
     /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#clear(java.lang.String)
+     * @see org.hawkular.apm.api.services.AnalyticsService#clearTenant(java.lang.String)
      */
     @Override
     public void clear(String tenantId) {
-        String index = client.getIndex(tenantId);
-
-        try {
-            client.getClient().admin().indices().prepareDelete(index).execute().actionGet();
-            client.clear(tenantId);
-        } catch (IndexMissingException ime) {
-            // Ignore
-        }
+        client.clearTenant(tenantId);
     }
 
 }
