@@ -47,10 +47,6 @@ he .dropdown {
   }
 }
 
-.modal-xl {
-  width: 95%;
-}
-
 .hk-txn-item {
 
   .hk-summary {
@@ -101,6 +97,10 @@ he .dropdown {
   &.alert-dismissible .close {
     right: 0;
   }
+}
+
+.hk-btm-ignored .panel .alert {
+  margin-bottom: 0;
 }
 
 // Charts
@@ -159,6 +159,23 @@ label[class*="col-"] {
   text-align: right;
 }
 
+// Modals
+
+.modal-xl {
+  width: calc(~"100% - 20px");
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  .pagination {
+    margin-bottom: 10px;
+  }
+}
+
+#idetails {
+  min-height: 460px;
+  height: calc(~"100vh - 260px");
+}
+
 // Panels
 
 .hk-panel-item {
@@ -214,4 +231,3 @@ label[class*="col-"] {
     background-color: transparent;
   }
 }
-
