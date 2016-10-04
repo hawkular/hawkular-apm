@@ -21,10 +21,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
+
+import io.opentracing.APMSpan;
 
 /**
  * This class represents the context associated with a trace instance.
@@ -34,6 +37,8 @@ import org.hawkular.apm.client.api.reporter.TraceReporter;
 public class TraceContext {
 
     private Trace trace;
+
+    private APMSpan topSpan;
 
     private NodeBuilder rootNode;
 
@@ -58,7 +63,8 @@ public class TraceContext {
      * @param startTime The start time for the trace fragment (in milliseconds)
      * @param reporter The trace reporter
      */
-    public TraceContext(NodeBuilder rootNode, long startTime, TraceReporter reporter) {
+    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, long startTime, TraceReporter reporter) {
+        this.topSpan = topSpan;
         this.rootNode = rootNode;
         this.reporter = reporter;
 
@@ -131,6 +137,26 @@ public class TraceContext {
      */
     public List<NodeProcessor> getNodeProcessors() {
         return nodeProcessors;
+    }
+
+    /**
+     * This method returns the top span associated with the traces involved in the current
+     * service invocation.
+     *
+     * @return The top span
+     */
+    public APMSpan getTopSpan() {
+        return topSpan;
+    }
+
+    /**
+     * This method returns the source endpoint for the root trace fragment generated
+     * by the service invocation.
+     *
+     * @return The source endpoint
+     */
+    public EndpointRef getSourceEndpoint() {
+        return new EndpointRef(TagUtil.getUriPath(topSpan.getTags()), topSpan.getOperationName(), false);
     }
 
 }

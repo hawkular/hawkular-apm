@@ -44,7 +44,8 @@ public class NodeBuilder {
 
     private String uri;
     private String operation;
-    private String endpointType;
+    private String endpointType = "n/a";    // Default endpoint type used to signify an external endpoint but
+                                            // type is unknown. A 'null' endpoint is for internal connections.
     private String componentType;
     private String fault;
     private long duration;
@@ -232,4 +233,5 @@ public class NodeBuilder {
 
         return ret;
     }
+
 }

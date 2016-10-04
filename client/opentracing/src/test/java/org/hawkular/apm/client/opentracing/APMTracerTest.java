@@ -33,6 +33,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.BeforeClass;
@@ -350,12 +351,18 @@ public class APMTracerTest {
         Trace trace2 = reporter.getTraces().get(1);
         assertEquals(TEST_BTXN, trace2.getBusinessTransaction());
         assertEquals(1, trace2.getNodes().size());
-        assertEquals(Component.class, trace2.getNodes().get(0).getClass());
+        assertEquals(Consumer.class, trace2.getNodes().get(0).getClass());
 
-        Component component2 = (Component) trace2.getNodes().get(0);
+        Consumer consumer2 = (Consumer) trace2.getNodes().get(0);
 
-        assertTrue(component2.getCorrelationIds().contains(new CorrelationIdentifier(Scope.CausedBy,
+        assertTrue(consumer2.getCorrelationIds().contains(new CorrelationIdentifier(Scope.CausedBy,
                 trace1.getId() + ":0:0")));
+        assertEquals(EndpointUtil.getSourceEndpoint(trace1), EndpointUtil.getSourceEndpoint(trace2));
+
+        assertEquals(1, consumer2.getNodes().size());
+        assertEquals(Component.class, consumer2.getNodes().get(0).getClass());
+
+        Component component2 = (Component) consumer2.getNodes().get(0);
 
         // Get producer invoking a remote service
         assertEquals(1, component2.getNodes().size());
