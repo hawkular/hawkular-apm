@@ -23,7 +23,6 @@ package org.hawkular.apm.api.services;
  */
 public class StoreException extends Exception {
 
-    /**  */
     private static final long serialVersionUID = -2673182772454488068L;
 
     /**

@@ -60,9 +60,6 @@ public class AddContentAction extends ExpressionBasedAction {
         this.type = type;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "AddContentAction [name=" + name + ", type=" + type + ", getExpression()=" + getExpression()

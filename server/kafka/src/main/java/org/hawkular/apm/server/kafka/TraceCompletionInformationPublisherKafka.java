@@ -28,7 +28,6 @@ import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInfo
 public class TraceCompletionInformationPublisherKafka extends AbstractPublisherKafka<TraceCompletionInformation>
         implements TraceCompletionInformationPublisher {
 
-    /**  */
     private static final String TOPIC = "TraceCompletionInformation";
 
     /**

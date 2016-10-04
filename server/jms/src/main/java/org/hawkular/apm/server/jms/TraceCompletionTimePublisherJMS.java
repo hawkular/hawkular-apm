@@ -29,9 +29,6 @@ public class TraceCompletionTimePublisherJMS extends AbstractPublisherJMS<Comple
 
     private static final String DESTINATION = "java:/TraceCompletionTimes";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
-     */
     @Override
     protected String getDestinationURI() {
         return DESTINATION;

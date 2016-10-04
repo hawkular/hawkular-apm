@@ -28,7 +28,6 @@ import org.hawkular.apm.server.api.services.FragmentCompletionTimePublisher;
 public class FragmentCompletionTimePublisherKafka extends AbstractPublisherKafka<CompletionTime>
         implements FragmentCompletionTimePublisher {
 
-    /**  */
     private static final String TOPIC = "FragmentCompletionTime";
 
     /**

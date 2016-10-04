@@ -60,9 +60,6 @@ public class PrincipalInfo {
         this.count = count;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "PrincipalInfo [id=" + id + ", count=" + count + "]";

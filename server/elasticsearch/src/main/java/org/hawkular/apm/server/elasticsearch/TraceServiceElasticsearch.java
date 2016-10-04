@@ -69,24 +69,15 @@ public class TraceServiceElasticsearch implements TraceService {
 
     private static final MsgLogger msgLog = MsgLogger.LOGGER;
 
-    /**  */
     private static final String START_TIME_FIELD = "startTime";
-    /**  */
     private static final String NODES_FIELD = "nodes";
-    /**  */
     private static final String PRINCIPAL_FIELD = "principal";
-    /**  */
     private static final String ID_FIELD = "id";
-    /**  */
     private static final String HOST_NAME_FIELD = "hostName";
-    /**  */
     private static final String HOST_ADDRESS_FIELD = "hostAddress";
-    /**  */
     private static final String BUSINESS_TRANSACTION_FIELD = "businessTransaction";
-    /**  */
     private static final String PROPERTIES_FIELD = "properties";
 
-    /**  */
     public static final String TRACE_TYPE = "trace";
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -127,9 +118,6 @@ public class TraceServiceElasticsearch implements TraceService {
         this.client = client;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#getFragment(java.lang.String, java.lang.String)
-     */
     @Override
     public Trace getFragment(String tenantId, String id) {
         Trace ret = null;
@@ -153,9 +141,6 @@ public class TraceServiceElasticsearch implements TraceService {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#getTrace(java.lang.String, java.lang.String)
-     */
     @Override
     public Trace getTrace(String tenantId, String id) {
         Trace ret = getFragment(tenantId, id);
@@ -236,10 +221,6 @@ public class TraceServiceElasticsearch implements TraceService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#searchFragments(java.lang.String,
-     *          org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public List<Trace> searchFragments(String tenantId, Criteria criteria) {
         return internalQuery(client, tenantId, criteria);
@@ -313,10 +294,6 @@ public class TraceServiceElasticsearch implements TraceService {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#storeTraces(java.lang.String,
-     *                              java.util.List)
-     */
     @Override
     public void storeFragments(String tenantId, List<Trace> traces)
             throws StoreException {
@@ -358,9 +335,6 @@ public class TraceServiceElasticsearch implements TraceService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#clearTenant(java.lang.String)
-     */
     @Override
     public void clear(String tenantId) {
         client.clearTenant(tenantId);
@@ -368,10 +342,6 @@ public class TraceServiceElasticsearch implements TraceService {
 
     public static class TraceSerializer extends JsonSerializer<Trace> {
 
-        /* (non-Javadoc)
-         * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object,
-         *          com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
-         */
         @Override
         public void serialize(Trace trace, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException, JsonProcessingException {
@@ -399,9 +369,6 @@ public class TraceServiceElasticsearch implements TraceService {
 
     public static class TraceDeserializer extends JsonDeserializer<Trace> {
 
-        /* (non-Javadoc)
-         * @see com.fasterxml.jackson.databind.JsonDeserializer#deserialize(com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.databind.DeserializationContext)
-         */
         @Override
         public Trace deserialize(JsonParser parser, DeserializationContext context)
                 throws IOException, JsonProcessingException {

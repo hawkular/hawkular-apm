@@ -36,10 +36,8 @@ public class TraceStoreKafka extends AbstractConsumerKafka<Trace, Void> {
 
     private static final Logger log = Logger.getLogger(TraceStoreKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "TraceStore";
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     private TraceService traceService;

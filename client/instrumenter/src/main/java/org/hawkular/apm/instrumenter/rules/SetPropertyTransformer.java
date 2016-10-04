@@ -26,18 +26,11 @@ import org.hawkular.apm.api.model.config.instrumentation.jvm.SetProperty;
  */
 public class SetPropertyTransformer implements InstrumentActionTransformer {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#getActionType()
-     */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
         return SetProperty.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#convertToRuleAction(
-     *                      org.hawkular.apm.api.model.admin.InstrumentAction)
-     */
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetProperty setAction = (SetProperty) action;

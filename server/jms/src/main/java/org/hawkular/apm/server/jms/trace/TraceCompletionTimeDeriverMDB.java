@@ -53,7 +53,6 @@ public class TraceCompletionTimeDeriverMDB extends RetryCapableMDB<TraceCompleti
     @Inject
     private TraceCompletionTimePublisherJMS traceCompletionTimePublisher;
 
-    /**  */
     public static final String SUBSCRIBER = "TraceCompletionTimeDeriver";
 
     public TraceCompletionTimeDeriverMDB() {

@@ -24,9 +24,6 @@ package org.hawkular.apm.api.model.config.btxn;
  */
 public class SetFaultAction extends ExpressionBasedAction {
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "SetFaultAction [getExpression()=" + getExpression() + ", getDescription()=" + getDescription()

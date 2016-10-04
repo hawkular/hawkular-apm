@@ -25,17 +25,11 @@ import org.hawkular.apm.instrumenter.headers.HeadersAccessor;
  */
 public class TestHeadersAccessor implements HeadersAccessor {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.HeadersFactory#getTargetType()
-     */
     @Override
     public String getTargetType() {
         return TestHeadersObject.class.getName();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.headers.HeadersAccessor#getHeaders(java.lang.Object)
-     */
     @Override
     public Map<String, String> getHeaders(Object target) {
         return ((TestHeadersObject) target).getProperties();

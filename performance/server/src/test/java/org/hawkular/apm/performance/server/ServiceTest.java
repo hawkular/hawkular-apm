@@ -31,7 +31,6 @@ import org.junit.Test;
  */
 public class ServiceTest {
 
-    /**  */
     private static final String TXN_NAME = "TestBTxnName";
 
     @Test

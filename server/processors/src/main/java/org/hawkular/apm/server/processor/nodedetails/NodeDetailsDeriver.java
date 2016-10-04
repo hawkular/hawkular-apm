@@ -50,9 +50,6 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
         super(ProcessorType.OneToMany);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processMultiple(java.lang.Object)
-     */
     @Override
     public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws RetryAttemptException {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();

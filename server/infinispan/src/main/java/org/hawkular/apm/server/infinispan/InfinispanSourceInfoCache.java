@@ -39,7 +39,6 @@ import org.infinispan.manager.CacheContainer;
 @Singleton
 public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecycle {
 
-    /**  */
     private static final String CACHE_NAME = "sourceinfo";
 
     private static final Logger log = Logger.getLogger(InfinispanSourceInfoCache.class.getName());
@@ -73,9 +72,6 @@ public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecy
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.SourceInfoCache#get(java.lang.String, java.lang.String)
-     */
     @Override
     public SourceInfo get(String tenantId, String id) {
         SourceInfo ret = sourceInfo.get(id);
@@ -87,9 +83,6 @@ public class InfinispanSourceInfoCache implements SourceInfoCache, ServiceLifecy
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.SourceInfoCache#store(java.lang.String, java.util.List)
-     */
     @Override
     public void store(String tenantId, List<SourceInfo> sourceInfoList) {
         if (cacheContainer != null) {

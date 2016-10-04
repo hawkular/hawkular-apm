@@ -41,7 +41,6 @@ public class AddContentActionHandler extends ExpressionBasedActionHandler {
 
     private static final Logger log = Logger.getLogger(AddContentActionHandler.class.getName());
 
-    /**  */
     private static final String NAME_MUST_BE_SPECIFIED = "Name must be specified";
 
     /**
@@ -79,11 +78,6 @@ public class AddContentActionHandler extends ExpressionBasedActionHandler {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.collector.internal.actions.ProcessorActionHandler#process(
-     *      org.hawkular.apm.api.model.trace.Trace, org.hawkular.apm.api.model.trace.Node,
-     *      org.hawkular.apm.api.model.config.Direction, java.util.Map, java.lang.Object[])
-     */
     @Override
     public boolean process(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {

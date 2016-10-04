@@ -133,9 +133,6 @@ public class BusinessTxnConfig {
         this.deleted = deleted;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "BusinessTxnConfig [level=" + level + ", description=" + description + ", filter=" + filter

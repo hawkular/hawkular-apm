@@ -23,9 +23,6 @@ package org.hawkular.apm.api.model.config.btxn;
  */
 public class TextExpression extends DataExpression {
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Text [getSource()=" + getSource() + ", getKey()=" + getKey()

@@ -30,31 +30,18 @@ import org.junit.Test;
  */
 public class TransformerTest {
 
-    /**  */
     private static final String ANY_PARAMETERS = "*";
-    /**  */
     private static final String BIND_EXPR2 = "BindExpr2";
-    /**  */
     private static final String BIND_TYPE2 = "BindType2";
-    /**  */
     private static final String BIND_NAME2 = "BindName2";
-    /**  */
     private static final String BIND_EXPR1 = "BindExpr1";
-    /**  */
     private static final String BIND_TYPE1 = "BindType1";
-    /**  */
     private static final String BIND_NAME1 = "BindName1";
-    /**  */
     private static final String TEST_CONDITION_1 = "$1.getAttributes().contains(\"BTMID\")";
-    /**  */
     private static final String TEST_PARAM2 = "TestParam2";
-    /**  */
     private static final String TEST_PARAM1 = "TestParam1";
-    /**  */
     private static final String TEST_METHOD = "TestMethod";
-    /**  */
     private static final String TEST_CLASS = "TestClass";
-    /**  */
     private static final String TEST_RULE = "TestRule";
 
     @Test

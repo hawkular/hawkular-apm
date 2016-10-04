@@ -24,12 +24,8 @@ import org.hawkular.apm.server.api.security.SecurityProviderException;
  */
 public class JAASSecurityProvider implements SecurityProvider {
 
-    /**  */
     protected static final String DEFAULT_TENANT = "hawkular";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.security.SecurityProvider#validate(java.lang.String, java.lang.String)
-     */
     @Override
     public String validate(String tenant, String principal) throws SecurityProviderException {
         return tenant == null ? DEFAULT_TENANT : tenant;

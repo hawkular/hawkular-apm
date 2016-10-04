@@ -27,9 +27,7 @@ import org.junit.Test;
  */
 public class NodeUtilTest {
 
-    /**  */
     private static final String NEW_URI = "/new/uri";
-    /**  */
     private static final String ORIGINAL_URI = "/original/uri";
 
     @Test

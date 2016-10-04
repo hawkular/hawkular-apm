@@ -51,9 +51,6 @@ public class TraceCompletionInformationProcessor extends
         super(ProcessorType.OneToOne);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#getDeliveryDelay(java.util.List)
-     */
     @Override
     public long getDeliveryDelay(List<TraceCompletionInformation> results) {
         // TODO: Just return default 500msec delay for now, but when supporting long running
@@ -76,9 +73,6 @@ public class TraceCompletionInformationProcessor extends
         this.communicationDetailsCache = communicationDetailsCache;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
-     */
     @Override
     public TraceCompletionInformation processOneToOne(String tenantId,
             TraceCompletionInformation item) throws RetryAttemptException {

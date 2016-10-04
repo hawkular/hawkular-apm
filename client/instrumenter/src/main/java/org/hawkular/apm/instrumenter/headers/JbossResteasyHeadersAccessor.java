@@ -31,20 +31,13 @@ public class JbossResteasyHeadersAccessor implements HeadersAccessor {
 
     private static final Logger log = Logger.getLogger(JbossResteasyHeadersAccessor.class.getName());
 
-    /**  */
     private static final String TARGET_TYPE = "org.jboss.resteasy.client.jaxrs.internal.ClientInvocation";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.HeadersAccessor#getTargetType()
-     */
     @Override
     public String getTargetType() {
         return TARGET_TYPE;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.HeadersAccessor#getHeaders(java.lang.Object)
-     */
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, String> getHeaders(Object target) {

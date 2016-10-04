@@ -35,7 +35,6 @@ public class CommunicationSeverityAnalyser {
     // NOTE: May want to provide a pluggable algorithm, but for now just implement
     // a basic approach
 
-    /**  */
     private static final int MAX_SEVERITY = 5;
 
     /**

@@ -44,9 +44,6 @@ public class LiteralExpression extends Expression {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Literal [value=" + value + "]";

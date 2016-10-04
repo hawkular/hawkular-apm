@@ -388,7 +388,6 @@ public class ClientJettyStreamITest extends ClientTestBase {
 
     public static class EmbeddedServlet extends HttpServlet {
 
-        /**  */
         private static final long serialVersionUID = 1L;
 
         @Override

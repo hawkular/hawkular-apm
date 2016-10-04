@@ -29,9 +29,6 @@ public class NodeDetailsPublisherJMS extends AbstractPublisherJMS<NodeDetails>
 
     private static final String DESTINATION = "java:/NodeDetails";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
-     */
     @Override
     protected String getDestinationURI() {
         return DESTINATION;

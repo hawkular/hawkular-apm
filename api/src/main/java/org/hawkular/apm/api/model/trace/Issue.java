@@ -78,9 +78,6 @@ public abstract class Issue {
         this.severity = severity;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Issue [description=" + description + ", severity=" + severity + "]";

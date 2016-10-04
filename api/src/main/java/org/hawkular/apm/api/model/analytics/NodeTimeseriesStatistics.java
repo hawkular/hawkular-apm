@@ -63,9 +63,6 @@ public class NodeTimeseriesStatistics {
         this.componentTypes = componentTypes;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "NodeTimeseriesStatistics [timestamp=" + timestamp + ", componentTypes=" + componentTypes + "]";
@@ -127,9 +124,6 @@ public class NodeTimeseriesStatistics {
             this.count = count;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "NodeComponentTypeStatistics [duration=" + duration + ", count=" + count + "]";

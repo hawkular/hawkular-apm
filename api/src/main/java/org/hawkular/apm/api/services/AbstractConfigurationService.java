@@ -36,13 +36,8 @@ import org.hawkular.apm.api.model.trace.ProcessorIssue;
  */
 public abstract class AbstractConfigurationService implements ConfigurationService {
 
-    /**  */
     private static final String NO_FILTERS = "No inclusion or exclusion filters have been defined";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#validateBusinessTransaction(
-     *                  org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig)
-     */
     @Override
     public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
         List<ConfigMessage> messages = new ArrayList<ConfigMessage>();
@@ -85,9 +80,6 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
         return messages;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
-     */
     @Override
     public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
             throws Exception {

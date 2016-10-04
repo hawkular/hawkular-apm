@@ -59,7 +59,6 @@ public class CommunicationDetailsCacheMDB extends RetryCapableMDB<CommunicationD
     @Inject
     private CommunicationDetailsCache communicationDetailsCache;
 
-    /**  */
     public static final String SUBSCRIBER = "CommunicationDetailsCache";
 
     public CommunicationDetailsCacheMDB() {

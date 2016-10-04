@@ -295,9 +295,6 @@ public class CompletionTime implements ApmEvent {
         this.internal = internal;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", endpointType="

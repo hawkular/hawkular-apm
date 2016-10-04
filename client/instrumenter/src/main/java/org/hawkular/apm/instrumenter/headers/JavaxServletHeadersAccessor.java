@@ -33,20 +33,13 @@ public class JavaxServletHeadersAccessor implements HeadersAccessor {
 
     private static final Logger log = Logger.getLogger(JavaxServletHeadersAccessor.class.getName());
 
-    /**  */
     private static final String TARGET_TYPE = "javax.servlet.http.HttpServletRequest";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.HeadersAccessor#getTargetType()
-     */
     @Override
     public String getTargetType() {
         return TARGET_TYPE;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.HeadersAccessor#getHeaders(java.lang.Object)
-     */
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, String> getHeaders(Object target) {

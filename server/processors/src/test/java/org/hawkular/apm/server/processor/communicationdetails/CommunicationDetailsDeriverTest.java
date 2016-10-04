@@ -46,7 +46,6 @@ import org.junit.Test;
  */
 public class CommunicationDetailsDeriverTest {
 
-    /**  */
     private static final String BTXN_NAME = "traceName";
 
     @Test

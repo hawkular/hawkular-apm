@@ -170,9 +170,6 @@ public class Processor {
         this.actions = actions;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Processor [description=" + description + ", nodeType=" + nodeType + ", direction=" + direction

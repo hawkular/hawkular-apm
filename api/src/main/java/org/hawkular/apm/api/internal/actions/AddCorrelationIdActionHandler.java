@@ -41,11 +41,6 @@ public class AddCorrelationIdActionHandler extends ExpressionBasedActionHandler 
         super(action);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.collector.internal.actions.ProcessorActionHandler#process(
-     *      org.hawkular.apm.api.model.trace.Trace, org.hawkular.apm.api.model.trace.Node,
-     *      org.hawkular.apm.api.model.config.Direction, java.util.Map, java.lang.Object[])
-     */
     @Override
     public boolean process(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {

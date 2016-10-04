@@ -83,9 +83,6 @@ public class ProcessorIssue extends Issue {
         this.field = field;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "ProcessorIssue [processor=" + processor + ", action=" + action + ", field=" + field + "]";

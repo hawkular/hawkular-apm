@@ -45,44 +45,27 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#get(java.lang.String, java.lang.String)
-     */
     @Override
     public Trace getFragment(String tenantId, String id) {
         return getResultsForUrl(tenantId, TRACE, "traces/fragments/%s", id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#getTrace(java.lang.String, java.lang.String)
-     */
     @Override
     public Trace getTrace(String tenantId, String id) {
         return getResultsForUrl(tenantId, TRACE, "traces/complete/%s", id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#searchFragments(java.lang.String,
-     *                      org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public List<Trace> searchFragments(String tenantId, Criteria criteria) {
         String path = "traces/fragments/search?criteria=%s";
         return getResultsForUrl(tenantId, TRACE_LIST, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#storeTraces(java.lang.String,
-     *                              java.util.List)
-     */
     @Override
     public void storeFragments(String tenantId, List<Trace> traces) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TraceService#clear(java.lang.String)
-     */
     @Override
     public void clear(String tenantId) {
         clear(tenantId, "traces");

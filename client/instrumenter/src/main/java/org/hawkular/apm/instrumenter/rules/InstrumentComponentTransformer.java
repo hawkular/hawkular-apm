@@ -27,25 +27,16 @@ import org.hawkular.apm.api.model.config.instrumentation.jvm.InstrumentComponent
  */
 public class InstrumentComponentTransformer extends CollectorActionTransformer {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#getActionType()
-     */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
         return InstrumentComponent.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#getEntity()
-     */
     @Override
     protected String getEntity() {
         return "component";
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#getParameters()
-     */
     @Override
     protected String[] getParameters(CollectorAction invocation) {
         String[] ret = new String[3];

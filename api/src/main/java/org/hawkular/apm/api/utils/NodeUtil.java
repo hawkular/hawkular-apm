@@ -29,7 +29,6 @@ import org.hawkular.apm.api.model.trace.Node;
  */
 public class NodeUtil {
 
-    /**  */
     private static final String APM_ORIGINAL_URI = "apm_original_uri";
 
     /**

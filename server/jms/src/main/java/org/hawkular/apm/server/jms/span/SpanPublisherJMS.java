@@ -30,9 +30,6 @@ public class SpanPublisherJMS extends AbstractPublisherJMS<Span>
 
     private static final String DESTINATION = "java:/Spans";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
-     */
     @Override
     protected String getDestinationURI() {
         return DESTINATION;

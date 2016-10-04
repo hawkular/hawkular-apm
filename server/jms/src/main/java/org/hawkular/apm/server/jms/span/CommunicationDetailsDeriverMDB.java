@@ -56,7 +56,6 @@ public class CommunicationDetailsDeriverMDB extends RetryCapableMDB<Span, Commun
     @Inject
     private SpanCache spanCache;
 
-    /**  */
     public static final String SUBSCRIBER = "SpanCommunicationDetailsDeriver";
 
     public CommunicationDetailsDeriverMDB() {

@@ -56,17 +56,11 @@ import org.junit.Test;
  */
 public class DefaultTraceCollectorTest {
 
-    /**  */
     private static final String BTXN_PRINCIPAL = "BTxnPrincipal";
-    /**  */
     private static final String BTXN_NAME = "BTxnName";
-    /**  */
     private static final String TEST_TENANT = "TestTenant";
-    /**  */
     private static final String TYPE = "TestType";
-    /**  */
     private static final String URI = "TestURI";
-    /**  */
     private static final String OP = "TestOP";
 
     @Test
@@ -1032,52 +1026,33 @@ public class DefaultTraceCollectorTest {
         private List<Trace> businessTransactions = new ArrayList<Trace>();
         private String tenantId;
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.TracePublisher#publish(java.lang.String, java.util.List)
-         */
         @Override
         public void publish(String tenantId, List<Trace> traces) throws Exception {
             this.tenantId = tenantId;
             businessTransactions.addAll(traces);
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
-         */
         @Override
         public void publish(String tenantId, List<Trace> items, int retryCount, long delay)
                                     throws Exception {
             publish(tenantId, items);
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
-         */
         @Override
         public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay)
                 throws Exception {
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.TraceService#getFragment(java.lang.String, java.lang.String)
-         */
         @Override
         public Trace getFragment(String tenantId, String id) {
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.TraceService#getTrace(java.lang.String, java.lang.String)
-         */
         @Override
         public Trace getTrace(String tenantId, String id) {
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.TraceService#query(java.lang.String,
-         *              org.hawkular.apm.api.services.Criteria)
-         */
         @Override
         public List<Trace> searchFragments(String tenantId, Criteria criteria) {
             return null;
@@ -1111,35 +1086,22 @@ public class DefaultTraceCollectorTest {
             this.tenantId = tenantId;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.BusinessTransactionService#storeBusinessTransactions(java.lang.String,
-         *                              java.util.List)
-         */
         @Override
         public void storeFragments(String tenantId, List<Trace> businessTransactions)
                 throws StoreException {
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.BusinessTransactionService#clear(java.lang.String)
-         */
         @Override
         public void clear(String tenantId) {
             // TODO Auto-generated method stub
 
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.Publisher#getInitialRetryCount()
-         */
         @Override
         public int getInitialRetryCount() {
             return 0;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
-         */
         @Override
         public void setMetricHandler(PublisherMetricHandler<Trace> handler) {
         }
@@ -1195,9 +1157,6 @@ public class DefaultTraceCollectorTest {
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#clear(java.lang.String)
-         */
         @Override
         public void clear(String tenantId) {
             // TODO Auto-generated method stub

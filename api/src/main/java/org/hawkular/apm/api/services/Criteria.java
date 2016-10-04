@@ -47,10 +47,8 @@ public class Criteria {
     private String uri;
     private String operation;
 
-    /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
 
-    /**  */
     private static long DEFAULT_TIMEOUT = 10000L;
 
     private long timeout = DEFAULT_TIMEOUT;
@@ -474,9 +472,6 @@ public class Criteria {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
@@ -621,9 +616,6 @@ public class Criteria {
             return buf.toString();
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "PropertyCriteria [name=" + name + ", value=" + value + ", operator=" + operator + "]";
@@ -714,9 +706,6 @@ public class Criteria {
             return buf.toString();
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "FaultCriteria [value=" + value + ", operator=" + operator + "]";

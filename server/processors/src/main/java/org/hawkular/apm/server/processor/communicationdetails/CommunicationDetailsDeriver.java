@@ -73,9 +73,6 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         this.sourceInfoCache = sourceInfoCache;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#initialise(java.util.List)
-     */
     @Override
     public void initialise(String tenantId, List<Trace> items) throws RetryAttemptException {
         List<SourceInfo> sourceInfoList = SourceInfoUtil.getSourceInfo(tenantId, items);
@@ -87,9 +84,6 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
-     */
     @Override
     public CommunicationDetails processOneToOne(String tenantId, Trace item) throws RetryAttemptException {
         CommunicationDetails ret = null;

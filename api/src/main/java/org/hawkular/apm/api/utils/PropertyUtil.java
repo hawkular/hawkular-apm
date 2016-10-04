@@ -31,7 +31,6 @@ public class PropertyUtil {
 
     private static final Logger LOG = Logger.getLogger(PropertyUtil.class.getName());
 
-    /**  */
     public static final String HAWKULAR_TENANT = "HAWKULAR_TENANT";
 
     /**

@@ -52,7 +52,6 @@ public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime,
     @Inject
     private AnalyticsService analyticsService;
 
-    /**  */
     public static final String SUBSCRIBER = "TraceCompletionTimeStore";
 
     public TraceCompletionTimeStoreMDB() {

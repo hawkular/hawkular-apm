@@ -24,7 +24,6 @@ package org.hawkular.apm.server.api.task;
  */
 public class RetryAttemptException extends Exception {
 
-    /**  */
     private static final long serialVersionUID = -9183048971847453822L;
 
     /**

@@ -34,41 +34,26 @@ public class TestTracePublisher implements TracePublisher {
         return traces;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#getInitialRetryCount()
-     */
     @Override
     public int getInitialRetryCount() {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List)
-     */
     @Override
     public void publish(String tenantId, List<Trace> items) throws Exception {
         traces.addAll(items);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
-     */
     @Override
     public void publish(String tenantId, List<Trace> items, int retryCount, long delay) throws Exception {
         traces.addAll(items);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
-     */
     @Override
     public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay)
             throws Exception {
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
-     */
     @Override
     public void setMetricHandler(PublisherMetricHandler<Trace> handler) {
     }

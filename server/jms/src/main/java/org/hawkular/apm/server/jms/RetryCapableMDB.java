@@ -60,7 +60,6 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
 
     private String retrySubscriber;
 
-    /**  */
     private static final int DEFAULT_MAX_RETRY_COUNT = 3;
 
     private int maxRetryCount = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT,
@@ -131,9 +130,6 @@ public abstract class RetryCapableMDB<S,T> implements MessageListener {
         this.typeReference = typeReference;
     }
 
-    /* (non-Javadoc)
-     * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
-     */
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {

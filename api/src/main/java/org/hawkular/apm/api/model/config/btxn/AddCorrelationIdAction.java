@@ -45,9 +45,6 @@ public class AddCorrelationIdAction extends ExpressionBasedAction {
         this.scope = scope;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "AddCorrelationIdAction [scope=" + scope + ", getExpression()=" + getExpression()

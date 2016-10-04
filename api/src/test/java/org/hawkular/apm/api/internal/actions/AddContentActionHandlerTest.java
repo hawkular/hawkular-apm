@@ -33,13 +33,10 @@ import org.junit.Test;
  */
 public class AddContentActionHandlerTest {
 
-    /**  */
     private static final String TEST_TYPE_1 = "testtype1";
 
-    /**  */
     private static final String TEST_NAME_1 = "testname1";
 
-    /**  */
     private static final String TEST_VALUE_1 = "testvalue1";
 
     @Test

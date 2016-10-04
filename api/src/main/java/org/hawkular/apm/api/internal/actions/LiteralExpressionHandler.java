@@ -46,11 +46,6 @@ public class LiteralExpressionHandler extends ExpressionHandler {
         super(expression);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.internal.actions.ExpressionHandler#init(
-     *              org.hawkular.apm.api.model.config.btxn.Processor,
-     *              org.hawkular.apm.api.model.config.btxn.ProcessorAction, boolean)
-     */
     @Override
     public void init(Processor processor, ProcessorAction action, boolean predicate) {
         LiteralExpression expr = (LiteralExpression) getExpression();
@@ -74,24 +69,12 @@ public class LiteralExpressionHandler extends ExpressionHandler {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.internal.actions.ExpressionHandler#test(
-     *              org.hawkular.apm.api.model.trace.Trace,
-     *              org.hawkular.apm.api.model.trace.Node, org.hawkular.apm.api.model.config.Direction,
-     *              java.util.Map, java.lang.Object[])
-     */
     @Override
     public boolean test(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {
         return predicateResult;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.internal.actions.ExpressionHandler#test(
-     *              org.hawkular.apm.api.model.trace.Trace,
-     *              org.hawkular.apm.api.model.trace.Node, org.hawkular.apm.api.model.config.Direction,
-     *              java.util.Map, java.lang.Object[])
-     */
     @Override
     public String evaluate(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {

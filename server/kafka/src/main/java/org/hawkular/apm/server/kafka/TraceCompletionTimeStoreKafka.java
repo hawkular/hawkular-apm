@@ -36,10 +36,8 @@ public class TraceCompletionTimeStoreKafka extends AbstractConsumerKafka<Complet
 
     private static final Logger log = Logger.getLogger(TraceCompletionTimeStoreKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "TraceCompletionTimeStore";
 
-    /**  */
     private static final String TOPIC = "TraceCompletionTime";
 
     private AnalyticsService analyticsService;

@@ -33,10 +33,8 @@ public class NodeDetailsDeriverKafka extends AbstractConsumerKafka<Trace, NodeDe
 
     private static final Logger log = Logger.getLogger(NodeDetailsDeriverKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "NodeDetailsDeriver";
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     public NodeDetailsDeriverKafka() {

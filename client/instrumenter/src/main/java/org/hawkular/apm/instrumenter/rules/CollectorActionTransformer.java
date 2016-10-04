@@ -27,10 +27,6 @@ import org.hawkular.apm.api.model.config.instrumentation.jvm.InstrumentAction;
  */
 public abstract class CollectorActionTransformer implements InstrumentActionTransformer {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#convertToRule(
-     *                  org.hawkular.apm.api.model.admin.InstrumentAction)
-     */
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         // NOTE: This class could use a templating mechanism to provide the

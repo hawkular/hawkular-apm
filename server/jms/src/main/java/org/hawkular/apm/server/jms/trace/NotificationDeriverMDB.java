@@ -51,7 +51,6 @@ public class NotificationDeriverMDB extends RetryCapableMDB<Trace, Notification>
     @Inject
     private NotificationPublisherJMS notificationPublisher;
 
-    /**  */
     public static final String SUBSCRIBER = "NotificationDeriver";
 
     public NotificationDeriverMDB() {

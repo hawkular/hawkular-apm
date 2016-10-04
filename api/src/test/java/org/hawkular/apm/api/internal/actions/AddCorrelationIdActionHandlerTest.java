@@ -31,7 +31,6 @@ import org.junit.Test;
  */
 public class AddCorrelationIdActionHandlerTest {
 
-    /**  */
     private static final String TEST_VALUE_1 = "testvalue1";
 
     @Test

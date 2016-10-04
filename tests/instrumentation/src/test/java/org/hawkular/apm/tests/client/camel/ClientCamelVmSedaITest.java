@@ -44,7 +44,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class ClientCamelVmSedaITest extends ClientCamelITestBase {
 
-    /**  */
     private static final String ORDER_CREATED = "Order created";
 
     @Override

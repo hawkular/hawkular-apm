@@ -44,7 +44,6 @@ public class SourceInfoCacheKafka extends AbstractConsumerKafka<Trace, Void> {
      * queue semantics) */
     private static final String GROUP_ID = "SourceInfoCache_" + UUID.randomUUID().toString();
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     private SourceInfoCache sourceInfoCache;

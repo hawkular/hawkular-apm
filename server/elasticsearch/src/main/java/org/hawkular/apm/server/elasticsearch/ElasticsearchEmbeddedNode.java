@@ -39,7 +39,6 @@ import org.elasticsearch.node.NodeBuilder;
  */
 public final class ElasticsearchEmbeddedNode {
 
-    /**  */
     private static final String HAWKULAR_ELASTICSEARCH_PROPERTIES = "hawkular-elasticsearch.properties";
 
     private static final Logger log = Logger.getLogger(ElasticsearchEmbeddedNode.class.getName());

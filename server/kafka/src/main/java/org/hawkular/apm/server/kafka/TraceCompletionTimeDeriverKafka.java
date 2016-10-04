@@ -36,7 +36,6 @@ public class TraceCompletionTimeDeriverKafka
 
     private static final String GROUP_ID = "TraceCompletionTimeDeriver";
 
-    /**  */
     private static final String TOPIC = "TraceCompletionInformation";
 
     public TraceCompletionTimeDeriverKafka() {

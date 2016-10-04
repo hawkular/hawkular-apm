@@ -33,10 +33,8 @@ import org.junit.Test;
  */
 public class SetDetailActionHandlerTest {
 
-    /**  */
     private static final String TEST_NAME_1 = "testname1";
 
-    /**  */
     private static final String TEST_VALUE_1 = "testvalue1";
 
     @Test

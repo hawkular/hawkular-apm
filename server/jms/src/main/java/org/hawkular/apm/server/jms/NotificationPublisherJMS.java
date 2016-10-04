@@ -29,9 +29,6 @@ public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
 
     private static final String DESTINATION = "java:/Notifications";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
-     */
     @Override
     protected String getDestinationURI() {
         return DESTINATION;

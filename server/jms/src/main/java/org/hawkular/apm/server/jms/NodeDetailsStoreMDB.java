@@ -52,7 +52,6 @@ public class NodeDetailsStoreMDB extends RetryCapableMDB<NodeDetails, Void> {
     @Inject
     private AnalyticsService analyticsService;
 
-    /**  */
     public static final String SUBSCRIBER = "NodeDetailsStore";
 
     public NodeDetailsStoreMDB() {

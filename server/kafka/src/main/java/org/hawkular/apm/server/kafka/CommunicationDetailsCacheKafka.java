@@ -42,7 +42,6 @@ public class CommunicationDetailsCacheKafka extends AbstractConsumerKafka<Commun
      * queue semantics) */
     private static final String GROUP_ID = "CommunicationDetailsCache_" + UUID.randomUUID().toString();
 
-    /**  */
     private static final String TOPIC = "CommunicationDetails";
 
     private CommunicationDetailsCache communicationDetailsCache;

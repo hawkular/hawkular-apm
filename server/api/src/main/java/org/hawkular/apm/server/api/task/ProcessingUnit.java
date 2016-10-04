@@ -112,9 +112,6 @@ public class ProcessingUnit<T, R> implements Handler<T> {
         this.retryHandler = retryHandler;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Handler#handle(java.lang.String,java.util.List)
-     */
     @Override
     public void handle(String tenantId, List<T> items) throws Exception {
         List<R> results = null;

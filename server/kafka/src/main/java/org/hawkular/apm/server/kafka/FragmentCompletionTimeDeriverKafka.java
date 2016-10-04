@@ -33,10 +33,8 @@ public class FragmentCompletionTimeDeriverKafka extends AbstractConsumerKafka<Tr
 
     private static final Logger log = Logger.getLogger(FragmentCompletionTimeDeriverKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "FragmentCompletionTimeDeriver";
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     public FragmentCompletionTimeDeriverKafka() {

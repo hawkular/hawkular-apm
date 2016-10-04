@@ -54,7 +54,6 @@ public class TraceCompletionInformationInitiatorMDB
     @Inject
     private TraceCompletionInformationPublisherJMS traceCompletionInformationPublisher;
 
-    /**  */
     public static final String SUBSCRIBER = "TraceCompletionInformationInitiator";
 
     public TraceCompletionInformationInitiatorMDB() {

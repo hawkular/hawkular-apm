@@ -46,13 +46,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ConfigurationLoader {
 
-    /**  */
     private static final String DEFAULT_TYPE = "jvm";
 
     /** The system property that optional contains the location of the configuration */
     public static final String HAWKULAR_APM_CONFIG = "HAWKULAR_APM_CONFIG";
 
-    /**  */
     private static final String DEFAULT_URI = "apmconfig";
 
     private static ObjectMapper mapper = new ObjectMapper();

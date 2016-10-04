@@ -68,9 +68,6 @@ public class SourceInfoCacheMDB implements MessageListener {
     private TypeReference<java.util.List<Trace>> typeRef = new TypeReference<java.util.List<Trace>>() {
     };
 
-    /* (non-Javadoc)
-     * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
-     */
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {

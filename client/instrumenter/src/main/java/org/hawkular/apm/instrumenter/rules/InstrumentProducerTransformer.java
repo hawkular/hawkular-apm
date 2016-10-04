@@ -28,25 +28,16 @@ import org.hawkular.apm.api.model.config.instrumentation.jvm.InstrumentProducer;
  */
 public class InstrumentProducerTransformer extends CollectorActionTransformer {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#getActionType()
-     */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
         return InstrumentProducer.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentInvocationTransformer#getEntity()
-     */
     @Override
     protected String getEntity() {
         return "producer";
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentInvocationTransformer#getParameters()
-     */
     @Override
     protected String[] getParameters(CollectorAction invocation) {
         String[] ret = new String[invocation.getDirection() == Direction.In ? 4 : 3];

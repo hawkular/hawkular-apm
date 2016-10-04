@@ -23,25 +23,16 @@ package org.hawkular.apm.instrumenter.faults;
  */
 public class ThrowableFaultDescriptor implements FaultDescriptor {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.faults.FaultDescriptor#isValid(java.lang.Object)
-     */
     @Override
     public boolean isValid(Object fault) {
         return fault instanceof Throwable;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.faults.FaultDescriptor#getName(java.lang.Object)
-     */
     @Override
     public String getName(Object fault) {
         return fault.getClass().getSimpleName();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.faults.FaultDescriptor#getDescription(java.lang.Object)
-     */
     @Override
     public String getDescription(Object fault) {
         return ((Throwable)fault).getMessage();
