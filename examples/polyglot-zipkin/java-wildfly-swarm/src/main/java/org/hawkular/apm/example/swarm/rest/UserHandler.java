@@ -28,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 import org.hawkular.apm.example.swarm.dao.User;
@@ -43,6 +44,9 @@ public class UserHandler {
 
     @Inject
     private UserDAO userDAO;
+
+    @Inject
+    private Client client;
 
     @GET
     @Path("/users")
@@ -62,6 +66,9 @@ public class UserHandler {
     @Path("/users")
     public Response getOne(User user) {
         user = userDAO.createUser(user);
+
+        client.target("http://python:3004/pyramid/users").request().get().close();
+
         return Response.ok().entity(user).build();
     }
 }

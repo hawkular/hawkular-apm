@@ -569,6 +569,9 @@
             <exclude>**/Gemfile.lock</exclude>
             <exclude>**/config.ru</exclude>
             <exclude>**/*.dia</exclude>
+            <exclude>**/*.egg-info/**</exclude>
+            <exclude>**/*.go</exclude>
+            <exclude>**/*go*/**/bin/**</exclude>
           </excludes>
         </configuration>
       </plugin>

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -14,28 +15,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-class MyApp < Roda
-
-  route do |r|
-
-    # GET /
-    r.root do
-      r.redirect "/roda/hello"
-    end
-
-    r.on "roda/hello" do
-      r.get do
-        "Hello from Roda! [Ruby]"
-      end
-    end
-
-    r.on "roda/users" do
-      r.get do
-        puts "User created!"
-        "User created!"
-      end
-    end
-  end
-end
 

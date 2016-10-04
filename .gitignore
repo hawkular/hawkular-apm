@@ -47,3 +47,8 @@ defs.d.ts
 *.dia~
 
 npm-debug.log
+
+# Python
+*.egg
+**/*.egg-info/**
+

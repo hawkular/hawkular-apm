@@ -35,8 +35,6 @@ const recorder = new zipkin.BatchRecorder({
 });
 
 const ctxImpl = new CLSContext('zipkin');
-
-// const tracer = new zipkin.Tracer({recorder: recorder, ctxImpl: ctxImpl});
 const tracer = new zipkin.Tracer({recorder: recorder, ctxImpl: ctxImpl});
 
 var app = express();

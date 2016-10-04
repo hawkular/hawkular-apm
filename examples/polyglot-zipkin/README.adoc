@@ -13,12 +13,15 @@ services.
 == Run
 [source,shell]
 ----
--> run tracing server (Hawkular APM or zipkin server). If using Hawkular APM use /standalone.sh -b 0.0.0.0
 $ export TRACING_SERVER=172.17.0.1
 $ export TRACING_PORT=8080
-
+$ docker-compose pull
 $ docker-compose up
 $ docker-compose down -> stop and remove
+
+-> Run tracing server (Hawkular APM or zipkin server). Server has to be started after containers to make sure kafka is running.
+-> If using Hawkular APM use /standalone.sh -b 0.0.0.0.
+-> Zipkin server has to be started with KAFKA_ZOOKEEPER=172.17.0.1:2181 java -jar zipkin-server.jar
 ----
 
 * `TRACING_SERVER` - address of tracing server. It cannot be localhost,
@@ -32,6 +35,7 @@ $ curl -ivX GET 'http://localhost:3001/nodejs/hello'
 $ curl -ivX GET 'http://localhost:3000/dropwizard/hello'
 $ curl -ivX GET 'http://localhost:3003/wildfly-swarm/hello'
 $ curl -ivX GET 'http://localhost:3002/roda/hello'
+$ curl -ivX GET 'http://localhost:3004/pyramid/hello'
 -> hello calls
 
 $ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3001/nodejs/createUser' -d '{"name": "jdoe"}'
@@ -45,6 +49,8 @@ $ curl -ivX GET 'http://localhost:3003/wildfly-swarm/users'
 $ curl -ivX GET 'http://localhost:3000/dropwizard/asyncTwoOutgoingCalls'
 -> asynchronous call
 $ curl -ivX GET 'http://localhost:3000/dropwizard/A'
+-> chaining requests within one service
+$ curl -ivX GET 'http://localhost:3004/pyramid/loop'
 -> chaining requests within one service
 ----
 
