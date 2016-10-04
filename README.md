@@ -49,7 +49,7 @@ Documentation
 
 Project documentation can be found [here](https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/).
 
-REST API documentation can be generated using `-Pdocgen` profile. The doc is generated under *rest/target* folder.
+REST API documentation can be generated using `-Pdocgen` profile. The doc is generated under `rest/target` folder.
 
 ```shell
 $ mvn clean install -Pdocgen
