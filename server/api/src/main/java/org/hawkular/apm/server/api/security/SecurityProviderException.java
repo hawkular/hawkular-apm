@@ -23,7 +23,6 @@ package org.hawkular.apm.server.api.security;
  */
 public class SecurityProviderException extends Exception {
 
-    /**  */
     private static final long serialVersionUID = 1L;
 
     public SecurityProviderException(String mesg) {

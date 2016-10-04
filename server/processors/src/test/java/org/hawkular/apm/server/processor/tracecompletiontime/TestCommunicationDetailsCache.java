@@ -33,17 +33,11 @@ public class TestCommunicationDetailsCache implements CommunicationDetailsCache 
     private Map<String, List<CommunicationDetails>> multipleConsumers = new HashMap<String,
                             List<CommunicationDetails>>();
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#getSingleConsumer(java.lang.String)
-     */
     @Override
     public CommunicationDetails get(String tenantId, String id) {
         return singleConsumer.get(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.btxncompletiontime.CommunicationDetailsCache#store(java.util.List)
-     */
     @Override
     public void store(String tenantId, List<CommunicationDetails> details) {
         for (int i=0; i < details.size(); i++) {

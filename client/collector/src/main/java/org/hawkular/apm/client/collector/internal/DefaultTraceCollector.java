@@ -227,9 +227,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         reporter.setTenantId(tenantId);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#setName(java.lang.String, java.lang.String)
-     */
     @Override
     public void setBusinessTransaction(String location, String name) {
         if (name == null || name.trim().isEmpty()) {
@@ -261,9 +258,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.TraceCollector#getBusinessTransaction()
-     */
     @Override
     public String getBusinessTransaction() {
         String ret = null;
@@ -293,9 +287,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#setPrincipal(java.lang.String, java.lang.String)
-     */
     @Override
     public void setPrincipal(String location, String principal) {
         if (principal == null || principal.trim().isEmpty()) {
@@ -324,9 +315,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#getPrincipal()
-     */
     @Override
     public String getPrincipal() {
         String ret = null;
@@ -356,9 +344,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#setLevel(java.lang.String, java.lang.String)
-     */
     @Override
     public void setLevel(String location, String level) {
         if (level == null || level.trim().isEmpty()) {
@@ -389,9 +374,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#getLevel()
-     */
     @Override
     public String getLevel() {
         String ret = null;
@@ -421,10 +403,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#consumerStart(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void consumerStart(String location, String uri, String type, String operation, String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -454,10 +432,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#consumerEnd(java.lang.String,
-     *                          java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void consumerEnd(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
@@ -483,10 +457,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#componentStart(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void componentStart(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
@@ -512,10 +482,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#componentEnd(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void componentEnd(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
@@ -541,10 +507,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#producerStart(java.lang.String,
-     *                      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void producerStart(String location, String uri, String type, String operation, String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -574,10 +536,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#producerEnd(java.lang.String,
-     *                          java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void producerEnd(String location, String uri, String type, String operation) {
         if (log.isLoggable(Level.FINEST)) {
@@ -637,9 +595,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         outer.getNodes().remove(inner);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#isInProcessed(java.lang.String)
-     */
     @Override
     public boolean isInProcessed(String location) {
 
@@ -669,9 +624,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#isInContentProcessed(java.lang.String)
-     */
     @Override
     public boolean isInContentProcessed(String location) {
 
@@ -700,9 +652,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#isOutProcessed(java.lang.String)
-     */
     @Override
     public boolean isOutProcessed(String location) {
 
@@ -732,9 +681,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#isOutContentProcessed(java.lang.String)
-     */
     @Override
     public boolean isOutContentProcessed(String location) {
 
@@ -763,10 +709,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#processIn(java.lang.String,
-     *                          java.util.Map, java.lang.Object[])
-     */
     @Override
     public void processIn(String location, Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
@@ -789,10 +731,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#processOut(java.lang.String,
-     *                                      java.util.Map, java.lang.Object[])
-     */
     @Override
     public void processOut(String location, Map<String, ?> headers, Object... values) {
         if (log.isLoggable(Level.FINEST)) {
@@ -818,10 +756,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#setFault(java.lang.String,
-     *                  java.lang.String)
-     */
     @Override
     public void setFault(String location, String value) {
         if (log.isLoggable(Level.FINEST)) {
@@ -843,10 +777,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#setProperty(java.lang.String,
-     *                                      java.lang.String, java.lang.String)
-     */
     @Override
     public void setProperty(String location, String name, String value) {
         if (log.isLoggable(Level.FINEST)) {
@@ -870,10 +800,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#setDetail(java.lang.String,
-     *                                      java.lang.String, java.lang.String, java.lang.String, boolean)
-     */
     @Override
     public void setDetail(String location, String name, String value, String nodeType, boolean onStack) {
         if (log.isLoggable(Level.FINEST)) {
@@ -916,10 +842,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#initInBuffer(java.lang.String,
-     *                                       java.lang.Object)
-     */
     @Override
     public void initInBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
@@ -954,10 +876,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return obj.hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#isInBufferActive(java.lang.String,
-     *                                      java.lang.Object)
-     */
     @Override
     public boolean isInBufferActive(String location, Object obj) {
         try {
@@ -984,10 +902,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#appendInBuffer(java.lang.String,
-     *                                  java.lang.Object, byte[], int, int)
-     */
     @Override
     public void appendInBuffer(String location, Object obj, byte[] data, int offset, int len) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1014,10 +928,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#recordInBuffer(java.lang.String,
-     *                                      java.lang.Object)
-     */
     @Override
     public void recordInBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1053,10 +963,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#initOutBuffer(java.lang.String,
-     *                              java.lang.Object)
-     */
     @Override
     public void initOutBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1078,10 +984,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#isOutBufferActive(java.lang.String,
-     *                                      java.lang.Object)
-     */
     @Override
     public boolean isOutBufferActive(String location, Object obj) {
         try {
@@ -1108,10 +1010,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#appendOutBuffer(java.lang.String,
-     *                          java.lang.Object, byte[], int, int)
-     */
     @Override
     public void appendOutBuffer(String location, Object obj, byte[] data, int offset, int len) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1138,10 +1036,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceCollector#recordOutBuffer(java.lang.String,
-     *                                      java.lang.Object)
-     */
     @Override
     public void recordOutBuffer(String location, Object obj) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1373,17 +1267,11 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#activate(java.lang.String,java.lang.String)
-     */
     @Override
     public boolean activate(String uri, String  operation) {
         return activate(uri, operation, null);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#activate(java.lang.String,java.lang.String,java.lang.String)
-     */
     @Override
     public boolean activate(String uri, String operation, String id) {
         if (!reporter.isEnabled()) {
@@ -1468,9 +1356,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return active;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#isActive()
-     */
     @Override
     public boolean isActive() {
         try {
@@ -1484,9 +1369,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#deactivate()
-     */
     @Override
     public void deactivate() {
         try {
@@ -1500,9 +1382,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.TraceCollector#retainNode(java.lang.String)
-     */
     @Override
     public void retainNode(String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1522,9 +1401,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.TraceCollector#releaseNode(java.lang.String)
-     */
     @Override
     public void releaseNode(String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1547,9 +1423,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.TraceCollector#retrieveNode(java.lang.String)
-     */
     @Override
     public Node retrieveNode(String id) {
         Node ret = null;
@@ -1573,9 +1446,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#initiateCorrelation(java.lang.String)
-     */
     @Override
     public void initiateCorrelation(String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1615,9 +1485,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#isCorrelated(java.lang.String)
-     */
     @Override
     public boolean isCorrelated(String id) {
         boolean correlationActive = correlations.containsKey(id);
@@ -1627,9 +1494,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return correlationActive;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#correlate(java.lang.String)
-     */
     @Override
     public void correlate(String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1649,9 +1513,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#completeCorrelation(java.lang.String, boolean)
-     */
     @Override
     public void completeCorrelation(String id, boolean allowSpawn) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1772,9 +1633,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         pop(location, spawnedBuilder, Consumer.class, uri);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#unlink()
-     */
     @Override
     public void unlink() {
         if (log.isLoggable(Level.FINEST)) {
@@ -1792,9 +1650,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#suppress()
-     */
     @Override
     public void suppress() {
         FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -1804,9 +1659,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#ignoreNode()
-     */
     @Override
     public void ignoreNode() {
         FragmentBuilder builder = fragmentManager.getFragmentBuilder();
@@ -1816,9 +1668,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.SessionManager#assertComplete()
-     */
     @Override
     public void assertComplete() {
         if (log.isLoggable(Level.FINEST)) {
@@ -1846,9 +1695,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#setState(java.lang.Object, java.lang.String, java.lang.Object, boolean)
-     */
     @Override
     public void setState(Object context, String name, Object value, boolean session) {
         if (log.isLoggable(Level.FINEST)) {
@@ -1873,9 +1719,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#getState(java.lang.Object, java.lang.String, boolean)
-     */
     @Override
     public Object getState(Object context, String name, boolean session) {
         Object ret = null;
@@ -1908,9 +1751,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.client.TraceCollector#session()
-     */
     @Override
     public SessionManager session() {
         return this;

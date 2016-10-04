@@ -42,9 +42,6 @@ public class JSONExpression extends DataExpression {
         this.jsonpath = jsonpath;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "JSONExpression [jsonpath=" + jsonpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()

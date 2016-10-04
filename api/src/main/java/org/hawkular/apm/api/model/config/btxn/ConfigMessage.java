@@ -114,9 +114,6 @@ public class ConfigMessage {
         this.field = field;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "ConfigMessage [severity=" + severity + ", message=" + message + ", processor=" + processor

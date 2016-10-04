@@ -43,9 +43,7 @@ public class XML {
 
     private static final Logger log = Logger.getLogger(XML.class.getName());
 
-    /**  */
     private static final String DEFAULT_INDENT = "yes";
-    /**  */
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     /**

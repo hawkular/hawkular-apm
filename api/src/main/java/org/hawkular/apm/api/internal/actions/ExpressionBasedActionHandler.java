@@ -36,7 +36,6 @@ import org.hawkular.apm.api.model.trace.Trace;
  */
 public abstract class ExpressionBasedActionHandler extends ProcessorActionHandler {
 
-    /**  */
     public static final String EXPRESSION_HAS_NOT_BEEN_DEFINED = "Expression has not been defined";
 
     private static final Logger log = Logger.getLogger(ExpressionBasedActionHandler.class.getName());

@@ -28,7 +28,6 @@ import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
 public class TraceCompletionTimePublisherKafka extends AbstractPublisherKafka<CompletionTime>
         implements TraceCompletionTimePublisher {
 
-    /**  */
     private static final String TOPIC = "TraceCompletionTime";
 
     /**

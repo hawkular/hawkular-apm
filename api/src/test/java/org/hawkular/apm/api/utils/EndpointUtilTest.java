@@ -33,9 +33,7 @@ import org.junit.Test;
  */
 public class EndpointUtilTest {
 
-    /**  */
     private static final String OPERATION = "Op";
-    /**  */
     private static final String URI = "/uri";
 
     @Test

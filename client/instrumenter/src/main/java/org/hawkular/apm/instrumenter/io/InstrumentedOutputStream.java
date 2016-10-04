@@ -66,25 +66,16 @@ public class InstrumentedOutputStream extends OutputStream {
         os.write(b, offset, len);
     }
 
-    /* (non-Javadoc)
-     * @see java.io.OutputStream#write(int)
-     */
     @Override
     public void write(int arg0) throws IOException {
         os.write(arg0);
     }
 
-    /* (non-Javadoc)
-     * @see java.io.OutputStream#flush()
-     */
     @Override
     public void flush() throws IOException {
         os.flush();
     }
 
-    /* (non-Javadoc)
-     * @see java.io.OutputStream#close()
-     */
     @Override
     public void close() throws IOException {
         if (direction == Direction.In) {

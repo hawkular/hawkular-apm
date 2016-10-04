@@ -62,9 +62,6 @@ public class SetPropertyAction extends ExpressionBasedAction {
         this.type = type;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "SetPropertyAction [name=" + name + ", type=" + type + ", getExpression()=" + getExpression()

@@ -36,10 +36,8 @@ public class NodeDetailsStoreKafka extends AbstractConsumerKafka<NodeDetails, Vo
 
     private static final Logger log = Logger.getLogger(NodeDetailsStoreKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "NodeDetailsStore";
 
-    /**  */
     private static final String TOPIC = "NodeDetails";
 
     private AnalyticsService analyticsService;

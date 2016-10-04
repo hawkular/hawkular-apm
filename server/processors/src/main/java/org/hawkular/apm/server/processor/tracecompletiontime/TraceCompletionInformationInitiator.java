@@ -46,9 +46,6 @@ public class TraceCompletionInformationInitiator extends
         super(ProcessorType.OneToOne);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
-     */
     @Override
     public TraceCompletionInformation processOneToOne(String tenantId,
             Trace item) throws RetryAttemptException {

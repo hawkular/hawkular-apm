@@ -42,17 +42,11 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
         super(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#getInitialRetryCount()
-     */
     @Override
     public int getInitialRetryCount() {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TracePublisher#publish(java.lang.String, java.util.List)
-     */
     @Override
     public void publish(String tenantId, List<Trace> traces) throws Exception {
         long startTime = clock.millis();
@@ -73,25 +67,16 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
-     */
     @Override
     public void publish(String tenantId, List<Trace> items, int retryCount, long delay) throws Exception {
         throw new UnsupportedOperationException("Cannot set the retry count and delay");
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
-     */
     @Override
     public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay) throws Exception {
         throw new UnsupportedOperationException("Cannot retry");
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
-     */
     @Override
     public void setMetricHandler(PublisherMetricHandler<Trace> handler) {
         this.handler = handler;

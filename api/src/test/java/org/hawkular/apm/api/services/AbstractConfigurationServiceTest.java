@@ -97,20 +97,12 @@ public class AbstractConfigurationServiceTest {
 
     public class TestConfigurationService extends AbstractConfigurationService {
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#getCollector(java.lang.String,
-         *                      java.lang.String, java.lang.String, java.lang.String)
-         */
         @Override
         public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
             // TODO Auto-generated method stub
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransaction(java.lang.String,
-         *                  java.lang.String, org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig)
-         */
         @Override
         public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
                 throws Exception {
@@ -118,9 +110,6 @@ public class AbstractConfigurationServiceTest {
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
-         */
         @Override
         public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
                 throws Exception {
@@ -128,47 +117,30 @@ public class AbstractConfigurationServiceTest {
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransaction(java.lang.String,
-         *                  java.lang.String)
-         */
         @Override
         public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
             // TODO Auto-generated method stub
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String, long)
-         */
         @Override
         public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
             // TODO Auto-generated method stub
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransactionSummaries(java.lang.String)
-         */
         @Override
         public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
             // TODO Auto-generated method stub
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
-         *                  java.lang.String)
-         */
         @Override
         public void removeBusinessTransaction(String tenantId, String name) throws Exception {
             // TODO Auto-generated method stub
 
         }
 
-        /* (non-Javadoc)
-         * @see org.hawkular.apm.api.services.ConfigurationService#clear(java.lang.String)
-         */
         @Override
         public void clear(String tenantId) {
             // TODO Auto-generated method stub

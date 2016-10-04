@@ -58,9 +58,6 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
-     */
     @Override
     public boolean isAvailable() {
         String uri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER,
@@ -87,25 +84,16 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
         producer = new KafkaProducer<>(props);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#getInitialRetryCount()
-     */
     @Override
     public int getInitialRetryCount() {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List)
-     */
     @Override
     public void publish(String tenantId, List<T> items) throws Exception {
         publish(tenantId, items, getInitialRetryCount(), 0);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, int, long)
-     */
     @Override
     public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
         long startTime = 0;
@@ -139,17 +127,11 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
-     */
     @Override
     public void retry(String tenantId, List<T> items, String subscriber, int retryCount, long delay) throws Exception {
         throw new UnsupportedOperationException("Retry not supported for this publisher");
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
-     */
     @Override
     public void setMetricHandler(PublisherMetricHandler<T> handler) {
         this.handler = handler;

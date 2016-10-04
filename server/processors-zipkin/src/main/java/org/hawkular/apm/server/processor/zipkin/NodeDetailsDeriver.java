@@ -48,9 +48,6 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         super(ProcessorType.OneToOne);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
-     */
     @Override
     public NodeDetails processOneToOne(String tenantId, Span item) throws RetryAttemptException {
         NodeDetails nd = createTypedNodeDetails(item);

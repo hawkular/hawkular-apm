@@ -438,9 +438,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         this.outbound = outbound;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "CommunicationDetails [id=" + id + ", linkId=" + linkId + ", businessTransaction=" + businessTransaction
@@ -454,9 +451,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
                 + properties + ", outbound=" + outbound + "]";
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -486,9 +480,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -587,9 +578,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
-     */
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Version
@@ -626,9 +614,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
-     */
     @Override
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Version
@@ -720,9 +705,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
             this.producerOffset = producerOffset;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -733,9 +715,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
             return result;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -764,18 +743,12 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
             return true;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "Outbound [linkIds=" + linkIds + ", multiConsumer=" + multiConsumer + ", producerOffset=" + producerOffset
                     + "]";
         }
 
-        /* (non-Javadoc)
-         * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
-         */
         @Override
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
             in.readInt(); // Version
@@ -789,9 +762,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
             producerOffset = in.readLong();
         }
 
-        /* (non-Javadoc)
-         * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
-         */
         @Override
         public void writeExternal(ObjectOutput out) throws IOException {
             out.writeInt(1); // Version

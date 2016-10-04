@@ -36,7 +36,6 @@ public class TraceCompletionInformationProcessorKafka
 
     private static final String GROUP_ID = "TraceCompletionInformationProcessor";
 
-    /**  */
     private static final String TOPIC = "TraceCompletionInformation";
 
     public TraceCompletionInformationProcessorKafka() {
@@ -68,9 +67,6 @@ public class TraceCompletionInformationProcessorKafka
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.kafka.AbstractRetryConsumerKafka#isExpired(java.lang.Object, long)
-     */
     @Override
     protected boolean isExpired(TraceCompletionInformation item, long currentTime) {
         // TODO Auto-generated method stub

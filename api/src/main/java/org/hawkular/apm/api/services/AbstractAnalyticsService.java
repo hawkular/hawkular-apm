@@ -86,10 +86,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      */
     protected abstract List<Trace> getFragments(String tenantId, Criteria criteria);
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getUnboundEndpoints(java.lang.String,
-     *                                  long, long, boolean)
-     */
     @Override
     public List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress) {
         Criteria criteria = new Criteria();
@@ -100,10 +96,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         return (doGetUnboundEndpoints(tenantId, fragments, compress));
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getBoundEndpoints(java.lang.String,
-     *                               java.lang.String, long, long)
-     */
     @Override
     public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
                                     long endTime) {
@@ -286,10 +278,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
-     *                          org.hawkular.apm.api.services.Criteria, boolean)
-     */
     @Override
     public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
             Criteria criteria, boolean asTree) {
@@ -542,7 +530,6 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
      */
     public static class EndpointPart {
 
-        /**  */
         private static final int CHILD_THRESHOLD = 10;
         private int count = 1;
         private Map<String, EndpointPart> children;

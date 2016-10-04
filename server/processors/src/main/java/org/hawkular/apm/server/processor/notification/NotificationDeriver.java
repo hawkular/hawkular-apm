@@ -43,9 +43,6 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
         super(ProcessorType.OneToOne);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.Object)
-     */
     @Override
     public Notification processOneToOne(String tenantId, Trace item) throws RetryAttemptException {
         // Check if named txn and has nodes

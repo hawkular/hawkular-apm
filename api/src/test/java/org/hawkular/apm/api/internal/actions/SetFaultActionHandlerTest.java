@@ -30,7 +30,6 @@ import org.junit.Test;
  */
 public class SetFaultActionHandlerTest {
 
-    /**  */
     private static final String TEST_VALUE_1 = "testvalue1";
 
     @Test

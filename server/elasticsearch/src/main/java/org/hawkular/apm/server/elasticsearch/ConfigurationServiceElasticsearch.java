@@ -52,20 +52,16 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
-    /**  */
     private static final String BUSINESS_TXN_CONFIG_TYPE = "businesstxnconfig";
 
-    /**  */
     private static final String BUSINESS_TXN_CONFIG_INVALID_TYPE = "businesstxnconfiginvalid";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private ElasticsearchClient client = ElasticsearchClient.getSingleton();
 
-    /**  */
     private static int DEFAULT_RESPONSE_SIZE = 100000;
 
-    /**  */
     private static long DEFAULT_TIMEOUT = 10000L;
 
     private long timeout = DEFAULT_TIMEOUT;
@@ -102,10 +98,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         this.client = client;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getCollector(java.lang.String,
-     *                          java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
         CollectorConfiguration config = ConfigurationLoader.getConfiguration(type);
@@ -150,10 +142,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         return config;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransaction(java.lang.String,
-     *              java.lang.String, org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig)
-     */
     @Override
     public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
             throws Exception {
@@ -196,10 +184,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         return messages;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransaction(java.lang.String,
-     *                  java.lang.String)
-     */
     @Override
     public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
         BusinessTxnConfig ret = null;
@@ -257,9 +241,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransactionSummaries(java.lang.String)
-     */
     @Override
     public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
         List<BusinessTxnSummary> ret = new ArrayList<BusinessTxnSummary>();
@@ -337,9 +318,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String, long)
-     */
     @Override
     public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
         Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
@@ -383,10 +361,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
-     *                          java.lang.String)
-     */
     @Override
     public void removeBusinessTransaction(String tenantId, String name) throws Exception {
         BusinessTxnConfig config = new BusinessTxnConfig();
@@ -411,9 +385,6 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#clearTenant(java.lang.String)
-     */
     @Override
     public void clear(String tenantId) {
         client.clearTenant(tenantId);

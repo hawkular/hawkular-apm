@@ -79,9 +79,6 @@ public class BusinessTxnSummary {
         this.description = description;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "BusinessTxnSummary [name=" + name + ", level=" + level + ", description=" + description + "]";

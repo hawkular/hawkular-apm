@@ -43,7 +43,6 @@ import org.jboss.byteman.rule.helper.Helper;
  */
 public class RuleHelper extends Helper implements SessionManager {
 
-    /**  */
     public static final String BINARY_SQL_MARKER = "<binary>";
 
     private static final Logger log = Logger.getLogger(RuleHelper.class.getName());
@@ -327,65 +326,41 @@ public class RuleHelper extends Helper implements SessionManager {
         return (headersAccessors.get(type));
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#activate(java.lang.String,java.lang.String,java.lang.String)
-     */
     @Override
     public boolean activate(String uri, String operation, String id) {
         return collector().session().activate(uri, operation, id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#activate(java.lang.String,java.lang.String)
-     */
     @Override
     public boolean activate(String uri, String operation) {
         return collector().session().activate(uri, operation);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#isActive()
-     */
     @Override
     public boolean isActive() {
         return collector().session().isActive();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#deactivate()
-     */
     @Override
     public void deactivate() {
         collector().session().deactivate();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#retainNode(java.lang.String)
-     */
     @Override
     public void retainNode(String id) {
         collector().session().retainNode(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#releaseNode(java.lang.String)
-     */
     @Override
     public void releaseNode(String id) {
         collector().session().releaseNode(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#retrieveNode(java.lang.String)
-     */
     @Override
     public Node retrieveNode(String id) {
         return collector().session().retrieveNode(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#initiateCorrelation(java.lang.String)
-     */
     @Override
     public void initiateCorrelation(String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -394,17 +369,11 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().initiateCorrelation(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#isCorrelated(java.lang.String)
-     */
     @Override
     public boolean isCorrelated(String id) {
         return collector().session().isCorrelated(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#correlate(java.lang.String)
-     */
     @Override
     public void correlate(String id) {
         if (log.isLoggable(Level.FINEST)) {
@@ -413,9 +382,6 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().correlate(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#completeCorrelation(java.lang.String, boolean)
-     */
     @Override
     public void completeCorrelation(String id, boolean allowSpawn) {
         if (log.isLoggable(Level.FINEST)) {
@@ -425,9 +391,6 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().completeCorrelation(id, allowSpawn);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#unlink()
-     */
     @Override
     public void unlink() {
         if (log.isLoggable(Level.FINEST)) {
@@ -436,9 +399,6 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().unlink();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#suppress()
-     */
     @Override
     public void suppress() {
         if (log.isLoggable(Level.FINEST)) {
@@ -447,9 +407,6 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().suppress();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#ignoreNode()
-     */
     @Override
     public void ignoreNode() {
         if (log.isLoggable(Level.FINEST)) {
@@ -458,9 +415,6 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().ignoreNode();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#assertComplete()
-     */
     @Override
     public void assertComplete() {
         if (log.isLoggable(Level.FINEST)) {
@@ -691,10 +645,6 @@ public class RuleHelper extends Helper implements SessionManager {
         return new InstrumentedInputStream(collector(), Direction.Out, is);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#setState(java.lang.Object, java.lang.String,
-     *                          java.lang.Object, boolean)
-     */
     @Override
     public void setState(Object context, String name, Object value, boolean session) {
         if (log.isLoggable(Level.FINEST)) {
@@ -704,9 +654,6 @@ public class RuleHelper extends Helper implements SessionManager {
         collector().session().setState(context, name, value, session);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.SessionManager#getState(java.lang.Object, java.lang.String, boolean)
-     */
     @Override
     public Object getState(Object context, String name, boolean session) {
         if (log.isLoggable(Level.FINEST)) {

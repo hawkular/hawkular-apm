@@ -23,7 +23,6 @@ package org.hawkular.apm.server.api.services;
  */
 public class CacheException extends Exception {
 
-    /**  */
     private static final long serialVersionUID = 4985887160445662299L;
 
     /**

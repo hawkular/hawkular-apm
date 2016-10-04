@@ -48,7 +48,6 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  */
 public class ElasticsearchClient {
 
-    /**  */
     private static final String HAWKULAR_APM_MAPPING_JSON = "hawkular-apm-mapping.json";
 
     /**

@@ -28,7 +28,6 @@ import org.hawkular.apm.server.api.services.CommunicationDetailsPublisher;
 public class CommunicationDetailsPublisherKafka extends AbstractPublisherKafka<CommunicationDetails>
         implements CommunicationDetailsPublisher {
 
-    /**  */
     private static final String TOPIC = "CommunicationDetails";
 
     /**

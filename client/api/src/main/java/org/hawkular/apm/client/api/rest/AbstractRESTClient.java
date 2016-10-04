@@ -67,9 +67,6 @@ public class AbstractRESTClient implements ServiceStatus {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
-     */
     @Override
     public boolean isAvailable() {
         // Check URI is specified and starts with http, so either http: or https:

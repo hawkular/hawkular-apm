@@ -53,7 +53,6 @@ public class FragmentCompletionTimeDeriverMDB extends RetryCapableMDB<Trace, Com
     @Inject
     private FragmentCompletionTimePublisherJMS fragmentCompletionTimePublisher;
 
-    /**  */
     public static final String SUBSCRIBER = "FragmentCompletionTimeDeriver";
 
     public FragmentCompletionTimeDeriverMDB() {

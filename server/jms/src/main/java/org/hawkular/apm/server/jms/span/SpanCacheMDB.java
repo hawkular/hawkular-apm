@@ -64,9 +64,6 @@ public class SpanCacheMDB implements MessageListener {
     private TypeReference<java.util.List<Span>> typeRef = new TypeReference<java.util.List<Span>>() {
     };
 
-    /* (non-Javadoc)
-     * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
-     */
     @Override
     public void onMessage(Message message) {
         if (log.isLoggable(Level.FINEST)) {

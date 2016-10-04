@@ -34,10 +34,8 @@ import org.junit.Test;
  */
 public class SetPropertyActionHandlerTest {
 
-    /**  */
     private static final String TEST_NAME_1 = "testname1";
 
-    /**  */
     private static final String TEST_VALUE_1 = "testvalue1";
 
     @Test

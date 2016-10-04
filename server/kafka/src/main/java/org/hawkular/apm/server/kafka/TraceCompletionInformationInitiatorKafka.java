@@ -34,10 +34,8 @@ public class TraceCompletionInformationInitiatorKafka
 
     private static final Logger log = Logger.getLogger(TraceCompletionInformationInitiatorKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "TraceCompletionInformationInitiator";
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     public TraceCompletionInformationInitiatorKafka() {

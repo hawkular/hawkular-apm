@@ -23,17 +23,11 @@ public class TestService1Impl implements TestService, ServiceLifecycle {
 
     private boolean initialised = false;
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ServiceLifecycle#init()
-     */
     @Override
     public void init() {
         initialised = true;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.TestService#isInitialised()
-     */
     @Override
     public boolean isInitialised() {
         return initialised;

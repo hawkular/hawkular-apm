@@ -99,9 +99,6 @@ public class BinaryAnnotation implements Serializable {
         this.endpoint = endpoint;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "BinaryAnnotation [key=" + key + ", value=" + value + ", type=" + type + ", endpoint=" + endpoint + "]";

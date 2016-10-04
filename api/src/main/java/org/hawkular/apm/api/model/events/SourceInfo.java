@@ -325,9 +325,6 @@ public class SourceInfo implements Externalizable, ApmEvent {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
-     */
     @Override
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Write version

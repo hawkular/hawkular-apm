@@ -25,25 +25,16 @@ import javax.xml.soap.SOAPFault;
  */
 public class SOAPFaultDescriptor implements FaultDescriptor {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.faults.FaultDescriptor#isValid(java.lang.Object)
-     */
     @Override
     public boolean isValid(Object fault) {
         return fault instanceof SOAPFault;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.faults.FaultDescriptor#getName(java.lang.Object)
-     */
     @Override
     public String getName(Object fault) {
         return ((SOAPFault)fault).getFaultCode();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.faults.FaultDescriptor#getDescription(java.lang.Object)
-     */
     @Override
     public String getDescription(Object fault) {
         return ((SOAPFault)fault).getFaultString();

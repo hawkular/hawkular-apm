@@ -44,10 +44,8 @@ import org.mockito.Mockito;
  */
 public class ConfigurationServiceElasticsearchTest {
 
-    /**  */
     private static final String VALID_DESCRIPTION = "Valid description";
 
-    /**  */
     private static final String INVALID_DESCRIPTION = "Invalid description";
     private ConfigurationServiceElasticsearch cfgs;
     private Clock clock = Mockito.mock(Clock.class);

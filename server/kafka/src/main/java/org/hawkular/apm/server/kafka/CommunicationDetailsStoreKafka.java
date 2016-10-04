@@ -36,10 +36,8 @@ public class CommunicationDetailsStoreKafka extends AbstractConsumerKafka<Commun
 
     private static final Logger log = Logger.getLogger(CommunicationDetailsStoreKafka.class.getName());
 
-    /**  */
     private static final String GROUP_ID = "CommunicationDetailsStore";
 
-    /**  */
     private static final String TOPIC = "CommunicationDetails";
 
     private AnalyticsService analyticsService;

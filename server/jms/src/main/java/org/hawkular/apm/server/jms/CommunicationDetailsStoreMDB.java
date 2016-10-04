@@ -52,7 +52,6 @@ public class CommunicationDetailsStoreMDB extends RetryCapableMDB<CommunicationD
     @Inject
     private AnalyticsService analyticsService;
 
-    /**  */
     public static final String SUBSCRIBER = "CommunicationDetailsStore";
 
     public CommunicationDetailsStoreMDB() {

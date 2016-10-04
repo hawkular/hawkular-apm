@@ -26,18 +26,11 @@ import org.hawkular.apm.api.model.config.instrumentation.jvm.SetPrincipal;
  */
 public class SetPrincipalTransformer implements InstrumentActionTransformer {
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#getActionType()
-     */
     @Override
     public Class<? extends InstrumentAction> getActionType() {
         return SetPrincipal.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.instrumenter.config.InstrumentActionTransformer#convertToRuleAction(
-     *                      org.hawkular.apm.api.model.admin.InstrumentAction)
-     */
     @Override
     public String convertToRuleAction(InstrumentAction action) {
         SetPrincipal setAction = (SetPrincipal) action;

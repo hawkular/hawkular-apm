@@ -52,7 +52,6 @@ public class FragmentCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTi
     @Inject
     private AnalyticsService analyticsService;
 
-    /**  */
     public static final String SUBSCRIBER = "FragmentCompletionTimeStore";
 
     public FragmentCompletionTimeStoreMDB() {

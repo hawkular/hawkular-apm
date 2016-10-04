@@ -108,9 +108,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getUnboundEndpoints(java.lang.String, long, long, boolean)
-     */
     @Override
     public List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress) {
         if (log.isLoggable(Level.FINEST)) {
@@ -122,10 +119,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, URIINFO_LIST, path, startTime, endTime, compress);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getBoundEndpoints(java.lang.String, java.lang.String,
-     *                                  long, long)
-     */
     @Override
     public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
                                                 long endTime) {
@@ -168,10 +161,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, PRINCIPAL_INFO_LIST, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCompletionCount(java.lang.String,
-     *                          org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public long getTraceCompletionCount(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -183,10 +172,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, LONG, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCompletionFaultCount(java.lang.String,
-     *                      org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public long getTraceCompletionFaultCount(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -197,9 +182,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, LONG, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getTraceCompletionTimes(java.lang.String, org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -211,10 +193,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, COMPLETION_TIME_LIST, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCompletionPercentiles(java.lang.String,
-     *                      org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public Percentiles getTraceCompletionPercentiles(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -226,10 +204,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, PERCENTILES_TYPE_REFERENCE, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCompletionStatistics(java.lang.String,
-     *                  org.hawkular.apm.api.services.Criteria, long)
-     */
     @Override
     public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
                                                                                        Criteria criteria,
@@ -243,10 +217,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, COMPLETION_STATISTICS_LIST, path, criteria, interval);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCompletionFaultDetails(java.lang.String,
-     *                      org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public List<Cardinality> getTraceCompletionFaultDetails(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -258,10 +228,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, CARDINALITY_LIST, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCompletionPropertyDetails(java.lang.String,
-     *              org.hawkular.apm.api.services.Criteria, java.lang.String)
-     */
     @Override
     public List<Cardinality> getTraceCompletionPropertyDetails(String tenantId, Criteria criteria,
                                                                String property) {
@@ -276,10 +242,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, CARDINALITY_LIST, path, criteria, property);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getNodeStatistics(java.lang.String,
-     *                      org.hawkular.apm.api.services.Criteria, long)
-     */
     @Override
     public List<NodeTimeseriesStatistics> getNodeTimeseriesStatistics(String tenantId,
                                                                       Criteria criteria, long interval) {
@@ -297,10 +259,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getNodeSummaryStatistics(java.lang.String,
-     *                          org.hawkular.apm.api.services.Criteria)
-     */
     @Override
     public Collection<NodeSummaryStatistics> getNodeSummaryStatistics(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -312,10 +270,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, NODE_SUMMARY_STATISTICS_LIST, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getCommunicationSummaryStatistics(java.lang.String,
-     *                          org.hawkular.apm.api.services.Criteria, boolean)
-     */
     @Override
     public Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
                                                                                         Criteria criteria, boolean tree) {
@@ -333,44 +287,27 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeCommunicationDetails(java.lang.String, java.util.List)
-     */
     @Override
     public void storeCommunicationDetails(String tenantId, List<CommunicationDetails> communicationDetails)
             throws StoreException {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeNodeDetails(java.lang.String, java.util.List)
-     */
     @Override
     public void storeNodeDetails(String tenantId, List<NodeDetails> nodeDetails) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeCompletionTimes(java.lang.String, java.util.List)
-     */
     @Override
     public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#storeFragmentCompletionTimes(java.lang.String,
-     *                      java.util.List)
-     */
     @Override
     public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.AnalyticsService#getHostNames(java.lang.String,
-     *                      org.hawkular.apm.api.services.BaseCriteria)
-     */
     @Override
     public Set<String> getHostNames(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
@@ -382,9 +319,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         return getResultsForUrl(tenantId, STRING_SET, path, criteria);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#clear(java.lang.String)
-     */
     @Override
     public void clear(String tenantId) {
         clear(tenantId, "analytics");

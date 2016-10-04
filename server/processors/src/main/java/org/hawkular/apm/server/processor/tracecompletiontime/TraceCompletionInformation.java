@@ -60,9 +60,6 @@ public class TraceCompletionInformation {
         this.communications = communications;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "TraceCompletionInformation [completionTime=" + completionTime + ", communications=" + communications
@@ -77,7 +74,6 @@ public class TraceCompletionInformation {
      */
     public static class Communication {
 
-        /**  */
         public static final int DEFAULT_EXPIRY_WINDOW = 4000;
 
         private List<String> ids = new ArrayList<String>();
@@ -141,9 +137,6 @@ public class TraceCompletionInformation {
             this.expire = expire;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "Communication [ids=" + ids + ", multipleConsumers=" + multipleConsumers + ", baseDuration="

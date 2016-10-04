@@ -27,7 +27,6 @@ import org.hawkular.apm.server.api.services.NodeDetailsPublisher;
  */
 public class NodeDetailsPublisherKafka extends AbstractPublisherKafka<NodeDetails> implements NodeDetailsPublisher {
 
-    /**  */
     private static final String TOPIC = "NodeDetails";
 
     /**

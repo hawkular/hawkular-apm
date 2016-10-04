@@ -679,9 +679,6 @@ public class FragmentBuilder {
             this.position = position;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "NodePlaceholder [node=" + node + ", position=" + position + "]";

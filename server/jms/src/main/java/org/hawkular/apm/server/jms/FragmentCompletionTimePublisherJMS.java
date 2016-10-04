@@ -29,9 +29,6 @@ public class FragmentCompletionTimePublisherJMS extends AbstractPublisherJMS<Com
 
     private static final String DESTINATION = "java:/FragmentCompletionTimes";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
-     */
     @Override
     protected String getDestinationURI() {
         return DESTINATION;

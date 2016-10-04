@@ -59,9 +59,6 @@ public class Cardinality {
         this.count = count;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Cardinality [value=" + value + ", count=" + count + "]";

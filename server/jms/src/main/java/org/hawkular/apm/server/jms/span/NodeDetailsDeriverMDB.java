@@ -51,7 +51,6 @@ public class NodeDetailsDeriverMDB extends RetryCapableMDB<Span, NodeDetails> {
     @Inject
     private NodeDetailsPublisherJMS nodeDetailsPublisher;
 
-    /**  */
     public static final String SUBSCRIBER = "SpanNodeDetailsDeriver";
 
     public NodeDetailsDeriverMDB() {

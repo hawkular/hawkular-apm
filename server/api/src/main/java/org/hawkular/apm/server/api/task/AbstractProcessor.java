@@ -27,10 +27,8 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  */
 public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
 
-    /**  */
     private static final int DEFAULT_RETRY_DELAY = 2000;
 
-    /**  */
     private static final int DEFAULT_LAST_RETRY_DELAY = 10000;
 
     private long retryDelay = PropertyUtil.getPropertyAsInteger(PropertyUtil.HAWKULAR_APM_PROCESSOR_RETRY_DELAY,
@@ -50,32 +48,20 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
         this.type = type;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#getType()
-     */
     @Override
     public org.hawkular.apm.server.api.task.Processor.ProcessorType getType() {
         return type;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#initialise(java.lang.String,java.util.List)
-     */
     @Override
     public void initialise(String tenantId, List<T> items) throws RetryAttemptException {
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#getDeliveryDelay(java.util.List)
-     */
     @Override
     public long getDeliveryDelay(List<R> results) {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#getRetryDelay(java.util.List, int)
-     */
     @Override
     public long getRetryDelay(List<T> items, int retryCount) {
         if (retryCount == 0) {
@@ -84,41 +70,26 @@ public abstract class AbstractProcessor<T, R> implements Processor<T,R> {
         return retryDelay;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#isReportRetryExpirationAsWarning()
-     */
     @Override
     public boolean isReportRetryExpirationAsWarning() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processOneToOne(java.lang.String, java.lang.Object)
-     */
     @Override
     public R processOneToOne(String tenantId, T item) throws RetryAttemptException {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processOneToMany(java.lang.String, java.lang.Object)
-     */
     @Override
     public List<R> processOneToMany(String tenantId, T item) throws RetryAttemptException {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processManyToMany(java.lang.String, java.util.List)
-     */
     @Override
     public List<R> processManyToMany(String tenantId, List<T> items) throws RetryAttemptException {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#cleanup(java.lang.String,java.util.List)
-     */
     @Override
     public void cleanup(String tenantId, List<T> items) {
     }

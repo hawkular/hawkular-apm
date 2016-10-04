@@ -151,9 +151,6 @@ public class Notification implements ApmEvent {
         this.issues = issues;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Notification [id=" + id + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp

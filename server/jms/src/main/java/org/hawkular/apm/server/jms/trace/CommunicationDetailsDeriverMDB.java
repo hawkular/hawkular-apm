@@ -55,7 +55,6 @@ public class CommunicationDetailsDeriverMDB extends RetryCapableMDB<Trace, Commu
     @Inject
     private CommunicationDetailsDeriver communicationDetailsDeriver;
 
-    /**  */
     public static final String SUBSCRIBER = "CommunicationDetailsDeriver";
 
     public CommunicationDetailsDeriverMDB() {

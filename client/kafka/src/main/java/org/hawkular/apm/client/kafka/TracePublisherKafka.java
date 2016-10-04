@@ -26,7 +26,6 @@ import org.hawkular.apm.api.services.TracePublisher;
  */
 public class TracePublisherKafka extends AbstractPublisherKafka<Trace> implements TracePublisher {
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     /**

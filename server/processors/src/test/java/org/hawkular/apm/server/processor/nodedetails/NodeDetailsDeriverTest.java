@@ -33,10 +33,8 @@ import org.junit.Test;
  */
 public class NodeDetailsDeriverTest {
 
-    /**  */
     private static final String INTERNAL_URI = "internalUri";
 
-    /**  */
     private static final String TEST_URI = "testUri";
 
     @Test

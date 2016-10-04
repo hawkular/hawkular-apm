@@ -53,7 +53,6 @@ public class TraceCompletionInformationProcessorMDB
     @Inject
     private TraceCompletionInformationProcessor traceCompletionInformationProcessor;
 
-    /**  */
     public static final String SUBSCRIBER = "TraceCompletionInformationProcessor";
 
     public TraceCompletionInformationProcessorMDB() {

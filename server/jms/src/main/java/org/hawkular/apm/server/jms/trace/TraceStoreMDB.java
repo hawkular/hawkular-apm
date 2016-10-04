@@ -53,7 +53,6 @@ public class TraceStoreMDB extends RetryCapableMDB<Trace, Void> {
     @Inject
     private TraceService traceService;
 
-    /**  */
     public static final String SUBSCRIBER = "TraceStore";
 
     public TraceStoreMDB() {

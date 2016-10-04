@@ -36,7 +36,6 @@ public class CommunicationDetailsDeriverKafka extends AbstractRetryConsumerKafka
 
     private static final String GROUP_ID = "CommunicationDetailsDeriver";
 
-    /**  */
     private static final String TOPIC = "Traces";
 
     public CommunicationDetailsDeriverKafka() {
@@ -71,9 +70,6 @@ public class CommunicationDetailsDeriverKafka extends AbstractRetryConsumerKafka
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.kafka.AbstractRetryConsumerKafka#isExpired(java.lang.Object, long)
-     */
     @Override
     protected boolean isExpired(Trace item, long currentTime) {
         // TODO Auto-generated method stub

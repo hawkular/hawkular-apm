@@ -42,9 +42,6 @@ public class XMLExpression extends DataExpression {
         this.xpath = xpath;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "XMLExpression [xpath=" + xpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()

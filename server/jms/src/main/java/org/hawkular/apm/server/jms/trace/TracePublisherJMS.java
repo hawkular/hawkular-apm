@@ -30,9 +30,6 @@ public class TracePublisherJMS extends AbstractPublisherJMS<Trace>
 
     private static final String DESTINATION = "java:/Traces";
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.jms.AbstractPublisherJMS#getDestinationURI()
-     */
     @Override
     protected String getDestinationURI() {
         return DESTINATION;

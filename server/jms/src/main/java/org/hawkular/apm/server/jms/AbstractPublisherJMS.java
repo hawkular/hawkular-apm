@@ -61,9 +61,6 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T>, ServiceLi
     private int initialRetryCount = PropertyUtil.getPropertyAsInteger(
             PropertyUtil.HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT, DEFAULT_INITIAL_RETRY_COUNT);
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ServiceStatus#isAvailable()
-     */
     @Override
     public boolean isAvailable() {
         // If no publisher is defined, then this is the default implementation
@@ -144,25 +141,16 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T>, ServiceLi
         producer.send(tm);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List, long)
-     */
     @Override
     public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
         doPublish(tenantId, items, null, retryCount, delay);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#publish(java.lang.String, java.util.List)
-     */
     @Override
     public void publish(String tenantId, List<T> items) throws Exception {
         doPublish(tenantId, items, null, getInitialRetryCount(), 0);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#retry(java.lang.String, java.util.List, java.lang.String, int, long)
-     */
     @Override
     public void retry(String tenantId, List<T> items, String subscriber, int retryCount, long delay) throws Exception {
         doPublish(tenantId, items, subscriber, retryCount, delay);
@@ -182,9 +170,6 @@ public abstract class AbstractPublisherJMS<T> implements Publisher<T>, ServiceLi
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.Publisher#setMetricHandler(org.hawkular.apm.api.services.PublisherMetricHandler)
-     */
     @Override
     public void setMetricHandler(PublisherMetricHandler<T> handler) {
     }

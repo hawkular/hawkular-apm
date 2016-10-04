@@ -39,18 +39,14 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  */
 public class BatchTraceReporter implements TraceReporter {
 
-    /**  */
     private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
 
-    /**  */
     private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANTID";
 
     private static final Logger log = Logger.getLogger(BatchTraceReporter.class.getName());
 
-    /**  */
     private static final int DEFAULT_BATCH_TIME = 500;
 
-    /**  */
     private static final int DEFAULT_BATCH_SIZE = 1000;
 
     private TracePublisher tracePublisher;
@@ -167,9 +163,6 @@ public class BatchTraceReporter implements TraceReporter {
         this.tenantId = tenantId;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.api.TraceReporter#report(org.hawkular.apm.api.model.trace.Trace)
-     */
     @Override
     public void report(Trace trace) {
         if (tracePublisher != null) {

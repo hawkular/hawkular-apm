@@ -48,7 +48,6 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
 
     private static final Logger log = Logger.getLogger(EvaluateURIActionHandler.class.getName());
 
-    /**  */
     public static final String TEMPLATE_MUST_BE_SPECIFIED = "Template must be specified";
 
     private String pathTemplate;
@@ -112,11 +111,6 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.client.collector.internal.actions.ProcessorActionHandler#process(
-     *      org.hawkular.apm.api.model.trace.Trace, org.hawkular.apm.api.model.trace.Node,
-     *      org.hawkular.apm.api.model.config.Direction, java.util.Map, java.lang.Object[])
-     */
     @Override
     public boolean process(Trace trace, Node node, Direction direction, Map<String, ?> headers,
             Object[] values) {

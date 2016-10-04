@@ -43,9 +43,6 @@ public class SetDetailAction extends ExpressionBasedAction {
         this.name = name;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "SetDetailAction [name=" + name + ", getExpression()=" + getExpression() + ", getDescription()="

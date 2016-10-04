@@ -138,17 +138,11 @@ public class Property implements Externalizable {
         this.number = number;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Property [name=" + name + ", value=" + value + ", type=" + type + ", number=" + number + "]";
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -159,9 +153,6 @@ public class Property implements Externalizable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -186,9 +177,6 @@ public class Property implements Externalizable {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
-     */
     @Override
     public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
         ois.readInt(); // Read version
@@ -199,9 +187,6 @@ public class Property implements Externalizable {
         number = ois.readDouble();
     }
 
-    /* (non-Javadoc)
-     * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
-     */
     @Override
     public void writeExternal(ObjectOutput oos) throws IOException {
         oos.writeInt(1); // Write version

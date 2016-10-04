@@ -127,9 +127,6 @@ public class CompletionTimeseriesStatistics {
         this.max = max;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "CompletionTimeseriesStatistics [timestamp=" + timestamp + ", count=" + count + ", faultCount="

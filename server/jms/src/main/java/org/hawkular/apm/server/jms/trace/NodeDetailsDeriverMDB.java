@@ -51,7 +51,6 @@ public class NodeDetailsDeriverMDB extends RetryCapableMDB<Trace, NodeDetails> {
     @Inject
     private NodeDetailsPublisherJMS nodeDetailsPublisher;
 
-    /**  */
     public static final String SUBSCRIBER = "NodeDetailsDeriver";
 
     public NodeDetailsDeriverMDB() {

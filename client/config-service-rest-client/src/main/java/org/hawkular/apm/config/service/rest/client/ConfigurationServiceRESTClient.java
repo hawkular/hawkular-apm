@@ -57,10 +57,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getCollector(java.lang.String,
-     *                                  java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
 
@@ -102,10 +98,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         return cc;
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransaction(java.lang.String,
-     *              java.lang.String, org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig)
-     */
     @Override
     public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
         return withJsonPayloadAndResults(
@@ -117,9 +109,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         );
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#setBusinessTransactions(java.lang.String, java.util.Map)
-     */
     @Override
     public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs) {
         return withJsonPayloadAndResults(
@@ -131,10 +120,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         );
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#validateBusinessTransaction(
-     *                  org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig)
-     */
     @Override
     public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
         if (!isAvailable()) {
@@ -153,10 +138,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         );
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransaction(java.lang.String,
-     *                          java.lang.String)
-     */
     @Override
     public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
         if (!isAvailable()) {
@@ -170,9 +151,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         return getResultsForUrl(tenantId, BUSINESS_TXN_CONFIG_TYPE_REFERENCE, url, name);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransactionSummaries(java.lang.String)
-     */
     @Override
     public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
         if (!isAvailable()) {
@@ -186,9 +164,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         return getResultsForUrl(tenantId, BTXN_SUMMARY_LIST, url);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#getBusinessTransactions(java.lang.String, long)
-     */
     @Override
     public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
         if (!isAvailable()) {
@@ -202,10 +177,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         return getResultsForUrl(tenantId, BUSINESS_TXN_MAP, url, updated);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#removeBusinessTransaction(java.lang.String,
-     *                          java.lang.String)
-     */
     @Override
     public void removeBusinessTransaction(String tenantId, String name) {
         if (!isAvailable()) {
@@ -238,9 +209,6 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         });
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.api.services.ConfigurationService#clear(java.lang.String)
-     */
     @Override
     public void clear(String tenantId) {
         if (!isAvailable()) {

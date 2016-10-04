@@ -30,17 +30,11 @@ public class TestSourceInfoCache implements SourceInfoCache {
 
     private Map<String,SourceInfo> sourceInfoCache = new HashMap<String,SourceInfo>();
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.SourceInfoCache#get(java.lang.String, java.lang.String)
-     */
     @Override
     public SourceInfo get(String tenantId, String id) {
         return sourceInfoCache.get(id);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.processor.communicationdetails.SourceInfoCache#store(java.lang.String, java.util.List)
-     */
     @Override
     public void store(String tenantId, List<SourceInfo> sourceInfoList) {
         for (int i=0; i < sourceInfoList.size(); i++) {

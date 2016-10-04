@@ -39,9 +39,6 @@ public class TraceCompletionTimeDeriver extends AbstractProcessor<TraceCompletio
         super(ProcessorType.OneToOne);
     }
 
-    /* (non-Javadoc)
-     * @see org.hawkular.apm.server.api.task.Processor#processSingle(java.lang.String,java.lang.Object)
-     */
     @Override
     public CompletionTime processOneToOne(String tenantId, TraceCompletionInformation item)
             throws RetryAttemptException {
