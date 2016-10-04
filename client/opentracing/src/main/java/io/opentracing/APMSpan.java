@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.NodeType;
@@ -42,6 +43,7 @@ public class APMSpan extends AbstractSpan {
     private TraceContext traceContext;
 
     private NodeBuilder nodeBuilder;
+    private String nodePath;
 
     private String interactionId;
 
@@ -73,8 +75,11 @@ public class APMSpan extends AbstractSpan {
         // If no nodebuilder established based on reference information, then create a new
         // one and trace context
         if (nodeBuilder == null) {
-            initTopLevelState(builder, reporter);
+            initTopLevelState(this, builder, reporter);
         }
+
+        // Initialise node path
+        nodePath = nodeBuilder.getNodePath();
 
         traceContext.startProcessingNode();
     }
@@ -85,10 +90,11 @@ public class APMSpan extends AbstractSpan {
      *
      * @param builder The span builder
      * @param reporter The trace reporter
+     * @param parent The optional parent trace context
      */
-    protected void initTopLevelState(APMSpanBuilder builder, TraceReporter reporter) {
+    protected void initTopLevelState(APMSpan topSpan, APMSpanBuilder builder, TraceReporter reporter) {
         nodeBuilder = new NodeBuilder();
-        traceContext = new TraceContext(nodeBuilder, builder.start.toEpochMilli(), reporter);       
+        traceContext = new TraceContext(topSpan, nodeBuilder, builder.start.toEpochMilli(), reporter);
     }
 
     /**
@@ -112,7 +118,7 @@ public class APMSpan extends AbstractSpan {
             if (parent.getNodeBuilder() != null) {
                 nodeBuilder = new NodeBuilder(parent.getNodeBuilder());
                 traceContext = parent.traceContext;
-                
+
                 // As it is not possible to know if a tag has been set after span
                 // creation, we use this situation to check if the parent span
                 // has the 'transaction.name' specified, to set on the trace
@@ -126,22 +132,25 @@ public class APMSpan extends AbstractSpan {
                 }
             }
 
-        // If APMSpanBuilder, then implies that the referred to details
-        // represent an id passed by a client, and therefore we are
-        // creating the 'server' span
+            // If APMSpanBuilder, then implies that the referred to details
+            // represent an id passed by a client, and therefore we are
+            // creating the 'server' span
         } else if (ref.getReferredTo() instanceof APMSpanBuilder) {
             APMSpanBuilder parentBuilder = (APMSpanBuilder) ref.getReferredTo();
 
-            initTopLevelState(builder, reporter);
+            initTopLevelState(this, builder, reporter);
 
             // Check for passed state
             if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_ID)) {
-                setInteractionId(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_ID).toString(), NodeType.Consumer);
+                setInteractionId(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_ID).toString(),
+                        NodeType.Consumer);
                 if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_BT_NAME)) {
-                    traceContext.setBusinessTransaction(parentBuilder.getState().get(APMTracer.HAWKULAR_BT_NAME).toString());
+                    traceContext.setBusinessTransaction(
+                            parentBuilder.getState().get(APMTracer.HAWKULAR_BT_NAME).toString());
                 }
                 if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_LEVEL)) {
-                    traceContext.setReportingLevel(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_LEVEL).toString());
+                    traceContext.setReportingLevel(
+                            parentBuilder.getState().get(APMTracer.HAWKULAR_APM_LEVEL).toString());
                 }
             } else {
                 // Assume top level consumer, even though no state was provider, as span context
@@ -161,15 +170,29 @@ public class APMSpan extends AbstractSpan {
      * @param ref The 'follows-from' relationship
      */
     protected void initFollowsFrom(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
-        initTopLevelState(builder, reporter);
 
         // This reference refers to another span within the same process, but as part of a different
         // trace
         if (ref.getReferredTo() instanceof APMSpan) {
             APMSpan referenced = (APMSpan) ref.getReferredTo();
-            String nodeId = referenced.getNodeBuilder().getNodePath();
+
+            initTopLevelState(referenced.getTraceContext().getTopSpan(), builder, reporter);
+
+            // Top level node in spawned fragment should be a Consumer with correlation id
+            // referencing back to the 'spawned' node
+            String nodeId = referenced.getNodePath();
             getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.CausedBy, nodeId));
-            
+            getNodeBuilder().setNodeType(NodeType.Consumer);
+            getNodeBuilder().setEndpointType(null);
+
+            EndpointRef epref = referenced.getTraceContext().getSourceEndpoint();
+            getNodeBuilder().setUri(epref.getUri());
+            getNodeBuilder().setOperation(epref.getOperation());
+
+            // Create new node builder for the actual span, as a child of the 'Consumer' that
+            // is providing the link back to the referenced node
+            nodeBuilder = new NodeBuilder(getNodeBuilder());
+
             // Propagate business transaction name and reporting level as creating a
             // separate trace fragment to represent the 'follows from' activity
             traceContext.setBusinessTransaction(referenced.getTraceContext().getBusinessTransaction());
@@ -185,6 +208,10 @@ public class APMSpan extends AbstractSpan {
 
     protected String getInteractionId() {
         return interactionId;
+    }
+
+    protected String getNodePath() {
+        return nodePath;
     }
 
     @Override
@@ -216,7 +243,7 @@ public class APMSpan extends AbstractSpan {
         nodeBuilder.setDuration(Duration.between(getStart(), Instant.now()).toNanos());
 
         // Process the span to initialise the node
-        traceContext.getNodeProcessors().forEach( np -> np.process(traceContext, this, nodeBuilder));
+        traceContext.getNodeProcessors().forEach(np -> np.process(traceContext, this, nodeBuilder));
 
         traceContext.endProcessingNode();
         nodeBuilder = null;
@@ -239,7 +266,7 @@ public class APMSpan extends AbstractSpan {
     protected NodeBuilder getNodeBuilder() {
         return nodeBuilder;
     }
-    
+
     /**
      * This method returns the trace context associated with the span.
      *

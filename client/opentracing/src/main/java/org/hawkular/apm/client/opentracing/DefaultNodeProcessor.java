@@ -16,8 +16,6 @@
  */
 package org.hawkular.apm.client.opentracing;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.Property;
@@ -38,14 +36,9 @@ public class DefaultNodeProcessor implements NodeProcessor {
             if (entry.getKey() != null && entry.getValue() != null) {
                 nodeBuilder.addProperty(new Property(entry.getKey(), entry.getValue().toString()));
 
-                if (entry.getKey().endsWith(".url") || entry.getKey().endsWith(".uri")) {
-                    try {
-                        URL url = new URL(entry.getValue().toString());
-                        nodeBuilder.setUri(url.getPath());
-                    } catch (MalformedURLException e) {
-                        nodeBuilder.setUri(entry.getValue().toString());
-                    }
-                    String type=entry.getKey().substring(0, entry.getKey().length() - 4);
+                if (TagUtil.isUriKey(entry.getKey())) {
+                    nodeBuilder.setUri(TagUtil.getUriPath(entry.getValue().toString()));
+                    String type = TagUtil.getTypeFromUriKey(entry.getKey());
                     nodeBuilder.setEndpointType(type);
                     nodeBuilder.setComponentType(type);
                 } else if (entry.getKey().equals("component")) {

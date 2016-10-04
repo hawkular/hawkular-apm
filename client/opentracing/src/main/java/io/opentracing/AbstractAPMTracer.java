@@ -35,21 +35,6 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     private static final Logger log = Logger.getLogger(APMTracer.class.getName());
 
-    /** This constant represents the prefix used by all Hawkular APM state. */
-    public static final String HAWKULAR_APM_PREFIX = "Hawkular-APM";
-
-    /** This constant represents the interaction id exchanges between a sender and receiver. */
-    public static final String HAWKULAR_APM_ID = HAWKULAR_APM_PREFIX + "-Id";
-
-    /** This constant represents the transaction name. */
-    public static final String HAWKULAR_BT_NAME = HAWKULAR_APM_PREFIX + "-BTxn";
-
-    /** This constant represents the reporting level. */
-    public static final String HAWKULAR_APM_LEVEL = HAWKULAR_APM_PREFIX + "-Level";
-
-    /** Tag name used to represent the business transaction name */
-    public static final String TRANSACTION_NAME = "transaction.name";
-
     private TraceReporter reporter;
 
     public AbstractAPMTracer() {
@@ -80,7 +65,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
         if (spanContext instanceof APMSpan) {
             APMSpan span = (APMSpan) spanContext;
             if (span.getInteractionId() != null) {
-                ret.put(AbstractAPMTracer.HAWKULAR_APM_ID, span.getInteractionId());
+                ret.put(APMTracer.HAWKULAR_APM_ID, span.getInteractionId());
             } else {
                 // Not sure if issue - but just logging as warning for now
                 log.warning("No id available to include in trace state for context = " + spanContext);
@@ -90,17 +75,17 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
             // has been defined in the span tags - if so copy the value to the trace
             // context so that it can be propagated to invoked services
             if (span.getTraceContext().getBusinessTransaction() == null
-                    && span.getTags().containsKey(TRANSACTION_NAME)) {
-                span.getTraceContext().setBusinessTransaction(span.getTags().get(TRANSACTION_NAME).toString());
+                    && span.getTags().containsKey(APMTracer.TRANSACTION_NAME)) {
+                span.getTraceContext().setBusinessTransaction(span.getTags().get(APMTracer.TRANSACTION_NAME).toString());
             }
 
             // If transaction name defined on trace context, then propagate it
             if (span.getTraceContext().getBusinessTransaction() != null) {
-                ret.put(AbstractAPMTracer.HAWKULAR_BT_NAME, span.getTraceContext().getBusinessTransaction());
+                ret.put(APMTracer.HAWKULAR_BT_NAME, span.getTraceContext().getBusinessTransaction());
             }
 
             if (span.getTraceContext().getReportingLevel() != null) {
-                ret.put(AbstractAPMTracer.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
+                ret.put(APMTracer.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
             }
         }
 
