@@ -18,7 +18,6 @@ package org.hawkular.apm.tests.client.jetty;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -27,27 +26,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.LoginService;
-import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
@@ -66,23 +58,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientJettyStreamTest extends ClientTestBase {
+public class ClientJettyStreamAsyncITest extends ClientTestBase {
 
-    /**  */
-    private static final String TEST_USER = "jdoe";
-    /**  */
     private static final String GREETINGS_REQUEST = "Greetings";
-    /**  */
     private static final String TEST_HEADER = "test-header";
-    /**  */
     private static final String HELLO_URL = "http://localhost:8180/hello";
-    /**  */
-    private static final String BAD_URL = "http://localhost:9876/hello";
-    /**  */
     private static final String QUERY_STRING = "to=me";
-    /**  */
     private static final String HELLO_URL_WITH_QS = HELLO_URL + "?" + QUERY_STRING;
-    /**  */
     private static final String HELLO_WORLD_RESPONSE = "<h1>HELLO WORLD</h1>";
 
     private static Server server = null;
@@ -91,33 +73,15 @@ public class ClientJettyStreamTest extends ClientTestBase {
     public static void initClass() {
         server = new Server(8180);
 
-        LoginService loginService = new HashLoginService("MyRealm",
-                "src/test/resources/realm.properties");
-        server.addBean(loginService);
-
-        ConstraintSecurityHandler security = new ConstraintSecurityHandler();
-        server.setHandler(security);
-
-        Constraint constraint = new Constraint();
-        constraint.setName("auth");
-        constraint.setAuthenticate(true);
-        constraint.setRoles(new String[] { "user", "admin" });
-
-        ConstraintMapping mapping = new ConstraintMapping();
-        mapping.setPathSpec("/*");
-        mapping.setConstraint(constraint);
-
-        security.setConstraintMappings(Collections.singletonList(mapping));
-        security.setAuthenticator(new BasicAuthenticator());
-        security.setLoginService(loginService);
-
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
-        context.addServlet(EmbeddedServlet.class, "/hello");
-        security.setHandler(context);
+        ServletHolder asyncHolder = context.addServlet(EmbeddedAsyncServlet.class, "/hello");
+        asyncHolder.setAsyncSupported(true);
+        server.setHandler(context);
 
         try {
             server.start();
+            //server.join();
         } catch (Exception e) {
             fail("Failed to start server: " + e);
         }
@@ -175,63 +139,9 @@ public class ClientJettyStreamTest extends ClientTestBase {
         testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
-    @Test
-    public void testGetWithBadURL() {
-        String path = null;
-
-        try {
-            URL url = new URL(BAD_URL);
-            path = url.getPath();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
-
-            connection.connect();
-
-            fail("ConnectException was not thrown");
-        } catch (ConnectException ce) {
-
-        } catch (Exception e) {
-            fail("Failed to perform get: " + e);
-        }
-
-        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
-
-        for (Trace trace : getApmMockServer().getTraces()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        // Check stored business transactions (including 1 for the test client)
-        assertEquals(1, getApmMockServer().getTraces().size());
-
-        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
-
-        assertEquals("Expecting 1 producers", 1, producers.size());
-
-        Producer testProducer = producers.get(0);
-
-        assertEquals(path, testProducer.getUri());
-        assertEquals("ConnectException", producers.get(0).getFault());
-        assertEquals("Connection refused", producers.get(0).getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
-    }
-
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
-            boolean respexpected) {
-        String path = null;
+                    boolean respexpected) {
+        String path=null;
 
         try {
             URL url = new URL(urlstr);
@@ -254,11 +164,6 @@ public class ClientJettyStreamTest extends ClientTestBase {
             if (!respexpected) {
                 connection.setRequestProperty("test-no-data", "true");
             }
-
-            String authString = TEST_USER + ":" + "password";
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            connection.setRequestProperty("Authorization", "Basic " + encoded);
 
             java.io.InputStream is = null;
 
@@ -381,20 +286,9 @@ public class ClientJettyStreamTest extends ClientTestBase {
                 assertFalse(testProducer.getIn().getContent().containsKey("all"));
             }
         }
-
-        Trace consumerBTxn = null;
-
-        if (getApmMockServer().getTraces().get(0).getNodes().get(0) instanceof Consumer) {
-            consumerBTxn = getApmMockServer().getTraces().get(0);
-        } else if (getApmMockServer().getTraces().get(1).getNodes().get(0) instanceof Consumer) {
-            consumerBTxn = getApmMockServer().getTraces().get(1);
-        }
-
-        assertNotNull(consumerBTxn);
-        assertEquals(TEST_USER, consumerBTxn.getPrincipal());
     }
 
-    public static class EmbeddedServlet extends HttpServlet {
+    public static class EmbeddedAsyncServlet extends HttpServlet {
 
         /**  */
         private static final long serialVersionUID = 1L;
@@ -403,28 +297,40 @@ public class ClientJettyStreamTest extends ClientTestBase {
         protected void service(HttpServletRequest request, HttpServletResponse response)
                 throws ServletException, IOException {
 
-            InputStream is = request.getInputStream();
+            final AsyncContext ctxt = request.startAsync();
+            ctxt.start(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        InputStream is = request.getInputStream();
 
-            byte[] b = new byte[is.available()];
-            is.read(b);
+                        byte[] b = new byte[is.available()];
+                        is.read(b);
 
-            is.close();
+                        is.close();
 
-            System.out.println("REQUEST(INPUTSTREAM) RECEIVED: " + new String(b));
+                        System.out.println("REQUEST(ASYNC INPUTSTREAM) RECEIVED: " + new String(b));
 
-            response.setContentType("text/html; charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
+                        response.setContentType("text/html; charset=utf-8");
+                        response.setStatus(HttpServletResponse.SC_OK);
 
-            if (request.getHeader("test-no-data") == null) {
-                OutputStream os = response.getOutputStream();
+                        if (request.getHeader("test-no-data") == null) {
+                            OutputStream os = response.getOutputStream();
 
-                byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
+                            byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
 
-                os.write(resp, 0, resp.length);
+                            os.write(resp, 0, resp.length);
 
-                os.flush();
-                os.close();
-            }
+                            os.flush();
+                            os.close();
+                        }
+                    } catch (Exception e) {
+                        fail("Failed: " + e);
+                    }
+
+                    ctxt.complete();
+                }
+            });
         }
     }
 

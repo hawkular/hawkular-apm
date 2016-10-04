@@ -22,9 +22,9 @@
 
   <parent>
     <groupId>org.hawkular.apm</groupId>
-    <artifactId>hawkular-apm</artifactId>
+    <artifactId>hawkular-apm-tests-parent</artifactId>
     <version>0.10.1.Final-SNAPSHOT</version>
-    <relativePath>../../../pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>hawkular-apm-tests-containers-standalone</artifactId>
@@ -64,10 +64,6 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-tests-server-mock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-tests-common</artifactId>
     </dependency>
 
@@ -89,124 +85,121 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>get-client-all</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
+  <profiles>
+    <profile>
+      <id>itest</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>get-client-all</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular.apm</groupId>
+                      <artifactId>hawkular-apm-agent</artifactId>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${hawkular-apm.lib}</outputDirectory>
+                      <destFileName>hawkular-apm-agent.jar</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.hawkular.apm</groupId>
-                  <artifactId>hawkular-apm-agent</artifactId>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${hawkular-apm.lib}</outputDirectory>
-                  <destFileName>hawkular-apm-agent.jar</destFileName>
-                </artifactItem>
-              </artifactItems>
+              <systemPropertyVariables>
+                <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
+                <hawkular-apm.testapp.uri>${hawkular-apm.testapp.uri}</hawkular-apm.testapp.uri>
+              </systemPropertyVariables>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <HAWKULAR_APM_URI>${HAWKULAR_APM_URI}</HAWKULAR_APM_URI>
-            <hawkular-apm.testapp.uri>${hawkular-apm.testapp.uri}</hawkular-apm.testapp.uri>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <id>exec-standalone-tests</id>
-            <goals>
-              <goal>integration-test</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>**/*Test.java</include>
-              </includes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>final-verify</id>
-            <goals>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>TestBTxnService</id>
-            <phase>pre-integration-test</phase>
-            <configuration>
-              <target>
-                <property name="runtime_classpath" refid="maven.runtime.classpath" />
-                <echo message="runtime classpath: ${runtime_classpath}" />
-                <java classname="org.hawkular.apm.tests.server.ApmMockServer" fork="true" spawn="true">
-                  <classpath>
-                    <pathelement path="${project.build.outputDirectory}" />
-                    <pathelement path="${runtime_classpath}" />
-                  </classpath>
-                  <jvmarg value="-Dhawkular-apm.test.server.host=${hawkular.host}" />
-                  <jvmarg value="-Dhawkular-apm.test.server.port=${hawkular.port}" />
-                  <jvmarg value="-Dhawkular-apm.test.server.shutdown=30000" />
-                  <jvmarg value="-Djava.util.logging.config.file=${HAWKULAR_APM_CONFIG}/test-trace-service-logging.properties" />
-                </java>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>ClientJava</id>
-            <phase>pre-integration-test</phase>
-            <configuration>
-              <target>
-                <property name="runtime_classpath" refid="maven.runtime.classpath" />
-                <echo message="runtime classpath: ${runtime_classpath}" />
-                <java classname="org.hawkular.apm.tests.client.jav.ClientJavaMain" fork="true" spawn="true">
-                  <classpath>
-                    <pathelement path="${project.build.outputDirectory}" />
-                    <pathelement path="${runtime_classpath}" />
-                  </classpath>
-                  <jvmarg value="-javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar" />
-                  <jvmarg value="-DHAWKULAR_APM_CONFIG=${HAWKULAR_APM_CONFIG}" />
-                  <jvmarg value="-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}" />
-                  <jvmarg value="-Dhawkular-apm.testapp.host=${hawkular-apm.testapp.host}" />
-                  <jvmarg value="-Dhawkular-apm.testapp.port=${hawkular-apm.testapp.port}" />
-                  <jvmarg value="-DHAWKULAR_APM_LOG_LEVEL=INFO" />
-                  <jvmarg value="-Dhawkular-apm.log.jul=true" />
-                  <jvmarg value="-Djava.util.logging.config.file=${HAWKULAR_APM_CONFIG}/test-app-logging.properties" />
-                </java>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
+            <executions>
+              <execution>
+                <id>run-integration-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/*ITest.java</include>
+                  </includes>
+                </configuration>
+              </execution>
+              <execution>
+                <id>final-verify</id>
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>TestBTxnService</id>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <target>
+                    <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                    <echo message="runtime classpath: ${runtime_classpath}" />
+                    <java classname="org.hawkular.apm.tests.common.ApmMockServer" fork="true" spawn="true">
+                      <classpath>
+                        <pathelement path="${project.build.outputDirectory}" />
+                        <pathelement path="${runtime_classpath}" />
+                      </classpath>
+                      <jvmarg value="-Dhawkular-apm.test.server.host=${hawkular.host}" />
+                      <jvmarg value="-Dhawkular-apm.test.server.port=${hawkular.port}" />
+                      <jvmarg value="-Dhawkular-apm.test.server.shutdown=30000" />
+                      <jvmarg value="-Djava.util.logging.config.file=${HAWKULAR_APM_CONFIG}/test-trace-service-logging.properties" />
+                    </java>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>ClientJava</id>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <target>
+                    <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                    <echo message="runtime classpath: ${runtime_classpath}" />
+                    <java classname="org.hawkular.apm.tests.client.jav.ClientJavaMain" fork="true" spawn="true">
+                      <classpath>
+                        <pathelement path="${project.build.outputDirectory}" />
+                        <pathelement path="${runtime_classpath}" />
+                      </classpath>
+                      <jvmarg value="-javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar" />
+                      <jvmarg value="-DHAWKULAR_APM_CONFIG=${HAWKULAR_APM_CONFIG}" />
+                      <jvmarg value="-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}" />
+                      <jvmarg value="-Dhawkular-apm.testapp.host=${hawkular-apm.testapp.host}" />
+                      <jvmarg value="-Dhawkular-apm.testapp.port=${hawkular-apm.testapp.port}" />
+                      <jvmarg value="-DHAWKULAR_APM_LOG_LEVEL=INFO" />
+                      <jvmarg value="-Dhawkular-apm.log.jul=true" />
+                      <jvmarg value="-Djava.util.logging.config.file=${HAWKULAR_APM_CONFIG}/test-app-logging.properties" />
+                    </java>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

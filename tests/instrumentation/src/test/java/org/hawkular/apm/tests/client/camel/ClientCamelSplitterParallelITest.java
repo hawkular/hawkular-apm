@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientCamelSplitterParallelTest extends ClientCamelTestBase {
+public class ClientCamelSplitterParallelITest extends ClientCamelITestBase {
 
     @Override
     public RouteBuilder getRouteBuilder() {

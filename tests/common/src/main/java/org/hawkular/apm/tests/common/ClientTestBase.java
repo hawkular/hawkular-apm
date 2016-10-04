@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Producer;
-import org.hawkular.apm.tests.server.ApmMockServer;
 import org.junit.After;
 import org.junit.Before;
 

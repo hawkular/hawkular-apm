@@ -21,19 +21,19 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>hawkular-apm</artifactId>
+    <artifactId>hawkular-apm-tests-parent</artifactId>
     <groupId>org.hawkular.apm</groupId>
     <version>0.10.1.Final-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>instrumentation-test-framework</artifactId>
-
   <name>Hawkular APM::Tests::Instrumentation Test Framework</name>
+
   <dependencies>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-tests-server-mock</artifactId>
+      <artifactId>hawkular-apm-tests-common</artifactId>
     </dependency>
 
     <dependency>
@@ -70,77 +70,99 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>apm-env-variables.properties</include>
-        </includes>
-        <targetPath>${project.build.directory}</targetPath>
-      </resource>
-    </resources>
+  <profiles>
+    <profile>
+      <id>itest</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+          </resource>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>apm-env-variables.properties</include>
+            </includes>
+            <targetPath>${project.build.directory}</targetPath>
+          </resource>
+        </resources>
 
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-apm-agent-to-target-dir</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-apm-agent-to-target-dir</id>
+                <phase>test-compile</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular.apm</groupId>
+                      <artifactId>hawkular-apm-agent</artifactId>
+                      <version>${project.version}</version>
+                      <type>jar</type>
+                    </artifactItem>
+                  </artifactItems>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <stripVersion>true</stripVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>unpack-instrumentation-rules-for-mock-server</id>
+                <phase>test-compile</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular.apm</groupId>
+                      <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
+                    </artifactItem>
+                  </artifactItems>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.hawkular.apm</groupId>
-                  <artifactId>hawkular-apm-agent</artifactId>
-                  <version>${project.version}</version>
-                  <type>jar</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <stripVersion>true</stripVersion>
+              <systemPropertyVariables>
+                <buildDirectory>${project.build.directory}</buildDirectory>
+                <HAWKULAR_APM_CONFIG>${project.build.directory}/apmconfig</HAWKULAR_APM_CONFIG>
+                <testSources>${project.build.testSourceDirectory}</testSources>
+              </systemPropertyVariables>
             </configuration>
-          </execution>
-          <execution>
-            <id>unpack-instrumentation-rules-for-mock-server</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.hawkular.apm</groupId>
-                  <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Build directory path, where is agent.jar and instrumentation rules -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <buildDirectory>${project.build.directory}</buildDirectory>
-            <HAWKULAR_APM_CONFIG>${project.build.directory}/apmconfig</HAWKULAR_APM_CONFIG>
-            <testSources>${project.build.testSourceDirectory}</testSources>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+            <executions>
+              <execution>
+                <id>run-integration-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/*ITest.java</include>
+                  </includes>
+                </configuration>
+              </execution>
+              <execution>
+                <id>final-verify</id>
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

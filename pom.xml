@@ -83,8 +83,7 @@
     <module>server/zipkin-war</module>
     <module>server/war</module>
     <module>dist</module>
-    <module>tests/common</module>
-    <module>tests/server/mock</module>
+    <module>tests</module>
   </modules>
 
   <scm>
@@ -265,11 +264,6 @@
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-tests-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hawkular.apm</groupId>
-        <artifactId>hawkular-apm-tests-server-mock</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -568,7 +562,6 @@
         <configuration>
           <excludes combine.children="append">
             <exclude>**/*.data</exclude>
-            <exclude>**/*.btm</exclude>
             <exclude>**/*.deployed</exclude>
             <exclude>**/.babelrc</exclude>
             <exclude>**/node_modules/**</exclude>
@@ -608,18 +601,6 @@
       </activation>
       <modules>
         <module>ui</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>tests</id>
-      <modules>
-        <module>tests/instrumentation</module>
-        <module>tests/container/standalone</module>
-        <module>tests/container/jetty</module>
-        <module>tests/container/vertx</module>
-        <module>tests/container/wildfly</module>
-        <module>tests/server/wildfly</module>
-        <module>tests/instrumentation-framework</module>
       </modules>
     </profile>
     <profile>

@@ -24,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -43,7 +42,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientCamelRestletTest extends ClientCamelTestBase {
+public class ClientCamelVmSedaITest extends ClientCamelITestBase {
 
     /**  */
     private static final String ORDER_CREATED = "Order created";
@@ -59,15 +58,8 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                 rest("/orders")
                         .get("/createOrder").to("direct:createOrder");
 
-                rest("/inventory")
-                        .get("/checkStock").to("seda:checkStock");
-
-                rest("/creditagency")
-                        .get("/checkCredit").to("vm:checkCredit");
-
                 from("direct:createOrder")
-                        .to("language:simple:" + URLEncoder.encode("Hello", "UTF-8"))
-                        .to("restlet:http://localhost:8180/inventory/checkStock")
+                        .to("seda:checkStock")
                         .choice()
                         .when(body().isEqualTo(true))
                         .to("direct:processOrder")
@@ -75,7 +67,7 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                         .transform().constant("Order NOT created: Out of Stock");
 
                 from("direct:processOrder")
-                        .to("restlet:http://localhost:8180/creditagency/checkCredit")
+                        .to("vm:checkCredit")
                         .choice()
                         .when(body().isEqualTo(true))
                         .transform().constant(ORDER_CREATED).endChoice()
@@ -129,10 +121,10 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
             fail("Failed to perform testOp: " + e);
         }
 
-        Wait.until(() -> getApmMockServer().getTraces().size() == 6);
+        Wait.until(() -> getApmMockServer().getTraces().size() == 4);
 
-        // Check stored traces (including 1 for test client)
-        assertEquals(6, getApmMockServer().getTraces().size());
+        // Check stored traces (including 1 for the test client)
+        assertEquals(4, getApmMockServer().getTraces().size());
 
         Consumer creditCheck = null;
         Consumer checkStock = null;
@@ -152,9 +144,9 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
                     && trace.getNodes().get(0).getClass() == Consumer.class) {
                 Consumer consumer = (Consumer) trace.getNodes().get(0);
 
-                if (consumer.getUri().equals("/inventory/checkStock")) {
+                if (consumer.getUri().equals("seda://checkStock")) {
                     checkStock = consumer;
-                } else if (consumer.getUri().equals("/creditagency/checkCredit")) {
+                } else if (consumer.getUri().equals("vm://checkCredit")) {
                     creditCheck = consumer;
                 } else if (consumer.getUri().equals("/orders/createOrder")) {
                     createOrder = consumer;
@@ -166,11 +158,6 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         assertNotNull("checkStock null", checkStock);
         assertNotNull("createOrder null", createOrder);
 
-        // Check if operation specified
-        assertEquals("GET", creditCheck.getOperation());
-        assertEquals("GET", checkStock.getOperation());
-        assertEquals("GET", createOrder.getOperation());
-
         List<Producer> producers = NodeUtil.findNodes(createOrder.getNodes(), Producer.class);
 
         assertEquals("Expecting 2 producers", 2, producers.size());
@@ -178,9 +165,9 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         Producer creditCheckProducer = null;
         Producer checkStockProducer = null;
         for (Producer p : producers) {
-            if (p.getUri().equals("/inventory/checkStock")) {
+            if (p.getUri().equals("seda://checkStock")) {
                 checkStockProducer = p;
-            } else if (p.getUri().equals("/creditagency/checkCredit")) {
+            } else if (p.getUri().equals("vm://checkCredit")) {
                 creditCheckProducer = p;
             }
         }
@@ -192,4 +179,5 @@ public class ClientCamelRestletTest extends ClientCamelTestBase {
         checkInteractionCorrelationIdentifiers(creditCheckProducer, creditCheck);
         checkInteractionCorrelationIdentifiers(checkStockProducer, checkStock);
     }
+
 }

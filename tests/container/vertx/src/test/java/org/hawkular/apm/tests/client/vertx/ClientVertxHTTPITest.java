@@ -40,15 +40,11 @@ import io.vertx.core.http.HttpServer;
 /**
  * @author gbrown
  */
-public class ClientVertxHTTPTest extends ClientTestBase {
+public class ClientVertxHTTPITest extends ClientTestBase {
 
-    /**  */
     private static final String QUERY_STRING = "to=me";
-    /**  */
     private static final String HELLO_PATH = "/hello_http";
-    /**  */
     private static final String RESPONSE = "<html><body><h1>Hello from vert.x!</h1></body></html>";
-    /**  */
     private static final String MY_REQUEST = "My request";
     private static HttpServer server;
 

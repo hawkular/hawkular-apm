@@ -37,7 +37,6 @@
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

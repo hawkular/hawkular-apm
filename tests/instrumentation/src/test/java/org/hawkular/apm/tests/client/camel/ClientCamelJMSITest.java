@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientCamelJMSTest extends ClientCamelTestBase {
+public class ClientCamelJMSITest extends ClientCamelITestBase {
 
     private ProducerTemplate template;
 

@@ -23,9 +23,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
@@ -58,19 +56,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * @author gbrown
  */
-public class ClientJettyStreamAsyncTest extends ClientTestBase {
+public class ClientJettyReaderWriterAsyncITest extends ClientTestBase {
 
-    /**  */
     private static final String GREETINGS_REQUEST = "Greetings";
-    /**  */
     private static final String TEST_HEADER = "test-header";
-    /**  */
     private static final String HELLO_URL = "http://localhost:8180/hello";
-    /**  */
     private static final String QUERY_STRING = "to=me";
-    /**  */
     private static final String HELLO_URL_WITH_QS = HELLO_URL + "?" + QUERY_STRING;
-    /**  */
     private static final String HELLO_WORLD_RESPONSE = "<h1>HELLO WORLD</h1>";
 
     private static Server server = null;
@@ -81,13 +73,11 @@ public class ClientJettyStreamAsyncTest extends ClientTestBase {
 
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
-        ServletHolder asyncHolder = context.addServlet(EmbeddedAsyncServlet.class, "/hello");
-        asyncHolder.setAsyncSupported(true);
+        context.addServlet(EmbeddedAsyncServlet.class, "/hello");
         server.setHandler(context);
 
         try {
             server.start();
-            //server.join();
         } catch (Exception e) {
             fail("Failed to start server: " + e);
         }
@@ -146,12 +136,13 @@ public class ClientJettyStreamAsyncTest extends ClientTestBase {
     }
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
-                    boolean respexpected) {
+                            boolean respexpected) {
         String path=null;
 
         try {
             URL url = new URL(urlstr);
             path = url.getPath();
+
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod(method);
@@ -308,27 +299,18 @@ public class ClientJettyStreamAsyncTest extends ClientTestBase {
                 @Override
                 public void run() {
                     try {
-                        InputStream is = request.getInputStream();
+                        BufferedReader reader = request.getReader();
 
-                        byte[] b = new byte[is.available()];
-                        is.read(b);
-
-                        is.close();
-
-                        System.out.println("REQUEST(ASYNC INPUTSTREAM) RECEIVED: " + new String(b));
+                        String str = reader.readLine();
+                        System.out.println("REQUEST(READER) RECEIVED: " + str);
 
                         response.setContentType("text/html; charset=utf-8");
                         response.setStatus(HttpServletResponse.SC_OK);
 
                         if (request.getHeader("test-no-data") == null) {
-                            OutputStream os = response.getOutputStream();
+                            PrintWriter out = response.getWriter();
 
-                            byte[] resp = HELLO_WORLD_RESPONSE.getBytes();
-
-                            os.write(resp, 0, resp.length);
-
-                            os.flush();
-                            os.close();
+                            out.println(HELLO_WORLD_RESPONSE);
                         }
                     } catch (Exception e) {
                         fail("Failed: " + e);

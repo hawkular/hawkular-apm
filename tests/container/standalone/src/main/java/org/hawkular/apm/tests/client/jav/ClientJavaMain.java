@@ -33,7 +33,6 @@ import io.undertow.util.Headers;
  */
 public class ClientJavaMain {
 
-    /**  */
     private static final int SHUTDOWN_TIMER = 30000;
 
     private static final Logger log = Logger.getLogger(ClientJavaMain.class.getName());

@@ -47,7 +47,7 @@ import io.vertx.core.http.HttpServer;
 /**
  * @author gbrown
  */
-public class ClientVertxTest extends ClientTestBase {
+public class ClientVertxITest extends ClientTestBase {
 
     @Override
     public int getPort() {

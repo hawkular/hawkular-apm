@@ -24,7 +24,7 @@ import org.hawkular.apm.tests.common.ClientTestBase;
 /**
  * @author gbrown
  */
-public abstract class ClientCamelTestBase extends ClientTestBase {
+public abstract class ClientCamelITestBase extends ClientTestBase {
 
     private CamelContext context = new DefaultCamelContext();
 

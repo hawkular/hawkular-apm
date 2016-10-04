@@ -40,14 +40,12 @@ import org.junit.Test;
 /**
  * @author gbrown
  */
-public class ClientJavaMainTest {
+public class ClientJavaMainITest {
 
     private static String baseUrl = System.getProperty("hawkular-apm.testapp.uri");
     private static String testAPMServerUri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
-    /**  */
     private static final String TEST_PASSWORD = "password";
-    /**  */
     private static final String TEST_USERNAME = "jdoe";
 
     @BeforeClass

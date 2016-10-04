@@ -43,7 +43,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 /**
  * @author gbrown
  */
-public class ClientVertxEventBusTest extends ClientTestBase {
+public class ClientVertxEventBusITest extends ClientTestBase {
 
     @Override
     public int getPort() {
