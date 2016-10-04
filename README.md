@@ -60,7 +60,7 @@ Project Structure
 
 The project is divided into several areas:
 
-Module | Description
+Folder | Description
 ---- | ----
 **api** | This module contains the Java interfaces for services and processors, as well as the information model for exchanging business transaction information.
 **client** | This folder contains the modules used to collector information from an execution environment.
