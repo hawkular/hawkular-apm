@@ -49,8 +49,7 @@ Documentation
 
 Project documentation can be found [here](https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/).
 
-REST API documentation can be generated using *-Pdocgen* profile. +
-The doc is generated under *rest/target* folder.
+REST API documentation can be generated using `-Pdocgen` profile. The doc is generated under *rest/target* folder.
 
 ```shell
 $ mvn clean install -Pdocgen
@@ -61,7 +60,8 @@ Project Structure
 
 The project is divided into several areas:
 
---- | ---
+Module | Description
+---- | ----
 **api** | This module contains the Java interfaces for services and processors, as well as the information model for exchanging business transaction information.
 **client** | This folder contains the modules used to collector information from an execution environment.
 **dist** | This module builds a distribution containing a pre-packaged Hawkular server with BTM installed.
