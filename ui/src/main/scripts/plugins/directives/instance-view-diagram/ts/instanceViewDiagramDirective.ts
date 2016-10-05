@@ -48,72 +48,72 @@ module InstanceViewDiagram {
       let render = new dagreD3.render();
       let g = new dagreD3.graphlib.Graph();
 
-render.shapes().producer = function(parent, bbox, node) {
-  let w = bbox.width + 10,
-      h = bbox.height + 10,
-      points = [
-        { x:     0,      y:     0 },
-        { x:     w,      y:     0 },
-        { x:     w + 10, y:     -h / 2 },
-        { x:     w,      y:     -h },
-        { x:     0,      y:     -h },
-        { x:     0,      y:     0 }
-      ];
-      let shapeSvg = parent.insert('polygon', ':first-child')
-        .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
-        .attr('transform', 'translate(' + (-w / 1.85) + ',' + (h * 4 / 8) + ')');
+      render.shapes().producer = function(parent, bbox, node) {
+        let w = bbox.width + 10,
+            h = bbox.height + 10,
+            points = [
+              { x:     0,      y:     0 },
+              { x:     w,      y:     0 },
+              { x:     w + 10, y:     -h / 2 },
+              { x:     w,      y:     -h },
+              { x:     0,      y:     -h },
+              { x:     0,      y:     0 }
+            ];
+            let shapeSvg = parent.insert('polygon', ':first-child')
+              .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
+              .attr('transform', 'translate(' + (-w / 1.85) + ',' + (h * 4 / 8) + ')');
 
-  node.intersect = function(point) {
-    return dagreD3.intersect.polygon(node, points, point);
-  };
+        node.intersect = function(point) {
+          return dagreD3.intersect.polygon(node, points, point);
+        };
 
-  return shapeSvg;
-};
+        return shapeSvg;
+      };
 
-render.shapes().consumer = function(parent, bbox, node) {
-  let w = bbox.width + 20,
-      h = bbox.height + 10,
-      points = [
-        { x:     0, y:          0 },
-        { x:     w, y:          0 },
-        { x:     w, y:          -h },
-        { x:     0, y:          -h },
-        { x:     10, y:         -h / 2 },
-        { x:     0, y:          0 }
-      ];
-      let shapeSvg = parent.insert('polygon', ':first-child')
-        .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
-        .attr('transform', 'translate(' + (-w / 2.15) + ',' + (h * 4 / 8) + ')');
+      render.shapes().consumer = function(parent, bbox, node) {
+        let w = bbox.width + 20,
+            h = bbox.height + 10,
+            points = [
+              { x:     0, y:          0 },
+              { x:     w, y:          0 },
+              { x:     w, y:          -h },
+              { x:     0, y:          -h },
+              { x:     10, y:         -h / 2 },
+              { x:     0, y:          0 }
+            ];
+            let shapeSvg = parent.insert('polygon', ':first-child')
+              .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
+              .attr('transform', 'translate(' + (-w / 2.15) + ',' + (h * 4 / 8) + ')');
 
-  node.intersect = function(point) {
-    return dagreD3.intersect.polygon(node, points, point);
-  };
+        node.intersect = function(point) {
+          return dagreD3.intersect.polygon(node, points, point);
+        };
 
-  return shapeSvg;
-};
+        return shapeSvg;
+      };
 
-render.shapes().component = function(parent, bbox, node) {
-  let w = bbox.width + 20,
-      h = bbox.height + 8,
-      points = [
-        { x:     -10,    y:     -h / 2 },
-        { x:     0,      y:     -h },
-        { x:     w - 10, y:     -h },
-        { x:     w,      y:     -h / 2 },
-        { x:     w - 10, y:     0 },
-        { x:     0,      y:     0 },
-        { x:     -10,    y:     -h / 2 }
-      ];
-      let shapeSvg = parent.insert('polygon', ':first-child')
-        .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
-        .attr('transform', 'translate(' + (-w / 2.4) + ',' + (h * 4 / 8) + ')');
+      render.shapes().component = function(parent, bbox, node) {
+        let w = bbox.width + 20,
+            h = bbox.height + 8,
+            points = [
+              { x:     -10,    y:     -h / 2 },
+              { x:     0,      y:     -h },
+              { x:     w - 10, y:     -h },
+              { x:     w,      y:     -h / 2 },
+              { x:     w - 10, y:     0 },
+              { x:     0,      y:     0 },
+              { x:     -10,    y:     -h / 2 }
+            ];
+            let shapeSvg = parent.insert('polygon', ':first-child')
+              .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
+              .attr('transform', 'translate(' + (-w / 2.4) + ',' + (h * 4 / 8) + ')');
 
-  node.intersect = function(point) {
-    return dagreD3.intersect.polygon(node, points, point);
-  };
+        node.intersect = function(point) {
+          return dagreD3.intersect.polygon(node, points, point);
+        };
 
-  return shapeSvg;
-};
+        return shapeSvg;
+      };
 
       let prevNodes = [];
       let currNodes = [];
@@ -175,13 +175,13 @@ render.shapes().component = function(parent, bbox, node) {
             }
           }
 
-          let label = '<div class="name" style="color: #eee;">' + uri + '</div>';
+          let label = '<div class="name">' + uri + '</div>';
           if (theShape === 'circle') {
-            label = '<div><i class="fa fa-share-alt" style="color: #ddd; font-size: 2.5em; margin: 0.2em;"></i></div>';
+            label = '<div><i class="fa fa-share-alt spawn"></i></div>';
           } else if (d.componentType && d.componentType.toLowerCase() === 'database') {
-            label = '<div><i class="fa fa-database" style="color: #eee"></i></div>';
+            label = '<div><i class="fa fa-database database"></i></div>';
           } else if (d.componentType && d.componentType.toLowerCase() === 'ejb') {
-            label = '<div><i class="fa fa-coffee" style="color: #eee"></i></div>';
+            label = '<div><i class="fa fa-coffee ejb"></i></div>';
           }
 
           let nodeTooltip = '<strong>' + d.uri + '</strong><hr/><strong>';
@@ -191,8 +191,8 @@ render.shapes().component = function(parent, bbox, node) {
           html += label;
           if (theShape !== 'circle') {
             html += '<span class="stats">';
-            html += '  <span class="duration pull-left" style="margin-left: 0.5em;">';
-            html += '    <i style="color: #DDD; " class="fa fa-clock-o"></i>';
+            html += '  <span class="duration pull-left">';
+            html += '    <i class="fa fa-clock-o"></i>';
             html += '    ' + (d.duration / 1000 / 1000).toFixed(2) + 'ms';
             html += '  </span>';
             html += '</span>';
