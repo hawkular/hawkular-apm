@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.tests.wildfly;
+package org.hawkular.apm.tests.dist;
 
 import java.io.IOException;
 

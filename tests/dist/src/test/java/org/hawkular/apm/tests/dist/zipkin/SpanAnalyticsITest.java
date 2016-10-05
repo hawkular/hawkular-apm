@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.tests.wildfly.zipkin;
+package org.hawkular.apm.tests.dist.zipkin;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.hawkular.apm.server.api.model.zipkin.AnnotationType;
 import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.tests.common.Wait;
-import org.hawkular.apm.tests.wildfly.AbstractITest;
+import org.hawkular.apm.tests.dist.AbstractITest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
