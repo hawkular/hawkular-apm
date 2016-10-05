@@ -164,18 +164,13 @@ module InstanceViewDiagram {
           }
         }
         if (!skip) {
-          // if there is no uri show service name
-          let uri = d.uri;
-          if (uri == null) {
-            let prop: any = _.find(d.properties, {name: 'service'});
-            if (prop) {
-              uri = 'service: ' + prop.value;
-            } else {
-              uri = '';
-            }
-          }
+          let serviceNameProp: any = _.find(d.properties, {name: 'service'});
+          let serviceName = serviceNameProp ? serviceNameProp.value : '';
 
-          let label = '<div class="name">' + uri + '</div>';
+          let uri = (d.uri || '') + (d.operation ? ('[' + d.operation + ']') : '');
+
+          let label = '<span class="name service-name">' + (serviceName || '') + '</span>';
+          label += '<div class="name">' + uri + '</div>';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt spawn"></i></div>';
           } else if (d.componentType && d.componentType.toLowerCase() === 'database') {
