@@ -36,9 +36,16 @@ public class Constants {
     public static final String URI_CLIENT_PREFIX = "client:";
 
     /**
-     * Property key representing service name
+     * Property key representing the service name
+     * {@link org.hawkular.apm.api.model.Property#name}
      */
     public static final String PROP_SERVICE_NAME = "service";
+
+    /**
+     * Property key representing the transaction name
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_TRANSACTION_NAME = "transaction";
 
     /**
      * Details key representing a description of a fault.
@@ -57,6 +64,30 @@ public class Constants {
      */
     public static final String COMPONENT_EJB = "EJB";
 
+
+    /**
+     * This constant represents the prefix used by all Hawkular APM state transferred between
+     * communication services.
+     */
+    public static final String HAWKULAR_APM_PREFIX = "HWKAPM";
+
+    /**
+     * This constant represents the interaction id transferred between a sender and receiver
+     * usually as a header property on the exchanged message.
+     */
+    public static final String HAWKULAR_APM_ID = HAWKULAR_APM_PREFIX + "ID";
+
+    /**
+     * This constant represents the transaction name transferred between a sender and receiver
+     * usually as a header property on the exchanged message.
+     */
+    public static final String HAWKULAR_APM_TXN = HAWKULAR_APM_PREFIX + "TXN";
+
+    /**
+     * This constant represents the reporting level transferred between a sender and receiver
+     * usually as a header property on the exchanged message.
+     */
+    public static final String HAWKULAR_APM_LEVEL = HAWKULAR_APM_PREFIX + "LEVEL";
 
 
     /**

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
@@ -65,7 +66,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
         if (spanContext instanceof APMSpan) {
             APMSpan span = (APMSpan) spanContext;
             if (span.getInteractionId() != null) {
-                ret.put(APMTracer.HAWKULAR_APM_ID, span.getInteractionId());
+                ret.put(Constants.HAWKULAR_APM_ID, span.getInteractionId());
             } else {
                 // Not sure if issue - but just logging as warning for now
                 log.warning("No id available to include in trace state for context = " + spanContext);
@@ -75,17 +76,17 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
             // has been defined in the span tags - if so copy the value to the trace
             // context so that it can be propagated to invoked services
             if (span.getTraceContext().getBusinessTransaction() == null
-                    && span.getTags().containsKey(APMTracer.TRANSACTION_NAME)) {
-                span.getTraceContext().setBusinessTransaction(span.getTags().get(APMTracer.TRANSACTION_NAME).toString());
+                    && span.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)) {
+                span.getTraceContext().setBusinessTransaction(span.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
             }
 
             // If transaction name defined on trace context, then propagate it
             if (span.getTraceContext().getBusinessTransaction() != null) {
-                ret.put(APMTracer.HAWKULAR_BT_NAME, span.getTraceContext().getBusinessTransaction());
+                ret.put(Constants.HAWKULAR_APM_TXN, span.getTraceContext().getBusinessTransaction());
             }
 
             if (span.getTraceContext().getReportingLevel() != null) {
-                ret.put(APMTracer.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
+                ret.put(Constants.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
             }
         }
 

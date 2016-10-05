@@ -22,20 +22,20 @@
         },{
           "name": "id",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkularbtid\")"
+          "expression": "headers.getFirstValue(\"Hwkapmid\")"
         },{
           "name": "btname",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkularbtname\")"
+          "expression": "headers.getFirstValue(\"Hwkapmtxn\")"
         },{
           "name": "btlevel",
           "type": "java.lang.String",
-          "expression": "headers.getFirstValue(\"Hawkularbtlevel\")"
+          "expression": "headers.getFirstValue(\"Hwkapmlevel\")"
         }],
         "condition": "activate($1.getResourceRef().getPath(),null,id)",
         "actions": [{
           "type": "FreeFormAction",
-          "action": "headers.removeAll(\"Hawkularbtid\")"
+          "action": "headers.removeAll(\"Hwkapmid\")"
         },{
           "type": "SetBusinessTransaction",
           "nameExpression": "btname"

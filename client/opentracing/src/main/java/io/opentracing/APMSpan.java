@@ -20,12 +20,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
-import org.hawkular.apm.client.opentracing.APMTracer;
 import org.hawkular.apm.client.opentracing.NodeBuilder;
 import org.hawkular.apm.client.opentracing.TraceContext;
 
@@ -125,10 +125,10 @@ public class APMSpan extends AbstractSpan {
                 // context. This is required in case a child span is used to invoke
                 // another service (and needs to propagate the transaction
                 // name).
-                if (parent.getTags().containsKey(APMTracer.TRANSACTION_NAME)
+                if (parent.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)
                         && traceContext.getBusinessTransaction() == null) {
                     traceContext.setBusinessTransaction(
-                            parent.getTags().get(APMTracer.TRANSACTION_NAME).toString());
+                            parent.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
                 }
             }
 
@@ -141,16 +141,16 @@ public class APMSpan extends AbstractSpan {
             initTopLevelState(this, builder, reporter);
 
             // Check for passed state
-            if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_ID)) {
-                setInteractionId(parentBuilder.getState().get(APMTracer.HAWKULAR_APM_ID).toString(),
+            if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
+                setInteractionId(parentBuilder.getState().get(Constants.HAWKULAR_APM_ID).toString(),
                         NodeType.Consumer);
-                if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_BT_NAME)) {
+                if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_TXN)) {
                     traceContext.setBusinessTransaction(
-                            parentBuilder.getState().get(APMTracer.HAWKULAR_BT_NAME).toString());
+                            parentBuilder.getState().get(Constants.HAWKULAR_APM_TXN).toString());
                 }
-                if (parentBuilder.getState().containsKey(APMTracer.HAWKULAR_APM_LEVEL)) {
+                if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_LEVEL)) {
                     traceContext.setReportingLevel(
-                            parentBuilder.getState().get(APMTracer.HAWKULAR_APM_LEVEL).toString());
+                            parentBuilder.getState().get(Constants.HAWKULAR_APM_LEVEL).toString());
                 }
             } else {
                 // Assume top level consumer, even though no state was provider, as span context

@@ -58,13 +58,13 @@
           "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getQuery()"
         },{
           "type": "FreeFormAction",
-          "action": "req.headers().add(\"Hawkularbtid\",id)"
+          "action": "req.headers().add(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "req.headers().add(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "req.headers().add(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "req.headers().add(\"Hawkularbtlevel\",getLevel())"
+          "action": "req.headers().add(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Netty HTTP Producer End",

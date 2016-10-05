@@ -18,6 +18,7 @@ package org.hawkular.apm.client.opentracing;
 
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 
 import io.opentracing.APMSpan;
@@ -44,7 +45,7 @@ public class DefaultNodeProcessor implements NodeProcessor {
                     nodeBuilder.setComponentType(entry.getValue().toString());
                 } else if (entry.getKey().equals("fault")) {
                     nodeBuilder.setFault(entry.getValue().toString());
-                } else if (entry.getKey().equals(APMTracer.TRANSACTION_NAME)) {
+                } else if (entry.getKey().contains(Constants.PROP_TRANSACTION_NAME)) {
                     // Check if business transaction name already defined - if not then set on the trace context
                     if (context.getBusinessTransaction() == null) {
                         context.setBusinessTransaction(entry.getValue().toString());

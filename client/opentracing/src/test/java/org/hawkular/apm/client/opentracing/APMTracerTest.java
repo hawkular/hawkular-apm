@@ -90,10 +90,10 @@ public class APMTracerTest {
         assertEquals(1, service.getMessages().size());
 
         // Check producer has interaction based correlation id matching the value in the outbound message
-        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
 
         assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
 
         Set<Property> props=producer.getProperties(MY_TAG);
 
@@ -143,8 +143,8 @@ public class APMTracerTest {
         SyncService service = new SyncService(tracer);
 
         Message message = new Message();
-        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(APMTracer.HAWKULAR_BT_NAME, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
         service.handle1(message);
 
@@ -185,10 +185,10 @@ public class APMTracerTest {
         assertEquals(1, service.getMessages().size());
 
         // Check producer has interaction based correlation id matching the value in the outbound message
-        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
         assertEquals("http", producer.getEndpointType());
         assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class APMTracerTest {
         SyncService service = new SyncService(tracer);
 
         Message message = new Message();
-        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
 
         service.handle1(message);
 
@@ -240,13 +240,13 @@ public class APMTracerTest {
         assertEquals(1, service.getMessages().size());
 
         // Check producer has interaction based correlation id matching the value in the outbound message
-        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
         assertEquals("http", producer.getEndpointType());
         assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
 
         assertEquals(SyncService.SYNC_BTXN_NAME_1,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_BT_NAME));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
     @Test
@@ -257,7 +257,7 @@ public class APMTracerTest {
         SyncService service = new SyncService(tracer);
 
         Message message = new Message();
-        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
 
         // Call alternate 'handle' method that does not set the transaction name straightaway
         service.handle2(message);
@@ -299,13 +299,13 @@ public class APMTracerTest {
         assertEquals(1, service.getMessages().size());
 
         // Check producer has interaction based correlation id matching the value in the outbound message
-        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
         assertEquals("http", producer.getEndpointType());
         assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
 
         assertEquals(SyncService.SYNC_BTXN_NAME_2,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_BT_NAME));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
     @Test
@@ -316,8 +316,8 @@ public class APMTracerTest {
         AsyncService service = new AsyncService(tracer);
 
         Message message = new Message();
-        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(APMTracer.HAWKULAR_BT_NAME, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
         service.handle(message);
 
@@ -373,12 +373,12 @@ public class APMTracerTest {
         assertEquals(1, service.getMessages().size());
 
         // Check producer has interaction based correlation id matching the value in the outbound message
-        assertTrue(service.getMessages().get(0).getHeaders().containsKey(APMTracer.HAWKULAR_APM_ID));
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
 
         assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_APM_ID))));
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
 
-        assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(APMTracer.HAWKULAR_BT_NAME));
+        assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
     @Test
@@ -389,8 +389,8 @@ public class APMTracerTest {
         ForkJoinService service = new ForkJoinService(tracer);
 
         Message message = new Message();
-        message.getHeaders().put(APMTracer.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(APMTracer.HAWKULAR_BT_NAME, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
         service.handle(message);
 

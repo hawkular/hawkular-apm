@@ -49,13 +49,13 @@
           "valueExpression": "$0.getURL().getPort()"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtid\",id)"
+          "action": "$0.setRequestProperty(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$0.setRequestProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtlevel\",getLevel())"
+          "action": "$0.setRequestProperty(\"HWKAPMLEVEL\",getLevel())"
         },{
           "type": "InitiateCorrelation",
           "idExpression": "\"java.net-async-\"+hashCode($0)"
@@ -134,13 +134,13 @@
           "valueExpression": "$0.getURL().getPort()"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtid\",id)"
+          "action": "$0.setRequestProperty(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$0.setRequestProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtlevel\",getLevel())"
+          "action": "$0.setRequestProperty(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection getOutputStream Producer Init Buffer",
@@ -223,13 +223,13 @@
           "valueExpression": "$0.getURL().getPort()"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtid\",id)"
+          "action": "$0.setRequestProperty(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$0.setRequestProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.setRequestProperty(\"Hawkularbtlevel\",getLevel())"
+          "action": "$0.setRequestProperty(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Java HttpUrlConnection Producer End Complete Async Link",
