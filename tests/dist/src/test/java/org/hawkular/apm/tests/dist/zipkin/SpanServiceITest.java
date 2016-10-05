@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.tests.wildfly.zipkin;
+package org.hawkular.apm.tests.dist.zipkin;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.server.api.model.zipkin.Annotation;
 import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.tests.common.Wait;
-import org.hawkular.apm.tests.wildfly.AbstractITest;
+import org.hawkular.apm.tests.dist.AbstractITest;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
 import org.junit.Assert;
 import org.junit.Before;
