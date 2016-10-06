@@ -18,6 +18,8 @@ package org.hawkular.apm.processor.alerts;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Clock;
 
@@ -87,6 +89,17 @@ public class EventTest {
         completionTime.getProperties().add(new Property("foo", "baz"));
         Event event = new Event(completionTime, "eventSetsProperties");
         assertEquals(event.getTags().get("foo"), "baz");
+    }
+
+    @Test
+    public void eventSetsMultiValuedProperties() {
+        CompletionTime completionTime = new CompletionTime();
+        completionTime.getProperties().add(new Property("foo", "baz"));
+        completionTime.getProperties().add(new Property("foo", "bar"));
+        Event event = new Event(completionTime, "eventSetsProperties");
+        String result = event.getTags().get("foo");
+        assertNotNull(result);
+        assertTrue(result.equals("baz,bar") || result.equals("bar,baz"));
     }
 
     @Test
