@@ -185,26 +185,26 @@
            "org.apache.camel.Exchange"
         ],
         "location": "ENTRY",
-        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null,$2.getProperty(\"Hawkularbtid\"))",
+        "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null,$2.getProperty(\"HWKAPMID\"))",
         "actions": [{
           "type": "SetBusinessTransaction",
-          "nameExpression": "$2.getProperty(\"Hawkularbtname\")"
+          "nameExpression": "$2.getProperty(\"HWKAPMTXN\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$2.getProperty(\"Hawkularbtlevel\")"
+          "levelExpression": "$2.getProperty(\"HWKAPMLEVEL\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
-          "idExpression": "$2.getProperty(\"Hawkularbtid\")"
+          "idExpression": "$2.getProperty(\"HWKAPMID\")"
         },{
           "type": "SetDetail",
           "name": "apm_source",
           "valueExpression": "\"org.apache.camel\""
         },{
           "type": "FreeFormAction",
-          "action": "$2.removeProperty(\"Hawkularbtid\")"
+          "action": "$2.removeProperty(\"HWKAPMID\")"
         }]
       },{
         "ruleName": "Apache Camel Inbound Consumer End",
@@ -252,13 +252,13 @@
           "valueExpression": "\"org.apache.camel\""
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkularbtid\",id)"
+          "action": "$2.setProperty(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$2.setProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setProperty(\"Hawkularbtlevel\",getLevel())"
+          "action": "$2.setProperty(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Apache Camel Outbound Producer End",

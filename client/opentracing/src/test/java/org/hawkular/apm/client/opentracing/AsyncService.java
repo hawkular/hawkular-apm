@@ -93,7 +93,7 @@ public class AsyncService extends AbstractService {
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
                 .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
-                .withTag(APMTracer.TRANSACTION_NAME, "AnotherTxnName")     // Should not overwrite the existing name
+                .withTag(Constants.PROP_TRANSACTION_NAME, "AnotherTxnName")     // Should not overwrite the existing name
                 .asChildOf(span).start()) {
             Message mesg = createMessage();
             getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,

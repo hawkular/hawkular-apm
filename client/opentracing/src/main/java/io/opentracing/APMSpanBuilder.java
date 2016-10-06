@@ -19,6 +19,7 @@ package io.opentracing;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 
 /**
@@ -54,7 +55,7 @@ public class APMSpanBuilder extends AbstractSpanBuilder {
 
     @Override
     boolean isTraceState(String key, Object value) {
-        return key.startsWith("Hawkular-APM");
+        return key.startsWith(Constants.HAWKULAR_APM_PREFIX);
     }
 
     protected Map<String, Object> getState() {

@@ -30,21 +30,6 @@ import io.opentracing.AbstractAPMTracer;
 @Singleton
 public class APMTracer extends AbstractAPMTracer {
 
-    /** This constant represents the prefix used by all Hawkular APM state. */
-    public static final String HAWKULAR_APM_PREFIX = "Hawkular-APM";
-
-    /** This constant represents the interaction id exchanges between a sender and receiver. */
-    public static final String HAWKULAR_APM_ID = HAWKULAR_APM_PREFIX + "-Id";
-
-    /** This constant represents the transaction name. */
-    public static final String HAWKULAR_BT_NAME = HAWKULAR_APM_PREFIX + "-BTxn";
-
-    /** This constant represents the reporting level. */
-    public static final String HAWKULAR_APM_LEVEL = HAWKULAR_APM_PREFIX + "-Level";
-
-    /** Tag name used to represent the business transaction name */
-    public static final String TRANSACTION_NAME = "transaction";
-
     public APMTracer() {
     }
 

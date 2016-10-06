@@ -11,19 +11,19 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() == null && !isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),null,$1.headers().get(\"Hawkularbtid\"))",
+        "condition": "$1.replyAddress() == null && !isCorrelated(\"io.vertx.core.eventbus-producer\"+$1.address()) && activate($1.address(),null,$1.headers().get(\"HWKAPMID\"))",
         "actions": [{
           "type": "SetBusinessTransaction",
-          "nameExpression": "$1.headers().get(\"Hawkularbtname\")"
+          "nameExpression": "$1.headers().get(\"HWKAPMTXN\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$1.headers().get(\"Hawkularbtlevel\")"
+          "levelExpression": "$1.headers().get(\"HWKAPMLEVEL\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.address()",
-          "idExpression": "$1.headers().get(\"Hawkularbtid\")"
+          "idExpression": "$1.headers().get(\"HWKAPMID\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
@@ -60,19 +60,19 @@
           "io.vertx.core.eventbus.Message"
          ],
         "location": "ENTRY",
-        "condition": "$1.replyAddress() != null && activate($1.address(),null,$1.headers().get(\"Hawkularbtid\"))",
+        "condition": "$1.replyAddress() != null && activate($1.address(),null,$1.headers().get(\"HWKAPMID\"))",
         "actions": [{
           "type": "SetBusinessTransaction",
-          "nameExpression": "$1.headers().get(\"Hawkularbtname\")"
+          "nameExpression": "$1.headers().get(\"HWKAPMTXN\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "$1.headers().get(\"Hawkularbtlevel\")"
+          "levelExpression": "$1.headers().get(\"HWKAPMLEVEL\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"MOM\"",
           "uriExpression": "$1.address()",
-          "idExpression": "$1.headers().get(\"Hawkularbtid\")"
+          "idExpression": "$1.headers().get(\"HWKAPMID\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
@@ -141,13 +141,13 @@
           "valueExpression": "\"io.vertx.core.eventbus\""
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"Hawkularbtid\",id)"
+          "action": "$3.addHeader(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$3.addHeader(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"Hawkularbtlevel\",getLevel())"
+          "action": "$3.addHeader(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Vertx EventBus Queue Producer Sync End",
@@ -205,13 +205,13 @@
           "valueExpression": "\"true\""
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"Hawkularbtid\",id)"
+          "action": "$3.addHeader(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$3.addHeader(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$3.addHeader(\"Hawkularbtlevel\",getLevel())"
+          "action": "$3.addHeader(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Vertx EventBus PubSub Producer Sync End",
@@ -265,13 +265,13 @@
           "valueExpression": "\"io.vertx.core.eventbus\""
         },{
           "type": "FreeFormAction",
-          "action": "$0.headers().set(\"Hawkularbtid\",id)"
+          "action": "$0.headers().set(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$0.headers().set(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$0.headers().set(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$0.headers().set(\"Hawkularbtlevel\",getLevel())"
+          "action": "$0.headers().set(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Vertx EventBus Producer Async End",

@@ -55,13 +55,13 @@
           "valueExpression": "uri.getPort()"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setHeader(\"Hawkularbtid\",id)"
+          "action": "$2.setHeader(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setHeader(\"Hawkularbtname\",getBusinessTransactionName())"
+          "action": "$2.setHeader(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setHeader(\"Hawkularbtlevel\",getLevel())"
+          "action": "$2.setHeader(\"HWKAPMLEVEL\",getLevel())"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Write Request",

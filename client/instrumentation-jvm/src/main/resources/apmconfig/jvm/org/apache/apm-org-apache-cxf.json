@@ -23,20 +23,20 @@
           "type": "javax.servlet.http.HttpServletRequest",
           "expression": "$2"
         }],
-        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"Hawkularbtid\"))",
+        "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"HWKAPMID\"))",
         "actions": [{
           "type": "SetBusinessTransaction",
-          "nameExpression": "req.getHeader(\"Hawkularbtname\")"
+          "nameExpression": "req.getHeader(\"HWKAPMTXN\")"
         },{
           "type": "SetLevel",
-          "levelExpression": "req.getHeader(\"Hawkularbtlevel\")"
+          "levelExpression": "req.getHeader(\"HWKAPMLEVEL\")"
         },{
           "type": "InstrumentConsumer",
           "direction": "In",
           "endpointTypeExpression": "\"HTTP\"",
           "uriExpression": "req.getRequestURL().toString()",
           "operationExpression": "req.getMethod()",
-          "idExpression": "req.getHeader(\"Hawkularbtid\")"
+          "idExpression": "req.getHeader(\"HWKAPMID\")"
         },{
           "type": "ProcessHeaders",
           "direction": "In",
