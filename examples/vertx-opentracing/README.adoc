@@ -1,0 +1,57 @@
+= Example Vertx Application instrumented using Opentracing API
+
+This example provides a simple order management system. When a user places an order, the Order Manager communicates with:
+
+- Account Manager to verify the account id is known
+- Inventory Manager to check there is enough stock
+- Once the order is confirmed and acknowledged to the user, it will be stored in the Order Log and the Inventory Manager
+will be updated.
+
+NOTE: Once the end user response has been returned, to confirm the order, the notification to the Order Log and Inventory
+Manager is performed via publishing a message on a shared destination.
+
+The other operation that can be performed by an end user is to list the current orders associated with an account id.
+
+== Run
+
+First step is to start up the APM server. Then open a console window from this folder and run:
+
+[source,shell]
+----
+$ export HAWKULAR_APM_URI=http://localhost:8080
+$ export HAWKULAR_APM_USERNAME=...
+$ export HAWKULAR_APM_PASSWORD=...
+$ mvn clean install
+$ mvn exec:java
+----
+
+== Example requests
+
+Valid account ids are `fred`, `joe` and `jane`.
+
+Valid items are `laptop` (quantity 5) and `car` (quantity 10).
+
+To place a valid order, call:
+
+[source,shell]
+----
+curl -X POST -d '{"accountId":"fred","itemId":"laptop","quantity":2}' http://localhost:8180/orders
+----
+
+Try changing the account id, item id or quantity (i.e. 6) and see the various error messages. For example,
+
+[source,shell]
+----
+curl -X POST -d '{"accountId":"sarah","itemId":"laptop","quantity":2}' http://localhost:8180/orders
+----
+
+will generated an `Account not found` error message.
+
+Another command that can be performed is to list the current orders for an account:
+
+[source,shell]
+----
+curl -X GET -d '{"accountId":"fred"}' http://localhost:8180/orders
+----
+
+

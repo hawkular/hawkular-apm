@@ -43,7 +43,7 @@ public class APMTracer extends AbstractAPMTracer {
     public static final String HAWKULAR_APM_LEVEL = HAWKULAR_APM_PREFIX + "-Level";
 
     /** Tag name used to represent the business transaction name */
-    public static final String TRANSACTION_NAME = "transaction.name";
+    public static final String TRANSACTION_NAME = "transaction";
 
     public APMTracer() {
     }
