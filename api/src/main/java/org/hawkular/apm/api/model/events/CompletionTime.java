@@ -56,9 +56,6 @@ public class CompletionTime implements ApmEvent {
     private String principal;
 
     @JsonInclude(Include.NON_NULL)
-    private String fault;
-
-    @JsonInclude(Include.NON_NULL)
     private String hostName;
 
     @JsonInclude(Include.NON_NULL)
@@ -186,20 +183,6 @@ public class CompletionTime implements ApmEvent {
     }
 
     /**
-     * @return the fault
-     */
-    public String getFault() {
-        return fault;
-    }
-
-    /**
-     * @param fault the fault to set
-     */
-    public void setFault(String fault) {
-        this.fault = fault;
-    }
-
-    /**
      * This method sets the hostname, where the completion time is associated
      * with a fragment.
      *
@@ -299,7 +282,7 @@ public class CompletionTime implements ApmEvent {
     public String toString() {
         return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", endpointType="
                 + endpointType + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp
-                + ", duration=" + duration + ", principal=" + principal + ", fault=" + fault + ", hostName="
+                + ", duration=" + duration + ", principal=" + principal + ", hostName="
                 + hostName + ", properties=" + properties + ", internal=" + internal + "]";
     }
 

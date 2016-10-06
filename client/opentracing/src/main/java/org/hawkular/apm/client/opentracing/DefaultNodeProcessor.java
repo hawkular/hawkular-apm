@@ -43,8 +43,6 @@ public class DefaultNodeProcessor implements NodeProcessor {
                     nodeBuilder.setComponentType(type);
                 } else if (entry.getKey().equals("component")) {
                     nodeBuilder.setComponentType(entry.getValue().toString());
-                } else if (entry.getKey().equals("fault")) {
-                    nodeBuilder.setFault(entry.getValue().toString());
                 } else if (entry.getKey().contains(Constants.PROP_TRANSACTION_NAME)) {
                     // Check if business transaction name already defined - if not then set on the trace context
                     if (context.getBusinessTransaction() == null) {

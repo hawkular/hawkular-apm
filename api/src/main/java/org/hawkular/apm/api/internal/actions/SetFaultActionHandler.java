@@ -18,6 +18,8 @@ package org.hawkular.apm.api.internal.actions;
 
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
 import org.hawkular.apm.api.model.trace.Node;
@@ -45,7 +47,7 @@ public class SetFaultActionHandler extends ExpressionBasedActionHandler {
         if (super.process(trace, node, direction, headers, values)) {
             String value = getValue(trace, node, direction, headers, values);
             if (value != null) {
-                node.setFault(value);
+                node.getProperties().add(new Property(Constants.PROP_FAULT, value));
                 return true;
             }
         }

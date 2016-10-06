@@ -61,10 +61,6 @@ public class Event {
             });
         }
 
-        if (completionTime.getFault() != null && !completionTime.getFault().isEmpty()) {
-            this.tags.put("fault", completionTime.getFault());
-        }
-
         this.category = eventSource;
         this.dataSource = "APM";
         this.id = UUID.randomUUID().toString();

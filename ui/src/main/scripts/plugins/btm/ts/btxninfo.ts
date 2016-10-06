@@ -34,7 +34,6 @@ module BTM {
     $scope.criteria = {
       businessTransaction: $scope.businessTransactionName,
       properties: [],
-      faults: [],
       startTime: '-3600000',
       endTime: '0',
       lowerBound: 0
@@ -124,7 +123,7 @@ module BTM {
         columns: $scope.faultData,
         type: 'pie',
         onclick: function(d, i) {
-          let added = addIfAbsent($scope.criteria.faults, undefined, d.id);
+          let added = addIfAbsent($scope.criteria.properties, 'fault', d.id);
           if (added) {
             $scope.reload();
           }

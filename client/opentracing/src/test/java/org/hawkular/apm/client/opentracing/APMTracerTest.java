@@ -166,7 +166,8 @@ public class APMTracerTest {
         assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
 
         assertEquals("http", consumer.getEndpointType());
-        assertEquals(SyncService.MY_FAULT, consumer.getFault());
+        assertEquals(1, consumer.getProperties(Constants.PROP_FAULT).size());
+        assertEquals(SyncService.MY_FAULT, consumer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
 
         // Get middle component
         assertEquals(1, consumer.getNodes().size());
@@ -221,7 +222,8 @@ public class APMTracerTest {
         assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
 
         assertEquals("http", consumer.getEndpointType());
-        assertEquals(SyncService.MY_FAULT, consumer.getFault());
+        assertEquals(1, consumer.getProperties(Constants.PROP_FAULT).size());
+        assertEquals(SyncService.MY_FAULT, consumer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
 
         // Get middle component
         assertEquals(1, consumer.getNodes().size());
@@ -280,7 +282,8 @@ public class APMTracerTest {
         assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
 
         assertEquals("http", consumer.getEndpointType());
-        assertEquals(SyncService.MY_FAULT, consumer.getFault());
+        assertEquals(1, consumer.getProperties(Constants.PROP_FAULT).size());
+        assertEquals(SyncService.MY_FAULT, consumer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
 
         // Get middle component
         assertEquals(1, consumer.getNodes().size());

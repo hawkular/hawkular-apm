@@ -39,7 +39,6 @@ public class Criteria {
     private String businessTransaction;
     private Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
-    private Set<FaultCriteria> faults = new HashSet<FaultCriteria>();
     private String hostName;
     private long upperBound;
     private long lowerBound;
@@ -79,7 +78,6 @@ public class Criteria {
 
         criteria.properties.forEach(pc -> this.properties.add(new PropertyCriteria(pc)));
         criteria.correlationIds.forEach(cid -> this.correlationIds.add(new CorrelationIdentifier(cid)));
-        criteria.faults.forEach(fc -> this.faults.add(new FaultCriteria(fc)));
     }
 
     /**
@@ -307,22 +305,6 @@ public class Criteria {
     }
 
     /**
-     * @return the faults
-     */
-    public Set<FaultCriteria> getFaults() {
-        return faults;
-    }
-
-    /**
-     * @param fault the fault to set
-     * @return The criteria
-     */
-    public Criteria setFaults(Set<FaultCriteria> faults) {
-        this.faults = faults;
-        return this;
-    }
-
-    /**
      * @return the timeout
      */
     public long getTimeout() {
@@ -411,23 +393,6 @@ public class Criteria {
             ret.put("correlations", buf.toString());
         }
 
-        // Only relevant for completion time queries
-        if (!getFaults().isEmpty()) {
-            boolean first = true;
-            StringBuilder buf = new StringBuilder();
-
-            for (FaultCriteria pc : getFaults()) {
-                if (first) {
-                    first = false;
-                } else {
-                    buf.append(',');
-                }
-                buf.append(pc.encoded());
-            }
-
-            ret.put("faults", buf.toString());
-        }
-
         if (principal != null) {
             ret.put("principal", principal);
         }
@@ -454,7 +419,7 @@ public class Criteria {
      * @return Whether the criteria would apply to all fragments in a transaction
      */
     public boolean transactionWide() {
-        return !(!properties.isEmpty() || !correlationIds.isEmpty() || !faults.isEmpty() || hostName != null
+        return !(!properties.isEmpty() || !correlationIds.isEmpty() || hostName != null
                 || uri != null || operation != null);
     }
 
@@ -476,7 +441,7 @@ public class Criteria {
     public String toString() {
         return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
                 + businessTransaction + ", properties=" + properties + ", correlationIds=" + correlationIds
-                + ", faults=" + faults + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound="
+                + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound="
                 + lowerBound + ", principal=" + principal + ", uri=" + uri + ", operation=" + operation + ", timeout="
                 + timeout + ", maxResponseSize=" + maxResponseSize + "]";
     }
@@ -623,92 +588,4 @@ public class Criteria {
 
     }
 
-    /**
-     * This class represents the fault criteria.
-     */
-    public static class FaultCriteria {
-
-        private String value;
-
-        private Operator operator = Operator.HAS;
-
-        /**
-         * This is the default constructor.
-         */
-        public FaultCriteria() {
-        }
-
-        /**
-         * This is the copy constructor.
-         *
-         * @param fc The fault criteria
-         */
-        public FaultCriteria(FaultCriteria fc) {
-            this.value = fc.value;
-            this.operator = fc.operator;
-        }
-
-        /**
-         * This constructor initialises the fields.
-         *
-         * @param value The value
-         * @param operator The comparison operator
-         */
-        public FaultCriteria(String value, Operator operator) {
-            this.value = value;
-            setOperator(operator);
-        }
-
-        /**
-         * @return the value
-         */
-        public String getValue() {
-            return value;
-        }
-
-        /**
-         * @param value the value to set
-         */
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        /**
-         * @return the operator
-         */
-        public Operator getOperator() {
-            return operator;
-        }
-
-        /**
-         * @param operator the operator to set
-         */
-        public void setOperator(Operator operator) {
-            if (operator == null) {
-                operator = Operator.HAS;
-            }
-            this.operator = operator;
-        }
-
-        /**
-         * This method returns an encoded form for the
-         * property criteria.
-         *
-         * @return The encoded form
-         */
-        public String encoded() {
-            StringBuilder buf = new StringBuilder();
-            buf.append(getValue());
-            if (getOperator() != Operator.HAS) {
-                buf.append('|');
-                buf.append(getOperator());
-            }
-            return buf.toString();
-        }
-
-        @Override
-        public String toString() {
-            return "FaultCriteria [value=" + value + ", operator=" + operator + "]";
-        }
-    }
 }

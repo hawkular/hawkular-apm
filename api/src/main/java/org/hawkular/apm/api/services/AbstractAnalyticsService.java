@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
@@ -385,7 +386,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
                     // Check whether endpoint already known, and that it did not result
                     // in a fault (e.g. want to ignore spurious URIs that are not
                     // associated with a valid transaction)
-                    if (!map.containsKey(endpoint) && consumer.getFault() == null) {
+                    if (!map.containsKey(endpoint) && consumer.getProperties(Constants.PROP_FAULT).isEmpty()) {
                         EndpointInfo info = new EndpointInfo();
                         info.setEndpoint(endpoint);
                         info.setType(consumer.getEndpointType());

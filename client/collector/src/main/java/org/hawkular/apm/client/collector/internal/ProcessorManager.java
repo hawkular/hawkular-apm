@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -29,6 +30,8 @@ import org.hawkular.apm.api.internal.actions.ProcessorActionHandler;
 import org.hawkular.apm.api.internal.actions.ProcessorActionHandlerFactory;
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
@@ -420,15 +423,17 @@ public class ProcessorManager {
                     return;
                 }
 
+                Set<Property> faults = node.getProperties(Constants.PROP_FAULT);
+
                 // If fault filter not defined, then node cannot have a fault
-                if (faultFilter == null && node.getFault() != null) {
+                if (faultFilter == null &&  !faults.isEmpty()) {
                     return;
                 }
 
                 // If fault filter regex expression defined, then verify whether
                 // node fault string matches.
-                if (faultFilter != null && (node.getFault() == null
-                        || !faultFilter.test(node.getFault()))) {
+                if (faultFilter != null &&
+                        faults.stream().filter(f -> faultFilter.test(f.getValue())).count() == 0) {
                     return;
                 }
 

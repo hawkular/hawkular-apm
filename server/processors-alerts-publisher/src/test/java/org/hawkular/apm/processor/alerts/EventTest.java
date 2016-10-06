@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.Clock;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.junit.Test;
@@ -34,9 +35,10 @@ public class EventTest {
     @Test
     public void eventConsumesFault() {
         CompletionTime completionTime = new CompletionTime();
-        completionTime.setFault("the fault");
+        completionTime.getProperties().add(new Property(Constants.PROP_FAULT, "the fault"));
         Event event = new Event(completionTime, "eventConsumesFault");
-        assertEquals(event.getTags().get("fault"), completionTime.getFault());
+        assertEquals(event.getTags().get(Constants.PROP_FAULT),
+                completionTime.getProperties().iterator().next().getValue());
     }
 
     @Test(expected = IllegalStateException.class)

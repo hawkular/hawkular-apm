@@ -66,9 +66,6 @@ public class NodeDetails implements ApmEvent {
     private String operation;
 
     @JsonInclude(Include.NON_NULL)
-    private String fault;
-
-    @JsonInclude(Include.NON_NULL)
     private String hostName;
 
     @JsonInclude(Include.NON_NULL)
@@ -218,20 +215,6 @@ public class NodeDetails implements ApmEvent {
     }
 
     /**
-     * @return the fault
-     */
-    public String getFault() {
-        return fault;
-    }
-
-    /**
-     * @param fault the fault to set
-     */
-    public void setFault(String fault) {
-        this.fault = fault;
-    }
-
-    /**
      * @return the hostName
      */
     public String getHostName() {
@@ -362,7 +345,6 @@ public class NodeDetails implements ApmEvent {
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
-        result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
@@ -407,11 +389,6 @@ public class NodeDetails implements ApmEvent {
             return false;
         if (elapsed != other.elapsed)
             return false;
-        if (fault == null) {
-            if (other.fault != null)
-                return false;
-        } else if (!fault.equals(other.fault))
-            return false;
         if (hostName == null) {
             if (other.hostName != null)
                 return false;
@@ -453,7 +430,7 @@ public class NodeDetails implements ApmEvent {
     public String toString() {
         return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
                 + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType="
-                + componentType + ", operation=" + operation + ", fault=" + fault + ", hostName=" + hostName
+                + componentType + ", operation=" + operation + ", hostName=" + hostName
                 + ", principal=" + principal + ", properties=" + properties + ", details=" + details
                 + ", correlationIds=" + correlationIds + "]";
     }

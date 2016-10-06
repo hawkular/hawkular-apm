@@ -226,7 +226,8 @@ public class ApacheHttpClientITest extends ClientTestBase {
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
 
         if (fault) {
-            assertEquals("401", testProducer.getFault());
+            assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
+            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
             assertEquals("Unauthorized", testProducer.getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
         } else {
 

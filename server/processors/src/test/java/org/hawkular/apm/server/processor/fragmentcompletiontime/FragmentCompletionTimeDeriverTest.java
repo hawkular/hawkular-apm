@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Trace;
@@ -44,7 +46,7 @@ public class FragmentCompletionTimeDeriverTest {
         c.setUri("uri");
         c.setBaseTime(1);
         c.setDuration(200000000);
-        c.setFault("myFault");
+        c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
         c.setEndpointType("HTTP");
 
         trace.getNodes().add(c);
@@ -68,7 +70,7 @@ public class FragmentCompletionTimeDeriverTest {
         assertEquals(trace.getStartTime(), ct.getTimestamp());
         assertEquals(c.getUri(), ct.getUri());
         assertEquals(200, ct.getDuration());
-        assertEquals(c.getFault(), ct.getFault());
+        assertEquals(c.getProperties(Constants.PROP_FAULT), ct.getProperties(Constants.PROP_FAULT));
     }
 
     @Test

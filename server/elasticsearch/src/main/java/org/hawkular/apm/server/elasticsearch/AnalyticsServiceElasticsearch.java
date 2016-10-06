@@ -304,16 +304,26 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .stats("stats")
                 .field("duration");
 
-        MissingBuilder faultCountBuilder = AggregationBuilders
-                .missing("faults")
-                .field("fault");
+        // TODO: HWKAPM-679 (related to HWKAPM-675), faults now recorded as properties. However this
+        // current results in the fault count being an actual count of fault properties, where
+        // the original intention of the fault count is the number of txns that have been affected
+        // by a fault.
+        FilterAggregationBuilder faultCountBuilder = AggregationBuilders
+                .filter("faults")
+                .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("properties.name", Constants.PROP_FAULT))));
+
+        NestedBuilder nestedFaultCountBuilder = AggregationBuilders
+                .nested("nested")
+                .path("properties")
+                .subAggregation(faultCountBuilder);
 
         DateHistogramBuilder histogramBuilder = AggregationBuilders
                 .dateHistogram("histogram")
                 .interval(interval)
                 .field("timestamp")
                 .subAggregation(statsBuilder)
-                .subAggregation(faultCountBuilder);
+                .subAggregation(nestedFaultCountBuilder);
 
         BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
@@ -329,28 +339,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
     @Override
     public List<Cardinality> getTraceCompletionFaultDetails(String tenantId, Criteria criteria) {
-        String index = client.getIndex(tenantId);
-        if (!refresh(index)) {
-            return null;
-        }
-
-        TermsBuilder cardinalityBuilder = AggregationBuilders
-                .terms("cardinality")
-                .field("fault")
-                .order(Order.aggregation("_count", false))
-                .size(criteria.getMaxResponseSize());
-
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
-        SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
-                .addAggregation(cardinalityBuilder);
-
-        SearchResponse response = getSearchResponse(request);
-        Terms terms = response.getAggregations().get("cardinality");
-
-        return terms.getBuckets().stream()
-                .map(AnalyticsServiceElasticsearch::toCardinality)
-                .sorted((one, another) -> (int) (another.getCount() - one.getCount()))
-                .collect(Collectors.toList());
+        return getTraceCompletionPropertyDetails(tenantId, criteria, Constants.PROP_FAULT);
     }
 
     @Override
@@ -947,7 +936,10 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
     private static CompletionTimeseriesStatistics toCompletionTimeseriesStatistics(Bucket bucket) {
         Stats stat = bucket.getAggregations().get("stats");
-        Missing missing = bucket.getAggregations().get("faults");
+
+        long faultCount = bucket.getAggregations()
+                .<Nested>get("nested").getAggregations()
+                .<Filter>get("faults").getDocCount();
 
         CompletionTimeseriesStatistics s = new CompletionTimeseriesStatistics();
         s.setTimestamp(bucket.getKeyAsDate().getMillis());
@@ -955,7 +947,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         s.setMin((long)stat.getMin());
         s.setMax((long)stat.getMax());
         s.setCount(stat.getCount());
-        s.setFaultCount(stat.getCount() - missing.getDocCount());
+        s.setFaultCount(faultCount);
         return s;
     }
 
@@ -1023,8 +1015,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0);
 
         if (onlyFaulty) {
-            FilterBuilder filter = FilterBuilders.existsFilter("fault");
-            request.setPostFilter(filter);
+            FilterBuilder filter = FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                    .must(QueryBuilders.matchQuery("properties.name", Constants.PROP_FAULT)));
+            request.setPostFilter(FilterBuilders.nestedFilter("properties", filter));
         }
 
         SearchResponse response = request.execute().actionGet();

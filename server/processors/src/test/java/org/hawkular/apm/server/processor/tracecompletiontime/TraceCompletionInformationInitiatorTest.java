@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
@@ -76,7 +78,7 @@ public class TraceCompletionInformationInitiatorTest {
         c.setUri("uri");
         c.setBaseTime(1);
         c.setDuration(200000000);
-        c.setFault("myFault");
+        c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
         c.setEndpointType("HTTP");
 
         trace.getNodes().add(c);
@@ -102,7 +104,8 @@ public class TraceCompletionInformationInitiatorTest {
         assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(c.getUri(), ci.getCompletionTime().getUri());
         assertEquals(200, ci.getCompletionTime().getDuration());
-        assertEquals(c.getFault(), ci.getCompletionTime().getFault());
+        assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());
+        assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
     }
 
     @Test
@@ -116,7 +119,7 @@ public class TraceCompletionInformationInitiatorTest {
         c.setUri("uri");
         c.setBaseTime(1);
         c.setDuration(200000000);
-        c.setFault("myFault");
+        c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
 
         trace.getNodes().add(c);
 
@@ -139,7 +142,9 @@ public class TraceCompletionInformationInitiatorTest {
         assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
         assertEquals(200, ci.getCompletionTime().getDuration());
-        assertEquals(c.getFault(), ci.getCompletionTime().getFault());
+        assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
+        assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());
+
     }
 
     @Test

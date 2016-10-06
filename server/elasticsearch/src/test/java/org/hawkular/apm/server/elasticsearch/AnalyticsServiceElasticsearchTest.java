@@ -57,7 +57,6 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.Criteria;
-import org.hawkular.apm.api.services.Criteria.FaultCriteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.utils.EndpointUtil;
@@ -549,14 +548,14 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
-        ct2.setFault("TestFault1");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setUri("uri2");
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
-        ct3.setFault("TestFault2");
+        ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setUri("uri1");
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
@@ -582,14 +581,14 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
-        ct2.setFault("TestFault1");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setUri("uri2");
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
-        ct3.setFault("TestFault2");
+        ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setUri("uri1");
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
@@ -615,14 +614,14 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
-        ct2.setFault("TestFault1");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setOperation(OP2);
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
-        ct3.setFault("TestFault2");
+        ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setOperation(OP1);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
@@ -683,12 +682,12 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        ct2.setFault("TestFault");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault", null));
+        criteria.addProperty(Constants.PROP_FAULT, "TestFault", Criteria.Operator.HAS);
         criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
@@ -704,17 +703,17 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        ct2.setFault("TestFault1");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
-        ct3.setFault("TestFault2");
+        ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault1", Operator.HASNOT));
+        criteria.addProperty(Constants.PROP_FAULT, "TestFault1", Operator.HASNOT);
         criteria.setBusinessTransaction(BTXN).setStartTime(100).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
@@ -732,13 +731,13 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
         ct2.setPrincipal("p2");
-        ct2.setFault("TestFault1");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
         ct3.setPrincipal("p1");
-        ct3.setFault("TestFault2");
+        ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
@@ -809,7 +808,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1 = new CompletionTime();
         ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        ct1.setFault("Failed");
+        ct1.getProperties().add(new Property(Constants.PROP_FAULT, "Failed"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
@@ -979,7 +978,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setFault("fault1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
@@ -990,7 +989,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        ct2.setFault("fault2");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
@@ -1037,7 +1036,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setPrincipal("p1");
-        ct1_2.setFault("fault1");
+        ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
@@ -1135,13 +1134,13 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setFault("TestFault");
+        ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
         ct1_2.getProperties().add(new Property("prop1", "value2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault", null));
+        criteria.addProperty(Constants.PROP_FAULT, "TestFault", Criteria.Operator.HAS);
         criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
@@ -1169,13 +1168,13 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setFault("TestFault");
+        ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
         ct1_2.getProperties().add(new Property("prop1", "value2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
-        criteria.getFaults().add(new FaultCriteria("TestFault", Operator.HASNOT));
+        criteria.addProperty(Constants.PROP_FAULT, "TestFault", Operator.HASNOT);
         criteria.setBusinessTransaction(BTXN).setStartTime(1000).setEndTime(10000);
 
         Wait.until(() ->
@@ -1232,19 +1231,19 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setFault("fault1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setFault("fault2");
+        ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
-        ct2.setFault("fault2");
+        ct2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
@@ -1257,10 +1256,10 @@ public class AnalyticsServiceElasticsearchTest {
         assertNotNull(cards1);
         assertEquals(2, cards1.size());
 
-        assertEquals("fault2", cards1.get(0).getValue());
-        assertEquals(2, cards1.get(0).getCount());
-        assertEquals("fault1", cards1.get(1).getValue());
-        assertEquals(1, cards1.get(1).getCount());
+        assertEquals("fault1", cards1.get(0).getValue());
+        assertEquals(1, cards1.get(0).getCount());
+        assertEquals("fault2", cards1.get(1).getValue());
+        assertEquals(2, cards1.get(1).getCount());
     }
 
     @Test
@@ -1269,7 +1268,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setFault("fault1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
@@ -1302,14 +1301,14 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setFault("fault1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
         ct1_1.setPrincipal("p1");
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setFault("fault2");
+        ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
         ct1_2.setPrincipal("p2");
 
         CompletionTime ct2 = new CompletionTime();
