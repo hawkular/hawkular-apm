@@ -15,12 +15,17 @@
 # limitations under the License.
 #
 
-# export TRACING_SERVER=172.17.0.1
-# docker-compose up
-
 version: "2"
 
 services:
+  kafka:
+    image: spotify/kafka
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      - ADVERTISED_HOST=${TRACING_SERVER}
+      - AUTO_CREATE_TOPICS=true
   dropwizard:
     image: hawkular/apm-example-polyglot-zipkin-dropwizard
     extra_hosts:
@@ -38,6 +43,12 @@ services:
       - "3003:3003"
     environment:
       - TRACING_PORT
+  cassandra:
+    image: hawkular/apm-example-polyglot-zipkin-cassandra
+    extra_hosts:
+      - "tracing-server:${TRACING_SERVER}"
+    environment:
+      - JVM_OPTS=-Dcassandra.custom_tracing_class=com.thelastpickle.cassandra.tracing.ZipkinTracing -Dcassandra.custom_query_handler_class=org.apache.cassandra.cql3.CustomPayloadMirroringQueryHandler -DZipkinTracing.httpCollectorHost=tracing-server -DZipkinTracing.httpCollectorPort=${TRACING_PORT}
   js:
     image: hawkular/apm-example-polyglot-zipkin-js
     extra_hosts:
@@ -54,9 +65,7 @@ services:
       - "3002:3002"
     environment:
       - TRACING_PORT
-  cassandra:
-    image: hawkular/apm-example-polyglot-zipkin-cassandra
-    extra_hosts:
-      - "tracing-server:${TRACING_SERVER}"
-    environment:
-      - JVM_OPTS=-Dcassandra.custom_tracing_class=com.thelastpickle.cassandra.tracing.ZipkinTracing -Dcassandra.custom_query_handler_class=org.apache.cassandra.cql3.CustomPayloadMirroringQueryHandler -DZipkinTracing.httpCollectorHost=tracing-server -DZipkinTracing.httpCollectorPort=${TRACING_PORT}
+  python:
+    image: hawkular/apm-example-polyglot-zipkin-python
+    ports:
+      - "3004:3004"

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
@@ -15,27 +17,23 @@
 # limitations under the License.
 #
 
-class MyApp < Roda
+from setuptools import setup
 
-  route do |r|
-
-    # GET /
-    r.root do
-      r.redirect "/roda/hello"
-    end
-
-    r.on "roda/hello" do
-      r.get do
-        "Hello from Roda! [Ruby]"
-      end
-    end
-
-    r.on "roda/users" do
-      r.get do
-        puts "User created!"
-        "User created!"
-      end
-    end
-  end
-end
-
+setup(name='hawkular-apm-example-polyglot-zipkin-python',
+      version='0.1',
+      description='Zipkin python example',
+      keywords = "Hawkular APM zipkin pyramid tracing",
+      url='http://github.com/hawkular/hawkular-apm/examples/polyglot-zipkin/python-pyramid',
+      author='Pavol Loffay',
+      author_email='ploffay@redhat.com',
+      license='Apache 2.0',
+      packages=['zipkin_python'],
+      install_requires=[
+          'pyramid',
+          'waitress',
+          'bravado',
+          'kafka',
+          'pyramid_zipkin',
+          'swagger_zipkin'
+      ],
+      zip_safe=False)

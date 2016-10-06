@@ -15,27 +15,19 @@
 # limitations under the License.
 #
 
-class MyApp < Roda
+FROM python:2.7
 
-  route do |r|
+MAINTAINER Pavol Loffay <ploffay@redhat.com>
 
-    # GET /
-    r.root do
-      r.redirect "/roda/hello"
-    end
+ENV APP_HOME /app/
 
-    r.on "roda/hello" do
-      r.get do
-        "Hello from Roda! [Ruby]"
-      end
-    end
+COPY setup.py $APP_HOME
+COPY zipkin_python $APP_HOME/zipkin_python
 
-    r.on "roda/users" do
-      r.get do
-        puts "User created!"
-        "User created!"
-      end
-    end
-  end
-end
+WORKDIR $APP_HOME
+RUN pip install pyasn1
+RUN python setup.py install --user
 
+EXPOSE 3004
+
+CMD ["python", "zipkin_python/app.py"]

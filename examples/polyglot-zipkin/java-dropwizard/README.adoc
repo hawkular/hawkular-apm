@@ -5,7 +5,7 @@ Dropwizard application instrumented with zipkin brave library.
 == Standalone Run & Build
 [source,shell]
 ----
-$ mvn install
+$ mvn clean install
 $ java -jar target/hawkular-apm-example-zipkin-dropwizard.jar server app.yml
 ----
 
