@@ -54,7 +54,11 @@ public class Event {
 
         Set<Property> properties = completionTime.getProperties();
         if (properties != null && properties.size() > 0) {
-            properties.forEach(p -> this.tags.put(p.getName(), p.getValue()));
+            properties.forEach(p -> {
+                String value = this.tags.get(p.getName());
+                this.tags.put(p.getName(), value == null ? p.getValue()
+                        : String.format("%s,%s", value, p.getValue()));
+            });
         }
 
         if (completionTime.getFault() != null && !completionTime.getFault().isEmpty()) {
