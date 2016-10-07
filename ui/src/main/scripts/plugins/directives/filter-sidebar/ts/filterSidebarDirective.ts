@@ -53,7 +53,6 @@ module FilterSidebar {
         businessTransaction: '',
         hostName: '',
         properties: [],
-        faults: [],
         startTime: $rootScope.timeSpans[4].time,
         endTime: '0'
       };
@@ -160,15 +159,6 @@ module FilterSidebar {
           this.$rootScope.sbFilter.data.properties = resp.data || [];
         }, (error) => {
             console.log('Failed to get properties: ' + angular.toJson(error));
-        });
-      }
-
-      if (scope.fsb.showFaults) {
-        this.$http.get('/hawkular/apm/analytics/trace/completion/faults?criteria=' +
-            encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
-          this.$rootScope.sbFilter.data.faults = resp.data || [];
-        }, (error) => {
-            console.log('Failed to get faults: ' + angular.toJson(error));
         });
       }
 

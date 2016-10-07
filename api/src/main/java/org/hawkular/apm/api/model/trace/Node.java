@@ -63,9 +63,6 @@ public abstract class Node {
     @JsonInclude
     private long duration = 0;
 
-    @JsonInclude(Include.NON_NULL)
-    private String fault;
-
     @JsonInclude(Include.NON_EMPTY)
     private Set<Property> properties = new HashSet<Property>();
 
@@ -180,22 +177,6 @@ public abstract class Node {
      */
     public Node setDuration(long duration) {
         this.duration = duration;
-        return this;
-    }
-
-    /**
-     * @return the fault
-     */
-    public String getFault() {
-        return fault;
-    }
-
-    /**
-     * @param fault the fault to set
-     * @return The node
-     */
-    public Node setFault(String fault) {
-        this.fault = fault;
         return this;
     }
 
@@ -445,7 +426,6 @@ public abstract class Node {
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
-        result = prime * result + ((fault == null) ? 0 : fault.hashCode());
         result = prime * result + ((issues == null) ? 0 : issues.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
@@ -476,11 +456,6 @@ public abstract class Node {
         } else if (!details.equals(other.details))
             return false;
         if (duration != other.duration)
-            return false;
-        if (fault == null) {
-            if (other.fault != null)
-                return false;
-        } else if (!fault.equals(other.fault))
             return false;
         if (issues == null) {
             if (other.issues != null)

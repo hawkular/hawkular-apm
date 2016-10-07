@@ -21,7 +21,6 @@ import java.util.StringTokenizer;
 
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
-import org.hawkular.apm.api.services.Criteria.FaultCriteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
 import org.jboss.logging.Logger;
@@ -93,31 +92,4 @@ public class RESTServiceUtil {
         }
     }
 
-    /**
-     * This method decodes a set of faults.
-     *
-     * @param faults The faults
-     * @param encoded The string containing the encoded faults
-     */
-    public static void decodeFaults(Set<FaultCriteria> faults, String encoded) {
-        if (encoded != null && !encoded.trim().isEmpty()) {
-            StringTokenizer st = new StringTokenizer(encoded, ",");
-            while (st.hasMoreTokens()) {
-                String fault = st.nextToken();
-                String[] parts = fault.split("[|]");
-                if (parts.length >= 1) {
-                    String value = parts[0].trim();
-                    Operator op = Operator.HAS;
-
-                    if (parts.length > 1) {
-                        op = Operator.valueOf(parts[1].trim());
-                    }
-
-                    log.tracef("Extracted fault value [%s] operator [%s]", value, op);
-
-                    faults.add(new FaultCriteria(value, op));
-                }
-            }
-        }
-    }
 }

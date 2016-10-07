@@ -19,6 +19,7 @@ package org.hawkular.apm.api.internal.actions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.apm.api.model.config.btxn.SetFaultAction;
@@ -45,7 +46,8 @@ public class SetFaultActionHandlerTest {
 
         handler.process(null, node, Direction.In, null, null);
 
-        assertEquals(TEST_VALUE_1, node.getFault());
+        assertEquals(1, node.getProperties(Constants.PROP_FAULT).size());
+        assertEquals(TEST_VALUE_1, node.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
 
         assertNull(handler.getIssues());
     }

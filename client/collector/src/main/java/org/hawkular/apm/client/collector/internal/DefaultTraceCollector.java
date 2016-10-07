@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
@@ -766,7 +767,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                builder.getCurrentNode().setFault(value);
+                builder.getCurrentNode().getProperties().add(new Property(Constants.PROP_FAULT, value));
             } else if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setFault: No fragment builder for this thread", null);
             }

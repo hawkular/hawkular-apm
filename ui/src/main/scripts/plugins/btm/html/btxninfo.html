@@ -15,26 +15,6 @@
         <div class="card-pf-body">
 
           <div class="form-group" >
-            <span ng-repeat="fault in criteria.faults">
-              <span ng-show="fault.operator === undefined || fault.operator === 'HAS'">
-                <a class="btn btn-success" ng-click="toggleExclusion(fault)">
-                  <i>fault</i>: {{fault.value}}
-                  <a class="btn btn-default" ng-click="removeFault(fault)">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                  </a>
-                </a>
-              </span>
-              <span ng-show="fault.operator === 'HASNOT'">
-                <a class="btn btn-danger" ng-click="toggleExclusion(fault)">
-                  <i>fault</i>: {{fault.value}}
-                  <a class="btn btn-default" ng-click="removeFault(fault)">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                  </a>
-                </a>
-              </span>
-              <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
-            </span>
-
             <span ng-repeat="property in criteria.properties">
               <span ng-show="property.operator === undefined || property.operator === 'HAS'">
                 <a class="btn btn-success" ng-click="toggleExclusion(property)">
@@ -145,7 +125,7 @@
             <select name="propertyField" class="form-control"
               ng-model="config.selectedProperty" ng-change="reloadProperty()" ng-show="properties.length">
               <option value="" disabled>Select a property</option>
-              <option ng-repeat="property in properties">{{property.name}}</option>
+              <option ng-repeat="property in properties | filter:{name: '!fault'}">{{property.name}}</option>
             </select>
           </div>
         </div>

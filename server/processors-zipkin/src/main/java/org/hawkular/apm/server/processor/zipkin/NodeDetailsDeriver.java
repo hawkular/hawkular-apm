@@ -69,7 +69,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
             nd.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
         }
 
-        nd.setFault(SpanDeriverUtil.deriveFault(item));
+        nd.getProperties().add(new Property(Constants.PROP_FAULT, SpanDeriverUtil.deriveFault(item)));
         nd.setOperation(SpanDeriverUtil.deriveOperation(item));
 
         if (log.isLoggable(Level.FINEST)) {

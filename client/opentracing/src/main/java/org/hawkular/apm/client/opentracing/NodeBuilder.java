@@ -47,7 +47,6 @@ public class NodeBuilder {
     private String endpointType = "n/a";    // Default endpoint type used to signify an external endpoint but
                                             // type is unknown. A 'null' endpoint is for internal connections.
     private String componentType;
-    private String fault;
     private long duration;
     private Set<Property> properties = new HashSet<>();
     private Map<String, String> details = new HashMap<>();
@@ -145,15 +144,6 @@ public class NodeBuilder {
     }
 
     /**
-     * @param fault the fault to set
-     * @return The node builder
-     */
-    public NodeBuilder setFault(String fault) {
-        this.fault = fault;
-        return this;
-    }
-
-    /**
      * @param duration The duration (in nanoseconds)
      * @return The node builder
      */
@@ -220,7 +210,6 @@ public class NodeBuilder {
         }
         ret.setCorrelationIds(correlationIds);
         ret.setDetails(details);
-        ret.setFault(fault);
         ret.setOperation(operation);
         ret.setProperties(properties);
         ret.setUri(uri);

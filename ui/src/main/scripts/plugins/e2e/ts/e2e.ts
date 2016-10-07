@@ -106,14 +106,6 @@ module E2E {
       $rootScope.sbFilter.criteria.properties.splice($rootScope.sbFilter.criteria.properties.indexOf(property), 1);
     };
 
-    $scope.addFaultToFilter = function(fault, operator) {
-      $rootScope.sbFilter.criteria.faults.push({value: fault, operator: operator});
-    };
-
-    $scope.remFaultFromFilter = function(fault) {
-      $rootScope.sbFilter.criteria.faults.splice($rootScope.sbFilter.criteria.faults.indexOf(fault), 1);
-    };
-
     $scope.toggleExcludeInclude = function(propOrFault) {
       if (propOrFault.operator === undefined || propOrFault.operator === 'HAS') {
         propOrFault.operator = 'HASNOT';

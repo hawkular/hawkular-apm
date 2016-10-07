@@ -412,7 +412,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
-        c1.setFault("Failed");
+        c1.getProperties().add(new Property(Constants.PROP_FAULT, "Failed"));
         trace1.getNodes().add(c1);
 
         List<Trace> traces = new ArrayList<Trace>();
@@ -495,7 +495,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
         Consumer c1 = new Consumer();
         c1.setUri("testuri1");
-        c1.setFault(MY_FAULT);
+        c1.getProperties().add(new Property(Constants.PROP_FAULT, MY_FAULT));
         c1.getProperties().add(new Property("prop2", "hello"));
         trace1.getNodes().add(c1);
 
@@ -538,8 +538,8 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         CompletionTime ct = times.get(0);
         assertEquals("1", ct.getId());
-        assertNotNull(ct.getFault());
-        assertEquals(MY_FAULT, ct.getFault());
+        assertEquals(1, ct.getProperties(Constants.PROP_FAULT).size());
+        assertEquals(MY_FAULT, ct.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
     }
 
     @Test
@@ -632,7 +632,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
-        c1.setFault("fault1");
+        c1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
         trace1.getNodes().add(c1);
 
         List<Trace> traces = new ArrayList<Trace>();

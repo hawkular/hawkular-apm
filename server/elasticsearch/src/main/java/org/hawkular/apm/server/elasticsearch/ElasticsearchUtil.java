@@ -25,7 +25,6 @@ import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.services.Criteria;
-import org.hawkular.apm.api.services.Criteria.FaultCriteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
 import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
 
@@ -113,16 +112,6 @@ public class ElasticsearchUtil {
                                 .must(QueryBuilders.matchQuery("correlationIds.scope", id.getScope()))
                                 .must(QueryBuilders.matchQuery("correlationIds.value", id.getValue()))));
                  */
-            }
-        }
-
-        if (!criteria.getFaults().isEmpty()) {
-            for (FaultCriteria fc : criteria.getFaults()) {
-                if (fc.getOperator() == Operator.HASNOT) {
-                    query = query.mustNot(QueryBuilders.matchQuery("fault", fc.getValue()));
-                } else {
-                    query = query.must(QueryBuilders.matchQuery("fault", fc.getValue()));
-                }
             }
         }
 

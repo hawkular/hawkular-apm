@@ -73,7 +73,6 @@ public class TraceCompletionInformationInitiator extends
                 ct.setBusinessTransaction(item.getBusinessTransaction());
                 ct.setDuration(item.calculateDuration());
                 ct.setPrincipal(item.getPrincipal());
-                ct.setFault(n.getFault());
                 ct.setProperties(item.allProperties());
                 ct.setTimestamp(item.getStartTime());
 

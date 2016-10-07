@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.btxn.AddContentAction;
@@ -364,7 +366,8 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", service.getFault());
+        assertEquals(1, service.getProperties(Constants.PROP_FAULT).size());
+        assertEquals("second", service.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
     }
 
     @Test
@@ -550,7 +553,7 @@ public class ProcessorManagerTest {
 
         Trace trace = new Trace();
         Consumer service = new Consumer();
-        service.setFault("NotSameFault");
+        service.getProperties().add(new Property(Constants.PROP_FAULT, "NotSameFault"));
 
         trace.getNodes().add(service);
         trace.setBusinessTransaction("testapp");
@@ -560,7 +563,8 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(0, trace.allProperties().size());
+        // The 'fault' property
+        assertEquals(1, trace.allProperties().size());
     }
 
     @Test
@@ -589,7 +593,7 @@ public class ProcessorManagerTest {
 
         Trace trace = new Trace();
         Consumer service = new Consumer();
-        service.setFault("MyFault");
+        service.getProperties().add(new Property(Constants.PROP_FAULT, "MyFault"));
 
         trace.getNodes().add(service);
         trace.setBusinessTransaction("testapp");
@@ -599,7 +603,8 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals(1, trace.allProperties().size());
+        // Including the 'fault' property
+        assertEquals(2, trace.allProperties().size());
         assertTrue(trace.hasProperty("result"));
     }
 

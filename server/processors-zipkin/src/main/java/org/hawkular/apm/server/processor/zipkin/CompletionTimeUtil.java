@@ -52,7 +52,7 @@ public class CompletionTimeUtil {
         completionTime.setDuration(TimeUnit.MILLISECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
 
         completionTime.setOperation(SpanDeriverUtil.deriveOperation(span));
-        completionTime.setFault(SpanDeriverUtil.deriveFault(span));
+        completionTime.getProperties().add(new Property(Constants.PROP_FAULT, SpanDeriverUtil.deriveFault(span)));
 
         completionTime.setHostAddress(span.ipv4());
         if (span.service() != null) {

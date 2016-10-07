@@ -106,41 +106,6 @@
       </div>
     </div>
 
-    <div class="hk-filter-v-block" ng-if="fsb.showFaults">
-      <label><button class="btn-link" ng-click="showSearchFault = !showSearchFault"><i class="fa" ng-class="showSearchFault ? 'fa-angle-right' : 'fa-angle-down'"></i>Faults</button></label>
-      <div collapse="showSearchFault">
-
-        <ul ng-repeat="fault in $root.sbFilter.criteria.faults" class="fa-ul">
-          <li class="sb-prop" ng-click="toggleExcludeInclude(fault)">
-            <span class="hk-cursor-pointer">
-              <i class="fa-li fa" aria-hidden="true"
-                ng-class="fault.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
-            </span>
-            {{ fault.value }}
-            <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remFaultFromFilter(fault)">
-              <i class="fa fa-remove"></i>
-            </span>
-          </li>
-        </ul>
-
-        <div class="radio" style="margin-left: 0px;">
-          <div class="input-group">
-            <select class="form-control" ng-options="f.value for f in $root.sbFilter.data.faults track by f.value" ng-model="selFault"></select>
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-disabled="!selFault"
-                ng-click="addFaultToFilter(selFault.value, 'HAS')">
-                <i class="fa fa-plus sb-prop-incexc"></i>
-              </button>
-              <button type="button" class="btn btn-default" ng-disabled="!selFault"
-                ng-click="addFaultToFilter(selFault.value, 'HASNOT')">
-                <i class="fa fa-minus sb-prop-incexc"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="hk-filter-v-block" ng-if="fsb.showText">
       <label class="hk-label-heading">Text</label>
       <input type="text" class="form-control" placeholder="Contains text" ng-model="$root.sbFilter.search"/>

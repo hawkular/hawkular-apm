@@ -31,6 +31,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
@@ -208,7 +209,8 @@ public class JBossRESTEasyClientITest extends ClientTestBase {
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
 
         if (fault) {
-            assertEquals("401", testProducer.getFault());
+            assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
+            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
 
             // TODO: Awaitin fix for HWKBTM-151
             //assertEquals("Unauthorized", testProducer.getFaultDescription());
