@@ -232,7 +232,7 @@ public class AnalyticsHandler extends BaseHandler {
             @ApiResponse(code = 500, message = "Internal server error") })
     public Response getTraceCompletionPropertyDetails(@BeanParam TraceCompletionPropertyRequest request) {
         return withErrorHandler(() -> {
-            Criteria criteria = new Criteria();
+            Criteria criteria = request.toCriteria();
             log.tracef("Get trace completion property details for criteria (GET) [%s] property [%s]", criteria, request.getProperty());
             List<Cardinality> cards = analyticsService.getTraceCompletionPropertyDetails(getTenant(request), criteria, request.getProperty());
             log.tracef("Got trace completion property details for criteria (GET) [%s] = %s", criteria, cards);
