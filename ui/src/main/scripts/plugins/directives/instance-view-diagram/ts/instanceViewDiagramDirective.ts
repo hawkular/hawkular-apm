@@ -106,7 +106,7 @@ module InstanceViewDiagram {
             ];
             let shapeSvg = parent.insert('polygon', ':first-child')
               .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
-              .attr('transform', 'translate(' + (-w / 2.4) + ',' + (h * 4 / 8) + ')');
+              .attr('transform', 'translate(' + (-w / 2.1) + ',' + (h * 4 / 8) + ')');
 
         node.intersect = function(point) {
           return dagreD3.intersect.polygon(node, points, point);
@@ -167,32 +167,34 @@ module InstanceViewDiagram {
           let serviceNameProp: any = _.find(d.properties, {name: 'service'});
           let serviceName = serviceNameProp ? serviceNameProp.value : '';
 
+          if (d.componentType && d.componentType.toLowerCase() === 'database') {
+            serviceName += '<i class="fa fa-database database pull-left"></i>&nbsp;';
+          } else if (d.componentType && d.componentType.toLowerCase() === 'ejb') {
+            serviceName += '<i class="fa fa-coffee ejb pull-left"></i>&nbsp;';
+          }
+
           let uri = (d.uri || '') + (d.operation ? ('[' + d.operation + ']') : '');
 
           let label = '<span class="name service-name">' + (serviceName || '') + '</span>';
           label += '<div class="name">' + uri + '</div>';
-          if (theShape === 'circle') {
-            label = '<div><i class="fa fa-share-alt spawn"></i></div>';
-          } else if (d.componentType && d.componentType.toLowerCase() === 'database') {
-            label = '<div><i class="fa fa-database database"></i></div>';
-          } else if (d.componentType && d.componentType.toLowerCase() === 'ejb') {
-            label = '<div><i class="fa fa-coffee ejb"></i></div>';
-          }
 
           let nodeTooltip = '<strong>' + d.uri + '</strong><hr/><strong>';
 
           let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
             'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
-          html += label;
-          if (theShape !== 'circle') {
-            html += '<span class="stats">';
-            html += '  <span class="duration pull-left">';
-            html += '    <i class="fa fa-clock-o"></i>';
-            html += '    ' + (d.duration / 1000 / 1000).toFixed(2) + 'ms';
-            html += '  </span>';
-            html += '</span>';
+
+          if (theShape === 'circle') {
+            label = '<div><i class="fa fa-share-alt spawn"></i></div>';
+          } else {
+            label += '<span class="stats">';
+            label += '  <span class="duration pull-left">';
+            label += '    <i class="fa fa-clock-o"></i>';
+            label += '    ' + (d.duration / 1000 / 1000).toFixed(2) + 'ms';
+            label += '  </span>';
+            label += '</span>';
           }
-          html += '</div>';
+          label += '</div>';
+          html += label;
 
           /*
           html += '<span class="name">' + d.id + '</span>';
