@@ -178,11 +178,14 @@ module InstanceViewDiagram {
           let label = '<span class="name service-name">' + (serviceName || '') + '</span>';
           label += '<div class="name">' + uri + '</div>';
 
-          let nodeTooltip = '<strong>' + d.uri + '</strong><hr/><strong>';
+          let nodeTT = '<ul>';
+          _.each(d.properties, (property) => {
+            nodeTT += ('<li class=\'tt-prop\'><strong>' + property.name + '</strong> ' + property.value + '</li>');
+          });
+          nodeTT += '</ul>';
 
-          let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
-            'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
-
+          let html = '<div' + ((nodeTT.length > 9) ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
+            'tooltip-html-unsafe="' + nodeTT + '"') : '') + '>';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt spawn"></i></div>';
           } else {
