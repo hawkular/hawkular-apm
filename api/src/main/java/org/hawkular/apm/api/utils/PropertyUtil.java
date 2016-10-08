@@ -111,6 +111,11 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_COLLECTOR_BATCHTHREADS = "HAWKULAR_APM_COLLECTOR_BATCHTHREADS";
 
     /**
+     * The time interval (in milliseconds) between checks for expired trace states in the agent.
+     */
+    public static final String HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL = "HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL";
+
+    /**
      * The maximum number of retry attempts when processing a batch of events.
      */
     public static final String HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT = "HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT";

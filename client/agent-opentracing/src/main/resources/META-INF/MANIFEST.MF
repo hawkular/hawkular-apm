@@ -1,0 +1,5 @@
+Agent-Class: org.hawkular.apm.agent.opentracing.OpenTracingAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Premain-Class: org.hawkular.apm.agent.opentracing.OpenTracingAgent
+Boot-Class-Path: ./hawkular-apm-agent-opentracing.jar

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Constants;
@@ -71,10 +72,6 @@ public class APMTracerTest {
 
         assertEquals(1, reporter.getTraces().size());
 
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
-
         Trace trace = reporter.getTraces().get(0);
         assertEquals(1, trace.getNodes().size());
         assertEquals(Component.class, trace.getNodes().get(0).getClass());
@@ -92,8 +89,9 @@ public class APMTracerTest {
         // Check producer has interaction based correlation id matching the value in the outbound message
         assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
 
-        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
+        assertEquals(1, producer.getCorrelationIds().size());
+        assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
         Set<Property> props=producer.getProperties(MY_TAG);
 
@@ -114,10 +112,6 @@ public class APMTracerTest {
         service.handle();
 
         assertEquals(1, reporter.getTraces().size());
-
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
 
         Trace trace = reporter.getTraces().get(0);
         assertEquals(1, trace.getNodes().size());
@@ -150,10 +144,6 @@ public class APMTracerTest {
 
         assertEquals(1, reporter.getTraces().size());
 
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
-
         Trace trace = reporter.getTraces().get(0);
 
         assertEquals(TEST_BTXN, trace.getBusinessTransaction());
@@ -163,7 +153,8 @@ public class APMTracerTest {
         Consumer consumer = (Consumer) trace.getNodes().get(0);
 
         // Check has supplied correlation id
-        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+        assertEquals(1, consumer.getCorrelationIds().size());
+        assertEquals(consumer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID));
 
         assertEquals("http", consumer.getEndpointType());
         assertEquals(1, consumer.getProperties(Constants.PROP_FAULT).size());
@@ -188,8 +179,9 @@ public class APMTracerTest {
         // Check producer has interaction based correlation id matching the value in the outbound message
         assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
         assertEquals("http", producer.getEndpointType());
-        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
+        assertEquals(1, producer.getCorrelationIds().size());
+        assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
     }
 
     @Test
@@ -206,10 +198,6 @@ public class APMTracerTest {
 
         assertEquals(1, reporter.getTraces().size());
 
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
-
         Trace trace = reporter.getTraces().get(0);
 
         assertEquals(SyncService.SYNC_BTXN_NAME_1, trace.getBusinessTransaction());
@@ -219,7 +207,8 @@ public class APMTracerTest {
         Consumer consumer = (Consumer) trace.getNodes().get(0);
 
         // Check has supplied correlation id
-        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+        assertEquals(1, consumer.getCorrelationIds().size());
+        assertEquals(consumer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID));
 
         assertEquals("http", consumer.getEndpointType());
         assertEquals(1, consumer.getProperties(Constants.PROP_FAULT).size());
@@ -244,8 +233,9 @@ public class APMTracerTest {
         // Check producer has interaction based correlation id matching the value in the outbound message
         assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
         assertEquals("http", producer.getEndpointType());
-        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
+        assertEquals(1, producer.getCorrelationIds().size());
+        assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
         assertEquals(SyncService.SYNC_BTXN_NAME_1,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
@@ -266,10 +256,6 @@ public class APMTracerTest {
 
         assertEquals(1, reporter.getTraces().size());
 
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
-
         Trace trace = reporter.getTraces().get(0);
 
         assertEquals(SyncService.SYNC_BTXN_NAME_2, trace.getBusinessTransaction());
@@ -279,7 +265,8 @@ public class APMTracerTest {
         Consumer consumer = (Consumer) trace.getNodes().get(0);
 
         // Check has supplied correlation id
-        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+        assertEquals(1, consumer.getCorrelationIds().size());
+        assertEquals(consumer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID));
 
         assertEquals("http", consumer.getEndpointType());
         assertEquals(1, consumer.getProperties(Constants.PROP_FAULT).size());
@@ -304,19 +291,71 @@ public class APMTracerTest {
         // Check producer has interaction based correlation id matching the value in the outbound message
         assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
         assertEquals("http", producer.getEndpointType());
-        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
+        assertEquals(1, producer.getCorrelationIds().size());
+        assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
         assertEquals(SyncService.SYNC_BTXN_NAME_2,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
     @Test
-    public void testAsync() throws JsonProcessingException {
+    public void testAsync() throws JsonProcessingException, InterruptedException {
         TestTraceReporter reporter = new TestTraceReporter();
         APMTracer tracer = new APMTracer(reporter);
 
         AsyncService service = new AsyncService(tracer);
+
+        Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
+
+        CountDownLatch latch=new CountDownLatch(1);
+        service.handle(message, obj -> {
+            latch.countDown();
+        });
+
+        latch.await(5, TimeUnit.SECONDS);
+
+        Wait.until(() -> reporter.getTraces().size() == 1, 5, TimeUnit.SECONDS);
+
+        assertEquals(1, reporter.getTraces().size());
+
+        Trace trace1 = reporter.getTraces().get(0);
+        assertEquals(TEST_BTXN, trace1.getBusinessTransaction());
+        assertEquals(1, trace1.getNodes().size());
+        assertEquals(Consumer.class, trace1.getNodes().get(0).getClass());
+
+        Consumer consumer = (Consumer) trace1.getNodes().get(0);
+
+        // Check has supplied correlation id
+        assertEquals(1, consumer.getCorrelationIds().size());
+        assertEquals(consumer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID));
+
+        // Get middle component
+        assertEquals(1, consumer.getNodes().size());
+        assertEquals(Producer.class, consumer.getNodes().get(0).getClass());
+
+        Producer producer = (Producer) consumer.getNodes().get(0);
+
+        assertEquals(1, service.getMessages().size());
+
+        // Check producer has interaction based correlation id matching the value in the outbound message
+        assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
+
+        assertEquals(1, producer.getCorrelationIds().size());
+        assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
+
+        assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
+    }
+
+    @Test
+    public void testSpawn() throws JsonProcessingException {
+        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracer tracer = new APMTracer(reporter);
+
+        SpawnService service = new SpawnService(tracer);
 
         Message message = new Message();
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
@@ -328,10 +367,6 @@ public class APMTracerTest {
 
         assertEquals(2, reporter.getTraces().size());
 
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
-
         Trace trace1 = reporter.getTraces().get(0);
         assertEquals(TEST_BTXN, trace1.getBusinessTransaction());
         assertEquals(1, trace1.getNodes().size());
@@ -340,7 +375,8 @@ public class APMTracerTest {
         Consumer consumer = (Consumer) trace1.getNodes().get(0);
 
         // Check has supplied correlation id
-        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+        assertEquals(1, consumer.getCorrelationIds().size());
+        assertEquals(consumer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID));
 
         // Get middle component
         assertEquals(1, consumer.getNodes().size());
@@ -378,8 +414,9 @@ public class APMTracerTest {
         // Check producer has interaction based correlation id matching the value in the outbound message
         assertTrue(service.getMessages().get(0).getHeaders().containsKey(Constants.HAWKULAR_APM_ID));
 
-        assertTrue(producer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction,
-                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID))));
+        assertEquals(1, producer.getCorrelationIds().size());
+        assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
+                service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
         assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
@@ -399,10 +436,6 @@ public class APMTracerTest {
 
         assertEquals(1, reporter.getTraces().size());
 
-        for (Trace trace : reporter.getTraces()) {
-            System.out.println("TRACE=" + mapper.writeValueAsString(trace));
-        }
-
         Trace trace = reporter.getTraces().get(0);
         assertEquals(TEST_BTXN, trace.getBusinessTransaction());
         assertEquals(1, trace.getNodes().size());
@@ -411,7 +444,8 @@ public class APMTracerTest {
         Consumer consumer = (Consumer) trace.getNodes().get(0);
 
         // Check has supplied correlation id
-        assertTrue(consumer.getCorrelationIds().contains(new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID)));
+        assertEquals(1, consumer.getCorrelationIds().size());
+        assertEquals(consumer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction, TEST_APM_ID));
 
         // Get middle component
         assertEquals(5, consumer.getNodes().size());

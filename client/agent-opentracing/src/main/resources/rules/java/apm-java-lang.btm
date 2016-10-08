@@ -1,0 +1,12 @@
+
+RULE java.lang(1) Check if runnable should resume a previous trace
+INTERFACE ^java.lang.Runnable
+METHOD run()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF TRUE
+DO
+  resume(String.valueOf($0.hashCode()));
+ENDRULE
+
+

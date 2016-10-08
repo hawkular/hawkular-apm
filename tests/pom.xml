@@ -32,6 +32,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>agent-opentracing</module>
     <module>common</module>
     <module>container/jetty</module>
     <module>container/standalone</module>

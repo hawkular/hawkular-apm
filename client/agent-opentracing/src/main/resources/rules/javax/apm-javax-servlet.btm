@@ -1,0 +1,72 @@
+
+RULE javax.servlet(1) Javax Servlet Consumer Start
+INTERFACE ^javax.servlet.Servlet
+METHOD service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+BIND req : javax.servlet.http.HttpServletRequest = $1;
+     uri : java.net.URI = java.net.URI.create(req.getRequestURI());
+     spanCtx:SpanContext = getTracer().extract(textMapFormat(),
+  		new org.hawkular.apm.agent.opentracing.propagation.jax.HttpServletRequestExtractAdapter($1));
+IF TRUE
+DO
+  startSpan(getTracer().buildSpan(req.getMethod())
+    .withTag("http.uri", uri.getPath())
+    .withTag("http.query", req.getQueryString())
+    .withTag("principal", req.getRemoteUser()),
+    spanCtx);
+ENDRULE
+
+RULE javax.servlet(2) Javax Servlet Consumer End Sync Fault Code
+INTERFACE ^javax.servlet.http.HttpServletResponse
+METHOD sendError(int)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  getSpan().setTag("fault.code",String.valueOf($1))
+    .setTag("fault",String.valueOf($1));
+ENDRULE
+
+RULE javax.servlet(3) Javax Servlet Consumer End Sync Fault Code Message
+INTERFACE ^javax.servlet.http.HttpServletResponse
+METHOD sendError(int,String)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  getSpan().setTag("fault.code",String.valueOf($1))
+    .setTag("fault",$2);
+ENDRULE
+
+RULE javax.servlet(4) Javax Servlet Consumer End Sync
+INTERFACE ^javax.servlet.Servlet
+METHOD service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF !$1.isAsyncStarted() && hasSpan()
+DO
+  finishSpan();
+ENDRULE
+
+RULE javax.servlet(5) Javax Servlet Consumer StartAsync
+INTERFACE ^javax.servlet.AsyncContext
+METHOD start(java.lang.Runnable)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  # Resume is in the java.lang rules
+  suspend(String.valueOf($1.hashCode()));
+ENDRULE
+
+RULE javax.servlet(6) Javax Servlet Consumer End Async
+INTERFACE ^javax.servlet.AsyncContext
+METHOD complete()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE
+

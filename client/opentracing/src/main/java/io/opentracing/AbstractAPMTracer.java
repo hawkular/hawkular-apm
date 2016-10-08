@@ -45,6 +45,10 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     public AbstractAPMTracer(TraceReporter reporter) {
         this.reporter = reporter;
     }
+    
+    public void setTraceReporter(TraceReporter reporter) {
+        this.reporter = reporter;
+    }
 
     @Override
     APMSpanBuilder createSpanBuilder(String operationName) {
