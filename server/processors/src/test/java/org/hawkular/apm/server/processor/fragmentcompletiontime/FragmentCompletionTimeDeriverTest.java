@@ -40,11 +40,11 @@ public class FragmentCompletionTimeDeriverTest {
         Trace trace = new Trace();
         trace.setId("btxnId");
         trace.setBusinessTransaction("btxnName");
-        trace.setStartTime(100000);
+        trace.setTimestamp(100000);
 
         Consumer c = new Consumer();
         c.setUri("uri");
-        c.setBaseTime(1);
+        c.setTimestamp(1);
         c.setDuration(200000);
         c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
         c.setEndpointType("HTTP");
@@ -67,7 +67,7 @@ public class FragmentCompletionTimeDeriverTest {
         assertEquals(trace.getBusinessTransaction(), ct.getBusinessTransaction());
         assertEquals(c.getEndpointType(), ct.getEndpointType());
         assertFalse(ct.isInternal());
-        assertEquals(trace.getStartTime(), ct.getTimestamp());
+        assertEquals(trace.getTimestamp(), ct.getTimestamp());
         assertEquals(c.getUri(), ct.getUri());
         assertEquals(200000, ct.getDuration());
         assertEquals(c.getProperties(Constants.PROP_FAULT), ct.getProperties(Constants.PROP_FAULT));
@@ -78,11 +78,11 @@ public class FragmentCompletionTimeDeriverTest {
         Trace trace = new Trace();
         trace.setId("btxnId");
         trace.setBusinessTransaction("btxnName");
-        trace.setStartTime(100);
+        trace.setTimestamp(100);
 
         Consumer c = new Consumer();
         c.setUri("uri");
-        c.setBaseTime(1);
+        c.setTimestamp(1);
         c.setDuration(200000000);
 
         trace.getNodes().add(c);

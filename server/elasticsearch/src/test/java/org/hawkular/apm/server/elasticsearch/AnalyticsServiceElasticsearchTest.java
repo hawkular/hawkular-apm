@@ -123,7 +123,7 @@ public class AnalyticsServiceElasticsearchTest {
         List<Trace> traces = new ArrayList<>();
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
         traces.add(trace1);
 
         Consumer c1 = new Consumer();
@@ -143,7 +143,7 @@ public class AnalyticsServiceElasticsearchTest {
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
         traces.add(trace2);
 
         Consumer c2 = new Consumer();
@@ -166,7 +166,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testAllDistinctUnboundEndpointsProducer() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Component c1 = new Component();
         c1.setUri("uri1");
@@ -203,7 +203,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testAllDuplicationUnboundEndpoints() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Component c1 = new Component();
         c1.setUri("uri1");
@@ -222,7 +222,7 @@ public class AnalyticsServiceElasticsearchTest {
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri3");
@@ -243,7 +243,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testUnboundEndpointsExcludeBTxnConfig() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
@@ -315,7 +315,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testUnboundEndpointsExcludeBTxnConfigRegex() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Consumer c1 = new Consumer();
         c1.setUri("{myns}ns");
@@ -387,7 +387,7 @@ public class AnalyticsServiceElasticsearchTest {
     public void testBoundEndpoints() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
@@ -407,7 +407,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         Consumer c2 = new Consumer();
         c2.setUri("uri4");
@@ -513,12 +513,12 @@ public class AnalyticsServiceElasticsearchTest {
     public void testPrincipalInfo() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
         trace1.setPrincipal("p1");
 
         Trace trace2 = new Trace();
         trace2.setBusinessTransaction("trace1");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         bts.storeFragments(null, Arrays.asList(trace1, trace2));
 
@@ -2634,11 +2634,11 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testHostNames() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
         trace1.setHostName("hostA");
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
         trace2.setHostName("hostB");
 
         bts.storeFragments(null, Arrays.asList(trace1, trace2));

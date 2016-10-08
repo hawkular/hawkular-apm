@@ -59,12 +59,12 @@ public class CommunicationDetailsDeriverTest {
 
         Trace trace1 = new Trace();
         trace1.setId("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         traces.add(trace1);
 
         Consumer c1 = new Consumer();
-        c1.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        c1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -74,7 +74,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        p1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -98,14 +98,14 @@ public class CommunicationDetailsDeriverTest {
 
         Trace trace1 = new Trace();
         trace1.setId("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         Component c1 = new Component();
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setUri("p1");
-        p1.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        p1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -116,7 +116,7 @@ public class CommunicationDetailsDeriverTest {
 
         Producer p2 = new Producer();
         p2.setUri("p2");
-        p2.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        p2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         CorrelationIdentifier pid2 = new CorrelationIdentifier();
         pid2.setScope(Scope.Interaction);
@@ -150,7 +150,7 @@ public class CommunicationDetailsDeriverTest {
 
         Trace trace1 = new Trace();
         trace1.setId("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         Consumer c1 = new Consumer();
         c1.setUri("consumerURI");
@@ -158,7 +158,7 @@ public class CommunicationDetailsDeriverTest {
 
         Producer p1 = new Producer();
         p1.setUri("p1");
-        p1.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        p1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -169,7 +169,7 @@ public class CommunicationDetailsDeriverTest {
 
         Producer p2 = new Producer();
         p2.setUri("p2");
-        p2.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        p2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         CorrelationIdentifier pid2 = new CorrelationIdentifier();
         pid2.setScope(Scope.Interaction);
@@ -235,7 +235,7 @@ public class CommunicationDetailsDeriverTest {
         deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000000);
+        trace1.setTimestamp(1000000000);
 
         trace1.setBusinessTransaction(BTXN_NAME);
         trace1.setId("trace1");
@@ -245,7 +245,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(trace1.getTimestamp());
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -255,7 +255,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(1000);
+        p1.setTimestamp(trace1.getTimestamp() + 1000);
         p1.setDuration(2000000);
         p1.getProperties().add(new Property("prop1", "value1"));
 
@@ -267,7 +267,7 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000000000);
+        trace2.setTimestamp(2000000000);
 
         trace2.setBusinessTransaction(BTXN_NAME);
         trace2.setId("trace2");
@@ -277,6 +277,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000);
         c2.getProperties().add(new Property("prop2", "value2"));
 
@@ -313,10 +314,9 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("addr2", details.getTargetHostAddress());
         assertEquals("p1", details.getPrincipal());
 
-        long timestamp = trace1.getStartTime() + p1.getBaseTime() - c1.getBaseTime();
-        assertEquals(timestamp, details.getTimestamp());
+        assertEquals(p1.getTimestamp(), details.getTimestamp());
 
-        long timestampOffset = trace2.getStartTime() - details.getTimestamp() - details.getLatency();
+        long timestampOffset = trace2.getTimestamp() - details.getTimestamp() - details.getLatency();
 
         assertEquals(timestampOffset, details.getTimestampOffset());
     }
@@ -329,7 +329,7 @@ public class CommunicationDetailsDeriverTest {
         deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000000);
+        trace1.setTimestamp(1000000000);
 
         trace1.setBusinessTransaction(BTXN_NAME);
         trace1.setId("trace1");
@@ -339,7 +339,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(trace1.getTimestamp());
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.ControlFlow);
@@ -349,7 +349,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(1000);
+        p1.setTimestamp(trace1.getTimestamp() + 1000);
         p1.setDuration(2000000);
         p1.getProperties().add(new Property("prop1", "value1"));
 
@@ -361,7 +361,7 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000000000);
+        trace2.setTimestamp(2000000000);
 
         trace2.setBusinessTransaction(BTXN_NAME);
         trace2.setId("trace2");
@@ -371,6 +371,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000);
         c2.getProperties().add(new Property("prop2", "value2"));
 
@@ -407,10 +408,9 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("addr2", details.getTargetHostAddress());
         assertEquals("p1", details.getPrincipal());
 
-        long timestamp = trace1.getStartTime() + p1.getBaseTime() - c1.getBaseTime();
-        assertEquals(timestamp, details.getTimestamp());
+        assertEquals(p1.getTimestamp(), details.getTimestamp());
 
-        long timestampOffset = trace2.getStartTime() - details.getTimestamp() - details.getLatency();
+        long timestampOffset = trace2.getTimestamp() - details.getTimestamp() - details.getLatency();
 
         assertEquals(timestampOffset, details.getTimestampOffset());
     }
@@ -425,7 +425,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces1 = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
 
         traces1.add(trace1);
 
@@ -436,7 +436,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(0);
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -446,7 +446,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(1000000);
+        p1.setTimestamp(1000000);
         p1.setDuration(2000000000);
         p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
 
@@ -460,7 +460,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces2 = new ArrayList<Trace>();
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000000);
+        trace2.setTimestamp(2000000);
 
         traces2.add(trace2);
 
@@ -501,7 +501,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces1 = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
 
         traces1.add(trace1);
 
@@ -512,7 +512,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(0);
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.ControlFlow);
@@ -522,7 +522,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(1000000);
+        p1.setTimestamp(1000000);
         p1.setDuration(2000000000);
         p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
 
@@ -536,7 +536,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces2 = new ArrayList<Trace>();
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000000);
+        trace2.setTimestamp(2000000);
 
         traces2.add(trace2);
 
@@ -577,7 +577,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces1 = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         traces1.add(trace1);
 
@@ -589,7 +589,7 @@ public class CommunicationDetailsDeriverTest {
 
         Producer p1 = new Producer();
         p1.setUri("TheURI");
-        p1.setBaseTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        p1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         p1.setDuration(2000000);
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
@@ -655,7 +655,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces1 = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
 
         traces1.add(trace1);
 
@@ -664,7 +664,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(0);
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -674,7 +674,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(1000000);
+        p1.setTimestamp(1000000);
         p1.setDuration(2000000000);
         p1.getProperties().add(new Property("prop1", null));
 
@@ -688,7 +688,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces2 = new ArrayList<Trace>();
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000000);
+        trace2.setTimestamp(2000000);
 
         traces2.add(trace2);
 
@@ -732,7 +732,7 @@ public class CommunicationDetailsDeriverTest {
         deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
 
         trace1.setBusinessTransaction(BTXN_NAME);
         trace1.setId("trace1");
@@ -742,7 +742,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(trace1.getTimestamp());
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -752,14 +752,14 @@ public class CommunicationDetailsDeriverTest {
         trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
-        comp1.setBaseTime(1000000);
+        comp1.setTimestamp(trace1.getTimestamp() + 1000000);
         comp1.setDuration(2000000000);
         comp1.getProperties().add(new Property("prop1", "value1"));
 
         c1.getNodes().add(comp1);
 
         Trace trace2 = new Trace();
-        trace2.setStartTime(2000000);
+        trace2.setTimestamp(2000000);
 
         trace2.setBusinessTransaction(BTXN_NAME);
         trace2.setId("trace2");
@@ -769,6 +769,7 @@ public class CommunicationDetailsDeriverTest {
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000000);
         c2.getProperties().add(new Property("prop2", "value2"));
 
@@ -794,7 +795,7 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(comp1.getDuration() == details.getProducerDuration());
 
-        long latency = trace2.getStartTime() - (trace1.getStartTime() + comp1.getBaseTime());
+        long latency = comp1.getTimestamp() - trace2.getTimestamp();
 
         assertEquals(latency, details.getLatency());
         assertTrue(details.hasProperty("prop1"));
@@ -807,8 +808,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("addr2", details.getTargetHostAddress());
         assertEquals("p1", details.getPrincipal());
 
-        long timestamp = trace1.getStartTime() + comp1.getBaseTime() - c1.getBaseTime();
-        assertEquals(timestamp, details.getTimestamp());
+        assertEquals(comp1.getTimestamp(), details.getTimestamp());
     }
 
     @Test
@@ -820,15 +820,15 @@ public class CommunicationDetailsDeriverTest {
 
         Trace trace1 = new Trace();
         trace1.setId("trace1");
-        trace1.setStartTime(1000000000);
+        trace1.setTimestamp(1000000000);
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
-        c1.setBaseTime(0);
+        c1.setTimestamp(0);
         trace1.getNodes().add(c1);
 
         Producer p1a = new Producer();
-        p1a.setBaseTime(1000);
+        p1a.setTimestamp(1000);
         p1a.setDuration(2000000);
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
@@ -840,7 +840,7 @@ public class CommunicationDetailsDeriverTest {
 
         Trace trace2 = new Trace();
         trace2.setId("trace2");
-        trace2.setStartTime(2000000000);
+        trace2.setTimestamp(2000000000);
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
@@ -854,7 +854,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.getNodes().add(c2);
 
         Producer p2 = new Producer();
-        p2.setBaseTime(1000);
+        p2.setTimestamp(1000);
         p2.setDuration(2000000);
 
         CorrelationIdentifier pid2 = new CorrelationIdentifier();
@@ -866,7 +866,7 @@ public class CommunicationDetailsDeriverTest {
 
         Producer p3 = new Producer();
         p3.getDetails().put(Producer.DETAILS_PUBLISH, "true");
-        p3.setBaseTime(1000);
+        p3.setTimestamp(1000);
         p3.setDuration(2000000);
 
         CorrelationIdentifier pid3 = new CorrelationIdentifier();
@@ -923,13 +923,13 @@ public class CommunicationDetailsDeriverTest {
         si.setDuration(2000);
 
         Trace item = new Trace();
-        item.setStartTime(2000);
+        item.setTimestamp(2000);
 
         Consumer consumer = new Consumer();
         consumer.setDuration(3000);
         item.getNodes().add(consumer);
 
-        long latency = item.getStartTime() - si.getTimestamp();
+        long latency = item.getTimestamp() - si.getTimestamp();
 
         assertEquals(latency, CommunicationDetailsDeriver.calculateLatency(si, item, consumer));
     }
@@ -941,12 +941,12 @@ public class CommunicationDetailsDeriverTest {
         si.setTimestamp(1000);
 
         Trace item = new Trace();
-        item.setStartTime(2000);
+        item.setTimestamp(2000);
 
         Consumer consumer = new Consumer();
         item.getNodes().add(consumer);
 
-        long latency = item.getStartTime() - si.getTimestamp();
+        long latency = item.getTimestamp() - si.getTimestamp();
 
         assertEquals(latency, CommunicationDetailsDeriver.calculateLatency(si, item, consumer));
     }

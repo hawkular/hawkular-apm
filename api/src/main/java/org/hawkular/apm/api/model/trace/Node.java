@@ -58,10 +58,10 @@ public abstract class Node {
     private String operation;
 
     /**
-     * Base time in microseconds
+     * Timestamp in microseconds
      */
     @JsonInclude
-    private long baseTime = 0;
+    private long timestamp = 0;
 
     /**
      * Duration in microseconds
@@ -155,18 +155,18 @@ public abstract class Node {
     }
 
     /**
-     * @return the baseTime in microseconds
+     * @return the timestamp in microseconds
      */
-    public long getBaseTime() {
-        return baseTime;
+    public long getTimestamp() {
+        return timestamp;
     }
 
     /**
-     * @param baseTime the baseTime in microseconds
+     * @param timestamp the timestamp in microseconds
      * @return The node
      */
-    public Node setBaseTime(long baseTime) {
-        this.baseTime = baseTime;
+    public Node setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
         return this;
     }
 
@@ -358,7 +358,7 @@ public abstract class Node {
      * @return The end time (in microseconds), based on base time and duration, or 0 if not known
      */
     protected long endTime() {
-        return baseTime + duration;
+        return timestamp + duration;
     }
 
     /**
@@ -382,7 +382,7 @@ public abstract class Node {
      * @return The completed duration (ns)
      */
     protected long completedDuration() {
-        return overallEndTime() - baseTime;
+        return overallEndTime() - timestamp;
     }
 
     /**
@@ -427,7 +427,7 @@ public abstract class Node {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (baseTime ^ (baseTime >>> 32));
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
@@ -448,7 +448,7 @@ public abstract class Node {
         if (getClass() != obj.getClass())
             return false;
         Node other = (Node) obj;
-        if (baseTime != other.baseTime)
+        if (timestamp != other.timestamp)
             return false;
         if (correlationIds == null) {
             if (other.correlationIds != null)

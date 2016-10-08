@@ -41,7 +41,7 @@ public class NotificationDeriverTest {
         Trace trace = new Trace();
         trace.setId("myid");
         trace.setBusinessTransaction("mytrace");
-        trace.setStartTime(1000);
+        trace.setTimestamp(1000);
         trace.setHostAddress("myhostaddr");
         trace.setHostName("myhostname");
 
@@ -83,7 +83,7 @@ public class NotificationDeriverTest {
         assertNotNull(notification);
         assertEquals(trace.getId(), notification.getId());
         assertEquals(trace.getBusinessTransaction(), notification.getBusinessTransaction());
-        assertEquals(trace.getStartTime(), notification.getTimestamp());
+        assertEquals(trace.getTimestamp(), notification.getTimestamp());
         assertEquals(trace.getHostAddress(), notification.getHostAddress());
         assertEquals(trace.getHostName(), notification.getHostName());
 
@@ -101,7 +101,7 @@ public class NotificationDeriverTest {
         Trace trace = new Trace();
         trace.setId("myid");
         trace.setBusinessTransaction("mytrace");
-        trace.setStartTime(1000);
+        trace.setTimestamp(1000);
         trace.setHostAddress("myhostaddr");
         trace.setHostName("myhostname");
 

@@ -30,7 +30,7 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "startTime": {
+                "timestamp": {
                     "type": "long"
                 },
                 "nodes": {

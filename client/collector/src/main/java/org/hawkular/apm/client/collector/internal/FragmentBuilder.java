@@ -50,6 +50,8 @@ public class FragmentBuilder {
 
     private Trace trace;
 
+    private long baseNanoseconds;
+
     private Stack<Node> nodeStack = new Stack<Node>();
 
     private Stack<Node> poppedNodes = new Stack<Node>();
@@ -78,9 +80,10 @@ public class FragmentBuilder {
     {
         trace = new Trace()
                 .setId(UUID.randomUUID().toString())
-                .setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()))
+                .setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()))
                 .setHostName(PropertyUtil.getHostName())
                 .setHostAddress(PropertyUtil.getHostAddress());
+        baseNanoseconds = System.nanoTime();
     }
 
     /**
@@ -201,6 +204,28 @@ public class FragmentBuilder {
         return node;
     }
 
+    protected long currentTimeMicros() {
+        return trace.getTimestamp() + TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - baseNanoseconds);
+    }
+
+    /**
+     * This method initialises the supplied node.
+     *
+     * @param node The node
+     */
+    protected void initNode(Node node) {
+        node.setTimestamp(currentTimeMicros());
+    }
+
+    /**
+     * This method finishes the supplied node.
+     *
+     * @param node The node
+     */
+    protected void finishNode(Node node) {
+        node.setDuration(currentTimeMicros() - node.getTimestamp());
+    }
+
     /**
      * This method pushes a new node into the trace
      * fragment hierarchy.
@@ -208,6 +233,7 @@ public class FragmentBuilder {
      * @param node The new node
      */
     public void pushNode(Node node) {
+        initNode(node);
 
         // Reset in stream
         inStream = null;

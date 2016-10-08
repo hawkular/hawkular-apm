@@ -58,7 +58,7 @@ public class TraceCompletionInformationUtil {
         c.setMultipleConsumers(true);
 
         // Calculate the base duration for the communication
-        c.setBaseDuration(n.getBaseTime() - fragmentBaseTime);
+        c.setBaseDuration(n.getTimestamp() - fragmentBaseTime);
 
         c.setExpire(System.currentTimeMillis()+
                 TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW_MILLIS);
@@ -83,7 +83,7 @@ public class TraceCompletionInformationUtil {
                 c.setMultipleConsumers(((Producer) n).multipleConsumers());
 
                 // Calculate the base duration for the communication
-                c.setBaseDuration(n.getBaseTime() - fragmentBaseTime);
+                c.setBaseDuration(n.getTimestamp() - fragmentBaseTime);
 
                 c.setExpire(System.currentTimeMillis() +
                         TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW_MILLIS);

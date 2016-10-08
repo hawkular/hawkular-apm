@@ -323,7 +323,7 @@ public class SpanServiceElasticsearch implements SpanService {
 
         Trace trace = new Trace();
         trace.setId(span.getId());
-        trace.setStartTime(span.getTimestamp() != null ? span.getTimestamp() : 0);
+        trace.setTimestamp(span.getTimestamp() != null ? span.getTimestamp() : 0);
         trace.setHostAddress(span.ipv4());
 
         return trace;
@@ -350,7 +350,7 @@ public class SpanServiceElasticsearch implements SpanService {
         node.setDetails(new HashMap<>(span.binaryAnnotationMapping().getNodeDetails()));
 
         if (span.getTimestamp() != null) {
-            node.setBaseTime(span.getTimestamp());
+            node.setTimestamp(span.getTimestamp());
         }
         if (span.getDuration() != null) {
             node.setDuration(span.getDuration());

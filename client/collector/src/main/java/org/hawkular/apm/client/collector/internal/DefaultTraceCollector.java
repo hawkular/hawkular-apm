@@ -1080,15 +1080,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     }
 
     /**
-     * This method initialises the supplied node.
-     *
-     * @param node The node
-     */
-    protected void initNode(Node node) {
-        node.setBaseTime(TimeUnit.NANOSECONDS.toMicros(System.nanoTime()));
-    }
-
-    /**
      * This method pushes a new node into the trace fragment.
      *
      * @param location The instrumentation location
@@ -1099,8 +1090,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
         // Check if any in content should be processed for the current node
         processInContent(location, builder, -1);
-
-        initNode(node);
 
         builder.pushNode(node);
     }
@@ -1136,7 +1125,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
         Node node = builder.popNode(cls, uri);
         if (node != null) {
-            node.setDuration(TimeUnit.NANOSECONDS.toMicros(System.nanoTime()) - node.getBaseTime());
+            builder.finishNode(node);
             return cls.cast(node);
         }
 
@@ -1607,7 +1596,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         producer.getCorrelationIds().add(new CorrelationIdentifier(Scope.ControlFlow, id));
 
         if (node != null && node.containerNode()) {
-            initNode(producer);
+            parentBuilder.initNode(producer);
             if (position == -1) {
                 ((ContainerNode)node).getNodes().add(producer);
             } else {

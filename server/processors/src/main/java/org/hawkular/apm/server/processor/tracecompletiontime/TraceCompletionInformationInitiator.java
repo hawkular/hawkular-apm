@@ -74,7 +74,7 @@ public class TraceCompletionInformationInitiator extends
                 ct.setDuration(item.calculateDuration());
                 ct.setPrincipal(item.getPrincipal());
                 ct.setProperties(item.allProperties());
-                ct.setTimestamp(item.getStartTime());
+                ct.setTimestamp(item.getTimestamp());
 
                 ci.setCompletionTime(ct);
 
@@ -82,7 +82,7 @@ public class TraceCompletionInformationInitiator extends
                 StringBuilder nodeId = new StringBuilder(item.getId());
                 nodeId.append(":0");
 
-                TraceCompletionInformationUtil.initialiseLinks(ci, n.getBaseTime(), n, nodeId);
+                TraceCompletionInformationUtil.initialiseLinks(ci, n.getTimestamp(), n, nodeId);
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Creating initial completion time information = " + ci);

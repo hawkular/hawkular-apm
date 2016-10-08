@@ -110,10 +110,6 @@ public class SourceInfoUtil {
     protected static void initialiseSourceInfo(List<SourceInfo> sourceInfoList, String tenantId,
             Trace trace, StringBuffer parentNodeId, int pos, Node node) {
 
-        // Calculate the timestamp for the node
-        long diff = node.getBaseTime() - trace.getNodes().get(0).getBaseTime();
-        long timestamp = trace.getStartTime() + diff;
-
         SourceInfo si = new SourceInfo();
 
         parentNodeId.append(':');
@@ -121,7 +117,7 @@ public class SourceInfoUtil {
 
         si.setId(parentNodeId.toString());
 
-        si.setTimestamp(timestamp);
+        si.setTimestamp(node.getTimestamp());
         si.setDuration(node.getDuration());
         si.setFragmentId(trace.getId());
         si.setHostName(trace.getHostName());

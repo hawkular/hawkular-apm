@@ -19,7 +19,6 @@ package org.hawkular.apm.client.opentracing;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.api.model.events.EndpointRef;
@@ -60,18 +59,17 @@ public class TraceContext {
     /**
      * This constructor initialises the trace context.
      *
+     * @param topSpan The top level span in the trace
      * @param rootNode The builder for the root node of the trace fragment
-     * @param startTime The start time for the trace fragment (in milliseconds)
      * @param reporter The trace reporter
      */
-    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, long startTime, TraceReporter reporter) {
+    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceReporter reporter) {
         this.topSpan = topSpan;
         this.rootNode = rootNode;
         this.reporter = reporter;
 
         trace = new Trace();
         trace.setId(UUID.randomUUID().toString());
-        trace.setStartTime(TimeUnit.MILLISECONDS.toMicros(startTime));
         trace.setHostName(PropertyUtil.getHostName());
         trace.setHostAddress(PropertyUtil.getHostAddress());
 
@@ -96,6 +94,7 @@ public class TraceContext {
         if (nodeCount.decrementAndGet() == 0 && reporter != null) {
             Node node = rootNode.build();
 
+            trace.setTimestamp(node.getTimestamp());
             trace.setBusinessTransaction(getBusinessTransaction());
             trace.getNodes().add(node);
 

@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
@@ -58,9 +57,9 @@ public class NodeBuilder {
     private List<NodeBuilder> nodes = new ArrayList<>();
 
     /**
-     * Base time in microseconds
+     * Timestamp in microseconds
      */
-    private long baseTime = TimeUnit.NANOSECONDS.toMicros(System.nanoTime());
+    private long timestamp;
 
     private NodeType nodeType = NodeType.Component;
 
@@ -160,6 +159,15 @@ public class NodeBuilder {
     }
 
     /**
+     * @param timestamp The timestamp (in microseconds)
+     * @return The node builder
+     */
+    public NodeBuilder setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    /**
      * @return the property
      * @return The node builder
      */
@@ -221,7 +229,7 @@ public class NodeBuilder {
         ret.setProperties(properties);
         ret.setUri(uri);
         ret.setDuration(duration);
-        ret.setBaseTime(baseTime);
+        ret.setTimestamp(timestamp);
 
         for (int i = 0; i < nodes.size(); i++) {
             ret.getNodes().add(nodes.get(i).build());

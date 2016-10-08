@@ -131,7 +131,7 @@ public class TraceServiceITest extends AbstractITest {
     public void testStoreAndRetrieveComplexTraceById() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
         c1.getProperties().add(new Property("prop1","value1"));
@@ -146,7 +146,7 @@ public class TraceServiceITest extends AbstractITest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
         c2.addInteractionCorrelationId("id1_2");
@@ -203,7 +203,7 @@ public class TraceServiceITest extends AbstractITest {
     public void testStoreAndQueryAll() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         List<Trace> traces = new ArrayList<>();
         traces.add(trace1);
@@ -228,7 +228,7 @@ public class TraceServiceITest extends AbstractITest {
     @Test
     public void testStoreAndQueryStartTimeInclude() {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
         trace1.setId("1");
 
         Consumer c1 = new Consumer();
@@ -258,7 +258,7 @@ public class TraceServiceITest extends AbstractITest {
     @Test
     public void testStoreAndQueryStartTimeExclude() {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
         trace1.setId("1");
 
         Consumer c1 = new Consumer();
@@ -287,7 +287,7 @@ public class TraceServiceITest extends AbstractITest {
     @Test
     public void testStoreAndQueryEndTimeInclude() {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1000000);
+        trace1.setTimestamp(1000000);
         trace1.setId("1");
 
         Consumer c1 = new Consumer();
@@ -317,7 +317,7 @@ public class TraceServiceITest extends AbstractITest {
     @Test
     public void testStoreAndQueryEndTimeExclude() {
         Trace trace1 = new Trace();
-        trace1.setStartTime(1200000);
+        trace1.setTimestamp(1200000);
         trace1.setId("1");
 
         Consumer c1 = new Consumer();
@@ -347,7 +347,7 @@ public class TraceServiceITest extends AbstractITest {
     public void testStoreAndQueryPropertiesInclude() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("hello", "world"));
@@ -375,7 +375,7 @@ public class TraceServiceITest extends AbstractITest {
     public void testStoreAndQueryPropertiesNotFound() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("hello", "world"));
@@ -404,7 +404,7 @@ public class TraceServiceITest extends AbstractITest {
         traceService.clear(null);
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("hello", "world"));
@@ -433,7 +433,7 @@ public class TraceServiceITest extends AbstractITest {
     public void testStoreAndQueryCorrelationsInclude() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.ControlFlow);
@@ -468,7 +468,7 @@ public class TraceServiceITest extends AbstractITest {
     public void testStoreAndQueryCorrelationsExclude() {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
         cid.setScope(Scope.Interaction);

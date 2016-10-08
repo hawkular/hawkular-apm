@@ -111,7 +111,7 @@ public class AnalyticsServiceITest extends AbstractITest {
     public void testGetUnboundEndpoints() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         trace1.getNodes().add(c1);
@@ -147,7 +147,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         trace1.getNodes().add(c1);
@@ -183,7 +183,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Component c1 = new Component();
         c1.getProperties().add(new Property("prop1", "value1"));
@@ -192,7 +192,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setBusinessTransaction("trace2");
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Component c2 = new Component();
         c2.getProperties().add(new Property("prop2", "value2"));
@@ -233,7 +233,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("prop1", "value1"));
@@ -271,7 +271,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setPrincipal("p1");
 
         Consumer c1 = new Consumer();
@@ -310,7 +310,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         trace1.getNodes().add(c1);
@@ -351,7 +351,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
@@ -413,7 +413,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.getProperties().add(new Property(Constants.PROP_FAULT, "Failed"));
@@ -455,7 +455,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         trace1.getNodes().add(c1);
@@ -496,7 +496,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri1");
         c1.getProperties().add(new Property(Constants.PROP_FAULT, MY_FAULT));
@@ -506,7 +506,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setBusinessTransaction(TESTAPP);
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
         c2.getProperties().add(new Property("prop1", "2.5", PropertyType.Number));
@@ -551,7 +551,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1000000);
@@ -591,7 +591,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -602,7 +602,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setBusinessTransaction(ANOAPP);
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
@@ -640,7 +640,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -683,10 +683,11 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
         trace1.getNodes().add(c1);
@@ -695,6 +696,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
+        comp1.setTimestamp(trace1.getTimestamp());
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
@@ -731,11 +733,12 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
         trace1.getNodes().add(c1);
@@ -744,6 +747,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
+        comp1.setTimestamp(trace1.getTimestamp());
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
@@ -789,10 +793,11 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
         trace1.getNodes().add(c1);
@@ -801,6 +806,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
+        comp1.setTimestamp(trace1.getTimestamp());
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
@@ -836,11 +842,12 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000000);
         c1.setEndpointType("HTTP");
         trace1.getNodes().add(c1);
@@ -849,6 +856,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         comp1.setComponentType(Constants.COMPONENT_DATABASE);
         comp1.setUri("jdbc:h2:hello");
         comp1.setOperation("query");
+        comp1.setTimestamp(trace1.getTimestamp());
         comp1.setDuration(600000);
         c1.getNodes().add(comp1);
 
@@ -892,16 +900,18 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
         c1.setEndpointType("endpoint");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1200000);
 
         Producer p1 = new Producer();
         p1.setUri("testuri");
         p1.setEndpointType("endpoint");
+        p1.setTimestamp(trace1.getTimestamp());
         p1.setDuration(1000000);
         p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
@@ -911,11 +921,12 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setBusinessTransaction(TESTAPP);
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(500000);
         c2.addInteractionCorrelationId("interaction1");
         trace2.getNodes().add(c2);
@@ -973,16 +984,18 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
         c1.setEndpointType("endpoint");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1200000);
 
         Producer p1 = new Producer();
         p1.setUri("testuri");
         p1.setEndpointType("endpoint");
+        p1.setTimestamp(trace1.getTimestamp());
         p1.setDuration(1000000);
         p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
@@ -992,11 +1005,12 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setBusinessTransaction(TESTAPP);
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri");
         c2.setEndpointType("endpoint");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(500000);
         c2.addInteractionCorrelationId("interaction1");
         trace2.getNodes().add(c2);
@@ -1050,7 +1064,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
 
         Consumer c1 = new Consumer();
@@ -1088,17 +1102,17 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction(TESTAPP);
-        trace1.setStartTime(baseTime);
+        trace1.setTimestamp(baseTime);
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri2");
         c1.setDuration(1000000);
-        c1.setBaseTime(1);
+        c1.setTimestamp(1);
 
         Producer p1 = new Producer();
         p1.setUri("testuri2");
         p1.setDuration(1000000);
-        c1.setBaseTime(1);
+        c1.setTimestamp(1);
         p1.addInteractionCorrelationId("interaction2");
         c1.getNodes().add(p1);
 
@@ -1107,17 +1121,17 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2");
         trace2.setBusinessTransaction(TESTAPP);
-        trace2.setStartTime(baseTime + 1000);
+        trace2.setTimestamp(baseTime + 1000);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
         c2.setDuration(500000);
-        c2.setBaseTime(1);
+        c2.setTimestamp(1);
         c2.addInteractionCorrelationId("interaction2");
 
         Component comp2 = new Component();
         comp2.setDuration(1500000);
-        comp2.setBaseTime(1);
+        comp2.setTimestamp(1);
         c2.getNodes().add(comp2);
 
         trace2.getNodes().add(c2);

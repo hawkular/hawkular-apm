@@ -48,33 +48,33 @@ public class TraceTest {
     @Test
     public void testStartTime() {
         Trace trace = new Trace();
-        trace.setStartTime(100);
+        trace.setTimestamp(100);
 
         Consumer node1 = new Consumer();
-        node1.setBaseTime(110);
+        node1.setTimestamp(110);
         trace.getNodes().add(node1);
 
-        assertEquals("Start time incorrect", 100L, trace.getStartTime());
+        assertEquals("Start time incorrect", 100L, trace.getTimestamp());
     }
 
     @Test
     public void testEndTime() {
         Trace trace = new Trace();
-        trace.setStartTime(100000);
+        trace.setTimestamp(100000);
 
         Consumer node1 = new Consumer();
-        node1.setBaseTime(100000);
+        node1.setTimestamp(100000);
         trace.getNodes().add(node1);
 
         Component node2 = new Component();
-        node2.setBaseTime(150000);
+        node2.setTimestamp(150000);
         node2.setDuration(0);
         node1.getNodes().add(node2);
 
         // This node will have the latest time associated with the
         // business transaction, comprised of the start time + duration
         Producer node3 = new Producer();
-        node3.setBaseTime(200000);
+        node3.setTimestamp(200000);
         node3.setDuration(50000);
         node1.getNodes().add(node3);
 
@@ -160,7 +160,7 @@ public class TraceTest {
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, "CID2"));
         c1.setDuration(1000);
-        c1.setBaseTime(1);
+        c1.setTimestamp(1);
         c1.setEndpointType("JMS");
         c1.setUri("queue:test");
 
@@ -183,7 +183,7 @@ public class TraceTest {
         s1.getProperties().add(new Property(TEST_PROP2, TEST_VALUE2));
         s1.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "CID1"));
         s1.setDuration(900);
-        s1.setBaseTime(2);
+        s1.setTimestamp(2);
         s1.setOperation("Op1");
         s1.setUri("ServiceType1");
 
@@ -192,7 +192,7 @@ public class TraceTest {
         s1.getNodes().add(cp1);
 
         cp1.setDuration(400);
-        cp1.setBaseTime(3);
+        cp1.setTimestamp(3);
         cp1.setUri("jdbc:TestDB");
         cp1.setComponentType(Constants.COMPONENT_DATABASE);
         cp1.setOperation("select X from Y");
@@ -204,7 +204,7 @@ public class TraceTest {
 
         s2.getCorrelationIds().add(new CorrelationIdentifier(Scope.ControlFlow, "CID3"));
         s2.setDuration(500);
-        s2.setBaseTime(3);
+        s2.setTimestamp(3);
         s2.setOperation("Op2");
         s2.setUri("ServiceType2");
 
@@ -215,7 +215,7 @@ public class TraceTest {
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.ControlFlow, "CID3"));
         c1.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, "CID4"));
         c1.setDuration(400);
-        c1.setBaseTime(4);
+        c1.setTimestamp(4);
         c1.setEndpointType("HTTP");
         c1.setUri("http://example.com/service");
 
@@ -241,17 +241,17 @@ public class TraceTest {
         Trace trace1 = new Trace();
         trace1.setId("1");
         trace1.setBusinessTransaction("testapp");
-        trace1.setStartTime(baseTime); // Within last hour
+        trace1.setTimestamp(baseTime); // Within last hour
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
         c1.setDuration(1000000);
-        c1.setBaseTime(100000);
+        c1.setTimestamp(100000);
 
         Producer p1 = new Producer();
         p1.setUri("testuri");
         p1.setDuration(1000000);
-        p1.setBaseTime(500000);
+        p1.setTimestamp(500000);
         p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
 

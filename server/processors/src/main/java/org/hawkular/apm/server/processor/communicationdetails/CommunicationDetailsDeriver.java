@@ -137,7 +137,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         // just copying timestamp as-is from producer fragment
                         ret.setTimestamp(si.getTimestamp());
 
-                        long timestampOffset = item.getStartTime() - si.getTimestamp() - ret.getLatency();
+                        long timestampOffset = item.getTimestamp() - si.getTimestamp() - ret.getLatency();
 
                         ret.setTimestampOffset(timestampOffset);
 
@@ -145,7 +145,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         StringBuilder nodeId = new StringBuilder(item.getId());
                         nodeId.append(":0");
 
-                        initialiseOutbound(consumer, item.getNodes().get(0).getBaseTime(), ret, nodeId);
+                        initialiseOutbound(consumer, item.getNodes().get(0).getTimestamp(), ret, nodeId);
                     } else {
                         lastId = id;
                     }
@@ -197,7 +197,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
     private static long calculateTimestampLatency(SourceInfo si, Trace trace) {
         long latency = 0;
 
-        latency = trace.getStartTime() - si.getTimestamp();
+        latency = trace.getTimestamp() - si.getTimestamp();
         if (latency < 0) {
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("WARNING: Negative latency based on timestamps, consumer trace = " + trace);
@@ -222,7 +222,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         CommunicationDetails.Outbound ob = new CommunicationDetails.Outbound();
         ob.getLinkIds().add(nodeId.toString());
         ob.setMultiConsumer(true);
-        ob.setProducerOffset(n.getBaseTime() - baseTime);
+        ob.setProducerOffset(n.getTimestamp() - baseTime);
         cd.getOutbound().add(ob);
 
         if (n.getClass() == Producer.class) {
@@ -238,7 +238,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                 // Check if pub/sub
                 ob.setMultiConsumer(((Producer) n).multipleConsumers());
 
-                ob.setProducerOffset(n.getBaseTime() - baseTime);
+                ob.setProducerOffset(n.getTimestamp() - baseTime);
                 cd.getOutbound().add(ob);
             }
         } else if (n.containerNode()) {

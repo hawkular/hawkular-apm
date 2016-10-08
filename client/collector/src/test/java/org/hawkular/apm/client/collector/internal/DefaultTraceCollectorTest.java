@@ -95,7 +95,7 @@ public class DefaultTraceCollectorTest {
 
         Node node = trace.getNodes().get(0);
 
-        assertTrue("Start time not set", node.getBaseTime() > 0);
+        assertTrue("Start time not set", node.getTimestamp() > 0);
         assertTrue("Duration not set", node.getDuration() > 0);
     }
 

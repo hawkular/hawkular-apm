@@ -38,23 +38,23 @@ public class TraceCompletionInformationUtilTest {
         long fragmentBaseTime = 100000000;
 
         Consumer consumer = new Consumer();
-        consumer.setBaseTime(fragmentBaseTime);
+        consumer.setTimestamp(fragmentBaseTime);
 
         Producer p1 = new Producer();
-        p1.setBaseTime(200000000);
+        p1.setTimestamp(200000000);
         p1.addInteractionCorrelationId("p1id");
         consumer.getNodes().add(p1);
 
         Component comp1 = new Component();
-        comp1.setBaseTime(300000000);
+        comp1.setTimestamp(300000000);
         consumer.getNodes().add(comp1);
 
         Producer p2 = new Producer();
-        p2.setBaseTime(400000000);
+        p2.setTimestamp(400000000);
         comp1.getNodes().add(p2);
 
         Producer p3 = new Producer();
-        p3.setBaseTime(450000000);
+        p3.setTimestamp(450000000);
         p3.addControlFlowCorrelationId("p3id");
         p3.getDetails().put(InteractionNode.DETAILS_PUBLISH, "true");
         comp1.getNodes().add(p3);
@@ -65,25 +65,25 @@ public class TraceCompletionInformationUtilTest {
 
         assertTrue(ci.getCommunications().get(0).getIds().contains("trace1:0"));
         assertTrue(ci.getCommunications().get(0).isMultipleConsumers());
-        assertEquals(consumer.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(0).getBaseDuration());
+        assertEquals(consumer.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(0).getBaseDuration());
         assertTrue(ci.getCommunications().get(1).getIds().contains("trace1:0:0"));
         assertTrue(ci.getCommunications().get(1).isMultipleConsumers());
-        assertEquals(p1.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(1).getBaseDuration());
+        assertEquals(p1.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(1).getBaseDuration());
         assertTrue(ci.getCommunications().get(2).getIds().contains("p1id"));
         assertFalse(ci.getCommunications().get(2).isMultipleConsumers());
-        assertEquals(p1.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(2).getBaseDuration());
+        assertEquals(p1.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(2).getBaseDuration());
         assertTrue(ci.getCommunications().get(3).getIds().contains("trace1:0:1"));
         assertTrue(ci.getCommunications().get(3).isMultipleConsumers());
-        assertEquals(comp1.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(3).getBaseDuration());
+        assertEquals(comp1.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(3).getBaseDuration());
         assertTrue(ci.getCommunications().get(4).getIds().contains("trace1:0:1:0"));
         assertTrue(ci.getCommunications().get(4).isMultipleConsumers());
-        assertEquals(p2.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(4).getBaseDuration());
+        assertEquals(p2.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(4).getBaseDuration());
         assertTrue(ci.getCommunications().get(5).getIds().contains("trace1:0:1:1"));
         assertTrue(ci.getCommunications().get(5).isMultipleConsumers());
-        assertEquals(p3.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(5).getBaseDuration());
+        assertEquals(p3.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(5).getBaseDuration());
         assertTrue(ci.getCommunications().get(6).getIds().contains("p3id"));
         assertTrue(ci.getCommunications().get(6).isMultipleConsumers());
-        assertEquals(p3.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(6).getBaseDuration());
+        assertEquals(p3.getTimestamp() - fragmentBaseTime, ci.getCommunications().get(6).getBaseDuration());
     }
 
 }

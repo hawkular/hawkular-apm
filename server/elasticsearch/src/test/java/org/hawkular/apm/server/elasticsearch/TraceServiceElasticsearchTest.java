@@ -70,16 +70,16 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setBusinessTransaction("trace2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
-        trace3.setStartTime(3000);
+        trace3.setTimestamp(3000);
 
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
@@ -101,16 +101,16 @@ public class TraceServiceElasticsearchTest {
         Trace trace1 = new Trace();
         trace1.setId("id1");
         trace1.setBusinessTransaction("trace1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
         trace2.setBusinessTransaction("trace2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
-        trace3.setStartTime(3000);
+        trace3.setTimestamp(3000);
 
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
@@ -131,7 +131,7 @@ public class TraceServiceElasticsearchTest {
     public void testSearchFragments() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1a", "value1a"));
@@ -163,7 +163,7 @@ public class TraceServiceElasticsearchTest {
     public void testQuerySinglePropertyAndValueIncluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
@@ -171,7 +171,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
@@ -179,7 +179,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
-        trace3.setStartTime(3000);
+        trace3.setTimestamp(3000);
 
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
@@ -203,21 +203,21 @@ public class TraceServiceElasticsearchTest {
     public void testQuerySinglePropertyAndValueExcluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
-        trace3.setStartTime(3000);
+        trace3.setTimestamp(3000);
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
         trace3.getNodes().add(consumer3);
@@ -241,28 +241,28 @@ public class TraceServiceElasticsearchTest {
     public void testQuerySinglePropertyAndMultiValueIncluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
-        trace3.setStartTime(3000);
+        trace3.setTimestamp(3000);
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop3", "value3"));
         trace3.getNodes().add(consumer3);
 
         Trace trace4 = new Trace();
         trace4.setId("id4");
-        trace4.setStartTime(4000);
+        trace4.setTimestamp(4000);
         Consumer consumer4 = new Consumer();
         consumer4.getProperties().add(new Property("prop1", "value1"));
         consumer4.getProperties().add(new Property("prop3", "value3"));
@@ -287,21 +287,21 @@ public class TraceServiceElasticsearchTest {
     public void testQuerySinglePropertyAndMultiValueExcluded() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
         trace3.setId("id3");
-        trace3.setStartTime(3000);
+        trace3.setTimestamp(3000);
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
         trace3.getNodes().add(consumer3);
@@ -334,7 +334,7 @@ public class TraceServiceElasticsearchTest {
     protected void testQueryCorrelationId(Scope scope) throws StoreException {
         Trace trace1 = new Trace();
         trace1.setId("id1");
-        trace1.setStartTime(1000);
+        trace1.setTimestamp(1000);
 
         Consumer c1=new Consumer();
         c1.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid1"));
@@ -342,7 +342,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("id2");
-        trace2.setStartTime(2000);
+        trace2.setTimestamp(2000);
 
         Consumer c2=new Consumer();
         c2.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid2"));
@@ -366,7 +366,7 @@ public class TraceServiceElasticsearchTest {
     public void testStoreAndRetrieveInteractionTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
         c1.getProperties().add(new Property("prop1","value1"));
@@ -382,7 +382,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
         c2.setEndpointType("HTTP");
@@ -426,7 +426,7 @@ public class TraceServiceElasticsearchTest {
     public void testStoreAndRetrieveCausedByTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
         c1.getProperties().add(new Property("prop1","value1"));
@@ -437,7 +437,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
         c2.getProperties().add(new Property("prop1","value1"));
@@ -450,7 +450,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace3 = new Trace();
         trace3.setId("3");
-        trace3.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace3.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c3 = new Consumer();
         c3.setUri("uri3");
         c3.getProperties().add(new Property("prop3","value3"));
@@ -520,7 +520,7 @@ public class TraceServiceElasticsearchTest {
     public void testGetTraceByIdJustProducerConsumer() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Producer producer = new Producer();
         producer.setUri("uri");
         producer.addInteractionCorrelationId("id1");
@@ -528,7 +528,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer consumer = new Consumer();
         consumer.setUri("uri");
         consumer.addInteractionCorrelationId("id1");
