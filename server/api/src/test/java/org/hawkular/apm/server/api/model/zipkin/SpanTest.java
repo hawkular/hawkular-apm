@@ -106,13 +106,13 @@ public class SpanTest {
         BinaryAnnotation stringAnnotation = new BinaryAnnotation();
         stringAnnotation.setKey("http.method");
         stringAnnotation.setValue("GET");
-        stringAnnotation.setEndpoint(createEndpoint("bonjour", "127.0.0.2", 8090));
+        stringAnnotation.setEndpoint(createEndpoint("bonjour", "127.0.0.2", (short)8090));
         stringAnnotation.setType(AnnotationType.STRING);
 
         BinaryAnnotation binaryAnnotationWithMapping = new BinaryAnnotation();
         binaryAnnotationWithMapping.setKey("foo");
         binaryAnnotationWithMapping.setValue("value");
-        binaryAnnotationWithMapping.setEndpoint(createEndpoint("bonjour2", "127.0.1.2", 8090));
+        binaryAnnotationWithMapping.setEndpoint(createEndpoint("bonjour2", "127.0.1.2", (short)8090));
         binaryAnnotationWithMapping.setType(AnnotationType.DOUBLE);
 
         Span span = new Span(Arrays.asList(stringAnnotation, binaryAnnotationWithMapping), serverAnnotations());
@@ -188,17 +188,17 @@ public class SpanTest {
         Annotation csAnnotation = new Annotation();
         csAnnotation.setValue("sr");
         csAnnotation.setTimestamp(1);
-        csAnnotation.setEndpoint(createEndpoint("hola", "127.0.0.1", 8080));
+        csAnnotation.setEndpoint(createEndpoint("hola", "127.0.0.1", (short)8080));
 
         Annotation crAnnotation = new Annotation();
         crAnnotation.setValue("ss");
         crAnnotation.setTimestamp(2);
-        crAnnotation.setEndpoint(createEndpoint("ola", "127.0.0.1", 9080));
+        crAnnotation.setEndpoint(createEndpoint("ola", "127.0.0.1", (short)9080));
 
         return Collections.unmodifiableList(Arrays.asList(csAnnotation, crAnnotation));
     }
 
-    private Endpoint createEndpoint(String serviceName, String ipv4, int port) {
+    private Endpoint createEndpoint(String serviceName, String ipv4, Short port) {
         Endpoint endpoint = new Endpoint();
         endpoint.setServiceName(serviceName);
         endpoint.setIpv4(ipv4);

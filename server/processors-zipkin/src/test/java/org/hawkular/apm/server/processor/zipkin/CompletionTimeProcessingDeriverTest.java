@@ -52,7 +52,7 @@ public class CompletionTimeProcessingDeriverTest {
         Span rootSpan = new Span(Arrays.asList(httpAddress), Arrays.asList(sr, ss));
         rootSpan.setId("trace");
         rootSpan.setTraceId("trace");
-        rootSpan.setTimestamp(0);
+        rootSpan.setTimestamp(0L);
         rootSpan.setDuration(ss.getTimestamp() - sr.getTimestamp());
         Mockito.when(spanCacheMock.getTrace(null, "trace")).thenReturn(new HashSet<>(Arrays.asList(rootSpan)));
 
@@ -74,7 +74,7 @@ public class CompletionTimeProcessingDeriverTest {
         Span descendant = new Span(null, Arrays.asList(sr, ss));
         descendant.setId("descendant");
         descendant.setTraceId("trace");
-        descendant.setTimestamp(1500);
+        descendant.setTimestamp(1500L);
         Mockito.when(spanCacheMock.getTrace(null, "trace")).thenReturn(
                 new HashSet<>(Arrays.asList(rootSpan, descendant)));
 

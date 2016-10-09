@@ -28,11 +28,10 @@
   </parent>
 
   <artifactId>hawkular-apm-server-zipkin</artifactId>
-  <packaging>war</packaging>
   <name>Hawkular APM::Server::Zipkin WAR</name>
+  <packaging>war</packaging>
 
   <dependencies>
-
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-zipkin-rest</artifactId>
@@ -42,6 +41,18 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-processors-zipkin</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-server-kafka-consumer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>0.8.2.2</version>
     </dependency>
 
     <dependency>

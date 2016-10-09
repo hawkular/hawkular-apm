@@ -58,9 +58,9 @@ public class Span implements Serializable {
 
     private Boolean debug;
 
-    private long timestamp;
+    private Long timestamp;
 
-    private long duration;
+    private Long duration;
 
     /**
      * Hawkular APM specific
@@ -191,28 +191,28 @@ public class Span implements Serializable {
     /**
      * @return the timestamp
      */
-    public long getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
     /**
      * @param timestamp the timestamp to set
      */
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
     /**
      * @return the duration
      */
-    public long getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
     /**
      * @param duration the duration to set
      */
-    public void setDuration(long duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 
@@ -339,8 +339,6 @@ public class Span implements Serializable {
 
         Span span = (Span) o;
 
-        if (timestamp != span.timestamp) return false;
-        if (duration != span.duration) return false;
         if (traceId != null ? !traceId.equals(span.traceId) : span.traceId != null) return false;
         if (name != null ? !name.equals(span.name) : span.name != null) return false;
         if (id != null ? !id.equals(span.id) : span.id != null) return false;
@@ -350,6 +348,8 @@ public class Span implements Serializable {
                 span.binaryAnnotations != null)
             return false;
         if (debug != null ? !debug.equals(span.debug) : span.debug != null) return false;
+        if (timestamp != null ? !timestamp.equals(span.timestamp) : span.timestamp != null) return false;
+        if (duration != null ? !duration.equals(span.duration) : span.duration != null) return false;
         if (mappingResult != null ? !mappingResult.equals(span.mappingResult) : span.mappingResult != null)
             return false;
         if (service != null ? !service.equals(span.service) : span.service != null) return false;
@@ -367,8 +367,8 @@ public class Span implements Serializable {
         result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
         result = 31 * result + (binaryAnnotations != null ? binaryAnnotations.hashCode() : 0);
         result = 31 * result + (debug != null ? debug.hashCode() : 0);
-        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-        result = 31 * result + (int) (duration ^ (duration >>> 32));
+        result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
         result = 31 * result + (mappingResult != null ? mappingResult.hashCode() : 0);
         result = 31 * result + (service != null ? service.hashCode() : 0);
         result = 31 * result + (ipv4 != null ? ipv4.hashCode() : 0);

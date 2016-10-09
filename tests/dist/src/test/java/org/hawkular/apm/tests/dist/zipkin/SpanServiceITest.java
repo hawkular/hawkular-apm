@@ -20,14 +20,14 @@ package org.hawkular.apm.tests.dist.zipkin;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.server.api.model.zipkin.Annotation;
-import org.hawkular.apm.server.api.model.zipkin.Span;
+import org.hawkular.apm.server.api.utils.zipkin.ZipkinSpanConvertor;
 import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.tests.dist.AbstractITest;
 import org.hawkular.apm.trace.service.rest.client.TraceServiceRESTClient;
@@ -57,46 +57,55 @@ public class SpanServiceITest extends AbstractITest {
 
     @Test
     public void testStoreSpanGetTrace() throws IOException {
-        Span span = new Span(null,  serverAnnotations(millisToMicroSeconds(1), millisToMicroSeconds(30)));
-        span.setTimestamp(millisToMicroSeconds(1L));
-        span.setDuration(calculateDuration(1L, 30L));
-        span.setTraceId("root");
-        span.setId("root");
-        span.setName("get");
+        final long traceId = UUID.randomUUID().getMostSignificantBits();
+        final String traceStringId = ZipkinSpanConvertor.parseSpanId(traceId);
+        zipkin.Span span = zipkin.Span.builder()
+                .annotations(serverAnnotations(millisToMicroSeconds(1), millisToMicroSeconds(30)))
+                .timestamp(millisToMicroSeconds(1))
+                .duration(calculateDuration(1L, 30L))
+                .traceId(traceId)
+                .id(traceId)
+                .name("get")
+                .build();
 
         post(Server.Zipkin, "/spans", null, Arrays.asList(span));
+        Wait.until(() -> traceService.getTrace(null, traceStringId) != null);
 
-        Wait.until(() -> traceService.getTrace(null, "root") != null);
-
-        Trace trace = traceService.getTrace(null, "root");
-        Assert.assertEquals("root", trace.getId());
+        Trace trace = traceService.getTrace(null, traceStringId);
+        Assert.assertEquals(traceStringId, trace.getId());
         Assert.assertEquals(1, trace.getNodes().size());
         Node node = trace.getNodes().get(0);
         Assert.assertEquals(NodeType.Consumer, node.getType());
         CorrelationIdentifier correlationIdentifier = node.getCorrelationIds().get(0);
-        Assert.assertEquals("root", correlationIdentifier.getValue());
+        Assert.assertEquals(traceStringId, correlationIdentifier.getValue());
         Assert.assertEquals(CorrelationIdentifier.Scope.Interaction, correlationIdentifier.getScope());
     }
 
-    static List<Annotation> clientAnnotation(Long timestampCS, Long timestampCR) {
-        Annotation cs = new Annotation();
-        cs.setValue("cs");
-        cs.setTimestamp(timestampCS);
+    static List<zipkin.Annotation> clientAnnotation(Long timestampCS, Long timestampCR) {
+        zipkin.Annotation cs = zipkin.Annotation.builder()
+                .value("cs")
+                .timestamp(timestampCS)
+                .build();
 
-        Annotation cr = new Annotation();
-        cr.setValue("cr");
-        cr.setTimestamp(timestampCR);
+        zipkin.Annotation cr = zipkin.Annotation.builder()
+                .value("cr")
+                .timestamp(timestampCR)
+                .build();
+
         return Arrays.asList(cs, cr);
     }
 
-    static List<Annotation> serverAnnotations(Long timestampSR, Long timestampSS) {
-        Annotation sr = new Annotation();
-        sr.setValue("sr");
-        sr.setTimestamp(timestampSR);
+    static List<zipkin.Annotation> serverAnnotations(Long timestampSR, Long timestampSS) {
+        zipkin.Annotation sr = zipkin.Annotation.builder()
+                .value("sr")
+                .timestamp(timestampSR)
+                .build();
 
-        Annotation ss = new Annotation();
-        ss.setValue("ss");
-        ss.setTimestamp(timestampSS);
+        zipkin.Annotation ss = zipkin.Annotation.builder()
+                .value("ss")
+                .timestamp(timestampSS)
+                .build();
+
         return Arrays.asList(sr, ss);
     }
 

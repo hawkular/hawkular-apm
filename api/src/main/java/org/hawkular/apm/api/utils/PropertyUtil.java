@@ -161,6 +161,12 @@ public class PropertyUtil {
      */
     private static final String ENV_HOSTNAME = "HOSTNAME";
 
+    /**
+     * Environmental variable representing Kafka host address e.g. 127.0.0.1:2181.
+     * If the port is not specified it will use default 2181.
+     */
+    private static final String ENV_KAFKA_ZOOKEEPER = "KAFKA_ZOOKEEPER";
+
     private static String hostName;
     private static String hostAddress;
 
@@ -279,4 +285,10 @@ public class PropertyUtil {
         return hostAddress;
     }
 
+    /**
+     * See {@link #ENV_KAFKA_ZOOKEEPER};
+     */
+    public static String getKafkaZookeeper() {
+        return System.getenv(ENV_KAFKA_ZOOKEEPER);
+    }
 }

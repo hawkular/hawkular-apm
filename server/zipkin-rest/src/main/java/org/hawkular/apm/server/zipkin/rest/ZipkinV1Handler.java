@@ -17,23 +17,26 @@
 package org.hawkular.apm.server.zipkin.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
-import java.util.Collections;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.hawkular.apm.server.api.model.zipkin.Span;
 import org.hawkular.apm.server.api.services.SpanPublisher;
+import org.hawkular.apm.server.api.utils.zipkin.ZipkinSpanConvertor;
 import org.jboss.logging.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import zipkin.Codec;
 
 /**
  * REST interface for reporting zipkin spans.
@@ -42,39 +45,81 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Path("v1")
-@Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ZipkinV1Handler {
 
     private static final Logger log = Logger.getLogger(ZipkinV1Handler.class);
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final String APPLICATION_THRIFT = "application/x-thrift";
 
     @Inject
     private SpanPublisher spanPublisher;
 
+
     @POST
     @Path("spans")
-    public Response addSpans(List<Span> spans) {
-        try {
-            if (log.isTraceEnabled()) {
-                log.trace("Span = " + mapper.writeValueAsString(spans));
-            }
-
-            spanPublisher.publish(null, spans);
-
-            return Response
-                    .status(Response.Status.ACCEPTED)
-                    .build();
-
-        } catch (Throwable t) {
-            log.errorf(t.getMessage(), t);
-            return Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Collections.singletonMap("errorMsg", "Internal Error: " + t.getMessage()))
-                    .type(APPLICATION_JSON_TYPE)
-                    .build();
-        }
+    @Consumes(APPLICATION_JSON)
+    public Response addJsonSpans(@HeaderParam("Content-Encoding") String encoding, byte[] spans) {
+        return acceptSpans(encoding, Codec.JSON, spans);
     }
 
+    @POST
+    @Path("spans")
+    @Consumes(APPLICATION_THRIFT)
+    public Response addThriftSpans(@HeaderParam("Content-Encoding") String encoding, byte[] spans) {
+        return acceptSpans(encoding, Codec.THRIFT, spans);
+    }
+
+    private Response acceptSpans(String encoding, Codec codec, byte[] body) {
+        if (encoding != null && "gzip".equals(encoding)) {
+            try {
+                body = gunzip(body);
+            } catch (IOException e) {
+                log.error("Could not gunzip spans", e);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Cannot gunzip spans: " + e.getMessage() + "\n")
+                        .build();
+            }
+        }
+
+        List<zipkin.Span> spans;
+        try {
+            spans = codec.readSpans(body);
+        } catch (RuntimeException e) {
+            log.error("Could not deserialize", e);
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Cannot deserialize spans: " + e.getMessage() + "\n")
+                    .build();
+        }
+
+        try {
+            spanPublisher.publish(null, ZipkinSpanConvertor.spans(spans));
+        } catch (Exception e) {
+            log.error("Could not publish spans to JMS", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Cannot publish spans tp JMS: " + e.getMessage() + "\n")
+                    .build();
+        }
+
+        return Response.status(Response.Status.ACCEPTED).build();
+    }
+
+    private static final ThreadLocal<byte[]> GZIP_BUFFER = new ThreadLocal<byte[]>() {
+        @Override
+        protected byte[] initialValue() {
+            return new byte[1024];
+        }
+    };
+
+    static byte[] gunzip(byte[] input) throws IOException {
+        GZIPInputStream in = new GZIPInputStream(new ByteArrayInputStream(input));
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(input.length)) {
+            byte[] buf = GZIP_BUFFER.get();
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                outputStream.write(buf, 0, len);
+            }
+            return outputStream.toByteArray();
+        }
+    }
 }

@@ -57,10 +57,14 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
             nd.setUri(url.getPath());
         }
 
-        nd.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
-        nd.setElapsed(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
-        // TODO: How to calculate actual - i.e. would need to know child times???
-        nd.setActual(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
+        if (item.getTimestamp() != null) {
+            nd.setTimestamp(TimeUnit.MILLISECONDS.convert(item.getTimestamp(), TimeUnit.MICROSECONDS));
+        }
+        if (item.getDuration() != null) {
+            nd.setElapsed(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
+            // TODO: How to calculate actual - i.e. would need to know child times???
+            nd.setActual(TimeUnit.NANOSECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
+        }
 
         nd.getProperties().addAll(item.binaryAnnotationMapping().getProperties());
         nd.setHostAddress(item.ipv4());

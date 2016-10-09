@@ -48,8 +48,12 @@ public class CompletionTimeUtil {
         CompletionTime completionTime = new CompletionTime();
         completionTime.setId(span.getId());
 
-        completionTime.setTimestamp(TimeUnit.MILLISECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
-        completionTime.setDuration(TimeUnit.MILLISECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
+        if (span.getTimestamp() != null) {
+            completionTime.setTimestamp(TimeUnit.MILLISECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
+        }
+        if (span.getDuration() != null) {
+            completionTime.setDuration(TimeUnit.MILLISECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
+        }
 
         completionTime.setOperation(SpanDeriverUtil.deriveOperation(span));
         completionTime.getProperties().add(new Property(Constants.PROP_FAULT, SpanDeriverUtil.deriveFault(span)));

@@ -18,16 +18,21 @@
 package org.hawkular.apm.tests.dist;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.junit.Assert;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+
+import zipkin.Codec;
+import zipkin.Span;
 
 /**
  * @author Pavol Loffay
@@ -56,17 +61,14 @@ public abstract class AbstractITest {
         }
     }
 
-
     public AbstractITest() {
         this.objectMapper = new ObjectMapper();
         this.client = new OkHttpClient();
     }
 
     protected Response post(Server server, String path, String tenant, Object payload) throws IOException {
-        String json = objectMapper.writeValueAsString(payload);
-
         Request.Builder request = new Request.Builder()
-                .post(RequestBody.create(MEDIA_TYPE_JSON, json))
+                .post(RequestBody.create(MEDIA_TYPE_JSON, serialize(server, payload)))
                 .url(server.getURL() + path);
 
         if (tenant != null) {
@@ -90,5 +92,19 @@ public abstract class AbstractITest {
         System.out.format("<--- Response: %s\n", response.toString());
 
         return response;
+    }
+
+    private byte[] serialize(Server server, Object payload) throws JsonProcessingException {
+        byte[] json;
+        switch (server) {
+            case Zipkin:
+                json = Codec.JSON.writeSpans((List<Span>) payload);
+                break;
+            case APM:
+            default:
+                json = objectMapper.writeValueAsBytes(payload);
+        }
+
+        return json;
     }
 }

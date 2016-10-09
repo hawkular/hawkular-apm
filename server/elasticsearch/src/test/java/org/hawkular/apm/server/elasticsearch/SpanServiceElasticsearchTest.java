@@ -76,10 +76,10 @@ public class SpanServiceElasticsearchTest {
         Annotation annotation = new Annotation();
         annotation.setValue("foo bar");
         annotation.setTimestamp(123456789L);
-        annotation.setEndpoint(createEndpoint("123.123.123.1233", 123, "foo service"));
+        annotation.setEndpoint(createEndpoint("123.123.123.1233", (short)123, "foo service"));
 
         BinaryAnnotation binaryAnnotation = new BinaryAnnotation();
-        binaryAnnotation.setEndpoint(createEndpoint("123.123.123.1233", 123, "foo service"));
+        binaryAnnotation.setEndpoint(createEndpoint("123.123.123.1233", (short)123, "foo service"));
         binaryAnnotation.setValue("foo");
         binaryAnnotation.setKey("foo key");
         binaryAnnotation.setType(AnnotationType.I64);
@@ -110,10 +110,10 @@ public class SpanServiceElasticsearchTest {
         Annotation annotation = new Annotation();
         annotation.setValue("foo bar");
         annotation.setTimestamp(123456789);
-        annotation.setEndpoint(createEndpoint("123.123.123.1233", 123, "foo service"));
+        annotation.setEndpoint(createEndpoint("123.123.123.1233", (short)123, "foo service"));
 
         BinaryAnnotation binaryAnnotation = new BinaryAnnotation();
-        binaryAnnotation.setEndpoint(createEndpoint("123.123.123.1233", 123, "foo service"));
+        binaryAnnotation.setEndpoint(createEndpoint("123.123.123.1233", (short)123, "foo service"));
         binaryAnnotation.setValue("foo");
         binaryAnnotation.setKey("foo key");
         binaryAnnotation.setType(AnnotationType.I64);
@@ -146,13 +146,13 @@ public class SpanServiceElasticsearchTest {
 
         Span clientSpan = new Span(null, clientAnnotations());
         clientSpan.setId("foo");
-        clientSpan.setDuration(111);
+        clientSpan.setDuration(111L);
 
         storeAndWait(null, Collections.singletonList(clientSpan), x -> x.getId() + clientIdsuffix);
 
         Span span = new Span();
         span.setId("foo");
-        span.setDuration(444);
+        span.setDuration(444L);
 
         storeAndWait(null, Collections.singletonList(span), x -> x.getId());
 
@@ -536,7 +536,7 @@ public class SpanServiceElasticsearchTest {
         spanService.storeSpan(tenant, spans, idSupplier);
     }
 
-    private Endpoint createEndpoint(String ipv4, int port, String serviceName) {
+    private Endpoint createEndpoint(String ipv4, Short port, String serviceName) {
         Endpoint endpoint = new Endpoint();
         endpoint.setIpv4(ipv4);
         endpoint.setPort(port);
