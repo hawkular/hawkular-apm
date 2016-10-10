@@ -70,6 +70,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
     private static final String MY_FAULT = "MyFault";
     private static final String TESTAPP = "testapp";
+    private static final String ANOAPP = "anoapp";
 
     private static AnalyticsServiceRESTClient analyticsService;
     private static TraceServiceRESTClient traceService;
@@ -595,23 +596,32 @@ public class AnalyticsServiceITest extends AbstractITest {
         c1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(c1);
 
-        tracePublisher.publish(null, Collections.singletonList(trace1));
+        Trace trace2 = new Trace();
+        trace2.setId("2");
+        trace2.setBusinessTransaction(ANOAPP);
+        trace2.setStartTime(System.currentTimeMillis() - 4000); // Within last hour
+
+        Consumer c2 = new Consumer();
+        c2.setUri("testuri2");
+        c2.setDuration(1000000);
+        c2.getProperties().add(new Property("prop1", "value2"));
+        trace2.getNodes().add(c2);
+
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2));
 
         // Wait to ensure record persisted
-        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
 
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getId());
+        assertEquals(2, result.size());
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
