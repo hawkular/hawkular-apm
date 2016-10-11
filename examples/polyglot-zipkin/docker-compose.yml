@@ -67,5 +67,7 @@ services:
       - TRACING_PORT
   python:
     image: hawkular/apm-example-polyglot-zipkin-python
+    depends_on:
+      - kafka
     ports:
       - "3004:3004"
