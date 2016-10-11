@@ -6,7 +6,10 @@
     }
   },
   "sql.query": {
-    "componentType": "Database"
+    "componentType": "Database",
+    "property": {
+      "include": true
+    }
   }
 }
 
