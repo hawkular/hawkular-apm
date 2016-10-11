@@ -17,89 +17,52 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
-    <groupId>org.hawkular.apm</groupId>
     <artifactId>hawkular-apm</artifactId>
+    <groupId>org.hawkular.apm</groupId>
     <version>0.10.1.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-apm-server-zipkin-rest</artifactId>
-  <packaging>jar</packaging>
-  <name>Hawkular APM::Server::Zipkin REST</name>
+  <artifactId>hawkular-apm-server-kafka-consumer</artifactId>
+  <name>Hawkular APM::Server::Kafka Consumer</name>
 
   <dependencies>
-
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-api</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-server-processors-zipkin</artifactId>
+      <groupId>io.zipkin.java</groupId>
+      <artifactId>zipkin-collector-kafka</artifactId>
+      <version>${version.io.zipkin.java}</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Wildfly provided -->
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
-
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-processor</artifactId>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
-
 </project>

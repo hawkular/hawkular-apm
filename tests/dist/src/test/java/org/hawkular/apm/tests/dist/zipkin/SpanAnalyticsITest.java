@@ -32,9 +32,7 @@ import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.utils.EndpointUtil;
-import org.hawkular.apm.server.api.model.zipkin.AnnotationType;
-import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
-import org.hawkular.apm.server.api.model.zipkin.Span;
+import org.hawkular.apm.server.api.utils.zipkin.ZipkinSpanConvertor;
 import org.hawkular.apm.tests.common.Wait;
 import org.hawkular.apm.tests.dist.AbstractITest;
 import org.junit.Assert;
@@ -63,43 +61,49 @@ public class SpanAnalyticsITest extends AbstractITest {
 
     @Test
     public void testCompletionTimeSyncCalls() throws IOException {
-        BinaryAnnotation urlRootBinAnn = new BinaryAnnotation();
-        urlRootBinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlRootBinAnn.setValue("http://localhost/root");
-        urlRootBinAnn.setType(AnnotationType.STRING);
+        zipkin.BinaryAnnotation urlRootBinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/root", null);
 
-        Span rootSpan = new Span(Arrays.asList(urlRootBinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(1), SpanServiceITest.millisToMicroSeconds(30)));
-        rootSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(1L));
-        rootSpan.setDuration(SpanServiceITest.calculateDuration(1L, 30L));
-        rootSpan.setTraceId(UUID.randomUUID().toString());
-        rootSpan.setId(rootSpan.getTraceId());
-        rootSpan.setName("get");
+        final long rootId = UUID.randomUUID().getMostSignificantBits();
+        final String rootStringId = ZipkinSpanConvertor.parseSpanId(rootId);
+        zipkin.Span rootSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.serverAnnotations(SpanServiceITest.millisToMicroSeconds(1),
+                        SpanServiceITest.millisToMicroSeconds(30)))
+                .addBinaryAnnotation(urlRootBinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(1))
+                .duration(SpanServiceITest.calculateDuration(1L, 30L))
+                .name("get")
+                .traceId(rootId)
+                .id(rootId)
+                .build();
 
-        BinaryAnnotation urlServiceABinAnn = new BinaryAnnotation();
-        urlServiceABinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlServiceABinAnn.setValue("http://localhost/serviceA");
+        zipkin.BinaryAnnotation urlServiceABinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/serviceA", null);
 
-        Span clientSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(5),
-                        SpanServiceITest.millisToMicroSeconds(15)));
-        clientSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(5));
-        clientSpan.setDuration(SpanServiceITest.calculateDuration(5L, 15L));
-        clientSpan.setTraceId(rootSpan.getTraceId());
-        clientSpan.setId(UUID.randomUUID().toString());
-        clientSpan.setParentId(rootSpan.getId());
-        clientSpan.setName("post");
+        final long clientSpanId = UUID.randomUUID().getMostSignificantBits();
+        zipkin.Span clientSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(5),
+                        SpanServiceITest.millisToMicroSeconds(15)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(5))
+                .duration(SpanServiceITest.calculateDuration(5L, 15L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
-        Span serverSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(7), SpanServiceITest.millisToMicroSeconds(10)));
-        serverSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(7));
-        serverSpan.setDuration(SpanServiceITest.calculateDuration(7L, 10L));
-        serverSpan.setTraceId(rootSpan.getTraceId());
-        serverSpan.setId(clientSpan.getId());
-        serverSpan.setParentId(rootSpan.getId());
-        serverSpan.setName("post");
+        zipkin.Span serverSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(7),
+                        SpanServiceITest.millisToMicroSeconds(10)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(7))
+                .duration(SpanServiceITest.calculateDuration(7L, 10L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
         post(Server.Zipkin, "/spans", null, Arrays.asList(serverSpan));
         post(Server.Zipkin, "/spans", null, Arrays.asList(clientSpan));
@@ -114,51 +118,57 @@ public class SpanAnalyticsITest extends AbstractITest {
         Assert.assertEquals(1, traceCompletionTimes.size());
 
         CompletionTime completionTime = traceCompletionTimes.get(0);
-        Assert.assertEquals(rootSpan.getDuration(),
+        Assert.assertEquals(rootSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(completionTime.getDuration(), TimeUnit.MILLISECONDS));
         Assert.assertEquals("/root", completionTime.getUri());
-        Assert.assertEquals(rootSpan.getId(), completionTime.getId());
+        Assert.assertEquals(rootStringId, completionTime.getId());
     }
 
     @Test
     public void testCompletionTimeAsyncCalls() throws IOException, InterruptedException {
-        BinaryAnnotation urlRootBinAnn = new BinaryAnnotation();
-        urlRootBinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlRootBinAnn.setValue("http://localhost/root");
-        urlRootBinAnn.setType(AnnotationType.STRING);
+        zipkin.BinaryAnnotation urlRootBinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/root", null);
 
-        Span rootSpan = new Span(Arrays.asList(urlRootBinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(1), SpanServiceITest.millisToMicroSeconds(5)));
-        rootSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(1L));
-        rootSpan.setDuration(SpanServiceITest.calculateDuration(1L, 5L));
-        rootSpan.setTraceId(UUID.randomUUID().toString());
-        rootSpan.setId(rootSpan.getTraceId());
-        rootSpan.setName("get");
+        final long rootId = UUID.randomUUID().getMostSignificantBits();
+        final String rootStringId = ZipkinSpanConvertor.parseSpanId(rootId);
+        zipkin.Span rootSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.serverAnnotations(SpanServiceITest.millisToMicroSeconds(1),
+                        SpanServiceITest.millisToMicroSeconds(5)))
+                .addBinaryAnnotation(urlRootBinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(1))
+                .duration(SpanServiceITest.calculateDuration(1L, 5L))
+                .name("get")
+                .traceId(rootId)
+                .id(rootId)
+                .build();
 
-        BinaryAnnotation urlServiceABinAnn = new BinaryAnnotation();
-        urlServiceABinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlServiceABinAnn.setValue("http://localhost/serviceA");
+        zipkin.BinaryAnnotation urlServiceABinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/serviceA", null);
 
-        Span clientSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(2),
-                        SpanServiceITest.millisToMicroSeconds(4)));
-        clientSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(2));
-        clientSpan.setDuration(SpanServiceITest.calculateDuration(2L, 4L));
-        clientSpan.setTraceId(rootSpan.getTraceId());
-        clientSpan.setId(UUID.randomUUID().toString());
-        clientSpan.setParentId(rootSpan.getId());
-        clientSpan.setName("post");
+        final long clientSpanId = UUID.randomUUID().getMostSignificantBits();
+        zipkin.Span clientSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(2),
+                        SpanServiceITest.millisToMicroSeconds(4)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(1))
+                .duration(SpanServiceITest.calculateDuration(2L, 4L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
-        Span serverSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(3), SpanServiceITest.millisToMicroSeconds(10)));
-        serverSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(3));
-        serverSpan.setDuration(SpanServiceITest.calculateDuration(3L, 10L));
-        serverSpan.setTraceId(rootSpan.getTraceId());
-        serverSpan.setId(clientSpan.getId());
-        serverSpan.setParentId(rootSpan.getId());
-        serverSpan.setName("post");
+        zipkin.Span serverSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(3),
+                        SpanServiceITest.millisToMicroSeconds(10)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(3))
+                .duration(SpanServiceITest.calculateDuration(3L, 10L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
         post(Server.Zipkin, "/spans", null, Arrays.asList(rootSpan));
         post(Server.Zipkin, "/spans", null, Arrays.asList(clientSpan));
@@ -177,48 +187,53 @@ public class SpanAnalyticsITest extends AbstractITest {
         Assert.assertEquals(9000,
                 TimeUnit.MICROSECONDS.convert(completionTime.getDuration(), TimeUnit.MILLISECONDS));
         Assert.assertEquals("/root", completionTime.getUri());
-        Assert.assertEquals(rootSpan.getId(), completionTime.getId());
+        Assert.assertEquals(rootStringId, completionTime.getId());
     }
 
     @Test
     public void testCommunicationSummaryStatistics() throws IOException {
-        BinaryAnnotation urlRootBinAnn = new BinaryAnnotation();
-        urlRootBinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlRootBinAnn.setValue("http://localhost/root");
-        urlRootBinAnn.setType(AnnotationType.STRING);
+        zipkin.BinaryAnnotation urlRootBinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/root", null);
 
-        Span rootSpan = new Span(Arrays.asList(urlRootBinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(1), SpanServiceITest.millisToMicroSeconds(30)));
-        rootSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(1L));
-        rootSpan.setDuration(SpanServiceITest.calculateDuration(1L, 30L));
-        rootSpan.setTraceId(UUID.randomUUID().toString());
-        rootSpan.setId(rootSpan.getTraceId());
-        rootSpan.setName("get");
+        final long rootId = UUID.randomUUID().getMostSignificantBits();
+        zipkin.Span rootSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.serverAnnotations(SpanServiceITest.millisToMicroSeconds(1),
+                        SpanServiceITest.millisToMicroSeconds(30)))
+                .addBinaryAnnotation(urlRootBinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(1))
+                .duration(SpanServiceITest.calculateDuration(1L, 30L))
+                .name("get")
+                .traceId(rootId)
+                .id(rootId)
+                .build();
 
-        BinaryAnnotation urlServiceABinAnn = new BinaryAnnotation();
-        urlServiceABinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlServiceABinAnn.setValue("http://localhost/serviceA");
+        zipkin.BinaryAnnotation urlServiceABinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/serviceA", null);
 
-        Span clientSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(5),
-                        SpanServiceITest.millisToMicroSeconds(15)));
-        clientSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(5));
-        clientSpan.setDuration(SpanServiceITest.calculateDuration(5L, 15L));
-        clientSpan.setTraceId(rootSpan.getTraceId());
-        clientSpan.setId(UUID.randomUUID().toString());
-        clientSpan.setParentId(rootSpan.getId());
-        clientSpan.setName("post");
+        final long clientSpanId = UUID.randomUUID().getMostSignificantBits();
+        zipkin.Span clientSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(5),
+                        SpanServiceITest.millisToMicroSeconds(15)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(5))
+                .duration(SpanServiceITest.calculateDuration(5L, 15L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
-        Span serverSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(7), SpanServiceITest.millisToMicroSeconds(10)));
-        serverSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(7));
-        serverSpan.setDuration(SpanServiceITest.calculateDuration(7L, 10L));
-        serverSpan.setTraceId(rootSpan.getTraceId());
-        serverSpan.setId(clientSpan.getId());
-        serverSpan.setParentId(rootSpan.getId());
-        serverSpan.setName("post");
+        zipkin.Span serverSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.serverAnnotations(SpanServiceITest.millisToMicroSeconds(7),
+                        SpanServiceITest.millisToMicroSeconds(10)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(7))
+                .duration(SpanServiceITest.calculateDuration(7L, 10L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
         post(Server.Zipkin, "/spans", null, Arrays.asList(rootSpan));
         post(Server.Zipkin, "/spans", null, Arrays.asList(clientSpan));
@@ -237,11 +252,11 @@ public class SpanAnalyticsITest extends AbstractITest {
         CommunicationSummaryStatistics summaryStatistics = communicationSummaryStatisticsList.get(0);
         Assert.assertEquals(EndpointUtil.encodeEndpoint("/root", "GET"), summaryStatistics.getId());
         Assert.assertEquals(1, summaryStatistics.getCount());
-        Assert.assertEquals(rootSpan.getDuration(),
+        Assert.assertEquals(rootSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(summaryStatistics.getMinimumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(rootSpan.getDuration(),
+        Assert.assertEquals(rootSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(summaryStatistics.getMaximumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(rootSpan.getDuration(),
+        Assert.assertEquals(rootSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(summaryStatistics.getAverageDuration(), TimeUnit.MILLISECONDS));
         Assert.assertEquals(1, summaryStatistics.getOutbound().size());
         Assert.assertTrue(summaryStatistics.getOutbound().containsKey(EndpointUtil.encodeEndpoint("/serviceA", "POST")));
@@ -249,54 +264,59 @@ public class SpanAnalyticsITest extends AbstractITest {
         summaryStatistics = communicationSummaryStatisticsList.get(1);
         Assert.assertEquals(EndpointUtil.encodeEndpoint("/serviceA", "POST"), summaryStatistics.getId());
         Assert.assertEquals(1, summaryStatistics.getCount());
-        Assert.assertEquals(serverSpan.getDuration(),
+        Assert.assertEquals(serverSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(summaryStatistics.getMinimumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(serverSpan.getDuration(),
+        Assert.assertEquals(serverSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(summaryStatistics.getMaximumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(serverSpan.getDuration(),
+        Assert.assertEquals(serverSpan.duration.longValue(),
                 TimeUnit.MICROSECONDS.convert(summaryStatistics.getAverageDuration(), TimeUnit.MILLISECONDS));
         Assert.assertEquals(0, summaryStatistics.getOutbound().size());
     }
 
     @Test
     public void testNodeSummaryStatistics() throws IOException {
-        BinaryAnnotation urlRootBinAnn = new BinaryAnnotation();
-        urlRootBinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlRootBinAnn.setValue("http://localhost/root");
-        urlRootBinAnn.setType(AnnotationType.STRING);
+        zipkin.BinaryAnnotation urlRootBinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/root", null);
 
-        Span rootSpan = new Span(Arrays.asList(urlRootBinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(1), SpanServiceITest.millisToMicroSeconds(30)));
-        rootSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(1L));
-        rootSpan.setDuration(SpanServiceITest.calculateDuration(1L, 30L));
-        rootSpan.setTraceId(UUID.randomUUID().toString());
-        rootSpan.setId(rootSpan.getTraceId());
-        rootSpan.setName("get");
+        final long rootId = UUID.randomUUID().getMostSignificantBits();
+        zipkin.Span rootSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.serverAnnotations(SpanServiceITest.millisToMicroSeconds(1),
+                        SpanServiceITest.millisToMicroSeconds(30)))
+                .addBinaryAnnotation(urlRootBinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(1))
+                .duration(SpanServiceITest.calculateDuration(1L, 30L))
+                .name("get")
+                .traceId(rootId)
+                .id(rootId)
+                .build();
 
-        BinaryAnnotation urlServiceABinAnn = new BinaryAnnotation();
-        urlServiceABinAnn.setKey(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL);
-        urlServiceABinAnn.setValue("http://localhost/serviceA");
+        zipkin.BinaryAnnotation urlServiceABinAnn = zipkin.BinaryAnnotation.create(
+                Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost/serviceA", null);
 
-        Span clientSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(5),
-                        SpanServiceITest.millisToMicroSeconds(15)));
-        clientSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(5));
-        clientSpan.setDuration(SpanServiceITest.calculateDuration(5L, 15L));
-        clientSpan.setTraceId(rootSpan.getTraceId());
-        clientSpan.setId(UUID.randomUUID().toString());
-        clientSpan.setParentId(rootSpan.getId());
-        clientSpan.setName("post");
+        final long clientSpanId = UUID.randomUUID().getMostSignificantBits();
+        zipkin.Span clientSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.clientAnnotation(SpanServiceITest.millisToMicroSeconds(5),
+                        SpanServiceITest.millisToMicroSeconds(15)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(5))
+                .duration(SpanServiceITest.calculateDuration(5L, 15L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
-        Span serverSpan = new Span(Arrays.asList(urlServiceABinAnn),
-                SpanServiceITest.serverAnnotations(
-                        SpanServiceITest.millisToMicroSeconds(7), SpanServiceITest.millisToMicroSeconds(10)));
-        serverSpan.setTimestamp(SpanServiceITest.millisToMicroSeconds(7));
-        serverSpan.setDuration(SpanServiceITest.calculateDuration(7L, 10L));
-        serverSpan.setTraceId(rootSpan.getTraceId());
-        serverSpan.setId(clientSpan.getId());
-        serverSpan.setParentId(rootSpan.getId());
-        serverSpan.setName("post");
+        zipkin.Span serverSpan = zipkin.Span.builder()
+                .annotations(SpanServiceITest.serverAnnotations(SpanServiceITest.millisToMicroSeconds(7),
+                        SpanServiceITest.millisToMicroSeconds(10)))
+                .addBinaryAnnotation(urlServiceABinAnn)
+                .timestamp(SpanServiceITest.millisToMicroSeconds(7))
+                .duration(SpanServiceITest.calculateDuration(7L, 10L))
+                .name("post")
+                .traceId(rootId)
+                .id(clientSpanId)
+                .parentId(rootId)
+                .build();
 
         post(Server.Zipkin, "/spans", null, Arrays.asList(rootSpan));
         post(Server.Zipkin, "/spans", null, Arrays.asList(clientSpan));

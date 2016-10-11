@@ -31,7 +31,7 @@ public class Endpoint implements Serializable {
 
     private String ipv4;
 
-    private int port;
+    private Short port;
 
     private String serviceName;
 
@@ -52,14 +52,14 @@ public class Endpoint implements Serializable {
     /**
      * @return the port
      */
-    public int getPort() {
+    public Short getPort() {
         return port;
     }
 
     /**
      * @param port the port to set
      */
-    public void setPort(int port) {
+    public void setPort(Short port) {
         this.port = port;
     }
 
@@ -93,8 +93,8 @@ public class Endpoint implements Serializable {
 
         Endpoint endpoint = (Endpoint) o;
 
-        if (port != endpoint.port) return false;
         if (ipv4 != null ? !ipv4.equals(endpoint.ipv4) : endpoint.ipv4 != null) return false;
+        if (port != null ? !port.equals(endpoint.port) : endpoint.port != null) return false;
         return serviceName != null ? serviceName.equals(endpoint.serviceName) : endpoint.serviceName == null;
 
     }
@@ -102,7 +102,7 @@ public class Endpoint implements Serializable {
     @Override
     public int hashCode() {
         int result = ipv4 != null ? ipv4.hashCode() : 0;
-        result = 31 * result + port;
+        result = 31 * result + (port != null ? port.hashCode() : 0);
         result = 31 * result + (serviceName != null ? serviceName.hashCode() : 0);
         return result;
     }

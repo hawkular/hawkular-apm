@@ -211,8 +211,13 @@ public class SourceInfoUtil {
             if (rootOrServerSpan != null) {
                 // Build source information
                 SourceInfo si = new SourceInfo();
-                si.setDuration(TimeUnit.MILLISECONDS.convert(clientSpan.getDuration(), TimeUnit.MICROSECONDS));
-                si.setTimestamp(TimeUnit.MILLISECONDS.convert(clientSpan.getTimestamp(), TimeUnit.MICROSECONDS));
+
+                if (clientSpan.getDuration() != null) {
+                    si.setDuration(TimeUnit.MILLISECONDS.convert(clientSpan.getDuration(), TimeUnit.MICROSECONDS));
+                }
+                if (clientSpan.getTimestamp() != null) {
+                    si.setTimestamp(TimeUnit.MILLISECONDS.convert(clientSpan.getTimestamp(), TimeUnit.MICROSECONDS));
+                }
                 si.setFragmentId(clientSpan.getId());
 
                 si.getProperties().addAll(clientSpan.binaryAnnotationMapping().getProperties());
