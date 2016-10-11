@@ -34,6 +34,21 @@ public class PropertyUtil {
     public static final String HAWKULAR_TENANT = "HAWKULAR_TENANT";
 
     /**
+     * Location of the Hawkular Services
+     */
+    public static final String HAWKULAR_URI = "HAWKULAR_URI";
+
+    /**
+     * Username for authentication against Hawkular Services
+     */
+    public static final String HAWKULAR_USERNAME = "HAWKULAR_USERNAME";
+
+    /**
+     * Password for authentication against Hawkular Services
+     */
+    public static final String HAWKULAR_PASSWORD = "HAWKULAR_PASSWORD";
+
+    /**
      * The location of the APM server
      */
     public static final String HAWKULAR_APM_URI = "HAWKULAR_APM_URI";
@@ -140,21 +155,6 @@ public class PropertyUtil {
 
     /** The URI prefix to denote use of Kafka */
     public static final String KAFKA_PREFIX = "kafka:";
-
-    /**
-     * Location of the Hawkular Services Server.
-     */
-    public static final String HAWKULAR_SERVER = "HAWKULAR_SERVER";
-
-    /**
-     * Username for authentication against the Hawkular Server
-     */
-    public static final String HAWKULAR_SERVER_USERNAME = "HAWKULAR_SERVER_USERNAME";
-
-    /**
-     * Password for authentication against the Hawkular Server
-     */
-    public static final String HAWKULAR_SERVER_PASSWORD = "HAWKULAR_SERVER_PASSWORD";
 
     /**
      * Environment variable representing the container's host name.

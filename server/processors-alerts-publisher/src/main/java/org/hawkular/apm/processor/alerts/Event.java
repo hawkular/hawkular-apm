@@ -61,8 +61,9 @@ public class Event {
             });
         }
 
-        this.category = eventSource;
-        this.dataSource = "APM";
+        this.dataId = eventSource;
+        this.category = "APM";
+        this.dataSource = completionTime.getHostName();
         this.id = UUID.randomUUID().toString();
         this.ctime = completionTime.getTimestamp();
         this.text = Long.toString(completionTime.getDuration());
@@ -131,4 +132,11 @@ public class Event {
     public void setTags(Map<String, String> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public String toString() {
+        return "Event [category=" + category + ", context=" + context + ", tags=" + tags + ", ctime=" + ctime + ", id="
+                + id + ", dataId=" + dataId + ", dataSource=" + dataSource + ", text=" + text + "]";
+    }
+
 }
