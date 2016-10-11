@@ -36,9 +36,9 @@ import feign.jackson.JacksonEncoder;
 @Stateless
 public class AlertsPublisher {
     private static final MsgLogger logger = MsgLogger.LOGGER;
-    private static final String BASE_URL = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_SERVER);
-    private static final String USERNAME = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_SERVER_USERNAME);
-    private static final String PASSWORD = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_SERVER_PASSWORD);
+    private static final String BASE_URL = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_URI);
+    private static final String USERNAME = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_USERNAME);
+    private static final String PASSWORD = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_PASSWORD);
     private static final String TARGET = String.format("%s/hawkular/alerts", BASE_URL);
 
     @Asynchronous

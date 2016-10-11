@@ -57,7 +57,10 @@ public class FragmentCompletionTimeAlertsPublisherMDB implements MessageListener
         try {
             String data = ((TextMessage) message).getText();
             List<CompletionTime> items = mapper.readValue(data, new TypeReference<List<CompletionTime>>() {});
+
+            /* HWKAPM-684 - error when publishing fragment completion times to Alerts.
             publisher.publish(items, "FragmentCompletionTime");
+            */
         } catch (IOException | JMSException e) {
             logger.errorPublishingToAlerts(e);
         }

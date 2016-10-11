@@ -64,8 +64,9 @@ public class EventTest {
     @Test
     public void eventSetsDataSource() {
         CompletionTime completionTime = new CompletionTime();
+        completionTime.setHostName("myhost");
         Event event = new Event(completionTime, "eventSetsDataSource");
-        assertEquals(event.getDataSource(), "APM");
+        assertEquals(event.getDataSource(), completionTime.getHostName());
     }
 
     @Test
@@ -79,10 +80,17 @@ public class EventTest {
     }
 
     @Test
+    public void eventSetsDataId() {
+        CompletionTime completionTime = new CompletionTime();
+        Event event = new Event(completionTime, "eventSetsDataId");
+        assertEquals(event.getDataId(), "eventSetsDataId");
+    }
+
+    @Test
     public void eventSetsCategory() {
         CompletionTime completionTime = new CompletionTime();
-        Event event = new Event(completionTime, "eventSetsCategory");
-        assertEquals(event.getCategory(), "eventSetsCategory");
+        Event event = new Event(completionTime, "eventSource");
+        assertEquals(event.getCategory(), "APM");
     }
 
     @Test
