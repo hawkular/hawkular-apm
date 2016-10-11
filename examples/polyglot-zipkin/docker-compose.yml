@@ -24,7 +24,7 @@ services:
       - "2181:2181"
       - "9092:9092"
     environment:
-      - ADVERTISED_HOST=${TRACING_SERVER}
+      - ADVERTISED_HOST=${KAFKA_ZOOKEEPER}
       - AUTO_CREATE_TOPICS=true
   dropwizard:
     image: hawkular/apm-example-polyglot-zipkin-dropwizard
