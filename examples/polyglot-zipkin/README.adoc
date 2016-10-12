@@ -11,22 +11,26 @@ of the endpoints might not work as they are calling external services. Feel free
 services.
 
 == Run
+Before running ensure that containers from previous run were removed.
+
 [source,shell]
 ----
+$ export KAFKA_ZOOKEEPER=172.17.0.1
 $ export TRACING_SERVER=172.17.0.1
 $ export TRACING_PORT=8080
+
 $ docker-compose pull
 $ docker-compose up
-$ docker-compose down -> stop and remove
+$ docker-compose down -> stop and remove all containers
 
--> Run tracing server (Hawkular APM or zipkin server). Server has to be started after containers to make sure kafka is running.
--> If using Hawkular APM use /standalone.sh -b 0.0.0.0.
--> Zipkin server has to be started with KAFKA_ZOOKEEPER=172.17.0.1:2181 java -jar zipkin-server.jar
+-> Run tracing server (Hawkular APM or zipkin server). Server has to be started after containers to make sure kafka service is running.
+-> If using Hawkular APM use bin/standalone.sh -b 0.0.0.0 -Djboss.http.port=8080.
 ----
 
 * `TRACING_SERVER` - address of tracing server. It cannot be localhost,
-                     therefore bind tracing server to 0.0.0.0 address or 172.17.0.1 (docker0 interface).
+                     therefore bind tracing server to `0.0.0.0` address or `172.17.0.1` (docker0 interface).
 * `TRACING_PORT` - port of the tracing server. Hawkular APM 8080 or zipkin 9411.
+* `KAFKA_ZOOKEEPER` - enables kafka consumer in APM and Zipkin server. It should be an address of the machine with docker engine.
 
 == Example requests
 [source,shell]
@@ -55,6 +59,12 @@ $ curl -ivX GET 'http://localhost:3004/pyramid/loop'
 ----
 
 == Screenshots
+image::hawkular-apm-createUser.png[Hawkular APM UI, createUser, height="300", width="800"]
+{nbsp}
+
+image::hawkular-apm-createUser-detail.png[Hawkular APM UI, createUser, height="300", width="800"]
+{nbsp}
+
 image::zipkin-createUser.png[Zipkin UI, createUser, height="300", width="800"]
 
 == Known issues
