@@ -50,10 +50,14 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-collector</artifactId>
     </dependency>
+
+    <!-- HWKAPM-687 Don't include for now, as no consumer support on the server
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-client-kafka</artifactId>
     </dependency>
+    -->
+
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
@@ -90,10 +94,12 @@
       <artifactId>mvel2</artifactId>
     </dependency>
 
+    <!-- HWKAPM-687 Don't include for now, as no consumer support on the server
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
     </dependency>
+    -->
 
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
