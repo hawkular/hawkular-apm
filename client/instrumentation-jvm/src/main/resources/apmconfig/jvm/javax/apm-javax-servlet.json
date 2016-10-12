@@ -45,8 +45,8 @@
           "name": "apm_source",
           "valueExpression": "\"javax.servlet\""
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "req.getQueryString()"
         },{
           "type": "SetDetail",

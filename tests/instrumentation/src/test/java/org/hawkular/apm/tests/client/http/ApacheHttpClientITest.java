@@ -219,7 +219,7 @@ public class ApacheHttpClientITest extends ClientTestBase {
         assertEquals(path, testProducer.getUri());
 
         if (request.getURI().toString().endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         // Check headers
@@ -354,7 +354,7 @@ public class ApacheHttpClientITest extends ClientTestBase {
         assertEquals(path, testProducer.getUri());
 
         if (request.getURI().toString().endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         // Check headers

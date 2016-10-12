@@ -202,7 +202,7 @@ public class JBossRESTEasyClientITest extends ClientTestBase {
         assertEquals(path, testProducer.getUri());
 
         if (qs) {
-            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         // Check headers

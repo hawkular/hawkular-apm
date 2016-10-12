@@ -42,8 +42,8 @@
           "name": "http_method",
           "valueExpression": "$2.getRequestLine().getMethod()"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "uri.getQuery()"
         },{
           "type": "SetDetail",

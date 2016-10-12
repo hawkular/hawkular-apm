@@ -17,8 +17,8 @@
 package org.hawkular.apm.tests.client.http;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
@@ -123,7 +124,7 @@ public class NettyNoResponseHttpITest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(PATH_1, testProducer.getUri());
-        assertEquals(QUERY_1, testProducer.getDetails().get("http_query"));
+        assertEquals(QUERY_1, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         assertEquals("GET", testProducer.getOperation());
         assertEquals("GET", testProducer.getDetails().get("http_method"));
     }
@@ -166,7 +167,7 @@ public class NettyNoResponseHttpITest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(PATH_2, testProducer.getUri());
-        assertFalse(testProducer.getDetails().containsKey("http_query"));
+        assertTrue(testProducer.getProperties(Constants.PROP_HTTP_QUERY).isEmpty());
         assertEquals("POST", testProducer.getOperation());
         assertEquals("POST", testProducer.getDetails().get("http_method"));
     }
@@ -209,7 +210,7 @@ public class NettyNoResponseHttpITest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(PATH_3, testProducer.getUri());
-        assertFalse(testProducer.getDetails().containsKey("http_query"));
+        assertTrue(testProducer.getProperties(Constants.PROP_HTTP_QUERY).isEmpty());
         assertEquals("PUT", testProducer.getOperation());
         assertEquals("PUT", testProducer.getDetails().get("http_method"));
     }

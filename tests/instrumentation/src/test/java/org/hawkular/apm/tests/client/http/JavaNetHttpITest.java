@@ -305,7 +305,7 @@ public class JavaNetHttpITest extends ClientTestBase {
         assertEquals("Hello World", testProducer.getDetails().get("hello"));
 
         if (urlstr.endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         // Check headers

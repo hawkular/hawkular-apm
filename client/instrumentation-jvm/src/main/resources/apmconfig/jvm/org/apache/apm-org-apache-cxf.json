@@ -47,8 +47,8 @@
           "name": "apm_source",
           "valueExpression": "\"org.apache.cxf\""
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "req.getQueryString()"
         },{
           "type": "SetDetail",

@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
@@ -181,9 +182,9 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
         boolean ret = false;
 
         // Translate query string into a map
-        String queryString = node.getDetails().get("http_query");
-        if (queryString != null) {
-            StringTokenizer st = new StringTokenizer(queryString, "&");
+        Set<Property> queryString = node.getProperties(Constants.PROP_HTTP_QUERY);
+        if (!queryString.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(queryString.iterator().next().getValue(), "&");
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
                 String[] namevalue = token.split("=");
