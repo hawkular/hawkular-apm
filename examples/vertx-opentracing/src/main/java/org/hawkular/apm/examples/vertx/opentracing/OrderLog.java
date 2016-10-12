@@ -63,7 +63,7 @@ public class OrderLog {
                 try (Span storeOrderSpan = tracer.buildSpan("WriteOrder")
                         .asChildOf(orderConfirmedSpan)
                         .withTag("database.url", "OrdersDB")
-                        .withTag("sql", "UPDATE .....")
+                        .withTag("database.statement", "UPDATE Orders SET order=?")
                         .start()) {
 
                     String acctId = order.getString("accountId");
@@ -94,7 +94,7 @@ public class OrderLog {
                 try (Span retrieveOrdersSpan = tracer.buildSpan("RetrieveOrders")
                         .asChildOf(getOrdersSpan)
                         .withTag("database.url", "OrdersDB")
-                        .withTag("sql", "SELECT .....")
+                        .withTag("database.statement", "SELECT order FROM Orders WHERE accountId = ?")
                         .start()) {
                     String acctId = order.getString("accountId");
                     JsonArray myOrders = orders.get(acctId);

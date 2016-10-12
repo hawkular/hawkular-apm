@@ -69,7 +69,7 @@ public class AccountManager {
                     try (Span retrieveAccountSpan = tracer.buildSpan("RetrieveAccount")
                             .asChildOf(getAccountSpan)
                             .withTag("database.url", "AccountsDB")
-                            .withTag("sql", "SELECT .....")
+                            .withTag("database.statement", "SELECT account FROM Accounts WHERE id = ?")
                             .start()) {
                         JsonObject acct = accounts.get(req.getString("accountId"));
                         if (acct == null) {

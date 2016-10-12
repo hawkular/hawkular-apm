@@ -74,7 +74,7 @@ public class InventoryManager {
                     try (Span queryInventorySpan = tracer.buildSpan("QueryInventory")
                             .asChildOf(getItemSpan)
                             .withTag("database.url", "InventoryDB")
-                            .withTag("sql", "SELECT item FROM InventoryTable WHERE id = :id")
+                            .withTag("database.statement", "SELECT item FROM Inventory WHERE id = ?")
                             .start()) {
                         
                         JsonObject acct = items.get(req.getString("itemId"));
@@ -105,7 +105,7 @@ public class InventoryManager {
                 try (Span queryInventorySpan = tracer.buildSpan("WriteInventory")
                         .asChildOf(orderConfirmedSpan)
                         .withTag("database.url", "InventoryDB")
-                        .withTag("sql", "UPDATE FROM InventoryTable ....")
+                        .withTag("database.statement", "UPDATE Inventory SET item=?")
                         .start()) {
                     // Update quantity and write to db
                 }
