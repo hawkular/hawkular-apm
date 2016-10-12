@@ -78,7 +78,7 @@ public class AsyncService extends AbstractService {
         // Span will auto-close and automatically call finish
         try (Span component2Span = getTracer().buildSpan("Component2")
                 .addReference(References.FOLLOWS_FROM, span.context())
-                .withTag("sql", "INSERT order INTO Orders")
+                .withTag(Constants.PROP_DATABASE_STATEMENT, "INSERT order INTO Orders")
                 .withTag("component", Constants.COMPONENT_DATABASE)
                 .start()) {
 

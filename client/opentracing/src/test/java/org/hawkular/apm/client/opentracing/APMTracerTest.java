@@ -178,7 +178,7 @@ public class APMTracerTest {
         // Get producer invoking a remote service
         assertEquals(1, component.getNodes().size());
         assertEquals(Constants.COMPONENT_DATABASE, component.getComponentType());
-        assertTrue(component.getProperties("sql").size() > 0);
+        assertTrue(component.getProperties(Constants.PROP_DATABASE_STATEMENT).size() > 0);
         assertEquals(Producer.class, component.getNodes().get(0).getClass());
 
         Producer producer = (Producer) component.getNodes().get(0);
@@ -234,7 +234,7 @@ public class APMTracerTest {
         // Get producer invoking a remote service
         assertEquals(1, component.getNodes().size());
         assertEquals(Constants.COMPONENT_DATABASE, component.getComponentType());
-        assertTrue(component.getProperties("sql").size() > 0);
+        assertTrue(component.getProperties(Constants.PROP_DATABASE_STATEMENT).size() > 0);
         assertEquals(Producer.class, component.getNodes().get(0).getClass());
 
         Producer producer = (Producer) component.getNodes().get(0);
@@ -294,7 +294,7 @@ public class APMTracerTest {
         // Get producer invoking a remote service
         assertEquals(1, component.getNodes().size());
         assertEquals(Constants.COMPONENT_DATABASE, component.getComponentType());
-        assertTrue(component.getProperties("sql").size() > 0);
+        assertTrue(component.getProperties(Constants.PROP_DATABASE_STATEMENT).size() > 0);
         assertEquals(Producer.class, component.getNodes().get(0).getClass());
 
         Producer producer = (Producer) component.getNodes().get(0);

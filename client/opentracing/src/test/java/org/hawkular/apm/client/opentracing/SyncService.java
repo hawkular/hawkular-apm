@@ -93,7 +93,7 @@ public class SyncService extends AbstractService {
         // Span will auto-close and automatically call finish
         try (Span componentSpan = getTracer().buildSpan("Component")
                 .asChildOf(span)
-                .withTag("sql", "INSERT order INTO Orders")
+                .withTag(Constants.PROP_DATABASE_STATEMENT, "INSERT order INTO Orders")
                 .withTag("component", Constants.COMPONENT_DATABASE)
                 .start()) {
 
