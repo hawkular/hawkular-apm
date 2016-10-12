@@ -27,15 +27,19 @@ $ mvn exec:java
 
 == Example requests
 
-Valid account ids are `fred`, `joe` and `jane`.
+Valid account ids are `fred`, `joe`, `jane`, `steve` and `brian`.
 
-Valid items are `laptop` (quantity 5) and `car` (quantity 10).
+Valid items are `laptop` (quantity 5), `car` (quantity 8), `book` (quantity 9), `chair` (quantity 7) and `dvd` (quantity 6).
 
 To place a valid order, call:
 
 [source,shell]
 ----
 curl -X POST -d '{"accountId":"fred","itemId":"laptop","quantity":2}' http://localhost:8180/orders
+
+OR
+
+./order.sh fred laptop 2
 ----
 
 Try changing the account id, item id or quantity (i.e. 6) and see the various error messages. For example,
@@ -43,6 +47,10 @@ Try changing the account id, item id or quantity (i.e. 6) and see the various er
 [source,shell]
 ----
 curl -X POST -d '{"accountId":"sarah","itemId":"laptop","quantity":2}' http://localhost:8180/orders
+
+OR
+
+./order.sh sarah laptop 2
 ----
 
 will generated an `Account not found` error message.
@@ -52,6 +60,10 @@ Another command that can be performed is to list the current orders for an accou
 [source,shell]
 ----
 curl -X GET -d '{"accountId":"fred"}' http://localhost:8180/orders
+
+OR
+
+./list.sh fred
 ----
 
 

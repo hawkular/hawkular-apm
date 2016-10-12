@@ -49,7 +49,10 @@ public class InventoryManager {
 
     protected void initItems() {
         items.put("laptop", new JsonObject().put("itemId", "laptop").put("quantity", 5));
-        items.put("car", new JsonObject().put("itemId", "car").put("quantity", 10));
+        items.put("car", new JsonObject().put("itemId", "car").put("quantity", 8));
+        items.put("book", new JsonObject().put("itemId", "book").put("quantity", 9));
+        items.put("chair", new JsonObject().put("itemId", "chair").put("quantity", 7));
+        items.put("dvd", new JsonObject().put("itemId", "dvd").put("quantity", 6));
     }
 
     protected void initGetItemConsumer(EventBus eb, Tracer tracer) {
