@@ -26,9 +26,6 @@ do
 
 	quantity=`echo $[ 1 + $[ RANDOM % 10 ]]`
 
-
-        date
-
 	echo "Creating an order for account=$accountId item=$itemId quantity=$quantity"
 
 	data="{\"accountId\":\"$accountId\",\"itemId\":\"$itemId\",\"quantity\": $quantity}"
@@ -37,8 +34,6 @@ do
 
 	echo
 	echo
-
-        delay=`echo $[ $[ 1 + $[ RANDOM % 100 ]] / 100 ]`
 
 	sleep 0.3
 done

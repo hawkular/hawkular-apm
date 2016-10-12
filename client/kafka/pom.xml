@@ -37,10 +37,6 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-server-api</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.kafka</groupId>
