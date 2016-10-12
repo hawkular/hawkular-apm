@@ -48,6 +48,8 @@ public class AccountManager {
         accounts.put("fred", new JsonObject().put("name", "fred"));
         accounts.put("joe", new JsonObject().put("name", "joe"));
         accounts.put("jane", new JsonObject().put("name", "jane"));
+        accounts.put("steve", new JsonObject().put("name", "steve"));
+        accounts.put("brian", new JsonObject().put("name", "brian"));
 
         getAccountConsumer = eb.consumer("AccountManager.getAccount");
         getAccountConsumer.handler(message -> {
