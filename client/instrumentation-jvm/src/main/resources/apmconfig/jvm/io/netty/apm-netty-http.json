@@ -53,8 +53,8 @@
           "name": "http_port",
           "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPort()"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getQuery()"
         },{
           "type": "FreeFormAction",

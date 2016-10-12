@@ -58,8 +58,8 @@
           "name": "apm_source",
           "valueExpression": "\"org.restlet\""
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "$1.getResourceRef().getQuery()"
         },{
           "type": "SetDetail",

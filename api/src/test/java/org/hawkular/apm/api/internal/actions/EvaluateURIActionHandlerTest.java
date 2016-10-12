@@ -22,6 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.btxn.EvaluateURIAction;
 import org.hawkular.apm.api.model.config.btxn.Processor;
@@ -96,7 +98,7 @@ public class EvaluateURIActionHandlerTest {
         Trace trace = new Trace();
         Consumer consumer = new Consumer();
         consumer.setUri("/my/uri");
-        consumer.getDetails().put("http_query", "num=5&another=value&name=hello%20world");
+        consumer.getProperties().add(new Property(Constants.PROP_HTTP_QUERY, "num=5&another=value&name=hello%20world"));
         trace.getNodes().add(consumer);
 
         assertTrue(handler.process(trace, consumer, Direction.In, null, null));
@@ -123,7 +125,7 @@ public class EvaluateURIActionHandlerTest {
         Trace trace = new Trace();
         Consumer consumer = new Consumer();
         consumer.setUri("/my/test%20param/uri");
-        consumer.getDetails().put("http_query", "num=5&another=value&name=hello%20world");
+        consumer.getProperties().add(new Property(Constants.PROP_HTTP_QUERY, "num=5&another=value&name=hello%20world"));
         trace.getNodes().add(consumer);
 
         assertTrue(handler.process(trace, consumer, Direction.In, null, null));

@@ -36,8 +36,8 @@
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "$0.getURL().getQuery()"
         },{
           "type": "SetDetail",
@@ -121,8 +121,8 @@
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "$0.getURL().getQuery()"
         },{
           "type": "SetDetail",
@@ -210,8 +210,8 @@
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "$0.getURL().getQuery()"
         },{
           "type": "SetDetail",

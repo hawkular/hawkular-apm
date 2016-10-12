@@ -54,6 +54,18 @@ public class Constants {
     public static final String PROP_FAULT = "fault";
 
     /**
+     * Property key representing the database statement
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_DATABASE_STATEMENT = "database.statement";
+
+    /**
+     * Property key representing the HTTP query string
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_HTTP_QUERY = "http.query";
+
+    /**
      * Details key representing a description of a fault.
      */
     public static final String DETAIL_FAULT_DESCRIPTION = "fault.description";

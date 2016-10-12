@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Producer;
@@ -159,8 +160,8 @@ public class ClientVertxHTTPITest extends ClientTestBase {
         assertEquals(HELLO_PATH, producer.getUri());
 
         if (qs) {
-            assertEquals(QUERY_STRING, consumer.getDetails().get("http_query"));
-            assertEquals(QUERY_STRING, producer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, consumer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
+            assertEquals(QUERY_STRING, producer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         // Details

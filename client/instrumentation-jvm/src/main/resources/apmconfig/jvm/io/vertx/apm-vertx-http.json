@@ -38,8 +38,8 @@
           "name": "http_method",
           "valueExpression": "$0.method()"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "$0.query()"
         },{
           "type": "ProcessHeaders",
@@ -172,8 +172,8 @@
           "name": "http_port",
           "valueExpression": "$0.port"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "uri.getQuery()"
         },{
           "type": "FreeFormAction",
@@ -235,8 +235,8 @@
           "name": "http_port",
           "valueExpression": "$0.port"
         },{
-          "type": "SetDetail",
-          "name": "http_query",
+          "type": "SetProperty",
+          "name": "http.query",
           "valueExpression": "uri.getQuery()"
         },{
           "type": "FreeFormAction",

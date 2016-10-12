@@ -231,7 +231,7 @@ public class ClientJettyReaderWriterITest extends ClientTestBase {
         assertEquals(path, testProducer.getUri());
 
         if (urlstr.endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testProducer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         // Check headers
@@ -250,7 +250,7 @@ public class ClientJettyReaderWriterITest extends ClientTestBase {
         assertEquals(path, testConsumer.getUri());
 
         if (urlstr.endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testConsumer.getDetails().get("http_query"));
+            assertEquals(QUERY_STRING, testConsumer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
         }
 
         assertEquals(method, testConsumer.getOperation());

@@ -785,6 +785,13 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                     " name=" + name + " value=" + value);
         }
 
+        if (value == null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Property is null, so skipping...");
+            }
+            return;
+        }
+
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
