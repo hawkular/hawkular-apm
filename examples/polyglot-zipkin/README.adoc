@@ -69,3 +69,4 @@ image::zipkin-createUser.png[Zipkin UI, createUser, height="300", width="800"]
 
 == Known issues
 * https://issues.jboss.org/browse/HWKAPM-623[Span from ruby app fail to deserialize in zipkin server]
+* https://issues.jboss.org/browse/HWKAPM-689[zipkin-js instrumentation does not send all client spans]

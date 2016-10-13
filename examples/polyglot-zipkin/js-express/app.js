@@ -21,7 +21,7 @@ const http = require('http');
 const {HttpLogger} = require('zipkin-transport-http');
 const rest = require('rest');
 const mime = require('rest/interceptor/mime');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 
 const zipkin = require('zipkin');
 const {restInterceptor} = require('zipkin-instrumentation-cujojs-rest');
@@ -66,7 +66,7 @@ app.post(apiPrefix + '/createUser', function (req, resp) {
     postData(user, 'http://wildfy-swarm:3003/wildfly-swarm/users');
 
     console.log('User: ', user, " created!");
-    resp.send("Users created!");
+    resp.send('Users created!');
 });
 
 function postData(user, url) {
@@ -80,6 +80,35 @@ function postData(user, url) {
         console.error('Error', error);
     });
 }
+
+/**
+ * Reproducer for https://github.com/openzipkin/zipkin-js/issues/32
+ * Some client spans are not being reported.
+ *
+ * Execute multiple times:
+ * curl -ivX GET 'http://localhost:3001/nodejs/clientSpans?n=50'
+ *
+ * Server should show 1 + n reported spans (1 server span and n client spans)
+ */
+app.get(apiPrefix + '/clientSpans', function (req, resp) {
+
+    let url = 'https://jsonplaceholder.typicode.com/posts/1';
+    let numberOfRequests = req.query.n;
+
+    for (let i = 0; i < numberOfRequests; i++) {
+        client({
+            method: 'GET',
+            path: url,
+            entity: 'some data'
+        }).then(success => {
+            console.log('Got ' + i + ' successful response from ' + url);
+        }, error => {
+            console.error('Error', error);
+        });
+    }
+
+    resp.send(numberOfRequests + ' requests to ' + url);
+});
 
 var server = app.listen(3001, '0.0.0.0', function() {
     var host = server.address().address;
