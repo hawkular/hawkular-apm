@@ -35,7 +35,11 @@ const recorder = new zipkin.BatchRecorder({
 });
 
 const ctxImpl = new CLSContext('zipkin');
-const tracer = new zipkin.Tracer({recorder: recorder, ctxImpl: ctxImpl});
+const tracer = new zipkin.Tracer({
+    recorder: recorder,
+    ctxImpl: ctxImpl,
+    sampler: new zipkin.sampler.CountingSampler(1)
+});
 
 var app = express();
 app.use(bodyParser.json())

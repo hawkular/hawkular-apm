@@ -11,13 +11,13 @@
   "homepage": "https://github.com/hawkular/hawkular-apm",
   "dependencies": {
     "es6-shim": "^0.35.1",
-    "express": "^4.13.4",
+    "express": "^4.14.0",
     "body-parser": "^1.15.2",
     "rest": "^1.3.2",
-    "zipkin": "^0.2.6",
+    "zipkin": "^0.4.0",
     "zipkin-context-cls": "^0.2.1",
-    "zipkin-instrumentation-express": "^0.2.6",
-    "zipkin-transport-http": "^0.2.6",
-    "zipkin-instrumentation-cujojs-rest": "^0.2.6"
+    "zipkin-transport-http": "^0.4.0",
+    "zipkin-instrumentation-express": "^0.4.0",
+    "zipkin-instrumentation-cujojs-rest": "^0.4.0"
   }
 }
