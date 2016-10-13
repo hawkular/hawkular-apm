@@ -25,7 +25,6 @@ COPY setup.py $APP_HOME
 COPY zipkin_python $APP_HOME/zipkin_python
 
 WORKDIR $APP_HOME
-RUN pip install pyasn1
 RUN python setup.py install --user
 
 EXPOSE 3004

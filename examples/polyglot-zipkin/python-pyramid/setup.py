@@ -34,6 +34,7 @@ setup(name='hawkular-apm-example-polyglot-zipkin-python',
           'bravado',
           'kafka',
           'pyramid_zipkin',
-          'swagger_zipkin'
+          'swagger_zipkin',
+          'pyasn1'
       ],
       zip_safe=False)
