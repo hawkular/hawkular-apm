@@ -1,6 +1,16 @@
-= Example Polyglot Application
+= Example Polyglot Application Instrumented with Zipkin Libraries
 
-Example applications demonstrating polyglot environment instrumented with zipkin instrumentation libraries.
+Example applications demonstrating polyglot environment instrumented with several Zipkin instrumentation libraries.
+
+Used instrumentations:
+
+* Java (JAX-RS): https://github.com/openzipkin/brave[brave]
+* Java Dropwizard (JAX-RS): https://github.com/smoketurner/dropwizard-zipkin[dropwizard-zipkin] uses brave
+* Apache Cassandra: https://github.com/thelastpickle/cassandra-zipkin-tracing[cassandra-zipkin-tracing] uses brave
+* JavaScript (express, cujoJS): https://github.com/openzipkin/zipkin-js[zipkin-js]
+* Ruby (rack): https://github.com/openzipkin/zipkin-ruby[zipkin-ruby]
+* Python (Pyramid): https://github.com/Yelp/pyramid_zipkin[pyramid_zipkin]
+* Python (Bravado): https://github.com/Yelp/swagger_zipkin[swagger_zipkin]
 
 [[architecture]]
 image::architecture.png[Architecture]
@@ -21,10 +31,17 @@ $ export TRACING_PORT=8080
 
 $ docker-compose pull
 $ docker-compose up
-$ docker-compose down -> stop and remove all containers
 
--> Run tracing server (Hawkular APM or zipkin server). Server has to be started after containers to make sure kafka service is running.
--> If using Hawkular APM use bin/standalone.sh -b 0.0.0.0 -Djboss.http.port=8080.
+$ docker-compose down -> stop and remove all containers (when you finish)
+----
+
+
+Open other terminal and run tracing server (Hawkular APM or Zipkin). It has to be started after docker-compose (it
+depends on Kafka broker).
+[source,shell]
+----
+$ export KAFKA_ZOOKEEPER=172.17.0.1
+$ /bin/standalone.sh -b 0.0.0.0 -Djboss.http.port=8080
 ----
 
 * `TRACING_SERVER` - address of tracing server. It cannot be localhost,
@@ -68,5 +85,7 @@ image::hawkular-apm-createUser-detail.png[Hawkular APM UI, createUser, height="3
 image::zipkin-createUser.png[Zipkin UI, createUser, height="300", width="800"]
 
 == Known issues
-* https://issues.jboss.org/browse/HWKAPM-623[Span from ruby app fail to deserialize in zipkin server]
+* https://issues.jboss.org/browse/HWKAPM-623[Span from ruby app fails to deserialize]
 * https://issues.jboss.org/browse/HWKAPM-689[zipkin-js instrumentation does not send all client spans]
+* https://github.com/openzipkin/zipkin-ruby/issues/68[Ruby instrumentation: HTTP_X_B3_SAMPLED incorrect resulting inbroken traces],
+https://github.com/openzipkin/zipkin-ruby/pull/69[pull/69]
