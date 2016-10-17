@@ -110,7 +110,6 @@
     <version.commons-io>2.1</version.commons-io>
     <version.io.opentracing>0.15.0</version.io.opentracing>
     <version.io.undertow>1.1.0.Final</version.io.undertow>
-    <version.io.vertx>3.0.0</version.io.vertx>
     <version.io.zipkin.java>1.13.1</version.io.zipkin.java>
     <version.javaee.spec>7.0</version.javaee.spec>
     <version.javax.enterprise.concurrent>1.0</version.javax.enterprise.concurrent>
@@ -462,13 +461,6 @@
         <groupId>javax.enterprise.concurrent</groupId>
         <artifactId>javax.enterprise.concurrent-api</artifactId>
         <version>${version.javax.enterprise.concurrent}</version>
-      </dependency>
-
-      <!-- Vertx dependences -->
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-core</artifactId>
-        <version>${version.io.vertx}</version>
       </dependency>
 
       <dependency>

@@ -35,7 +35,6 @@
     <module>common</module>
     <module>container/jetty</module>
     <module>container/standalone</module>
-    <module>container/vertx</module>
     <module>container/wildfly</module>
     <module>instrumentation</module>
     <module>instrumentation-framework</module>
