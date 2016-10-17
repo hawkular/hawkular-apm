@@ -29,6 +29,8 @@ import java.io.Serializable;
  */
 public class Endpoint implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String ipv4;
 
     private Short port;
