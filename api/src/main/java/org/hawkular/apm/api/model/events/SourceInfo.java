@@ -16,15 +16,11 @@
  */
 package org.hawkular.apm.api.model.events;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.api.utils.SerializationUtil;
 
 /**
  * This class represents information cached about a source node, to enable it to be
@@ -32,7 +28,9 @@ import org.hawkular.apm.api.utils.SerializationUtil;
  *
  * @author gbrown
  */
-public class SourceInfo implements Externalizable, ApmEvent {
+public class SourceInfo implements Serializable, ApmEvent {
+
+    private static final long serialVersionUID = 1L;
 
     private String id;
 
@@ -304,44 +302,6 @@ public class SourceInfo implements Externalizable, ApmEvent {
         if (timestamp != other.timestamp)
             return false;
         return true;
-    }
-
-    @Override
-    public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
-        ois.readInt(); // Read version
-
-        id = SerializationUtil.deserializeString(ois);
-        endpoint = (EndpointRef)ois.readObject();
-        timestamp = ois.readLong();
-        duration = ois.readLong();
-        fragmentId = SerializationUtil.deserializeString(ois);
-        hostName = SerializationUtil.deserializeString(ois);
-        hostAddress = SerializationUtil.deserializeString(ois);
-        multipleConsumers = ois.readBoolean();
-
-        int size = ois.readInt();
-        for (int i = 0; i < size; i++) {
-            properties.add((Property) ois.readObject());
-        }
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput oos) throws IOException {
-        oos.writeInt(1); // Write version
-
-        SerializationUtil.serializeString(oos, id);
-        oos.writeObject(endpoint);
-        oos.writeLong(timestamp);
-        oos.writeLong(duration);
-        SerializationUtil.serializeString(oos, fragmentId);
-        SerializationUtil.serializeString(oos, hostName);
-        SerializationUtil.serializeString(oos, hostAddress);
-        oos.writeBoolean(multipleConsumers);
-
-        oos.writeInt(properties.size());
-        for (Property property : properties) {
-            oos.writeObject(property);
-        }
     }
 
 }
