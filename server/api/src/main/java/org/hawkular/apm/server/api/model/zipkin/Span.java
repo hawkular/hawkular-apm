@@ -42,6 +42,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Span implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Logger log = Logger.getLogger(Span.class.getName());
 
     private String traceId;

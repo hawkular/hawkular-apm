@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public class Annotation implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private long timestamp;
 
     private String value;

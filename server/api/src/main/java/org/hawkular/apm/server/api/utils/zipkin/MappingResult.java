@@ -40,6 +40,8 @@ import org.hawkular.apm.api.model.trace.Trace;
  */
 public class MappingResult implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Mapping for component type {@link Component#componentType}
      */
