@@ -16,17 +16,13 @@
  */
 package org.hawkular.apm.api.model.events;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.api.utils.SerializationUtil;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -37,7 +33,9 @@ import org.hibernate.search.annotations.Indexed;
  * @author gbrown
  */
 @Indexed
-public class CommunicationDetails implements Externalizable, ApmEvent {
+public class CommunicationDetails implements Serializable, ApmEvent {
+
+    private static final long serialVersionUID = 1L;
 
     @Field
     private String id;
@@ -578,78 +576,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         return true;
     }
 
-    @Override
-    public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
-        ois.readInt(); // Version
-
-        id = SerializationUtil.deserializeString(ois);
-        linkId = SerializationUtil.deserializeString(ois);
-        businessTransaction = SerializationUtil.deserializeString(ois);
-        source = SerializationUtil.deserializeString(ois);
-        target = SerializationUtil.deserializeString(ois);
-        multiConsumer = ois.readBoolean();
-        internal = ois.readBoolean();
-        timestamp = ois.readLong();
-        latency = ois.readLong();
-        consumerDuration = ois.readLong();
-        producerDuration = ois.readLong();
-        timestampOffset = ois.readLong();
-        sourceFragmentId = SerializationUtil.deserializeString(ois);
-        sourceHostName = SerializationUtil.deserializeString(ois);
-        sourceHostAddress = SerializationUtil.deserializeString(ois);
-        targetFragmentId = SerializationUtil.deserializeString(ois);
-        targetHostName = SerializationUtil.deserializeString(ois);
-        targetHostAddress = SerializationUtil.deserializeString(ois);
-        targetFragmentDuration = ois.readLong();
-        principal = SerializationUtil.deserializeString(ois);
-
-        int size = ois.readInt();
-        for (int i = 0; i < size; i++) {
-            properties.add((Property) ois.readObject());
-        }
-
-        size = ois.readInt();
-        for (int i = 0; i < size; i++) {
-            outbound.add((Outbound) ois.readObject());
-        }
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput oos) throws IOException {
-        oos.writeInt(1); // Version
-
-        SerializationUtil.serializeString(oos, id);
-        SerializationUtil.serializeString(oos, linkId);
-        SerializationUtil.serializeString(oos, businessTransaction);
-        SerializationUtil.serializeString(oos, source);
-        SerializationUtil.serializeString(oos, target);
-        oos.writeBoolean(multiConsumer);
-        oos.writeBoolean(internal);
-        oos.writeLong(timestamp);
-        oos.writeLong(latency);
-        oos.writeLong(consumerDuration);
-        oos.writeLong(producerDuration);
-        oos.writeLong(timestampOffset);
-        SerializationUtil.serializeString(oos, sourceFragmentId);
-        SerializationUtil.serializeString(oos, sourceHostName);
-        SerializationUtil.serializeString(oos, sourceHostAddress);
-        SerializationUtil.serializeString(oos, targetFragmentId);
-        SerializationUtil.serializeString(oos, targetHostName);
-        SerializationUtil.serializeString(oos, targetHostAddress);
-        oos.writeLong(targetFragmentDuration);
-        SerializationUtil.serializeString(oos, principal);
-
-        oos.writeInt(properties.size());
-        for (Property property : properties) {
-            oos.writeObject(property);
-        }
-
-        oos.writeInt(outbound.size());
-        for (int i = 0; i < outbound.size(); i++) {
-            oos.writeObject(outbound.get(i));
-        }
-    }
-
     /**
      * This class represents the outbound connectivity information associated with
      * the target fragment id. This can be used to build a complete end to end communication
@@ -657,7 +583,9 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
      *
      * @author gbrown
      */
-    public static class Outbound implements Externalizable {
+    public static class Outbound implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private List<String> linkIds = new ArrayList<String>();
         private boolean multiConsumer = false;
@@ -747,32 +675,6 @@ public class CommunicationDetails implements Externalizable, ApmEvent {
         public String toString() {
             return "Outbound [linkIds=" + linkIds + ", multiConsumer=" + multiConsumer + ", producerOffset=" + producerOffset
                     + "]";
-        }
-
-        @Override
-        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-            in.readInt(); // Version
-
-            int size = in.readInt();
-            for (int i = 0; i < size; i++) {
-                linkIds.add(in.readUTF());
-            }
-
-            multiConsumer = in.readBoolean();
-            producerOffset = in.readLong();
-        }
-
-        @Override
-        public void writeExternal(ObjectOutput out) throws IOException {
-            out.writeInt(1); // Version
-
-            out.writeInt(linkIds.size());
-            for (int i = 0; i < linkIds.size(); i++) {
-                out.writeUTF(linkIds.get(i));
-            }
-
-            out.writeBoolean(multiConsumer);
-            out.writeLong(producerOffset);
         }
 
     }

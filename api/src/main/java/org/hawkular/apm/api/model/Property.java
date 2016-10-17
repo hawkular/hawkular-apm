@@ -16,12 +16,7 @@
  */
 package org.hawkular.apm.api.model;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
-import org.hawkular.apm.api.utils.SerializationUtil;
+import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -31,7 +26,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  *
  * @author gbrown
  */
-public class Property implements Externalizable {
+public class Property implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @JsonInclude(Include.NON_NULL)
     private String name;
@@ -175,26 +172,6 @@ public class Property implements Externalizable {
         } else if (!value.equals(other.value))
             return false;
         return true;
-    }
-
-    @Override
-    public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
-        ois.readInt(); // Read version
-
-        name = SerializationUtil.deserializeString(ois);
-        value = SerializationUtil.deserializeString(ois);
-        type = PropertyType.values()[ois.readInt()];
-        number = ois.readDouble();
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput oos) throws IOException {
-        oos.writeInt(1); // Write version
-
-        SerializationUtil.serializeString(oos, name);
-        SerializationUtil.serializeString(oos, value);
-        oos.writeInt(type.ordinal());
-        oos.writeDouble(number == null ? 0 : number);
     }
 
 }

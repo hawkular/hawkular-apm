@@ -16,21 +16,19 @@
  */
 package org.hawkular.apm.api.model.events;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.utils.EndpointUtil;
-import org.hawkular.apm.api.utils.SerializationUtil;
 
 /**
  * This class represents an endpoint reference.
  *
  * @author gbrown
  */
-public class EndpointRef implements Externalizable {
+public class EndpointRef implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String uri;
     private String operation;
@@ -137,24 +135,6 @@ public class EndpointRef implements Externalizable {
         } else if (!uri.equals(other.uri))
             return false;
         return true;
-    }
-
-    @Override
-    public void readExternal(ObjectInput ois) throws IOException, ClassNotFoundException {
-        ois.readInt(); // Read version
-
-        uri = SerializationUtil.deserializeString(ois);
-        operation = SerializationUtil.deserializeString(ois);
-        client = ois.readBoolean();
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput oos) throws IOException {
-        oos.writeInt(1); // Write version
-
-        SerializationUtil.serializeString(oos, uri);
-        SerializationUtil.serializeString(oos, operation);
-        oos.writeBoolean(client);
     }
 
 }
