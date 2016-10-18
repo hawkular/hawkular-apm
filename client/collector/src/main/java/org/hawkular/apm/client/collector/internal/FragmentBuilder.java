@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.api.logging.Logger;
@@ -77,7 +78,7 @@ public class FragmentBuilder {
     {
         trace = new Trace()
                 .setId(UUID.randomUUID().toString())
-                .setStartTime(System.currentTimeMillis())
+                .setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()))
                 .setHostName(PropertyUtil.getHostName())
                 .setHostAddress(PropertyUtil.getHostAddress());
     }

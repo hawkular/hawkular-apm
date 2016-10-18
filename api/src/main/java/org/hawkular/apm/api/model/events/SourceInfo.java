@@ -36,8 +36,14 @@ public class SourceInfo implements Serializable, ApmEvent {
 
     private EndpointRef endpoint;
 
+    /**
+     * Timestamp in microseconds
+     */
     private long timestamp = 0;
 
+    /**
+     * Duration in microseconds
+     */
     private long duration = 0;
 
     private String fragmentId;
@@ -103,28 +109,28 @@ public class SourceInfo implements Serializable, ApmEvent {
     }
 
     /**
-     * @return the timestamp
+     * @return the timestamp in microseconds
      */
     public long getTimestamp() {
         return timestamp;
     }
 
     /**
-     * @param timestamp the timestamp to set
+     * @param timestamp the timestamp in microseconds
      */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
     /**
-     * @return the duration
+     * @return the duration in microseconds
      */
     public long getDuration() {
         return duration;
     }
 
     /**
-     * @param duration the duration to set
+     * @param duration the duration in microseconds
      */
     public void setDuration(long duration) {
         this.duration = duration;

@@ -37,6 +37,9 @@ public class Notification implements ApmEvent {
     @JsonInclude
     private String businessTransaction;
 
+    /**
+     * Timestamp in microseconds
+     */
     @JsonInclude
     private long timestamp = 0;
 
@@ -82,14 +85,14 @@ public class Notification implements ApmEvent {
     }
 
     /**
-     * @return the timestamp
+     * @return the timestamp in microseconds
      */
     public long getTimestamp() {
         return timestamp;
     }
 
     /**
-     * @param timestamp the timestamp to set
+     * @param timestamp the timestamp in microseconds
      */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;

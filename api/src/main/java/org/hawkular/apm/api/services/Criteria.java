@@ -34,7 +34,13 @@ public class Criteria {
 
     private static final Logger log = Logger.getLogger(Criteria.class.getName());
 
+    /**
+     * Start time in milliseconds
+     */
     private long startTime = 0L;
+    /**
+     * End time in milliseconds
+     */
     private long endTime = 0L;
     private String businessTransaction;
     private Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
@@ -45,14 +51,8 @@ public class Criteria {
     private String principal;
     private String uri;
     private String operation;
-
-    private static int DEFAULT_RESPONSE_SIZE = 100000;
-
-    private static long DEFAULT_TIMEOUT = 10000L;
-
-    private long timeout = DEFAULT_TIMEOUT;
-
-    private int maxResponseSize = DEFAULT_RESPONSE_SIZE;
+    private long timeout = 10000;
+    private int maxResponseSize = 100000;
 
     /**
      * Default constructor.
@@ -81,14 +81,14 @@ public class Criteria {
     }
 
     /**
-     * @return the startTime, or 0 meaning 1 hours ago
+     * @return the startTime in milliseconds, or 0 meaning 1 hours ago
      */
     public long getStartTime() {
         return startTime;
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param startTime the startTime in milliseconds
      * @return The criteria
      */
     public Criteria setStartTime(long startTime) {
@@ -115,14 +115,14 @@ public class Criteria {
     }
 
     /**
-     * @return the endTime, or 0 meaning 'current time'
+     * @return the endTime in milliseconds, or 0 meaning 'current time'
      */
     public long getEndTime() {
         return endTime;
     }
 
     /**
-     * @param endTime the endTime to set
+     * @param endTime the endTime in milliseconds
      * @return The criteria
      */
     public Criteria setEndTime(long endTime) {

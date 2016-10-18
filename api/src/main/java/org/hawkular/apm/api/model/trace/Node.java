@@ -57,9 +57,15 @@ public abstract class Node {
     @JsonInclude
     private String operation;
 
+    /**
+     * Base time in microseconds
+     */
     @JsonInclude
     private long baseTime = 0;
 
+    /**
+     * Duration in microseconds
+     */
     @JsonInclude
     private long duration = 0;
 
@@ -149,14 +155,14 @@ public abstract class Node {
     }
 
     /**
-     * @return the baseTime (in nanoseconds)
+     * @return the baseTime in microseconds
      */
     public long getBaseTime() {
         return baseTime;
     }
 
     /**
-     * @param baseTime the baseTime (in nanoseconds) to set
+     * @param baseTime the baseTime in microseconds
      * @return The node
      */
     public Node setBaseTime(long baseTime) {
@@ -165,14 +171,14 @@ public abstract class Node {
     }
 
     /**
-     * @return the duration
+     * @return the duration in microseconds
      */
     public long getDuration() {
         return duration;
     }
 
     /**
-     * @param duration the duration to set
+     * @param duration the duration in microseconds
      * @return The node
      */
     public Node setDuration(long duration) {
@@ -349,20 +355,19 @@ public abstract class Node {
      * This method calculates the end time of this node based on the
      * base time and duration.
      *
-     * @return The end time (in nanoseconds), based on base time and duration, or 0 if
-     *                  not known
+     * @return The end time (in microseconds), based on base time and duration, or 0 if not known
      */
     protected long endTime() {
         return baseTime + duration;
     }
 
     /**
-     * This method calculates the time (in nanoseconds) when all work initiated
+     * This method calculates the time (in microseconds) when all work initiated
      * by this node has been completed. Where async execution is performed, this could
      * mean the work continues beyond the scope of the node that initiates
      * the work.
      *
-     * @return The completed time (in nanoseconds)
+     * @return The completed time (in microseconds)
      */
     protected long completedTime() {
         return overallEndTime();

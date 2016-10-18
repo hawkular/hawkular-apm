@@ -29,10 +29,19 @@ public class CommunicationSummaryStatistics {
 
     private String id;
 
+    /**
+     * Minimum duration in microseconds
+     */
     private long minimumDuration;
 
+    /**
+     * Average duration in microseconds
+     */
     private long averageDuration;
 
+    /**
+     * Maximum duration in microseconds
+     */
     private long maximumDuration;
 
     private long count;

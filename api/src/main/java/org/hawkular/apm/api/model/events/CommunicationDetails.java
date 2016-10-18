@@ -52,14 +52,29 @@ public class CommunicationDetails implements Serializable, ApmEvent {
 
     private boolean internal = false;
 
+    /**
+     * Timestamp in microseconds
+     */
     private long timestamp = 0;
 
+    /**
+     * Network latency in microseconds
+     */
     private long latency = 0;
 
+    /**
+     * Consumer duration in microseconds
+     */
     private long consumerDuration = 0;
 
+    /**
+     * Producer duration in microseconds
+     */
     private long producerDuration = 0;
 
+    /**
+     * Timestamp offset in microseconds
+     */
     private long timestampOffset = 0;
 
     private String sourceFragmentId;
@@ -182,82 +197,78 @@ public class CommunicationDetails implements Serializable, ApmEvent {
     }
 
     /**
-     * @return the timestamp
+     * @return the timestamp in microseconds
      */
     public long getTimestamp() {
         return timestamp;
     }
 
     /**
-     * @param timestamp the timestamp to set
+     * @param timestamp the timestamp in microseconds
      */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
     /**
-     * This method returns the latency, between a producer and
-     * consumer, in milliseconds.
+     * This method returns the latency, between a producer and a consumer.
      *
-     * @return the latency
+     * @return the latency in microseconds
      */
     public long getLatency() {
         return latency;
     }
 
     /**
-     * This method sets the latency, between a producer and
-     * consumer, in milliseconds.
+     * This method sets the latency, between a producer and a consumer.
      *
-     * @param latency the latency to set
+     * @param latency the latency in microseconds
      */
     public void setLatency(long latency) {
         this.latency = latency;
     }
 
     /**
-     * @return the consumerDuration
+     * @return the consumer duration in microseconds
      */
     public long getConsumerDuration() {
         return consumerDuration;
     }
 
     /**
-     * @param consumerDuration the consumerDuration to set
+     * @param consumerDuration the consumer duration in microseconds
      */
     public void setTargetDuration(long consumerDuration) {
         this.consumerDuration = consumerDuration;
     }
 
     /**
-     * @return the producerDuration
+     * @return the producer duration in microseconds
      */
     public long getProducerDuration() {
         return producerDuration;
     }
 
     /**
-     * @param producerDuration the producerDuration to set
+     * @param producerDuration the producer duration in microseconds
      */
     public void setSourceDuration(long producerDuration) {
         this.producerDuration = producerDuration;
     }
 
     /**
-     * This method returns the timestamp offset, between the producer node
-     * and the consumer node, in milliseconds.
+     * This method returns the timestamp offset, between the producer node and the consumer node.
      *
-     * @return the timestampOffset
+     * @return the timestamp offset in microseconds
      */
     public long getTimestampOffset() {
         return timestampOffset;
     }
 
     /**
-     * This method sets the timestamp offset, between the producer node
-     * and the consumer node, in milliseconds.
+     * This method sets the timestamp offset, between the producer node and the consumer node.
      *
-     * @param timestampOffset the timestampOffset to set
+     * @param timestampOffset the timestamp offset in microseconds
      */
     public void setTimestampOffset(long timestampOffset) {
         this.timestampOffset = timestampOffset;

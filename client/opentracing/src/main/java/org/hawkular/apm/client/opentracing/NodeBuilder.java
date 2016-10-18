@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
@@ -47,13 +48,19 @@ public class NodeBuilder {
     private String endpointType = "n/a";    // Default endpoint type used to signify an external endpoint but
                                             // type is unknown. A 'null' endpoint is for internal connections.
     private String componentType;
+    /**
+     * Duration in microseconds
+     */
     private long duration;
     private Set<Property> properties = new HashSet<>();
     private Map<String, String> details = new HashMap<>();
     private List<CorrelationIdentifier> correlationIds = new ArrayList<>();
     private List<NodeBuilder> nodes = new ArrayList<>();
 
-    private long baseTime = System.nanoTime();
+    /**
+     * Base time in microseconds
+     */
+    private long baseTime = TimeUnit.NANOSECONDS.toMicros(System.nanoTime());
 
     private NodeType nodeType = NodeType.Component;
 
@@ -144,7 +151,7 @@ public class NodeBuilder {
     }
 
     /**
-     * @param duration The duration (in nanoseconds)
+     * @param duration The duration (in microseconds)
      * @return The node builder
      */
     public NodeBuilder setDuration(long duration) {

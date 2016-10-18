@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
@@ -60,7 +61,7 @@ public class SourceInfoTest {
         si.setMultipleConsumers(true);
         si.setEndpoint(new EndpointRef("sourceUri", "sourceOp", false));
         si.setProperties(props);
-        si.setTimestamp(System.currentTimeMillis());
+        si.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         SourceInfo result = null;
 
@@ -100,7 +101,7 @@ public class SourceInfoTest {
 
         SourceInfo si = new SourceInfo();
         si.setProperties(props);
-        si.setTimestamp(System.currentTimeMillis());
+        si.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         SourceInfo result = null;
 

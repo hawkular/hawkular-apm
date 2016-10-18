@@ -50,12 +50,21 @@ public class NodeDetails implements ApmEvent {
     @JsonInclude
     private String uri;
 
+    /**
+     * Timestamp in microseconds
+     */
     @JsonInclude
     private long timestamp = 0;
 
+    /**
+     * Elapsed time in microseconds
+     */
     @JsonInclude
     private long elapsed = 0;
 
+    /**
+     * Actual time in microseconds
+     */
     @JsonInclude
     private long actual = 0;
 
@@ -162,25 +171,25 @@ public class NodeDetails implements ApmEvent {
     }
 
     /**
-     * This method sets the elapsed duration, in nanoseconds.
+     * This method sets the elapsed time
      *
-     * @param elapsed the elapsed to set
+     * @param elapsed the elapsed time in microseconds
      */
     public void setElapsed(long elapsed) {
         this.elapsed = elapsed;
     }
 
     /**
-     * @return the actual
+     * @return the actual time in microseconds
      */
     public long getActual() {
         return actual;
     }
 
     /**
-     * This method sets the actual duration, in nanoseconds.
+     * This method sets the actual duration
      *
-     * @param actual the actual to set
+     * @param actual the actual duration in microseconds
      */
     public void setActual(long actual) {
         this.actual = actual;

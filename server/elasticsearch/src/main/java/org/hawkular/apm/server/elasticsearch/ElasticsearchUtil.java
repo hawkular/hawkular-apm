@@ -16,6 +16,8 @@
  */
 package org.hawkular.apm.server.elasticsearch;
 
+import java.util.concurrent.TimeUnit;
+
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -47,11 +49,14 @@ public class ElasticsearchUtil {
      */
     public static BoolQueryBuilder buildQuery(Criteria criteria, String timeProperty,
             String businessTxnProperty, Class<?> targetClass) {
-        long startTime = criteria.calculateStartTime();
-        long endTime = criteria.calculateEndTime();
-
+        /**
+         * Internally all time units are stored in microseconds
+         * Criteria API accepts milliseconds, therefore range adjustment is needed
+         */
         BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery(timeProperty).from(startTime).to(endTime));
+                .must(QueryBuilders.rangeQuery(timeProperty)
+                        .from(TimeUnit.MILLISECONDS.toMicros(criteria.calculateStartTime()))
+                        .to(TimeUnit.MILLISECONDS.toMicros(criteria.calculateEndTime())));
 
         if (criteria.getBusinessTransaction() != null
                 && !criteria.getBusinessTransaction().trim().isEmpty()) {

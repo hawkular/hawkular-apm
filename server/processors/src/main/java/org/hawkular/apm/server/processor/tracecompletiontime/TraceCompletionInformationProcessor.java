@@ -17,6 +17,7 @@
 package org.hawkular.apm.server.processor.tracecompletiontime;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -177,9 +178,10 @@ public class TraceCompletionInformationProcessor extends
             // TODO: Need to derive expiration based on knowledge about the time
             // different between the source and target linked fragments being
             // reported
-            long baseTimeStamp = ob.isMultiConsumer() ? cd.getTimestamp() : System.currentTimeMillis();
-            newc.setExpire(baseTimeStamp
-                        + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+            long baseTimeStamp = ob.isMultiConsumer() ?
+                    TimeUnit.MICROSECONDS.toMillis(cd.getTimestamp()) :
+                    System.currentTimeMillis();
+            newc.setExpire(baseTimeStamp + Communication.DEFAULT_EXPIRY_WINDOW_MILLIS);
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Completion info " + item + ": new communication = " + newc);

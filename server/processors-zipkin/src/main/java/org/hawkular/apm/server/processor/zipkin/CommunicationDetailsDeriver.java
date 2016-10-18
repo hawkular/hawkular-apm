@@ -18,7 +18,6 @@ package org.hawkular.apm.server.processor.zipkin;
 
 import java.net.URL;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
@@ -90,8 +89,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 }
 
                 // Calculate difference in milliseconds
-                long diff = si.getDuration() - TimeUnit.MILLISECONDS.convert(item.getDuration(),
-                        TimeUnit.MICROSECONDS);
+                long diff = si.getDuration() - item.getDuration();
                 if (diff > 0) {
                     ret.setLatency(diff / 2);
                 } else if (diff < 0) {
@@ -99,7 +97,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                 }
 
                 ret.setSourceDuration(si.getDuration());
-                ret.setTargetDuration(TimeUnit.MILLISECONDS.convert(item.getDuration(), TimeUnit.MICROSECONDS));
+                ret.setTargetDuration(item.getDuration());
 
                 ret.setMultiConsumer(si.isMultipleConsumers());
                 //ret.setInternal(consumer.getEndpointType() == null);
