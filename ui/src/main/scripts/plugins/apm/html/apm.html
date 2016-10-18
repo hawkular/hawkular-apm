@@ -89,6 +89,7 @@
             </th>
           </tr>
         </thead>
+        <tfoot><tr><td colspan="7"><small>* - Asynchronous activities within the scope of this component make it difficult to calculate the actual time</small></td></tr></tfoot>
         <tbody>
           <tr dir-paginate="summary in summaries|orderBy:sortKey:reverse|filter:$root.sbFilter.search|itemsPerPage:config.maxRows" ng-class="{'danger': getElapsedPercentage(summary) > 80,'warning': getElapsedPercentage(summary) > 60}" >
             <td scope="row">
@@ -99,7 +100,7 @@
                 </bar>
               </progress>
             </td>
-            <td scope="row">{{(summary.actual / 1000000000) | number: 3}}</td>
+            <td scope="row">{{((summary.actual / 1000000000) | number: 3) < 0 ? '*' : ((summary.actual / 1000000000) | number: 3)}}</td>
             <td scope="row">{{(summary.elapsed / 1000000000) | number: 3}}</td>
             <td>{{summary.count}}</td>
             <td>{{summary.componentType}}</td>
