@@ -27,12 +27,9 @@
   </parent>
 
   <artifactId>hawkular-apm-api</artifactId>
-  <packaging>jar</packaging>
-
   <name>Hawkular APM::API</name>
 
   <dependencies>
-
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -46,12 +43,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-search-engine</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -97,7 +88,5 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
 </project>

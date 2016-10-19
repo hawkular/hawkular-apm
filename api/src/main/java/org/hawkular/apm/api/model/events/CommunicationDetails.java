@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
 
 /**
  * This class represents communication details derived from two correlated trace
@@ -32,12 +30,10 @@ import org.hibernate.search.annotations.Indexed;
  *
  * @author gbrown
  */
-@Indexed
 public class CommunicationDetails implements Serializable, ApmEvent {
 
     private static final long serialVersionUID = 1L;
 
-    @Field
     private String id;
 
     private String linkId;
