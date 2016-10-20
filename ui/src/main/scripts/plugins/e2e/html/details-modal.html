@@ -56,7 +56,7 @@
             <th ng-click="sort('principal')" style="width: 15%">Principal
               <span class="glyphicon sort-icon" ng-show="sortKey=='principal'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
-            <th ng-click="sort('duration')">Duration
+            <th ng-click="sort('duration')">Duration (ms)
               <span class="glyphicon sort-icon" ng-show="sortKey=='duration'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
             <th>Details
@@ -73,7 +73,7 @@
               </span>
             </td>
             <td style="word-wrap: break-word">{{ tData.principal }}</td>
-            <td style="word-wrap: break-word">{{ tData.duration }}</td>
+            <td style="word-wrap: break-word">{{ tData.duration / 1000 }}</td>
             <td class="show-details-cell" ng-click="showIVD(tData.id)"><i class="fa fa-sitemap"></i></td>
           </tr>
           <tr dir-paginate-end ng-if="selectedTx === tData.id">

@@ -192,7 +192,7 @@ module InstanceViewDiagram {
             label += '<span class="stats">';
             label += '  <span class="duration pull-left">';
             label += '    <i class="fa fa-clock-o"></i>';
-            label += '    ' + (d.duration / 1000 / 1000).toFixed(2) + 'ms';
+            label += '    ' + (d.duration / 1000).toFixed(2) + 'ms';
             label += '  </span>';
             label += '</span>';
           }
