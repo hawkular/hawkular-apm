@@ -64,8 +64,8 @@ module DagreD3 {
         }
         currNodes.push(d.id);
         let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
-          d.averageDuration;
-        nodeTooltip += ' / ' + d.minimumDuration + ' / ' + d.maximumDuration;
+          (d.averageDuration / 1000);
+        nodeTooltip += ' / ' + (d.minimumDuration / 1000) + ' / ' + (d.maximumDuration / 1000);
         let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
           'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
         if (d.serviceName == null) {
@@ -75,7 +75,8 @@ module DagreD3 {
         html += '<span class="name service-name">' + d.serviceName + '</span>';
         html += '<span class="name">' + d.id + '</span>';
         html += '<span class="stats">';
-        html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' + d.averageDuration + 'ms</span>';
+        html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' +
+               (d.averageDuration / 1000) + 'ms</span>';
         html += '  <span class="node-count pull-right">' + d.count + '<i class="fa fa-clone"></i></span>';
         html += '</span>';
         html += '</div>';
@@ -93,8 +94,8 @@ module DagreD3 {
               drawNode(d.outbound[nd].node);
             }
             let edge = d.outbound[nd];
-            let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + edge.averageLatency;
-            linkTooltip += ' / ' + edge.minimumLatency + ' / ' + edge.maximumLatency;
+            let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + (edge.averageLatency / 1000);
+            linkTooltip += ' / ' + (edge.minimumLatency / 1000) + ' / ' + (edge.maximumLatency / 1000);
             let linkHtml = '<span' + (edge.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
               'tooltip-placement="bottom" tooltip-html-unsafe="' + linkTooltip + '"') : '') +
               '>' + edge.count + '</span>';

@@ -158,8 +158,8 @@ module E2E {
       };
 
       $scope.durationRange = function (entry) {
-        return entry.duration >= ($scope.minDuration || 0) &&
-          entry.duration <= ($scope.maxDuration === 0 ? 0 : ($scope.maxDuration || Number.MAX_VALUE));
+        return entry.duration >= (($scope.minDuration * 1000) || 0) &&
+          entry.duration <= ($scope.maxDuration === 0 ? 0 : (($scope.maxDuration * 1000) || Number.MAX_VALUE));
       };
 
       // Pagination
