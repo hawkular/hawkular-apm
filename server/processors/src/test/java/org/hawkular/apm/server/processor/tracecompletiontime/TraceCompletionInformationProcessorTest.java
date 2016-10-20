@@ -70,7 +70,7 @@ public class TraceCompletionInformationProcessorTest {
         }
 
         assertNotNull(result);
-        assertTrue(result.getCommunications().isEmpty());
+        assertEquals(0, result.getCommunications().size());
     }
 
     @Test

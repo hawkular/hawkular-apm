@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
@@ -59,25 +60,25 @@ public class TraceTest {
     @Test
     public void testEndTime() {
         Trace trace = new Trace();
-        trace.setStartTime(100);
+        trace.setStartTime(100000);
 
         Consumer node1 = new Consumer();
-        node1.setBaseTime(100000000);
+        node1.setBaseTime(100000);
         trace.getNodes().add(node1);
 
         Component node2 = new Component();
-        node2.setBaseTime(150000000);
+        node2.setBaseTime(150000);
         node2.setDuration(0);
         node1.getNodes().add(node2);
 
         // This node will have the latest time associated with the
         // business transaction, comprised of the start time + duration
         Producer node3 = new Producer();
-        node3.setBaseTime(200000000);
-        node3.setDuration(50000000);
+        node3.setBaseTime(200000);
+        node3.setDuration(50000);
         node1.getNodes().add(node3);
 
-        assertEquals("End time incorrect", 250L, trace.endTime());
+        assertEquals(250000, trace.endTime());
     }
 
     @Test
@@ -235,7 +236,7 @@ public class TraceTest {
 
     @Test
     public void testCalculateDuration() {
-        long baseTime = System.currentTimeMillis();
+        long baseTime = TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis());
 
         Trace trace1 = new Trace();
         trace1.setId("1");
@@ -244,13 +245,13 @@ public class TraceTest {
 
         Consumer c1 = new Consumer();
         c1.setUri("originuri");
-        c1.setDuration(1000000000);
-        c1.setBaseTime(100000000);
+        c1.setDuration(1000000);
+        c1.setBaseTime(100000);
 
         Producer p1 = new Producer();
         p1.setUri("testuri");
-        p1.setDuration(1000000000);
-        p1.setBaseTime(500000000);
+        p1.setDuration(1000000);
+        p1.setBaseTime(500000);
         p1.addInteractionCorrelationId("interaction1");
         c1.getNodes().add(p1);
 
@@ -258,7 +259,7 @@ public class TraceTest {
 
         long duration = trace1.calculateDuration();
 
-        assertEquals(1400, duration);
+        assertEquals(1400000, duration);
     }
 
     @Test

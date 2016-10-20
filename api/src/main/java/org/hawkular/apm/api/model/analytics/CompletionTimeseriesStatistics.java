@@ -25,6 +25,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class CompletionTimeseriesStatistics {
 
+    /**
+     * Timestamp in microseconds
+     */
     @JsonInclude
     private long timestamp = 0;
 
@@ -34,12 +37,21 @@ public class CompletionTimeseriesStatistics {
     @JsonInclude
     private long faultCount = 0;
 
+    /**
+     * Minimal duration in microseconds
+     */
     @JsonInclude
     private long min = 0;
 
+    /**
+     * Average duration in microseconds
+     */
     @JsonInclude
     private long average = 0;
 
+    /**
+     * Maximal duration in microseconds
+     */
     @JsonInclude
     private long max = 0;
 

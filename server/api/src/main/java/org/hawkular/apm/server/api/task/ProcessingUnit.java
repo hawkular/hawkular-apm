@@ -18,6 +18,7 @@ package org.hawkular.apm.server.api.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -124,7 +125,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             // If performance logging enabled, save the current time
             long startTime = 0;
             if (perfLog.isLoggable(Level.FINEST)) {
-                startTime = System.currentTimeMillis();
+                startTime = TimeUnit.NANOSECONDS.toMicros(System.nanoTime());
             }
 
             if (processor.getType() == ProcessorType.ManyToMany) {
@@ -165,7 +166,7 @@ public class ProcessingUnit<T, R> implements Handler<T> {
             // If performance logging enabled, log the duration associated with the event processing
             if (perfLog.isLoggable(Level.FINEST)) {
                 perfLog.finest("Performance: invoked processor ["+processor.getClass().getSimpleName()+"] duration=" +
-                        (System.currentTimeMillis() - startTime) + "ms");
+                        (TimeUnit.NANOSECONDS.toMicros(System.nanoTime()) - startTime) + "microseconds");
             }
 
         } catch (RetryAttemptException e) {

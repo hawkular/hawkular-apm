@@ -43,6 +43,9 @@ public class BusinessTxnConfig {
     @JsonInclude
     private List<Processor> processors = new ArrayList<Processor>();
 
+    /**
+     * Last updated in microseconds
+     */
     @JsonInclude(Include.NON_NULL)
     private long lastUpdated;
 

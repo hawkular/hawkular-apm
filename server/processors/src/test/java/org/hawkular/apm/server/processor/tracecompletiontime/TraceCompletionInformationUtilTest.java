@@ -20,8 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.TimeUnit;
-
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.InteractionNode;
@@ -67,32 +65,25 @@ public class TraceCompletionInformationUtilTest {
 
         assertTrue(ci.getCommunications().get(0).getIds().contains("trace1:0"));
         assertTrue(ci.getCommunications().get(0).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((consumer.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(0).getBaseDuration());
+        assertEquals(consumer.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(0).getBaseDuration());
         assertTrue(ci.getCommunications().get(1).getIds().contains("trace1:0:0"));
         assertTrue(ci.getCommunications().get(1).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((p1.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(1).getBaseDuration());
+        assertEquals(p1.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(1).getBaseDuration());
         assertTrue(ci.getCommunications().get(2).getIds().contains("p1id"));
         assertFalse(ci.getCommunications().get(2).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((p1.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(2).getBaseDuration());
+        assertEquals(p1.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(2).getBaseDuration());
         assertTrue(ci.getCommunications().get(3).getIds().contains("trace1:0:1"));
         assertTrue(ci.getCommunications().get(3).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((comp1.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(3).getBaseDuration());
+        assertEquals(comp1.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(3).getBaseDuration());
         assertTrue(ci.getCommunications().get(4).getIds().contains("trace1:0:1:0"));
         assertTrue(ci.getCommunications().get(4).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((p2.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(4).getBaseDuration());
+        assertEquals(p2.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(4).getBaseDuration());
         assertTrue(ci.getCommunications().get(5).getIds().contains("trace1:0:1:1"));
         assertTrue(ci.getCommunications().get(5).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((p3.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(5).getBaseDuration());
+        assertEquals(p3.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(5).getBaseDuration());
         assertTrue(ci.getCommunications().get(6).getIds().contains("p3id"));
         assertTrue(ci.getCommunications().get(6).isMultipleConsumers());
-        assertEquals(TimeUnit.MILLISECONDS.convert((p3.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS), ci.getCommunications().get(6).getBaseDuration());
+        assertEquals(p3.getBaseTime() - fragmentBaseTime, ci.getCommunications().get(6).getBaseDuration());
     }
 
 }

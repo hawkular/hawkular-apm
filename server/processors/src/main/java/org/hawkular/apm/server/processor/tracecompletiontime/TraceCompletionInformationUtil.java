@@ -17,7 +17,6 @@
 package org.hawkular.apm.server.processor.tracecompletiontime;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,7 +41,7 @@ public class TraceCompletionInformationUtil {
      * instance.
      *
      * @param ci The information
-     * @param fragmentBaseTime The base time for the fragment (ns)
+     * @param fragmentBaseTime The base time for the fragment (microseconds)
      * @param n The node
      * @param nodeId The path id for the node
      */
@@ -59,10 +58,10 @@ public class TraceCompletionInformationUtil {
         c.setMultipleConsumers(true);
 
         // Calculate the base duration for the communication
-        c.setBaseDuration(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - fragmentBaseTime),
-                TimeUnit.NANOSECONDS));
+        c.setBaseDuration(n.getBaseTime() - fragmentBaseTime);
 
-        c.setExpire(System.currentTimeMillis() + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+        c.setExpire(System.currentTimeMillis()+
+                TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW_MILLIS);
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Adding communication to completion information: ci=" + ci + " comms=" + c);
@@ -84,10 +83,10 @@ public class TraceCompletionInformationUtil {
                 c.setMultipleConsumers(((Producer) n).multipleConsumers());
 
                 // Calculate the base duration for the communication
-                c.setBaseDuration(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - fragmentBaseTime),
-                        TimeUnit.NANOSECONDS));
+                c.setBaseDuration(n.getBaseTime() - fragmentBaseTime);
 
-                c.setExpire(System.currentTimeMillis() + TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW);
+                c.setExpire(System.currentTimeMillis() +
+                        TraceCompletionInformation.Communication.DEFAULT_EXPIRY_WINDOW_MILLIS);
 
                 if (log.isLoggable(Level.FINEST)) {
                     log.finest("Adding communication to completion information: ci=" + ci + " comms=" + c);

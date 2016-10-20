@@ -46,9 +46,15 @@ public class CompletionTime implements ApmEvent {
     @JsonInclude
     private String businessTransaction;
 
+    /**
+     * Timestamp in microseconds
+     */
     @JsonInclude
     private long timestamp = 0;
 
+    /**
+     * Duration in microseconds
+     */
     @JsonInclude
     private long duration = 0;
 
@@ -139,30 +145,28 @@ public class CompletionTime implements ApmEvent {
     }
 
     /**
-     * @return the timestamp in milliseconds
+     * @return the timestamp in microseconds
      */
     public long getTimestamp() {
         return timestamp;
     }
 
     /**
-     * @param timestamp the timestamp in milliseconds to set
+     * @param timestamp the timestamp in microseconds
      */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
     /**
-     * @return the duration (ms)
+     * @return the duration in microseconds
      */
     public long getDuration() {
         return duration;
     }
 
     /**
-     * The duration in milliseconds.
-     *
-     * @param duration the duration to set
+     * @param duration the duration in microseconds
      */
     public void setDuration(long duration) {
         this.duration = duration;

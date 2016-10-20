@@ -72,12 +72,12 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setId("traceId");
         trace.setBusinessTransaction("traceName");
-        trace.setStartTime(100);
+        trace.setStartTime(100000);
 
         Consumer c = new Consumer();
         c.setUri("uri");
         c.setBaseTime(1);
-        c.setDuration(200000000);
+        c.setDuration(200000);
         c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
         c.setEndpointType("HTTP");
 
@@ -103,7 +103,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertFalse(ci.getCompletionTime().isInternal());
         assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(c.getUri(), ci.getCompletionTime().getUri());
-        assertEquals(200, ci.getCompletionTime().getDuration());
+        assertEquals(200000, ci.getCompletionTime().getDuration());
         assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());
         assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
     }
@@ -113,12 +113,12 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setId("traceId");
         trace.setBusinessTransaction("traceName");
-        trace.setStartTime(100);
+        trace.setStartTime(100000);
 
         Component c = new Component();
         c.setUri("uri");
         c.setBaseTime(1);
-        c.setDuration(200000000);
+        c.setDuration(200000);
         c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
 
         trace.getNodes().add(c);
@@ -141,7 +141,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
         assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
         assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
-        assertEquals(200, ci.getCompletionTime().getDuration());
+        assertEquals(200000, ci.getCompletionTime().getDuration());
         assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
         assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());
 

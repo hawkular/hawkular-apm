@@ -118,8 +118,7 @@ public class SpanAnalyticsITest extends AbstractITest {
         Assert.assertEquals(1, traceCompletionTimes.size());
 
         CompletionTime completionTime = traceCompletionTimes.get(0);
-        Assert.assertEquals(rootSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(completionTime.getDuration(), TimeUnit.MILLISECONDS));
+        Assert.assertEquals(rootSpan.duration.longValue(), completionTime.getDuration());
         Assert.assertEquals("/root", completionTime.getUri());
         Assert.assertEquals(rootStringId, completionTime.getId());
     }
@@ -184,8 +183,7 @@ public class SpanAnalyticsITest extends AbstractITest {
         Assert.assertEquals(1, traceCompletionTimes.size());
 
         CompletionTime completionTime = traceCompletionTimes.get(0);
-        Assert.assertEquals(9000,
-                TimeUnit.MICROSECONDS.convert(completionTime.getDuration(), TimeUnit.MILLISECONDS));
+        Assert.assertEquals(9000, completionTime.getDuration());
         Assert.assertEquals("/root", completionTime.getUri());
         Assert.assertEquals(rootStringId, completionTime.getId());
     }
@@ -252,24 +250,18 @@ public class SpanAnalyticsITest extends AbstractITest {
         CommunicationSummaryStatistics summaryStatistics = communicationSummaryStatisticsList.get(0);
         Assert.assertEquals(EndpointUtil.encodeEndpoint("/root", "GET"), summaryStatistics.getId());
         Assert.assertEquals(1, summaryStatistics.getCount());
-        Assert.assertEquals(rootSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(summaryStatistics.getMinimumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(rootSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(summaryStatistics.getMaximumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(rootSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(summaryStatistics.getAverageDuration(), TimeUnit.MILLISECONDS));
+        Assert.assertEquals(rootSpan.duration.longValue(), summaryStatistics.getMinimumDuration());
+        Assert.assertEquals(rootSpan.duration.longValue(), summaryStatistics.getMaximumDuration());
+        Assert.assertEquals(rootSpan.duration.longValue(), summaryStatistics.getAverageDuration());
         Assert.assertEquals(1, summaryStatistics.getOutbound().size());
         Assert.assertTrue(summaryStatistics.getOutbound().containsKey(EndpointUtil.encodeEndpoint("/serviceA", "POST")));
 
         summaryStatistics = communicationSummaryStatisticsList.get(1);
         Assert.assertEquals(EndpointUtil.encodeEndpoint("/serviceA", "POST"), summaryStatistics.getId());
         Assert.assertEquals(1, summaryStatistics.getCount());
-        Assert.assertEquals(serverSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(summaryStatistics.getMinimumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(serverSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(summaryStatistics.getMaximumDuration(), TimeUnit.MILLISECONDS));
-        Assert.assertEquals(serverSpan.duration.longValue(),
-                TimeUnit.MICROSECONDS.convert(summaryStatistics.getAverageDuration(), TimeUnit.MILLISECONDS));
+        Assert.assertEquals(serverSpan.duration.longValue(), summaryStatistics.getMinimumDuration());
+        Assert.assertEquals(serverSpan.duration.longValue(), summaryStatistics.getMaximumDuration());
+        Assert.assertEquals(serverSpan.duration.longValue(), summaryStatistics.getAverageDuration());
         Assert.assertEquals(0, summaryStatistics.getOutbound().size());
     }
 

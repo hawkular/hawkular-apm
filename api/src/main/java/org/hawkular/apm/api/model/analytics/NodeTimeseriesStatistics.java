@@ -28,6 +28,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class NodeTimeseriesStatistics {
 
+    /**
+     * Timestamp in microseconds
+     */
     @JsonInclude
     private long timestamp = 0;
 
@@ -75,6 +78,9 @@ public class NodeTimeseriesStatistics {
      */
     public static class NodeComponentTypeStatistics {
 
+        /**
+         * Duration in microseconds
+         */
         private long duration;
 
         private long count;

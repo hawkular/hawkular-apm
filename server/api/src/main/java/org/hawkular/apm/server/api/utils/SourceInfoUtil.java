@@ -19,7 +19,6 @@ package org.hawkular.apm.server.api.utils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -112,9 +111,8 @@ public class SourceInfoUtil {
             Trace trace, StringBuffer parentNodeId, int pos, Node node) {
 
         // Calculate the timestamp for the node
-        long diffns = node.getBaseTime() - trace.getNodes().get(0).getBaseTime();
-        long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
-        long timestamp = trace.getStartTime() + diffms;
+        long diff = node.getBaseTime() - trace.getNodes().get(0).getBaseTime();
+        long timestamp = trace.getStartTime() + diff;
 
         SourceInfo si = new SourceInfo();
 
@@ -213,10 +211,10 @@ public class SourceInfoUtil {
                 SourceInfo si = new SourceInfo();
 
                 if (clientSpan.getDuration() != null) {
-                    si.setDuration(TimeUnit.MILLISECONDS.convert(clientSpan.getDuration(), TimeUnit.MICROSECONDS));
+                    si.setDuration(clientSpan.getDuration());
                 }
                 if (clientSpan.getTimestamp() != null) {
-                    si.setTimestamp(TimeUnit.MILLISECONDS.convert(clientSpan.getTimestamp(), TimeUnit.MICROSECONDS));
+                    si.setTimestamp(clientSpan.getTimestamp());
                 }
                 si.setFragmentId(clientSpan.getId());
 

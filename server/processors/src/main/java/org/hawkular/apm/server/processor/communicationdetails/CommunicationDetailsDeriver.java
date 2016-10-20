@@ -18,7 +18,6 @@ package org.hawkular.apm.server.processor.communicationdetails;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -174,8 +173,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         long latency = 0;
 
         if (!si.isMultipleConsumers()) {
-            long diff = TimeUnit.MILLISECONDS.convert(si.getDuration() - consumer.getDuration(),
-                    TimeUnit.NANOSECONDS);
+            long diff = si.getDuration() - consumer.getDuration();
             if (diff > 0) {
                 // Latency is being calculated as half the difference between the producer and consumer
                 // durations - so is an approximation of the latency based on the assumption that
@@ -224,8 +222,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
         CommunicationDetails.Outbound ob = new CommunicationDetails.Outbound();
         ob.getLinkIds().add(nodeId.toString());
         ob.setMultiConsumer(true);
-        ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
-                    TimeUnit.NANOSECONDS));
+        ob.setProducerOffset(n.getBaseTime() - baseTime);
         cd.getOutbound().add(ob);
 
         if (n.getClass() == Producer.class) {
@@ -241,8 +238,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                 // Check if pub/sub
                 ob.setMultiConsumer(((Producer) n).multipleConsumers());
 
-                ob.setProducerOffset(TimeUnit.MILLISECONDS.convert((n.getBaseTime() - baseTime),
-                        TimeUnit.NANOSECONDS));
+                ob.setProducerOffset(n.getBaseTime() - baseTime);
                 cd.getOutbound().add(ob);
             }
         } else if (n.containerNode()) {

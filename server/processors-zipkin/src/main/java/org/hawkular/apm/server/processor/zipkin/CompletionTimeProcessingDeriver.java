@@ -20,7 +20,6 @@ package org.hawkular.apm.server.processor.zipkin;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CompletionTime;
@@ -133,7 +132,7 @@ public class CompletionTimeProcessingDeriver extends AbstractProcessor<Completio
             estimatedDuration = rootSpan.getDuration();
         }
 
-        return TimeUnit.MILLISECONDS.convert(estimatedDuration, TimeUnit.MICROSECONDS);
+        return estimatedDuration;
     }
 
     private Annotation extractLastAnnotation(Set<Span> spans) {

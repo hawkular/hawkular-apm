@@ -62,7 +62,7 @@ public class CompletionTimeProcessingDeriverTest {
         Assert.assertNull(completionTimeProcessing.getCompletionTime());
 
         completionTimeProcessing = completionTimeProcessingDeriver.processOneToOne(null, completionTimeProcessing);
-        Assert.assertEquals(1, completionTimeProcessing.getCompletionTime().getDuration());
+        Assert.assertEquals(rootSpan.getDuration().longValue(), completionTimeProcessing.getCompletionTime().getDuration());
 
         completionTimeProcessing = completionTimeProcessingDeriver.processOneToOne(null, completionTimeProcessing);
         Assert.assertNull(completionTimeProcessing);
@@ -75,15 +75,15 @@ public class CompletionTimeProcessingDeriverTest {
         descendant.setId("descendant");
         descendant.setTraceId("trace");
         descendant.setTimestamp(1500L);
-        Mockito.when(spanCacheMock.getTrace(null, "trace")).thenReturn(
-                new HashSet<>(Arrays.asList(rootSpan, descendant)));
+        Mockito.when(spanCacheMock.getTrace(null, "trace"))
+                .thenReturn(new HashSet<>(Arrays.asList(rootSpan, descendant)));
 
         completionTimeProcessing = new CompletionTimeProcessing(rootSpan);
         completionTimeProcessing = completionTimeProcessingDeriver.processOneToOne(null, completionTimeProcessing);
         Assert.assertNull(completionTimeProcessing.getCompletionTime());
 
         completionTimeProcessing = completionTimeProcessingDeriver.processOneToOne(null, completionTimeProcessing);
-        Assert.assertEquals(2, completionTimeProcessing.getCompletionTime().getDuration());
+        Assert.assertEquals(2000, completionTimeProcessing.getCompletionTime().getDuration());
 
         completionTimeProcessing = completionTimeProcessingDeriver.processOneToOne(null, completionTimeProcessing);
         Assert.assertNull(completionTimeProcessing);

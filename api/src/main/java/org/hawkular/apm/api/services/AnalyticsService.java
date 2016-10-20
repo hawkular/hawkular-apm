@@ -46,8 +46,8 @@ public interface AnalyticsService {
      * associated with a business transaction).
      *
      * @param tenantId The optional tenant id
-     * @param startTime The start time
-     * @param endTime The end time (if 0, then current time)
+     * @param startTime The start time in milliseconds
+     * @param endTime The end time (if 0, then current time) in milliseconds
      * @param compress Whether to compress the list and show common patterns
      * @return The unbound endpoints
      */
@@ -59,8 +59,8 @@ public interface AnalyticsService {
      *
      * @param tenantId The optional tenant id
      * @param businessTransaction The business transaction name
-     * @param startTime The start time
-     * @param endTime The end time (if 0, then current time)
+     * @param startTime The start time in milliseconds
+     * @param endTime The end time (if 0, then current time) in milliseconds
      * @return The bound endpoints
      */
     List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime);

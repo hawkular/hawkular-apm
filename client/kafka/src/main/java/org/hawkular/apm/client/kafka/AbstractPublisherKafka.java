@@ -18,6 +18,7 @@ package org.hawkular.apm.client.kafka;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -96,8 +97,6 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
 
     @Override
     public void publish(String tenantId, List<T> items, int retryCount, long delay) throws Exception {
-        long startTime = 0;
-
         // Check if delay is required
         // TODO: May need to check if delay is excessive and schedule message publish in separate thread
         if (delay > 0) {
@@ -110,8 +109,9 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
             }
         }
 
+        long startTime = 0;
         if (handler != null) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
 
         for (int i = 0; i < items.size(); i++) {
@@ -123,7 +123,7 @@ public abstract class AbstractPublisherKafka<T> implements Publisher<T>, Service
         }
 
         if (handler != null) {
-            handler.published(tenantId, items, (System.currentTimeMillis() - startTime));
+            handler.published(tenantId, items, (TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - startTime)));
         }
     }
 

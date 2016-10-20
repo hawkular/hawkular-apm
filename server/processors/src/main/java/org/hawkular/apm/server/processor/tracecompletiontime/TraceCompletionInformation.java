@@ -74,11 +74,17 @@ public class TraceCompletionInformation {
      */
     public static class Communication {
 
-        public static final int DEFAULT_EXPIRY_WINDOW = 4000;
+        public static final int DEFAULT_EXPIRY_WINDOW_MILLIS = 4000;
 
         private List<String> ids = new ArrayList<String>();
         private boolean multipleConsumers = false;
+        /**
+         * Duration in microseconds
+         */
         private long baseDuration = 0;
+        /**
+         * Expire in milliseconds
+         */
         private long expire = 0;
 
         /**
@@ -110,28 +116,28 @@ public class TraceCompletionInformation {
         }
 
         /**
-         * @return the baseDuration
+         * @return the base duration in microseconds
          */
         public long getBaseDuration() {
             return baseDuration;
         }
 
         /**
-         * @param baseDuration the baseDuration to set
+         * @param baseDuration the base duration in microseconds
          */
         public void setBaseDuration(long baseDuration) {
             this.baseDuration = baseDuration;
         }
 
         /**
-         * @return the expire
+         * @return the expire in microseconds
          */
         public long getExpire() {
             return expire;
         }
 
         /**
-         * @param expire the expire to set
+         * @param expire the expire in microseconds
          */
         public void setExpire(long expire) {
             this.expire = expire;

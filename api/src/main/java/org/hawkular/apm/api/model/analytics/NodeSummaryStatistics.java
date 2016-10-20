@@ -26,9 +26,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 public class NodeSummaryStatistics {
 
+    /**
+     * Actual time in microseconds
+     */
     @JsonInclude
     private long actual;
 
+    /**
+     * Elapsed time in microseconds
+     */
     @JsonInclude
     private long elapsed;
 

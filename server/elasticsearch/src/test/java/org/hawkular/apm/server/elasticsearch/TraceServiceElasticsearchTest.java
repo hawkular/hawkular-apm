@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
@@ -85,7 +86,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.setBusinessTransaction("trace1");
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
@@ -116,7 +117,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.setBusinessTransaction("");
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
@@ -150,7 +151,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
@@ -189,7 +190,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.addProperty("prop1", "value1", null);
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
@@ -226,7 +227,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.addProperty("prop1", "value1", Operator.HASNOT);
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 2);
@@ -272,7 +273,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3, trace4));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.addProperty("prop1", "value1", null);
         criteria.addProperty("prop3", "value3", null);
 
@@ -310,7 +311,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.addProperty("prop1", "value1", Operator.HASNOT);
         criteria.addProperty("prop1", "value3", Operator.HASNOT);
 
@@ -352,7 +353,7 @@ public class TraceServiceElasticsearchTest {
         ts.storeFragments(null, Arrays.asList(trace1, trace2));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(100);
+        criteria.setStartTime(1);
         criteria.getCorrelationIds().add(new CorrelationIdentifier(scope, "gid1"));
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
@@ -367,7 +368,7 @@ public class TraceServiceElasticsearchTest {
     public void testStoreAndRetrieveInteractionTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(System.currentTimeMillis());
+        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
         c1.getProperties().add(new Property("prop1","value1"));
@@ -383,7 +384,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(System.currentTimeMillis());
+        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
         c2.setEndpointType("HTTP");
@@ -431,7 +432,7 @@ public class TraceServiceElasticsearchTest {
     public void testStoreAndRetrieveCausedByTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(System.currentTimeMillis());
+        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
         c1.getProperties().add(new Property("prop1","value1"));
@@ -442,7 +443,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(System.currentTimeMillis());
+        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
         c2.getProperties().add(new Property("prop1","value1"));
@@ -455,7 +456,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace3 = new Trace();
         trace3.setId("3");
-        trace3.setStartTime(System.currentTimeMillis());
+        trace3.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c3 = new Consumer();
         c3.setUri("uri3");
         c3.getProperties().add(new Property("prop3","value3"));
@@ -529,7 +530,7 @@ public class TraceServiceElasticsearchTest {
     public void testGetTraceByIdJustProducerConsumer() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(System.currentTimeMillis());
+        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Producer producer = new Producer();
         producer.setUri("uri");
         producer.addInteractionCorrelationId("id1");
@@ -537,7 +538,7 @@ public class TraceServiceElasticsearchTest {
 
         Trace trace2 = new Trace();
         trace2.setId("2");
-        trace2.setStartTime(System.currentTimeMillis());
+        trace2.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer consumer = new Consumer();
         consumer.setUri("uri");
         consumer.addInteractionCorrelationId("id1");

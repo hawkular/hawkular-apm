@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -351,10 +350,10 @@ public class SpanServiceElasticsearch implements SpanService {
         node.setDetails(new HashMap<>(span.binaryAnnotationMapping().getNodeDetails()));
 
         if (span.getTimestamp() != null) {
-            node.setBaseTime(TimeUnit.NANOSECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
+            node.setBaseTime(span.getTimestamp());
         }
         if (span.getDuration() != null) {
-            node.setDuration(TimeUnit.NANOSECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
+            node.setDuration(span.getDuration());
         }
 
         return node;

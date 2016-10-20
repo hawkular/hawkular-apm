@@ -1085,7 +1085,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
      * @param node The node
      */
     protected void initNode(Node node) {
-        node.setBaseTime(System.nanoTime());
+        node.setBaseTime(TimeUnit.NANOSECONDS.toMicros(System.nanoTime()));
     }
 
     /**
@@ -1136,7 +1136,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
         Node node = builder.popNode(cls, uri);
         if (node != null) {
-            node.setDuration(System.nanoTime() - node.getBaseTime());
+            node.setDuration(TimeUnit.NANOSECONDS.toMicros(System.nanoTime()) - node.getBaseTime());
             return cls.cast(node);
         }
 

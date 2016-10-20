@@ -17,11 +17,6 @@
             }],
             "date_detection" : false,
             "numeric_detection": false,
-            "_timestamp": {
-                "enabled": true,
-                "path": "startTime",
-                "format": "yyyy/MM/dd HH:mm:ss"
-            },
             "properties": {
                 "businessTransaction": {
                     "type": "string",
@@ -36,8 +31,7 @@
                     "index": "not_analyzed"
                 },
                 "startTime": {
-                    "type": "date",
-                    "format": "yyyy/MM/dd HH:mm:ss"
+                    "type": "long"
                 },
                 "nodes": {
                     "type": "nested",
@@ -98,11 +92,6 @@
             }],
             "date_detection" : false,
             "numeric_detection": false,
-            "_timestamp": {
-                "enabled": true,
-                "path": "timestamp",
-                "format": "yyyy/MM/dd HH:mm:ss"
-            },
             "properties": {
                 "businessTransaction": {
                     "type": "string",
@@ -119,8 +108,7 @@
                     "type": "long"
                 },
                 "timestamp": {
-                    "type": "date",
-                    "format": "yyyy/MM/dd HH:mm:ss"
+                    "type": "long"
                 },
                 "properties": {
                     "type": "nested",
@@ -157,11 +145,6 @@
             }],
             "date_detection" : false,
             "numeric_detection": false,
-            "_timestamp": {
-                "enabled": true,
-                "path": "timestamp",
-                "format": "yyyy/MM/dd HH:mm:ss"
-            },
             "properties": {
                 "type": {
                     "type": "string",
@@ -200,8 +183,7 @@
                     }
                 },
                 "timestamp": {
-                    "type": "date",
-                    "format": "yyyy/MM/dd HH:mm:ss"
+                    "type": "long"
                 },
                 "properties": {
                     "type": "nested",
@@ -238,11 +220,6 @@
             }],
             "date_detection" : false,
             "numeric_detection": false,
-            "_timestamp": {
-                "enabled": true,
-                "path": "timestamp",
-                "format": "yyyy/MM/dd HH:mm:ss"
-            },
             "properties": {
                 "businessTransaction": {
                     "type": "string",
@@ -256,8 +233,7 @@
                     "type": "long"
                 },
                 "timestamp": {
-                    "type": "date",
-                    "format": "yyyy/MM/dd HH:mm:ss"
+                    "type": "long"
                 },
                 "properties": {
                     "type": "nested",
@@ -294,11 +270,6 @@
             }],
             "date_detection" : false,
             "numeric_detection": false,
-            "_timestamp": {
-                "enabled": true,
-                "path": "timestamp",
-                "format": "yyyy/MM/dd HH:mm:ss"
-            },
             "properties": {
                 "businessTransaction": {
                     "type": "string",
@@ -312,8 +283,7 @@
                     "type": "long"
                 },
                 "timestamp": {
-                    "type": "date",
-                    "format": "yyyy/MM/dd HH:mm:ss"
+                    "type": "long"
                 },
                 "properties": {
                     "type": "nested",
@@ -350,11 +320,6 @@
             }],
             "date_detection": false,
             "numeric_detection": false,
-            "_timestamp": {
-                "enabled": true,
-                "path": "timestamp",
-                "format": "yyyy/MM/dd HH:mm:ss"
-            },
             "properties": {
                 "traceId": {
                     "type": "string",
@@ -373,8 +338,7 @@
                     "index": "not_analyzed"
                 },
                 "timestamp": {
-                    "type": "date",
-                    "format": "yyyy/MM/dd HH:mm:ss"
+                    "type": "long"
                 },
                 "duration": {
                     "type": "long"
@@ -388,8 +352,7 @@
                     "include_in_root": true,
                     "properties": {
                         "timestamp": {
-                            "type": "date",
-                            "format": "yyyy/MM/dd HH:mm:ss"
+                            "type": "long"
                         },
                         "value": {
                             "type": "string",

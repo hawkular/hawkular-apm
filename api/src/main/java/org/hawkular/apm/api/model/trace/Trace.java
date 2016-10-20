@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Property;
 
@@ -48,6 +47,9 @@ public class Trace {
     @JsonInclude
     private String id;
 
+    /**
+     * Start time in microseconds
+     */
     @JsonInclude
     private long startTime;
 
@@ -86,14 +88,14 @@ public class Trace {
     }
 
     /**
-     * @return the startTime
+     * @return the startTime in microseconds
      */
     public long getStartTime() {
         return startTime;
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param startTime the startTime in microseconds
      * @return The trace
      */
     public Trace setStartTime(long startTime) {
@@ -242,7 +244,7 @@ public class Trace {
     /**
      * This method returns the end time of the trace fragment.
      *
-     * @return The end time (in milliseconds)
+     * @return The end time (in microseconds)
      */
     public long endTime() {
         return getStartTime() + calculateDuration();
@@ -251,25 +253,22 @@ public class Trace {
     /**
      * This method returns the duration of the trace fragment.
      *
-     * @return The duration (in milliseconds), or 0 if no nodes defined
+     * @return The duration (in microseconds), or 0 if no nodes defined
      */
     public long calculateDuration() {
         if (!nodes.isEmpty()) {
-            long endTimeNS = 0;
+            long endTime = 0;
 
             for (int i = 0; i < getNodes().size(); i++) {
                 Node node = getNodes().get(i);
-                long et = node.overallEndTime();
+                long nodeEndTime = node.overallEndTime();
 
-                if (et > endTimeNS) {
-                    endTimeNS = et;
+                if (nodeEndTime > endTime) {
+                    endTime = nodeEndTime;
                 }
             }
 
-            long elapsedTime = endTimeNS - getNodes().get(0).getBaseTime();
-
-            // Convert elapsed time to milliseconds
-            return TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS);
+            return endTime - getNodes().get(0).getBaseTime();
         }
 
         return 0L;

@@ -18,7 +18,6 @@ package org.hawkular.apm.server.processor.nodedetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,7 +72,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
      * nodes.
      *
      * @param trace The trace
-     * @param baseTime The base time, in nanoseconds, for the trace
+     * @param baseTime The base time, in microseconds, for the trace
      * @param nodes The nodes
      * @param rts The list of node details
      */
@@ -96,8 +95,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
             }
 
             if (!ignoreNode) {
-                long diffns = n.getBaseTime() - baseTime;
-                long diffms = TimeUnit.MILLISECONDS.convert(diffns, TimeUnit.NANOSECONDS);
+                long diff = n.getBaseTime() - baseTime;
 
                 NodeDetails nd = new NodeDetails();
                 nd.setId(trace.getId() + "-" + rts.size());
@@ -129,7 +127,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 }
 
                 nd.setProperties(trace.allProperties());
-                nd.setTimestamp(trace.getStartTime() + diffms);
+                nd.setTimestamp(trace.getStartTime() + diff);
                 nd.setType(n.getType());
                 nd.setUri(n.getUri());
                 nd.setOperation(n.getOperation());

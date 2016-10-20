@@ -18,7 +18,6 @@
 package org.hawkular.apm.server.processor.zipkin;
 
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
@@ -49,10 +48,10 @@ public class CompletionTimeUtil {
         completionTime.setId(span.getId());
 
         if (span.getTimestamp() != null) {
-            completionTime.setTimestamp(TimeUnit.MILLISECONDS.convert(span.getTimestamp(), TimeUnit.MICROSECONDS));
+            completionTime.setTimestamp(span.getTimestamp());
         }
         if (span.getDuration() != null) {
-            completionTime.setDuration(TimeUnit.MILLISECONDS.convert(span.getDuration(), TimeUnit.MICROSECONDS));
+            completionTime.setDuration(span.getDuration());
         }
 
         completionTime.setOperation(SpanDeriverUtil.deriveOperation(span));
