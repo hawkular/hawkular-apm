@@ -268,8 +268,8 @@ public class ClientJettyStreamAsyncITest extends ClientTestBase {
 
         if (fault) {
             assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
-            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("Unauthorized", testProducer.getDetails().get(Constants.DETAIL_FAULT_DESCRIPTION));
+            assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
+            assertEquals("401", testProducer.getDetails().get(Constants.DETAIL_FAULT_CODE));
         } else {
 
             if (isProcessContent()) {

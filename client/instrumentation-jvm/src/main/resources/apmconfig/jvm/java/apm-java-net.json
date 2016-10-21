@@ -255,11 +255,11 @@
         "condition": "isActive() && $! >= 400",
         "actions": [{
           "type": "SetFault",
-          "valueExpression": "$!"
+          "valueExpression": "$0.responseMessage"
         },{
           "type": "SetDetail",
-          "name": "fault.description",
-          "valueExpression": "$0.responseMessage"
+          "name": "fault.code",
+          "valueExpression": "$!"
         },{
           "type": "InstrumentProducer",
           "direction": "Out",

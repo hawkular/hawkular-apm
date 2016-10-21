@@ -158,10 +158,6 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "fault": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
                 "duration": {
                     "type": "long",
                     "index": "not_analyzed"
@@ -225,10 +221,6 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "fault": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
                 "duration": {
                     "type": "long"
                 },
@@ -272,10 +264,6 @@
             "numeric_detection": false,
             "properties": {
                 "businessTransaction": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "fault": {
                     "type": "string",
                     "index": "not_analyzed"
                 },
