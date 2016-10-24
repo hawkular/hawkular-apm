@@ -24,7 +24,7 @@ module APM {
     '$interval', '$timeout', ($scope, $rootScope, $routeParams, $http, $interval, $timeout) => {
 
     $scope.config = {
-      interval: '60000',
+      interval: '60000000',
       maxRows: 10
     };
 
@@ -64,7 +64,7 @@ module APM {
           default: [0, 10000000000],
           padding: {bottom: 0},
           tick: {
-            format: function (y) { return y / 1000000000; }
+            format: function (y) { return y / 1000000; }
           }
         }
       }
@@ -86,6 +86,7 @@ module APM {
         let componentTypes = [];
 
         _.forEach(resp.data, (datapoint: any) => {
+            datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
             timestamps.push(datapoint.timestamp);
 
             // Iterate and gather the available component types in this datapoint

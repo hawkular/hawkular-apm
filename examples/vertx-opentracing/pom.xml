@@ -35,7 +35,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <version.io.vertx>3.3.3</version.io.vertx>
-    <version.org.hawkular.apm>0.10.1.Final-SNAPSHOT</version.org.hawkular.apm>
+    <version.org.hawkular.apm>0.11.1.Final-SNAPSHOT</version.org.hawkular.apm>
     <version.com.fasterxml.jackson.core>2.7.4</version.com.fasterxml.jackson.core>
   </properties>
 

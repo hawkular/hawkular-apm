@@ -240,7 +240,7 @@ public class APMSpan extends AbstractSpan {
             return;
         }
         nodeBuilder.setOperation(getOperationName());
-        nodeBuilder.setDuration(Duration.between(getStart(), Instant.now()).toNanos());
+        nodeBuilder.setDuration(Duration.between(getStart(), Instant.now()).toNanos()/1000);
 
         // Process the span to initialise the node
         traceContext.getNodeProcessors().forEach(np -> np.process(traceContext, this, nodeBuilder));

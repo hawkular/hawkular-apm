@@ -40,7 +40,7 @@ module BTM {
     };
 
     $scope.config = {
-      interval: '60000',
+      interval: '60000000',
       selectedProperty: undefined,
       lowerBoundDisplay: 0,
       prevLowerBoundDisplay: 0,
@@ -87,7 +87,7 @@ module BTM {
           default: [0, 10000],
           padding: { bottom: 0 },
           tick: {
-            format: function(y) { return y / 1000; }
+            format: function(y) { return y / 1000000; }
           }
         },
         y2: {
@@ -148,6 +148,9 @@ module BTM {
     $scope.reload = function() {
       $http.get('/hawkular/apm/analytics/trace/completion/statistics?interval=' + $scope.config.interval +
           '&criteria=' + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
+        _.forEach(resp.data, (datapoint: any) => {
+            datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
+        });
         $scope.statistics = resp.data;
         $scope.updatedBounds();
         $scope.redrawLineChart();
