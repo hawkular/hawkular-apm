@@ -17,11 +17,9 @@
 
 package org.hawkular.apm.server.api.utils.zipkin;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.server.api.model.zipkin.BinaryAnnotation;
@@ -65,14 +63,9 @@ public class BinaryAnnotationMappingDeriverTest {
         Assert.assertEquals("foo.endpoint", mappingResult.getEndpointType());
         Assert.assertEquals(new HashSet<>(Arrays.asList(
                     new Property("foo.prop", "foo-value"),
+                    new Property("key.no.mapping", "no-mapping-value"),
                     new Property("bar", "bar-value"))),
                 new HashSet<>(mappingResult.getProperties()));
-
-        Assert.assertEquals(new HashSet<Map.Entry<String, String>>(Arrays.asList(
-                    new AbstractMap.SimpleEntry<>("foo.detail", "foo-value"),
-                    new AbstractMap.SimpleEntry<>("key.no.mapping", "no-mapping-value"),
-                    new AbstractMap.SimpleEntry<>("bar", "bar-value"))),
-                mappingResult.getNodeDetails().entrySet());
 
         BinaryAnnotationMappingDeriver.clearStorage();
     }

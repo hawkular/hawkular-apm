@@ -28,11 +28,11 @@
           "direction": "In",
           "headersExpression": "$0.getRequestProperties()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.net\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
         },{
@@ -40,11 +40,11 @@
           "name": "http.query",
           "valueExpression": "$0.getURL().getQuery()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_host",
           "valueExpression": "$0.getURL().getHost()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "$0.getURL().getPort()"
         },{
@@ -75,10 +75,11 @@
           "type": "CompleteCorrelation",
           "idExpression": "\"java.net-async-\"+hashCode($0)"
         },{
-          "type": "SetFault",
+          "type": "SetProperty",
+          "name": "fault",
           "valueExpression": "simpleClassName($^)"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "fault.description",
           "valueExpression": "$^.getMessage()"
         },{
@@ -113,11 +114,11 @@
           "direction": "In",
           "headersExpression": "$0.getRequestProperties()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.net\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
         },{
@@ -125,11 +126,11 @@
           "name": "http.query",
           "valueExpression": "$0.getURL().getQuery()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_host",
           "valueExpression": "$0.getURL().getHost()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "$0.getURL().getPort()"
         },{
@@ -202,11 +203,11 @@
           "direction": "In",
           "headersExpression": "$0.getRequestProperties()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.net\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "$0.getRequestMethod()"
         },{
@@ -214,11 +215,11 @@
           "name": "http.query",
           "valueExpression": "$0.getURL().getQuery()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_host",
           "valueExpression": "$0.getURL().getHost()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "$0.getURL().getPort()"
         },{
@@ -254,12 +255,13 @@
         "location": "EXIT",
         "condition": "isActive() && $! >= 400",
         "actions": [{
-          "type": "SetFault",
-          "valueExpression": "$0.responseMessage"
-        },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "fault.code",
           "valueExpression": "$!"
+        },{
+          "type": "SetProperty",
+          "name": "fault",
+          "valueExpression": "$0.responseMessage"
         },{
           "type": "InstrumentProducer",
           "direction": "Out",

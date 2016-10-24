@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
@@ -347,7 +346,6 @@ public class SpanServiceElasticsearch implements SpanService {
 
         node.setProperties(new HashSet<>(span.binaryAnnotationMapping().getProperties()));
         node.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, span.service()));
-        node.setDetails(new HashMap<>(span.binaryAnnotationMapping().getNodeDetails()));
 
         if (span.getTimestamp() != null) {
             node.setTimestamp(span.getTimestamp());

@@ -287,7 +287,7 @@ public class JavaNetHttpITest extends ClientTestBase {
 
         assertEquals(path, testProducer.getUri());
 
-        assertEquals("Hello World", testProducer.getDetails().get("hello"));
+        assertEquals("Hello World", testProducer.getProperties("hello").iterator().next().getValue());
 
         if (urlstr.endsWith(QUERY_STRING)) {
             assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
@@ -299,7 +299,8 @@ public class JavaNetHttpITest extends ClientTestBase {
         if (fault) {
             assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
             assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getDetails().get(Constants.DETAIL_FAULT_CODE));
+            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE)
+                    .iterator().next().getValue());
         } else {
 
             if (isProcessContent()) {

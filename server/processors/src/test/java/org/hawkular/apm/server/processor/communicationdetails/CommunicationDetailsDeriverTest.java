@@ -448,7 +448,7 @@ public class CommunicationDetailsDeriverTest {
         Producer p1 = new Producer();
         p1.setTimestamp(1000000);
         p1.setDuration(2000000000);
-        p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
+        p1.getProperties().add(new Property(Producer.PROPERTY_PUBLISH, "true"));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -472,7 +472,7 @@ public class CommunicationDetailsDeriverTest {
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setDuration(1200000000);
-        c2.getDetails().put(Consumer.DETAILS_PUBLISH, "true");
+        c2.getProperties().add(new Property(Consumer.PROPERTY_PUBLISH, "true"));
         c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
@@ -524,7 +524,7 @@ public class CommunicationDetailsDeriverTest {
         Producer p1 = new Producer();
         p1.setTimestamp(1000000);
         p1.setDuration(2000000000);
-        p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
+        p1.getProperties().add(new Property(Producer.PROPERTY_PUBLISH, "true"));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.ControlFlow);
@@ -548,7 +548,7 @@ public class CommunicationDetailsDeriverTest {
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setDuration(1200000000);
-        c2.getDetails().put(Consumer.DETAILS_PUBLISH, "true");
+        c2.getProperties().add(new Property(Consumer.PROPERTY_PUBLISH, "true"));
         c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
@@ -865,7 +865,7 @@ public class CommunicationDetailsDeriverTest {
         c2.getNodes().add(p2);
 
         Producer p3 = new Producer();
-        p3.getDetails().put(Producer.DETAILS_PUBLISH, "true");
+        p3.getProperties().add(new Property(Producer.PROPERTY_PUBLISH, "true"));
         p3.setTimestamp(1000);
         p3.setDuration(2000000);
 

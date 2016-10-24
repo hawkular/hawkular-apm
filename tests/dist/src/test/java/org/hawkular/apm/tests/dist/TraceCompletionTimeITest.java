@@ -362,7 +362,7 @@ public class TraceCompletionTimeITest extends AbstractITest {
         p1.setTimestamp(trace1.getTimestamp() + 500);
         p1.setDuration(500);
         p1.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid1_"+suffix));
-        p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
+        p1.getProperties().add(new Property(Producer.PROPERTY_PUBLISH, "true"));
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
@@ -381,7 +381,7 @@ public class TraceCompletionTimeITest extends AbstractITest {
         p2.setTimestamp(trace2.getTimestamp() + 500);
         p2.setDuration(500);
         p2.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
-        p2.getDetails().put(Producer.DETAILS_PUBLISH, "true");
+        p2.getProperties().add(new Property(Producer.PROPERTY_PUBLISH, "true"));
         c2.getNodes().add(p2);
 
         Trace trace3 = new Trace();

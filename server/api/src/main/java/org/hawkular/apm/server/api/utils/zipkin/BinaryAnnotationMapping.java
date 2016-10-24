@@ -23,7 +23,6 @@ import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.events.SourceInfo;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
-import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 
@@ -44,17 +43,13 @@ public class BinaryAnnotationMapping {
      */
     private String endpointType;
     /**
-     * Mapping for details map {@link Node#details} and {@link NodeDetails#details}.
-     */
-    private ExcludableProperty nodeDetails;
-    /**
      * Mapping for property {@link Trace#allProperties()}, and its derived objects e.g.
      * {@link CommunicationDetails#properties},
      * {@link CompletionTime#properties},
      * {@link NodeDetails#properties},
      * {@link SourceInfo#properties}.
      */
-    private IncludableProperty property;
+    private ExcludableProperty property;
 
     /**
      * Binary annotation is ignored
@@ -77,19 +72,11 @@ public class BinaryAnnotationMapping {
         this.endpointType = endpointType;
     }
 
-    public ExcludableProperty getNodeDetails() {
-        return nodeDetails;
-    }
-
-    public void setNodeDetails(ExcludableProperty nodeDetails) {
-        this.nodeDetails = nodeDetails;
-    }
-
-    public IncludableProperty getProperty() {
+    public ExcludableProperty getProperty() {
         return property;
     }
 
-    public void setProperty(IncludableProperty property) {
+    public void setProperty(ExcludableProperty property) {
         this.property = property;
     }
 
@@ -102,43 +89,18 @@ public class BinaryAnnotationMapping {
     }
 
     /**
-     * Represents property which is by default included
-     */
-    public static class ExcludableProperty {
-        // ignore this property
-        private boolean ignore;
-        private String key;
-
-        public boolean isIgnore() {
-            return ignore;
-        }
-
-        public void setIgnore(boolean ignore) {
-            this.ignore = ignore;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-    }
-
-    /**
      * Represents property which is by default excluded
      */
-    public static class IncludableProperty {
-        private boolean include;
+    public static class ExcludableProperty {
+        private boolean exclude;
         private String key;
 
-        public boolean isInclude() {
-            return include;
+        public boolean isExclude() {
+            return exclude;
         }
 
-        public void setInclude(boolean include) {
-            this.include = include;
+        public void setExclude(boolean exclude) {
+            this.exclude = exclude;
         }
 
         public String getKey() {

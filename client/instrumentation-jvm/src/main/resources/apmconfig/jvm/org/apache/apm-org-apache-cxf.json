@@ -43,7 +43,7 @@
           "originalType": "javax.servlet.http.HttpServletRequest",
           "headersExpression": "req"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.apache.cxf\""
         },{
@@ -51,27 +51,27 @@
           "name": "http.query",
           "valueExpression": "req.getQueryString()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "req.getMethod()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_host",
           "valueExpression": "req.getServerName()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "req.getServerPort()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "principal",
           "valueExpression": "req.getRemoteUser()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "remoteAddr",
           "valueExpression": "req.getRemoteAddr()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "remoteHost",
           "valueExpression": "req.getRemoteHost()"
         },{

@@ -18,10 +18,8 @@ package org.hawkular.apm.api.model.trace;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,9 +69,6 @@ public abstract class Node {
 
     @JsonInclude(Include.NON_EMPTY)
     private Set<Property> properties = new HashSet<Property>();
-
-    @JsonInclude(Include.NON_EMPTY)
-    private Map<String, String> details = new HashMap<String, String>();
 
     @JsonInclude(Include.NON_EMPTY)
     private List<CorrelationIdentifier> correlationIds = new ArrayList<CorrelationIdentifier>();
@@ -198,33 +193,11 @@ public abstract class Node {
      * @return The node
      */
     public Node setProperties(Set<Property> properties) {
-        if (details == null) {
+        if (properties == null) {
             throw new IllegalArgumentException("Null value not permitted");
         }
 
         this.properties = properties;
-        return this;
-    }
-
-    /**
-     * This method returns the specific details about the node.
-     *
-     * @return the details
-     */
-    public Map<String, String> getDetails() {
-        return details;
-    }
-
-    /**
-     * @param details the details to set
-     * @return The node
-     */
-    public Node setDetails(Map<String, String> details) {
-        if (details == null) {
-            throw new IllegalArgumentException("Null value not permitted");
-        }
-
-        this.details = details;
         return this;
     }
 
@@ -429,7 +402,6 @@ public abstract class Node {
         int result = 1;
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
-        result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + ((issues == null) ? 0 : issues.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
@@ -454,11 +426,6 @@ public abstract class Node {
             if (other.correlationIds != null)
                 return false;
         } else if (!correlationIds.equals(other.correlationIds))
-            return false;
-        if (details == null) {
-            if (other.details != null)
-                return false;
-        } else if (!details.equals(other.details))
             return false;
         if (duration != other.duration)
             return false;

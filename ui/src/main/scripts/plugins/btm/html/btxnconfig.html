@@ -214,9 +214,6 @@
                 -->
 
                 <li><a href="" ng-click="addAction(processor, 'EvaluateURI')">Evaluate URI</a></li>
-                <li><a href="" ng-click="addAction(processor, 'SetDetail')">Set Detail</a></li>
-                <li><a href="" ng-click="addAction(processor, 'SetFault')">Set Fault Code</a></li>
-                <li><a href="" ng-click="addAction(processor, 'SetFaultDescription')">Set Fault Description</a></li>
                 <li><a href="" ng-click="addAction(processor, 'SetProperty')">Set Property</a></li>
               </ul>
             </div>
@@ -288,9 +285,9 @@
                          cause a change in state that refreshes the field. -->
 
                   <div class="form-group clearfix">
-                    <label for="actionName" ng-class="{error:isError(processor,action,'name')}" class="col-sm-3" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" >Name:</label>
+                    <label for="actionName" ng-class="{error:isError(processor,action,'name')}" class="col-sm-3" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetProperty'" >Name:</label>
                     <div class="col-sm-6">
-                      <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetDetail' || action.actionType === 'SetProperty'" class="form-control" />
+                      <input type="text" name="actionName" ng-model="action.name" ng-change="setDirty()" ng-show="action.actionType === 'AddContent' || action.actionType === 'SetProperty'" class="form-control" />
                     </div>
                   </div>
 

@@ -95,36 +95,31 @@ public class BinaryAnnotationMappingDeriver {
             }
 
             BinaryAnnotationMapping mapping = mappingStorage.getKeyBasedMappings().get(binaryAnnotation.getKey());
-            //ignore all what is not in mappings
-            if (mapping == null) {
-                mappingIsNull(mappingBuilder, binaryAnnotation);
-                continue;
-            }else if (mapping != null && mapping.isIgnore()) {
+            if (mapping != null && mapping.isIgnore()) {
                 continue;
             }
 
-            if (mapping.getComponentType() != null) {
-                componentTypes.add(mapping.getComponentType());
-            }
-
-            if (mapping.getEndpointType() != null) {
-                endpointTypes.add(mapping.getEndpointType());
-            }
-
-            if (mapping.getNodeDetails() == null ||
-                    (mapping.getNodeDetails() != null && !mapping.getNodeDetails().isIgnore())) {
-                String key = mapping.getNodeDetails() != null && mapping.getNodeDetails().getKey() != null ?
-                        mapping.getNodeDetails().getKey() :
-                        binaryAnnotation.getKey();
-
-                mappingBuilder.addNodeDetail(key, binaryAnnotation.getValue());
-            }
-
-            if (mapping.getProperty() != null && mapping.getProperty().isInclude()) {
-                String key = mapping.getProperty().getKey() != null ? mapping.getProperty().getKey() :
-                        binaryAnnotation.getKey();
-                mappingBuilder.addProperty(new Property(key, binaryAnnotation.getValue(),
+            if (mapping == null || mapping.getProperty() == null) {
+                // If no mapping, then just store property
+                mappingBuilder.addProperty(new Property(binaryAnnotation.getKey(), binaryAnnotation.getValue(),
                         AnnotationTypeUtil.toPropertyType(binaryAnnotation.getType())));
+            }
+
+            if (mapping != null) {
+                if (mapping.getComponentType() != null) {
+                    componentTypes.add(mapping.getComponentType());
+                }
+
+                if (mapping.getEndpointType() != null) {
+                    endpointTypes.add(mapping.getEndpointType());
+                }
+
+                if (mapping.getProperty() != null && !mapping.getProperty().isExclude()) {
+                    String key = mapping.getProperty().getKey() != null ? mapping.getProperty().getKey() :
+                            binaryAnnotation.getKey();
+                    mappingBuilder.addProperty(new Property(key, binaryAnnotation.getValue(),
+                            AnnotationTypeUtil.toPropertyType(binaryAnnotation.getType())));
+                }
             }
         }
 
@@ -147,11 +142,4 @@ public class BinaryAnnotationMappingDeriver {
         }
     }
 
-    private void mappingIsNull(MappingResult.Builder mappingBuilder, BinaryAnnotation binaryAnnotation) {
-        if (binaryAnnotation == null || binaryAnnotation.getKey() == null) {
-            return;
-        }
-
-        mappingBuilder.addNodeDetail(binaryAnnotation.getKey(), binaryAnnotation.getValue());
-    }
 }

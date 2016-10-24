@@ -26,11 +26,11 @@
           "name": "database.statement",
           "valueExpression": "$1"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "action",
           "valueExpression": "\"execute\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.sql\""
         },{
@@ -76,11 +76,11 @@
           "name": "database.statement",
           "valueExpression": "$1"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "action",
           "valueExpression": "\"query\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.sql\""
         },{
@@ -123,11 +123,11 @@
           "name": "database.statement",
           "valueExpression": "$1"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "action",
           "valueExpression": "\"update\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.sql\""
         },{
@@ -186,11 +186,11 @@
           "name": "database.statement",
           "valueExpression": "formatSQL($0,getState($0,\"sql\",true))"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "action",
           "valueExpression": "\"query\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.sql\""
         },{
@@ -231,11 +231,11 @@
           "name": "database.statement",
           "valueExpression": "formatSQL($0,getState($0,\"sql\",true))"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "action",
           "valueExpression": "\"update\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"java.sql\""
         },{

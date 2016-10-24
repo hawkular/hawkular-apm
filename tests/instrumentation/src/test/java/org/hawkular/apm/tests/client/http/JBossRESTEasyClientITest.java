@@ -195,10 +195,7 @@ public class JBossRESTEasyClientITest extends ClientTestBase {
         if (fault) {
             assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
             assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getDetails().get(Constants.DETAIL_FAULT_CODE));
-
-            // TODO: Awaitin fix for HWKBTM-151
-            //assertEquals("Unauthorized", testProducer.getFaultDescription());
+            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE).iterator().next().getValue());
         } else {
 
             if (isProcessContent()) {

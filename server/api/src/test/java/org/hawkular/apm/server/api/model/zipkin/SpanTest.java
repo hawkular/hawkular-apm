@@ -27,7 +27,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -104,8 +103,8 @@ public class SpanTest {
         BinaryAnnotationMappingDeriver.getInstance(testResourcesPath + "test-binary-annotations-mapping.json");
 
         BinaryAnnotation stringAnnotation = new BinaryAnnotation();
-        stringAnnotation.setKey("http.method");
-        stringAnnotation.setValue("GET");
+        stringAnnotation.setKey("ignore.key");
+        stringAnnotation.setValue("ignore.value");
         stringAnnotation.setEndpoint(createEndpoint("bonjour", "127.0.0.2", (short)8090));
         stringAnnotation.setType(AnnotationType.STRING);
 
@@ -120,10 +119,6 @@ public class SpanTest {
         Span deserializedSpan = (Span)deserialize(serialize(span));
 
         Assert.assertEquals(span, deserializedSpan);
-        Assert.assertEquals(new HashSet<>(Arrays.asList(
-                new AbstractMap.SimpleEntry<>("http.method", "GET"),
-                new AbstractMap.SimpleEntry<>("foo.detail", "value"))),
-                deserializedSpan.binaryAnnotationMapping().getNodeDetails().entrySet());
         Assert.assertEquals(new HashSet<>(Arrays.asList(
                 new Property("foo.prop", "value", PropertyType.Number))),
                 new HashSet<>(deserializedSpan.binaryAnnotationMapping().getProperties()));
@@ -221,6 +216,7 @@ public class SpanTest {
         FileOutputStream fos = new FileOutputStream(temp);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(obj);
+        oos.close();
 
         return temp;
     }

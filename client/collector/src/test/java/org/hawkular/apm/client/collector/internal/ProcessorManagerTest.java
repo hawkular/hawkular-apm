@@ -34,8 +34,6 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.config.btxn.DataSource;
 import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
 import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.SetDetailAction;
-import org.hawkular.apm.api.model.config.btxn.SetFaultAction;
 import org.hawkular.apm.api.model.config.btxn.SetPropertyAction;
 import org.hawkular.apm.api.model.config.btxn.TextExpression;
 import org.hawkular.apm.api.model.trace.Component;
@@ -66,7 +64,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         pa1.setName("test");
         TextExpression expr = new TextExpression();
         expr.setSource(DataSource.Content);
@@ -83,7 +81,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", service.getDetails().get("test"));
+        assertEquals("second", service.getProperties("test").iterator().next().getValue());
     }
 
     @Test
@@ -99,7 +97,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         LiteralExpression literal = new LiteralExpression();
@@ -121,7 +119,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", service.getDetails().get("test"));
+        assertEquals("second", service.getProperties("test").iterator().next().getValue());
     }
 
     @Test
@@ -137,7 +135,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         LiteralExpression literal = new LiteralExpression();
@@ -159,7 +157,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertFalse(service.getDetails().containsKey("test"));
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test
@@ -175,7 +173,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -193,7 +191,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.Out, null, "first", "second");
 
-        assertFalse(service.getDetails().containsKey("test"));
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test
@@ -209,7 +207,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -227,7 +225,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertFalse(service.getDetails().containsKey("test"));
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test
@@ -244,7 +242,7 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -263,7 +261,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", service.getDetails().get("test"));
+        assertEquals("second", service.getProperties("test").iterator().next().getValue());
     }
 
     @Test
@@ -280,7 +278,7 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -299,75 +297,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertFalse(service.getDetails().containsKey("test"));
-    }
-
-    @Test
-    public void testNodeTypeInNoURIFilterSetDetails() {
-        CollectorConfiguration cc = new CollectorConfiguration();
-
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
-
-        Processor p1 = new Processor();
-        btc.getProcessors().add(p1);
-
-        p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.In);
-
-        SetDetailAction pa1 = new SetDetailAction();
-        p1.getActions().add(pa1);
-
-        pa1.setName("test");
-        TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Content);
-        expr.setKey("1");
-        pa1.setExpression(expr);
-
-        ProcessorManager pm = new ProcessorManager(cc);
-
-        Trace trace = new Trace();
-        Component service = new Component();
-        trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
-
-        pm.process(trace, service, Direction.In, null, "first", "second");
-
-        assertEquals("second", service.getDetails().get("test"));
-    }
-
-    @Test
-    public void testNodeTypeInNoURIFilterSetFault() {
-        CollectorConfiguration cc = new CollectorConfiguration();
-
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
-
-        Processor p1 = new Processor();
-        btc.getProcessors().add(p1);
-
-        p1.setNodeType(NodeType.Component);
-        p1.setDirection(Direction.In);
-
-        SetFaultAction pa1 = new SetFaultAction();
-        p1.getActions().add(pa1);
-
-        TextExpression expr = new TextExpression();
-        expr.setSource(DataSource.Content);
-        expr.setKey("1");
-        pa1.setExpression(expr);
-
-        ProcessorManager pm = new ProcessorManager(cc);
-
-        Trace trace = new Trace();
-        Component service = new Component();
-        trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
-
-        pm.process(trace, service, Direction.In, null, "first", "second");
-
-        assertEquals(1, service.getProperties(Constants.PROP_FAULT).size());
-        assertEquals("second", service.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test
@@ -401,7 +331,42 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", trace.getProperties("test").iterator().next().getValue());
+        assertEquals("second", service.getProperties("test").iterator().next().getValue());
+    }
+
+    @Test
+    public void testNodeTypeInNoURIFilterSetFault() {
+        CollectorConfiguration cc = new CollectorConfiguration();
+
+        BusinessTxnConfig btc = new BusinessTxnConfig();
+        cc.getBusinessTransactions().put("testapp", btc);
+
+        Processor p1 = new Processor();
+        btc.getProcessors().add(p1);
+
+        p1.setNodeType(NodeType.Component);
+        p1.setDirection(Direction.In);
+
+        SetPropertyAction pa1 = new SetPropertyAction();
+        p1.getActions().add(pa1);
+
+        pa1.setName(Constants.PROP_FAULT);
+        TextExpression expr = new TextExpression();
+        expr.setSource(DataSource.Content);
+        expr.setKey("1");
+        pa1.setExpression(expr);
+
+        ProcessorManager pm = new ProcessorManager(cc);
+
+        Trace trace = new Trace();
+        Component service = new Component();
+        trace.getNodes().add(service);
+        trace.setBusinessTransaction("testapp");
+
+        pm.process(trace, service, Direction.In, null, "first", "second");
+
+        assertEquals(1, service.getProperties(Constants.PROP_FAULT).size());
+        assertEquals("second", service.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
     }
 
     @Test
@@ -763,7 +728,7 @@ public class ProcessorManagerTest {
         p1.setDirection(Direction.In);
         p1.setUriFilter("include");
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -902,7 +867,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -919,7 +884,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null);
 
-        assertEquals("hello", service.getDetails().get("test"));
+        assertEquals("hello", service.getProperties("test").iterator().next().getValue());
     }
 
     @Test
@@ -935,7 +900,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -954,7 +919,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null);
 
-        assertFalse(service.getDetails().containsKey("test"));
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test
@@ -970,7 +935,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -990,7 +955,7 @@ public class ProcessorManagerTest {
         headers.put("hello", "world");
         pm.process(trace, service, Direction.In, headers);
 
-        assertTrue(service.getDetails().containsKey("test"));
+        assertTrue(service.hasProperty("test"));
     }
 
     @Test
@@ -1006,7 +971,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -1024,7 +989,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null);
 
-        assertFalse(service.getDetails().containsKey("test"));
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test
@@ -1040,7 +1005,7 @@ public class ProcessorManagerTest {
         p1.setNodeType(NodeType.Component);
         p1.setDirection(Direction.In);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -1058,7 +1023,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "hello");
 
-        assertTrue(service.getDetails().containsKey("test"));
+        assertTrue(service.hasProperty("test"));
     }
 
     @Test
@@ -1078,7 +1043,7 @@ public class ProcessorManagerTest {
         literal.setValue("true");
         p1.setPredicate(literal);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -1096,7 +1061,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertEquals("second", service.getDetails().get("test"));
+        assertEquals("second", service.getProperties("test").iterator().next().getValue());
     }
 
     @Test
@@ -1116,7 +1081,7 @@ public class ProcessorManagerTest {
         literal.setValue("false");
         p1.setPredicate(literal);
 
-        SetDetailAction pa1 = new SetDetailAction();
+        SetPropertyAction pa1 = new SetPropertyAction();
         p1.getActions().add(pa1);
 
         pa1.setName("test");
@@ -1134,7 +1099,7 @@ public class ProcessorManagerTest {
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
-        assertFalse(service.getDetails().containsKey("test"));
+        assertFalse(service.hasProperty("test"));
     }
 
     @Test

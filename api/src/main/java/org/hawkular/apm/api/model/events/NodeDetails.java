@@ -17,10 +17,8 @@
 package org.hawkular.apm.api.model.events;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
@@ -85,9 +83,6 @@ public class NodeDetails implements ApmEvent {
 
     @JsonInclude(Include.NON_EMPTY)
     private Set<Property> properties = new HashSet<Property>();
-
-    @JsonInclude(Include.NON_EMPTY)
-    private Map<String, String> details = new HashMap<String, String>();
 
     @JsonInclude(Include.NON_EMPTY)
     private List<CorrelationIdentifier> correlationIds = new ArrayList<CorrelationIdentifier>();
@@ -317,20 +312,6 @@ public class NodeDetails implements ApmEvent {
     }
 
     /**
-     * @return the details
-     */
-    public Map<String, String> getDetails() {
-        return details;
-    }
-
-    /**
-     * @param details the details to set
-     */
-    public void setDetails(Map<String, String> details) {
-        this.details = details;
-    }
-
-    /**
      * @return the correlationIds
      */
     public List<CorrelationIdentifier> getCorrelationIds() {
@@ -352,7 +333,6 @@ public class NodeDetails implements ApmEvent {
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
-        result = prime * result + ((details == null) ? 0 : details.hashCode());
         result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -390,11 +370,6 @@ public class NodeDetails implements ApmEvent {
             if (other.correlationIds != null)
                 return false;
         } else if (!correlationIds.equals(other.correlationIds))
-            return false;
-        if (details == null) {
-            if (other.details != null)
-                return false;
-        } else if (!details.equals(other.details))
             return false;
         if (elapsed != other.elapsed)
             return false;
@@ -440,7 +415,7 @@ public class NodeDetails implements ApmEvent {
         return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
                 + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType="
                 + componentType + ", operation=" + operation + ", hostName=" + hostName
-                + ", principal=" + principal + ", properties=" + properties + ", details=" + details
+                + ", principal=" + principal + ", properties=" + properties
                 + ", correlationIds=" + correlationIds + "]";
     }
 

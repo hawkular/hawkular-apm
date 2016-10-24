@@ -13,7 +13,7 @@
         "uriFilter": "/sayHello",
         "actions": [{
           "name": "hello",
-          "actionType": "SetDetail",
+          "actionType": "SetProperty",
           "expression": {
             "type": "Literal",
             "value": "Hello World"
