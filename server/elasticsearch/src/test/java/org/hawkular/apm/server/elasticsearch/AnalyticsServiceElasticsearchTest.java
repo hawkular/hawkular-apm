@@ -2610,6 +2610,28 @@ public class AnalyticsServiceElasticsearchTest {
     }
 
     @Test
+    public void testGetCommunicationSummaryStatisticsServiceNameMissingURI() throws StoreException {
+        CompletionTime ct1 = new CompletionTime();
+        ct1.setOperation("op1");
+        ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
+
+        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1));
+
+        Criteria criteria = new Criteria()
+                .setStartTime(0)
+                .setEndTime(100000);
+
+        Collection<CommunicationSummaryStatistics> communicationSummaryStatisticsList =
+                analytics.getCommunicationSummaryStatistics(null, criteria, false);
+
+        Assert.assertEquals(1, communicationSummaryStatisticsList.size());
+        CommunicationSummaryStatistics communicationSummaryStatistics =
+                communicationSummaryStatisticsList.iterator().next();
+
+        Assert.assertEquals("wildfly", communicationSummaryStatistics.getServiceName());
+    }
+
+    @Test
     public void testHostNames() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setStartTime(1000);

@@ -757,7 +757,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                         .<Nested>get("nestedProperties").getAggregations()
                         .<Filter>get("propertiesServiceFilter")
                         .getAggregations().get("serviceTerm"));
-                css.setServiceName(serviceName);
+                if (serviceName != null) {
+                    css.setServiceName(serviceName);
+                }
             }
 
             Missing missingOp = urisBucket.getAggregations().get("missingOperation");
@@ -776,7 +778,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                             .<Nested>get("nestedProperties").getAggregations()
                             .<Filter>get("propertiesServiceFilter")
                             .getAggregations().get("serviceTerm"));
-                    css.setServiceName(serviceName);
+                    if (serviceName != null) {
+                        css.setServiceName(serviceName);
+                    }
 
                     stats.put(id, css);
                 }
@@ -803,6 +807,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                     css.setId(id);
                     css.setOperation(operationBucket.getKey());
                     stats.put(id, css);
+                }
+
+                String serviceName = serviceName(operationBucket.getAggregations()
+                        .<Nested>get("nestedProperties").getAggregations()
+                        .<Filter>get("propertiesServiceFilter")
+                        .getAggregations().get("serviceTerm"));
+                if (serviceName != null) {
+                    css.setServiceName(serviceName);
                 }
 
                 if (addMetrics) {
