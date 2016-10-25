@@ -59,10 +59,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * @author gbrown
  */
@@ -196,17 +192,6 @@ public class ClientJettyStreamITest extends ClientTestBase {
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
 
-        for (Trace trace : getApmMockServer().getTraces()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
         // Check stored business transactions (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
@@ -297,17 +282,6 @@ public class ClientJettyStreamITest extends ClientTestBase {
         }
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 2);
-
-        for (Trace trace : getApmMockServer().getTraces()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
 
         // Check stored business transactions (including 1 for the test client)
         assertEquals(2, getApmMockServer().getTraces().size());
@@ -401,8 +375,6 @@ public class ClientJettyStreamITest extends ClientTestBase {
             is.read(b);
 
             is.close();
-
-            System.out.println("REQUEST(INPUTSTREAM) RECEIVED: " + new String(b));
 
             response.setContentType("text/html; charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);

@@ -31,10 +31,6 @@ import org.hawkular.apm.tests.common.ClientTestBase;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * These tests invoke a Camel based REST service to cause business transaction information
  * to be reported to the BusinessTransactionService.
@@ -104,8 +100,6 @@ public class ClientCamelCXFITest extends ClientTestBase {
 
             String resp = new String(b);
 
-            System.out.println(">>> RESP = " + resp);
-
             assertTrue("Response should contain '<code>OK;123</code>'",
                     resp.contains("<code>OK;123</code>"));
         } catch (Exception e) {
@@ -116,16 +110,6 @@ public class ClientCamelCXFITest extends ClientTestBase {
 
         // Check if trace fragments have been reported
         List<Trace> btxns = getApmMockServer().getTraces();
-
-        for (Trace trace : btxns) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
 
         assertEquals(1, btxns.size());
 

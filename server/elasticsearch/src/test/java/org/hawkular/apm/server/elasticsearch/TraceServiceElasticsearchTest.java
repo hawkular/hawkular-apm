@@ -42,8 +42,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author gbrown
@@ -408,10 +406,6 @@ public class TraceServiceElasticsearchTest {
         assertNotNull(result);
         assertEquals("1", result.getId());
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        System.out.println("TRACE(testStoreAndRetrieveInteractionTraceById)=" + mapper.writeValueAsString(result));
-
         assertEquals(2, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
         assertEquals(Consumer.class, result.getNodes().get(0).getClass());
@@ -474,10 +468,6 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result);
         assertEquals("1", result.getId());
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        System.out.println("TRACE(testStoreAndRetrieveSingleCausedByTraceById)=" + mapper.writeValueAsString(result));
 
         assertEquals(3, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
@@ -552,10 +542,6 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result);
         assertEquals("1", result.getId());
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        System.out.println("TRACE(testGetTraceByIdJustProducerConsumer)=" + mapper.writeValueAsString(result));
 
         assertEquals(1, result.getNodes().size());
         assertEquals(Producer.class, result.getNodes().get(0).getClass());

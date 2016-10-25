@@ -61,9 +61,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * @author gbrown
  */
@@ -949,10 +946,6 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertNotNull(stats);
         assertEquals(2, stats.size());
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
-
         CommunicationSummaryStatistics first = null;
         CommunicationSummaryStatistics second = null;
 
@@ -1033,11 +1026,6 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertNotNull(stats);
         assertEquals(1, stats.size());
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        System.out.println("COMMS STATS=" + mapper.writeValueAsString(stats));
 
         CommunicationSummaryStatistics first = stats.iterator().next();
 
