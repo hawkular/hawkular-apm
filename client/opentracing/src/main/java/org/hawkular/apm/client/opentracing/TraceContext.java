@@ -19,6 +19,7 @@ package org.hawkular.apm.client.opentracing;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.api.model.events.EndpointRef;
@@ -70,7 +71,7 @@ public class TraceContext {
 
         trace = new Trace();
         trace.setId(UUID.randomUUID().toString());
-        trace.setStartTime(startTime);
+        trace.setStartTime(TimeUnit.MILLISECONDS.toMicros(startTime));
         trace.setHostName(PropertyUtil.getHostName());
         trace.setHostAddress(PropertyUtil.getHostAddress());
 
