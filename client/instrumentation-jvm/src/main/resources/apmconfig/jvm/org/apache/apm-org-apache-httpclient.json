@@ -99,11 +99,11 @@
         "condition": "isActive() && $1.getStatusCode() >= 400",
         "actions": [{
           "type": "SetFault",
-          "valueExpression": "$1.getStatusCode()"
+          "valueExpression": "$1.getReasonPhrase()"
         },{
           "type": "SetDetail",
-          "name": "fault.description",
-          "valueExpression": "$1.getReasonPhrase()"
+          "name": "fault.code",
+          "valueExpression": "$1.getStatusCode()"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Check Fault Or No Content End",
