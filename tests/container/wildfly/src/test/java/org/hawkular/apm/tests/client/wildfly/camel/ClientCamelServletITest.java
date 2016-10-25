@@ -31,10 +31,6 @@ import org.hawkular.apm.tests.common.ClientTestBase;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * These tests invoke a Camel based REST service to cause business transaction information
  * to be reported to the BusinessTransactionService.
@@ -88,31 +84,12 @@ public class ClientCamelServletITest extends ClientTestBase {
         Wait.until(() -> getApmMockServer().getTraces().size() == 1, 2, TimeUnit.SECONDS);
 
         // Check if trace fragments have been reported
-        /*
-        BusinessTransactionServiceRESTClient service = new BusinessTransactionServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
+        List<Trace> traces = getApmMockServer().getTraces();
 
-        BusinessTransactionCriteria criteria = new BusinessTransactionCriteria().setStartTime(startTime);
-
-        List<BusinessTransaction> btxns = service.query(null, criteria);
-         */
-        List<Trace> btxns = getApmMockServer().getTraces();
-
-        for (Trace trace : btxns) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-
-        assertEquals(1, btxns.size());
+        assertEquals(1, traces.size());
 
         // Check top level node is a Consumer associated with the servlet
-        assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());
+        assertEquals(Consumer.class, traces.get(0).getNodes().get(0).getClass());
     }
 
 }

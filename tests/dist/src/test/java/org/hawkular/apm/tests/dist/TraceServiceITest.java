@@ -43,9 +43,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * @author gbrown
  */
@@ -185,15 +182,6 @@ public class TraceServiceITest extends AbstractITest {
 
         assertNotNull(result);
         assertEquals("1", result.getId());
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        try {
-            System.out.println("TRACE=" + mapper.writeValueAsString(result));
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
         assertEquals(2, result.allProperties().size());
         assertEquals(1, result.getNodes().size());

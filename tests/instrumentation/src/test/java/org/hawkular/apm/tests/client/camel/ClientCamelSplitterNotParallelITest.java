@@ -29,10 +29,6 @@ import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * @author gbrown
  */
@@ -58,17 +54,6 @@ public class ClientCamelSplitterNotParallelITest extends ClientCamelITestBase {
     public void testFileSplitNotParallel() {
         getApmMockServer().getTraces();
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
-
-        for (Trace trace : getApmMockServer().getTraces()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
 
         // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());

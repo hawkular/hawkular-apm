@@ -35,10 +35,6 @@ import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * @author gbrown
  */
@@ -130,15 +126,6 @@ public class ClientCamelVmSedaITest extends ClientCamelITestBase {
         Consumer createOrder = null;
 
         for (Trace trace : getApmMockServer().getTraces()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
             if (!trace.getNodes().isEmpty()
                     && trace.getNodes().get(0).getClass() == Consumer.class) {
                 Consumer consumer = (Consumer) trace.getNodes().get(0);

@@ -40,17 +40,12 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
-import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author gbrown
@@ -206,17 +201,6 @@ public class ClientJettyReaderWriterITest extends ClientTestBase {
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 2);
 
-        for (Trace trace : getApmMockServer().getTraces()) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                System.out.println("BTXN=" + mapper.writeValueAsString(trace));
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
         // Check stored business transactions (including 1 for the test client)
         assertEquals(2, getApmMockServer().getTraces().size());
 
@@ -294,8 +278,7 @@ public class ClientJettyReaderWriterITest extends ClientTestBase {
 
             BufferedReader reader = request.getReader();
 
-            String str = reader.readLine();
-            System.out.println("REQUEST(READER) RECEIVED: " + str);
+            reader.readLine();
 
             response.setContentType("text/html; charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
