@@ -49,8 +49,12 @@ public class Event {
         this.context.put("id", completionTime.getId());
 
         this.tags = new HashMap<>();
-        this.tags.put("uri", completionTime.getUri());
-        this.tags.put("operation", completionTime.getOperation());
+        if (null != completionTime.getUri()) {
+            this.tags.put("uri", completionTime.getUri());
+        }
+        if (null != completionTime.getOperation()) {
+            this.tags.put("operation", completionTime.getOperation());
+        }
 
         Set<Property> properties = completionTime.getProperties();
         if (properties != null && properties.size() > 0) {
