@@ -37,19 +37,19 @@
           "originalType": "java.lang.Iterable<Map.Entry>",
           "headersExpression": "req.headers()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"io.netty.http\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "req.getMethod().name()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_host",
           "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getHost()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "(new java.net.URI(\"http://\"+req.headers().get(\"host\")+req.getUri())).getPort()"
         },{

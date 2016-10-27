@@ -54,7 +54,7 @@
           "direction": "In",
           "headersExpression": "headers.getValuesMap()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.restlet\""
         },{
@@ -62,11 +62,11 @@
           "name": "http.query",
           "valueExpression": "$1.getResourceRef().getQuery()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "$1.getMethod().getName()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "$1.getResourceRef().getHostPort()"
         }]

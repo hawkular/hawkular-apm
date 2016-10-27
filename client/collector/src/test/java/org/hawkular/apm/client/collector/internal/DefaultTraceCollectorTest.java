@@ -727,7 +727,7 @@ public class DefaultTraceCollectorTest {
     }
 
     @Test
-    public void testSetDetailsCurrentNode() {
+    public void testSetPropertyCurrentNode() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
 
         // Cause a fragment builder to be created
@@ -739,80 +739,9 @@ public class DefaultTraceCollectorTest {
 
         assertNotNull(node);
 
-        collector.setDetail(null, "testname", "testvalue", null, true);
+        collector.setProperty(null, "testname", "testvalue");
 
-        assertTrue(node.getDetails().containsKey("testname"));
-
-        collector.getFragmentManager().clear();
-    }
-
-    @Test
-    public void testSetDetailsOnStack() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
-
-        // Cause a fragment builder to be created
-        FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
-
-        collector.consumerStart(null, "testconsumer", "testtype", "testop", "testid");
-
-        Consumer consumer = (Consumer) builder.getCurrentNode();
-
-        assertNotNull(consumer);
-
-        collector.componentStart(null, "testcomponent", "testcomptype", "testcompop");
-
-        Component component = (Component) builder.getCurrentNode();
-
-        assertNotNull(component);
-
-        collector.setDetail(null, "testname", "testvalue", "Consumer", true);
-
-        assertTrue(consumer.getDetails().containsKey("testname"));
-        assertFalse(component.getDetails().containsKey("testname"));
-
-        collector.getFragmentManager().clear();
-    }
-
-    @Test
-    public void testSetDetailsPoppedNode() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
-
-        // Cause a fragment builder to be created
-        FragmentBuilder builder = collector.getFragmentManager().getFragmentBuilder();
-
-        collector.consumerStart(null, "testconsumer", "testcontype", "testop", "testconid");
-
-        Consumer consumer = (Consumer) builder.getCurrentNode();
-
-        assertNotNull(consumer);
-
-        collector.componentStart(null, "testcomponent1", "testcomptype", "testcompop");
-
-        Component component1 = (Component) builder.getCurrentNode();
-
-        assertNotNull(component1);
-
-        collector.componentStart(null, "testcomponent2", "testcomptype", "testcompop");
-
-        Component component2 = (Component) builder.getCurrentNode();
-
-        assertNotNull(component2);
-
-        collector.producerStart(null, "testproducer", "testprodtype", "testop", "tesprodid");
-
-        Producer producer = (Producer) builder.getCurrentNode();
-
-        assertNotNull(producer);
-
-        // Pop the producer and one of the components
-        collector.producerEnd(null, "testproducer", "testprodtype", "testop");
-        collector.componentEnd(null, "testcomponent2", "testcomptype", "testcompop");
-
-        collector.setDetail(null, "testname", "testvalue", "Producer", false);
-
-        assertTrue(producer.getDetails().containsKey("testname"));
-        assertFalse(consumer.getDetails().containsKey("testname"));
-        assertFalse(component1.getDetails().containsKey("testname"));
+        assertTrue(node.hasProperty("testname"));
 
         collector.getFragmentManager().clear();
     }

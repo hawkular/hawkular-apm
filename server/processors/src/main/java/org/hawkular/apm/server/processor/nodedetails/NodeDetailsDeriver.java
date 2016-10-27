@@ -92,7 +92,6 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 nd.setId(trace.getId() + "-" + rts.size());
                 nd.setBusinessTransaction(trace.getBusinessTransaction());
                 nd.setCorrelationIds(n.getCorrelationIds());
-                nd.setDetails(n.getDetails());
                 nd.setElapsed(n.getDuration());
 
                 long childElapsed = 0;

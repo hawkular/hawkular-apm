@@ -243,7 +243,7 @@ public class ClientJettyStreamAsyncITest extends ClientTestBase {
         }
 
         assertEquals(method, testConsumer.getOperation());
-        assertEquals(method, testConsumer.getDetails().get("http_method"));
+        assertEquals(method, testConsumer.getProperties("http_method").iterator().next().getValue());
 
         // Check headers
         assertFalse("testConsumer has no headers", testConsumer.getIn().getHeaders().isEmpty());
@@ -253,7 +253,8 @@ public class ClientJettyStreamAsyncITest extends ClientTestBase {
         if (fault) {
             assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
             assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getDetails().get(Constants.DETAIL_FAULT_CODE));
+            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE)
+                    .iterator().next().getValue());
         } else {
 
             if (isProcessContent()) {

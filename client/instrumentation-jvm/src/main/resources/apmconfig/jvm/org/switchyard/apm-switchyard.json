@@ -13,17 +13,13 @@
         "location": "ENTRY",
         "condition": "isActive() && $1.getConsumer().getServiceMetadata().getRegistrant().isBinding()",
         "actions": [{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceType",
-          "valueExpression": "$1.getConsumer().getName()",
-          "nodeType": "Consumer",
-          "onStack": "true"
+          "valueExpression": "$1.getConsumer().getName()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceOperation",
-          "valueExpression": "$1.getContract().getConsumerOperation().getName()",
-          "nodeType": "Consumer",
-          "onStack": "true"
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
       },{
         "ruleName": "SwitchYard Service Component Start",
@@ -53,19 +49,19 @@
             "$1.getMessage().getContent()"
           ]
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.switchyard\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceType",
           "valueExpression": "$1.getConsumer().getName()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceOperation",
           "valueExpression": "$1.getContract().getConsumerOperation().getName()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceInternal",
           "valueExpression": "\"\"+!$1.getConsumer().getServiceMetadata().getRegistrant().isBinding()"
         }]
@@ -85,17 +81,13 @@
         }],
         "condition": "isActive() && $1.getProvider().getServiceMetadata().getRegistrant().isBinding()",
         "actions": [{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceType",
-          "valueExpression": "$1.getProvider().getName()",
-          "nodeType": "Producer",
-          "onStack": "false"
+          "valueExpression": "$1.getProvider().getName()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_serviceOperation",
-          "valueExpression": "$1.getContract().getConsumerOperation().getName()",
-          "nodeType": "Producer",
-          "onStack": "false"
+          "valueExpression": "$1.getContract().getConsumerOperation().getName()"
         }]
       },{
         "ruleName": "SwitchYard Service Component Normal End",
@@ -145,10 +137,11 @@
         }],
         "condition": "isActive()",
         "actions": [{
-          "type": "SetFault",
+          "type": "SetProperty",
+          "name": "fault",
           "valueExpression": "faultName(content)"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "fault.description",
           "valueExpression": "faultDescription(content)"
         },{

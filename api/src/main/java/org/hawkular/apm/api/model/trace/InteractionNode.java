@@ -16,6 +16,10 @@
  */
 package org.hawkular.apm.api.model.trace;
 
+import java.util.Set;
+
+import org.hawkular.apm.api.model.Property;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -36,7 +40,7 @@ import io.swagger.annotations.ApiModel;
     subTypes = { Consumer.class, Producer.class, Component.class }, discriminator = "type")
 public abstract class InteractionNode extends ContainerNode {
 
-    public static final String DETAILS_PUBLISH = "apm_publish";
+    public static final String PROPERTY_PUBLISH = "apm_publish";
 
     @JsonInclude(Include.NON_NULL)
     private Message in;
@@ -94,9 +98,10 @@ public abstract class InteractionNode extends ContainerNode {
      * @return Whether interaction relates to multiple consumers
      */
     public boolean multipleConsumers() {
-        return getDetails().containsKey(Producer.DETAILS_PUBLISH)
-                && getDetails().get(Producer.DETAILS_PUBLISH)
-                .equalsIgnoreCase(Boolean.TRUE.toString());
+        // TODO: When HWKAPM-698 implemented, it may no longer be necessary to capture this info
+        Set<Property> props=getProperties(Producer.PROPERTY_PUBLISH);
+        return !props.isEmpty()
+                && props.iterator().next().getValue().equalsIgnoreCase(Boolean.TRUE.toString());
     }
 
     @Override

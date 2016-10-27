@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
-import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
@@ -758,27 +757,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     }
 
     @Override
-    public void setFault(String location, String value) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set fault: location=[" + location + "] value=" + value);
-        }
-
-        try {
-            if (fragmentManager.hasFragmentBuilder()) {
-                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
-
-                builder.getCurrentNode().getProperties().add(new Property(Constants.PROP_FAULT, value));
-            } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setFault: No fragment builder for this thread", null);
-            }
-        } catch (Throwable t) {
-            if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setFault failed", t);
-            }
-        }
-    }
-
-    @Override
     public void setProperty(String location, String name, String value) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Set property: location=" + location +
@@ -804,48 +782,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
                 log.log(warningLogLevel, "setProperty failed", t);
-            }
-        }
-    }
-
-    @Override
-    public void setDetail(String location, String name, String value, String nodeType, boolean onStack) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set node detail: location=[" + location + "] name=" + name + " value=" + value
-                    + " nodeType=" + nodeType + " onStack=" + onStack);
-        }
-
-        try {
-            if (fragmentManager.hasFragmentBuilder()) {
-                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
-
-                Node node = null;
-
-                if (nodeType == null) {
-                    node = builder.getCurrentNode();
-                } else {
-                    node = builder.getLatestNode(nodeType, onStack);
-                }
-
-                if (node != null) {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Set node details: using node=" + node);
-                    }
-                    if (value == null) {
-                        node.getDetails().remove(name);
-                    } else {
-                        node.getDetails().put(name, value);
-                    }
-                } else if (log.isLoggable(Level.FINEST)) {
-                    log.finest("Set node details: failed to find node to set");
-                }
-
-            } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setDetail: No fragment builder for this thread", null);
-            }
-        } catch (Throwable t) {
-            if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setDetail failed", t);
             }
         }
     }

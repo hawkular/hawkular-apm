@@ -131,12 +131,12 @@ public class ClientCamelJMSITest extends ClientCamelITestBase {
         assertNotNull("topicProducer null", topicProducer);
 
         // Check details
-        String publish = queueProducer.getDetails().get("apm_publish");
+        String publish = queueProducer.getProperties("apm_publish").iterator().next().getValue();
         if (publish != null) {
             assertEquals("false", publish);
         }
 
-        assertEquals("true", topicProducer.getDetails().get("apm_publish"));
+        assertEquals("true", topicProducer.getProperties("apm_publish").iterator().next().getValue());
 
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(topicProducer, topicConsumer);
@@ -210,12 +210,12 @@ public class ClientCamelJMSITest extends ClientCamelITestBase {
         assertNotNull("topicProducer null", topicProducer);
 
         // Check details
-        String publish = queueProducer.getDetails().get("apm_publish");
+        String publish = queueProducer.getProperties("apm_publish").iterator().next().getValue();
         if (publish != null) {
             assertEquals("false", publish);
         }
 
-        assertEquals("true", topicProducer.getDetails().get("apm_publish"));
+        assertEquals("true", topicProducer.getProperties("apm_publish").iterator().next().getValue());
 
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(topicProducer, topicConsumer);

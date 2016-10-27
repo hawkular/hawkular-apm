@@ -99,8 +99,8 @@ public class ClientCamelSplitterParallelITest extends ClientCamelITestBase {
         assertNotNull(parent);
 
         // Check 'apm_publish' set on producer
-        assertTrue(producer.getDetails().containsKey("apm_publish"));
-        assertEquals(producer.getDetails().get("apm_publish"), "true");
+        assertTrue(producer.hasProperty("apm_publish"));
+        assertEquals(producer.getProperties("apm_publish").iterator().next().getValue(), "true");
     }
 
 }

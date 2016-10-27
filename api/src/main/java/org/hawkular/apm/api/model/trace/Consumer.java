@@ -95,7 +95,7 @@ public class Consumer extends InteractionNode {
                 + ", getNodes()=" + getNodes() + ", getType()=" + getType() + ", getUri()=" + getUri()
                 + ", getOperation()=" + getOperation() + ", getTimestamp()=" + getTimestamp() + ", getDuration()="
                 + getDuration() + ", getProperties()=" + getProperties()
-                + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()="
+                + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()="
                 + getIssues() + "]";
     }
 

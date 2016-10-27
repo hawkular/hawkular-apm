@@ -19,6 +19,7 @@ package org.hawkular.apm.api.model.trace;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.hawkular.apm.api.model.Property;
 import org.junit.Test;
 
 /**
@@ -29,7 +30,7 @@ public class InteractionNodeTest {
     @Test
     public void testMultipleConsumersTrue() {
         Consumer node = new Consumer();
-        node.getDetails().put(Consumer.DETAILS_PUBLISH, "true");
+        node.getProperties().add(new Property(Consumer.PROPERTY_PUBLISH, "true"));
 
         assertTrue(node.multipleConsumers());
     }

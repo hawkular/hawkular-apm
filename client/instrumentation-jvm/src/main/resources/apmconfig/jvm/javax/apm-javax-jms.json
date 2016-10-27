@@ -33,7 +33,7 @@
           "originalType": "javax.jms.Message",
           "headersExpression": "$1"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"javax.jms\""
         }]
@@ -168,11 +168,11 @@
           "originalType": "javax.jms.Message",
           "headersExpression": "$2"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"javax.jms\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_publish",
           "valueExpression": "isInstanceOf($1,javax.jms.Topic.class)"
         },{
@@ -242,11 +242,11 @@
           "originalType": "javax.jms.Message",
           "headersExpression": "$2"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"javax.jms\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_publish",
           "valueExpression": "isInstanceOf($1,javax.jms.Topic.class)"
         },{

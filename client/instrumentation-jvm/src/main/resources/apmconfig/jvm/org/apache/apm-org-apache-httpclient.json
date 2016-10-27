@@ -34,11 +34,11 @@
           "originalType": "org.apache.http.HttpMessage",
           "headersExpression": "$2"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.apache.http.client\""
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_method",
           "valueExpression": "$2.getRequestLine().getMethod()"
         },{
@@ -46,11 +46,11 @@
           "name": "http.query",
           "valueExpression": "uri.getQuery()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_host",
           "valueExpression": "uri.getHost()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "http_port",
           "valueExpression": "uri.getPort()"
         },{
@@ -98,12 +98,13 @@
         "location": "ENTRY",
         "condition": "isActive() && $1.getStatusCode() >= 400",
         "actions": [{
-          "type": "SetFault",
-          "valueExpression": "$1.getReasonPhrase()"
-        },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "fault.code",
           "valueExpression": "$1.getStatusCode()"
+        },{
+          "type": "SetProperty",
+          "name": "fault",
+          "valueExpression": "$1.getReasonPhrase()"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Check Fault Or No Content End",

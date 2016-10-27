@@ -1,15 +1,9 @@
 {
   "http.url": {
-    "endpointType": "HTTP",
-    "nodeDetails": {
-      "ignore": true
-    }
+    "endpointType": "HTTP"
   },
   "sql.query": {
-    "componentType": "Database",
-    "property": {
-      "include": true
-    }
+    "componentType": "Database"
   }
 }
 

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.InteractionNode;
@@ -56,7 +57,7 @@ public class TraceCompletionInformationUtilTest {
         Producer p3 = new Producer();
         p3.setTimestamp(450000000);
         p3.addControlFlowCorrelationId("p3id");
-        p3.getDetails().put(InteractionNode.DETAILS_PUBLISH, "true");
+        p3.getProperties().add(new Property(InteractionNode.PROPERTY_PUBLISH, "true"));
         comp1.getNodes().add(p3);
 
         TraceCompletionInformationUtil.initialiseLinks(ci, fragmentBaseTime, consumer, new StringBuilder("trace1:0"));

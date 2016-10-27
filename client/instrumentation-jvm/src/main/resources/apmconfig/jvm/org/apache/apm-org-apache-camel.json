@@ -51,7 +51,7 @@
           "componentTypeExpression": "removeSuffix(simpleClassName($2.getFromEndpoint()),\"Endpoint\")",
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.apache.camel\""
         },{
@@ -127,7 +127,7 @@
           "componentTypeExpression": "removeSuffix(simpleClassName($3),\"Endpoint\")",
           "uriExpression": "$3.getEndpointUri()"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.apache.camel\""
         }]
@@ -199,7 +199,7 @@
           "uriExpression": "$2.getFromEndpoint().getEndpointUri()",
           "idExpression": "$2.getProperty(\"HWKAPMID\")"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.apache.camel\""
         },{
@@ -247,7 +247,7 @@
           "uriExpression": "$3.getEndpointUri()",
           "idExpression": "id"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_source",
           "valueExpression": "\"org.apache.camel\""
         },{
@@ -308,7 +308,7 @@
           "type": "FreeFormAction",
           "action": "$1.setProperty(\"BTMMulticastId\",id)"
         },{
-          "type": "SetDetail",
+          "type": "SetProperty",
           "name": "apm_publish",
           "valueExpression": "\"true\""
         }]

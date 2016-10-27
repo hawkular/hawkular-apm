@@ -17,10 +17,8 @@
 package org.hawkular.apm.client.opentracing;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.hawkular.apm.api.model.Property;
@@ -52,7 +50,6 @@ public class NodeBuilder {
      */
     private long duration;
     private Set<Property> properties = new HashSet<>();
-    private Map<String, String> details = new HashMap<>();
     private List<CorrelationIdentifier> correlationIds = new ArrayList<>();
     private List<NodeBuilder> nodes = new ArrayList<>();
 
@@ -177,15 +174,6 @@ public class NodeBuilder {
     }
 
     /**
-     * @param details the details to set
-     * @return The node builder
-     */
-    public NodeBuilder addDetail(String name, String value) {
-        this.details.put(name, value);
-        return this;
-    }
-
-    /**
      * @param cid The correlation id
      * @return The node builder
      */
@@ -224,7 +212,6 @@ public class NodeBuilder {
             ((Producer) ret).setEndpointType(endpointType);
         }
         ret.setCorrelationIds(correlationIds);
-        ret.setDetails(details);
         ret.setOperation(operation);
         ret.setProperties(properties);
         ret.setUri(uri);

@@ -19,6 +19,7 @@ package org.hawkular.apm.api.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.Node;
 
@@ -38,7 +39,7 @@ public class NodeUtil {
      * @return Whether the node's URI has been rewritten
      */
     public static boolean isURIRewritten(Node node) {
-        return node.getDetails().containsKey(APM_ORIGINAL_URI);
+        return node.hasProperty(APM_ORIGINAL_URI);
     }
 
     /**
@@ -49,7 +50,7 @@ public class NodeUtil {
      * @param uri The new URI
      */
     public static void rewriteURI(Node node, String uri) {
-        node.getDetails().put(APM_ORIGINAL_URI, node.getUri());
+        node.getProperties().add(new Property(APM_ORIGINAL_URI, node.getUri()));
         node.setUri(uri);
     }
 
@@ -65,9 +66,8 @@ public class NodeUtil {
         if (node.getUri().equals(uri)) {
             return true;
         }
-        String original = node.getDetails().get(APM_ORIGINAL_URI);
-        if (original != null) {
-            return original.equals(uri);
+        if (node.hasProperty(APM_ORIGINAL_URI)) {
+            return node.getProperties(APM_ORIGINAL_URI).iterator().next().getValue().equals(uri);
         }
         return false;
     }
