@@ -1,0 +1,37 @@
+
+RULE org.apache.http.client(1) Apache HttpClient Producer Start
+CLASS ^org.apache.http.impl.client.CloseableHttpClient
+METHOD doExecute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+BIND
+  uri : java.net.URI = new java.net.URI($2.getRequestLine().getUri());
+IF TRUE
+DO
+  startSpan(getTracer().buildSpan($2.getRequestLine().getMethod())
+  		.withTag("http.uri", uri.getPath())
+  		.withTag("http.query", uri.getQuery()));
+  getTracer().inject(getSpan().context(), textMapFormat(),
+        new org.hawkular.apm.agent.opentracing.propagation.apache.HttpMessageInjectAdapter($2));
+ENDRULE
+
+RULE org.apache.http.client(2) Apache HttpClient Producer Sync Response Check Fault
+CLASS ^org.apache.http.impl.client.CloseableHttpClient
+METHOD doExecute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan() && $!.getStatusLine().getStatusCode() >= 400
+DO
+  getSpan().setTag("fault.code",String.valueOf($!.getStatusLine().getStatusCode()))
+	.setTag("fault",$!.getStatusLine().getReasonPhrase());
+ENDRULE
+
+RULE org.apache.http.client(3) Apache HttpClient Producer Sync Response
+CLASS ^org.apache.http.impl.client.CloseableHttpClient
+METHOD doExecute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE

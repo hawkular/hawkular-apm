@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 
 import org.hawkular.apm.api.model.Constants;
 
-import io.opentracing.References;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -38,72 +37,51 @@ public class AsyncService extends AbstractService {
         super(tracer);
     }
 
-    public void handle(Message message) {
+    public void handle(Message message, Handler handler) {
         SpanContext spanCtx = getTracer().extract(Format.Builtin.TEXT_MAP,
                 new TextMapExtractAdapter(message.getHeaders()));
 
         // Top level, so create Tracer and root span
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
-                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
+                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL,
+                        "http://localhost:8080/inbound?orderId=123&verbose=true")
                 .withTag("orderId", "1243343456455")
                 .start();
 
         delay(500);
 
-        component1(serverSpan);
+        callService(serverSpan, obj -> {
 
-        serverSpan.finish();
+            serverSpan.finish();
 
-        serverSpan.close();
+            handler.handle(obj);
+        });
     }
 
-    public void component1(Span span) {
-        // Span will auto-close and automatically call finish
-        try (Span component1Span = getTracer().buildSpan("Component1")
-                .asChildOf(span)
-                .start()) {
-
-            delay(500);
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(() -> {
-                component2(component1Span);
-            });
-
-        }
-    }
-
-    public void component2(Span span) {
-        // Span will auto-close and automatically call finish
-        try (Span component2Span = getTracer().buildSpan("Component2")
-                .addReference(References.FOLLOWS_FROM, span.context())
-                .withTag(Constants.PROP_DATABASE_STATEMENT, "INSERT order INTO Orders")
-                .withTag("component", Constants.COMPONENT_DATABASE)
-                .start()) {
-
-            delay(500);
-
-            callService(component2Span);
-
-            delay(500);
-        }
-    }
-
-    public void callService(Span span) {
-        try (Span clientSpan = getTracer().buildSpan("Client")
+    public void callService(Span span, Handler handler) {
+        Span clientSpan = getTracer().buildSpan("Client")
                 .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
                 .withTag(Constants.PROP_TRANSACTION_NAME, "AnotherTxnName")     // Should not overwrite the existing name
-                .asChildOf(span).start()) {
-            Message mesg = createMessage();
-            getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,
-                    new TextMapInjectAdapter(mesg.getHeaders()));
+                .asChildOf(span).start();
+        Message mesg = createMessage();
+        getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,
+                new TextMapInjectAdapter(mesg.getHeaders()));
 
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
             delay(500);
 
             // Explicit finish
             clientSpan.finish();
-        }
+
+            handler.handle("My Response");
+        });
     }
 
+    public interface Handler {
+
+        void handle(Object obj);
+
+    }
 }

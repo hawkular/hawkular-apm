@@ -177,7 +177,7 @@ public class BatchTraceReporter implements TraceReporter {
                 lock.unlock();
             }
         } else {
-            log.warning("Trace service is not available!");
+            log.warning("Trace publisher is not available!");
         }
     }
 
