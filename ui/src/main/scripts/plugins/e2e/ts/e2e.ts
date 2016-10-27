@@ -141,6 +141,9 @@ module E2E {
                                    encodeURI(angular.toJson(localCriteria)));
 
       instDetails.then(function(resp) {
+        _.forEach(resp.data, (datapoint: any) => {
+            datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
+        });
         $scope.timesData = resp.data;
       });
 
