@@ -72,11 +72,11 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setId("traceId");
         trace.setBusinessTransaction("traceName");
-        trace.setStartTime(100000);
+        trace.setTimestamp(100000);
 
         Consumer c = new Consumer();
         c.setUri("uri");
-        c.setBaseTime(1);
+        c.setTimestamp(1);
         c.setDuration(200000);
         c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
         c.setEndpointType("HTTP");
@@ -101,7 +101,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
         assertEquals(c.getEndpointType(), ci.getCompletionTime().getEndpointType());
         assertFalse(ci.getCompletionTime().isInternal());
-        assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
+        assertEquals(trace.getTimestamp(), ci.getCompletionTime().getTimestamp());
         assertEquals(c.getUri(), ci.getCompletionTime().getUri());
         assertEquals(200000, ci.getCompletionTime().getDuration());
         assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());
@@ -113,11 +113,11 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setId("traceId");
         trace.setBusinessTransaction("traceName");
-        trace.setStartTime(100000);
+        trace.setTimestamp(100000);
 
         Component c = new Component();
         c.setUri("uri");
-        c.setBaseTime(1);
+        c.setTimestamp(1);
         c.setDuration(200000);
         c.getProperties().add(new Property(Constants.PROP_FAULT, "myFault"));
 
@@ -139,7 +139,7 @@ public class TraceCompletionInformationInitiatorTest {
 
         assertEquals(trace.getId(), ci.getCompletionTime().getId());
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
-        assertEquals(trace.getStartTime(), ci.getCompletionTime().getTimestamp());
+        assertEquals(trace.getTimestamp(), ci.getCompletionTime().getTimestamp());
         assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
         assertEquals(200000, ci.getCompletionTime().getDuration());
         assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
@@ -152,7 +152,7 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setId("traceId");
         trace.setBusinessTransaction("traceName");
-        trace.setStartTime(100);
+        trace.setTimestamp(100);
 
         Consumer c = new Consumer();
         c.setUri("uri");

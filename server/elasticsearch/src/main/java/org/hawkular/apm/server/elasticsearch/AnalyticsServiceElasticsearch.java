@@ -134,11 +134,11 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field("businessTransaction")
+                .field(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD)
                 .order(Order.aggregation("_count", false))
                 .size(criteria.getMaxResponseSize());
 
-        BoolQueryBuilder query = buildQuery(criteria, "startTime", "businessTransaction", Trace.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, Trace.class);
         SearchRequestBuilder request = getBaseSearchRequestBuilder(TRACE_TYPE, index, criteria, query, 0)
                 .addAggregation(cardinalityBuilder);
 
@@ -186,17 +186,17 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return null;
         }
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field("properties.name")
+                .field(ElasticsearchUtil.PROPERTIES_NAME_FIELD)
                 .order(Order.aggregation("_count", false))
                 .size(criteria.getMaxResponseSize());
 
         NestedBuilder nestedBuilder = AggregationBuilders
                 .nested("nested")
-                .path("properties")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
                 .subAggregation(cardinalityBuilder);
 
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
@@ -221,11 +221,11 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field("principal")
+                .field(ElasticsearchUtil.PRINCIPAL_FIELD)
                 .order(Order.aggregation("_count", false))
                 .size(criteria.getMaxResponseSize());
 
-        BoolQueryBuilder query = buildQuery(criteria, "startTime", "businessTransaction", Trace.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, Trace.class);
         SearchRequestBuilder request = getBaseSearchRequestBuilder(TRACE_TYPE, index, criteria, query, 0)
                 .addAggregation(cardinalityBuilder);
 
@@ -255,7 +255,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return null;
         }
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, criteria.getMaxResponseSize());
         SearchResponse response = getSearchResponse(request);
         if (response.isTimedOut()) {
@@ -277,9 +277,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         PercentilesBuilder percentileAgg = AggregationBuilders
                 .percentiles("percentiles")
-                .field("duration");
+                .field(ElasticsearchUtil.DURATION_FIELD);
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
                 .addAggregation(percentileAgg);
 
@@ -302,7 +302,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         StatsBuilder statsBuilder = AggregationBuilders
                 .stats("stats")
-                .field("duration");
+                .field(ElasticsearchUtil.DURATION_FIELD);
 
         // TODO: HWKAPM-679 (related to HWKAPM-675), faults now recorded as properties. However this
         // current results in the fault count being an actual count of fault properties, where
@@ -311,21 +311,21 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         FilterAggregationBuilder faultCountBuilder = AggregationBuilders
                 .filter("faults")
                 .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
-                        .must(QueryBuilders.matchQuery("properties.name", Constants.PROP_FAULT))));
+                        .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, Constants.PROP_FAULT))));
 
         NestedBuilder nestedFaultCountBuilder = AggregationBuilders
                 .nested("nested")
-                .path("properties")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
                 .subAggregation(faultCountBuilder);
 
         DateHistogramBuilder histogramBuilder = AggregationBuilders
                 .dateHistogram("histogram")
                 .interval(interval)
-                .field("timestamp")
+                .field(ElasticsearchUtil.TIMESTAMP_FIELD)
                 .subAggregation(statsBuilder)
                 .subAggregation(nestedFaultCountBuilder);
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
                 .addAggregation(histogramBuilder);
 
@@ -350,26 +350,26 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         }
 
         BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
-                .must(QueryBuilders.matchQuery("properties.name", property));
+                .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property));
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
         query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field("properties.value")
+                .field(ElasticsearchUtil.PROPERTIES_VALUE_FIELD)
                 .order(Order.aggregation("_count", false))
                 .size(criteria.getMaxResponseSize());
 
         FilterAggregationBuilder filterAggBuilder = AggregationBuilders
                 .filter("nestedfilter")
                 .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
-                        .must(QueryBuilders.matchQuery("properties.name", property))))
+                        .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property))))
                 .subAggregation(cardinalityBuilder);
 
         NestedBuilder nestedBuilder = AggregationBuilders
                 .nested("nested")
-                .path("properties")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
                 .subAggregation(filterAggBuilder);
 
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
@@ -395,7 +395,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         AvgBuilder avgBuilder = AggregationBuilders
                 .avg("avg")
-                .field("actual");
+                .field(ElasticsearchUtil.ACTUAL_FIELD);
 
         TermsBuilder componentsBuilder = AggregationBuilders
                 .terms("components")
@@ -406,10 +406,10 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         DateHistogramBuilder histogramBuilder = AggregationBuilders
                 .dateHistogram("histogram")
                 .interval(interval)
-                .field("timestamp")
+                .field(ElasticsearchUtil.TIMESTAMP_FIELD)
                 .subAggregation(componentsBuilder);
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", NodeDetails.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, NodeDetails.class);
         SearchRequestBuilder request = getNodeSearchRequest(index, criteria, query, 0)
                 .addAggregation(histogramBuilder);
 
@@ -432,28 +432,28 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         AvgBuilder actualBuilder = AggregationBuilders
                 .avg("actual")
-                .field("actual");
+                .field(ElasticsearchUtil.ACTUAL_FIELD);
 
         AvgBuilder elapsedBuilder = AggregationBuilders
                 .avg("elapsed")
-                .field("elapsed");
+                .field(ElasticsearchUtil.ELAPSED_FIELD);
 
         TermsBuilder operationsBuilder = AggregationBuilders
                 .terms("operations")
-                .field("operation")
+                .field(ElasticsearchUtil.OPERATION_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(actualBuilder)
                 .subAggregation(elapsedBuilder);
 
         MissingBuilder missingOperationBuilder = AggregationBuilders
                 .missing("missingOperation")
-                .field("operation")
+                .field(ElasticsearchUtil.OPERATION_FIELD)
                 .subAggregation(actualBuilder)
                 .subAggregation(elapsedBuilder);
 
         TermsBuilder urisBuilder = AggregationBuilders
                 .terms("uris")
-                .field("uri")
+                .field(ElasticsearchUtil.URI_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(operationsBuilder)
                 .subAggregation(missingOperationBuilder);
@@ -473,7 +473,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         TermsBuilder interactionUrisBuilder = AggregationBuilders
                 .terms("uris")
-                .field("uri")
+                .field(ElasticsearchUtil.URI_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(actualBuilder)
                 .subAggregation(elapsedBuilder);
@@ -485,12 +485,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         TermsBuilder nodesBuilder = AggregationBuilders
                 .terms("types")
-                .field("type")
+                .field(ElasticsearchUtil.TYPE_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(componentsBuilder)
                 .subAggregation(missingComponentsBuilder);
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", NodeDetails.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, NodeDetails.class);
         SearchRequestBuilder request = getNodeSearchRequest(index, criteria, query, 0)
                 .addAggregation(nodesBuilder);
 
@@ -620,24 +620,24 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         // Don't specify target class, so that query provided that can be used with
         // CommunicationDetails and CompletionTime
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", null);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, null);
 
         // Only want external communications
         query = query.mustNot(QueryBuilders.matchQuery("internal", "true"));
 
         StatsBuilder latencyBuilder = AggregationBuilders
                 .stats("latency")
-                .field("latency");
+                .field(ElasticsearchUtil.LATENCY_FIELD);
 
         TermsBuilder targetBuilder = AggregationBuilders
                 .terms("target")
-                .field("target")
+                .field(ElasticsearchUtil.TARGET_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(latencyBuilder);
 
         TermsBuilder sourceBuilder = AggregationBuilders
                 .terms("source")
-                .field("source")
+                .field(ElasticsearchUtil.SOURCE_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(targetBuilder);
 
@@ -685,46 +685,46 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         // Obtain information about the fragments
         StatsBuilder durationBuilder = AggregationBuilders
                 .stats("duration")
-                .field("duration");
+                .field(ElasticsearchUtil.DURATION_FIELD);
 
         TermsBuilder serviceTerm = AggregationBuilders
                 .terms("serviceTerm")
-                .field("properties.value");
+                .field(ElasticsearchUtil.PROPERTIES_VALUE_FIELD);
 
         FilterAggregationBuilder propertiesServiceFilter = AggregationBuilders
                 .filter("propertiesServiceFilter")
                 .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
-                        .must(QueryBuilders.matchQuery("properties.name", Constants.PROP_SERVICE_NAME))))
+                        .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, Constants.PROP_SERVICE_NAME))))
                 .subAggregation(serviceTerm);
 
         NestedBuilder nestedProperties = AggregationBuilders
                 .nested("nestedProperties")
-                .path("properties")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
                 .subAggregation(propertiesServiceFilter);
 
         TermsBuilder operationsBuilder2 = AggregationBuilders
                 .terms("operations")
-                .field("operation")
+                .field(ElasticsearchUtil.OPERATION_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(durationBuilder)
                 .subAggregation(nestedProperties);
 
         MissingBuilder missingOperationBuilder2 = AggregationBuilders
                 .missing("missingOperation")
-                .field("operation")
+                .field(ElasticsearchUtil.OPERATION_FIELD)
                 .subAggregation(durationBuilder)
                 .subAggregation(nestedProperties);
 
         TermsBuilder urisBuilder2 = AggregationBuilders
                 .terms("uris")
-                .field("uri")
+                .field(ElasticsearchUtil.URI_FIELD)
                 .size(criteria.getMaxResponseSize())
                 .subAggregation(operationsBuilder2)
                 .subAggregation(missingOperationBuilder2);
 
         MissingBuilder missingUriBuilder2 = AggregationBuilders
                 .missing("missingUri")
-                .field("uri")
+                .field(ElasticsearchUtil.URI_FIELD)
                 .subAggregation(operationsBuilder2)
                 .subAggregation(missingOperationBuilder2);
 
@@ -1023,12 +1023,12 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return 0;
         }
 
-        BoolQueryBuilder query = buildQuery(criteria, "timestamp", "businessTransaction", CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0);
 
         if (onlyFaulty) {
             FilterBuilder filter = FilterBuilders.queryFilter(QueryBuilders.boolQuery()
-                    .must(QueryBuilders.matchQuery("properties.name", Constants.PROP_FAULT)));
+                    .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, Constants.PROP_FAULT)));
             request.setPostFilter(FilterBuilders.nestedFilter("properties", filter));
         }
 

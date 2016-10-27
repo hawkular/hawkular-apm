@@ -37,24 +37,44 @@ import org.hawkular.apm.api.services.Criteria.PropertyCriteria;
  */
 public class ElasticsearchUtil {
 
+    public static final String TIMESTAMP_FIELD = "timestamp";
+    public static final String DURATION_FIELD = "duration";
+    public static final String NODES_FIELD = "nodes";
+    public static final String URI_FIELD = "uri";
+    public static final String OPERATION_FIELD = "operation";
+    public static final String PRINCIPAL_FIELD = "principal";
+    public static final String ID_FIELD = "id";
+    public static final String TYPE_FIELD = "type";
+    public static final String COMPONENT_TYPE_FIELD = "componentType";
+    public static final String HOST_NAME_FIELD = "hostName";
+    public static final String HOST_ADDRESS_FIELD = "hostAddress";
+    public static final String BUSINESS_TRANSACTION_FIELD = "businessTransaction";
+    public static final String PROPERTIES_FIELD = "properties";
+    public static final String PROPERTIES_NAME_FIELD = "properties.name";
+    public static final String PROPERTIES_VALUE_FIELD = "properties.value";
+    public static final String PROPERTIES_NUMBER_FIELD = "properties.number";
+    public static final String ELAPSED_FIELD = "elapsed";
+    public static final String ACTUAL_FIELD = "actual";
+    public static final String LATENCY_FIELD = "latency";
+    public static final String SOURCE_FIELD = "source";
+    public static final String TARGET_FIELD = "target";
+
     /**
      * This method builds the Elasticsearch query based on the supplied
      * criteria.
      *
-     * @param timeProperty The name of the time property
-     * @param businessTxnProperty The name of the business transaction property
      * @param criteria the criteria
+     * @param businessTxnProperty The name of the business transaction property
      * @param targetClass The class being queried
      * @return The query
      */
-    public static BoolQueryBuilder buildQuery(Criteria criteria, String timeProperty,
-            String businessTxnProperty, Class<?> targetClass) {
+    public static BoolQueryBuilder buildQuery(Criteria criteria, String businessTxnProperty, Class<?> targetClass) {
         /**
          * Internally all time units are stored in microseconds
          * Criteria API accepts milliseconds, therefore range adjustment is needed
          */
         BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .must(QueryBuilders.rangeQuery(timeProperty)
+                .must(QueryBuilders.rangeQuery(TIMESTAMP_FIELD)
                         .from(TimeUnit.MILLISECONDS.toMicros(criteria.calculateStartTime()))
                         .to(TimeUnit.MILLISECONDS.toMicros(criteria.calculateEndTime())));
 
@@ -70,32 +90,32 @@ public class ElasticsearchUtil {
                         || pc.getOperator() == Operator.EQ
                         || pc.getOperator() == Operator.NE) {
                     BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
-                            .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
-                            .must(QueryBuilders.matchQuery("properties.value", pc.getValue()));
+                            .must(QueryBuilders.matchQuery(PROPERTIES_NAME_FIELD, pc.getName()))
+                            .must(QueryBuilders.matchQuery(PROPERTIES_VALUE_FIELD, pc.getValue()));
                     if (pc.getOperator() == Operator.HASNOT
                             || pc.getOperator() == Operator.NE) {
-                        query = query.mustNot(QueryBuilders.nestedQuery("properties", nestedQuery));
+                        query = query.mustNot(QueryBuilders.nestedQuery(PROPERTIES_FIELD, nestedQuery));
                     } else {
-                        query = query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
+                        query = query.must(QueryBuilders.nestedQuery(PROPERTIES_FIELD, nestedQuery));
                     }
                 } else {
                     // Numerical query
                     RangeQueryBuilder rangeQuery = null;
                     if (pc.getOperator() == Operator.GTE) {
-                        rangeQuery = QueryBuilders.rangeQuery("properties.number").gte(pc.getValue());
+                        rangeQuery = QueryBuilders.rangeQuery(PROPERTIES_NUMBER_FIELD).gte(pc.getValue());
                     } else if (pc.getOperator() == Operator.GT) {
-                        rangeQuery = QueryBuilders.rangeQuery("properties.number").gt(pc.getValue());
+                        rangeQuery = QueryBuilders.rangeQuery(PROPERTIES_NUMBER_FIELD).gt(pc.getValue());
                     } else if (pc.getOperator() == Operator.LTE) {
-                        rangeQuery = QueryBuilders.rangeQuery("properties.number").lte(pc.getValue());
+                        rangeQuery = QueryBuilders.rangeQuery(PROPERTIES_NUMBER_FIELD).lte(pc.getValue());
                     } else if (pc.getOperator() == Operator.LT) {
-                        rangeQuery = QueryBuilders.rangeQuery("properties.number").lt(pc.getValue());
+                        rangeQuery = QueryBuilders.rangeQuery(PROPERTIES_NUMBER_FIELD).lt(pc.getValue());
                     } else {
                         throw new IllegalArgumentException("Unknown property criteria operator: "+pc);
                     }
                     BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
-                            .must(QueryBuilders.matchQuery("properties.name", pc.getName()))
+                            .must(QueryBuilders.matchQuery(PROPERTIES_NAME_FIELD, pc.getName()))
                             .must(rangeQuery);
-                    query = query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
+                    query = query.must(QueryBuilders.nestedQuery(PROPERTIES_FIELD, nestedQuery));
                 }
             }
         }
@@ -105,7 +125,7 @@ public class ElasticsearchUtil {
         }
 
         if (criteria.getPrincipal() != null && !criteria.getPrincipal().trim().isEmpty()) {
-            query = query.must(QueryBuilders.matchQuery("principal", criteria.getPrincipal()));
+            query = query.must(QueryBuilders.matchQuery(PRINCIPAL_FIELD, criteria.getPrincipal()));
         }
 
         if (!criteria.getCorrelationIds().isEmpty()) {
@@ -122,7 +142,7 @@ public class ElasticsearchUtil {
 
         if (criteria.getLowerBound() > 0
                 || criteria.getUpperBound() > 0) {
-            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("duration");
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery(DURATION_FIELD);
             if (criteria.getLowerBound() > 0) {
                 rangeQuery.gte(criteria.getLowerBound());
             }
@@ -135,10 +155,10 @@ public class ElasticsearchUtil {
         // Querying uri and operation are only relevant to NodeDetails and CompletionTime
         if (targetClass == NodeDetails.class || targetClass == CompletionTime.class) {
             if (criteria.getUri() != null && !criteria.getUri().trim().isEmpty()) {
-                query = query.must(QueryBuilders.matchQuery("uri", criteria.getUri()));
+                query = query.must(QueryBuilders.matchQuery(URI_FIELD, criteria.getUri()));
             }
             if (criteria.getOperation() != null && !criteria.getOperation().trim().isEmpty()) {
-                query = query.must(QueryBuilders.matchQuery("operation", criteria.getOperation()));
+                query = query.must(QueryBuilders.matchQuery(OPERATION_FIELD, criteria.getOperation()));
             }
         }
 
@@ -153,7 +173,7 @@ public class ElasticsearchUtil {
      */
     public static FilterBuilder buildFilter(Criteria criteria) {
         if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().isEmpty()) {
-            return FilterBuilders.missingFilter("businessTransaction");
+            return FilterBuilders.missingFilter(BUSINESS_TRANSACTION_FIELD);
         }
         return null;
     }

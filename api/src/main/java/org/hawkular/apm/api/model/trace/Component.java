@@ -92,7 +92,7 @@ public class Component extends InteractionNode {
     public String toString() {
         return "Component [componentType=" + componentType + ", getIn()=" + getIn() + ", getOut()=" + getOut()
                 + ", getNodes()=" + getNodes() + ", getType()=" + getType() + ", getUri()=" + getUri()
-                + ", getOperation()=" + getOperation() + ", getBaseTime()=" + getBaseTime() + ", getDuration()="
+                + ", getOperation()=" + getOperation() + ", getTimestamp()=" + getTimestamp() + ", getDuration()="
                 + getDuration() + ", getProperties()=" + getProperties()
                 + ", getDetails()=" + getDetails() + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()="
                 + getIssues() + "]";

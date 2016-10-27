@@ -48,10 +48,10 @@ public class Trace {
     private String id;
 
     /**
-     * Start time in microseconds
+     * Timestamp in microseconds
      */
     @JsonInclude
-    private long startTime;
+    private long timestamp;
 
     @JsonInclude(Include.NON_EMPTY)
     private String businessTransaction;
@@ -88,18 +88,18 @@ public class Trace {
     }
 
     /**
-     * @return the startTime in microseconds
+     * @return the timestamp in microseconds
      */
-    public long getStartTime() {
-        return startTime;
+    public long getTimestamp() {
+        return timestamp;
     }
 
     /**
-     * @param startTime the startTime in microseconds
+     * @param timestamp the timestamp in microseconds
      * @return The trace
      */
-    public Trace setStartTime(long startTime) {
-        this.startTime = startTime;
+    public Trace setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
         return this;
     }
 
@@ -247,7 +247,7 @@ public class Trace {
      * @return The end time (in microseconds)
      */
     public long endTime() {
-        return getStartTime() + calculateDuration();
+        return getTimestamp() + calculateDuration();
     }
 
     /**
@@ -268,7 +268,7 @@ public class Trace {
                 }
             }
 
-            return endTime - getNodes().get(0).getBaseTime();
+            return endTime - getNodes().get(0).getTimestamp();
         }
 
         return 0L;
@@ -301,7 +301,7 @@ public class Trace {
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
         result = prime * result + ((principal == null) ? 0 : principal.hashCode());
-        result = prime * result + (int) (startTime ^ (startTime >>> 32));
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
 
@@ -359,7 +359,7 @@ public class Trace {
         } else if (!principal.equals(other.principal)) {
             return false;
         }
-        if (startTime != other.startTime) {
+        if (timestamp != other.timestamp) {
             return false;
         }
         return true;
@@ -367,7 +367,7 @@ public class Trace {
 
     @Override
     public String toString() {
-        return "Trace [id=" + id + ", startTime=" + startTime
+        return "Trace [id=" + id + ", timestamp=" + timestamp
                 + ", businessTransaction=" + businessTransaction + ", principal="
                 + principal + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", nodes=" + nodes + "]";
     }

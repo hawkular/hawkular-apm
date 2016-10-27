@@ -16,14 +16,14 @@
  */
 package io.opentracing;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
+import org.hawkular.apm.api.utils.TimeUtil;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 import org.hawkular.apm.client.opentracing.NodeBuilder;
@@ -75,7 +75,7 @@ public class APMSpan extends AbstractSpan {
         // If no nodebuilder established based on reference information, then create a new
         // one and trace context
         if (nodeBuilder == null) {
-            initTopLevelState(this, builder, reporter);
+            initTopLevelState(this, reporter);
         }
 
         // Initialise node path
@@ -88,13 +88,12 @@ public class APMSpan extends AbstractSpan {
      * This method initialises the node builder and trace context for a top level
      * trace fragment.
      *
-     * @param builder The span builder
+     * @param topSpan The top level span in the trace
      * @param reporter The trace reporter
-     * @param parent The optional parent trace context
      */
-    protected void initTopLevelState(APMSpan topSpan, APMSpanBuilder builder, TraceReporter reporter) {
+    protected void initTopLevelState(APMSpan topSpan, TraceReporter reporter) {
         nodeBuilder = new NodeBuilder();
-        traceContext = new TraceContext(topSpan, nodeBuilder, builder.start.toEpochMilli(), reporter);
+        traceContext = new TraceContext(topSpan, nodeBuilder, reporter);
     }
 
     /**
@@ -138,7 +137,7 @@ public class APMSpan extends AbstractSpan {
         } else if (ref.getReferredTo() instanceof APMSpanBuilder) {
             APMSpanBuilder parentBuilder = (APMSpanBuilder) ref.getReferredTo();
 
-            initTopLevelState(this, builder, reporter);
+            initTopLevelState(this, reporter);
 
             // Check for passed state
             if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
@@ -176,7 +175,7 @@ public class APMSpan extends AbstractSpan {
         if (ref.getReferredTo() instanceof APMSpan) {
             APMSpan referenced = (APMSpan) ref.getReferredTo();
 
-            initTopLevelState(referenced.getTraceContext().getTopSpan(), builder, reporter);
+            initTopLevelState(referenced.getTraceContext().getTopSpan(), reporter);
 
             // Top level node in spawned fragment should be a Consumer with correlation id
             // referencing back to the 'spawned' node
@@ -188,6 +187,8 @@ public class APMSpan extends AbstractSpan {
             EndpointRef epref = referenced.getTraceContext().getSourceEndpoint();
             getNodeBuilder().setUri(epref.getUri());
             getNodeBuilder().setOperation(epref.getOperation());
+
+            getNodeBuilder().setTimestamp(TimeUtil.toMicros(builder.start));
 
             // Create new node builder for the actual span, as a child of the 'Consumer' that
             // is providing the link back to the referenced node
@@ -240,7 +241,8 @@ public class APMSpan extends AbstractSpan {
             return;
         }
         nodeBuilder.setOperation(getOperationName());
-        nodeBuilder.setDuration(Duration.between(getStart(), Instant.now()).toNanos()/1000);
+        nodeBuilder.setTimestamp(TimeUtil.toMicros(getStart()));
+        nodeBuilder.setDuration(TimeUnit.NANOSECONDS.toMicros(getDuration().toNanos()));
 
         // Process the span to initialise the node
         traceContext.getNodeProcessors().forEach(np -> np.process(traceContext, this, nodeBuilder));

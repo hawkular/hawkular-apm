@@ -64,7 +64,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
             ct.setPrincipal(item.getPrincipal());
             ct.setHostName(item.getHostName());
             ct.setProperties(item.allProperties());
-            ct.setTimestamp(item.getStartTime());
+            ct.setTimestamp(item.getTimestamp());
 
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("FragmentCompletionTimeDeriver ret=" + ct);

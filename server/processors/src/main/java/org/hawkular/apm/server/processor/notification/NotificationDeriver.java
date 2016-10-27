@@ -51,7 +51,7 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
             Notification notification = new Notification();
             notification.setId(item.getId());
             notification.setBusinessTransaction(item.getBusinessTransaction());
-            notification.setTimestamp(item.getStartTime());
+            notification.setTimestamp(item.getTimestamp());
             notification.setHostAddress(item.getHostAddress());
             notification.setHostName(item.getHostName());
             notification.setPrincipal(item.getPrincipal());

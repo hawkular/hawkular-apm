@@ -80,7 +80,7 @@ public class TraceCompletionTimeITest extends AbstractITest {
     public void testGetCompletionTimesSingleFragment() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
         c1.setDuration(1234);
@@ -106,7 +106,7 @@ public class TraceCompletionTimeITest extends AbstractITest {
     public void testGetCompletionTimesTwoFragmentInteractionP2PSync() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1_2ip2psync");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -115,14 +115,14 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Producer p1 = new Producer();
         p1.setUri("testuri2");
-        p1.setBaseTime(500);
+        p1.setTimestamp(500);
         p1.setDuration(4000);
         p1.addInteractionCorrelationId("cid1_2ip2psync");
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
         trace2.setId("2_2ip2psync");
-        trace2.setStartTime(trace1.getStartTime() + 2000);
+        trace2.setTimestamp(trace1.getTimestamp() + 2000);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
@@ -150,16 +150,17 @@ public class TraceCompletionTimeITest extends AbstractITest {
     public void testGetCompletionTimesTwoFragmentInteractionP2PAsync() throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1_2ip2pasync");
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(3000);
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setUri("testuri2");
-        p1.setBaseTime(500);
+        p1.setTimestamp(trace1.getTimestamp() + 500);
         p1.setDuration(500);
         p1.addInteractionCorrelationId("cid1_2ip2pasync");
         c1.getNodes().add(p1);
@@ -167,10 +168,11 @@ public class TraceCompletionTimeITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setId("2_2ip2pasync");
         // Assuming no latency, so starts at the same time as the producer
-        trace2.setStartTime(trace1.getStartTime() + 500);
+        trace2.setTimestamp(trace1.getTimestamp() + 500);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(4000);
         c2.addInteractionCorrelationId("cid1_2ip2pasync");
         trace2.getNodes().add(c2);
@@ -204,7 +206,7 @@ public class TraceCompletionTimeITest extends AbstractITest {
     protected void testGetCompletionTimesThreeFragmentP2PSync(Scope scope, String suffix) throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1_"+suffix);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -213,14 +215,14 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Producer p1 = new Producer();
         p1.setUri("testuri2");
-        p1.setBaseTime(500);
+        p1.setTimestamp(500);
         p1.setDuration(4000);
         p1.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid1_"+suffix));
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
         trace2.setId("2_"+suffix);
-        trace2.setStartTime(trace1.getStartTime() + 500);
+        trace2.setTimestamp(trace1.getTimestamp() + 500);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
@@ -230,14 +232,14 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Producer p2 = new Producer();
         p2.setUri("testuri3");
-        p2.setBaseTime(500);
+        p2.setTimestamp(500);
         p2.setDuration(1000);
         p2.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         c2.getNodes().add(p2);
 
         Trace trace3 = new Trace();
         trace3.setId("3_"+suffix);
-        trace3.setStartTime(trace1.getStartTime() + 1000);
+        trace3.setTimestamp(trace1.getTimestamp() + 1000);
 
         Consumer c3 = new Consumer();
         c3.setUri("testuri3");
@@ -274,43 +276,46 @@ public class TraceCompletionTimeITest extends AbstractITest {
     protected void testGetCompletionTimesThreeFragmentInteractionP2PAsync(Scope scope, String suffix) throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1_"+suffix);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000);
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setUri("testuri2");
-        p1.setBaseTime(500);
+        p1.setTimestamp(trace1.getTimestamp() + 500);
         p1.setDuration(500);
         p1.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid1_"+suffix));
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
         trace2.setId("2_"+suffix);
-        trace2.setStartTime(trace1.getStartTime() + 500);
+        trace2.setTimestamp(trace1.getTimestamp() + 500);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1000);
         c2.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid1_"+suffix));
         trace2.getNodes().add(c2);
 
         Producer p2 = new Producer();
         p2.setUri("testuri3");
-        p2.setBaseTime(500);
+        p2.setTimestamp(trace2.getTimestamp() + 500);
         p2.setDuration(500);
         p2.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         c2.getNodes().add(p2);
 
         Trace trace3 = new Trace();
         trace3.setId("3_"+suffix);
-        trace3.setStartTime(trace2.getStartTime() + 500);
+        trace3.setTimestamp(trace2.getTimestamp() + 500);
 
         Consumer c3 = new Consumer();
         c3.setUri("testuri3");
+        c3.setTimestamp(trace3.getTimestamp());
         c3.setDuration(4000);
         c3.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         trace3.getNodes().add(c3);
@@ -344,16 +349,17 @@ public class TraceCompletionTimeITest extends AbstractITest {
     protected void testGetCompletionTimesThreeFragmentMultiConsumerAsync(Scope scope, String suffix) throws Exception {
         Trace trace1 = new Trace();
         trace1.setId("1_"+suffix);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000);
         trace1.getNodes().add(c1);
 
         Producer p1 = new Producer();
         p1.setUri("testuri2");
-        p1.setBaseTime(500);
+        p1.setTimestamp(trace1.getTimestamp() + 500);
         p1.setDuration(500);
         p1.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid1_"+suffix));
         p1.getDetails().put(Producer.DETAILS_PUBLISH, "true");
@@ -361,17 +367,18 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Trace trace2 = new Trace();
         trace2.setId("2_"+suffix);
-        trace2.setStartTime(trace1.getStartTime() + 500);
+        trace2.setTimestamp(trace1.getTimestamp() + 500);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1000);
         c2.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid1_"+suffix));
         trace2.getNodes().add(c2);
 
         Producer p2 = new Producer();
         p2.setUri("testuri3");
-        p2.setBaseTime(500);
+        p2.setTimestamp(trace2.getTimestamp() + 500);
         p2.setDuration(500);
         p2.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         p2.getDetails().put(Producer.DETAILS_PUBLISH, "true");
@@ -379,10 +386,11 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Trace trace3 = new Trace();
         trace3.setId("3_"+suffix);
-        trace3.setStartTime(trace2.getStartTime() + 500);
+        trace3.setTimestamp(trace2.getTimestamp() + 500);
 
         Consumer c3 = new Consumer();
         c3.setUri("testuri3");
+        c3.setTimestamp(trace3.getTimestamp());
         c3.setDuration(4000);
         c3.getCorrelationIds().add(new CorrelationIdentifier(scope, "cid2_"+suffix));
         trace3.getNodes().add(c3);
@@ -410,26 +418,28 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Trace trace1 = new Trace();
         trace1.setId("1_"+suffix);
-        trace1.setStartTime(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(1000);
         trace1.getNodes().add(c1);
 
         Component comp1 = new Component();
         comp1.setUri("comp1");
         comp1.getProperties().add(new Property("prop1", "value1"));
-        comp1.setBaseTime(500);
+        comp1.setTimestamp(trace1.getTimestamp() + 500);
         comp1.setDuration(500);
         c1.getNodes().add(comp1);
 
         Trace trace2 = new Trace();
         trace2.setId("2_"+suffix);
-        trace2.setStartTime(trace1.getStartTime() + 500);
+        trace2.setTimestamp(trace1.getTimestamp() + 500);
 
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1000);
         c2.getProperties().add(new Property("prop2", "value2"));
         // Link back to the component 'comp1'
@@ -438,17 +448,18 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Component comp2 = new Component();
         comp2.setUri("comp2");
-        comp2.setBaseTime(500);
+        comp2.setTimestamp(trace2.getTimestamp() + 500);
         comp2.setDuration(500);
         c2.getNodes().add(comp2);
 
         Trace trace3 = new Trace();
         trace3.setId("3_"+suffix);
-        trace3.setStartTime(trace2.getStartTime() + 500);
+        trace3.setTimestamp(trace2.getTimestamp() + 500);
 
         Consumer c3 = new Consumer();
         c3.setUri("testuri3");
         c3.getProperties().add(new Property("prop3", "value3"));
+        c3.setTimestamp(trace3.getTimestamp());
         c3.setDuration(4000);
         // Link back to the component 'comp2'
         c3.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, trace2.getId()+":0:0"));
@@ -479,21 +490,24 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         Trace trace1 = new Trace();
         trace1.setId("1_"+suffix);
-        trace1.setStartTime(startTime - 60000);
+        trace1.setTimestamp(startTime - 60000);
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
+        c1.setTimestamp(trace1.getTimestamp());
         c1.setDuration(4000);
         c1.getProperties().add(new Property("prop1","value1"));
         trace1.getNodes().add(c1);
         Component comp1 = new Component();
         comp1.setUri("comp1");
+        comp1.setTimestamp(trace1.getTimestamp());
         c1.getNodes().add(comp1);
 
         Trace trace2 = new Trace();
         trace2.setId("2_"+suffix);
-        trace2.setStartTime(startTime - 40000);
+        trace2.setTimestamp(startTime - 40000);
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
+        c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(15000);
         c2.getProperties().add(new Property("prop1","value1"));
         c2.getProperties().add(new Property("prop2","value2"));
@@ -501,19 +515,22 @@ public class TraceCompletionTimeITest extends AbstractITest {
         trace2.getNodes().add(c2);
         Component comp2 = new Component();
         comp2.setUri("comp2");
+        comp2.setTimestamp(trace2.getTimestamp());
         c2.getNodes().add(comp2);
 
         Trace trace3 = new Trace();
         trace3.setId("3_"+suffix);
-        trace3.setStartTime(startTime - 30000);
+        trace3.setTimestamp(startTime - 30000);
         Consumer c3 = new Consumer();
         c3.setUri("uri3");
+        c3.setTimestamp(trace3.getTimestamp());
         c3.setDuration(2000);
         c3.getProperties().add(new Property("prop3","value3"));
         c3.addCausedByCorrelationId(trace1.getId()+":0:0");
         trace3.getNodes().add(c3);
         Component comp3 = new Component();
         comp3.setUri("comp3");
+        comp3.setTimestamp(trace3.getTimestamp());
         c3.getNodes().add(comp3);
 
         tracePublisher.publish(null, Arrays.asList(trace1, trace2, trace3));
@@ -530,7 +547,7 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
         assertNotNull(times);
         assertEquals(1, times.size());
-        assertEquals((trace2.getStartTime() - trace1.getStartTime()) + c2.getDuration(), times.get(0).getDuration());
+        assertEquals((trace2.getTimestamp() - trace1.getTimestamp()) + c2.getDuration(), times.get(0).getDuration());
         assertEquals(3, times.get(0).getProperties().size());
     }
 }

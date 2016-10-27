@@ -69,15 +69,6 @@ public class TraceServiceElasticsearch implements TraceService {
 
     private static final MsgLogger msgLog = MsgLogger.LOGGER;
 
-    private static final String START_TIME_FIELD = "startTime";
-    private static final String NODES_FIELD = "nodes";
-    private static final String PRINCIPAL_FIELD = "principal";
-    private static final String ID_FIELD = "id";
-    private static final String HOST_NAME_FIELD = "hostName";
-    private static final String HOST_ADDRESS_FIELD = "hostAddress";
-    private static final String BUSINESS_TRANSACTION_FIELD = "businessTransaction";
-    private static final String PROPERTIES_FIELD = "properties";
-
     public static final String TRACE_TYPE = "trace";
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -244,8 +235,8 @@ public class TraceServiceElasticsearch implements TraceService {
             RefreshRequestBuilder refreshRequestBuilder = client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria, "startTime", "businessTransaction",
-                    Trace.class);
+            BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria,
+                    ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, Trace.class);
 
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_TYPE)
@@ -253,7 +244,7 @@ public class TraceServiceElasticsearch implements TraceService {
                     .setTimeout(TimeValue.timeValueMillis(criteria.getTimeout()))
                     .setSize(criteria.getMaxResponseSize())
                     .setQuery(query)
-                    .addSort("startTime", SortOrder.ASC);
+                    .addSort(ElasticsearchUtil.TIMESTAMP_FIELD, SortOrder.ASC);
 
             FilterBuilder filter = ElasticsearchUtil.buildFilter(criteria);
             if (filter != null) {
@@ -346,19 +337,19 @@ public class TraceServiceElasticsearch implements TraceService {
         public void serialize(Trace trace, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException, JsonProcessingException {
             jgen.writeStartObject();
-            jgen.writeStringField(BUSINESS_TRANSACTION_FIELD, trace.getBusinessTransaction());
-            jgen.writeStringField(HOST_ADDRESS_FIELD, trace.getHostAddress());
-            jgen.writeStringField(HOST_NAME_FIELD, trace.getHostName());
-            jgen.writeStringField(ID_FIELD, trace.getId());
-            jgen.writeStringField(PRINCIPAL_FIELD, trace.getPrincipal());
-            jgen.writeNumberField(START_TIME_FIELD, trace.getStartTime());
-            jgen.writeArrayFieldStart(NODES_FIELD);
+            jgen.writeStringField(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, trace.getBusinessTransaction());
+            jgen.writeStringField(ElasticsearchUtil.HOST_ADDRESS_FIELD, trace.getHostAddress());
+            jgen.writeStringField(ElasticsearchUtil.HOST_NAME_FIELD, trace.getHostName());
+            jgen.writeStringField(ElasticsearchUtil.ID_FIELD, trace.getId());
+            jgen.writeStringField(ElasticsearchUtil.PRINCIPAL_FIELD, trace.getPrincipal());
+            jgen.writeNumberField(ElasticsearchUtil.TIMESTAMP_FIELD, trace.getTimestamp());
+            jgen.writeArrayFieldStart(ElasticsearchUtil.NODES_FIELD);
             for (Node n : trace.getNodes()) {
                 jgen.writeObject(n);
             }
             jgen.writeEndArray();
             Set<Property> properties = trace.allProperties();
-            jgen.writeArrayFieldStart(PROPERTIES_FIELD);
+            jgen.writeArrayFieldStart(ElasticsearchUtil.PROPERTIES_FIELD);
             for (Property p : properties) {
                 jgen.writeObject(p);
             }
@@ -375,7 +366,7 @@ public class TraceServiceElasticsearch implements TraceService {
             Trace trace = new Trace();
             String field = parser.nextFieldName();
             while (field != null) {
-                if (field.equals(PROPERTIES_FIELD)) {
+                if (field.equals(ElasticsearchUtil.PROPERTIES_FIELD)) {
                     parser.nextValue(); // Consume START_ARRAY
 
                     while (parser.nextValue() == JsonToken.START_OBJECT) {
@@ -385,17 +376,17 @@ public class TraceServiceElasticsearch implements TraceService {
                     }
 
                     parser.nextValue(); // Consume END_ARRAY
-                } else if (field.equals(BUSINESS_TRANSACTION_FIELD)) {
+                } else if (field.equals(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD)) {
                     trace.setBusinessTransaction(parser.nextTextValue());
-                } else if (field.equals(HOST_ADDRESS_FIELD)) {
+                } else if (field.equals(ElasticsearchUtil.HOST_ADDRESS_FIELD)) {
                     trace.setHostAddress(parser.nextTextValue());
-                } else if (field.equals(HOST_NAME_FIELD)) {
+                } else if (field.equals(ElasticsearchUtil.HOST_NAME_FIELD)) {
                     trace.setHostName(parser.nextTextValue());
-                } else if (field.equals(ID_FIELD)) {
+                } else if (field.equals(ElasticsearchUtil.ID_FIELD)) {
                     trace.setId(parser.nextTextValue());
-                } else if (field.equals(PRINCIPAL_FIELD)) {
+                } else if (field.equals(ElasticsearchUtil.PRINCIPAL_FIELD)) {
                     trace.setPrincipal(parser.nextTextValue());
-                } else if (field.equals(NODES_FIELD)) {
+                } else if (field.equals(ElasticsearchUtil.NODES_FIELD)) {
                     parser.nextValue(); // Consume START_ARRAY
 
                     while (parser.nextValue() == JsonToken.START_OBJECT) {
@@ -403,8 +394,8 @@ public class TraceServiceElasticsearch implements TraceService {
                     }
 
                     parser.nextValue(); // Consume END_ARRAY
-                } else if (field.equals(START_TIME_FIELD)) {
-                    trace.setStartTime(parser.nextLongValue(0));
+                } else if (field.equals(ElasticsearchUtil.TIMESTAMP_FIELD)) {
+                    trace.setTimestamp(parser.nextLongValue(0));
                 }
                 field = parser.nextFieldName();
             }

@@ -53,12 +53,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
     public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws RetryAttemptException {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
-        long baseTime = 0;
-        if (!item.getNodes().isEmpty()) {
-            baseTime = item.getNodes().get(0).getBaseTime();
-        }
-
-        deriveNodeDetails(item, baseTime, item.getNodes(), ret);
+        deriveNodeDetails(item, item.getNodes(), ret);
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver [" + ret.size() + "] ret=" + ret);
@@ -72,12 +67,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
      * nodes.
      *
      * @param trace The trace
-     * @param baseTime The base time, in microseconds, for the trace
      * @param nodes The nodes
      * @param rts The list of node details
      */
-    protected void deriveNodeDetails(Trace trace, long baseTime,
-            List<Node> nodes, List<NodeDetails> rts) {
+    protected void deriveNodeDetails(Trace trace, List<Node> nodes, List<NodeDetails> rts) {
         for (int i = 0; i < nodes.size(); i++) {
             Node n = nodes.get(i);
 
@@ -95,8 +88,6 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
             }
 
             if (!ignoreNode) {
-                long diff = n.getBaseTime() - baseTime;
-
                 NodeDetails nd = new NodeDetails();
                 nd.setId(trace.getId() + "-" + rts.size());
                 nd.setBusinessTransaction(trace.getBusinessTransaction());
@@ -127,7 +118,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 }
 
                 nd.setProperties(trace.allProperties());
-                nd.setTimestamp(trace.getStartTime() + diff);
+                nd.setTimestamp(n.getTimestamp());
                 nd.setType(n.getType());
                 nd.setUri(n.getUri());
                 nd.setOperation(n.getOperation());
@@ -136,7 +127,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
             }
 
             if (!ignoreChildNodes && n.interactionNode()) {
-                deriveNodeDetails(trace, baseTime, ((InteractionNode) n).getNodes(), rts);
+                deriveNodeDetails(trace, ((InteractionNode) n).getNodes(), rts);
             }
         }
     }
