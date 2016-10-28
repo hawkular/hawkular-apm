@@ -69,12 +69,13 @@ public class TraceContext {
         this.reporter = reporter;
 
         trace = new Trace();
-        trace.setId(UUID.randomUUID().toString());
+        trace.setFragmentId(UUID.randomUUID().toString());
+        trace.setTraceId(trace.getFragmentId());
         trace.setHostName(PropertyUtil.getHostName());
         trace.setHostAddress(PropertyUtil.getHostAddress());
 
         // Initialise the root node's path
-        rootNode.setNodePath(String.format("%s:0", trace.getId()));
+        rootNode.setNodePath(String.format("%s:0", trace.getFragmentId()));
     }
 
     /**
@@ -103,7 +104,25 @@ public class TraceContext {
     }
 
     /**
-     * @return the businessTransaction
+     * This method returns the trace id.
+     *
+     * @return The trace id
+     */
+    public String getTraceId() {
+        return trace.getTraceId();
+    }
+
+    /**
+     * This method sets the trace id.
+     *
+     * @param traceId The trace id
+     */
+    public void setTraceId(String traceId) {
+        trace.setTraceId(traceId);
+    }
+
+    /**
+     * @param businessTransaction the businessTransaction to set
      */
     public String getBusinessTransaction() {
         return businessTransaction;

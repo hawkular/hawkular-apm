@@ -66,7 +66,9 @@ public class JavaNetHttpITest extends ClientTestBase {
                 .setHandler(path().addPrefixPath("sayHello", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        if (!exchange.getRequestHeaders().contains("test-fault")) {
+                        if (!exchange.getRequestHeaders().contains(Constants.HAWKULAR_APM_TRACEID)) {
+                            exchange.setResponseCode(400);
+                        } else if (!exchange.getRequestHeaders().contains("test-fault")) {
                             if (!exchange.getRequestHeaders().contains("test-no-data")) {
                                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
                                 exchange.getResponseSender().send(HELLO_WORLD);
@@ -90,23 +92,23 @@ public class JavaNetHttpITest extends ClientTestBase {
     }
 
     @Test
-    public void testHttpURLConnectionGET() {
+    public void testHttpURLConnectionGET() throws Exception {
         testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionGETWithQS() {
+    public void testHttpURLConnectionGETWithQS() throws Exception {
         testHttpURLConnection("GET", SAY_HELLO_URL_WITH_QS, null, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionGETNoData1() {
+    public void testHttpURLConnectionGETNoData1() throws Exception {
         testHttpURLConnection("GET", SAY_HELLO_URL, null, false, false, false);
     }
 
     @Test
     @org.junit.Ignore("Awaiting solution for HWKBTM-158")
-    public void testHttpURLConnectionGETNoData2() {
+    public void testHttpURLConnectionGETNoData2() throws Exception {
         // Although no content actually passed, set this flag to simulate
         // a user accidently defines a content processing definition
         setProcessContent(true);
@@ -114,156 +116,152 @@ public class JavaNetHttpITest extends ClientTestBase {
     }
 
     @Test
-    public void testHttpURLConnectionGETAsync() {
+    public void testHttpURLConnectionGETAsync() throws Exception {
         testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, true);
     }
 
     @Test
-    public void testHttpURLConnectionGETWithContent() {
+    public void testHttpURLConnectionGETWithContent() throws Exception {
         setProcessContent(true);
         testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionGETWithContentAsync() {
+    public void testHttpURLConnectionGETWithContentAsync() throws Exception {
         setProcessContent(true);
         testHttpURLConnection("GET", SAY_HELLO_URL, null, false, true, true);
     }
 
     @Test
-    public void testHttpURLConnectionPUT() {
+    public void testHttpURLConnectionPUT() throws Exception {
         testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionPUTAsync() {
+    public void testHttpURLConnectionPUTAsync() throws Exception {
         testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
-    public void testHttpURLConnectionPUTWithContent() {
+    public void testHttpURLConnectionPUTWithContent() throws Exception {
         setProcessContent(true);
         testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionPUTWithContentAsync() {
+    public void testHttpURLConnectionPUTWithContentAsync() throws Exception {
         setProcessContent(true);
         testHttpURLConnection("PUT", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
-    public void testHttpURLConnectionPOST() {
+    public void testHttpURLConnectionPOST() throws Exception {
         testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionPOSTAsync() {
+    public void testHttpURLConnectionPOSTAsync() throws Exception {
         testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
-    public void testHttpURLConnectionPOSTWithContent() {
+    public void testHttpURLConnectionPOSTWithContent() throws Exception {
         setProcessContent(true);
         testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, false);
     }
 
     @Test
-    public void testHttpURLConnectionPOSTWithContentAsync() {
+    public void testHttpURLConnectionPOSTWithContentAsync() throws Exception {
         setProcessContent(true);
         testHttpURLConnection("POST", SAY_HELLO_URL, SAY_HELLO, false, true, true);
     }
 
     @Test
-    public void testHttpURLConnectionGETWithFault() {
+    public void testHttpURLConnectionGETWithFault() throws Exception {
         testHttpURLConnection("GET", SAY_HELLO_URL, null, true, true, false);
     }
 
     protected void testHttpURLConnection(String method, String urlstr, String reqdata, boolean fault,
-            boolean respexpected, boolean async) {
+            boolean respexpected, boolean async) throws Exception {
         Thread testThread = Thread.currentThread();
 
-        try {
-            URL url = new URL(urlstr);
-            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        URL url = new URL(urlstr);
+        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod(method);
+        connection.setRequestMethod(method);
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            connection.setRequestProperty("test-header", "test-value");
-            if (fault) {
-                connection.setRequestProperty("test-fault", "true");
-            }
-            if (!respexpected) {
-                connection.setRequestProperty("test-no-data", "true");
-            }
+        connection.setRequestProperty("test-header", "test-value");
+        if (fault) {
+            connection.setRequestProperty("test-fault", "true");
+        }
+        if (!respexpected) {
+            connection.setRequestProperty("test-no-data", "true");
+        }
 
-            if (reqdata != null) {
-                OutputStream os = connection.getOutputStream();
+        if (reqdata != null) {
+            OutputStream os = connection.getOutputStream();
 
-                os.write(reqdata.getBytes());
+            os.write(reqdata.getBytes());
 
-                os.flush();
-                os.close();
-            } else if (fault || !respexpected) {
-                connection.connect();
-            }
+            os.flush();
+            os.close();
+        } else if (fault || !respexpected) {
+            connection.connect();
+        }
 
-            Callable<Void> task = new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    java.io.InputStream is = null;
+        Callable<Void> task = new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                java.io.InputStream is = null;
 
-                    if (async && testThread == Thread.currentThread()) {
-                        fail("Async response should be received in different thread");
+                if (async && testThread == Thread.currentThread()) {
+                    fail("Async response should be received in different thread");
+                }
+
+                if (!fault) {
+                    if (respexpected) {
+                        is = connection.getInputStream();
                     }
 
-                    if (!fault) {
-                        if (respexpected) {
+                    assertEquals("Unexpected response code", 200, connection.getResponseCode());
+
+                    if (respexpected) {
+                        if (is == null) {
                             is = connection.getInputStream();
                         }
 
-                        assertEquals("Unexpected response code", 200, connection.getResponseCode());
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-                        if (respexpected) {
-                            if (is == null) {
-                                is = connection.getInputStream();
-                            }
+                        StringBuilder builder = new StringBuilder();
+                        String str = null;
 
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-                            StringBuilder builder = new StringBuilder();
-                            String str = null;
-
-                            while ((str = reader.readLine()) != null) {
-                                builder.append(str);
-                            }
-                            is.close();
-
-                            assertEquals(HELLO_WORLD, builder.toString());
+                        while ((str = reader.readLine()) != null) {
+                            builder.append(str);
                         }
-                    } else {
-                        assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
-                    }
-                    return null;
-                }
-            };
+                        is.close();
 
-            if (async) {
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Future<Void> future = executor.submit(task);
-                future.get();
-            } else {
-                task.call();
+                        assertEquals(HELLO_WORLD, builder.toString());
+                    }
+                } else {
+                    assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
+                }
+                return null;
             }
-        } catch (Exception e) {
-            fail("Failed to perform '" + method + "': " + e);
+        };
+
+        if (async) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Void> future = executor.submit(task);
+            future.get();
+        } else {
+            task.call();
         }
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
@@ -277,13 +275,7 @@ public class JavaNetHttpITest extends ClientTestBase {
 
         Producer testProducer = producers.get(0);
 
-        String path = null;
-
-        try {
-            path = new URL(SAY_HELLO_URL).getPath();
-        } catch (Exception e) {
-            fail("Failed to get path: " + e);
-        }
+        String path = new URL(SAY_HELLO_URL).getPath();
 
         assertEquals(path, testProducer.getUri());
 

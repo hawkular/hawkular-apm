@@ -139,7 +139,7 @@ public class TraceServiceElasticsearch implements TraceService {
         if (ret != null) {
             for (int i=0; i < ret.getNodes().size(); i++) {
                 Node node = ret.getNodes().get(i);
-                processConnectedNode(tenantId, ret, node, new StringBuilder(ret.getId()).append(':').append(i));
+                processConnectedNode(tenantId, ret, node, new StringBuilder(ret.getFragmentId()).append(':').append(i));
             }
         }
 
@@ -190,7 +190,7 @@ public class TraceServiceElasticsearch implements TraceService {
                     } else {
                         anchor.getNodes().add(n);
                     }
-                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getId()).append(':').append(i));
+                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getFragmentId()).append(':').append(i));
                 }
             }
         }
@@ -203,10 +203,10 @@ public class TraceServiceElasticsearch implements TraceService {
 
             for (Trace tf : fragments) {
                 // Ensure we don't process top level trace again, if contains just a Producer
-                for (int i=0; !tf.getId().equals(trace.getId()) && i < tf.getNodes().size(); i++) {
+                for (int i=0; !tf.getFragmentId().equals(trace.getFragmentId()) && i < tf.getNodes().size(); i++) {
                     Node n = tf.getNodes().get(i);
                     ((Producer)node).getNodes().add(n);
-                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getId()).append(':').append(i));
+                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getFragmentId()).append(':').append(i));
                 }
             }
         }
@@ -302,7 +302,7 @@ public class TraceServiceElasticsearch implements TraceService {
                 }
 
                 bulkRequestBuilder.add(client.getClient().prepareIndex(client.getIndex(tenantId),
-                        TRACE_TYPE, trace.getId()).setSource(json));
+                        TRACE_TYPE, trace.getFragmentId()).setSource(json));
             }
         } catch (JsonProcessingException e) {
             throw new StoreException(e);
@@ -340,9 +340,10 @@ public class TraceServiceElasticsearch implements TraceService {
             jgen.writeStringField(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, trace.getBusinessTransaction());
             jgen.writeStringField(ElasticsearchUtil.HOST_ADDRESS_FIELD, trace.getHostAddress());
             jgen.writeStringField(ElasticsearchUtil.HOST_NAME_FIELD, trace.getHostName());
-            jgen.writeStringField(ElasticsearchUtil.ID_FIELD, trace.getId());
+            jgen.writeStringField(ElasticsearchUtil.FRAGMENT_ID_FIELD, trace.getFragmentId());
             jgen.writeStringField(ElasticsearchUtil.PRINCIPAL_FIELD, trace.getPrincipal());
             jgen.writeNumberField(ElasticsearchUtil.TIMESTAMP_FIELD, trace.getTimestamp());
+            jgen.writeStringField(ElasticsearchUtil.TRACE_ID_FIELD, trace.getTraceId());
             jgen.writeArrayFieldStart(ElasticsearchUtil.NODES_FIELD);
             for (Node n : trace.getNodes()) {
                 jgen.writeObject(n);
@@ -382,8 +383,8 @@ public class TraceServiceElasticsearch implements TraceService {
                     trace.setHostAddress(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.HOST_NAME_FIELD)) {
                     trace.setHostName(parser.nextTextValue());
-                } else if (field.equals(ElasticsearchUtil.ID_FIELD)) {
-                    trace.setId(parser.nextTextValue());
+                } else if (field.equals(ElasticsearchUtil.FRAGMENT_ID_FIELD)) {
+                    trace.setFragmentId(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.PRINCIPAL_FIELD)) {
                     trace.setPrincipal(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.NODES_FIELD)) {
@@ -396,6 +397,8 @@ public class TraceServiceElasticsearch implements TraceService {
                     parser.nextValue(); // Consume END_ARRAY
                 } else if (field.equals(ElasticsearchUtil.TIMESTAMP_FIELD)) {
                     trace.setTimestamp(parser.nextLongValue(0));
+                } else if (field.equals(ElasticsearchUtil.TRACE_ID_FIELD)) {
+                    trace.setTraceId(parser.nextTextValue());
                 }
                 field = parser.nextFieldName();
             }

@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
@@ -62,6 +63,9 @@ public class NettyHttpITest extends ClientTestBase {
         server = HttpServer.newServer()
                 .enableWireLogging(LogLevel.DEBUG)
                 .start((req, resp) -> {
+                    if (req.getHeader(Constants.HAWKULAR_APM_TRACEID) == null) {
+                        return resp.setStatus(HttpResponseStatus.BAD_REQUEST);
+                    }
                     if (req.getHttpMethod() == HttpMethod.POST
                             || req.getHttpMethod() == HttpMethod.PUT) {
                         req.getContent().subscribe(bb -> System.out.println("DATA = " + bb.toString()));

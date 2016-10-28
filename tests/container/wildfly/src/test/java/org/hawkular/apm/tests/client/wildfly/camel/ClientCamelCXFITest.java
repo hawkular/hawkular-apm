@@ -19,8 +19,8 @@ package org.hawkular.apm.tests.client.wildfly.camel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -63,61 +63,58 @@ public class ClientCamelCXFITest extends ClientTestBase {
     }
 
     @Test
-    public void testInvokeCamelCXFService() {
+    public void testInvokeCamelCXFService() throws IOException {
         // Delay to avoid picking up previously reported txns
         Wait.until(() -> getApmMockServer().getTraces().size() == 0);
 
-        try {
-            URL url = new URL(System.getProperty("test.uri")
-                    + "/camel-example-cxftomcat/webservices/incident");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        URL url = new URL(System.getProperty("test.uri")
+                + "/camel-example-cxftomcat/webservices/incident");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("POST");
+        connection.setRequestMethod("POST");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/soap+xml");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/soap+xml");
 
-            java.io.OutputStream os = connection.getOutputStream();
+        java.io.OutputStream os = connection.getOutputStream();
 
-            os.write(REQUEST.getBytes());
+        os.write(REQUEST.getBytes());
 
-            os.flush();
-            os.close();
+        os.flush();
+        os.close();
 
-            java.io.InputStream is = connection.getInputStream();
+        java.io.InputStream is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+        byte[] b = new byte[is.available()];
 
-            is.read(b);
+        is.read(b);
 
-            is.close();
+        is.close();
 
-            assertEquals(200, connection.getResponseCode());
+        assertEquals(200, connection.getResponseCode());
 
-            String resp = new String(b);
+        String resp = new String(b);
 
-            assertTrue("Response should contain '<code>OK;123</code>'",
-                    resp.contains("<code>OK;123</code>"));
-        } catch (Exception e) {
-            fail("Failed to get cxf response: " + e);
-        }
+        assertTrue("Response should contain '<code>OK;123</code>'",
+                resp.contains("<code>OK;123</code>"));
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 1);
 
         // Check if trace fragments have been reported
-        List<Trace> btxns = getApmMockServer().getTraces();
+        List<Trace> traces = getApmMockServer().getTraces();
 
-        assertEquals(1, btxns.size());
+        assertEquals(1, traces.size());
+        assertNotNull(traces.get(0).getTraceId());
 
         // Check top level node is a Consumer associated with the servlet
-        assertEquals(Consumer.class, btxns.get(0).getNodes().get(0).getClass());
+        assertEquals(Consumer.class, traces.get(0).getNodes().get(0).getClass());
 
         // Check that there is request and response message content
-        Consumer consumer = (Consumer) btxns.get(0).getNodes().get(0);
+        Consumer consumer = (Consumer) traces.get(0).getNodes().get(0);
 
         assertNotNull(consumer.getIn());
         assertNotNull(consumer.getOut());

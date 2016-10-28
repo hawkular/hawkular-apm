@@ -53,7 +53,7 @@ public class SourceInfoUtilTest {
     @Test
     public void testInitialiseIds() throws RetryAttemptException {
         Trace trace = new Trace();
-        trace.setId("trace1");
+        trace.setFragmentId("trace1");
 
         Consumer consumer1 = new Consumer();
         consumer1.setUri("uri1");
@@ -100,7 +100,7 @@ public class SourceInfoUtilTest {
     @Test
     public void testInitialiseFragmentOrigins() throws RetryAttemptException {
         Trace trace1 = new Trace();
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
 
         Component component1 = new Component();
         trace1.getNodes().add(component1);
@@ -112,7 +112,7 @@ public class SourceInfoUtilTest {
         component1.getNodes().add(producer1);
 
         Trace trace2 = new Trace();
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
 
         Consumer consumer1 = new Consumer();
         consumer1.setUri("uri1");

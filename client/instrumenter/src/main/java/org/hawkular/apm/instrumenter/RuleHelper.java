@@ -424,6 +424,15 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
+     * This method returns the trace id.
+     *
+     * @return The trace id
+     */
+    public String getTraceId() {
+        return collector().getTraceId();
+    }
+
+    /**
      * This method returns the business transaction name.
      *
      * @return The business transaction name

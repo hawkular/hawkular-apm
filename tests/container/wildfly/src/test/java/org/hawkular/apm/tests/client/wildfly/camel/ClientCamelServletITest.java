@@ -17,9 +17,10 @@
 package org.hawkular.apm.tests.client.wildfly.camel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -45,40 +46,36 @@ public class ClientCamelServletITest extends ClientTestBase {
     }
 
     @Test
-    public void testInvokeCamelRESTService() {
+    public void testInvokeCamelRESTService() throws IOException {
         // Delay to avoid picking up previously reported txns
         Wait.until(() -> getApmMockServer().getTraces().size() == 0);
 
-        try {
-            URL url = new URL(System.getProperty("test.uri")
-                    + "/camel-example-servlet-rest-tomcat/rest" + "/user/123");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        URL url = new URL(System.getProperty("test.uri")
+                + "/camel-example-servlet-rest-tomcat/rest" + "/user/123");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("GET");
+        connection.setRequestMethod("GET");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            java.io.InputStream is = connection.getInputStream();
+        java.io.InputStream is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+        byte[] b = new byte[is.available()];
 
-            is.read(b);
+        is.read(b);
 
-            is.close();
+        is.close();
 
-            assertEquals(200, connection.getResponseCode());
+        assertEquals(200, connection.getResponseCode());
 
-            String user = new String(b);
+        String user = new String(b);
 
-            assertTrue("Response should contain user with name 'John Doe'", user.contains("John Doe"));
-        } catch (Exception e) {
-            fail("Failed to get user details: " + e);
-        }
+        assertTrue("Response should contain user with name 'John Doe'", user.contains("John Doe"));
 
         // Need to wait for trace fragment to be reported to server
         Wait.until(() -> getApmMockServer().getTraces().size() == 1, 2, TimeUnit.SECONDS);
@@ -87,6 +84,7 @@ public class ClientCamelServletITest extends ClientTestBase {
         List<Trace> traces = getApmMockServer().getTraces();
 
         assertEquals(1, traces.size());
+        assertNotNull(traces.get(0).getTraceId());
 
         // Check top level node is a Consumer associated with the servlet
         assertEquals(Consumer.class, traces.get(0).getNodes().get(0).getClass());

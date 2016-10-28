@@ -72,7 +72,7 @@ public class SourceInfoUtil {
 
             // Need to check for Producer nodes
             Trace trace = items.get(i);
-            StringBuffer nodeId = new StringBuffer(trace.getId());
+            StringBuffer nodeId = new StringBuffer(trace.getFragmentId());
 
             for (int j = 0; j < trace.getNodes().size(); j++) {
                 Node node = trace.getNodes().get(j);
@@ -119,7 +119,7 @@ public class SourceInfoUtil {
 
         si.setTimestamp(node.getTimestamp());
         si.setDuration(node.getDuration());
-        si.setFragmentId(trace.getId());
+        si.setFragmentId(trace.getFragmentId());
         si.setHostName(trace.getHostName());
         si.setHostAddress(trace.getHostAddress());
         si.setMultipleConsumers(true);              // Multiple links could reference same node

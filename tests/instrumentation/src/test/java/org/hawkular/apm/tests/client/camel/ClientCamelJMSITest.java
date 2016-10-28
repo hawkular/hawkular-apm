@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -75,11 +74,7 @@ public class ClientCamelJMSITest extends ClientCamelITestBase {
 
     @Test
     public void testJMSRequestOnly() {
-        try {
-            template.sendBody("jms:queue:inboundq", "Test Message");
-        } catch (Exception e) {
-            fail("Failed to send test message: " + e);
-        }
+        template.sendBody("jms:queue:inboundq", "Test Message");
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 3);
 
@@ -151,12 +146,7 @@ public class ClientCamelJMSITest extends ClientCamelITestBase {
 
     @Test
     public void testJMSRequestResponse() {
-        Object resp = null;
-        try {
-            resp = template.sendBody("jms:queue:inboundq", ExchangePattern.InOut, "Test Message");
-        } catch (Exception e) {
-            fail("Failed to send test message: " + e);
-        }
+        Object resp = template.sendBody("jms:queue:inboundq", ExchangePattern.InOut, "Test Message");
 
         assertEquals("Hello", resp);
 
@@ -246,5 +236,21 @@ public class ClientCamelJMSITest extends ClientCamelITestBase {
         assertNotNull(queueConsumer.getOut().getContent());
         assertTrue(queueConsumer.getOut().getContent().containsKey("all"));
         assertEquals("Hello", queueConsumer.getOut().getContent().get("all").getValue());
+    }
+
+    @Test
+    public void testTraceIdPropagated() {
+        template.sendBody("jms:queue:inboundq", ExchangePattern.InOut, "Test Message");
+
+        Wait.until(() -> getApmMockServer().getTraces().size() == 3);
+
+        // Check stored traces - one btxn represents the test sender
+        assertEquals(3, getApmMockServer().getTraces().size());
+
+        // Check only one trace id used for all trace fragments
+        assertEquals(1, getApmMockServer().getTraces().stream().map(t -> {
+            assertNotNull(t.getTraceId());
+            return t.getTraceId();
+        }).distinct().count());
     }
 }

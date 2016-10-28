@@ -361,6 +361,12 @@ public class ClientJettyStreamITest extends ClientTestBase {
 
         assertNotNull(consumerBTxn);
         assertEquals(TEST_USER, consumerBTxn.getPrincipal());
+
+        // Check only one trace id used for all trace fragments
+        assertEquals(1, getApmMockServer().getTraces().stream().map(t -> {
+            assertNotNull(t.getTraceId());
+            return t.getTraceId();
+        }).distinct().count());
     }
 
     public static class EmbeddedServlet extends HttpServlet {

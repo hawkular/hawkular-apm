@@ -5,6 +5,7 @@ org.hawkular.apm.instrumenter.rules.InstrumentProducerTransformer
 org.hawkular.apm.instrumenter.rules.FreeFormActionTransformer
 org.hawkular.apm.instrumenter.rules.ProcessContentTransformer
 org.hawkular.apm.instrumenter.rules.ProcessHeadersTransformer
+org.hawkular.apm.instrumenter.rules.SetTraceIdTransformer
 org.hawkular.apm.instrumenter.rules.SetLevelTransformer
 org.hawkular.apm.instrumenter.rules.SetBusinessTransactionTransformer
 org.hawkular.apm.instrumenter.rules.SetPrincipalTransformer

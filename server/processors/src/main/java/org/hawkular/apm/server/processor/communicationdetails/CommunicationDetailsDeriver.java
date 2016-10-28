@@ -127,7 +127,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setSourceFragmentId(si.getFragmentId());
                         ret.setSourceHostName(si.getHostName());
                         ret.setSourceHostAddress(si.getHostAddress());
-                        ret.setTargetFragmentId(item.getId());
+                        ret.setTargetFragmentId(item.getFragmentId());
                         ret.setTargetHostName(item.getHostName());
                         ret.setTargetHostAddress(item.getHostAddress());
                         ret.setTargetFragmentDuration(item.calculateDuration());
@@ -142,7 +142,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.setTimestampOffset(timestampOffset);
 
                         // Build outbound information
-                        StringBuilder nodeId = new StringBuilder(item.getId());
+                        StringBuilder nodeId = new StringBuilder(item.getFragmentId());
                         nodeId.append(":0");
 
                         initialiseOutbound(consumer, item.getNodes().get(0).getTimestamp(), ret, nodeId);

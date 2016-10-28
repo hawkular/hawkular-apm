@@ -72,7 +72,7 @@ public class SpanServiceITest extends AbstractITest {
         Wait.until(() -> traceService.getTrace(null, traceStringId) != null);
 
         Trace trace = traceService.getTrace(null, traceStringId);
-        Assert.assertEquals(traceStringId, trace.getId());
+        Assert.assertEquals(traceStringId, trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
         Node node = trace.getNodes().get(0);
         Assert.assertEquals(NodeType.Consumer, node.getType());

@@ -58,6 +58,9 @@
           "action": "$2.setHeader(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
+          "action": "$2.setHeader(\"HWKAPMTRACEID\",getTraceId())"
+        },{
+          "type": "FreeFormAction",
           "action": "$2.setHeader(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",

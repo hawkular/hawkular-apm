@@ -58,7 +58,7 @@ public class CommunicationDetailsDeriverTest {
         List<Trace> traces = new ArrayList<Trace>();
 
         Trace trace1 = new Trace();
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         traces.add(trace1);
@@ -97,7 +97,7 @@ public class CommunicationDetailsDeriverTest {
         deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         Component c1 = new Component();
@@ -149,7 +149,7 @@ public class CommunicationDetailsDeriverTest {
         deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
 
         Consumer c1 = new Consumer();
@@ -238,7 +238,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.setTimestamp(1000000000);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
         trace1.setPrincipal("p1");
@@ -270,7 +270,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.setTimestamp(2000000000);
 
         trace2.setBusinessTransaction(BTXN_NAME);
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
@@ -332,7 +332,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.setTimestamp(1000000000);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
         trace1.setPrincipal("p1");
@@ -364,7 +364,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.setTimestamp(2000000000);
 
         trace2.setBusinessTransaction(BTXN_NAME);
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
@@ -430,7 +430,7 @@ public class CommunicationDetailsDeriverTest {
         traces1.add(trace1);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
 
@@ -465,7 +465,7 @@ public class CommunicationDetailsDeriverTest {
         traces2.add(trace2);
 
         trace2.setBusinessTransaction(BTXN_NAME);
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
 
@@ -506,7 +506,7 @@ public class CommunicationDetailsDeriverTest {
         traces1.add(trace1);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
 
@@ -541,7 +541,7 @@ public class CommunicationDetailsDeriverTest {
         traces2.add(trace2);
 
         trace2.setBusinessTransaction(BTXN_NAME);
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
 
@@ -582,7 +582,7 @@ public class CommunicationDetailsDeriverTest {
         traces1.add(trace1);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
         trace1.setPrincipal("p1");
@@ -605,7 +605,7 @@ public class CommunicationDetailsDeriverTest {
         traces2.add(trace2);
 
         trace2.setBusinessTransaction(BTXN_NAME);
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
@@ -660,7 +660,7 @@ public class CommunicationDetailsDeriverTest {
         traces1.add(trace1);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -692,7 +692,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces2.add(trace2);
 
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
@@ -735,7 +735,7 @@ public class CommunicationDetailsDeriverTest {
         trace1.setTimestamp(1000000);
 
         trace1.setBusinessTransaction(BTXN_NAME);
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
         trace1.setPrincipal("p1");
@@ -762,7 +762,7 @@ public class CommunicationDetailsDeriverTest {
         trace2.setTimestamp(2000000);
 
         trace2.setBusinessTransaction(BTXN_NAME);
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
         trace2.setPrincipal("p1");
@@ -819,7 +819,7 @@ public class CommunicationDetailsDeriverTest {
         deriver.setSourceInfoCache(cache);
 
         Trace trace1 = new Trace();
-        trace1.setId("trace1");
+        trace1.setFragmentId("trace1");
         trace1.setTimestamp(1000000000);
 
         Consumer c1 = new Consumer();
@@ -839,7 +839,7 @@ public class CommunicationDetailsDeriverTest {
         c1.getNodes().add(p1a);
 
         Trace trace2 = new Trace();
-        trace2.setId("trace2");
+        trace2.setFragmentId("trace2");
         trace2.setTimestamp(2000000000);
 
         Consumer c2 = new Consumer();

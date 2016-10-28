@@ -53,14 +53,12 @@ public class TraceCompletionInformationInitiator extends
         if (!item.getNodes().isEmpty()) {
             Node n = item.getNodes().get(0);
 
-            // If not a consumer, or consumer has no correlation ids, then it is
-            // a candidate for the start of a trace
-            if (n.getClass() != Consumer.class || n.getCorrelationIds().isEmpty()) {
+            if (item.initialFragment()) {
                 TraceCompletionInformation ci = new TraceCompletionInformation();
 
                 // Create the initial version of the completion time
                 CompletionTime ct = new CompletionTime();
-                ct.setId(item.getId());
+                ct.setId(item.getTraceId());
 
                 EndpointRef ep = EndpointUtil.getSourceEndpoint(item);
                 ct.setUri(ep.getUri());
@@ -79,7 +77,7 @@ public class TraceCompletionInformationInitiator extends
                 ci.setCompletionTime(ct);
 
                 // Initialise any communications that need to be further processed
-                StringBuilder nodeId = new StringBuilder(item.getId());
+                StringBuilder nodeId = new StringBuilder(item.getFragmentId());
                 nodeId.append(":0");
 
                 TraceCompletionInformationUtil.initialiseLinks(ci, n.getTimestamp(), n, nodeId);

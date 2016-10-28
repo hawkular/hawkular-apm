@@ -228,6 +228,63 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     }
 
     @Override
+    public void setTraceId(String location, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Ignoring attempt to set trace id to null");
+            }
+            return;
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set trace id location=[" + location + "] value=" + value);
+        }
+
+        try {
+            FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+            if (builder != null) {
+                builder.getTrace().setTraceId(value);
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setTraceId: No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "setTraceId failed", t);
+            }
+        }
+    }
+
+    @Override
+    public String getTraceId() {
+        String ret = null;
+
+        try {
+            if (fragmentManager.hasFragmentBuilder()) {
+                FragmentBuilder builder = fragmentManager.getFragmentBuilder();
+
+                ret = builder.getTrace().getTraceId();
+            } else if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getTraceId: No fragment builder for this thread", null);
+            }
+        } catch (Throwable t) {
+            if (log.isLoggable(warningLogLevel)) {
+                log.log(warningLogLevel, "getTraceId failed", t);
+            }
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get trace id=" + ret);
+        }
+
+        if (ret == null) {
+            ret = "";
+        }
+
+        return ret;
+    }
+
+    @Override
     public void setBusinessTransaction(String location, String name) {
         if (name == null || name.trim().isEmpty()) {
             if (log.isLoggable(Level.FINEST)) {
@@ -249,11 +306,11 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             if (builder != null) {
                 builder.getTrace().setBusinessTransaction(name);
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setName: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "setBusinessTransaction: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setName failed", t);
+                log.log(warningLogLevel, "setBusinessTransaction failed", t);
             }
         }
     }
@@ -268,11 +325,11 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
                 ret = builder.getTrace().getBusinessTransaction();
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "getName: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "getBusinessTransaction: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "getName failed", t);
+                log.log(warningLogLevel, "getBusinessTransaction failed", t);
             }
         }
 

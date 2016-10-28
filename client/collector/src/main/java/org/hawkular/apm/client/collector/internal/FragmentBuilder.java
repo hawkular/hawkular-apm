@@ -79,10 +79,11 @@ public class FragmentBuilder {
 
     {
         trace = new Trace()
-                .setId(UUID.randomUUID().toString())
+                .setFragmentId(UUID.randomUUID().toString())
                 .setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()))
                 .setHostName(PropertyUtil.getHostName())
                 .setHostAddress(PropertyUtil.getHostAddress());
+        trace.setTraceId(trace.getFragmentId());
         baseNanoseconds = System.nanoTime();
     }
 

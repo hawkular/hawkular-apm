@@ -16,6 +16,9 @@
         "location": "ENTRY",
         "condition": "!isActive() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class) && activate($1.getJMSDestination(),null,$1.getStringProperty(\"HWKAPMID\"))",
         "actions": [{
+          "type": "SetTraceId",
+          "valueExpression": "$1.getStringProperty(\"HWKAPMTRACEID\")"
+        },{
           "type": "SetBusinessTransaction",
           "nameExpression": "$1.getStringProperty(\"HWKAPMTXN\")"
         },{
@@ -180,6 +183,9 @@
           "action": "$2.setStringProperty(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
+          "action": "$2.setStringProperty(\"HWKAPMTRACEID\",getTraceId())"
+        },{
+          "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
@@ -255,6 +261,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HWKAPMID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setStringProperty(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HWKAPMTXN\",getBusinessTransactionName())"

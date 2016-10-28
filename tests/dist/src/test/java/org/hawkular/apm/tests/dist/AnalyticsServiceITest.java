@@ -110,7 +110,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetUnboundEndpoints() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -132,7 +133,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         // Retrieve stored trace
         List<EndpointInfo> endpoints = analyticsService.getUnboundEndpoints(null, 0, 0, true);
@@ -145,7 +146,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetBoundEndpoints() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -168,7 +170,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         // Retrieve stored trace Endpoints
         List<EndpointInfo> endpoints = analyticsService.getBoundEndpoints(null, "trace1", 0, 0);
@@ -181,7 +183,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetTransactionInfo() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -190,7 +193,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId("2");
+        trace2.setFragmentId("2");
         trace2.setBusinessTransaction("trace2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -231,7 +235,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetPropertyInfo() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -252,7 +257,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria=new Criteria()
                 .setBusinessTransaction("trace1")
@@ -269,7 +274,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetPrincipalInfo() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setPrincipal("p1");
@@ -290,7 +296,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria=new Criteria()
                 .setBusinessTransaction("trace1")
@@ -308,7 +314,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionCount() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -331,7 +338,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -349,7 +356,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionCountWithPropertyFilter() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -371,7 +379,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria().setStartTime(0).setEndTime(0)).size() == 1);
@@ -411,7 +419,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionFaultCount() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -435,7 +444,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -453,7 +462,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionTimes() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -476,7 +486,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -494,7 +504,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionTimesWithPropertyFilter() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -504,7 +515,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId("2");
+        trace2.setFragmentId("2");
         trace2.setBusinessTransaction(TESTAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c2 = new Consumer();
@@ -549,7 +561,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionTimeseriesStatistics() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
@@ -570,7 +583,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
@@ -589,7 +602,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionPropertyDetails() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -600,7 +614,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId("2");
+        trace2.setFragmentId("2");
         trace2.setBusinessTransaction(ANOAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -638,7 +653,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCompletionFaultDetails() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -664,7 +680,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -681,7 +697,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetNodeTimeseriesStatistics() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -716,7 +733,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
@@ -731,7 +748,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetNodeTimeseriesStatisticsHostName() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
@@ -767,7 +785,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setHostName("hostA").setStartTime(0).setEndTime(0);
@@ -791,7 +809,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetNodeSummaryStatistics() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -826,7 +845,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
@@ -840,7 +859,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetNodeSummaryStatisticsHostName() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
@@ -876,7 +896,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setHostName("hostA").setStartTime(0).setEndTime(0);
@@ -898,7 +918,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCommunicationSummaryStatisticsFlat() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -919,7 +940,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId("1");
+        trace2.setFragmentId("2");
         trace2.setBusinessTransaction(TESTAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -982,7 +1004,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetCommunicationSummaryStatisticsTree() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -1003,7 +1026,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId("1");
+        trace2.setFragmentId("2");
         trace2.setBusinessTransaction(TESTAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
@@ -1062,7 +1086,8 @@ public class AnalyticsServiceITest extends AbstractITest {
     @Test
     public void testGetHostNames() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
@@ -1083,7 +1108,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(0).setEndTime(0);
@@ -1100,7 +1125,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         long baseTime=TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC;
 
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction(TESTAPP);
         trace1.setTimestamp(baseTime);
 
@@ -1119,7 +1145,8 @@ public class AnalyticsServiceITest extends AbstractITest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId("1");
+        trace2.setFragmentId("2");
         trace2.setBusinessTransaction(TESTAPP);
         trace2.setTimestamp(baseTime + 1000);
 

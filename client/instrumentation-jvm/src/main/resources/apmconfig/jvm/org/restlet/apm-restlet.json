@@ -24,6 +24,10 @@
           "type": "java.lang.String",
           "expression": "headers.getFirstValue(\"Hwkapmid\")"
         },{
+          "name": "apmtraceid",
+          "type": "java.lang.String",
+          "expression": "headers.getFirstValue(\"Hwkapmtraceid\")"
+        },{
           "name": "btname",
           "type": "java.lang.String",
           "expression": "headers.getFirstValue(\"Hwkapmtxn\")"
@@ -36,6 +40,9 @@
         "actions": [{
           "type": "FreeFormAction",
           "action": "headers.removeAll(\"Hwkapmid\")"
+        },{
+          "type": "SetTraceId",
+          "valueExpression": "apmtraceid"
         },{
           "type": "SetBusinessTransaction",
           "nameExpression": "btname"

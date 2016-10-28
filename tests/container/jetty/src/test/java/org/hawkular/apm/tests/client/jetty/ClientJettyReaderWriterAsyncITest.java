@@ -18,6 +18,7 @@ package org.hawkular.apm.tests.client.jetty;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -269,6 +270,12 @@ public class ClientJettyReaderWriterAsyncITest extends ClientTestBase {
                 assertFalse(testProducer.getIn().getContent().containsKey("all"));
             }
         }
+
+        // Check only one trace id used for all trace fragments
+        assertEquals(1, getApmMockServer().getTraces().stream().map(t -> {
+            assertNotNull(t.getTraceId());
+            return t.getTraceId();
+        }).distinct().count());
     }
 
     public static class EmbeddedAsyncServlet extends HttpServlet {

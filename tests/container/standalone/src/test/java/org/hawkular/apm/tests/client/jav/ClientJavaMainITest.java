@@ -18,8 +18,8 @@ package org.hawkular.apm.tests.client.jav;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -63,40 +63,35 @@ public class ClientJavaMainITest {
     }
 
     @Test
-    public void testInvokeTestOp() {
+    public void testInvokeTestOp() throws IOException {
         long startTime = System.currentTimeMillis();
 
-        try {
-            String mesg = "hello";
-            String num = "12";
+        String mesg = "hello";
+        String num = "12";
 
-            URL url = new URL(baseUrl + "/testOp?mesg=" + mesg + "&num=" + num);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        URL url = new URL(baseUrl + "/testOp?mesg=" + mesg + "&num=" + num);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("GET");
+        connection.setRequestMethod("GET");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            java.io.InputStream is = connection.getInputStream();
+        java.io.InputStream is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+        byte[] b = new byte[is.available()];
 
-            is.read(b);
+        is.read(b);
 
-            is.close();
+        is.close();
 
-            assertEquals("Failed to shutdown", 200, connection.getResponseCode());
+        assertEquals("Failed to shutdown", 200, connection.getResponseCode());
 
-            assertEquals(mesg + ":" + num, new String(b));
-
-        } catch (Exception e) {
-            fail("Failed to perform testOp: " + e);
-        }
+        assertEquals(mesg + ":" + num, new String(b));
 
         TraceServiceRESTClient service = new TraceServiceRESTClient();
         service.setUsername(TEST_USERNAME);
@@ -115,6 +110,8 @@ public class ClientJavaMainITest {
         assertEquals("Only expecting 1 business txn", 1, result.size());
 
         Trace trace = result.get(0);
+
+        assertNotNull(trace.getTraceId());
 
         // Should be one top level Component node with another single Component node contained
         assertEquals("Expecting single top level node", 1, trace.getNodes().size());
@@ -136,61 +133,51 @@ public class ClientJavaMainITest {
     }
 
     @AfterClass
-    public static void shutdown() {
+    public static void shutdown() throws IOException {
         // Shutdown test standalone app
-        try {
-            URL url = new URL(baseUrl + "/shutdown");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        URL url = new URL(baseUrl + "/shutdown");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("GET");
+        connection.setRequestMethod("GET");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            java.io.InputStream is = connection.getInputStream();
+        java.io.InputStream is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+        byte[] b = new byte[is.available()];
 
-            is.read(b);
+        is.read(b);
 
-            is.close();
+        is.close();
 
-            assertEquals("Failed to shutdown", 200, connection.getResponseCode());
-
-        } catch (Exception e) {
-            fail("Failed to shutdown: " + e);
-        }
+        assertEquals("Failed to shutdown", 200, connection.getResponseCode());
 
         // Shutdown Test BTxn Service
-        try {
-            URL url = new URL(testAPMServerUri + "/hawkular/apm/shutdown");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        url = new URL(testAPMServerUri + "/hawkular/apm/shutdown");
+        connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("GET");
+        connection.setRequestMethod("GET");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            java.io.InputStream is = connection.getInputStream();
+        is = connection.getInputStream();
 
-            byte[] b = new byte[is.available()];
+        b = new byte[is.available()];
 
-            is.read(b);
+        is.read(b);
 
-            is.close();
+        is.close();
 
-            assertEquals("Failed to shutdown", 200, connection.getResponseCode());
-
-        } catch (Exception e) {
-            fail("Failed to shutdown: " + e);
-        }
+        assertEquals("Failed to shutdown", 200, connection.getResponseCode());
     }
 }

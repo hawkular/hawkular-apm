@@ -27,6 +27,21 @@ import java.util.Map;
 public interface TraceCollector {
 
     /**
+     * This method sets the id of the trace.
+     *
+     * @param location The instrumentation location
+     * @param value The trace id
+     */
+    void setTraceId(String location, String value);
+
+    /**
+     * This method returns the trace id.
+     *
+     * @return The trace id
+     */
+    String getTraceId();
+
+    /**
      * This method sets the name of the trace.
      *
      * @param location The instrumentation location

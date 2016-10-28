@@ -19,9 +19,7 @@ package org.hawkular.apm.tests.dist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -82,18 +80,12 @@ public class TraceServiceITest extends AbstractITest {
     }
 
     @Test
-    public void testStoreAndRetrieveFragmentById() {
+    public void testStoreAndRetrieveFragmentById() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         Wait.until(() -> traceService.getFragment(null, "1") != null);
 
@@ -101,22 +93,16 @@ public class TraceServiceITest extends AbstractITest {
         Trace result = traceService.getFragment(null, "1");
 
         assertNotNull(result);
-        assertEquals("1", result.getId());
+        assertEquals("1", result.getFragmentId());
     }
 
     @Test
-    public void testStoreAndRetrieveSimpleTraceById() {
+    public void testStoreAndRetrieveSimpleTraceById() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         Wait.until(() -> traceService.getTrace(null, "1") != null);
 
@@ -124,13 +110,14 @@ public class TraceServiceITest extends AbstractITest {
         Trace result = traceService.getTrace(null, "1");
 
         assertNotNull(result);
-        assertEquals("1", result.getId());
+        assertEquals("1", result.getFragmentId());
     }
 
     @Test
-    public void testStoreAndRetrieveComplexTraceById() {
+    public void testStoreAndRetrieveComplexTraceById() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
@@ -145,7 +132,8 @@ public class TraceServiceITest extends AbstractITest {
         c1.getNodes().add(p1_2);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setTraceId(trace1.getTraceId());
+        trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
@@ -160,11 +148,7 @@ public class TraceServiceITest extends AbstractITest {
         p2_2.addInteractionCorrelationId("id2_2");
         c2.getNodes().add(p2_2);
 
-        try {
-            tracePublisher.publish(null, Arrays.asList(trace1, trace2));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Arrays.asList(trace1, trace2));
 
         // Wait to ensure record persisted
         Wait.until(() -> {
@@ -181,7 +165,7 @@ public class TraceServiceITest extends AbstractITest {
         Trace result = traceService.getTrace(null, "1");
 
         assertNotNull(result);
-        assertEquals("1", result.getId());
+        assertEquals("1", result.getFragmentId());
 
         assertEquals(2, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
@@ -200,19 +184,13 @@ public class TraceServiceITest extends AbstractITest {
     }
 
     @Test
-    public void testStoreAndQueryAll() {
+    public void testStoreAndQueryAll() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
-        List<Trace> traces = new ArrayList<>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Wait to ensure record persisted
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
@@ -222,26 +200,20 @@ public class TraceServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
     }
 
     @Test
-    public void testStoreAndQueryStartTimeInclude() {
+    public void testStoreAndQueryStartTimeInclude() throws Exception {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000);
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
 
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteria = new Criteria();
@@ -252,26 +224,20 @@ public class TraceServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
     }
 
     @Test
-    public void testStoreAndQueryStartTimeExclude() {
+    public void testStoreAndQueryStartTimeExclude() throws Exception {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000);
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
 
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteria = new Criteria();
@@ -285,22 +251,16 @@ public class TraceServiceITest extends AbstractITest {
     }
 
     @Test
-    public void testStoreAndQueryEndTimeInclude() {
+    public void testStoreAndQueryEndTimeInclude() throws Exception {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000);
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
 
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteria = new Criteria();
@@ -311,26 +271,20 @@ public class TraceServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
     }
 
     @Test
-    public void testStoreAndQueryEndTimeExclude() {
+    public void testStoreAndQueryEndTimeExclude() throws Exception {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1200000);
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
 
         Consumer c1 = new Consumer();
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteria = new Criteria();
@@ -344,20 +298,17 @@ public class TraceServiceITest extends AbstractITest {
     }
 
     @Test
-    public void testStoreAndQueryPropertiesInclude() {
+    public void testStoreAndQueryPropertiesInclude() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("hello", "world"));
         trace1.getNodes().add(c1);
 
-        try {
-            tracePublisher.publish(null, Collections.singletonList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteria = new Criteria();
@@ -368,24 +319,21 @@ public class TraceServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
     }
 
     @Test
-    public void testStoreAndQueryPropertiesNotFound() {
+    public void testStoreAndQueryPropertiesNotFound() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("hello", "world"));
         trace1.getNodes().add(c1);
 
-        try {
-            tracePublisher.publish(null, Collections.singletonList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteriaToWait = new Criteria();
@@ -400,21 +348,18 @@ public class TraceServiceITest extends AbstractITest {
     }
 
     @Test
-    public void testStoreAndQueryPropertiesExclude() {
+    public void testStoreAndQueryPropertiesExclude() throws Exception {
         traceService.clear(null);
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("hello", "world"));
         trace1.getNodes().add(c1);
 
-        try {
-            tracePublisher.publish(null, Collections.singletonList(trace1));
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         Criteria criteriaToWait = new Criteria();
         criteriaToWait.addProperty("hello", "world", null);
@@ -430,9 +375,10 @@ public class TraceServiceITest extends AbstractITest {
     }
 
     @Test
-    public void testStoreAndQueryCorrelationsInclude() {
+    public void testStoreAndQueryCorrelationsInclude() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
@@ -443,14 +389,7 @@ public class TraceServiceITest extends AbstractITest {
         c1.getCorrelationIds().add(cid);
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         // Query stored trace
         Criteria criteria = new Criteria();
@@ -461,13 +400,14 @@ public class TraceServiceITest extends AbstractITest {
 
         assertEquals(1, result.size());
 
-        assertEquals("1", result.get(0).getId());
+        assertEquals("1", result.get(0).getFragmentId());
     }
 
     @Test
-    public void testStoreAndQueryCorrelationsExclude() {
+    public void testStoreAndQueryCorrelationsExclude() throws Exception {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         CorrelationIdentifier cid = new CorrelationIdentifier();
@@ -478,14 +418,7 @@ public class TraceServiceITest extends AbstractITest {
         c1.getCorrelationIds().add(cid);
         trace1.getNodes().add(c1);
 
-        List<Trace> traces = new ArrayList<Trace>();
-        traces.add(trace1);
-
-        try {
-            tracePublisher.publish(null, traces);
-        } catch (Exception e1) {
-            fail("Failed to store: " + e1);
-        }
+        tracePublisher.publish(null, Collections.singletonList(trace1));
 
         Criteria criteriaToWait = new Criteria();
         criteriaToWait.getCorrelationIds().add(new CorrelationIdentifier(Scope.Interaction, "myid"));
