@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static io.undertow.Handlers.path;
 
@@ -44,6 +43,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.ClientTestBase;
 import org.hawkular.apm.tests.common.Wait;
@@ -74,7 +74,9 @@ public class ApacheHttpClientITest extends ClientTestBase {
                 .setHandler(path().addPrefixPath("sayHello", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        if (!exchange.getRequestHeaders().contains("test-fault")) {
+                        if (!exchange.getRequestHeaders().contains(Constants.HAWKULAR_APM_TRACEID)) {
+                            exchange.setResponseCode(400);
+                        } else if (!exchange.getRequestHeaders().contains("test-fault")) {
                             if (!exchange.getRequestHeaders().contains("test-no-data")) {
                                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
                                 exchange.getResponseSender().send(HELLO_WORLD);
@@ -181,8 +183,6 @@ public class ApacheHttpClientITest extends ClientTestBase {
                 assertEquals("Unexpected fault response code", 401, status);
             }
 
-        } catch (Exception e) {
-            fail("Failed to perform get: " + e);
         } finally {
             httpclient.close();
         }
@@ -306,8 +306,6 @@ public class ApacheHttpClientITest extends ClientTestBase {
 
             assertEquals(HELLO_WORLD, responseBody);
 
-        } catch (Exception e) {
-            fail("Failed to perform get: " + e);
         } finally {
             httpclient.close();
         }
@@ -317,7 +315,9 @@ public class ApacheHttpClientITest extends ClientTestBase {
         // Check stored traces (including 1 for the test client)
         assertEquals(1, getApmMockServer().getTraces().size());
 
-        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
+        Trace trace = getApmMockServer().getTraces().get(0);
+
+        List<Producer> producers = NodeUtil.findNodes(trace.getNodes(), Producer.class);
 
         assertEquals("Expecting 1 producers", 1, producers.size());
 

@@ -43,7 +43,8 @@ public class ElasticsearchUtil {
     public static final String URI_FIELD = "uri";
     public static final String OPERATION_FIELD = "operation";
     public static final String PRINCIPAL_FIELD = "principal";
-    public static final String ID_FIELD = "id";
+    public static final String TRACE_ID_FIELD = "traceId";
+    public static final String FRAGMENT_ID_FIELD = "fragmentId";
     public static final String TYPE_FIELD = "type";
     public static final String COMPONENT_TYPE_FIELD = "componentType";
     public static final String HOST_NAME_FIELD = "hostName";

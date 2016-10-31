@@ -321,7 +321,8 @@ public class SpanServiceElasticsearch implements SpanService {
         }
 
         Trace trace = new Trace();
-        trace.setId(span.getId());
+        trace.setTraceId(span.getTraceId());
+        trace.setFragmentId(span.getId());
         trace.setTimestamp(span.getTimestamp() != null ? span.getTimestamp() : 0);
         trace.setHostAddress(span.ipv4());
 

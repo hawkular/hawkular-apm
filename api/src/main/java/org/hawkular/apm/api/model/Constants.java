@@ -103,6 +103,12 @@ public class Constants {
     public static final String HAWKULAR_APM_ID = HAWKULAR_APM_PREFIX + "ID";
 
     /**
+     * This constant represents the trace id transferred between a sender and receiver
+     * usually as a header property on the exchanged message.
+     */
+    public static final String HAWKULAR_APM_TRACEID = HAWKULAR_APM_PREFIX + "TRACEID";
+
+    /**
      * This constant represents the transaction name transferred between a sender and receiver
      * usually as a header property on the exchanged message.
      */

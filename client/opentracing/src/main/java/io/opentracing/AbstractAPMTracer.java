@@ -76,6 +76,8 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
                 log.warning("No id available to include in trace state for context = " + spanContext);
             }
 
+            ret.put(Constants.HAWKULAR_APM_TRACEID, span.getTraceContext().getTraceId());
+
             // Check if the transaction name has not currently been set, but
             // has been defined in the span tags - if so copy the value to the trace
             // context so that it can be propagated to invoked services

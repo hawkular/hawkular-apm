@@ -49,7 +49,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
             Node n = item.getNodes().get(0);
 
             CompletionTime ct = new CompletionTime();
-            ct.setId(item.getId());
+            ct.setId(item.getFragmentId());
             ct.setUri(n.getUri());
             ct.setOperation(n.getOperation());
 

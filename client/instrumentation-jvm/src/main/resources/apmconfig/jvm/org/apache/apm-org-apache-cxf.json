@@ -25,6 +25,9 @@
         }],
         "condition": "!isActive() && !isCorrelated(\"org.apache.cxf-jetty\"+$0.hashCode()) && activate($2.getRequestURL().toString(),null,$2.getHeader(\"HWKAPMID\"))",
         "actions": [{
+          "type": "SetTraceId",
+          "valueExpression": "req.getHeader(\"HWKAPMTRACEID\")"
+        },{
           "type": "SetBusinessTransaction",
           "nameExpression": "req.getHeader(\"HWKAPMTXN\")"
         },{

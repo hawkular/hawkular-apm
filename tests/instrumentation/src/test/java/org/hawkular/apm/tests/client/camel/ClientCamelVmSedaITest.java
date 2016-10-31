@@ -18,9 +18,9 @@ package org.hawkular.apm.tests.client.camel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -78,43 +78,42 @@ public class ClientCamelVmSedaITest extends ClientCamelITestBase {
         };
     }
 
-    @Test
-    public void testCreateOrder() {
-        try {
-            URL url = new URL("http://localhost:8180/orders/createOrder");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    protected void placeOrder() throws IOException {
+        URL url = new URL("http://localhost:8180/orders/createOrder");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setRequestMethod("GET");
+        connection.setRequestMethod("GET");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            connection.connect();
+        connection.connect();
 
-            java.io.InputStream is = connection.getInputStream();
+        java.io.InputStream is = connection.getInputStream();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            StringBuilder builder = new StringBuilder();
-            String str = null;
+        StringBuilder builder = new StringBuilder();
+        String str = null;
 
-            while ((str = reader.readLine()) != null) {
-                builder.append(str);
-            }
-
-            is.close();
-
-            assertEquals("Unexpected response code", 200, connection.getResponseCode());
-
-            assertEquals(ORDER_CREATED, builder.toString());
-
-        } catch (Exception e) {
-            fail("Failed to perform testOp: " + e);
+        while ((str = reader.readLine()) != null) {
+            builder.append(str);
         }
+
+        is.close();
+
+        assertEquals("Unexpected response code", 200, connection.getResponseCode());
+
+        assertEquals(ORDER_CREATED, builder.toString());
+    }
+
+    @Test
+    public void testCreateOrder() throws IOException {
+        placeOrder();
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 4);
 
@@ -164,6 +163,22 @@ public class ClientCamelVmSedaITest extends ClientCamelITestBase {
         // Check correlation identifiers match
         checkInteractionCorrelationIdentifiers(creditCheckProducer, creditCheck);
         checkInteractionCorrelationIdentifiers(checkStockProducer, checkStock);
+    }
+
+    @Test
+    public void testTraceIdPropagated() throws IOException {
+        placeOrder();
+
+        Wait.until(() -> getApmMockServer().getTraces().size() == 4);
+
+        // Check stored traces - one btxn represents the test sender
+        assertEquals(4, getApmMockServer().getTraces().size());
+
+        // Check only one trace id used for all trace fragments
+        assertEquals(1, getApmMockServer().getTraces().stream().map(t -> {
+            assertNotNull(t.getTraceId());
+            return t.getTraceId();
+        }).distinct().count());
     }
 
 }

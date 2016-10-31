@@ -53,6 +53,7 @@ public class APMTracerTest {
     private static final String MY_TAG = "myTag";
     private static final String TEST_BTXN = "TestBTxn";
     private static final String TEST_APM_ID = "abcd";
+    private static final String TEST_APM_TRACEID = "xyz";
     private static ObjectMapper mapper;
 
     @BeforeClass
@@ -92,6 +93,8 @@ public class APMTracerTest {
         assertEquals(1, producer.getCorrelationIds().size());
         assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
+
+        assertEquals(trace.getTraceId(), service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
 
         Set<Property> props=producer.getProperties(MY_TAG);
 
@@ -137,6 +140,7 @@ public class APMTracerTest {
         SyncService service = new SyncService(tracer);
 
         Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
         message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
@@ -182,6 +186,8 @@ public class APMTracerTest {
         assertEquals(1, producer.getCorrelationIds().size());
         assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
+
+        assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
     }
 
     @Test
@@ -192,6 +198,7 @@ public class APMTracerTest {
         SyncService service = new SyncService(tracer);
 
         Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
 
         service.handle1(message);
@@ -237,6 +244,8 @@ public class APMTracerTest {
         assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
+        assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
+
         assertEquals(SyncService.SYNC_BTXN_NAME_1,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
@@ -249,6 +258,7 @@ public class APMTracerTest {
         SyncService service = new SyncService(tracer);
 
         Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
 
         // Call alternate 'handle' method that does not set the transaction name straightaway
@@ -295,6 +305,8 @@ public class APMTracerTest {
         assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
+        assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
+
         assertEquals(SyncService.SYNC_BTXN_NAME_2,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
@@ -307,6 +319,7 @@ public class APMTracerTest {
         AsyncService service = new AsyncService(tracer);
 
         Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
         message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
@@ -347,6 +360,8 @@ public class APMTracerTest {
         assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
+        assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
+
         assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
@@ -358,6 +373,7 @@ public class APMTracerTest {
         SpawnService service = new SpawnService(tracer);
 
         Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
         message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
@@ -395,7 +411,7 @@ public class APMTracerTest {
         Consumer consumer2 = (Consumer) trace2.getNodes().get(0);
 
         assertTrue(consumer2.getCorrelationIds().contains(new CorrelationIdentifier(Scope.CausedBy,
-                trace1.getId() + ":0:0")));
+                trace1.getFragmentId() + ":0:0")));
         assertEquals(EndpointUtil.getSourceEndpoint(trace1), EndpointUtil.getSourceEndpoint(trace2));
 
         assertEquals(1, consumer2.getNodes().size());
@@ -418,6 +434,8 @@ public class APMTracerTest {
         assertEquals(producer.getCorrelationIds().get(0), new CorrelationIdentifier(Scope.Interaction,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_ID)));
 
+        assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
+
         assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
@@ -429,6 +447,7 @@ public class APMTracerTest {
         ForkJoinService service = new ForkJoinService(tracer);
 
         Message message = new Message();
+        message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
         message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
 
@@ -437,6 +456,7 @@ public class APMTracerTest {
         assertEquals(1, reporter.getTraces().size());
 
         Trace trace = reporter.getTraces().get(0);
+        assertEquals(TEST_APM_TRACEID, trace.getTraceId());
         assertEquals(TEST_BTXN, trace.getBusinessTransaction());
         assertEquals(1, trace.getNodes().size());
         assertEquals(Consumer.class, trace.getNodes().get(0).getClass());

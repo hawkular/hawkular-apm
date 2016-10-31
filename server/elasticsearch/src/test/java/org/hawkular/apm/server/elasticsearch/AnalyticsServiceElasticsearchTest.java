@@ -122,7 +122,7 @@ public class AnalyticsServiceElasticsearchTest {
     public void testAllDistinctUnboundEndpointsConsumer() throws StoreException {
         List<Trace> traces = new ArrayList<>();
 
-        Trace trace1 = new Trace();
+        Trace trace1 = new Trace().setTraceId("1").setFragmentId("1");
         trace1.setTimestamp(1000);
         traces.add(trace1);
 
@@ -142,7 +142,7 @@ public class AnalyticsServiceElasticsearchTest {
         p1.setUri("uri4");
         c1.getNodes().add(p1);
 
-        Trace trace2 = new Trace();
+        Trace trace2 = new Trace().setTraceId("2").setFragmentId("2");
         trace2.setTimestamp(2000);
         traces.add(trace2);
 
@@ -165,7 +165,7 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testAllDistinctUnboundEndpointsProducer() throws StoreException {
-        Trace trace1 = new Trace();
+        Trace trace1 = new Trace().setTraceId("1").setFragmentId("1");
         trace1.setTimestamp(1000);
 
         Component c1 = new Component();
@@ -202,7 +202,7 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testAllDuplicationUnboundEndpoints() throws StoreException {
-        Trace trace1 = new Trace();
+        Trace trace1 = new Trace().setTraceId("1").setFragmentId("1");
         trace1.setTimestamp(1000);
 
         Component c1 = new Component();
@@ -221,7 +221,7 @@ public class AnalyticsServiceElasticsearchTest {
         p1.setUri("uri3");
         c1.getNodes().add(p1);
 
-        Trace trace2 = new Trace();
+        Trace trace2 = new Trace().setTraceId("1").setFragmentId("2");
         trace2.setTimestamp(2000);
 
         Consumer c2 = new Consumer();
@@ -242,7 +242,7 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testUnboundEndpointsExcludeBTxnConfig() throws StoreException {
-        Trace trace1 = new Trace();
+        Trace trace1 = new Trace().setTraceId("1").setFragmentId("1");
         trace1.setTimestamp(1000);
 
         Consumer c1 = new Consumer();
@@ -314,7 +314,7 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testUnboundEndpointsExcludeBTxnConfigRegex() throws StoreException {
-        Trace trace1 = new Trace();
+        Trace trace1 = new Trace().setTraceId("1").setFragmentId("1");
         trace1.setTimestamp(1000);
 
         Consumer c1 = new Consumer();

@@ -216,7 +216,7 @@ public class SpanServiceElasticsearchTest {
                 SpanUniqueIdGenerator::toUnique);
 
         Trace trace = spanService.getTraceFragment(null, "root");
-        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals("root", trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
 
         InteractionNode rootConsumerNode = ((InteractionNode) trace.getNodes().get(0));
@@ -269,7 +269,7 @@ public class SpanServiceElasticsearchTest {
                 SpanUniqueIdGenerator::toUnique);
 
         Trace trace = spanService.getTraceFragment(null, SpanUniqueIdGenerator.getClientId("root"));
-        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals("root", trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
 
         InteractionNode rootProducerNode = (InteractionNode) trace.getNodes().get(0);
@@ -321,7 +321,7 @@ public class SpanServiceElasticsearchTest {
                 SpanUniqueIdGenerator::toUnique);
 
         Trace trace = spanService.getTraceFragment(null, "root");
-        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals("root", trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
 
         InteractionNode rootConsumerNode = (InteractionNode) trace.getNodes().get(0);
@@ -380,7 +380,7 @@ public class SpanServiceElasticsearchTest {
                 SpanUniqueIdGenerator::toUnique);
 
         Trace trace = spanService.getTrace(null, "root");
-        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals("root", trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
 
         InteractionNode rootConsumerNode = ((InteractionNode) trace.getNodes().get(0));
@@ -455,7 +455,7 @@ public class SpanServiceElasticsearchTest {
                 SpanUniqueIdGenerator::toUnique);
 
         Trace trace = spanService.getTrace(null, "root");
-        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals("root", trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
 
         InteractionNode rootProducerNode = ((InteractionNode) trace.getNodes().get(0));
@@ -510,7 +510,7 @@ public class SpanServiceElasticsearchTest {
                 SpanUniqueIdGenerator::toUnique);
 
         Trace trace = spanService.getTrace(null, "root");
-        Assert.assertEquals("root", trace.getId());
+        Assert.assertEquals("root", trace.getFragmentId());
         Assert.assertEquals(1, trace.getNodes().size());
 
         InteractionNode rootProducerNode = ((InteractionNode) trace.getNodes().get(0));

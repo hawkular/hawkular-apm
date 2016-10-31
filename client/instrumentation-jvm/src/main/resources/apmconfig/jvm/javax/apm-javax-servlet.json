@@ -23,6 +23,9 @@
         }],
         "condition": "!isActive() && activate(uri.getPath(),req.getMethod(),req.getHeader(\"HWKAPMID\"))",
         "actions": [{
+          "type": "SetTraceId",
+          "valueExpression": "req.getHeader(\"HWKAPMTRACEID\")"
+        },{
           "type": "SetBusinessTransaction",
           "nameExpression": "req.getHeader(\"HWKAPMTXN\")"
         },{

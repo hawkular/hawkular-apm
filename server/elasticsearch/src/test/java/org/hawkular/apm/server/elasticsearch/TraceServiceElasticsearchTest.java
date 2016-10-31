@@ -68,17 +68,17 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testQueryBTxnName() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setBusinessTransaction("trace1");
         trace1.setTimestamp(1000);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setBusinessTransaction("trace2");
         trace2.setTimestamp(2000);
 
         Trace trace3 = new Trace();
-        trace3.setId("id3");
+        trace3.setFragmentId("id3");
         trace3.setTimestamp(3000);
 
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
@@ -92,24 +92,24 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
-        assertEquals("id1", result1.get(0).getId());
+        assertEquals("id1", result1.get(0).getFragmentId());
         assertEquals("trace1", result1.get(0).getBusinessTransaction());
     }
 
     @Test
     public void testQueryNoBTxnName() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setBusinessTransaction("trace1");
         trace1.setTimestamp(1000);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setBusinessTransaction("trace2");
         trace2.setTimestamp(2000);
 
         Trace trace3 = new Trace();
-        trace3.setId("id3");
+        trace3.setFragmentId("id3");
         trace3.setTimestamp(3000);
 
         ts.storeFragments(null, Arrays.asList(trace1, trace2, trace3));
@@ -123,14 +123,14 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
-        assertEquals("id3", result1.get(0).getId());
+        assertEquals("id3", result1.get(0).getFragmentId());
         assertNull(result1.get(0).getBusinessTransaction());
     }
 
     @Test
     public void testSearchFragments() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setTimestamp(1000);
 
         Consumer consumer1 = new Consumer();
@@ -162,7 +162,7 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testQuerySinglePropertyAndValueIncluded() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setTimestamp(1000);
 
         Consumer consumer1 = new Consumer();
@@ -170,7 +170,7 @@ public class TraceServiceElasticsearchTest {
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setTimestamp(2000);
 
         Consumer consumer2 = new Consumer();
@@ -178,7 +178,7 @@ public class TraceServiceElasticsearchTest {
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
-        trace3.setId("id3");
+        trace3.setFragmentId("id3");
         trace3.setTimestamp(3000);
 
         Consumer consumer3 = new Consumer();
@@ -196,27 +196,27 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
-        assertEquals("id1", result1.get(0).getId());
+        assertEquals("id1", result1.get(0).getFragmentId());
     }
 
     @Test
     public void testQuerySinglePropertyAndValueExcluded() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setTimestamp(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setTimestamp(2000);
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
-        trace3.setId("id3");
+        trace3.setFragmentId("id3");
         trace3.setTimestamp(3000);
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
@@ -233,35 +233,35 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(2, result1.size());
-        assertTrue((result1.get(0).getId().equals("id2") && result1.get(1).getId().equals("id3"))
-                || (result1.get(0).getId().equals("id3") && result1.get(1).getId().equals("id2")));
+        assertTrue((result1.get(0).getFragmentId().equals("id2") && result1.get(1).getFragmentId().equals("id3"))
+                || (result1.get(0).getFragmentId().equals("id3") && result1.get(1).getFragmentId().equals("id2")));
     }
 
     @Test
     public void testQuerySinglePropertyAndMultiValueIncluded() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setTimestamp(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setTimestamp(2000);
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
-        trace3.setId("id3");
+        trace3.setFragmentId("id3");
         trace3.setTimestamp(3000);
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop3", "value3"));
         trace3.getNodes().add(consumer3);
 
         Trace trace4 = new Trace();
-        trace4.setId("id4");
+        trace4.setFragmentId("id4");
         trace4.setTimestamp(4000);
         Consumer consumer4 = new Consumer();
         consumer4.getProperties().add(new Property("prop1", "value1"));
@@ -280,27 +280,27 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
-        assertEquals("id4", result1.get(0).getId());
+        assertEquals("id4", result1.get(0).getFragmentId());
     }
 
     @Test
     public void testQuerySinglePropertyAndMultiValueExcluded() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setTimestamp(1000);
         Consumer consumer1 = new Consumer();
         consumer1.getProperties().add(new Property("prop1", "value1"));
         trace1.getNodes().add(consumer1);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setTimestamp(2000);
         Consumer consumer2 = new Consumer();
         consumer2.getProperties().add(new Property("prop2", "value2"));
         trace2.getNodes().add(consumer2);
 
         Trace trace3 = new Trace();
-        trace3.setId("id3");
+        trace3.setFragmentId("id3");
         trace3.setTimestamp(3000);
         Consumer consumer3 = new Consumer();
         consumer3.getProperties().add(new Property("prop1", "value3"));
@@ -318,7 +318,7 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
-        assertEquals("id2", result1.get(0).getId());
+        assertEquals("id2", result1.get(0).getFragmentId());
     }
 
     @Test
@@ -333,7 +333,7 @@ public class TraceServiceElasticsearchTest {
 
     protected void testQueryCorrelationId(Scope scope) throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setId("id1");
+        trace1.setFragmentId("id1");
         trace1.setTimestamp(1000);
 
         Consumer c1=new Consumer();
@@ -341,7 +341,7 @@ public class TraceServiceElasticsearchTest {
         trace1.getNodes().add(c1);
 
         Trace trace2 = new Trace();
-        trace2.setId("id2");
+        trace2.setFragmentId("id2");
         trace2.setTimestamp(2000);
 
         Consumer c2=new Consumer();
@@ -359,13 +359,13 @@ public class TraceServiceElasticsearchTest {
 
         assertNotNull(result1);
         assertEquals(1, result1.size());
-        assertEquals("id1", result1.get(0).getId());
+        assertEquals("id1", result1.get(0).getFragmentId());
     }
 
     @Test
     public void testStoreAndRetrieveInteractionTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
@@ -381,7 +381,7 @@ public class TraceServiceElasticsearchTest {
         c1.getNodes().add(p1_2);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
@@ -404,7 +404,7 @@ public class TraceServiceElasticsearchTest {
         Trace result = ts.getTrace(null, "1");
 
         assertNotNull(result);
-        assertEquals("1", result.getId());
+        assertEquals("1", result.getFragmentId());
 
         assertEquals(2, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
@@ -425,7 +425,7 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testStoreAndRetrieveCausedByTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
         c1.setUri("uri1");
@@ -436,25 +436,25 @@ public class TraceServiceElasticsearchTest {
         c1.getNodes().add(comp1);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
         c2.setUri("uri2");
         c2.getProperties().add(new Property("prop1","value1"));
         c2.getProperties().add(new Property("prop2","value2"));
-        c2.addCausedByCorrelationId(trace1.getId()+":0:0");
+        c2.addCausedByCorrelationId(trace1.getFragmentId()+":0:0");
         trace2.getNodes().add(c2);
         Component comp2 = new Component();
         comp2.setUri("comp2");
         c2.getNodes().add(comp2);
 
         Trace trace3 = new Trace();
-        trace3.setId("3");
+        trace3.setFragmentId("3");
         trace3.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c3 = new Consumer();
         c3.setUri("uri3");
         c3.getProperties().add(new Property("prop3","value3"));
-        c3.addCausedByCorrelationId(trace1.getId()+":0:0");
+        c3.addCausedByCorrelationId(trace1.getFragmentId()+":0:0");
         trace3.getNodes().add(c3);
         Component comp3 = new Component();
         comp3.setUri("comp3");
@@ -467,7 +467,7 @@ public class TraceServiceElasticsearchTest {
         Trace result = ts.getTrace(null, "1");
 
         assertNotNull(result);
-        assertEquals("1", result.getId());
+        assertEquals("1", result.getFragmentId());
 
         assertEquals(3, result.allProperties().size());
         assertEquals(1, result.getNodes().size());
@@ -519,7 +519,7 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testGetTraceByIdJustProducerConsumer() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Producer producer = new Producer();
         producer.setUri("uri");
@@ -527,7 +527,7 @@ public class TraceServiceElasticsearchTest {
         trace1.getNodes().add(producer);
 
         Trace trace2 = new Trace();
-        trace2.setId("2");
+        trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer consumer = new Consumer();
         consumer.setUri("uri");
@@ -541,7 +541,7 @@ public class TraceServiceElasticsearchTest {
         Trace result = ts.getTrace(null, "1");
 
         assertNotNull(result);
-        assertEquals("1", result.getId());
+        assertEquals("1", result.getFragmentId());
 
         assertEquals(1, result.getNodes().size());
         assertEquals(Producer.class, result.getNodes().get(0).getClass());

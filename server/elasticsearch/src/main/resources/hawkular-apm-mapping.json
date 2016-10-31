@@ -18,6 +18,14 @@
             "date_detection" : false,
             "numeric_detection": false,
             "properties": {
+                "traceId": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "fragmentId": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
                 "businessTransaction": {
                     "type": "string",
                     "index": "not_analyzed"

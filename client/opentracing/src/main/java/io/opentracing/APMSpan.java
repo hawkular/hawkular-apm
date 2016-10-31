@@ -143,6 +143,13 @@ public class APMSpan extends AbstractSpan {
             if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
                 setInteractionId(parentBuilder.getState().get(Constants.HAWKULAR_APM_ID).toString(),
                         NodeType.Consumer);
+                
+                if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_TRACEID)) {
+                    traceContext.setTraceId(
+                            parentBuilder.getState().get(Constants.HAWKULAR_APM_TRACEID).toString());
+                } else {
+                    log.severe("Trace id has not been propagated");
+                }
                 if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_TXN)) {
                     traceContext.setBusinessTransaction(
                             parentBuilder.getState().get(Constants.HAWKULAR_APM_TXN).toString());
@@ -194,8 +201,9 @@ public class APMSpan extends AbstractSpan {
             // is providing the link back to the referenced node
             nodeBuilder = new NodeBuilder(getNodeBuilder());
 
-            // Propagate business transaction name and reporting level as creating a
+            // Propagate trace id, business transaction name and reporting level as creating a
             // separate trace fragment to represent the 'follows from' activity
+            traceContext.setTraceId(referenced.getTraceContext().getTraceId());
             traceContext.setBusinessTransaction(referenced.getTraceContext().getBusinessTransaction());
             traceContext.setReportingLevel(referenced.getTraceContext().getReportingLevel());
         }

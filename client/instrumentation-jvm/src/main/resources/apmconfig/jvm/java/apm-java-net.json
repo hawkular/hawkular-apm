@@ -52,6 +52,9 @@
           "action": "$0.setRequestProperty(\"HWKAPMID\",id)"
         },{
           "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"HWKAPMTRACEID\",getTraceId())"
+        },{
+          "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
         },{
           "type": "FreeFormAction",
@@ -136,6 +139,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"HWKAPMID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
@@ -225,6 +231,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"HWKAPMID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$0.setRequestProperty(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
           "action": "$0.setRequestProperty(\"HWKAPMTXN\",getBusinessTransactionName())"

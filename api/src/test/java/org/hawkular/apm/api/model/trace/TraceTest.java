@@ -129,22 +129,14 @@ public class TraceTest {
 
     @Test
     public void testInitialFragmentTrue() {
-        Trace trace = new Trace();
-
-        Consumer c1 = new Consumer();
-        trace.getNodes().add(c1);
+        Trace trace = new Trace().setTraceId("1").setFragmentId("1");
 
         assertTrue(trace.initialFragment());
     }
 
     @Test
     public void testInitialFragmentFalse() {
-        Trace trace = new Trace();
-
-        Consumer c1 = new Consumer();
-        c1.addInteractionCorrelationId("myid");
-        trace.getNodes().add(c1);
-
+        Trace trace = new Trace().setTraceId("1").setFragmentId("2");
         assertFalse(trace.initialFragment());
     }
 
@@ -239,7 +231,7 @@ public class TraceTest {
         long baseTime = TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis());
 
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction("testapp");
         trace1.setTimestamp(baseTime); // Within last hour
 
@@ -265,7 +257,7 @@ public class TraceTest {
     @Test
     public void testAllProperties() {
         Trace trace1 = new Trace();
-        trace1.setId("1");
+        trace1.setFragmentId("1");
         trace1.setBusinessTransaction("testapp");
 
         Consumer c1 = new Consumer();

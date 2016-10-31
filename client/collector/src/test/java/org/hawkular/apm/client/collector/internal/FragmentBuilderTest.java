@@ -37,7 +37,7 @@ public class FragmentBuilderTest {
 
         assertNotNull("Trace should not be null", builder.getTrace());
 
-        assertNotNull("Trace id should not be null", builder.getTrace().getId());
+        assertNotNull("Trace id should not be null", builder.getTrace().getFragmentId());
 
         assertTrue("Trace should have no nodes", builder.getTrace().getNodes().isEmpty());
     }

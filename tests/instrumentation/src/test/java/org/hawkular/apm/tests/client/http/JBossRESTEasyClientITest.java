@@ -63,7 +63,9 @@ public class JBossRESTEasyClientITest extends ClientTestBase {
                 .setHandler(path().addPrefixPath("sayHello", new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        if (!exchange.getRequestHeaders().contains("test-fault")) {
+                        if (!exchange.getRequestHeaders().contains(Constants.HAWKULAR_APM_TRACEID)) {
+                            exchange.setResponseCode(400);
+                        } else if (!exchange.getRequestHeaders().contains("test-fault")) {
                             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
                             exchange.getResponseSender().send(HELLO_WORLD);
                         } else {

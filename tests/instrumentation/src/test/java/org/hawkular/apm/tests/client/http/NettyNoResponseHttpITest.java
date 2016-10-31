@@ -63,6 +63,9 @@ public class NettyNoResponseHttpITest extends ClientTestBase {
         server = HttpServer.newServer()
                 .enableWireLogging(LogLevel.DEBUG)
                 .start((req, resp) -> {
+                    if (req.getHeader(Constants.HAWKULAR_APM_TRACEID) == null) {
+                        return resp.setStatus(HttpResponseStatus.BAD_REQUEST);
+                    }
                     if (req.getHttpMethod() == HttpMethod.POST
                             || req.getHttpMethod() == HttpMethod.PUT) {
                         req.getContent().subscribe(bb -> System.out.println("DATA = " + bb.toString()));

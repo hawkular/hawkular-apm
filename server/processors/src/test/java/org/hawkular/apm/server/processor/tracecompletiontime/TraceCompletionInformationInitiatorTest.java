@@ -21,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
@@ -30,6 +29,7 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.EndpointUtil;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.hawkular.apm.server.processor.tracecompletiontime.TraceCompletionInformation.Communication;
 import org.junit.Test;
 
@@ -39,38 +39,30 @@ import org.junit.Test;
 public class TraceCompletionInformationInitiatorTest {
 
     @Test
-    public void testProcessSingleEmptyBtxn() {
+    public void testProcessSingleEmptyTrace() throws RetryAttemptException {
         Trace trace = new Trace();
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
-        try {
-            assertNull(initiator.processOneToOne(null, trace));
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        assertNull(initiator.processOneToOne(null, trace));
     }
 
     @Test
-    public void testProcessSingleConsumerWithInteractionId() {
-        Trace trace = new Trace();
+    public void testProcessSingleNotInitialFragment() throws RetryAttemptException {
+        Trace trace = new Trace().setTraceId("traceId").setFragmentId("anotherId");
         Consumer c = new Consumer();
-        c.addInteractionCorrelationId("myId");
         trace.getNodes().add(c);
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
-        try {
-            assertNull(initiator.processOneToOne(null, trace));
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        assertNull(initiator.processOneToOne(null, trace));
     }
 
     @Test
-    public void testProcessSingleConsumerWithNoInteractionIdNoProducers() {
+    public void testProcessSingleInitialFragmentConsumer() throws RetryAttemptException {
         Trace trace = new Trace();
-        trace.setId("traceId");
+        trace.setTraceId("traceId");
+        trace.setFragmentId("traceId");
         trace.setBusinessTransaction("traceName");
         trace.setTimestamp(100000);
 
@@ -85,19 +77,13 @@ public class TraceCompletionInformationInitiatorTest {
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
-        TraceCompletionInformation ci = null;
-
-        try {
-            ci = initiator.processOneToOne(null, trace);
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        TraceCompletionInformation ci = initiator.processOneToOne(null, trace);
 
         assertNotNull(ci);
         assertEquals(1, ci.getCommunications().size());
         assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
 
-        assertEquals(trace.getId(), ci.getCompletionTime().getId());
+        assertEquals(trace.getTraceId(), ci.getCompletionTime().getId());
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
         assertEquals(c.getEndpointType(), ci.getCompletionTime().getEndpointType());
         assertFalse(ci.getCompletionTime().isInternal());
@@ -109,9 +95,10 @@ public class TraceCompletionInformationInitiatorTest {
     }
 
     @Test
-    public void testProcessSingleComponentNoProducers() {
+    public void testProcessSingleInitialFragmentComponent() throws RetryAttemptException {
         Trace trace = new Trace();
-        trace.setId("traceId");
+        trace.setTraceId("traceId");
+        trace.setFragmentId("traceId");
         trace.setBusinessTransaction("traceName");
         trace.setTimestamp(100000);
 
@@ -125,32 +112,26 @@ public class TraceCompletionInformationInitiatorTest {
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
-        TraceCompletionInformation ci = null;
-
-        try {
-            ci = initiator.processOneToOne(null, trace);
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        TraceCompletionInformation ci = initiator.processOneToOne(null, trace);
 
         assertNotNull(ci);
         assertEquals(1, ci.getCommunications().size());
         assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
 
-        assertEquals(trace.getId(), ci.getCompletionTime().getId());
+        assertEquals(trace.getTraceId(), ci.getCompletionTime().getId());
         assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
         assertEquals(trace.getTimestamp(), ci.getCompletionTime().getTimestamp());
         assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
         assertEquals(200000, ci.getCompletionTime().getDuration());
         assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
         assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());
-
     }
 
     @Test
-    public void testProcessSingleConsumerWithNoInteractionIdWithProducers() {
+    public void testProcessSingleInitialFragmentConsumerWithProducers() throws RetryAttemptException {
         Trace trace = new Trace();
-        trace.setId("traceId");
+        trace.setTraceId("traceId");
+        trace.setFragmentId("traceId");
         trace.setBusinessTransaction("traceName");
         trace.setTimestamp(100);
 
@@ -171,13 +152,7 @@ public class TraceCompletionInformationInitiatorTest {
 
         TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
 
-        TraceCompletionInformation ci = null;
-
-        try {
-            ci = initiator.processOneToOne(null, trace);
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        TraceCompletionInformation ci = initiator.processOneToOne(null, trace);
 
         assertNotNull(ci);
         assertEquals(5, ci.getCommunications().size());

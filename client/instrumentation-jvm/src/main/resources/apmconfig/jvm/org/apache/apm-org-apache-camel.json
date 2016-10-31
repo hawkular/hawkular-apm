@@ -187,6 +187,9 @@
         "location": "ENTRY",
         "condition": "isInstanceOf($2.getFromEndpoint(),org.apache.camel.component.seda.SedaEndpoint.class) && activate($2.getFromEndpoint().getEndpointUri(),null,$2.getProperty(\"HWKAPMID\"))",
         "actions": [{
+          "type": "SetTraceId",
+          "valueExpression": "$2.getProperty(\"HWKAPMTRACEID\")"
+        },{
           "type": "SetBusinessTransaction",
           "nameExpression": "$2.getProperty(\"HWKAPMTXN\")"
         },{
@@ -253,6 +256,9 @@
         },{
           "type": "FreeFormAction",
           "action": "$2.setProperty(\"HWKAPMID\",id)"
+        },{
+          "type": "FreeFormAction",
+          "action": "$2.setProperty(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
           "action": "$2.setProperty(\"HWKAPMTXN\",getBusinessTransactionName())"

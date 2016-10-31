@@ -45,7 +45,10 @@ public class Trace {
     // objects to the top level, to enable them to be queried.
 
     @JsonInclude
-    private String id;
+    private String traceId;
+
+    @JsonInclude
+    private String fragmentId;
 
     /**
      * Timestamp in microseconds
@@ -72,18 +75,42 @@ public class Trace {
     }
 
     /**
-     * @return the id
+     * @return the traceId
      */
-    public String getId() {
-        return id;
+    public String getTraceId() {
+        return traceId;
     }
 
     /**
-     * @param id the id to set
+     * This method sets the trace id. When the fragment and trace id
+     * are the same value, it means the fragment is the initial fragment
+     * for the trace instance.
+     *
+     * @param traceId the traceId to set
      * @return The trace
      */
-    public Trace setId(String id) {
-        this.id = id;
+    public Trace setTraceId(String traceId) {
+        this.traceId = traceId;
+        return this;
+    }
+
+    /**
+     * @return the fragmentId
+     */
+    public String getFragmentId() {
+        return fragmentId;
+    }
+
+    /**
+     * This method sets the fragment id. When the fragment and trace id
+     * are the same value, it means the fragment is the initial fragment
+     * for the trace instance.
+     *
+     * @param fragmentId the fragmentId to set
+     * @return The trace
+     */
+    public Trace setFragmentId(String fragmentId) {
+        this.fragmentId = fragmentId;
         return this;
     }
 
@@ -237,8 +264,7 @@ public class Trace {
      * @return Whether this is the initial fragment
      */
     public boolean initialFragment() {
-        // Initial fragment, if the first node has no correlation ids
-        return !getNodes().isEmpty() && getNodes().get(0).getCorrelationIds().isEmpty();
+        return getTraceId().equals(getFragmentId());
     }
 
     /**
@@ -295,81 +321,71 @@ public class Trace {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
         result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
+        result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
         result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         Trace other = (Trace) obj;
-        if (hostAddress == null) {
-            if (other.hostAddress != null) {
-                return false;
-            }
-        } else if (!hostAddress.equals(other.hostAddress)) {
-            return false;
-        }
-        if (hostName == null) {
-            if (other.hostName != null) {
-                return false;
-            }
-        } else if (!hostName.equals(other.hostName)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
         if (businessTransaction == null) {
-            if (other.businessTransaction != null) {
+            if (other.businessTransaction != null)
                 return false;
-            }
-        } else if (!businessTransaction.equals(other.businessTransaction)) {
+        } else if (!businessTransaction.equals(other.businessTransaction))
             return false;
-        }
+        if (hostAddress == null) {
+            if (other.hostAddress != null)
+                return false;
+        } else if (!hostAddress.equals(other.hostAddress))
+            return false;
+        if (hostName == null) {
+            if (other.hostName != null)
+                return false;
+        } else if (!hostName.equals(other.hostName))
+            return false;
+        if (fragmentId == null) {
+            if (other.fragmentId != null)
+                return false;
+        } else if (!fragmentId.equals(other.fragmentId))
+            return false;
         if (nodes == null) {
-            if (other.nodes != null) {
+            if (other.nodes != null)
                 return false;
-            }
-        } else if (!nodes.equals(other.nodes)) {
+        } else if (!nodes.equals(other.nodes))
             return false;
-        }
         if (principal == null) {
-            if (other.principal != null) {
+            if (other.principal != null)
                 return false;
-            }
-        } else if (!principal.equals(other.principal)) {
+        } else if (!principal.equals(other.principal))
             return false;
-        }
-        if (timestamp != other.timestamp) {
+        if (timestamp != other.timestamp)
             return false;
-        }
+        if (traceId == null) {
+            if (other.traceId != null)
+                return false;
+        } else if (!traceId.equals(other.traceId))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "Trace [id=" + id + ", timestamp=" + timestamp
-                + ", businessTransaction=" + businessTransaction + ", principal="
-                + principal + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", nodes=" + nodes + "]";
+        return "Trace [id=" + fragmentId + ", traceId=" + traceId + ", timestamp=" + timestamp + ", businessTransaction="
+                + businessTransaction + ", principal=" + principal + ", hostName=" + hostName + ", hostAddress="
+                + hostAddress + ", nodes=" + nodes + "]";
     }
 
 }

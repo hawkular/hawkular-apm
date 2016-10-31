@@ -49,7 +49,7 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
         if (item.getBusinessTransaction() != null && !item.getBusinessTransaction().trim().isEmpty()
                 && !item.getNodes().isEmpty()) {
             Notification notification = new Notification();
-            notification.setId(item.getId());
+            notification.setId(item.getFragmentId());
             notification.setBusinessTransaction(item.getBusinessTransaction());
             notification.setTimestamp(item.getTimestamp());
             notification.setHostAddress(item.getHostAddress());
