@@ -18,6 +18,7 @@ package org.hawkular.apm.server.processor.nodedetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,7 +90,9 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
 
             if (!ignoreNode) {
                 NodeDetails nd = new NodeDetails();
-                nd.setId(trace.getFragmentId() + "-" + rts.size());
+                nd.setId(UUID.randomUUID().toString());
+                nd.setTraceId(trace.getTraceId());
+                nd.setFragmentId(trace.getFragmentId());
                 nd.setBusinessTransaction(trace.getBusinessTransaction());
                 nd.setCorrelationIds(n.getCorrelationIds());
                 nd.setElapsed(n.getDuration());

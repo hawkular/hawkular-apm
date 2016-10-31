@@ -35,6 +35,12 @@ public class Notification implements ApmEvent {
     private String id;
 
     @JsonInclude
+    private String traceId;
+
+    @JsonInclude
+    private String fragmentId;
+
+    @JsonInclude
     private String businessTransaction;
 
     /**
@@ -68,6 +74,34 @@ public class Notification implements ApmEvent {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the traceId
+     */
+    public String getTraceId() {
+        return traceId;
+    }
+
+    /**
+     * @param traceId the traceId to set
+     */
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
+    /**
+     * @return the fragmentId
+     */
+    public String getFragmentId() {
+        return fragmentId;
+    }
+
+    /**
+     * @param fragmentId the fragmentId to set
+     */
+    public void setFragmentId(String fragmentId) {
+        this.fragmentId = fragmentId;
     }
 
     /**
@@ -156,9 +190,9 @@ public class Notification implements ApmEvent {
 
     @Override
     public String toString() {
-        return "Notification [id=" + id + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp
-                + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", principal=" + principal + ", issues="
-                + issues + "]";
+        return "Notification [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId
+                + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp + ", hostName="
+                + hostName + ", hostAddress=" + hostAddress + ", principal=" + principal + ", issues=" + issues + "]";
     }
 
 }

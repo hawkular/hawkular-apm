@@ -34,6 +34,10 @@ public class SourceInfo implements Serializable, ApmEvent {
 
     private String id;
 
+    private String traceId;
+
+    private String fragmentId;
+
     private EndpointRef endpoint;
 
     /**
@@ -45,8 +49,6 @@ public class SourceInfo implements Serializable, ApmEvent {
      * Duration in microseconds
      */
     private long duration = 0;
-
-    private String fragmentId;
 
     private String hostName;
 
@@ -70,10 +72,11 @@ public class SourceInfo implements Serializable, ApmEvent {
      */
     public SourceInfo(SourceInfo si) {
         this.id = si.id;
+        this.traceId = si.traceId;
+        this.fragmentId = si.fragmentId;
         this.endpoint = si.endpoint;
         this.timestamp = si.timestamp;
         this.duration = si.duration;
-        this.fragmentId = si.fragmentId;
         this.hostName = si.hostName;
         this.hostAddress = si.hostAddress;
         this.multipleConsumers = si.multipleConsumers;
@@ -92,6 +95,34 @@ public class SourceInfo implements Serializable, ApmEvent {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the traceId
+     */
+    public String getTraceId() {
+        return traceId;
+    }
+
+    /**
+     * @param traceId the traceId to set
+     */
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
+    /**
+     * @return the fragmentId
+     */
+    public String getFragmentId() {
+        return fragmentId;
+    }
+
+    /**
+     * @param fragmentId the fragmentId to set
+     */
+    public void setFragmentId(String fragmentId) {
+        this.fragmentId = fragmentId;
     }
 
     /**
@@ -134,20 +165,6 @@ public class SourceInfo implements Serializable, ApmEvent {
      */
     public void setDuration(long duration) {
         this.duration = duration;
-    }
-
-    /**
-     * @return the fragmentId
-     */
-    public String getFragmentId() {
-        return fragmentId;
-    }
-
-    /**
-     * @param fragmentId the fragmentId to set
-     */
-    public void setFragmentId(String fragmentId) {
-        this.fragmentId = fragmentId;
     }
 
     /**
@@ -242,8 +259,9 @@ public class SourceInfo implements Serializable, ApmEvent {
     @Override
     public String toString() {
         return "SourceInfo [id=" + id + ", endpoint=" + endpoint + ", timestamp=" + timestamp + ", duration="
-                + duration + ", fragmentId=" + fragmentId + ", hostName=" + hostName + ", hostAddress=" + hostAddress
-                + ", multipleConsumers=" + multipleConsumers + ", properties=" + properties + "]";
+                + duration + ", traceId=" + traceId + ", fragmentId=" + fragmentId + ", hostName=" + hostName
+                + ", hostAddress=" + hostAddress + ", multipleConsumers=" + multipleConsumers + ", properties="
+                + properties + "]";
     }
 
     @Override
@@ -259,6 +277,7 @@ public class SourceInfo implements Serializable, ApmEvent {
         result = prime * result + (multipleConsumers ? 1231 : 1237);
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
         return result;
     }
 
@@ -306,6 +325,11 @@ public class SourceInfo implements Serializable, ApmEvent {
         } else if (!properties.equals(other.properties))
             return false;
         if (timestamp != other.timestamp)
+            return false;
+        if (traceId == null) {
+            if (other.traceId != null)
+                return false;
+        } else if (!traceId.equals(other.traceId))
             return false;
         return true;
     }

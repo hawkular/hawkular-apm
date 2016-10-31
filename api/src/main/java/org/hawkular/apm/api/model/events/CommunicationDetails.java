@@ -73,6 +73,8 @@ public class CommunicationDetails implements Serializable, ApmEvent {
      */
     private long timestampOffset = 0;
 
+    private String traceId;
+
     private String sourceFragmentId;
 
     private String sourceHostName;
@@ -271,6 +273,20 @@ public class CommunicationDetails implements Serializable, ApmEvent {
     }
 
     /**
+     * @return the traceId
+     */
+    public String getTraceId() {
+        return traceId;
+    }
+
+    /**
+     * @param traceId the traceId to set
+     */
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
+    /**
      * @return the sourceFragmentId
      */
     public String getSourceFragmentId() {
@@ -449,9 +465,9 @@ public class CommunicationDetails implements Serializable, ApmEvent {
                 + ", source=" + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal="
                 + internal + ", timestamp=" + timestamp + ", latency=" + latency + ", consumerDuration="
                 + consumerDuration + ", producerDuration=" + producerDuration + ", timestampOffset=" + timestampOffset
-                + ", sourceFragmentId=" + sourceFragmentId + ", sourceHostName=" + sourceHostName
-                + ", sourceHostAddress=" + sourceHostAddress + ", targetFragmentId=" + targetFragmentId
-                + ", targetHostName=" + targetHostName + ", targetHostAddress=" + targetHostAddress
+                + ", traceId=" + traceId + ", sourceFragmentId=" + sourceFragmentId + ", sourceHostName="
+                + sourceHostName + ", sourceHostAddress=" + sourceHostAddress + ", targetFragmentId="
+                + targetFragmentId + ", targetHostName=" + targetHostName + ", targetHostAddress=" + targetHostAddress
                 + ", targetFragmentDuration=" + targetFragmentDuration + ", principal=" + principal + ", properties="
                 + properties + ", outbound=" + outbound + "]";
     }
@@ -482,6 +498,7 @@ public class CommunicationDetails implements Serializable, ApmEvent {
         result = prime * result + ((targetHostName == null) ? 0 : targetHostName.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + (int) (timestampOffset ^ (timestampOffset >>> 32));
+        result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
         return result;
     }
 
@@ -579,6 +596,11 @@ public class CommunicationDetails implements Serializable, ApmEvent {
         if (timestamp != other.timestamp)
             return false;
         if (timestampOffset != other.timestampOffset)
+            return false;
+        if (traceId == null) {
+            if (other.traceId != null)
+                return false;
+        } else if (!traceId.equals(other.traceId))
             return false;
         return true;
     }

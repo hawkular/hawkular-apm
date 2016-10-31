@@ -39,6 +39,7 @@ public class NotificationDeriverTest {
         NotificationDeriver deriver = new NotificationDeriver();
 
         Trace trace = new Trace();
+        trace.setTraceId("mytraceid");
         trace.setFragmentId("myid");
         trace.setBusinessTransaction("mytrace");
         trace.setTimestamp(1000);
@@ -81,7 +82,8 @@ public class NotificationDeriverTest {
         }
 
         assertNotNull(notification);
-        assertEquals(trace.getFragmentId(), notification.getId());
+        assertEquals(trace.getTraceId(), notification.getTraceId());
+        assertEquals(trace.getFragmentId(), notification.getFragmentId());
         assertEquals(trace.getBusinessTransaction(), notification.getBusinessTransaction());
         assertEquals(trace.getTimestamp(), notification.getTimestamp());
         assertEquals(trace.getHostAddress(), notification.getHostAddress());
@@ -99,6 +101,7 @@ public class NotificationDeriverTest {
         NotificationDeriver deriver = new NotificationDeriver();
 
         Trace trace = new Trace();
+        trace.setTraceId("mytraceid");
         trace.setFragmentId("myid");
         trace.setBusinessTransaction("mytrace");
         trace.setTimestamp(1000);
