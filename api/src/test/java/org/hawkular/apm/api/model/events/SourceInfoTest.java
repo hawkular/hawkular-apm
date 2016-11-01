@@ -18,10 +18,10 @@ package org.hawkular.apm.api.model.events;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
@@ -38,7 +38,7 @@ import org.junit.Test;
 public class SourceInfoTest {
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws IOException, ClassNotFoundException {
         Set<Property> props = new HashSet<Property>();
         Property prop1 = new Property();
         prop1.setName("testProp1");
@@ -55,6 +55,7 @@ public class SourceInfoTest {
         SourceInfo si = new SourceInfo();
         si.setId("testId");
         si.setDuration(500);
+        si.setTraceId("traceId");
         si.setFragmentId("fragId");
         si.setHostAddress("hostAddr");
         si.setHostName("hostName");
@@ -65,27 +66,22 @@ public class SourceInfoTest {
 
         SourceInfo result = null;
 
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
 
-            oos.writeObject(si);
+        oos.writeObject(si);
 
-            oos.flush();
-            oos.close();
-            baos.close();
+        oos.flush();
+        oos.close();
+        baos.close();
 
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bais);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
 
-            result = (SourceInfo) ois.readObject();
+        result = (SourceInfo) ois.readObject();
 
-            bais.close();
-            ois.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to serialize: " + e);
-        }
+        bais.close();
+        ois.close();
 
         assertNotNull(result);
 
@@ -93,7 +89,7 @@ public class SourceInfoTest {
     }
 
     @Test
-    public void testSerializeAllNullStringFields() {
+    public void testSerializeAllNullStringFields() throws IOException, ClassNotFoundException {
         Set<Property> props = new HashSet<Property>();
         Property prop1 = new Property();
         prop1.setType(PropertyType.Text);
@@ -105,27 +101,22 @@ public class SourceInfoTest {
 
         SourceInfo result = null;
 
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
 
-            oos.writeObject(si);
+        oos.writeObject(si);
 
-            oos.flush();
-            oos.close();
-            baos.close();
+        oos.flush();
+        oos.close();
+        baos.close();
 
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bais);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
 
-            result = (SourceInfo) ois.readObject();
+        result = (SourceInfo) ois.readObject();
 
-            bais.close();
-            ois.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to serialize: " + e);
-        }
+        bais.close();
+        ois.close();
 
         assertNotNull(result);
 

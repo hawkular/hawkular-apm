@@ -17,6 +17,7 @@
 package org.hawkular.apm.server.processor.notification;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +50,9 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
         if (item.getBusinessTransaction() != null && !item.getBusinessTransaction().trim().isEmpty()
                 && !item.getNodes().isEmpty()) {
             Notification notification = new Notification();
-            notification.setId(item.getFragmentId());
+            notification.setId(UUID.randomUUID().toString());
+            notification.setTraceId(item.getTraceId());
+            notification.setFragmentId(item.getFragmentId());
             notification.setBusinessTransaction(item.getBusinessTransaction());
             notification.setTimestamp(item.getTimestamp());
             notification.setHostAddress(item.getHostAddress());

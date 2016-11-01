@@ -124,6 +124,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret.getProperties().addAll(consumer.getProperties());
                         ret.getProperties().addAll(si.getProperties());
 
+                        ret.setTraceId(si.getTraceId());
                         ret.setSourceFragmentId(si.getFragmentId());
                         ret.setSourceHostName(si.getHostName());
                         ret.setSourceHostAddress(si.getHostAddress());

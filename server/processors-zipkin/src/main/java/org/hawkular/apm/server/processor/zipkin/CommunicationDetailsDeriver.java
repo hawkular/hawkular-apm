@@ -110,6 +110,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Span, Communi
                     ret.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, item.service()));
                 }
 
+                ret.setTraceId(item.getTraceId());
                 ret.setSourceFragmentId(si.getFragmentId());
                 ret.setSourceHostName(si.getHostName());
                 ret.setSourceHostAddress(si.getHostAddress());

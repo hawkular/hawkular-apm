@@ -119,6 +119,7 @@ public class SourceInfoUtil {
 
         si.setTimestamp(node.getTimestamp());
         si.setDuration(node.getDuration());
+        si.setTraceId(trace.getTraceId());
         si.setFragmentId(trace.getFragmentId());
         si.setHostName(trace.getHostName());
         si.setHostAddress(trace.getHostAddress());
@@ -212,6 +213,7 @@ public class SourceInfoUtil {
                 if (clientSpan.getTimestamp() != null) {
                     si.setTimestamp(clientSpan.getTimestamp());
                 }
+                si.setTraceId(clientSpan.getTraceId());
                 si.setFragmentId(clientSpan.getId());
 
                 si.getProperties().addAll(clientSpan.binaryAnnotationMapping().getProperties());

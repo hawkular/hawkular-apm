@@ -40,6 +40,12 @@ public class NodeDetails implements ApmEvent {
     private String id;
 
     @JsonInclude
+    private String traceId;
+
+    @JsonInclude
+    private String fragmentId;
+
+    @JsonInclude
     private String businessTransaction;
 
     @JsonInclude
@@ -100,6 +106,34 @@ public class NodeDetails implements ApmEvent {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the traceId
+     */
+    public String getTraceId() {
+        return traceId;
+    }
+
+    /**
+     * @param traceId the traceId to set
+     */
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
+    /**
+     * @return the fragmentId
+     */
+    public String getFragmentId() {
+        return fragmentId;
+    }
+
+    /**
+     * @param fragmentId the fragmentId to set
+     */
+    public void setFragmentId(String fragmentId) {
+        this.fragmentId = fragmentId;
     }
 
     /**
@@ -334,12 +368,15 @@ public class NodeDetails implements ApmEvent {
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
+        result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
+        result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
@@ -373,6 +410,16 @@ public class NodeDetails implements ApmEvent {
             return false;
         if (elapsed != other.elapsed)
             return false;
+        if (fragmentId == null) {
+            if (other.fragmentId != null)
+                return false;
+        } else if (!fragmentId.equals(other.fragmentId))
+            return false;
+        if (hostAddress == null) {
+            if (other.hostAddress != null)
+                return false;
+        } else if (!hostAddress.equals(other.hostAddress))
+            return false;
         if (hostName == null) {
             if (other.hostName != null)
                 return false;
@@ -400,6 +447,11 @@ public class NodeDetails implements ApmEvent {
             return false;
         if (timestamp != other.timestamp)
             return false;
+        if (traceId == null) {
+            if (other.traceId != null)
+                return false;
+        } else if (!traceId.equals(other.traceId))
+            return false;
         if (type != other.type)
             return false;
         if (uri == null) {
@@ -412,11 +464,12 @@ public class NodeDetails implements ApmEvent {
 
     @Override
     public String toString() {
-        return "NodeDetails [id=" + id + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri="
-                + uri + ", timestamp=" + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType="
-                + componentType + ", operation=" + operation + ", hostName=" + hostName
-                + ", principal=" + principal + ", properties=" + properties
-                + ", correlationIds=" + correlationIds + "]";
+        return "NodeDetails [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId
+                + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri=" + uri + ", timestamp="
+                + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType=" + componentType
+                + ", operation=" + operation + ", hostName=" + hostName + ", hostAddress=" + hostAddress
+                + ", principal=" + principal + ", properties=" + properties + ", correlationIds=" + correlationIds
+                + "]";
     }
 
 }

@@ -81,10 +81,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         return nd;
     }
 
-
     private NodeDetails createTypedNodeDetails(Span span) {
         NodeDetails nd = new NodeDetails();
         nd.setId(span.getId());
+        nd.setTraceId(span.getTraceId());
 
         nd.setType(NodeType.Component);
         nd.setComponentType(span.binaryAnnotationMapping().getComponentType());
