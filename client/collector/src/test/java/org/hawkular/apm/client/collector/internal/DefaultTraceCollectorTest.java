@@ -56,7 +56,8 @@ import org.junit.Test;
  */
 public class DefaultTraceCollectorTest {
 
-    private static final String BTXN_PRINCIPAL = "BTxnPrincipal";
+    private static final String TRACE_ID = "traceId";
+    private static final String PRINCIPAL = "TestPrincipal";
     private static final String BTXN_NAME = "BTxnName";
     private static final String TEST_TENANT = "TestTenant";
     private static final String TYPE = "TestType";
@@ -797,11 +798,11 @@ public class DefaultTraceCollectorTest {
         FragmentBuilder parent = new FragmentBuilder();
         FragmentBuilder spawned = new FragmentBuilder();
 
-        Trace parentBTxn = parent.getTrace();
-        Trace spawnedBTxn = spawned.getTrace();
+        Trace parentTrace = parent.getTrace();
+        Trace spawnedTrace = spawned.getTrace();
 
-        parentBTxn.setBusinessTransaction(BTXN_NAME);
-        parentBTxn.setPrincipal(BTXN_PRINCIPAL);
+        parentTrace.setBusinessTransaction(BTXN_NAME);
+        parentTrace.setPrincipal(PRINCIPAL);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -821,10 +822,10 @@ public class DefaultTraceCollectorTest {
         assertEquals(OP, internalProducer.getOperation());
 
         // Check that spawned fragment has Consumer as top level node
-        assertEquals(1, spawnedBTxn.getNodes().size());
-        assertTrue(spawnedBTxn.getNodes().get(0) instanceof Consumer);
+        assertEquals(1, spawnedTrace.getNodes().size());
+        assertTrue(spawnedTrace.getNodes().get(0) instanceof Consumer);
 
-        Consumer internalConsumer=(Consumer)spawnedBTxn.getNodes().get(0);
+        Consumer internalConsumer=(Consumer)spawnedTrace.getNodes().get(0);
         assertEquals(URI, internalConsumer.getUri());
         assertEquals(OP, internalConsumer.getOperation());
 
@@ -837,8 +838,31 @@ public class DefaultTraceCollectorTest {
         assertEquals(ipids.get(0), icids.get(0));
 
         // Check trace details transferred
-        assertEquals(BTXN_NAME, spawnedBTxn.getBusinessTransaction());
-        assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
+        assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
+        assertEquals(PRINCIPAL, spawnedTrace.getPrincipal());
+    }
+
+    @Test
+    public void testSpawnFragmentSameTraceId() {
+        DefaultTraceCollector collector = new DefaultTraceCollector();
+
+        FragmentBuilder parent = new FragmentBuilder();
+        FragmentBuilder spawned = new FragmentBuilder();
+
+        Trace parentTrace = parent.getTrace();
+        Trace spawnedTrace = spawned.getTrace();
+
+        parentTrace.setTraceId(TRACE_ID);
+
+        // Create top level consumer in parent
+        Consumer parentConsumer = new Consumer();
+
+        collector.push(null, parent, parentConsumer);
+
+        collector.spawnFragment(parent, parentConsumer, -1, spawned);
+
+        // Check trace details transferred
+        assertEquals(TRACE_ID, spawnedTrace.getTraceId());
     }
 
     @Test
@@ -848,11 +872,11 @@ public class DefaultTraceCollectorTest {
         FragmentBuilder parent = new FragmentBuilder();
         FragmentBuilder spawned = new FragmentBuilder();
 
-        Trace parentBTxn = parent.getTrace();
-        Trace spawnedBTxn = spawned.getTrace();
+        Trace parentTrace = parent.getTrace();
+        Trace spawnedTrace = spawned.getTrace();
 
-        parentBTxn.setBusinessTransaction(BTXN_NAME);
-        parentBTxn.setPrincipal(BTXN_PRINCIPAL);
+        parentTrace.setBusinessTransaction(BTXN_NAME);
+        parentTrace.setPrincipal(PRINCIPAL);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -879,10 +903,10 @@ public class DefaultTraceCollectorTest {
         assertEquals(OP, internalProducer.getOperation());
 
         // Check that spawned fragment has Consumer as top level node
-        assertEquals(1, spawnedBTxn.getNodes().size());
-        assertTrue(spawnedBTxn.getNodes().get(0) instanceof Consumer);
+        assertEquals(1, spawnedTrace.getNodes().size());
+        assertTrue(spawnedTrace.getNodes().get(0) instanceof Consumer);
 
-        Consumer internalConsumer=(Consumer)spawnedBTxn.getNodes().get(0);
+        Consumer internalConsumer=(Consumer)spawnedTrace.getNodes().get(0);
         assertEquals(URI, internalConsumer.getUri());
         assertEquals(OP, internalConsumer.getOperation());
 
@@ -895,8 +919,8 @@ public class DefaultTraceCollectorTest {
         assertEquals(ipids.get(0), icids.get(0));
 
         // Check trace details transferred
-        assertEquals(BTXN_NAME, spawnedBTxn.getBusinessTransaction());
-        assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
+        assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
+        assertEquals(PRINCIPAL, spawnedTrace.getPrincipal());
     }
 
     @Test
@@ -906,11 +930,11 @@ public class DefaultTraceCollectorTest {
         FragmentBuilder parent = new FragmentBuilder();
         FragmentBuilder spawned = new FragmentBuilder();
 
-        Trace parentBTxn = parent.getTrace();
-        Trace spawnedBTxn = spawned.getTrace();
+        Trace parentTrace = parent.getTrace();
+        Trace spawnedTrace = spawned.getTrace();
 
-        parentBTxn.setBusinessTransaction(BTXN_NAME);
-        parentBTxn.setPrincipal(BTXN_PRINCIPAL);
+        parentTrace.setBusinessTransaction(BTXN_NAME);
+        parentTrace.setPrincipal(PRINCIPAL);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -930,10 +954,10 @@ public class DefaultTraceCollectorTest {
         assertEquals(OP, internalProducer.getOperation());
 
         // Check that spawned fragment has Consumer as top level node
-        assertEquals(1, spawnedBTxn.getNodes().size());
-        assertTrue(spawnedBTxn.getNodes().get(0) instanceof Consumer);
+        assertEquals(1, spawnedTrace.getNodes().size());
+        assertTrue(spawnedTrace.getNodes().get(0) instanceof Consumer);
 
-        Consumer internalConsumer=(Consumer)spawnedBTxn.getNodes().get(0);
+        Consumer internalConsumer=(Consumer)spawnedTrace.getNodes().get(0);
         assertEquals(URI, internalConsumer.getUri());
         assertEquals(OP, internalConsumer.getOperation());
 
@@ -946,8 +970,8 @@ public class DefaultTraceCollectorTest {
         assertEquals(ipids.get(0), icids.get(0));
 
         // Check trace details transferred
-        assertEquals(BTXN_NAME, spawnedBTxn.getBusinessTransaction());
-        assertEquals(BTXN_PRINCIPAL, spawnedBTxn.getPrincipal());
+        assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
+        assertEquals(PRINCIPAL, spawnedTrace.getPrincipal());
     }
 
     public static class TestTraceService implements TraceService, TracePublisher {
