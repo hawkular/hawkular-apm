@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.common.collect.Sets;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
@@ -40,7 +41,6 @@ import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
-import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
@@ -467,14 +467,14 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1 = new CompletionTime();
         ct1.setBusinessTransaction("trace1");
         ct1.setTimestamp(1000);
-        ct1.setPrincipal("p1");
+        ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1.getProperties().add(new Property("prop1", "value1"));
         ct1.getProperties().add(new Property("prop2", "value2"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction("trace1");
         ct2.setTimestamp(2000);
-        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property("prop3", "value3"));
         ct2.getProperties().add(new Property("prop2", "value2"));
 
@@ -485,55 +485,27 @@ public class AnalyticsServiceElasticsearchTest {
             .setStartTime(1)
             .setEndTime(0);
 
-        Wait.until(() -> analytics.getPropertyInfo(null, criteria).size() == 3);
+        Wait.until(() -> analytics.getPropertyInfo(null, criteria).size() == 4);
         java.util.List<PropertyInfo> pis = analytics.getPropertyInfo(null, criteria);
 
         assertNotNull(pis);
-        assertEquals(3, pis.size());
-        assertTrue(pis.get(0).getName().equals("prop1"));
-        assertTrue(pis.get(1).getName().equals("prop2"));
-        assertTrue(pis.get(2).getName().equals("prop3"));
+        assertEquals(4, pis.size());
+        assertEquals(Sets.newHashSet("prop1", "prop2", "prop3", Constants.PROP_PRINCIPAL),
+                pis.stream().map(pi -> pi.getName()).collect(Collectors.toSet()));
 
         Criteria criteria2 =new Criteria()
             .setBusinessTransaction("trace1")
-            .setPrincipal("p1")
+            .addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
             .setStartTime(1)
             .setEndTime(0);
 
-        Wait.until(() -> analytics.getPropertyInfo(null, criteria2).size() == 2);
+        Wait.until(() -> analytics.getPropertyInfo(null, criteria2).size() == 3);
         pis = analytics.getPropertyInfo(null, criteria2);
 
         assertNotNull(pis);
-        assertEquals(2, pis.size());
-        assertTrue(pis.get(0).getName().equals("prop1"));
-        assertTrue(pis.get(1).getName().equals("prop2"));
-    }
-
-    @Test
-    public void testPrincipalInfo() throws StoreException {
-        Trace trace1 = new Trace();
-        trace1.setBusinessTransaction("trace1");
-        trace1.setTimestamp(1000);
-        trace1.setPrincipal("p1");
-
-        Trace trace2 = new Trace();
-        trace2.setBusinessTransaction("trace1");
-        trace2.setTimestamp(2000);
-
-        bts.storeFragments(null, Arrays.asList(trace1, trace2));
-
-        Criteria criteria=new Criteria()
-            .setBusinessTransaction("trace1")
-            .setStartTime(1)
-            .setEndTime(0);
-
-        Wait.until(() -> analytics.getPrincipalInfo(null, criteria).size() == 1);
-        java.util.List<PrincipalInfo> pis = analytics.getPrincipalInfo(null, criteria);
-
-        assertNotNull(pis);
-        assertEquals(1, pis.size());
-        assertTrue(pis.get(0).getId().equals("p1"));
-        assertEquals(1, pis.get(0).getCount());
+        assertEquals(3, pis.size());
+        assertEquals(Sets.newHashSet("prop1", "prop2", Constants.PROP_PRINCIPAL),
+                pis.stream().map(pi -> pi.getName()).collect(Collectors.toSet()));
     }
 
     @Test
@@ -541,20 +513,20 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1 = new CompletionTime();
         ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        ct1.setPrincipal("p1");
+        ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1.setUri("uri1");
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setUri("uri2");
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
-        ct3.setPrincipal("p1");
+        ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setUri("uri1");
 
@@ -574,20 +546,20 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1 = new CompletionTime();
         ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        ct1.setPrincipal("p1");
+        ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1.setUri("uri1");
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setUri("uri2");
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
-        ct3.setPrincipal("p1");
+        ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setUri("uri1");
 
@@ -607,20 +579,17 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1 = new CompletionTime();
         ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        ct1.setPrincipal("p1");
         ct1.setOperation(OP1);
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        ct2.setPrincipal("p2");
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setOperation(OP2);
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
-        ct3.setPrincipal("p1");
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setOperation(OP1);
 
@@ -725,24 +694,24 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1 = new CompletionTime();
         ct1.setBusinessTransaction(BTXN);
         ct1.setTimestamp(1000);
-        ct1.setPrincipal("p1");
+        ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2000);
-        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
 
         CompletionTime ct3 = new CompletionTime();
         ct3.setBusinessTransaction(BTXN);
         ct3.setTimestamp(2000);
-        ct3.setPrincipal("p1");
+        ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
-        criteria.setPrincipal("p1");
+        criteria.addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS);
         criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
@@ -1029,25 +998,26 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setPrincipal("p1");
+        ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(1700);
         ct2.setDuration(500);
-        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setPrincipal("p1").setStartTime(1).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
+                        .setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 1
@@ -1196,20 +1166,21 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1_1.getProperties().add(new Property("prop1", "value1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setPrincipal("p2");
+        ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct1_2.getProperties().add(new Property("prop1", "value2"));
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setPrincipal("p1").setStartTime(1).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
+                        .setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
@@ -1302,14 +1273,14 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
-        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
-        ct1_2.setPrincipal("p2");
+        ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         CompletionTime ct2 = new CompletionTime();
         ct2.setBusinessTransaction(BTXN);
@@ -1319,7 +1290,8 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setPrincipal("p2").setStartTime(1).setEndTime(10000);
+        criteria.setBusinessTransaction(BTXN).addProperty(Constants.PROP_PRINCIPAL, "p2", Operator.HAS)
+                        .setStartTime(1).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
@@ -1396,34 +1368,34 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
-        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
-        ct1_2.setPrincipal("p1");
+        ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setComponentType(Constants.COMPONENT_EJB);
-        ct1_3.setPrincipal("p1");
+        ct1_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct2 = new NodeDetails();
         ct2.setBusinessTransaction(BTXN);
         ct2.setTimestamp(2100);
         ct2.setActual(500);
         ct2.setComponentType(Constants.COMPONENT_DATABASE);
-        ct2.setPrincipal("p2");
+        ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1).setEndTime(10000);
-        criteria.setPrincipal("p1");
+        criteria.addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS);
 
         Wait.until(() -> analytics.getNodeTimeseriesStatistics(null, criteria, 1000).size() == 1);
         List<NodeTimeseriesStatistics> stats = analytics.getNodeTimeseriesStatistics(null, criteria,
@@ -1684,7 +1656,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_0.setType(NodeType.Consumer);
         ct1_0.setUri("hello");
         ct1_0.setHostName("hostA");
-        ct1_0.setPrincipal("p1");
+        ct1_0.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setBusinessTransaction(BTXN);
@@ -1695,7 +1667,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.setUri("jdbc");
         ct1_1.setHostName("hostA");
-        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setBusinessTransaction(BTXN);
@@ -1706,7 +1678,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.setUri("jdbc");
         ct1_2.setHostName("hostB");
-        ct1_2.setPrincipal("p2");
+        ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setBusinessTransaction(BTXN);
@@ -1718,12 +1690,12 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setUri("BookingService");
         ct1_3.setOperation("createBooking");
         ct1_3.setHostName("hostB");
-        ct1_3.setPrincipal("p2");
+        ct1_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         analytics.storeNodeDetails(null, Arrays.asList(ct1_0, ct1_1, ct1_2, ct1_3));
 
         Criteria criteria = new Criteria();
-        criteria.setStartTime(1).setEndTime(10000).setPrincipal("p1");
+        criteria.setStartTime(1).setEndTime(10000).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS);
 
         Wait.until(() -> analytics.getNodeSummaryStatistics(null, criteria).size() == 2);
         Collection<NodeSummaryStatistics> stats = analytics.getNodeSummaryStatistics(null, criteria);
@@ -2362,7 +2334,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setBusinessTransaction(BTXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
-        ct1_1.setPrincipal("p1");
+        ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setUri(OUT1_1);
@@ -2370,7 +2342,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setBusinessTransaction(BTXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
-        ct1_2.setPrincipal("p1");
+        ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct1_3 = new CompletionTime();
         ct1_3.setUri(OUT1_2);
@@ -2378,7 +2350,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setBusinessTransaction(BTXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
-        ct1_3.setPrincipal("p1");
+        ct1_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct2_1 = new CompletionTime();
         ct2_1.setUri(IN2);
@@ -2386,7 +2358,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2_1.setBusinessTransaction(BTXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
-        ct2_1.setPrincipal("p2");
+        ct2_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         CompletionTime ct2_2 = new CompletionTime();
         ct2_2.setUri(OUT2_1);
@@ -2394,7 +2366,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2_2.setBusinessTransaction(BTXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
-        ct2_2.setPrincipal("p2");
+        ct2_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         CompletionTime ct2_3 = new CompletionTime();
         ct2_3.setUri(IN2);
@@ -2402,7 +2374,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2_3.setBusinessTransaction(BTXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
-        ct2_3.setPrincipal("p2");
+        ct2_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
@@ -2413,7 +2385,7 @@ public class AnalyticsServiceElasticsearchTest {
         cd1.setLatency(100);
         cd1.setSource(EP_INOP1);
         cd1.setTarget(EP_OUTOP1_1);
-        cd1.setPrincipal("p1");
+        cd1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
@@ -2422,7 +2394,7 @@ public class AnalyticsServiceElasticsearchTest {
         cd2.setLatency(200);
         cd2.setSource(EP_INOP1);
         cd2.setTarget(EP_OUTOP1_2);
-        cd2.setPrincipal("p1");
+        cd2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
@@ -2431,7 +2403,7 @@ public class AnalyticsServiceElasticsearchTest {
         cd3.setLatency(300);
         cd3.setSource(EP_INOP2);
         cd3.setTarget(EP_OUTOP2_1);
-        cd3.setPrincipal("p2");
+        cd3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
@@ -2440,7 +2412,7 @@ public class AnalyticsServiceElasticsearchTest {
         cd4.setLatency(300);
         cd4.setSource(EP_INOP1);
         cd4.setTarget(EP_OUTOP1_2);
-        cd4.setPrincipal("p1");
+        cd4.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
@@ -2449,13 +2421,13 @@ public class AnalyticsServiceElasticsearchTest {
         cd5.setLatency(500);
         cd5.setSource(EP_INOP2);
         cd5.setTarget(EP_OUTOP2_1);
-        cd5.setPrincipal("p2");
+        cd5.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
-        analytics.storeCommunicationDetails(null, Arrays.asList(cd1, cd2, cd3, cd4, cd5));
+        analytics.storeCommunicationDetails(null, Arrays.asList(cd1, cd2, cd4, cd3, cd5));
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1).setEndTime(10000);
-        criteria.setPrincipal("p1");
+        criteria.addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS);
 
         Wait.until(() -> analytics.getCommunicationSummaryStatistics(null, criteria, false).size() == 3);
         Collection<CommunicationSummaryStatistics> stats = analytics.getCommunicationSummaryStatistics(null,

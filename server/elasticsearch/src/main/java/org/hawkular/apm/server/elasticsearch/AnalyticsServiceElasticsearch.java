@@ -76,7 +76,6 @@ import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
-import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
@@ -209,32 +208,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         return terms.getBuckets().stream()
                 .map(AnalyticsServiceElasticsearch::toPropertyInfo)
                 .sorted((one, another) -> one.getName().compareTo(another.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PrincipalInfo> getPrincipalInfo(String tenantId, Criteria criteria) {
-        String index = client.getIndex(tenantId);
-        if (!refresh(index)) {
-            return null;
-        }
-
-        TermsBuilder cardinalityBuilder = AggregationBuilders
-                .terms("cardinality")
-                .field(ElasticsearchUtil.PRINCIPAL_FIELD)
-                .order(Order.aggregation("_count", false))
-                .size(criteria.getMaxResponseSize());
-
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, Trace.class);
-        SearchRequestBuilder request = getBaseSearchRequestBuilder(TRACE_TYPE, index, criteria, query, 0)
-                .addAggregation(cardinalityBuilder);
-
-        SearchResponse response = getSearchResponse(request);
-
-        Terms terms = response.getAggregations().get("cardinality");
-        return terms.getBuckets().stream()
-                .map(AnalyticsServiceElasticsearch::toPrincipalInfo)
-                .sorted((one, another) -> one.getId().compareTo(another.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -982,13 +955,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private static PropertyInfo toPropertyInfo(Terms.Bucket bucket) {
         PropertyInfo pi = new PropertyInfo();
         pi.setName(bucket.getKey());
-        return pi;
-    }
-
-    private static PrincipalInfo toPrincipalInfo(Terms.Bucket bucket) {
-        PrincipalInfo pi = new PrincipalInfo();
-        pi.setId(bucket.getKey());
-        pi.setCount(bucket.getDocCount());
         return pi;
     }
 

@@ -341,7 +341,6 @@ public class TraceServiceElasticsearch implements TraceService {
             jgen.writeStringField(ElasticsearchUtil.HOST_ADDRESS_FIELD, trace.getHostAddress());
             jgen.writeStringField(ElasticsearchUtil.HOST_NAME_FIELD, trace.getHostName());
             jgen.writeStringField(ElasticsearchUtil.FRAGMENT_ID_FIELD, trace.getFragmentId());
-            jgen.writeStringField(ElasticsearchUtil.PRINCIPAL_FIELD, trace.getPrincipal());
             jgen.writeNumberField(ElasticsearchUtil.TIMESTAMP_FIELD, trace.getTimestamp());
             jgen.writeStringField(ElasticsearchUtil.TRACE_ID_FIELD, trace.getTraceId());
             jgen.writeArrayFieldStart(ElasticsearchUtil.NODES_FIELD);
@@ -385,8 +384,6 @@ public class TraceServiceElasticsearch implements TraceService {
                     trace.setHostName(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.FRAGMENT_ID_FIELD)) {
                     trace.setFragmentId(parser.nextTextValue());
-                } else if (field.equals(ElasticsearchUtil.PRINCIPAL_FIELD)) {
-                    trace.setPrincipal(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.NODES_FIELD)) {
                     parser.nextValue(); // Consume START_ARRAY
 

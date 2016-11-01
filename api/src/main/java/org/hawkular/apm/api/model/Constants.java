@@ -48,6 +48,12 @@ public class Constants {
     public static final String PROP_TRANSACTION_NAME = "transaction";
 
     /**
+     * Property key representing the principal
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_PRINCIPAL = "principal";
+
+    /**
      * Property key representing the fault
      * {@link org.hawkular.apm.api.model.Property#name}
      */

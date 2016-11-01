@@ -139,16 +139,6 @@ public class AnalyticsHandler extends BaseHandler {
     }
 
     @GET
-    @Path("principals")
-    @ApiOperation(value = "Get principal information", response = List.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 500, message = "Internal server error") })
-    public Response getPrincipalInfo(@BeanParam CriteriaRequest request) {
-        return withCriteria(request, (criteria, tenant) -> analyticsService.getPrincipalInfo(tenant, criteria));
-    }
-
-    @GET
     @Path("trace/completion/count")
     @ApiOperation(value = "Get the trace completion count", response = Long.class)
     @ApiResponses(value = {

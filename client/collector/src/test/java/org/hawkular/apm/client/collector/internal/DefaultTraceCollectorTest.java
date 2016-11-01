@@ -57,7 +57,6 @@ import org.junit.Test;
 public class DefaultTraceCollectorTest {
 
     private static final String TRACE_ID = "traceId";
-    private static final String PRINCIPAL = "TestPrincipal";
     private static final String BTXN_NAME = "BTxnName";
     private static final String TEST_TENANT = "TestTenant";
     private static final String TYPE = "TestType";
@@ -558,44 +557,6 @@ public class DefaultTraceCollectorTest {
     }
 
     @Test
-    public void testSetPrincipalNoFragmentManager() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
-
-        collector.setPrincipal(null, "test");
-
-        assertEquals("", collector.getPrincipal());
-
-        collector.getFragmentManager().clear();
-    }
-
-    @Test
-    public void testSetPrincipalWithFragmentManager() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
-
-        TestConfigurationService cs = new TestConfigurationService();
-
-        CollectorConfiguration cc = new CollectorConfiguration();
-        cs.setCollectorConfiguration(cc);
-
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        btc.setFilter(new Filter());
-        btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
-
-        collector.setConfigurationService(cs);
-
-        // Cause a fragment builder to be created
-        collector.activate("/test", null);
-        collector.producerStart(null, "/test", "HTTP", null, null);
-
-        collector.setPrincipal(null, "test");
-
-        assertEquals("test", collector.getPrincipal());
-
-        collector.getFragmentManager().clear();
-    }
-
-    @Test
     public void testNamedOnInitialNode() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
@@ -802,7 +763,6 @@ public class DefaultTraceCollectorTest {
         Trace spawnedTrace = spawned.getTrace();
 
         parentTrace.setBusinessTransaction(BTXN_NAME);
-        parentTrace.setPrincipal(PRINCIPAL);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -839,7 +799,6 @@ public class DefaultTraceCollectorTest {
 
         // Check trace details transferred
         assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
-        assertEquals(PRINCIPAL, spawnedTrace.getPrincipal());
     }
 
     @Test
@@ -876,7 +835,6 @@ public class DefaultTraceCollectorTest {
         Trace spawnedTrace = spawned.getTrace();
 
         parentTrace.setBusinessTransaction(BTXN_NAME);
-        parentTrace.setPrincipal(PRINCIPAL);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -920,7 +878,6 @@ public class DefaultTraceCollectorTest {
 
         // Check trace details transferred
         assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
-        assertEquals(PRINCIPAL, spawnedTrace.getPrincipal());
     }
 
     @Test
@@ -934,7 +891,6 @@ public class DefaultTraceCollectorTest {
         Trace spawnedTrace = spawned.getTrace();
 
         parentTrace.setBusinessTransaction(BTXN_NAME);
-        parentTrace.setPrincipal(PRINCIPAL);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -971,7 +927,6 @@ public class DefaultTraceCollectorTest {
 
         // Check trace details transferred
         assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
-        assertEquals(PRINCIPAL, spawnedTrace.getPrincipal());
     }
 
     public static class TestTraceService implements TraceService, TracePublisher {

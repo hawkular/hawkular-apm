@@ -29,7 +29,6 @@ import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
-import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
@@ -92,10 +91,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             new TypeReference<java.util.List<PropertyInfo>>() {
             };
 
-    private static final TypeReference<java.util.List<PrincipalInfo>> PRINCIPAL_INFO_LIST =
-            new TypeReference<java.util.List<PrincipalInfo>>() {
-            };
-
     private static final TypeReference<java.util.List<CompletionTime>> COMPLETION_TIME_LIST =
             new TypeReference<java.util.List<CompletionTime>>() {
             };
@@ -149,16 +144,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
 
         String path = "analytics/properties?criteria=%s";
         return getResultsForUrl(tenantId, PROPERTY_INFO_LIST, path, criteria);
-    }
-
-    @Override
-    public List<PrincipalInfo> getPrincipalInfo(String tenantId, Criteria criteria) {
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get principal info: tenantId=[" + tenantId + "] criteria=" + criteria);
-        }
-
-        String path = "analytics/principals?criteria=%s";
-        return getResultsForUrl(tenantId, PRINCIPAL_INFO_LIST, path, criteria);
     }
 
     @Override

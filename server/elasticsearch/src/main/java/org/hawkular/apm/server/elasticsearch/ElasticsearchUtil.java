@@ -42,7 +42,6 @@ public class ElasticsearchUtil {
     public static final String NODES_FIELD = "nodes";
     public static final String URI_FIELD = "uri";
     public static final String OPERATION_FIELD = "operation";
-    public static final String PRINCIPAL_FIELD = "principal";
     public static final String TRACE_ID_FIELD = "traceId";
     public static final String FRAGMENT_ID_FIELD = "fragmentId";
     public static final String TYPE_FIELD = "type";
@@ -123,10 +122,6 @@ public class ElasticsearchUtil {
 
         if (criteria.getHostName() != null && !criteria.getHostName().trim().isEmpty()) {
             query = query.must(QueryBuilders.matchQuery("hostName", criteria.getHostName()));
-        }
-
-        if (criteria.getPrincipal() != null && !criteria.getPrincipal().trim().isEmpty()) {
-            query = query.must(QueryBuilders.matchQuery(PRINCIPAL_FIELD, criteria.getPrincipal()));
         }
 
         if (!criteria.getCorrelationIds().isEmpty()) {

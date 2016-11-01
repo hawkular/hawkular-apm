@@ -121,44 +121,44 @@ public class ClientJettyStreamITest extends ClientTestBase {
     }
 
     @Test
-    public void testGet() {
+    public void testGet() throws IOException {
         testJettyServlet("GET", HELLO_URL, null, false, true);
     }
 
     @Test
-    public void testGetWithQS() {
+    public void testGetWithQS() throws IOException {
         testJettyServlet("GET", HELLO_URL_WITH_QS, null, false, true);
     }
 
     @Test
-    public void testGetNoResponse() {
+    public void testGetNoResponse() throws IOException {
         testJettyServlet("GET", HELLO_URL, null, false, false);
     }
 
     @Test
-    public void testGetWithContent() {
+    public void testGetWithContent() throws IOException {
         setProcessContent(true);
         testJettyServlet("GET", HELLO_URL, null, false, true);
     }
 
     @Test
-    public void testPut() {
+    public void testPut() throws IOException {
         testJettyServlet("PUT", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
     @Test
-    public void testPutWithContent() {
+    public void testPutWithContent() throws IOException {
         setProcessContent(true);
         testJettyServlet("PUT", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
     @Test
-    public void testPost() {
+    public void testPost() throws IOException {
         testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
 
     @Test
-    public void testPostWithContent() {
+    public void testPostWithContent() throws IOException {
         setProcessContent(true);
         testJettyServlet("POST", HELLO_URL, GREETINGS_REQUEST, false, true);
     }
@@ -208,78 +208,71 @@ public class ClientJettyStreamITest extends ClientTestBase {
     }
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
-            boolean respexpected) {
-        String path = null;
+            boolean respexpected) throws IOException {
+        URL url = new URL(urlstr);
+        String path = url.getPath();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        try {
-            URL url = new URL(urlstr);
-            path = url.getPath();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(method);
 
-            connection.setRequestMethod(method);
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setAllowUserInteraction(false);
+        connection.setRequestProperty("Content-Type",
+                "application/json");
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setAllowUserInteraction(false);
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+        connection.setRequestProperty(TEST_HEADER, "test-value");
+        if (fault) {
+            connection.setRequestProperty("test-fault", "true");
+        }
+        if (!respexpected) {
+            connection.setRequestProperty("test-no-data", "true");
+        }
 
-            connection.setRequestProperty(TEST_HEADER, "test-value");
-            if (fault) {
-                connection.setRequestProperty("test-fault", "true");
-            }
-            if (!respexpected) {
-                connection.setRequestProperty("test-no-data", "true");
-            }
+        String authString = TEST_USER + ":" + "password";
+        String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
 
-            String authString = TEST_USER + ":" + "password";
-            String encoded = Base64.getEncoder().encodeToString(authString.getBytes());
+        connection.setRequestProperty("Authorization", "Basic " + encoded);
 
-            connection.setRequestProperty("Authorization", "Basic " + encoded);
+        java.io.InputStream is = null;
 
-            java.io.InputStream is = null;
+        if (reqdata != null) {
+            java.io.OutputStream os = connection.getOutputStream();
 
-            if (reqdata != null) {
-                java.io.OutputStream os = connection.getOutputStream();
+            os.write(reqdata.getBytes());
 
-                os.write(reqdata.getBytes());
+            os.flush();
+            os.close();
+        } else if (fault || !respexpected) {
+            connection.connect();
+        } else if (respexpected) {
+            is = connection.getInputStream();
+        }
 
-                os.flush();
-                os.close();
-            } else if (fault || !respexpected) {
-                connection.connect();
-            } else if (respexpected) {
-                is = connection.getInputStream();
-            }
+        if (!fault) {
+            assertEquals("Unexpected response code", 200, connection.getResponseCode());
 
-            if (!fault) {
-                assertEquals("Unexpected response code", 200, connection.getResponseCode());
-
-                if (respexpected) {
-                    if (is == null) {
-                        is = connection.getInputStream();
-                    }
-
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-                    StringBuilder builder = new StringBuilder();
-                    String str = null;
-
-                    while ((str = reader.readLine()) != null) {
-                        builder.append(str);
-                    }
-
-                    is.close();
-
-                    assertEquals(HELLO_WORLD_RESPONSE, builder.toString());
+            if (respexpected) {
+                if (is == null) {
+                    is = connection.getInputStream();
                 }
-            } else {
-                assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
-            }
 
-        } catch (Exception e) {
-            fail("Failed to perform get: " + e);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+                StringBuilder builder = new StringBuilder();
+                String str = null;
+
+                while ((str = reader.readLine()) != null) {
+                    builder.append(str);
+                }
+
+                is.close();
+
+                assertEquals(HELLO_WORLD_RESPONSE, builder.toString());
+            }
+        } else {
+            assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
         }
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 2);
@@ -360,7 +353,7 @@ public class ClientJettyStreamITest extends ClientTestBase {
         }
 
         assertNotNull(consumerBTxn);
-        assertEquals(TEST_USER, consumerBTxn.getPrincipal());
+        assertEquals(TEST_USER, consumerBTxn.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
 
         // Check only one trace id used for all trace fragments
         assertEquals(1, getApmMockServer().getTraces().stream().map(t -> {
