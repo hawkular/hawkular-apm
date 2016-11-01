@@ -1602,6 +1602,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
         // Transfer relevant details to the spawned trace and builder
         Trace spawnedTrace = spawnedBuilder.getTrace();
+        spawnedTrace.setTraceId(trace.getTraceId());
         spawnedTrace.setBusinessTransaction(trace.getBusinessTransaction());
         spawnedTrace.setPrincipal(trace.getPrincipal());
 
