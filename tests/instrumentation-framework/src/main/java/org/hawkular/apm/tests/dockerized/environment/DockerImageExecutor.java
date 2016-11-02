@@ -92,9 +92,7 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
             containerBuilder.withNetworkMode(network.getName());
         }
 
-        if (testEnvironment.getType() == Type.APM) {
-            containerBuilder.withEnv(apmEnvVariables());
-        }
+        containerBuilder.withEnv(apmEnvVariables(testEnvironment.getType()));
 
         log.info("Pulling image...");
         dockerClient.pullImageCmd(testEnvironment.getImage()).exec(new PullImageResultCallback()).awaitSuccess();
@@ -161,20 +159,19 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
         }
     }
 
-    private List<String> apmEnvVariables() {
+    private List<String> apmEnvVariables(Type type) {
         Properties properties = new Properties();
-        String filename = "apm-env-variables.properties";
-        InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+        InputStream is = getClass().getClassLoader().getResourceAsStream(type.getPropertyFile());
 
         if(is == null) {
-            throw new EnvironmentException("Could not load env variables property file: " + filename);
+            throw new EnvironmentException("Could not load env variables property file: " + type.getPropertyFile());
         }
 
         try {
             properties.load(is);
         } catch (IOException ex) {
-            log.severe(String.format("Could not open properties file: %s", filename));
-            throw new EnvironmentException("Could not load env variables property file: " + filename, ex);
+            log.severe(String.format("Could not open properties file: %s", type.getPropertyFile()));
+            throw new EnvironmentException("Could not load env variables property file: " + type.getPropertyFile(), ex);
         }
 
         List<String> envVariables = new ArrayList<>();

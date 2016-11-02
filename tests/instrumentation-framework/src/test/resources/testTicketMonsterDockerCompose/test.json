@@ -3,7 +3,7 @@
   "environment": {
     "dockerCompose": "docker-compose.yml",
     "initWaitSeconds": "20",
-    "type": "APM",
+    "type": "APMAGENT",
     "apmAddress": "172.16.158.1"
   },
   "tests": [
