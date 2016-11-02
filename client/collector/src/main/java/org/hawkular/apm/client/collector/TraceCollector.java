@@ -57,21 +57,6 @@ public interface TraceCollector {
     String getBusinessTransaction();
 
     /**
-     * This method sets the principal associated with the trace.
-     *
-     * @param location The instrumentation location
-     * @param principal The principal
-     */
-    void setPrincipal(String location, String principal);
-
-    /**
-     * This method returns the principal associated with the trace.
-     *
-     * @return The principal, or empty string if not defined
-     */
-    String getPrincipal();
-
-    /**
      * This method sets the reporting level.
      *
      * @param location The instrumentation location

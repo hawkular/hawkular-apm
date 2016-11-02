@@ -60,9 +60,6 @@ public class Trace {
     private String businessTransaction;
 
     @JsonInclude(Include.NON_EMPTY)
-    private String principal;
-
-    @JsonInclude(Include.NON_EMPTY)
     private String hostName;
 
     @JsonInclude(Include.NON_EMPTY)
@@ -143,22 +140,6 @@ public class Trace {
      */
     public Trace setBusinessTransaction(String name) {
         this.businessTransaction = name;
-        return this;
-    }
-
-    /**
-     * @return the principal
-     */
-    public String getPrincipal() {
-        return principal;
-    }
-
-    /**
-     * @param principal the principal to set
-     * @return The trace
-     */
-    public Trace setPrincipal(String principal) {
-        this.principal = principal;
         return this;
     }
 
@@ -322,11 +303,10 @@ public class Trace {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
+        result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
         result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
-        result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
         result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
-        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
         return result;
@@ -346,6 +326,11 @@ public class Trace {
                 return false;
         } else if (!businessTransaction.equals(other.businessTransaction))
             return false;
+        if (fragmentId == null) {
+            if (other.fragmentId != null)
+                return false;
+        } else if (!fragmentId.equals(other.fragmentId))
+            return false;
         if (hostAddress == null) {
             if (other.hostAddress != null)
                 return false;
@@ -356,20 +341,10 @@ public class Trace {
                 return false;
         } else if (!hostName.equals(other.hostName))
             return false;
-        if (fragmentId == null) {
-            if (other.fragmentId != null)
-                return false;
-        } else if (!fragmentId.equals(other.fragmentId))
-            return false;
         if (nodes == null) {
             if (other.nodes != null)
                 return false;
         } else if (!nodes.equals(other.nodes))
-            return false;
-        if (principal == null) {
-            if (other.principal != null)
-                return false;
-        } else if (!principal.equals(other.principal))
             return false;
         if (timestamp != other.timestamp)
             return false;
@@ -383,8 +358,8 @@ public class Trace {
 
     @Override
     public String toString() {
-        return "Trace [id=" + fragmentId + ", traceId=" + traceId + ", timestamp=" + timestamp + ", businessTransaction="
-                + businessTransaction + ", principal=" + principal + ", hostName=" + hostName + ", hostAddress="
+        return "Trace [traceId=" + traceId + ", fragmentId=" + fragmentId + ", timestamp=" + timestamp
+                + ", businessTransaction=" + businessTransaction + ", hostName=" + hostName + ", hostAddress="
                 + hostAddress + ", nodes=" + nodes + "]";
     }
 

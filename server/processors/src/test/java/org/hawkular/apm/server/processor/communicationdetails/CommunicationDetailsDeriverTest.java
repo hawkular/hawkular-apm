@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.SourceInfo;
@@ -241,11 +242,11 @@ public class CommunicationDetailsDeriverTest {
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
-        trace1.setPrincipal("p1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
         c1.setTimestamp(trace1.getTimestamp());
+        c1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -273,12 +274,12 @@ public class CommunicationDetailsDeriverTest {
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
-        trace2.setPrincipal("p1");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000);
+        c2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         c2.getProperties().add(new Property("prop2", "value2"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
@@ -312,7 +313,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("trace2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
-        assertEquals("p1", details.getPrincipal());
+        assertEquals("p1", details.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
 
         assertEquals(p1.getTimestamp(), details.getTimestamp());
 
@@ -335,11 +336,11 @@ public class CommunicationDetailsDeriverTest {
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
-        trace1.setPrincipal("p1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
         c1.setTimestamp(trace1.getTimestamp());
+        c1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.ControlFlow);
@@ -367,12 +368,12 @@ public class CommunicationDetailsDeriverTest {
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
-        trace2.setPrincipal("p1");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000);
+        c2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         c2.getProperties().add(new Property("prop2", "value2"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
@@ -406,7 +407,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("trace2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
-        assertEquals("p1", details.getPrincipal());
+        assertEquals("p1", details.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
 
         assertEquals(p1.getTimestamp(), details.getTimestamp());
 
@@ -585,12 +586,12 @@ public class CommunicationDetailsDeriverTest {
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
-        trace1.setPrincipal("p1");
 
         Producer p1 = new Producer();
         p1.setUri("TheURI");
         p1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         p1.setDuration(2000000);
+        p1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -608,11 +609,11 @@ public class CommunicationDetailsDeriverTest {
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
-        trace2.setPrincipal("p1");
 
         Consumer c2 = new Consumer();
         c2.setUri("TheURI");
         c2.setDuration(1200000);
+        c2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
@@ -642,7 +643,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("trace2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
-        assertEquals("p1", details.getPrincipal());
+        assertEquals("p1", details.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
     }
 
     @Test
@@ -738,11 +739,11 @@ public class CommunicationDetailsDeriverTest {
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
-        trace1.setPrincipal("p1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
         c1.setTimestamp(trace1.getTimestamp());
+        c1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -765,12 +766,12 @@ public class CommunicationDetailsDeriverTest {
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
-        trace2.setPrincipal("p1");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000000);
+        c2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         c2.getProperties().add(new Property("prop2", "value2"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
@@ -806,7 +807,7 @@ public class CommunicationDetailsDeriverTest {
         assertEquals("trace2", details.getTargetFragmentId());
         assertEquals("host2", details.getTargetHostName());
         assertEquals("addr2", details.getTargetHostAddress());
-        assertEquals("p1", details.getPrincipal());
+        assertEquals("p1", details.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
 
         assertEquals(comp1.getTimestamp(), details.getTimestamp());
     }

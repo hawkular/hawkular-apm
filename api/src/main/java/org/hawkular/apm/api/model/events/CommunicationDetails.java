@@ -89,8 +89,6 @@ public class CommunicationDetails implements Serializable, ApmEvent {
 
     private long targetFragmentDuration;
 
-    private String principal;
-
     private Set<Property> properties = new HashSet<Property>();
 
     private List<Outbound> outbound = new ArrayList<Outbound>();
@@ -385,20 +383,6 @@ public class CommunicationDetails implements Serializable, ApmEvent {
     }
 
     /**
-     * @return the principal
-     */
-    public String getPrincipal() {
-        return principal;
-    }
-
-    /**
-     * @param principal the principal to set
-     */
-    public void setPrincipal(String principal) {
-        this.principal = principal;
-    }
-
-    /**
      * @return the properties
      */
     public Set<Property> getProperties() {
@@ -468,8 +452,8 @@ public class CommunicationDetails implements Serializable, ApmEvent {
                 + ", traceId=" + traceId + ", sourceFragmentId=" + sourceFragmentId + ", sourceHostName="
                 + sourceHostName + ", sourceHostAddress=" + sourceHostAddress + ", targetFragmentId="
                 + targetFragmentId + ", targetHostName=" + targetHostName + ", targetHostAddress=" + targetHostAddress
-                + ", targetFragmentDuration=" + targetFragmentDuration + ", principal=" + principal + ", properties="
-                + properties + ", outbound=" + outbound + "]";
+                + ", targetFragmentDuration=" + targetFragmentDuration + ", properties=" + properties + ", outbound="
+                + outbound + "]";
     }
 
     @Override
@@ -484,7 +468,6 @@ public class CommunicationDetails implements Serializable, ApmEvent {
         result = prime * result + ((linkId == null) ? 0 : linkId.hashCode());
         result = prime * result + (multiConsumer ? 1231 : 1237);
         result = prime * result + ((outbound == null) ? 0 : outbound.hashCode());
-        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + (int) (producerDuration ^ (producerDuration >>> 32));
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + ((source == null) ? 0 : source.hashCode());
@@ -538,11 +521,6 @@ public class CommunicationDetails implements Serializable, ApmEvent {
             if (other.outbound != null)
                 return false;
         } else if (!outbound.equals(other.outbound))
-            return false;
-        if (principal == null) {
-            if (other.principal != null)
-                return false;
-        } else if (!principal.equals(other.principal))
             return false;
         if (producerDuration != other.producerDuration)
             return false;

@@ -34,13 +34,13 @@ import io.swagger.annotations.ApiModel;
     @Type(value = SetProperty.class), @Type(value = SetState.class), @Type(value = InitiateCorrelation.class),
     @Type(value = CompleteCorrelation.class), @Type(value = Correlate.class),
     @Type(value = Unlink.class), @Type(value = AssertComplete.class), @Type(value = Suppress.class),
-    @Type(value = ProcessHeaders.class), @Type(value = SetPrincipal.class), @Type(value = IgnoreNode.class),
+    @Type(value = ProcessHeaders.class), @Type(value = IgnoreNode.class),
     @Type(value = Deactivate.class), @Type(value = SetTraceId.class) })
 @ApiModel(subTypes = { InstrumentComponent.class, InstrumentConsumer.class,
         InstrumentProducer.class, FreeFormAction.class, ProcessContent.class,
         SetBusinessTransaction.class, SetLevel.class, SetProperty.class, SetState.class,
         InitiateCorrelation.class, CompleteCorrelation.class, Correlate.class, Unlink.class,
-        AssertComplete.class, Suppress.class, ProcessHeaders.class, SetPrincipal.class, IgnoreNode.class,
+        AssertComplete.class, Suppress.class, ProcessHeaders.class, IgnoreNode.class,
         Deactivate.class, SetTraceId.class},
         discriminator = "type")
 public abstract class InstrumentAction {

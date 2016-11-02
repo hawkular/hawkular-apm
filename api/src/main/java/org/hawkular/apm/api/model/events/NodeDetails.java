@@ -84,9 +84,6 @@ public class NodeDetails implements ApmEvent {
     @JsonInclude(Include.NON_NULL)
     private String hostAddress;
 
-    @JsonInclude(Include.NON_NULL)
-    private String principal;
-
     @JsonInclude(Include.NON_EMPTY)
     private Set<Property> properties = new HashSet<Property>();
 
@@ -285,20 +282,6 @@ public class NodeDetails implements ApmEvent {
     }
 
     /**
-     * @return the principal
-     */
-    public String getPrincipal() {
-        return principal;
-    }
-
-    /**
-     * @param principal the principal to set
-     */
-    public void setPrincipal(String principal) {
-        this.principal = principal;
-    }
-
-    /**
      * @return the properties
      */
     public Set<Property> getProperties() {
@@ -373,7 +356,6 @@ public class NodeDetails implements ApmEvent {
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
-        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
@@ -435,11 +417,6 @@ public class NodeDetails implements ApmEvent {
                 return false;
         } else if (!operation.equals(other.operation))
             return false;
-        if (principal == null) {
-            if (other.principal != null)
-                return false;
-        } else if (!principal.equals(other.principal))
-            return false;
         if (properties == null) {
             if (other.properties != null)
                 return false;
@@ -468,8 +445,7 @@ public class NodeDetails implements ApmEvent {
                 + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri=" + uri + ", timestamp="
                 + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType=" + componentType
                 + ", operation=" + operation + ", hostName=" + hostName + ", hostAddress=" + hostAddress
-                + ", principal=" + principal + ", properties=" + properties + ", correlationIds=" + correlationIds
-                + "]";
+                + ", properties=" + properties + ", correlationIds=" + correlationIds + "]";
     }
 
 }

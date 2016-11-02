@@ -40,7 +40,6 @@ import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
-import org.hawkular.apm.api.model.analytics.PrincipalInfo;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.config.ReportingLevel;
@@ -269,46 +268,6 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertNotNull(pis);
         assertEquals(1, pis.size());
         assertTrue(pis.get(0).getName().equals("prop1"));
-    }
-
-    @Test
-    public void testGetPrincipalInfo() throws Exception {
-        Trace trace1 = new Trace();
-        trace1.setTraceId("1");
-        trace1.setFragmentId("1");
-        trace1.setBusinessTransaction("trace1");
-        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
-        trace1.setPrincipal("p1");
-
-        Consumer c1 = new Consumer();
-        trace1.getNodes().add(c1);
-
-        tracePublisher.publish(null, Collections.singletonList(trace1));
-
-        // Wait to ensure record persisted
-        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
-
-        // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
-
-        // Query stored trace
-        List<Trace> result = traceService.searchFragments(null, new Criteria());
-
-        assertEquals(1, result.size());
-
-        assertEquals("1", result.get(0).getFragmentId());
-
-        Criteria criteria=new Criteria()
-                .setBusinessTransaction("trace1")
-                .setStartTime(0)
-                .setEndTime(0);
-
-        List<PrincipalInfo> pis = analyticsService.getPrincipalInfo(null, criteria);
-
-        assertNotNull(pis);
-        assertEquals(1, pis.size());
-        assertTrue(pis.get(0).getId().equals("p1"));
-        assertEquals(1, pis.get(0).getCount());
     }
 
     @Test

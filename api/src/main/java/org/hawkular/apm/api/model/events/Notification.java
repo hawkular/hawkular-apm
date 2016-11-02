@@ -55,9 +55,6 @@ public class Notification implements ApmEvent {
     @JsonInclude(Include.NON_EMPTY)
     private String hostAddress;
 
-    @JsonInclude(Include.NON_EMPTY)
-    private String principal;
-
     @JsonInclude
     private List<Issue> issues = new ArrayList<Issue>();
 
@@ -161,20 +158,6 @@ public class Notification implements ApmEvent {
     }
 
     /**
-     * @return the principal
-     */
-    public String getPrincipal() {
-        return principal;
-    }
-
-    /**
-     * @param principal the principal to set
-     */
-    public void setPrincipal(String principal) {
-        this.principal = principal;
-    }
-
-    /**
      * @return the issues
      */
     public List<Issue> getIssues() {
@@ -192,7 +175,7 @@ public class Notification implements ApmEvent {
     public String toString() {
         return "Notification [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId
                 + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp + ", hostName="
-                + hostName + ", hostAddress=" + hostAddress + ", principal=" + principal + ", issues=" + issues + "]";
+                + hostName + ", hostAddress=" + hostAddress + ", issues=" + issues + "]";
     }
 
 }

@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 
 /**
@@ -48,7 +50,6 @@ public class Criteria {
     private String hostName;
     private long upperBound;
     private long lowerBound;
-    private String principal;
     private String uri;
     private String operation;
     private long timeout = 10000;
@@ -72,7 +73,6 @@ public class Criteria {
         this.hostName = criteria.hostName;
         this.upperBound = criteria.upperBound;
         this.lowerBound = criteria.lowerBound;
-        this.principal = criteria.principal;
         this.uri = criteria.uri;
         this.operation = criteria.operation;
 
@@ -257,22 +257,6 @@ public class Criteria {
     }
 
     /**
-     * @return the principal
-     */
-    public String getPrincipal() {
-        return principal;
-    }
-
-    /**
-     * @param principal the principal to set
-     * @return The criteria
-     */
-    public Criteria setPrincipal(String principal) {
-        this.principal = principal;
-        return this;
-    }
-
-    /**
      * @return the uri
      */
     public String getUri() {
@@ -393,10 +377,6 @@ public class Criteria {
             ret.put("correlations", buf.toString());
         }
 
-        if (principal != null) {
-            ret.put("principal", principal);
-        }
-
         if (uri != null) {
             ret.put("uri", uri);
         }
@@ -432,8 +412,9 @@ public class Criteria {
         Criteria ret = new Criteria();
         ret.setStartTime(startTime);
         ret.setEndTime(endTime);
+        ret.setProperties(getProperties().stream().filter(p -> p.getName().equals(Constants.PROP_PRINCIPAL))
+                .collect(Collectors.toSet()));
         ret.setBusinessTransaction(businessTransaction);
-        ret.setPrincipal(principal);
         return ret;
     }
 
@@ -441,9 +422,9 @@ public class Criteria {
     public String toString() {
         return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
                 + businessTransaction + ", properties=" + properties + ", correlationIds=" + correlationIds
-                + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound="
-                + lowerBound + ", principal=" + principal + ", uri=" + uri + ", operation=" + operation + ", timeout="
-                + timeout + ", maxResponseSize=" + maxResponseSize + "]";
+                + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound=" + lowerBound + ", uri="
+                + uri + ", operation=" + operation + ", timeout=" + timeout + ", maxResponseSize=" + maxResponseSize
+                + "]";
     }
 
     /**

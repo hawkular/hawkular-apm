@@ -72,8 +72,9 @@
           "name": "remoteHost",
           "valueExpression": "req.getRemoteHost()"
         },{
-          "type": "SetPrincipal",
-          "nameExpression": "req.getRemoteUser()"
+          "type": "SetProperty",
+          "name": "principal",
+          "valueExpression": "req.getRemoteUser()"
         }]
       },{
         "ruleName": "Javax Servlet Consumer End Sync Fault",

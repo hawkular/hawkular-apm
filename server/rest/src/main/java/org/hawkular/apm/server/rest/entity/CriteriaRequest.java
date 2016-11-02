@@ -25,7 +25,7 @@ import org.hawkular.apm.api.services.Criteria;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Defines the parameters expected for a GET request on /principals
+ * Defines a request that supplies Criteria
  *
  * @author Juraci Paixão Kröhling
  */
