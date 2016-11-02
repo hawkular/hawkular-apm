@@ -85,7 +85,6 @@ image::hawkular-apm-createUser-detail.png[Hawkular APM UI, createUser, height="3
 image::zipkin-createUser.png[Zipkin UI, createUser, height="300", width="800"]
 
 == Known issues
-* https://issues.jboss.org/browse/HWKAPM-623[Span from ruby app fails to deserialize]
 * https://issues.jboss.org/browse/HWKAPM-689[zipkin-js instrumentation does not send all client spans]
-* https://github.com/openzipkin/zipkin-ruby/issues/68[Ruby instrumentation: HTTP_X_B3_SAMPLED incorrect resulting inbroken traces],
-https://github.com/openzipkin/zipkin-ruby/pull/69[pull/69]
+* https://github.com/openzipkin/zipkin-ruby/issues/68[Ruby instrumentation: HTTP_X_B3_SAMPLED incorrect resulting in
+broken traces], https://github.com/openzipkin/zipkin-ruby/pull/69[pull/69]
