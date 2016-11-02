@@ -255,7 +255,44 @@ th {
     color: #fff;
 }
 
-.show-details-cell {
+/** Instance Details Table styles */
+
+.inst-details-table {
+    table-layout: fixed;
+}
+
+th.inst-details-timestamp {
+    width: 105px;
+}
+
+td.inst-details-properties {
+    overflow: hidden;
+
+    span {
+         margin: 1px;
+         display: inline-block;
+         cursor: pointer;
+    }
+}
+
+th.inst-details-principal {
+    width: 140px;
+}
+td.inst-details-principal {
+    word-wrap: break-word;
+}
+
+th.inst-details-duration {
+    width: 120px;
+}
+td.inst-details-duration {
+    word-wrap: break-word;
+}
+
+th.inst-details-details {
+    width: 60px;
+}
+td.inst-details-details {
     cursor: pointer;
     text-align: center;
 }
