@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.examples.vertx.opentracing;
+package org.hawkular.apm.tests.app.vertx.opentracing;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -128,7 +128,7 @@ public class OrderManager {
             if (invresp.succeeded()) {
                 JsonObject item = (JsonObject) invresp.result().body();
                 if (order.getInteger("quantity", 1) <= item.getInteger("quantity", 1)) {
-                    
+
                     // Remove internal headers - necessary because we have had
                     // to piggyback the APM state as a top level field in the
                     // order JSON document - which now needs to be removed before

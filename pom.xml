@@ -101,7 +101,7 @@
   <properties>
     <hawkular-apm-db>elasticsearch</hawkular-apm-db>
 
-    <plugin.version.org.apache.maven.plugins.shade>2.4.2</plugin.version.org.apache.maven.plugins.shade>
+    <version.com.spotify.docker-maven-plugin>0.4.13</version.com.spotify.docker-maven-plugin>
     <version.com.github.eirslett.frontend-maven-plugin>1.0</version.com.github.eirslett.frontend-maven-plugin>
 
     <version.com.fasterxml.jackson.core>2.6.0</version.com.fasterxml.jackson.core>
@@ -589,19 +589,21 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>${plugin.version.org.apache.maven.plugins.shade}</version>
       </plugin>
     </plugins>
 
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>com.github.eirslett</groupId>
           <artifactId>frontend-maven-plugin</artifactId>
           <version>${version.com.github.eirslett.frontend-maven-plugin}</version>
         </plugin>
-
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>${version.com.spotify.docker-maven-plugin}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

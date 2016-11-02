@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.examples.vertx.opentracing;
+package org.hawkular.apm.tests.app.vertx.opentracing;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +76,7 @@ public class InventoryManager {
                             .withTag("database.url", "InventoryDB")
                             .withTag("database.statement", "SELECT item FROM Inventory WHERE id = ?")
                             .start()) {
-                        
+
                         JsonObject acct = items.get(req.getString("itemId"));
                         if (acct == null) {
                             sendError(2, "Item not found", message, getItemSpan);

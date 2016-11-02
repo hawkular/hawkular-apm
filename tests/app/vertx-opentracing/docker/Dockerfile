@@ -15,26 +15,14 @@
 # limitations under the License.
 #
 
-while :
-do
-	declare -a AccountIds=('joe' 'sarah' 'fred' 'jane' 'brian' 'steve');
+FROM openjdk:8-jdk
 
-	declare -a ItemIds=('laptop' 'car' 'book' 'chair' 'table' 'pencil' 'dvd');
+MAINTAINER Gary Brown <gbrown@redhat.com>
 
-	itemId=`echo ${ItemIds[$[ RANDOM % ${#ItemIds[@]} ]]}`
-	accountId=`echo ${AccountIds[$[ RANDOM % ${#AccountIds[@]} ]]}`
+ENV APP_HOME /app/
 
-	quantity=`echo $[ 1 + $[ RANDOM % 10 ]]`
+COPY hawkular-apm-tests-app-vertx-opentracing-fat.jar $APP_HOME
 
-	echo "Creating an order for account=$accountId item=$itemId quantity=$quantity"
+WORKDIR $APP_HOME
 
-	data="{\"accountId\":\"$accountId\",\"itemId\":\"$itemId\",\"quantity\": $quantity}"
-
-	curl -X POST -H "Content-Type: application/json" -d "$data" http://localhost:8180/orders
-
-	echo
-	echo
-
-	sleep 0.3
-done
-
+CMD ["java", "-jar", "hawkular-apm-tests-app-vertx-opentracing-fat.jar"]
