@@ -75,7 +75,6 @@
     <module>server/infinispan</module>
     <module>server/jms</module>
     <module>server/kafka</module>
-    <module>server/kafka-consumer</module>
     <module>server/processors</module>
     <module>server/processors-alerts-publisher</module>
     <module>server/processors-zipkin</module>

@@ -45,7 +45,7 @@
 
     <dependency>
       <groupId>org.hawkular.apm</groupId>
-      <artifactId>hawkular-apm-server-kafka-consumer</artifactId>
+      <artifactId>hawkular-apm-server-kafka</artifactId>
       <version>${project.version}</version>
     </dependency>
 
