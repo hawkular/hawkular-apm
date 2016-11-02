@@ -8,11 +8,11 @@ GEM
     multipart-post (2.0.0)
     puma (3.6.0)
     rack (2.0.1)
-    roda (2.17.0)
+    roda (2.19.0)
       rack
     sucker_punch (2.0.2)
       concurrent-ruby (~> 1.0.0)
-    zipkin-tracer (0.18.2)
+    zipkin-tracer (0.18.4)
       faraday (~> 0.8)
       finagle-thrift (~> 1.4.1)
       rack (>= 1.0)
