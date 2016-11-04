@@ -51,16 +51,6 @@ public class ElasticsearchClient {
     private static final String HAWKULAR_APM_MAPPING_JSON = "hawkular-apm-mapping.json";
 
     /**
-     * Default Elasticsearch hosts configuration.
-     */
-    public static final String ELASTICSEARCH_HOSTS = "HAWKULAR_APM_ELASTICSEARCH_HOSTS";
-
-    /**
-     * Default Elasticsearch cluster configuration.
-     */
-    public static final String ELASTICSEARCH_CLUSTER = "HAWKULAR_APM_ELASTICSEARCH_CLUSTER";
-
-    /**
      * Settings for the index this store is related to.
      */
     public static final String SETTINGS = "settings";
@@ -79,11 +69,27 @@ public class ElasticsearchClient {
 
     private Client client;
 
-    private static final String ELASTICSEARCH_HOSTS_DEFAULT = "embedded";
+    /**
+     * Property name for Elasticsearch hosts configuration.
+     */
+    public static final String ELASTICSEARCH_HOSTS = "HAWKULAR_APM_ELASTICSEARCH_HOSTS";
+
+    /**
+     * Default Elasticsearch hosts configuration.
+     */
+    public static final String ELASTICSEARCH_HOSTS_DEFAULT = "embedded";
 
     private String hosts;
 
-    private static final String ELASTICSEARCH_CLUSTER_DEFAULT = "elasticsearch";
+    /**
+     * Property name for Elasticsearch cluster configuration.
+     */
+    public static final String ELASTICSEARCH_CLUSTER = "HAWKULAR_APM_ELASTICSEARCH_CLUSTER";
+
+    /**
+     * Default Elasticsearch cluster configuration.
+     */
+    public static final String ELASTICSEARCH_CLUSTER_DEFAULT = "elasticsearch";
 
     private String cluster;
 
@@ -98,13 +104,18 @@ public class ElasticsearchClient {
     /**
      * Default constructor.
      */
-    private ElasticsearchClient() {
+    protected ElasticsearchClient() {
         if (PropertyUtil.getProperty("HAWKULAR_APM_DATA_DIR") == null
                 && System.getProperty("jboss.server.data.dir") != null) {
             System.setProperty("HAWKULAR_APM_DATA_DIR", System.getProperty("jboss.server.data.dir"));
         }
 
-        hosts = PropertyUtil.getProperty(ELASTICSEARCH_HOSTS, ELASTICSEARCH_HOSTS_DEFAULT);
+        hosts = PropertyUtil.getProperty(ELASTICSEARCH_HOSTS);
+
+        if (hosts == null || hosts.trim().isEmpty()) {
+            hosts = ELASTICSEARCH_HOSTS_DEFAULT;
+        }
+
         cluster = PropertyUtil.getProperty(ELASTICSEARCH_CLUSTER, ELASTICSEARCH_CLUSTER_DEFAULT);
     }
 
