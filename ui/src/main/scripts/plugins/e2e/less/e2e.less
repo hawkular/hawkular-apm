@@ -269,9 +269,11 @@ td.inst-details-properties {
     overflow: hidden;
 
     span {
-         margin: 1px;
-         display: inline-block;
-         cursor: pointer;
+        margin: 1px;
+        display: inline-block;
+        cursor: pointer;
+        white-space: normal;
+        text-align: left;
     }
 }
 
@@ -289,6 +291,15 @@ td.inst-details-details {
     cursor: pointer;
     text-align: center;
 }
+
+.inst-details-properties .tooltip-inner {
+    max-width: 100%;
+}
+
+.inst-details-properties .tooltip {
+    max-width: 95%;
+}
+
 .details-row {
     background-color: #FFF;
 }
