@@ -143,6 +143,16 @@ module E2E {
       instDetails.then(function(resp) {
         _.forEach(resp.data, (datapoint: any) => {
             datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
+            datapoint.propertiesGrouped = [];
+            _.forEach(datapoint.properties, (dpProp: any) => {
+              let newProp: any = _.find(datapoint.propertiesGrouped, { 'name': dpProp.name });
+              if (newProp) {
+                newProp.value += ', ' + dpProp.value;
+              } else {
+                newProp = { 'name' : dpProp.name, 'value': dpProp.value };
+                datapoint.propertiesGrouped.push(newProp);
+              }
+            });
         });
         $scope.timesData = resp.data;
       });
