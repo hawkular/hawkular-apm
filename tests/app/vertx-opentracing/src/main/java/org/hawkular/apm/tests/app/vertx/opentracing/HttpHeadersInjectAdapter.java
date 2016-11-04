@@ -14,41 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.examples.vertx.opentracing;
+package org.hawkular.apm.tests.app.vertx.opentracing;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import io.opentracing.propagation.TextMap;
-import io.vertx.core.json.JsonObject;
 
 /**
  * @author gbrown
  */
-public final class VertxMessageExtractAdapter implements TextMap {
-    private final Map<String, String> map;
+public final class HttpHeadersInjectAdapter implements TextMap {
+    private final Map<String, Object> map;
 
-    public VertxMessageExtractAdapter(final JsonObject obj) {
-        // Convert to single valued map
-        this.map = new HashMap<>();
-
-        JsonObject header = obj.getJsonObject("_apmHeader");
-        if (header != null) {
-            header.forEach(entry -> map.put(entry.getKey(), entry.getValue().toString()));
-            // Remove header
-            obj.remove("_apmHeader");
-        }
+    public HttpHeadersInjectAdapter(final Map<String, Object> map) {
+        this.map = map;
     }
 
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
-        return map.entrySet().iterator();
+        throw new UnsupportedOperationException("TextMapInjectAdapter should only be used with Tracer.inject()");
     }
 
     @Override
     public void put(String key, String value) {
-        throw new UnsupportedOperationException(
-                "VertxMessageExtractAdapter should only be used with Tracer.extract()");
+        this.map.put(key, value);
     }
 }
