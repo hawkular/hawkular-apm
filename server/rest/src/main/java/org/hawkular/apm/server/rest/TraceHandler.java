@@ -39,6 +39,7 @@ import org.hawkular.apm.api.services.TraceService;
 import org.hawkular.apm.server.rest.entity.CriteriaRequest;
 import org.hawkular.apm.server.rest.entity.GetByIdRequest;
 import org.hawkular.apm.server.rest.entity.TenantRequest;
+import org.hawkular.jaxrs.filter.tenant.TenantRequired;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -57,6 +58,7 @@ import io.swagger.annotations.ApiResponses;
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Api(value = "traces", description = "Report/Query trace fragments")
+@TenantRequired(false)
 public class TraceHandler extends BaseHandler {
     private static final Logger log = Logger.getLogger(TraceHandler.class);
     TracePublisher tracePublisher;

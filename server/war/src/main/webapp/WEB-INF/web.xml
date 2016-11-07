@@ -24,6 +24,13 @@
   <!-- Security -->
   <security-constraint>
     <web-resource-collection>
+      <web-resource-name>Status endpoint</web-resource-name>
+      <url-pattern>/status</url-pattern>
+    </web-resource-collection>
+  </security-constraint>
+
+  <security-constraint>
+    <web-resource-collection>
       <web-resource-name>hawkular-apm-server</web-resource-name>
       <url-pattern>/*</url-pattern>
     </web-resource-collection>

@@ -41,6 +41,10 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-server-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.commons</groupId>
+      <artifactId>hawkular-tenant-jaxrs-filter</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.logging</groupId>

@@ -43,6 +43,7 @@ import org.hawkular.apm.server.rest.entity.CollectorConfigurationRequest;
 import org.hawkular.apm.server.rest.entity.NamedBusinessTransactionRequest;
 import org.hawkular.apm.server.rest.entity.TenantRequest;
 import org.hawkular.apm.server.rest.entity.UpdatedBusinessTxnConfigurationsRequest;
+import org.hawkular.jaxrs.filter.tenant.TenantRequired;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -60,6 +61,7 @@ import io.swagger.annotations.ApiResponses;
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Api(value = "config", description = "Configuration")
+@TenantRequired(false)
 public class ConfigurationHandler extends BaseHandler {
     private static final Logger log = Logger.getLogger(ConfigurationHandler.class);
 

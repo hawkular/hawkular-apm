@@ -45,6 +45,7 @@ import org.hawkular.apm.server.rest.entity.TenantRequest;
 import org.hawkular.apm.server.rest.entity.TraceCompletionPropertyRequest;
 import org.hawkular.apm.server.rest.entity.TreeCriteriaRequest;
 import org.hawkular.apm.server.rest.entity.UnboundEndpointsRequest;
+import org.hawkular.jaxrs.filter.tenant.TenantRequired;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -61,6 +62,7 @@ import io.swagger.annotations.ApiResponses;
 @Path("analytics")
 @Produces(APPLICATION_JSON)
 @Api(value = "analytics", description = "Analytics")
+@TenantRequired(false)
 public class AnalyticsHandler extends BaseHandler {
     private static final Logger log = Logger.getLogger(AnalyticsHandler.class);
 
