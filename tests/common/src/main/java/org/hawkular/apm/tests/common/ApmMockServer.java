@@ -98,7 +98,7 @@ public class ApmMockServer {
     }
 
     /**
-     * @return the businessTransactions
+     * @return the traces
      */
     public List<Trace> getTraces() {
         return traces;

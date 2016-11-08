@@ -42,7 +42,7 @@ module APM {
       .build();
     btmTab = builder.create()
       .id('btm')
-      .title(() => 'Business Transactions')
+      .title(() => 'Transactions')
       .href(() => '/hawkular-ui/apm/btm')
       .rank(10)
       .build();
@@ -77,7 +77,7 @@ module APM {
         controller: 'BTM.BTxnConfigController',
         resolve: {
           btxn: function($http, $route, $location, toastr) {
-            return $http.get('/hawkular/apm/config/businesstxn/full/' +
+            return $http.get('/hawkular/apm/config/transaction/full/' +
               $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
                 $location.path('/hawkular-ui/apm/btm');
@@ -96,7 +96,7 @@ module APM {
         controller: 'BTM.BTxnInfoController',
         resolve: {
           btxn: function($http, $route, $location, toastr) {
-            return $http.get('/hawkular/apm/config/businesstxn/full/' +
+            return $http.get('/hawkular/apm/config/transaction/full/' +
               $route.current.params.businesstransaction).then(function(resp) {
               if (!resp.data) {
                 resp.data = {

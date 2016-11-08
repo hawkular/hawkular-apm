@@ -31,9 +31,9 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.EvaluateURIAction;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.EvaluateURIAction;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.ProcessorIssue;
@@ -145,7 +145,7 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
                         }
                     }
 
-                    // If properties extracted, then add to business txn properties, and set the node's
+                    // If properties extracted, then add to txn properties, and set the node's
                     // URI to the template, to make it stable/consistent - to make analytics easier
                     boolean processed = false;
 

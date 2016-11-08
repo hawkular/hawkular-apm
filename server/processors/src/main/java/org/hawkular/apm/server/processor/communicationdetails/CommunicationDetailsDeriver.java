@@ -105,7 +105,7 @@ public class CommunicationDetailsDeriver extends AbstractProcessor<Trace, Commun
                         ret = new CommunicationDetails();
                         ret.setId(UUID.randomUUID().toString());
                         ret.setLinkId(id);
-                        ret.setBusinessTransaction(item.getBusinessTransaction());
+                        ret.setTransaction(item.getTransaction());
 
                         ret.setSource(si.getEndpoint().toString());
 

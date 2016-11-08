@@ -24,16 +24,16 @@ package org.hawkular.apm.api.model.config;
  */
 public enum ReportingLevel {
 
-    /* The activity associated with this business txn is not of interest
+    /* The activity associated with this transaction is not of interest
      * (i.e. long term decision) */
     Ignore,
 
-    /* Don't report any instances of this business txn, but unlike the
+    /* Don't report any instances of this transaction, but unlike the
      * 'Ignore' level, this may only be a temporary situation, and the
      * trace is of interest */
     None,
 
-    /* Report all information related to instances of this business txn */
+    /* Report all information related to instances of this transaction */
     All
 
 }

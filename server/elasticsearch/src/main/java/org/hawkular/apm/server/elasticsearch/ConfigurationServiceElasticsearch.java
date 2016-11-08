@@ -33,9 +33,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.api.services.AbstractConfigurationService;
 import org.hawkular.apm.api.services.ConfigurationLoader;
 import org.hawkular.apm.server.elasticsearch.log.MsgLogger;
@@ -52,9 +52,9 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
     private final MsgLogger msgLog = MsgLogger.LOGGER;
 
-    private static final String BUSINESS_TXN_CONFIG_TYPE = "businesstxnconfig";
+    private static final String TXN_CONFIG_TYPE = "transactionconfig";
 
-    private static final String BUSINESS_TXN_CONFIG_INVALID_TYPE = "businesstxnconfiginvalid";
+    private static final String TXN_CONFIG_INVALID_TYPE = "transactionconfiginvalid";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -111,7 +111,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             // Only retrieve valid configurations
             SearchResponse response = client.getClient().prepareSearch(index)
-                    .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                    .setTypes(TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
                     .setSize(maxResponseSize)
@@ -122,20 +122,20 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    BusinessTxnConfig btc = mapper.readValue(searchHitFields.getSourceAsString(),
-                            BusinessTxnConfig.class);
+                    TransactionConfig btc = mapper.readValue(searchHitFields.getSourceAsString(),
+                            TransactionConfig.class);
                     if (!btc.isDeleted()) {
-                        config.getBusinessTransactions().put(searchHitFields.getId(), btc);
+                        config.getTransactions().put(searchHitFields.getId(), btc);
                     }
                 } catch (Exception e) {
                     msgLog.errorFailedToParse(e);
                 }
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transaction configurations have
+            // Ignore, as means that no transaction configurations have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("No index found, so unable to retrieve business transaction configs");
+                msgLog.tracef("No index found, so unable to retrieve transaction configs");
             }
         }
 
@@ -143,18 +143,18 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     }
 
     @Override
-    public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+    public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config)
             throws Exception {
         if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Update business transaction config with name[%s] config=%s", name, config);
+            msgLog.tracef("Update transaction config with name[%s] config=%s", name, config);
         }
 
-        List<ConfigMessage> messages = validateBusinessTransaction(config);
+        List<ConfigMessage> messages = validateTransaction(config);
 
         // Set last updated time
         config.setLastUpdated(clock.millis());
 
-        String index = (messages.isEmpty() ? BUSINESS_TXN_CONFIG_TYPE : BUSINESS_TXN_CONFIG_INVALID_TYPE);
+        String index = (messages.isEmpty() ? TXN_CONFIG_TYPE : TXN_CONFIG_INVALID_TYPE);
 
         IndexRequestBuilder builder = client.getClient().prepareIndex(client.getIndex(tenantId),
                 index, name).setRouting(name)
@@ -170,7 +170,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             // Delete any invalid entry
             DeleteRequestBuilder deletion = client.getClient().prepareDelete(client.getIndex(tenantId),
-                    BUSINESS_TXN_CONFIG_INVALID_TYPE, name);
+                    TXN_CONFIG_INVALID_TYPE, name);
 
             deletion.execute().actionGet();
 
@@ -185,11 +185,11 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     }
 
     @Override
-    public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
-        BusinessTxnConfig ret = null;
+    public TransactionConfig getTransaction(String tenantId, String name) {
+        TransactionConfig ret = null;
 
         if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Get business transaction config with name[%s]", name);
+            msgLog.tracef("Get transaction config with name[%s]", name);
         }
 
         try {
@@ -201,21 +201,21 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             // First check if an invalid config exists
             GetResponse response = client.getClient().prepareGet(
-                    index, BUSINESS_TXN_CONFIG_INVALID_TYPE, name).setRouting(name)
+                    index, TXN_CONFIG_INVALID_TYPE, name).setRouting(name)
                     .execute()
                     .actionGet();
 
             if (response.isSourceEmpty()) {
                 // Retrieve the valid configuration
                 response = client.getClient().prepareGet(
-                        index, BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
+                        index, TXN_CONFIG_TYPE, name).setRouting(name)
                         .execute()
                         .actionGet();
             }
 
             if (!response.isSourceEmpty()) {
                 try {
-                    ret = mapper.readValue(response.getSourceAsString(), BusinessTxnConfig.class);
+                    ret = mapper.readValue(response.getSourceAsString(), TransactionConfig.class);
 
                     // Check if config was deleted
                     if (ret.isDeleted()) {
@@ -227,23 +227,23 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
             }
 
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transaction configurations have
+            // Ignore, as means that no transaction configurations have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("No index found, so unable to retrieve business transaction config [%s]", name);
+                msgLog.tracef("No index found, so unable to retrieve transaction config [%s]", name);
             }
         }
 
         if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Get business transaction config with name[%s] is: %s", name, ret);
+            msgLog.tracef("Get transaction config with name[%s] is: %s", name, ret);
         }
 
         return ret;
     }
 
     @Override
-    public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
-        List<BusinessTxnSummary> ret = new ArrayList<BusinessTxnSummary>();
+    public List<TransactionSummary> getTransactionSummaries(String tenantId) {
+        List<TransactionSummary> ret = new ArrayList<TransactionSummary>();
         String index = client.getIndex(tenantId);
 
         try {
@@ -252,7 +252,7 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             SearchResponse response = client.getClient().prepareSearch(index)
-                    .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                    .setTypes(TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
                     .setSize(maxResponseSize)
@@ -265,10 +265,10 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    BusinessTxnConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
-                            BusinessTxnConfig.class);
+                    TransactionConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
+                            TransactionConfig.class);
                     if (!config.isDeleted()) {
-                        BusinessTxnSummary summary = new BusinessTxnSummary();
+                        TransactionSummary summary = new TransactionSummary();
                         summary.setName(searchHitFields.getId());
                         summary.setDescription(config.getDescription());
                         summary.setLevel(config.getLevel());
@@ -280,10 +280,10 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
                 }
             }
 
-            // Check whether any invalid business transactions exist that have not yet
+            // Check whether any invalid transactions exist that have not yet
             // been stored in the valid list
             response = client.getClient().prepareSearch(index)
-                    .setTypes(BUSINESS_TXN_CONFIG_INVALID_TYPE)
+                    .setTypes(TXN_CONFIG_INVALID_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
                     .setSize(maxResponseSize)
@@ -294,10 +294,10 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    BusinessTxnConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
-                            BusinessTxnConfig.class);
+                    TransactionConfig config = mapper.readValue(searchHitFields.getSourceAsString(),
+                            TransactionConfig.class);
                     if (!names.contains(searchHitFields.getId())) {
-                        BusinessTxnSummary summary = new BusinessTxnSummary();
+                        TransactionSummary summary = new TransactionSummary();
                         summary.setName(searchHitFields.getId());
                         summary.setDescription(config.getDescription());
                         summary.setLevel(config.getLevel());
@@ -308,10 +308,10 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
                 }
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transaction configurations have
+            // Ignore, as means that no transaction configurations have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("No index found, so unable to retrieve business transaction summaries");
+                msgLog.tracef("No index found, so unable to retrieve transaction summaries");
             }
         }
 
@@ -319,8 +319,8 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     }
 
     @Override
-    public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-        Map<String, BusinessTxnConfig> ret = new HashMap<String, BusinessTxnConfig>();
+    public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
+        Map<String, TransactionConfig> ret = new HashMap<String, TransactionConfig>();
         String index = client.getIndex(tenantId);
 
         try {
@@ -328,9 +328,9 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
                     client.getClient().admin().indices().prepareRefresh(index);
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
-            // Should only obtain valid business transactions
+            // Should only obtain valid transactions
             SearchResponse response = client.getClient().prepareSearch(index)
-                    .setTypes(BUSINESS_TXN_CONFIG_TYPE)
+                    .setTypes(TXN_CONFIG_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setTimeout(TimeValue.timeValueMillis(timeout))
                     .setSize(maxResponseSize)
@@ -341,8 +341,8 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
 
             for (SearchHit searchHitFields : response.getHits()) {
                 try {
-                    BusinessTxnConfig btxn = mapper.readValue(searchHitFields.getSourceAsString(),
-                            BusinessTxnConfig.class);
+                    TransactionConfig btxn = mapper.readValue(searchHitFields.getSourceAsString(),
+                            TransactionConfig.class);
                     if ((updated == 0 && !btxn.isDeleted()) || (updated > 0 && btxn.getLastUpdated() > updated)) {
                         ret.put(searchHitFields.getId(), btxn);
                     }
@@ -351,10 +351,10 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
                 }
             }
         } catch (org.elasticsearch.indices.IndexMissingException t) {
-            // Ignore, as means that no business transaction configurations have
+            // Ignore, as means that no transaction configurations have
             // been stored yet
             if (msgLog.isTraceEnabled()) {
-                msgLog.tracef("No index found, so unable to retrieve business transaction names");
+                msgLog.tracef("No index found, so unable to retrieve transaction names");
             }
         }
 
@@ -362,26 +362,26 @@ public class ConfigurationServiceElasticsearch extends AbstractConfigurationServ
     }
 
     @Override
-    public void removeBusinessTransaction(String tenantId, String name) throws Exception {
-        BusinessTxnConfig config = new BusinessTxnConfig();
+    public void removeTransaction(String tenantId, String name) throws Exception {
+        TransactionConfig config = new TransactionConfig();
         config.setDeleted(true);
         config.setLastUpdated(clock.millis());
 
-        // Remove valid version of the business transaction config
+        // Remove valid version of the transaction config
         IndexRequestBuilder builder = client.getClient().prepareIndex(client.getIndex(tenantId),
-                BUSINESS_TXN_CONFIG_TYPE, name).setRouting(name)
+                TXN_CONFIG_TYPE, name).setRouting(name)
                 .setSource(mapper.writeValueAsString(config));
 
         builder.execute().actionGet();
 
-        // Remove invalid version of the business transaction config, which may or may not exist
+        // Remove invalid version of the transaction config, which may or may not exist
         DeleteRequestBuilder deletion = client.getClient().prepareDelete(client.getIndex(tenantId),
-                BUSINESS_TXN_CONFIG_INVALID_TYPE, name);
+                TXN_CONFIG_INVALID_TYPE, name);
 
         deletion.execute().actionGet();
 
         if (msgLog.isTraceEnabled()) {
-            msgLog.tracef("Remove business transaction config with name[%s]", name);
+            msgLog.tracef("Remove transaction config with name[%s]", name);
         }
     }
 

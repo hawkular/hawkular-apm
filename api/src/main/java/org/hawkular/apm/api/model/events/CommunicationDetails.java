@@ -38,7 +38,7 @@ public class CommunicationDetails implements Serializable, ApmEvent {
 
     private String linkId;
 
-    private String businessTransaction;
+    private String transaction;
 
     private String source;
 
@@ -123,17 +123,17 @@ public class CommunicationDetails implements Serializable, ApmEvent {
     }
 
     /**
-     * @return the businessTransaction
+     * @return the transaction
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public void setBusinessTransaction(String businessTransaction) {
-        this.businessTransaction = businessTransaction;
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
     }
 
     /**
@@ -445,7 +445,7 @@ public class CommunicationDetails implements Serializable, ApmEvent {
 
     @Override
     public String toString() {
-        return "CommunicationDetails [id=" + id + ", linkId=" + linkId + ", businessTransaction=" + businessTransaction
+        return "CommunicationDetails [id=" + id + ", linkId=" + linkId + ", transaction=" + transaction
                 + ", source=" + source + ", target=" + target + ", multiConsumer=" + multiConsumer + ", internal="
                 + internal + ", timestamp=" + timestamp + ", latency=" + latency + ", consumerDuration="
                 + consumerDuration + ", producerDuration=" + producerDuration + ", timestampOffset=" + timestampOffset
@@ -460,7 +460,7 @@ public class CommunicationDetails implements Serializable, ApmEvent {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
+        result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
         result = prime * result + (int) (consumerDuration ^ (consumerDuration >>> 32));
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + (internal ? 1231 : 1237);
@@ -494,10 +494,10 @@ public class CommunicationDetails implements Serializable, ApmEvent {
         if (getClass() != obj.getClass())
             return false;
         CommunicationDetails other = (CommunicationDetails) obj;
-        if (businessTransaction == null) {
-            if (other.businessTransaction != null)
+        if (transaction == null) {
+            if (other.transaction != null)
                 return false;
-        } else if (!businessTransaction.equals(other.businessTransaction))
+        } else if (!transaction.equals(other.transaction))
             return false;
         if (consumerDuration != other.consumerDuration)
             return false;

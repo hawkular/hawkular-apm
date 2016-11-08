@@ -30,8 +30,6 @@ module APM {
 
     $scope.nodeComponents = [];
 
-    $scope.businessTransactions = [];
-
     $scope.components = [];
 
     $scope.timestamps = ['timestamp'];

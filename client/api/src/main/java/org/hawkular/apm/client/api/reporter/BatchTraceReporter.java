@@ -128,8 +128,8 @@ public class BatchTraceReporter implements TraceReporter {
         }).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                // Initial check, to avoid doing too much work if no business
-                // transactions reported
+                // Initial check, to avoid doing too much work if no
+                // traces reported
                 if (!traces.isEmpty()) {
                     try {
                         lock.lock();

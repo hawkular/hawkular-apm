@@ -25,7 +25,7 @@ module BTM {
     $scope.candidateCount = 0;
 
     $scope.reload = function() {
-      $http.get('/hawkular/apm/config/businesstxn/summary').then(function(resp) {
+      $http.get('/hawkular/apm/config/transaction/summary').then(function(resp) {
         $scope.businessTransactions = resp.data;
         $scope.businessTransactions.$resolved = true;
       },function(resp) {
@@ -43,7 +43,7 @@ module BTM {
 
     $scope.deleteBusinessTxn = function(btxn) {
       if (confirm('Are you sure you want to delete business transaction \'' + btxn.name + '\'?')) {
-        $http.delete('/hawkular/apm/config/businesstxn/full/' + btxn.name).then(function(resp) {
+        $http.delete('/hawkular/apm/config/transaction/full/' + btxn.name).then(function(resp) {
           console.log('Deleted: ' + btxn.name);
           $scope.businessTransactions.remove(btxn);
         },function(resp) {

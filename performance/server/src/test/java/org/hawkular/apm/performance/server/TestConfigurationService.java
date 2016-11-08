@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.api.services.ConfigurationService;
 
 /**
@@ -42,39 +42,39 @@ public class TestConfigurationService implements ConfigurationService {
     }
 
     @Override
-    public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+    public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config)
             throws Exception {
         return null;
     }
 
     @Override
-    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+    public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs)
             throws Exception {
         return null;
     }
 
     @Override
-    public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+    public List<ConfigMessage> validateTransaction(TransactionConfig config) {
         return null;
     }
 
     @Override
-    public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+    public TransactionConfig getTransaction(String tenantId, String name) {
         return null;
     }
 
     @Override
-    public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+    public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
         return null;
     }
 
     @Override
-    public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+    public List<TransactionSummary> getTransactionSummaries(String tenantId) {
         return null;
     }
 
     @Override
-    public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+    public void removeTransaction(String tenantId, String name) throws Exception {
     }
 
     @Override

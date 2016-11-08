@@ -19,7 +19,7 @@ package org.hawkular.apm.api.model.config.instrumentation.jvm;
 /**
  * This type represents the session action for ignoring the current node. Ignoring
  * a node only implies that if 'ignored' nodes are the only remaining nodes associated
- * with a business fragment that is being captured, then the fragment will be considered
+ * with a fragment that is being captured, then the fragment will be considered
  * 'complete' - although the fragment will not be sent until all of these nodes have
  * been individually popped off the stack.
  *

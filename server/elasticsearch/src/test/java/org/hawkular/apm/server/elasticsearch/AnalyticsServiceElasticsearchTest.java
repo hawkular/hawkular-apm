@@ -43,10 +43,10 @@ import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.events.NodeDetails;
@@ -72,7 +72,7 @@ import org.junit.Test;
  */
 public class AnalyticsServiceElasticsearchTest {
 
-    private static final String BTXN = "testapp";
+    private static final String TXN = "testapp";
 
     private static final String OP2_1 = "op2.1";
     private static final String OUT2_1 = "out2.1";
@@ -258,27 +258,27 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config)
                     throws Exception {
                 return null;
             }
 
             @Override
-            public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+            public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs)
                     throws Exception {
                 // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+            public TransactionConfig getTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-                Map<String, BusinessTxnConfig> ret = new HashMap<>();
-                BusinessTxnConfig btc = new BusinessTxnConfig();
+            public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
+                Map<String, TransactionConfig> ret = new HashMap<>();
+                TransactionConfig btc = new TransactionConfig();
                 btc.setFilter(new Filter());
                 btc.getFilter().getInclusions().add("uri1");
                 ret.put("btc1", btc);
@@ -286,16 +286,16 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+            public List<TransactionSummary> getTransactionSummaries(String tenantId) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+            public void removeTransaction(String tenantId, String name) throws Exception {
             }
 
             @Override
-            public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+            public List<ConfigMessage> validateTransaction(TransactionConfig config) {
                 return null;
             }
 
@@ -330,26 +330,26 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+            public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config)
                     throws Exception {
                 return null;
             }
 
             @Override
-            public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+            public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs)
                     throws Exception {
                 return null;
             }
 
             @Override
-            public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+            public TransactionConfig getTransaction(String tenantId, String name) {
                 return null;
             }
 
             @Override
-            public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
-                Map<String, BusinessTxnConfig> ret = new HashMap<>();
-                BusinessTxnConfig btc = new BusinessTxnConfig();
+            public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
+                Map<String, TransactionConfig> ret = new HashMap<>();
+                TransactionConfig btc = new TransactionConfig();
                 btc.setFilter(new Filter());
                 btc.getFilter().getInclusions().add("^\\{myns\\}ns$");
                 ret.put("btc1", btc);
@@ -357,16 +357,16 @@ public class AnalyticsServiceElasticsearchTest {
             }
 
             @Override
-            public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+            public List<TransactionSummary> getTransactionSummaries(String tenantId) {
                 return null;
             }
 
             @Override
-            public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+            public void removeTransaction(String tenantId, String name) throws Exception {
             }
 
             @Override
-            public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+            public List<ConfigMessage> validateTransaction(TransactionConfig config) {
                 return null;
             }
 
@@ -386,7 +386,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testBoundEndpoints() throws StoreException {
         Trace trace1 = new Trace();
-        trace1.setBusinessTransaction("trace1");
+        trace1.setTransaction("trace1");
         trace1.setTimestamp(1000);
 
         Consumer c1 = new Consumer();
@@ -406,7 +406,7 @@ public class AnalyticsServiceElasticsearchTest {
         c1.getNodes().add(p1);
 
         Trace trace2 = new Trace();
-        trace2.setBusinessTransaction("trace2");
+        trace2.setTransaction("trace2");
         trace2.setTimestamp(2000);
 
         Consumer c2 = new Consumer();
@@ -441,7 +441,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1.getProperties().add(new Property("prop2", "value2"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("trace1");
+        ct2.setTransaction("trace1");
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property("prop3", "value3"));
         ct2.getProperties().add(new Property("prop2", "value2"));
@@ -465,14 +465,14 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testPropertyInfoWithTxn() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("trace1");
+        ct1.setTransaction("trace1");
         ct1.setTimestamp(1000);
         ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1.getProperties().add(new Property("prop1", "value1"));
         ct1.getProperties().add(new Property("prop2", "value2"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction("trace1");
+        ct2.setTransaction("trace1");
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property("prop3", "value3"));
@@ -481,7 +481,7 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null,  Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria()
-            .setBusinessTransaction("trace1")
+            .setTransaction("trace1")
             .setStartTime(1)
             .setEndTime(0);
 
@@ -494,7 +494,7 @@ public class AnalyticsServiceElasticsearchTest {
                 pis.stream().map(pi -> pi.getName()).collect(Collectors.toSet()));
 
         Criteria criteria2 =new Criteria()
-            .setBusinessTransaction("trace1")
+            .setTransaction("trace1")
             .addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
             .setStartTime(1)
             .setEndTime(0);
@@ -511,20 +511,20 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimes() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
         ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1.setUri("uri1");
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setUri("uri2");
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction(BTXN);
+        ct3.setTransaction(TXN);
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
@@ -544,20 +544,20 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimesForUri() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
         ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1.setUri("uri1");
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setUri("uri2");
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction(BTXN);
+        ct3.setTransaction(TXN);
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
@@ -577,18 +577,18 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimesForOperation() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
         ct1.setOperation(OP1);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
         ct2.setOperation(OP2);
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction(BTXN);
+        ct3.setTransaction(TXN);
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setOperation(OP1);
@@ -607,17 +607,17 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionCount() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(0);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
@@ -626,17 +626,17 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionCount2() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(1);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(1);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
@@ -645,11 +645,11 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionCountForFault() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
 
@@ -657,7 +657,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault", Criteria.Operator.HAS);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(0);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionCount(null, criteria));
@@ -666,16 +666,16 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionCountForNotFault() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction(BTXN);
+        ct3.setTransaction(TXN);
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
 
@@ -683,7 +683,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault1", Operator.HASNOT);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(0);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
@@ -692,18 +692,18 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionCountForPrincipal() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
         ct1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault1"));
 
         CompletionTime ct3 = new CompletionTime();
-        ct3.setBusinessTransaction(BTXN);
+        ct3.setTransaction(TXN);
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
@@ -712,7 +712,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(0);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionCount(null, criteria) == 2);
         assertEquals(2, analytics.getTraceCompletionCount(null, criteria));
@@ -775,18 +775,18 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionFaultCount() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction(BTXN);
+        ct1.setTransaction(TXN);
         ct1.setTimestamp(1000);
         ct1.getProperties().add(new Property(Constants.PROP_FAULT, "Failed"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(0);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
 
         Wait.until(() -> analytics.getTraceCompletionFaultCount(null, criteria) == 1);
         assertEquals(1, analytics.getTraceCompletionFaultCount(null, criteria));
@@ -795,24 +795,24 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimeseriesStatistics() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -844,17 +844,17 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimeseriesStatisticsWithLowerBound() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
@@ -862,7 +862,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setLowerBound(200);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -894,17 +894,17 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimeseriesStatisticsWithUpperBound() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(500);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(300);
 
@@ -912,7 +912,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setUpperBound(400);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -944,18 +944,18 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimeseriesStatisticsWithFaults() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
@@ -963,7 +963,7 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
@@ -995,20 +995,20 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionTimeseriesStatisticsForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(1700);
         ct2.setDuration(500);
         ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
@@ -1016,7 +1016,7 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
+        criteria.setTransaction(TXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
                         .setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
@@ -1042,20 +1042,20 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionPropertyDetails() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property("prop1", "value1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property("prop1", "value2"));
         ct1_2.getProperties().add(new Property("prop2", "value3"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
         ct2.getProperties().add(new Property("prop1", "value2"));
@@ -1064,7 +1064,7 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 2
@@ -1095,13 +1095,13 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionPropertyDetailsForFault() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property("prop1", "value1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
@@ -1111,7 +1111,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault", Criteria.Operator.HAS);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
@@ -1129,13 +1129,13 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionPropertyDetailsForExcludedFault() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property("prop1", "value1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
@@ -1145,7 +1145,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault", Operator.HASNOT);
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
             analytics.getTraceCompletionPropertyDetails(null, criteria, "prop1").size() == 1
@@ -1163,14 +1163,14 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionPropertyDetailsForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct1_1.getProperties().add(new Property("prop1", "value1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
@@ -1179,7 +1179,7 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
+        criteria.setTransaction(TXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
                         .setStartTime(1).setEndTime(10000);
 
         Wait.until(() ->
@@ -1199,19 +1199,19 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionFaultDetails() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
@@ -1219,7 +1219,7 @@ public class AnalyticsServiceElasticsearchTest {
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 2 );
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
@@ -1236,25 +1236,25 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionFaultDetailsNotAllFaults() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).setStartTime(1).setEndTime(10000);
+        criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
         List<Cardinality> cards1 = analytics.getTraceCompletionFaultDetails(null, criteria);
@@ -1269,28 +1269,28 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCompletionFaultDetailsForPrincipal() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_FAULT, "fault1"));
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CompletionTime ct1_2 = new CompletionTime();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         CompletionTime ct2 = new CompletionTime();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
         analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(BTXN).addProperty(Constants.PROP_PRINCIPAL, "p2", Operator.HAS)
+        criteria.setTransaction(TXN).addProperty(Constants.PROP_PRINCIPAL, "p2", Operator.HAS)
                         .setStartTime(1).setEndTime(10000);
 
         Wait.until(() -> analytics.getTraceCompletionFaultDetails(null, criteria).size() == 1);
@@ -1306,25 +1306,25 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetNodeTimeseriesStatistics() throws StoreException {
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setComponentType(Constants.COMPONENT_EJB);
 
         NodeDetails ct2 = new NodeDetails();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setActual(500);
         ct2.setComponentType(Constants.COMPONENT_DATABASE);
@@ -1364,28 +1364,28 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetNodeTimeseriesStatisticsPrincipalFilter() throws StoreException {
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setComponentType(Constants.COMPONENT_DATABASE);
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setComponentType(Constants.COMPONENT_EJB);
         ct1_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct2 = new NodeDetails();
-        ct2.setBusinessTransaction(BTXN);
+        ct2.setTransaction(TXN);
         ct2.setTimestamp(2100);
         ct2.setActual(500);
         ct2.setComponentType(Constants.COMPONENT_DATABASE);
@@ -1420,7 +1420,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetNodeSummaryStatistics() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction(BTXN);
+        ct1_0.setTransaction(TXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
@@ -1428,7 +1428,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_0.setUri("hello");
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1437,7 +1437,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setUri("jdbc");
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1446,7 +1446,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setUri("jdbc");
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1456,7 +1456,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_3.setOperation("createBooking");
 
         NodeDetails ct1_4 = new NodeDetails();
-        ct1_4.setBusinessTransaction(BTXN);
+        ct1_4.setTransaction(TXN);
         ct1_4.setTimestamp(1800);
         ct1_4.setActual(170);
         ct1_4.setElapsed(200);
@@ -1505,7 +1505,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetNodeSummaryStatisticsWithBlankHostNameFilter() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction(BTXN);
+        ct1_0.setTransaction(TXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
@@ -1514,7 +1514,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_0.setHostName("hostA");
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1524,7 +1524,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setHostName("hostA");
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1534,7 +1534,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setHostName("hostB");
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1580,7 +1580,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetNodeSummaryStatisticsWithHostNameFilter() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction(BTXN);
+        ct1_0.setTransaction(TXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
@@ -1589,7 +1589,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_0.setHostName("hostA");
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1599,7 +1599,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.setHostName("hostA");
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1609,7 +1609,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.setHostName("hostB");
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1649,7 +1649,7 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetNodeSummaryStatisticsWithPrincipalFilter() throws StoreException {
         NodeDetails ct1_0 = new NodeDetails();
-        ct1_0.setBusinessTransaction(BTXN);
+        ct1_0.setTransaction(TXN);
         ct1_0.setTimestamp(1500);
         ct1_0.setActual(100);
         ct1_0.setElapsed(200);
@@ -1659,7 +1659,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_0.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_1 = new NodeDetails();
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setActual(100);
         ct1_1.setElapsed(200);
@@ -1670,7 +1670,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         NodeDetails ct1_2 = new NodeDetails();
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setActual(300);
         ct1_2.setElapsed(600);
@@ -1681,7 +1681,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
         NodeDetails ct1_3 = new NodeDetails();
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1700);
         ct1_3.setActual(150);
         ct1_3.setElapsed(300);
@@ -1723,37 +1723,37 @@ public class AnalyticsServiceElasticsearchTest {
     public void testGetCommunicationSummaryStatisticsWithoutOps() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
         ct1_1.setUri(IN1);
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setUri(OUT1_1);
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct1_3 = new CompletionTime();
         ct1_3.setUri(OUT1_2);
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
 
         CompletionTime ct2_1 = new CompletionTime();
         ct2_1.setUri(IN2);
-        ct2_1.setBusinessTransaction(BTXN);
+        ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
 
         CompletionTime ct2_2 = new CompletionTime();
         ct2_2.setUri(OUT2_1);
-        ct2_2.setBusinessTransaction(BTXN);
+        ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
 
         CompletionTime ct2_3 = new CompletionTime();
         ct2_3.setUri(IN2);
-        ct2_3.setBusinessTransaction(BTXN);
+        ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
 
@@ -1761,7 +1761,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction(BTXN);
+        cd1.setTransaction(TXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
         cd1.setSource(IN1);
@@ -1769,7 +1769,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction(BTXN);
+        cd2.setTransaction(TXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
         cd2.setSource(IN1);
@@ -1777,7 +1777,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction(BTXN);
+        cd3.setTransaction(TXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
         cd3.setSource(IN2);
@@ -1785,7 +1785,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction(BTXN);
+        cd4.setTransaction(TXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
         cd4.setSource(IN1);
@@ -1793,7 +1793,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction(BTXN);
+        cd5.setTransaction(TXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
         cd5.setSource(IN2);
@@ -1863,37 +1863,37 @@ public class AnalyticsServiceElasticsearchTest {
     public void testGetCommunicationSummaryStatisticsWithoutUri() throws StoreException {
         CompletionTime ct1_1 = new CompletionTime();
         ct1_1.setOperation(IN1);
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setOperation(OUT1_1);
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct1_3 = new CompletionTime();
         ct1_3.setOperation(OUT1_2);
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
 
         CompletionTime ct2_1 = new CompletionTime();
         ct2_1.setOperation(IN2);
-        ct2_1.setBusinessTransaction(BTXN);
+        ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
 
         CompletionTime ct2_2 = new CompletionTime();
         ct2_2.setOperation(OUT2_1);
-        ct2_2.setBusinessTransaction(BTXN);
+        ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
 
         CompletionTime ct2_3 = new CompletionTime();
         ct2_3.setOperation(IN2);
-        ct2_3.setBusinessTransaction(BTXN);
+        ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
 
@@ -1901,7 +1901,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction(BTXN);
+        cd1.setTransaction(TXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
         cd1.setSource(EP_IN1_OP);
@@ -1909,7 +1909,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction(BTXN);
+        cd2.setTransaction(TXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
         cd2.setSource(EP_IN1_OP);
@@ -1917,7 +1917,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction(BTXN);
+        cd3.setTransaction(TXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
         cd3.setSource(EP_IN2_OP);
@@ -1925,7 +1925,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction(BTXN);
+        cd4.setTransaction(TXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
         cd4.setSource(EP_IN1_OP);
@@ -1933,7 +1933,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction(BTXN);
+        cd5.setTransaction(TXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
         cd5.setSource(EP_IN2_OP);
@@ -2019,42 +2019,42 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_1 = new CompletionTime();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct1_3 = new CompletionTime();
         ct1_3.setUri(OUT1_2);
         ct1_3.setOperation(OP1_2);
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
 
         CompletionTime ct2_1 = new CompletionTime();
         ct2_1.setUri(IN2);
         ct2_1.setOperation(OP2);
-        ct2_1.setBusinessTransaction(BTXN);
+        ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
 
         CompletionTime ct2_2 = new CompletionTime();
         ct2_2.setUri(OUT2_1);
         ct2_2.setOperation(OP2_1);
-        ct2_2.setBusinessTransaction(BTXN);
+        ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
 
         CompletionTime ct2_3 = new CompletionTime();
         ct2_3.setUri(IN2);
         ct2_3.setOperation(OP2);
-        ct2_3.setBusinessTransaction(BTXN);
+        ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
 
@@ -2062,7 +2062,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction(BTXN);
+        cd1.setTransaction(TXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
         cd1.setSource(EP_INOP1);
@@ -2070,7 +2070,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction(BTXN);
+        cd2.setTransaction(TXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
         cd2.setSource(EP_INOP1);
@@ -2078,7 +2078,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction(BTXN);
+        cd3.setTransaction(TXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
         cd3.setSource(EP_INOP2);
@@ -2086,7 +2086,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction(BTXN);
+        cd4.setTransaction(TXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
         cd4.setSource(EP_INOP1);
@@ -2094,7 +2094,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction(BTXN);
+        cd5.setTransaction(TXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
         cd5.setSource(EP_INOP2);
@@ -2165,49 +2165,49 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_1 = new CompletionTime();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(50);
 
         CompletionTime ct1_1_internal = new CompletionTime();
         ct1_1_internal.setUri(IN1);
         ct1_1_internal.setOperation(OP1);
-        ct1_1_internal.setBusinessTransaction(BTXN);
+        ct1_1_internal.setTransaction(TXN);
         ct1_1_internal.setTimestamp(1550);
         ct1_1_internal.setDuration(100);
 
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
 
         CompletionTime ct1_3 = new CompletionTime();
         ct1_3.setUri(OUT1_2);
         ct1_3.setOperation(OP1_2);
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
 
         CompletionTime ct2_1 = new CompletionTime();
         ct2_1.setUri(IN2);
         ct2_1.setOperation(OP2);
-        ct2_1.setBusinessTransaction(BTXN);
+        ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
 
         CompletionTime ct2_2 = new CompletionTime();
         ct2_2.setUri(OUT2_1);
         ct2_2.setOperation(OP2_1);
-        ct2_2.setBusinessTransaction(BTXN);
+        ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
 
         CompletionTime ct2_3 = new CompletionTime();
         ct2_3.setUri(IN2);
         ct2_3.setOperation(OP2);
-        ct2_3.setBusinessTransaction(BTXN);
+        ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
 
@@ -2216,7 +2216,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1internal = new CommunicationDetails();
         cd1internal.setLinkId("cd1internal");
-        cd1internal.setBusinessTransaction(BTXN);
+        cd1internal.setTransaction(TXN);
         cd1internal.setTimestamp(1500);
         cd1internal.setLatency(50);
         cd1internal.setSource(EP_INOP1);
@@ -2225,7 +2225,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction(BTXN);
+        cd1.setTransaction(TXN);
         cd1.setTimestamp(1550);
         cd1.setLatency(100);
         cd1.setSource(EP_INOP1);
@@ -2233,7 +2233,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction(BTXN);
+        cd2.setTransaction(TXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
         cd2.setSource(EP_INOP1);
@@ -2241,7 +2241,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction(BTXN);
+        cd3.setTransaction(TXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
         cd3.setSource(EP_INOP2);
@@ -2249,7 +2249,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction(BTXN);
+        cd4.setTransaction(TXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
         cd4.setSource(EP_INOP1);
@@ -2257,7 +2257,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction(BTXN);
+        cd5.setTransaction(TXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
         cd5.setSource(EP_INOP2);
@@ -2331,7 +2331,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_1 = new CompletionTime();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
@@ -2339,7 +2339,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
@@ -2347,7 +2347,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_3 = new CompletionTime();
         ct1_3.setUri(OUT1_2);
         ct1_3.setOperation(OP1_2);
-        ct1_3.setBusinessTransaction(BTXN);
+        ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
         ct1_3.setDuration(200);
         ct1_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
@@ -2355,7 +2355,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct2_1 = new CompletionTime();
         ct2_1.setUri(IN2);
         ct2_1.setOperation(OP2);
-        ct2_1.setBusinessTransaction(BTXN);
+        ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
         ct2_1.setDuration(500);
         ct2_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
@@ -2363,7 +2363,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct2_2 = new CompletionTime();
         ct2_2.setUri(OUT2_1);
         ct2_2.setOperation(OP2_1);
-        ct2_2.setBusinessTransaction(BTXN);
+        ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
         ct2_2.setDuration(400);
         ct2_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
@@ -2371,7 +2371,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct2_3 = new CompletionTime();
         ct2_3.setUri(IN2);
         ct2_3.setOperation(OP2);
-        ct2_3.setBusinessTransaction(BTXN);
+        ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
         ct2_3.setDuration(600);
         ct2_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
@@ -2380,7 +2380,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction(BTXN);
+        cd1.setTransaction(TXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
         cd1.setSource(EP_INOP1);
@@ -2389,7 +2389,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd2 = new CommunicationDetails();
         cd2.setLinkId("cd2");
-        cd2.setBusinessTransaction(BTXN);
+        cd2.setTransaction(TXN);
         cd2.setTimestamp(1500);
         cd2.setLatency(200);
         cd2.setSource(EP_INOP1);
@@ -2398,7 +2398,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd3 = new CommunicationDetails();
         cd3.setLinkId("cd3");
-        cd3.setBusinessTransaction(BTXN);
+        cd3.setTransaction(TXN);
         cd3.setTimestamp(1500);
         cd3.setLatency(300);
         cd3.setSource(EP_INOP2);
@@ -2407,7 +2407,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd4 = new CommunicationDetails();
         cd4.setLinkId("cd4");
-        cd4.setBusinessTransaction(BTXN);
+        cd4.setTransaction(TXN);
         cd4.setTimestamp(1600);
         cd4.setLatency(300);
         cd4.setSource(EP_INOP1);
@@ -2416,7 +2416,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd5 = new CommunicationDetails();
         cd5.setLinkId("cd5");
-        cd5.setBusinessTransaction(BTXN);
+        cd5.setTransaction(TXN);
         cd5.setTimestamp(1600);
         cd5.setLatency(500);
         cd5.setSource(EP_INOP2);
@@ -2470,7 +2470,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_1 = new CompletionTime();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
-        ct1_1.setBusinessTransaction(BTXN);
+        ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
         ct1_1.setDuration(100);
         ct1_1.setHostName("hostA");
@@ -2478,7 +2478,7 @@ public class AnalyticsServiceElasticsearchTest {
         CompletionTime ct1_2 = new CompletionTime();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
-        ct1_2.setBusinessTransaction(BTXN);
+        ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
         ct1_2.setDuration(300);
         ct1_2.setHostName("hostB");
@@ -2487,7 +2487,7 @@ public class AnalyticsServiceElasticsearchTest {
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
-        cd1.setBusinessTransaction(BTXN);
+        cd1.setTransaction(TXN);
         cd1.setTimestamp(1500);
         cd1.setLatency(100);
         cd1.setSource(EP_INOP1);
@@ -2526,14 +2526,14 @@ public class AnalyticsServiceElasticsearchTest {
     @Test
     public void testGetCommunicationSummaryStatisticsServiceName() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
-        ct1.setBusinessTransaction("testapp");
+        ct1.setTransaction("testapp");
         ct1.setUri("in1");
         ct1.setOperation("op1");
         ct1.getProperties().add(new Property("prop", "val"));
         ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
 
         CommunicationDetails cd1 = new CommunicationDetails();
-        cd1.setBusinessTransaction("testapp");
+        cd1.setTransaction("testapp");
         cd1.setSource("in1[op1]");
         cd1.setTarget("out1.1[op1.1]");
 
@@ -2543,7 +2543,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria()
                 .setStartTime(0)
                 .setEndTime(100000)
-                .setBusinessTransaction("testapp");
+                .setTransaction("testapp");
 
         Collection<CommunicationSummaryStatistics> communicationSummaryStatisticsList =
                 analytics.getCommunicationSummaryStatistics(null, criteria, false);
@@ -2560,7 +2560,7 @@ public class AnalyticsServiceElasticsearchTest {
     public void testGetCommunicationSummaryStatisticsServiceNameMissingOperation() throws StoreException {
         CompletionTime ct1 = new CompletionTime();
         ct1.setUri("in1");
-        ct1.setBusinessTransaction("testapp");
+        ct1.setTransaction("testapp");
         ct1.getProperties().add(new Property("prop", "val"));
         ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
 
@@ -2569,7 +2569,7 @@ public class AnalyticsServiceElasticsearchTest {
         Criteria criteria = new Criteria()
                 .setStartTime(0)
                 .setEndTime(100000)
-                .setBusinessTransaction("testapp");
+                .setTransaction("testapp");
 
         Collection<CommunicationSummaryStatistics> communicationSummaryStatisticsList =
                 analytics.getCommunicationSummaryStatistics(null, criteria, false);

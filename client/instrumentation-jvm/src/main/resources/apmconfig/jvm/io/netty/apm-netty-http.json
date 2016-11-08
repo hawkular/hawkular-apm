@@ -64,7 +64,7 @@
           "action": "req.headers().add(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
-          "action": "req.headers().add(\"HWKAPMTXN\",getBusinessTransactionName())"
+          "action": "req.headers().add(\"HWKAPMTXN\",getTransactionName())"
         },{
           "type": "FreeFormAction",
           "action": "req.headers().add(\"HWKAPMLEVEL\",getLevel())"

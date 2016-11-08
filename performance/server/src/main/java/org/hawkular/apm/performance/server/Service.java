@@ -145,7 +145,7 @@ public class Service {
 
         if (activated) {
             collector.consumerStart(null, uri, "Test", null, interactionId);
-            collector.setBusinessTransaction(null, btxnName);
+            collector.setTransaction(null, btxnName);
         }
 
         if (calledServices != null) {
@@ -178,7 +178,7 @@ public class Service {
                     }
                 }
 
-                calledService.call(mesg, nextInteractionId, collector.getBusinessTransaction());
+                calledService.call(mesg, nextInteractionId, collector.getTransaction());
 
                 if (activated) {
                     collector.producerEnd(null, calledService.getUri(), "Test", null);

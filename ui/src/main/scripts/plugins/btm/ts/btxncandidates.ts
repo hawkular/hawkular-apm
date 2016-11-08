@@ -26,7 +26,7 @@ module BTM {
     $scope.selectedendpoints = [ ];
     $scope.candidateCount = 0;
 
-    $http.get('/hawkular/apm/config/businesstxn/summary').then(function(resp) {
+    $http.get('/hawkular/apm/config/transaction/summary').then(function(resp) {
       $scope.businessTransactions = resp.data;
     },function(resp) {
       console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
@@ -79,7 +79,7 @@ module BTM {
           });
         }
       }
-      $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
+      $http.put('/hawkular/apm/config/transaction/full/' + $scope.newBTxnName, defn).then(function(resp) {
         $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
       },function(resp) {
         console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + angular.toJson(resp));
@@ -110,7 +110,7 @@ module BTM {
           });
         }
       }
-      $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.newBTxnName, defn).then(function(resp) {
+      $http.put('/hawkular/apm/config/transaction/full/' + $scope.newBTxnName, defn).then(function(resp) {
         $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
       },function(resp) {
         console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + angular.toJson(resp));
@@ -118,14 +118,14 @@ module BTM {
     };
 
     $scope.updateBusinessTxn = function() {
-      $http.get('/hawkular/apm/config/businesstxn/full/' + $scope.existingBTxnName).then(function(resp) {
+      $http.get('/hawkular/apm/config/transaction/full/' + $scope.existingBTxnName).then(function(resp) {
         let btxn = resp.data;
         for (let i = 0; i < $scope.selectedendpoints.length; i++) {
           if (btxn.filter.inclusions.indexOf($scope.selectedendpoints[i].regex) === -1) {
             btxn.filter.inclusions.push($scope.selectedendpoints[i].regex);
           }
         }
-        $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
+        $http.put('/hawkular/apm/config/transaction/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
           console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
           $location.path('/hawkular-ui/apm/btm/config/' + $scope.existingBTxnName);
         },function(resp) {

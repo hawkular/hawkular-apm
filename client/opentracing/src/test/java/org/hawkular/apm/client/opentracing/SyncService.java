@@ -30,8 +30,8 @@ import io.opentracing.propagation.TextMapInjectAdapter;
  */
 public class SyncService extends AbstractService {
 
-    public static final String SYNC_BTXN_NAME_1 = "This is the sync service";
-    public static final String SYNC_BTXN_NAME_2 = "This is the other sync service";
+    public static final String SYNC_TXN_NAME_1 = "This is the sync service";
+    public static final String SYNC_TXN_NAME_2 = "This is the other sync service";
     public static final String MY_FAULT = "MyFault";
     public static final String ORDER_ID_NAME = "orderId";
     public static final String ORDER_ID_VALUE = "1243343456455";
@@ -48,7 +48,7 @@ public class SyncService extends AbstractService {
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
                 .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
-                .withTag(Constants.PROP_TRANSACTION_NAME, SYNC_BTXN_NAME_1)
+                .withTag(Constants.PROP_TRANSACTION_NAME, SYNC_TXN_NAME_1)
                 .withTag(ORDER_ID_NAME, ORDER_ID_VALUE)
                 .start();
 
@@ -109,7 +109,7 @@ public class SyncService extends AbstractService {
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
                 .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
-                .withTag(Constants.PROP_TRANSACTION_NAME, SYNC_BTXN_NAME_2)
+                .withTag(Constants.PROP_TRANSACTION_NAME, SYNC_TXN_NAME_2)
                 .asChildOf(span).start()) {
             Message mesg = createMessage();
             getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,

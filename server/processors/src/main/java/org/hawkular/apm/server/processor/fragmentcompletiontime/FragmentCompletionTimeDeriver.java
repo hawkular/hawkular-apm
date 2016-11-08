@@ -59,7 +59,7 @@ public class FragmentCompletionTimeDeriver extends AbstractProcessor<Trace, Comp
                         || ((Consumer) n).getEndpointType().trim().isEmpty());
             }
 
-            ct.setBusinessTransaction(item.getBusinessTransaction());
+            ct.setTransaction(item.getTransaction());
             ct.setDuration(item.calculateDuration());
             ct.setHostName(item.getHostName());
             ct.setProperties(item.allProperties());

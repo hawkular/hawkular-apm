@@ -35,9 +35,9 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.ProcessorIssue;
@@ -69,22 +69,22 @@ public class ProcessorManager {
      * @param config The configuration
      */
     protected void init(CollectorConfiguration config) {
-        for (String btxn : config.getBusinessTransactions().keySet()) {
-            BusinessTxnConfig btc = config.getBusinessTransactions().get(btxn);
+        for (String btxn : config.getTransactions().keySet()) {
+            TransactionConfig btc = config.getTransactions().get(btxn);
             init(btxn, btc);
         }
     }
 
     /**
      * This method initialises the processors associated with the supplied
-     * business transaction configuration.
+     * transaction configuration.
      *
-     * @param btxn The business transaction name
+     * @param txn The transaction name
      * @param btc The configuration
      */
-    public void init(String btxn, BusinessTxnConfig btc) {
+    public void init(String txn, TransactionConfig btc) {
         if (log.isLoggable(Level.FINE)) {
-            log.fine("ProcessManager: initialise btxn '" + btxn + "' config=" + btc
+            log.fine("ProcessManager: initialise btxn '" + txn + "' config=" + btc
                     + " processors=" + btc.getProcessors().size());
         }
 
@@ -96,23 +96,23 @@ public class ProcessorManager {
             }
 
             synchronized (processors) {
-                processors.put(btxn, procs);
+                processors.put(txn, procs);
             }
         } else {
             synchronized (processors) {
-                processors.remove(btxn);
+                processors.remove(txn);
             }
         }
     }
 
     /**
-     * This method removes the business transaction configuration.
+     * This method removes the transaction configuration.
      *
-     * @param btxn The business transaction name
+     * @param txn The transaction name
      */
-    public void remove(String btxn) {
+    public void remove(String txn) {
         synchronized (processors) {
-            processors.remove(btxn);
+            processors.remove(txn);
         }
     }
 
@@ -128,11 +128,11 @@ public class ProcessorManager {
     public boolean isProcessed(Trace trace, Node node, Direction direction) {
         boolean ret = false;
 
-        if (trace.getBusinessTransaction() != null) {
+        if (trace.getTransaction() != null) {
             List<ProcessorWrapper> procs = null;
 
             synchronized (processors) {
-                procs = processors.get(trace.getBusinessTransaction());
+                procs = processors.get(trace.getTransaction());
             }
 
             if (procs != null) {
@@ -162,11 +162,11 @@ public class ProcessorManager {
     public boolean isContentProcessed(Trace trace, Node node, Direction direction) {
         boolean ret = false;
 
-        if (trace.getBusinessTransaction() != null) {
+        if (trace.getTransaction() != null) {
             List<ProcessorWrapper> procs = null;
 
             synchronized (processors) {
-                procs = processors.get(trace.getBusinessTransaction());
+                procs = processors.get(trace.getTransaction());
             }
 
             if (procs != null) {
@@ -204,15 +204,15 @@ public class ProcessorManager {
                     + " : available processors=" + processors);
         }
 
-        if (trace.getBusinessTransaction() != null) {
+        if (trace.getTransaction() != null) {
             List<ProcessorWrapper> procs = null;
 
             synchronized (processors) {
-                procs = processors.get(trace.getBusinessTransaction());
+                procs = processors.get(trace.getTransaction());
             }
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ProcessManager: trace name=" + trace.getBusinessTransaction() + " processors=" + procs);
+                log.finest("ProcessManager: trace name=" + trace.getTransaction() + " processors=" + procs);
             }
 
             if (procs != null) {
@@ -352,7 +352,7 @@ public class ProcessorManager {
         }
 
         /**
-         * This method checks that this processor matches the supplied business txn
+         * This method checks that this processor matches the supplied txn
          * name and node details.
          *
          * @param trace The trace

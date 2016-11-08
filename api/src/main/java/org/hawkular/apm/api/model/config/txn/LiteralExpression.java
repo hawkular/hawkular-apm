@@ -14,41 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
-
-import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
+package org.hawkular.apm.api.model.config.txn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents the action of adding a correlation identifier.
+ * This class represents a literal.
  *
  * @author gbrown
  */
-public class AddCorrelationIdAction extends ExpressionBasedAction {
+public class LiteralExpression extends Expression {
 
-    @JsonInclude(Include.NON_NULL)
-    private CorrelationIdentifier.Scope scope;
+    @JsonInclude
+    private String value;
 
     /**
-     * @return the scope
+     * @return the value
      */
-    public CorrelationIdentifier.Scope getScope() {
-        return scope;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * @param scope the scope to set
+     * @param value the value to set
+     * @return The literal expression
      */
-    public void setScope(CorrelationIdentifier.Scope scope) {
-        this.scope = scope;
+    public LiteralExpression setValue(String value) {
+        this.value = value;
+        return this;
     }
 
     @Override
     public String toString() {
-        return "AddCorrelationIdAction [scope=" + scope + ", getExpression()=" + getExpression()
-                + ", getDescription()=" + getDescription() + ", getPredicate()=" + getPredicate() + "]";
+        return "Literal [value=" + value + "]";
     }
 
 }

@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
 
 /**
- * This class represents expression that can be applied to Text data.
- *
  * @author gbrown
  */
-public class TextExpression extends DataExpression {
+public enum DataSource {
 
-    @Override
-    public String toString() {
-        return "Text [getSource()=" + getSource() + ", getKey()=" + getKey()
-                + "]";
-    }
+    /* The data source is the content */
+    Content,
+
+    /* The data source is a header property */
+    Header
 
 }

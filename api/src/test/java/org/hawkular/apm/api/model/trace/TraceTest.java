@@ -72,7 +72,7 @@ public class TraceTest {
         node1.getNodes().add(node2);
 
         // This node will have the latest time associated with the
-        // business transaction, comprised of the start time + duration
+        // transaction, comprised of the start time + duration
         Producer node3 = new Producer();
         node3.setTimestamp(200000);
         node3.setDuration(50000);
@@ -232,7 +232,7 @@ public class TraceTest {
 
         Trace trace1 = new Trace();
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setTransaction("testapp");
         trace1.setTimestamp(baseTime); // Within last hour
 
         Consumer c1 = new Consumer();
@@ -258,7 +258,7 @@ public class TraceTest {
     public void testAllProperties() {
         Trace trace1 = new Trace();
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction("testapp");
+        trace1.setTransaction("testapp");
 
         Consumer c1 = new Consumer();
         c1.getProperties().add(new Property("prop1", "value1"));

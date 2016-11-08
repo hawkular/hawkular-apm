@@ -33,8 +33,8 @@ import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
 /**
- * These tests invoke a Camel based REST service to cause business transaction information
- * to be reported to the BusinessTransactionService.
+ * These tests invoke a Camel based REST service to cause transaction information
+ * to be reported to the TraceService.
  *
  * @author gbrown
  */

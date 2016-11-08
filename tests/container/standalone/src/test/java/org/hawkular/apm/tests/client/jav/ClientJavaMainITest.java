@@ -97,7 +97,7 @@ public class ClientJavaMainITest {
         service.setUsername(TEST_USERNAME);
         service.setPassword(TEST_PASSWORD);
 
-        // Retrieve stored business transaction
+        // Retrieve stored traces
         Criteria criteria = new Criteria();
         criteria.setStartTime(startTime);
 
@@ -107,7 +107,7 @@ public class ClientJavaMainITest {
         List<Trace> result = service.searchFragments(null, criteria);
 
         assertNotNull(result);
-        assertEquals("Only expecting 1 business txn", 1, result.size());
+        assertEquals("Only expecting 1 trace", 1, result.size());
 
         Trace trace = result.get(0);
 

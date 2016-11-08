@@ -51,7 +51,7 @@ public class APMTracerTest {
 
     private static final String MY_VALUE = "myValue";
     private static final String MY_TAG = "myTag";
-    private static final String TEST_BTXN = "TestBTxn";
+    private static final String TEST_TXN = "TestBTxn";
     private static final String TEST_APM_ID = "abcd";
     private static final String TEST_APM_TRACEID = "xyz";
     private static ObjectMapper mapper;
@@ -142,7 +142,7 @@ public class APMTracerTest {
         Message message = new Message();
         message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_TXN);
 
         service.handle1(message);
 
@@ -150,7 +150,7 @@ public class APMTracerTest {
 
         Trace trace = reporter.getTraces().get(0);
 
-        assertEquals(TEST_BTXN, trace.getBusinessTransaction());
+        assertEquals(TEST_TXN, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
         assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
 
@@ -207,7 +207,7 @@ public class APMTracerTest {
 
         Trace trace = reporter.getTraces().get(0);
 
-        assertEquals(SyncService.SYNC_BTXN_NAME_1, trace.getBusinessTransaction());
+        assertEquals(SyncService.SYNC_TXN_NAME_1, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
         assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
 
@@ -246,7 +246,7 @@ public class APMTracerTest {
 
         assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
 
-        assertEquals(SyncService.SYNC_BTXN_NAME_1,
+        assertEquals(SyncService.SYNC_TXN_NAME_1,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
@@ -268,7 +268,7 @@ public class APMTracerTest {
 
         Trace trace = reporter.getTraces().get(0);
 
-        assertEquals(SyncService.SYNC_BTXN_NAME_2, trace.getBusinessTransaction());
+        assertEquals(SyncService.SYNC_TXN_NAME_2, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
         assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
 
@@ -307,7 +307,7 @@ public class APMTracerTest {
 
         assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
 
-        assertEquals(SyncService.SYNC_BTXN_NAME_2,
+        assertEquals(SyncService.SYNC_TXN_NAME_2,
                 service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
@@ -321,7 +321,7 @@ public class APMTracerTest {
         Message message = new Message();
         message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_TXN);
 
         CountDownLatch latch=new CountDownLatch(1);
         service.handle(message, obj -> {
@@ -335,7 +335,7 @@ public class APMTracerTest {
         assertEquals(1, reporter.getTraces().size());
 
         Trace trace1 = reporter.getTraces().get(0);
-        assertEquals(TEST_BTXN, trace1.getBusinessTransaction());
+        assertEquals(TEST_TXN, trace1.getTransaction());
         assertEquals(1, trace1.getNodes().size());
         assertEquals(Consumer.class, trace1.getNodes().get(0).getClass());
 
@@ -362,7 +362,7 @@ public class APMTracerTest {
 
         assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
 
-        assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
+        assertEquals(TEST_TXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class APMTracerTest {
         Message message = new Message();
         message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_TXN);
 
         service.handle(message);
 
@@ -384,7 +384,7 @@ public class APMTracerTest {
         assertEquals(2, reporter.getTraces().size());
 
         Trace trace1 = reporter.getTraces().get(0);
-        assertEquals(TEST_BTXN, trace1.getBusinessTransaction());
+        assertEquals(TEST_TXN, trace1.getTransaction());
         assertEquals(1, trace1.getNodes().size());
         assertEquals(Consumer.class, trace1.getNodes().get(0).getClass());
 
@@ -404,7 +404,7 @@ public class APMTracerTest {
 
         // Check trace2
         Trace trace2 = reporter.getTraces().get(1);
-        assertEquals(TEST_BTXN, trace2.getBusinessTransaction());
+        assertEquals(TEST_TXN, trace2.getTransaction());
         assertEquals(1, trace2.getNodes().size());
         assertEquals(Consumer.class, trace2.getNodes().get(0).getClass());
 
@@ -436,7 +436,7 @@ public class APMTracerTest {
 
         assertEquals(TEST_APM_TRACEID, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TRACEID));
 
-        assertEquals(TEST_BTXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
+        assertEquals(TEST_TXN, service.getMessages().get(0).getHeaders().get(Constants.HAWKULAR_APM_TXN));
     }
 
     @Test
@@ -449,7 +449,7 @@ public class APMTracerTest {
         Message message = new Message();
         message.getHeaders().put(Constants.HAWKULAR_APM_TRACEID, TEST_APM_TRACEID);
         message.getHeaders().put(Constants.HAWKULAR_APM_ID, TEST_APM_ID);
-        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_BTXN);
+        message.getHeaders().put(Constants.HAWKULAR_APM_TXN, TEST_TXN);
 
         service.handle(message);
 
@@ -457,7 +457,7 @@ public class APMTracerTest {
 
         Trace trace = reporter.getTraces().get(0);
         assertEquals(TEST_APM_TRACEID, trace.getTraceId());
-        assertEquals(TEST_BTXN, trace.getBusinessTransaction());
+        assertEquals(TEST_TXN, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
         assertEquals(Consumer.class, trace.getNodes().get(0).getClass());
 

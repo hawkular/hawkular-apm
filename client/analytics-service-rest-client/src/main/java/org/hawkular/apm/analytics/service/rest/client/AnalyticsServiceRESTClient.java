@@ -115,15 +115,15 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
     }
 
     @Override
-    public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
+    public List<EndpointInfo> getBoundEndpoints(String tenantId, String transaction, long startTime,
                                                 long endTime) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get bound endpoints: tenantId=[" + tenantId + "] businessTransaction="
-                    + businessTransaction + " startTime=" + startTime + " endTime=" + endTime);
+            log.finest("Get bound endpoints: tenantId=[" + tenantId + "] transaction="
+                    + transaction + " startTime=" + startTime + " endTime=" + endTime);
         }
 
         String path = "analytics/boundendpoints/%s?startTime=%d&endTime=%d";
-        return getResultsForUrl(tenantId, URIINFO_LIST, path, businessTransaction, startTime, endTime);
+        return getResultsForUrl(tenantId, URIINFO_LIST, path, transaction, startTime, endTime);
     }
 
     @Override

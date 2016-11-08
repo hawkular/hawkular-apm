@@ -38,7 +38,7 @@
               </div>
               <div class="form-group input col-sm-6">
                 <div class="input-group input-group-lg">
-                  <select pf-select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
+                  <select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
                     <option value="">Select existing ....</option>
                     <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
                   </select>

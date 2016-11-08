@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.api.services.ConfigurationLoader;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.utils.PropertyUtil;
@@ -44,11 +44,11 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
 
     private static final TypeReference<CollectorConfiguration> COLLECTOR_CONFIGURATION_TYPE_REFERENCE = new TypeReference<CollectorConfiguration>() {
     };
-    private static final TypeReference<BusinessTxnConfig> BUSINESS_TXN_CONFIG_TYPE_REFERENCE = new TypeReference<BusinessTxnConfig>() {
+    private static final TypeReference<TransactionConfig> TXN_CONFIG_TYPE_REFERENCE = new TypeReference<TransactionConfig>() {
     };
-    private static final TypeReference<List<BusinessTxnSummary>> BTXN_SUMMARY_LIST = new TypeReference<List<BusinessTxnSummary>>() {
+    private static final TypeReference<List<TransactionSummary>> TXN_SUMMARY_LIST = new TypeReference<List<TransactionSummary>>() {
     };
-    private static final TypeReference<Map<String, BusinessTxnConfig>> BUSINESS_TXN_MAP = new TypeReference<Map<String, BusinessTxnConfig>>() {
+    private static final TypeReference<Map<String, TransactionConfig>> TXN_CONFIG_MAP = new TypeReference<Map<String, TransactionConfig>>() {
     };
     private static final TypeReference<List<ConfigMessage>> CONFIG_MESSAGE_LIST = new TypeReference<List<ConfigMessage>>() {
     };
@@ -99,29 +99,29 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
     }
 
     @Override
-    public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+    public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config) {
         return withJsonPayloadAndResults(
                 "PUT",
                 tenantId,
-                getUrl("config/businesstxn/full/%s", name),
+                getUrl("config/transaction/full/%s", name),
                 config,
                 (connection) -> parseResultsIntoJson(connection, CONFIG_MESSAGE_LIST)
         );
     }
 
     @Override
-    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs) {
+    public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs) {
         return withJsonPayloadAndResults(
                 "POST",
                 tenantId,
-                getUrl("config/businesstxn/full"),
+                getUrl("config/transaction/full"),
                 configs,
                 (connection) -> parseResultsIntoJson(connection, CONFIG_MESSAGE_LIST)
         );
     }
 
     @Override
-    public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+    public List<ConfigMessage> validateTransaction(TransactionConfig config) {
         if (!isAvailable()) {
             if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
@@ -132,14 +132,14 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         return withJsonPayloadAndResults(
                 "POST",
                 null,
-                getUrl("config/businesstxn/validate"),
+                getUrl("config/transaction/validate"),
                 config,
                 (connection) -> parseResultsIntoJson(connection, CONFIG_MESSAGE_LIST)
         );
     }
 
     @Override
-    public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+    public TransactionConfig getTransaction(String tenantId, String name) {
         if (!isAvailable()) {
             if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
@@ -147,12 +147,12 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
             return null;
         }
 
-        String url = "config/businesstxn/full/%s";
-        return getResultsForUrl(tenantId, BUSINESS_TXN_CONFIG_TYPE_REFERENCE, url, name);
+        String url = "config/transaction/full/%s";
+        return getResultsForUrl(tenantId, TXN_CONFIG_TYPE_REFERENCE, url, name);
     }
 
     @Override
-    public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+    public List<TransactionSummary> getTransactionSummaries(String tenantId) {
         if (!isAvailable()) {
             if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
@@ -160,12 +160,12 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
             return null;
         }
 
-        String url = "config/businesstxn/summary";
-        return getResultsForUrl(tenantId, BTXN_SUMMARY_LIST, url);
+        String url = "config/transaction/summary";
+        return getResultsForUrl(tenantId, TXN_SUMMARY_LIST, url);
     }
 
     @Override
-    public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+    public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
         if (!isAvailable()) {
             if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
@@ -173,12 +173,12 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
             return null;
         }
 
-        String url = "config/businesstxn/full?updated=%d";
-        return getResultsForUrl(tenantId, BUSINESS_TXN_MAP, url, updated);
+        String url = "config/transaction/full?updated=%d";
+        return getResultsForUrl(tenantId, TXN_CONFIG_MAP, url, updated);
     }
 
     @Override
-    public void removeBusinessTransaction(String tenantId, String name) {
+    public void removeTransaction(String tenantId, String name) {
         if (!isAvailable()) {
             if (log.isLoggable(Logger.Level.FINEST)) {
                 log.finest("Configuration Service is not enabled");
@@ -186,24 +186,24 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
             return;
         }
 
-        URL url = getUrl("config/businesstxn/full/%s", name);
+        URL url = getUrl("config/transaction/full/%s", name);
         withContext(tenantId, url, (connection) -> {
             try {
                 connection.setRequestMethod("DELETE");
                 if (connection.getResponseCode() == 200) {
                     if (log.isLoggable(Logger.Level.FINEST)) {
-                        log.finest(String.format("Business transaction [%s] removed", name));
+                        log.finest(String.format("Transaction [%s] removed", name));
                     }
                 } else {
                     if (log.isLoggable(Logger.Level.FINEST)) {
-                        log.warning("Failed to remove business transaction: status=["
+                        log.warning("Failed to remove transaction: status=["
                                 + connection.getResponseCode() + "]:"
                                 + connection.getResponseMessage());
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                log.log(Logger.Level.SEVERE, String.format("Failed to remove business transaction [%s]", name), e);
+                log.log(Logger.Level.SEVERE, String.format("Failed to remove transaction [%s]", name), e);
             }
             return null;
         });

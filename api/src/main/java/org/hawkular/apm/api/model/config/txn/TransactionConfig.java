@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +25,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents a business transaction configuration.
+ * This class represents a transaction configuration.
  *
  * @author gbrown
  */
-public class BusinessTxnConfig {
+public class TransactionConfig {
 
     @JsonInclude
     private ReportingLevel level = ReportingLevel.All;

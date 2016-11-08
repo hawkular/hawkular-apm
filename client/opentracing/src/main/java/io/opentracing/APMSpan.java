@@ -23,8 +23,8 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
-import org.hawkular.apm.api.utils.TimeUtil;
 import org.hawkular.apm.api.model.trace.NodeType;
+import org.hawkular.apm.api.utils.TimeUtil;
 import org.hawkular.apm.client.api.reporter.TraceReporter;
 import org.hawkular.apm.client.opentracing.NodeBuilder;
 import org.hawkular.apm.client.opentracing.TraceContext;
@@ -125,8 +125,8 @@ public class APMSpan extends AbstractSpan {
                 // another service (and needs to propagate the transaction
                 // name).
                 if (parent.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)
-                        && traceContext.getBusinessTransaction() == null) {
-                    traceContext.setBusinessTransaction(
+                        && traceContext.getTransaction() == null) {
+                    traceContext.setTransaction(
                             parent.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
                 }
             }
@@ -151,7 +151,7 @@ public class APMSpan extends AbstractSpan {
                     log.severe("Trace id has not been propagated");
                 }
                 if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_TXN)) {
-                    traceContext.setBusinessTransaction(
+                    traceContext.setTransaction(
                             parentBuilder.getState().get(Constants.HAWKULAR_APM_TXN).toString());
                 }
                 if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_LEVEL)) {
@@ -201,10 +201,10 @@ public class APMSpan extends AbstractSpan {
             // is providing the link back to the referenced node
             nodeBuilder = new NodeBuilder(getNodeBuilder());
 
-            // Propagate trace id, business transaction name and reporting level as creating a
+            // Propagate trace id, transaction name and reporting level as creating a
             // separate trace fragment to represent the 'follows from' activity
             traceContext.setTraceId(referenced.getTraceContext().getTraceId());
-            traceContext.setBusinessTransaction(referenced.getTraceContext().getBusinessTransaction());
+            traceContext.setTransaction(referenced.getTraceContext().getTransaction());
             traceContext.setReportingLevel(referenced.getTraceContext().getReportingLevel());
         }
     }

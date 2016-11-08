@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
 
 import org.hawkular.apm.api.model.config.ReportingLevel;
 
@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents a business transaction summary.
+ * This class represents a transaction summary.
  *
  * @author gbrown
  */
-public class BusinessTxnSummary {
+public class TransactionSummary {
 
     @JsonInclude
     private String name;

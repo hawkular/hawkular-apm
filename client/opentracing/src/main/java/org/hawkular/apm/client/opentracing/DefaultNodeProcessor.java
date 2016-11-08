@@ -44,9 +44,9 @@ public class DefaultNodeProcessor implements NodeProcessor {
                 } else if (entry.getKey().equals("component")) {
                     nodeBuilder.setComponentType(entry.getValue().toString());
                 } else if (entry.getKey().contains(Constants.PROP_TRANSACTION_NAME)) {
-                    // Check if business transaction name already defined - if not then set on the trace context
-                    if (context.getBusinessTransaction() == null) {
-                        context.setBusinessTransaction(entry.getValue().toString());
+                    // Check if transaction name already defined - if not then set on the trace context
+                    if (context.getTransaction() == null) {
+                        context.setTransaction(entry.getValue().toString());
                     }
                 } else {
                     nodeBuilder.addProperty(new Property(entry.getKey(), entry.getValue().toString()));

@@ -31,10 +31,10 @@ import java.util.concurrent.Executors;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.ReportingLevel;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
@@ -57,7 +57,7 @@ import org.junit.Test;
 public class DefaultTraceCollectorTest {
 
     private static final String TRACE_ID = "traceId";
-    private static final String BTXN_NAME = "BTxnName";
+    private static final String TXN_NAME = "BTxnName";
     private static final String TEST_TENANT = "TestTenant";
     private static final String TYPE = "TestType";
     private static final String URI = "TestURI";
@@ -83,9 +83,9 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
+        Wait.until(() -> traceService.getTraces().size() == 1);
 
-        List<Trace> traces = traceService.getBusinessTransactions();
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
 
@@ -112,7 +112,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
+        Wait.until(() -> traceService.getTraces().size() == 1);
         // Clear property
         System.getProperties().remove("HAWKULAR_APM_TENANTID");
 
@@ -139,8 +139,8 @@ public class DefaultTraceCollectorTest {
         collector.processOut(null, respHeaders);
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
-        List<Trace> traces = traceService.getBusinessTransactions();
+        Wait.until(() -> traceService.getTraces().size() == 1);
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
 
@@ -175,9 +175,9 @@ public class DefaultTraceCollectorTest {
         collector.processIn(null, reqHeaders2);
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
+        Wait.until(() -> traceService.getTraces().size() == 1);
 
-        List<Trace> traces = traceService.getBusinessTransactions();
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
 
@@ -208,8 +208,8 @@ public class DefaultTraceCollectorTest {
         collector.processIn(null, reqHeaders);
         collector.consumerEnd(null, URI, TYPE, OP);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
-        List<Trace> traces = traceService.getBusinessTransactions();
+        Wait.until(() -> traceService.getTraces().size() == 1);
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
 
@@ -235,8 +235,8 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
-        List<Trace> traces = traceService.getBusinessTransactions();
+        Wait.until(() -> traceService.getTraces().size() == 1);
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals("Only 1 trace expected", 1, traces.size());
 
@@ -264,11 +264,11 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         tcs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setLevel(ReportingLevel.None);
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(tcs);
 
@@ -278,7 +278,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        List<Trace> traces = traceService.getBusinessTransactions();
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals(0, traces.size());
     }
@@ -294,11 +294,11 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         tcs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setLevel(ReportingLevel.None);
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test\\[op\\]");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(tcs);
 
@@ -308,7 +308,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        List<Trace> traces = traceService.getBusinessTransactions();
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals(0, traces.size());
     }
@@ -324,10 +324,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         tcs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(tcs);
 
@@ -339,7 +339,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        List<Trace> traces = traceService.getBusinessTransactions();
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals(0, traces.size());
     }
@@ -355,10 +355,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         tcs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test\\[op\\]");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(tcs);
 
@@ -370,7 +370,7 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        List<Trace> traces = traceService.getBusinessTransactions();
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals(0, traces.size());
     }
@@ -386,10 +386,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         tcs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(tcs);
 
@@ -399,8 +399,8 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
-        List<Trace> traces = traceService.getBusinessTransactions();
+        Wait.until(() -> traceService.getTraces().size() == 1);
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals(1, traces.size());
     }
@@ -416,10 +416,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         tcs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test\\[op\\]");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(tcs);
 
@@ -429,8 +429,8 @@ public class DefaultTraceCollectorTest {
 
         collector.consumerEnd(null, null, null, null);
 
-        Wait.until(() -> traceService.getBusinessTransactions().size() == 1);
-        List<Trace> traces = traceService.getBusinessTransactions();
+        Wait.until(() -> traceService.getTraces().size() == 1);
+        List<Trace> traces = traceService.getTraces();
 
         assertEquals(1, traces.size());
     }
@@ -522,9 +522,9 @@ public class DefaultTraceCollectorTest {
     public void testSetNameNoFragmentManager() {
         DefaultTraceCollector collector = new DefaultTraceCollector();
 
-        collector.setBusinessTransaction(null, "test");
+        collector.setTransaction(null, "test");
 
-        assertEquals("test", collector.getBusinessTransaction());
+        assertEquals("test", collector.getTransaction());
 
         collector.getFragmentManager().clear();
     }
@@ -538,10 +538,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         cs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(cs);
 
@@ -549,9 +549,9 @@ public class DefaultTraceCollectorTest {
         collector.activate("/test", null);
         collector.producerStart(null, "/test", "HTTP", null, null);
 
-        collector.setBusinessTransaction(null, "test");
+        collector.setTransaction(null, "test");
 
-        assertEquals("test", collector.getBusinessTransaction());
+        assertEquals("test", collector.getTransaction());
 
         collector.getFragmentManager().clear();
     }
@@ -567,10 +567,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         cs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(cs);
 
@@ -581,7 +581,7 @@ public class DefaultTraceCollectorTest {
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
-        assertEquals("testapp", collector.getBusinessTransaction());
+        assertEquals("testapp", collector.getTransaction());
 
         collector.getFragmentManager().clear();
     }
@@ -597,10 +597,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         cs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(cs);
 
@@ -615,7 +615,7 @@ public class DefaultTraceCollectorTest {
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
-        assertEquals("testapp", collector.getBusinessTransaction());
+        assertEquals("testapp", collector.getTransaction());
 
         collector.getFragmentManager().clear();
     }
@@ -631,10 +631,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         cs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test\\[op\\]");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(cs);
 
@@ -649,7 +649,7 @@ public class DefaultTraceCollectorTest {
         collector.producerStart(null, "/test", "HTTP", "op", null);
 
         assertTrue(collector.isActive());
-        assertEquals("testapp", collector.getBusinessTransaction());
+        assertEquals("testapp", collector.getTransaction());
 
         collector.getFragmentManager().clear();
     }
@@ -663,10 +663,10 @@ public class DefaultTraceCollectorTest {
         CollectorConfiguration cc = new CollectorConfiguration();
         cs.setCollectorConfiguration(cc);
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
+        TransactionConfig btc = new TransactionConfig();
         btc.setFilter(new Filter());
         btc.getFilter().getInclusions().add("/test");
-        cc.getBusinessTransactions().put("testapp", btc);
+        cc.getTransactions().put("testapp", btc);
 
         collector.setConfigurationService(cs);
 
@@ -683,7 +683,7 @@ public class DefaultTraceCollectorTest {
         collector.producerStart(null, "/test", "HTTP", null, null);
 
         assertTrue(collector.isActive());
-        assertEquals("", collector.getBusinessTransaction());
+        assertEquals("", collector.getTransaction());
 
         collector.getFragmentManager().clear();
     }
@@ -762,7 +762,7 @@ public class DefaultTraceCollectorTest {
         Trace parentTrace = parent.getTrace();
         Trace spawnedTrace = spawned.getTrace();
 
-        parentTrace.setBusinessTransaction(BTXN_NAME);
+        parentTrace.setTransaction(TXN_NAME);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -798,7 +798,7 @@ public class DefaultTraceCollectorTest {
         assertEquals(ipids.get(0), icids.get(0));
 
         // Check trace details transferred
-        assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
+        assertEquals(TXN_NAME, spawnedTrace.getTransaction());
     }
 
     @Test
@@ -834,7 +834,7 @@ public class DefaultTraceCollectorTest {
         Trace parentTrace = parent.getTrace();
         Trace spawnedTrace = spawned.getTrace();
 
-        parentTrace.setBusinessTransaction(BTXN_NAME);
+        parentTrace.setTransaction(TXN_NAME);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -877,7 +877,7 @@ public class DefaultTraceCollectorTest {
         assertEquals(ipids.get(0), icids.get(0));
 
         // Check trace details transferred
-        assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
+        assertEquals(TXN_NAME, spawnedTrace.getTransaction());
     }
 
     @Test
@@ -890,7 +890,7 @@ public class DefaultTraceCollectorTest {
         Trace parentTrace = parent.getTrace();
         Trace spawnedTrace = spawned.getTrace();
 
-        parentTrace.setBusinessTransaction(BTXN_NAME);
+        parentTrace.setTransaction(TXN_NAME);
 
         // Create top level consumer in parent
         Consumer parentConsumer = new Consumer();
@@ -926,18 +926,18 @@ public class DefaultTraceCollectorTest {
         assertEquals(ipids.get(0), icids.get(0));
 
         // Check trace details transferred
-        assertEquals(BTXN_NAME, spawnedTrace.getBusinessTransaction());
+        assertEquals(TXN_NAME, spawnedTrace.getTransaction());
     }
 
     public static class TestTraceService implements TraceService, TracePublisher {
 
-        private List<Trace> businessTransactions = new ArrayList<Trace>();
+        private List<Trace> traces = new ArrayList<Trace>();
         private String tenantId;
 
         @Override
         public void publish(String tenantId, List<Trace> traces) throws Exception {
             this.tenantId = tenantId;
-            businessTransactions.addAll(traces);
+            this.traces.addAll(traces);
         }
 
         @Override
@@ -967,17 +967,17 @@ public class DefaultTraceCollectorTest {
         }
 
         /**
-         * @return the businessTransactions
+         * @return the traces
          */
-        public List<Trace> getBusinessTransactions() {
-            return businessTransactions;
+        public List<Trace> getTraces() {
+            return traces;
         }
 
         /**
-         * @param businessTransactions the businessTransactions to set
+         * @param traces the traces to set
          */
-        public void setBusinessTransactions(List<Trace> businessTransactions) {
-            this.businessTransactions = businessTransactions;
+        public void setTraces(List<Trace> traces) {
+            this.traces = traces;
         }
 
         /**
@@ -995,7 +995,7 @@ public class DefaultTraceCollectorTest {
         }
 
         @Override
-        public void storeFragments(String tenantId, List<Trace> businessTransactions)
+        public void storeFragments(String tenantId, List<Trace> traces)
                 throws StoreException {
         }
 
@@ -1030,37 +1030,37 @@ public class DefaultTraceCollectorTest {
         }
 
         @Override
-        public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config) {
+        public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config) {
             return null;
         }
 
         @Override
-        public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+        public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs)
                 throws Exception {
             return null;
         }
 
         @Override
-        public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+        public List<ConfigMessage> validateTransaction(TransactionConfig config) {
             return null;
         }
 
         @Override
-        public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+        public TransactionConfig getTransaction(String tenantId, String name) {
             return null;
         }
 
         @Override
-        public void removeBusinessTransaction(String tenantId, String name) {
+        public void removeTransaction(String tenantId, String name) {
         }
 
         @Override
-        public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+        public List<TransactionSummary> getTransactionSummaries(String tenantId) {
             return null;
         }
 
         @Override
-        public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+        public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
             // TODO Auto-generated method stub
             return null;
         }

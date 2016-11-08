@@ -14,25 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.rest.entity;
+package org.hawkular.apm.api.model.config.instrumentation.jvm;
 
-import javax.ws.rs.PathParam;
-
-import io.swagger.annotations.ApiParam;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * @author Juraci Paixão Kröhling
+ * This type represents the action for setting the transaction name.
+ *
+ * @author gbrown
  */
-public class NamedBusinessTransactionRequest extends TenantRequest {
-    @ApiParam(required = true, value = "business transaction name")
-    @PathParam("name")
-    String name;
+public class SetTransaction extends InstrumentAction {
 
-    public String getName() {
-        return name;
+    @JsonInclude
+    private String nameExpression;
+
+    /**
+     * @return the nameExpression
+     */
+    public String getNameExpression() {
+        return nameExpression;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * @param nameExpression the nameExpression to set
+     */
+    public void setNameExpression(String nameExpression) {
+        this.nameExpression = nameExpression;
     }
+
 }

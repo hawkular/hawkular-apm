@@ -36,7 +36,7 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.Node;
@@ -98,12 +98,12 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     }
 
     @Override
-    public List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime,
+    public List<EndpointInfo> getBoundEndpoints(String tenantId, String transaction, long startTime,
                                     long endTime) {
         List<EndpointInfo> ret = new ArrayList<EndpointInfo>();
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(businessTransaction)
+        criteria.setTransaction(transaction)
         .setStartTime(startTime)
         .setEndTime(endTime);
 
@@ -358,11 +358,10 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
             Criteria criteria);
 
     /**
-     * This method obtains the unbound endpoints from a list of business
-     * transaction fragments.
+     * This method obtains the unbound endpoints from a list of trace fragments.
      *
      * @param tenantId The tenant
-     * @param fragments The list of business txn fragments
+     * @param fragments The list of trace fragments
      * @param compress Whether the list should be compressed (i.e. to identify patterns)
      * @return The list of unbound endpoints
      */
@@ -375,7 +374,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         for (int i = 0; i < fragments.size(); i++) {
             Trace trace = fragments.get(i);
 
-            if (trace.initialFragment() && !trace.getNodes().isEmpty() && trace.getBusinessTransaction() == null) {
+            if (trace.initialFragment() && !trace.getNodes().isEmpty() && trace.getTransaction() == null) {
 
                 // Check if top level node is Consumer
                 if (trace.getNodes().get(0) instanceof Consumer) {
@@ -400,10 +399,10 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
         }
 
         // Check whether any of the top level endpoints are already associated with
-        // a business txn config
+        // a transaction config
         if (configService != null) {
-            Map<String, BusinessTxnConfig> configs = configService.getBusinessTransactions(tenantId, 0);
-            for (BusinessTxnConfig config : configs.values()) {
+            Map<String, TransactionConfig> configs = configService.getTransactions(tenantId, 0);
+            for (TransactionConfig config : configs.values()) {
                 if (config.getFilter() != null && config.getFilter().getInclusions() != null) {
                     if (log.isLoggable(Level.FINEST)) {
                         log.finest("Remove unbound URIs associated with btxn config=" + config);

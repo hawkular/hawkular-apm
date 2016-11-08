@@ -17,28 +17,28 @@
 package org.hawkular.apm.instrumenter.rules;
 
 import org.hawkular.apm.api.model.config.instrumentation.jvm.InstrumentAction;
-import org.hawkular.apm.api.model.config.instrumentation.jvm.SetBusinessTransaction;
+import org.hawkular.apm.api.model.config.instrumentation.jvm.SetTransaction;
 
 /**
- * This class transforms the SetBusinessTransaction action type.
+ * This class transforms the SetTransaction action type.
  *
  * @author gbrown
  */
-public class SetBusinessTransactionTransformer implements InstrumentActionTransformer {
+public class SetTransactionTransformer implements InstrumentActionTransformer {
 
     @Override
     public Class<? extends InstrumentAction> getActionType() {
-        return SetBusinessTransaction.class;
+        return SetTransaction.class;
     }
 
     @Override
     public String convertToRuleAction(InstrumentAction action) {
-        SetBusinessTransaction setAction = (SetBusinessTransaction) action;
+        SetTransaction setAction = (SetTransaction) action;
         StringBuilder builder = new StringBuilder(64);
 
         builder.append("collector().");
 
-        builder.append("setBusinessTransaction(getRuleName(),");
+        builder.append("setTransaction(getRuleName(),");
 
         if (setAction.getNameExpression() == null) {
             builder.append("null");

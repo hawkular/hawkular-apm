@@ -24,7 +24,7 @@ import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 
 /**
- * This class manages the set of business fragment builders.
+ * This class manages the set of fragment builders.
  *
  * @author gbrown
  */

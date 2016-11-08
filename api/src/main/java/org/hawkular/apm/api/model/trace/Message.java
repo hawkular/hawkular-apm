@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents information exchanged between two participants in the business
+ * This class represents information exchanged between two participants in the
  * transaction flow.
  *
  * @author gbrown

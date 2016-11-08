@@ -26,7 +26,7 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "businessTransaction": {
+                "transaction": {
                     "type": "string",
                     "index": "not_analyzed"
                 },
@@ -101,7 +101,7 @@
             "date_detection" : false,
             "numeric_detection": false,
             "properties": {
-                "businessTransaction": {
+                "transaction": {
                     "type": "string",
                     "index": "not_analyzed"
                 },
@@ -158,7 +158,7 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "businessTransaction": {
+                "transaction": {
                     "type": "string",
                     "index": "not_analyzed"
                 },
@@ -225,7 +225,7 @@
             "date_detection" : false,
             "numeric_detection": false,
             "properties": {
-                "businessTransaction": {
+                "transaction": {
                     "type": "string",
                     "index": "not_analyzed"
                 },
@@ -271,7 +271,7 @@
             "date_detection" : false,
             "numeric_detection": false,
             "properties": {
-                "businessTransaction": {
+                "transaction": {
                     "type": "string",
                     "index": "not_analyzed"
                 },

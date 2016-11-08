@@ -35,12 +35,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.server.rest.entity.CollectorConfigurationRequest;
-import org.hawkular.apm.server.rest.entity.NamedBusinessTransactionRequest;
+import org.hawkular.apm.server.rest.entity.NamedTransactionRequest;
 import org.hawkular.apm.server.rest.entity.TenantRequest;
 import org.hawkular.apm.server.rest.entity.UpdatedBusinessTxnConfigurationsRequest;
 import org.hawkular.jaxrs.filter.tenant.TenantRequired;
@@ -89,16 +89,16 @@ public class ConfigurationHandler extends BaseHandler {
     }
 
     @GET
-    @Path("businesstxn/summary")
-    @ApiOperation(value = "Retrieve the business transaction summaries", response = List.class)
+    @Path("transaction/summary")
+    @ApiOperation(value = "Retrieve the transaction summaries", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public Response getBusinessTxnConfigurationSummaries(@BeanParam TenantRequest request) {
         return withErrorHandler(() -> {
-            log.tracef("Get business transaction summaries");
+            log.tracef("Get transaction summaries");
 
-            List<BusinessTxnSummary> summaries = configService.getBusinessTransactionSummaries(getTenant(request));
+            List<TransactionSummary> summaries = configService.getTransactionSummaries(getTenant(request));
 
             // Sort the list
             Collections.sort(summaries, (one, another) -> {
@@ -108,7 +108,7 @@ public class ConfigurationHandler extends BaseHandler {
                 return one.getName().compareTo(another.getName());
             });
 
-            log.tracef("Got business transaction summaries=[%s]", summaries);
+            log.tracef("Got transaction summaries=[%s]", summaries);
 
             return Response
                     .status(Response.Status.OK)
@@ -119,16 +119,16 @@ public class ConfigurationHandler extends BaseHandler {
     }
 
     @GET
-    @Path("businesstxn/full")
-    @ApiOperation(value = "Retrieve the business transaction configurations, changed since an optional specified time", response = Map.class)
+    @Path("transaction/full")
+    @ApiOperation(value = "Retrieve the transaction configurations, changed since an optional specified time", response = Map.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public Response getBusinessTxnConfigurations(@BeanParam UpdatedBusinessTxnConfigurationsRequest request) {
         return withErrorHandler(() -> {
-            log.tracef("Get business transactions, updated = [%s]", request.getUpdated());
-            Map<String, BusinessTxnConfig> btxns = configService.getBusinessTransactions(getTenant(request), request.getUpdated());
-            log.tracef("Got business transactions=[%s]", btxns);
+            log.tracef("Get transactions, updated = [%s]", request.getUpdated());
+            Map<String, TransactionConfig> btxns = configService.getTransactions(getTenant(request), request.getUpdated());
+            log.tracef("Got transactions=[%s]", btxns);
 
             return Response
                     .status(Response.Status.OK)
@@ -139,16 +139,16 @@ public class ConfigurationHandler extends BaseHandler {
     }
 
     @GET
-    @Path("businesstxn/full/{name}")
-    @ApiOperation(value = "Retrieve the business transaction configuration for the specified name", response = BusinessTxnConfig.class)
+    @Path("transaction/full/{name}")
+    @ApiOperation(value = "Retrieve the transaction configuration for the specified name", response = TransactionConfig.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public Response getBusinessTxnConfiguration(@BeanParam NamedBusinessTransactionRequest request) {
+    public Response getBusinessTxnConfiguration(@BeanParam NamedTransactionRequest request) {
         return withErrorHandler(() -> {
-            log.tracef("Get business transaction configuration for name [%s]", request.getName());
-            BusinessTxnConfig config = configService.getBusinessTransaction(getTenant(request), request.getName());
-            log.tracef("Got business transaction configuration for name [%s] config=[%s]", request.getName(), config);
+            log.tracef("Get transaction configuration for name [%s]", request.getName());
+            TransactionConfig config = configService.getTransaction(getTenant(request), request.getName());
+            log.tracef("Got transaction configuration for name [%s] config=[%s]", request.getName(), config);
 
             return Response
                     .status(Response.Status.OK)
@@ -159,16 +159,16 @@ public class ConfigurationHandler extends BaseHandler {
     }
 
     @PUT
-    @Path("businesstxn/full/{name}")
-    @ApiOperation(value = "Add or update the business transaction configuration for the specified name", response = List.class)
+    @Path("transaction/full/{name}")
+    @ApiOperation(value = "Add or update the transaction configuration for the specified name", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public Response setBusinessTxnConfiguration(@BeanParam NamedBusinessTransactionRequest request, BusinessTxnConfig config) {
+    public Response setBusinessTxnConfiguration(@BeanParam NamedTransactionRequest request, TransactionConfig config) {
         return withErrorHandler(() -> {
-            log.tracef("About to set business transaction configuration for name [%s] config=[%s]", request.getName(), config);
-            List<ConfigMessage> messages = configService.setBusinessTransaction(getTenant(request), request.getName(), config);
-            log.tracef("Updated business transaction configuration for name [%s] messages=[%s]", request.getName(), messages);
+            log.tracef("About to set transaction configuration for name [%s] config=[%s]", request.getName(), config);
+            List<ConfigMessage> messages = configService.setTransaction(getTenant(request), request.getName(), config);
+            log.tracef("Updated transaction configuration for name [%s] messages=[%s]", request.getName(), messages);
 
             return Response
                     .status(Response.Status.OK)
@@ -179,16 +179,16 @@ public class ConfigurationHandler extends BaseHandler {
     }
 
     @POST
-    @Path("businesstxn/full")
-    @ApiOperation(value = "Add or update the business transaction configurations", response = List.class)
+    @Path("transaction/full")
+    @ApiOperation(value = "Add or update the transaction configurations", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public Response setBusinessTxnConfigurations(@BeanParam TenantRequest request, Map<String, BusinessTxnConfig> btxnConfigs) {
+    public Response setBusinessTxnConfigurations(@BeanParam TenantRequest request, Map<String, TransactionConfig> btxnConfigs) {
         return withErrorHandler(() -> {
-            log.tracef("About to set business transaction configurations=[%s]", btxnConfigs);
-            List<ConfigMessage> messages = configService.setBusinessTransactions(getTenant(request), btxnConfigs);
-            log.tracef("Updated business transaction configurations : messages=[%s]", messages);
+            log.tracef("About to set transaction configurations=[%s]", btxnConfigs);
+            List<ConfigMessage> messages = configService.setTransactions(getTenant(request), btxnConfigs);
+            log.tracef("Updated transaction configurations : messages=[%s]", messages);
 
             return Response
                     .status(Response.Status.OK)
@@ -198,30 +198,30 @@ public class ConfigurationHandler extends BaseHandler {
     }
 
     @DELETE
-    @Path("businesstxn/full/{name}")
-    @ApiOperation(value = "Remove the business transaction configuration with the specified name")
+    @Path("transaction/full/{name}")
+    @ApiOperation(value = "Remove the transaction configuration with the specified name")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public Response removeBusinessTxnConfiguration(@BeanParam NamedBusinessTransactionRequest request) {
+    public Response removeBusinessTxnConfiguration(@BeanParam NamedTransactionRequest request) {
         return withErrorHandler(() -> {
-            log.tracef("About to remove business transaction configuration for name [%s]", request.getName());
-            configService.removeBusinessTransaction(getTenant(request), request.getName());
+            log.tracef("About to remove transaction configuration for name [%s]", request.getName());
+            configService.removeTransaction(getTenant(request), request.getName());
             return Response.status(Response.Status.OK).build();
         });
     }
 
     @POST
-    @Path("businesstxn/validate")
-    @ApiOperation(value = "Validate the business transaction configuration", response = List.class)
+    @Path("transaction/validate")
+    @ApiOperation(value = "Validate the transaction configuration", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
-    public Response validateBusinessTxnConfiguration(@BeanParam TenantRequest request, BusinessTxnConfig config) {
+    public Response validateBusinessTxnConfiguration(@BeanParam TenantRequest request, TransactionConfig config) {
         return withErrorHandler(() -> {
-            log.tracef("Validate business transaction configuration=[%s]", config);
-            List<ConfigMessage> messages = configService.validateBusinessTransaction(config);
-            log.tracef("Validated business transaction configuration: messages=[%s]", messages);
+            log.tracef("Validate transaction configuration=[%s]", config);
+            List<ConfigMessage> messages = configService.validateTransaction(config);
+            log.tracef("Validated transaction configuration: messages=[%s]", messages);
 
             return Response
                     .status(Response.Status.OK)

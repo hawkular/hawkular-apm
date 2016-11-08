@@ -20,8 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.AddCorrelationIdAction;
-import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
+import org.hawkular.apm.api.model.config.txn.AddCorrelationIdAction;
+import org.hawkular.apm.api.model.config.txn.LiteralExpression;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.junit.Test;

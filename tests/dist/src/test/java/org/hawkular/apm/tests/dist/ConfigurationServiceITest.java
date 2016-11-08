@@ -28,10 +28,10 @@ import java.util.Map;
 
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.config.service.rest.client.ConfigurationServiceRESTClient;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Before;
@@ -45,8 +45,8 @@ public class ConfigurationServiceITest extends AbstractITest {
 
     private static final String DESCRIPTION1 = "Description 1";
     private static final String DESCRIPTION2 = "Description 2";
-    private static final String BTXNCONFIG1 = "btxnconfig1";
-    private static final String BTXNCONFIG2 = "btxnconfig2";
+    private static final String TXNCONFIG1 = "btxnconfig1";
+    private static final String TXNCONFIG2 = "btxnconfig2";
 
     private static ConfigurationServiceRESTClient configService;
 
@@ -83,21 +83,21 @@ public class ConfigurationServiceITest extends AbstractITest {
     @Test
     public void testAddUpdateDeleteBusinessTxnConfig() {
         // Check config not already defined
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
 
-        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        configService.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+        configService.setTransaction(null, TXNCONFIG1, btxnconfig1);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        Wait.until(() -> configService.getBusinessTransaction(null, BTXNCONFIG1) != null);
+        Wait.until(() -> configService.getTransaction(null, TXNCONFIG1) != null);
 
         // Check config was added
-        BusinessTxnConfig btxnconfig2 = configService.getBusinessTransaction(null, BTXNCONFIG1);
+        TransactionConfig btxnconfig2 = configService.getTransaction(null, TXNCONFIG1);
 
         assertNotNull(btxnconfig2);
         assertEquals(DESCRIPTION1, btxnconfig2.getDescription());
@@ -105,26 +105,26 @@ public class ConfigurationServiceITest extends AbstractITest {
         // Update description
         btxnconfig2.setDescription(DESCRIPTION2);
 
-        configService.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig2);
+        configService.setTransaction(null, TXNCONFIG1, btxnconfig2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        Wait.until(() -> configService.getBusinessTransaction(null, BTXNCONFIG1) != null);
+        Wait.until(() -> configService.getTransaction(null, TXNCONFIG1) != null);
 
         // Check config was updated
-        BusinessTxnConfig btxnconfig3 = configService.getBusinessTransaction(null, BTXNCONFIG1);
+        TransactionConfig btxnconfig3 = configService.getTransaction(null, TXNCONFIG1);
 
         assertNotNull(btxnconfig3);
         assertEquals(DESCRIPTION2, btxnconfig3.getDescription());
 
         // Remove the config
-        configService.removeBusinessTransaction(null, BTXNCONFIG1);
+        configService.removeTransaction(null, TXNCONFIG1);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        Wait.until(() -> configService.getBusinessTransaction(null, BTXNCONFIG1) == null);
+        Wait.until(() -> configService.getTransaction(null, TXNCONFIG1) == null);
 
-        BusinessTxnConfig btxnconfig4 = configService.getBusinessTransaction(null, BTXNCONFIG1);
+        TransactionConfig btxnconfig4 = configService.getTransaction(null, TXNCONFIG1);
 
         assertNull(btxnconfig4);
     }
@@ -132,21 +132,21 @@ public class ConfigurationServiceITest extends AbstractITest {
     @Test
     public void testGetCollectorConfigurationWithBusinessTxnConfigs() {
         // Check config not already defined
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG2));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG2));
 
-        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig2 = new TransactionConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
         btxnconfig2.setFilter(new Filter());
         btxnconfig2.getFilter().getInclusions().add("myfilter");
 
-        configService.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
-        configService.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
+        configService.setTransaction(null, TXNCONFIG1, btxnconfig1);
+        configService.setTransaction(null, TXNCONFIG2, btxnconfig2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
@@ -156,42 +156,42 @@ public class ConfigurationServiceITest extends AbstractITest {
         CollectorConfiguration cc = configService.getCollector(null, null, null, null);
 
         assertNotNull(cc);
-        assertNotNull(cc.getBusinessTransactions().get(BTXNCONFIG1));
-        assertNotNull(cc.getBusinessTransactions().get(BTXNCONFIG2));
+        assertNotNull(cc.getTransactions().get(TXNCONFIG1));
+        assertNotNull(cc.getTransactions().get(TXNCONFIG2));
 
         // Remove the config
-        configService.removeBusinessTransaction(null, BTXNCONFIG1);
-        configService.removeBusinessTransaction(null, BTXNCONFIG2);
+        configService.removeTransaction(null, TXNCONFIG1);
+        configService.removeTransaction(null, TXNCONFIG2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
         Wait.until(
-                () -> configService.getBusinessTransaction(null, BTXNCONFIG1) == null
-                        && configService.getBusinessTransaction(null, BTXNCONFIG2) == null);
+                () -> configService.getTransaction(null, TXNCONFIG1) == null
+                        && configService.getTransaction(null, TXNCONFIG2) == null);
 
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG2));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG2));
     }
 
     @Test
     public void testGetBusinessTxnConfigurations() throws InterruptedException {
         // Check config not already defined
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG2));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG2));
 
-        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig2 = new TransactionConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
         btxnconfig2.setFilter(new Filter());
         btxnconfig2.getFilter().getInclusions().add("myfilter");
 
         long midtime = 0;
 
-        configService.setBusinessTransaction(null, BTXNCONFIG1, btxnconfig1);
+        configService.setTransaction(null, TXNCONFIG1, btxnconfig1);
 
         // these waits are part of the business logic and shouldn't be changed
         synchronized (this) {
@@ -204,125 +204,125 @@ public class ConfigurationServiceITest extends AbstractITest {
             wait(1000);
         }
 
-        configService.setBusinessTransaction(null, BTXNCONFIG2, btxnconfig2);
+        configService.setTransaction(null, TXNCONFIG2, btxnconfig2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        Wait.until(() -> configService.getBusinessTransactionSummaries(null) != null);
+        Wait.until(() -> configService.getTransactionSummaries(null) != null);
 
         // Get the btxn names
-        List<BusinessTxnSummary> btns = configService.getBusinessTransactionSummaries(null);
+        List<TransactionSummary> btns = configService.getTransactionSummaries(null);
 
         assertNotNull(btns);
         assertEquals(2, btns.size());
 
-        assertEquals(BTXNCONFIG1, btns.get(0).getName());
-        assertEquals(BTXNCONFIG2, btns.get(1).getName());
+        assertEquals(TXNCONFIG1, btns.get(0).getName());
+        assertEquals(TXNCONFIG2, btns.get(1).getName());
 
         // Get all the btxn configs
-        Map<String, BusinessTxnConfig> btcs = configService.getBusinessTransactions(null, 0);
+        Map<String, TransactionConfig> btcs = configService.getTransactions(null, 0);
 
         assertNotNull(btcs);
         assertEquals(2, btcs.size());
 
-        assertTrue(btcs.containsKey(BTXNCONFIG1));
-        assertTrue(btcs.containsKey(BTXNCONFIG2));
+        assertTrue(btcs.containsKey(TXNCONFIG1));
+        assertTrue(btcs.containsKey(TXNCONFIG2));
 
         // Get the btxn configs updated after the specified time
-        Map<String, BusinessTxnConfig> btcs2 = configService.getBusinessTransactions(null, midtime);
+        Map<String, TransactionConfig> btcs2 = configService.getTransactions(null, midtime);
 
         assertNotNull(btcs2);
         assertEquals(1, btcs2.size());
 
-        assertTrue(btcs2.containsKey(BTXNCONFIG2));
+        assertTrue(btcs2.containsKey(TXNCONFIG2));
 
         // Remove the config
-        configService.removeBusinessTransaction(null, BTXNCONFIG1);
-        configService.removeBusinessTransaction(null, BTXNCONFIG2);
+        configService.removeTransaction(null, TXNCONFIG1);
+        configService.removeTransaction(null, TXNCONFIG2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
         Wait.until(
-                () -> configService.getBusinessTransaction(null, BTXNCONFIG1) == null
-                        && configService.getBusinessTransaction(null, BTXNCONFIG2) == null);
+                () -> configService.getTransaction(null, TXNCONFIG1) == null
+                        && configService.getTransaction(null, TXNCONFIG2) == null);
 
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG2));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG2));
     }
 
     @Test
     public void testSetBusinessTxnConfigurations() {
         // Check config not already defined
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG2));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG2));
 
-        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig2 = new TransactionConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
         btxnconfig2.setFilter(new Filter());
         btxnconfig2.getFilter().getInclusions().add("myfilter");
 
-        Map<String,BusinessTxnConfig> configs = new HashMap<String,BusinessTxnConfig>();
-        configs.put(BTXNCONFIG1, btxnconfig1);
-        configs.put(BTXNCONFIG2, btxnconfig2);
+        Map<String,TransactionConfig> configs = new HashMap<String,TransactionConfig>();
+        configs.put(TXNCONFIG1, btxnconfig1);
+        configs.put(TXNCONFIG2, btxnconfig2);
 
-        configService.setBusinessTransactions(null, configs);
+        configService.setTransactions(null, configs);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
-        Wait.until(() -> configService.getBusinessTransactionSummaries(null) != null);
+        Wait.until(() -> configService.getTransactionSummaries(null) != null);
 
         // Get the btxn names
-        List<BusinessTxnSummary> btns = configService.getBusinessTransactionSummaries(null);
+        List<TransactionSummary> btns = configService.getTransactionSummaries(null);
 
         assertNotNull(btns);
         assertEquals(2, btns.size());
 
-        assertEquals(BTXNCONFIG1, btns.get(0).getName());
-        assertEquals(BTXNCONFIG2, btns.get(1).getName());
+        assertEquals(TXNCONFIG1, btns.get(0).getName());
+        assertEquals(TXNCONFIG2, btns.get(1).getName());
 
         // Get all the btxn configs
-        Map<String, BusinessTxnConfig> btcs = configService.getBusinessTransactions(null, 0);
+        Map<String, TransactionConfig> btcs = configService.getTransactions(null, 0);
 
         assertNotNull(btcs);
         assertEquals(2, btcs.size());
 
-        assertTrue(btcs.containsKey(BTXNCONFIG1));
-        assertTrue(btcs.containsKey(BTXNCONFIG2));
+        assertTrue(btcs.containsKey(TXNCONFIG1));
+        assertTrue(btcs.containsKey(TXNCONFIG2));
 
         // Remove the config
-        configService.removeBusinessTransaction(null, BTXNCONFIG1);
-        configService.removeBusinessTransaction(null, BTXNCONFIG2);
+        configService.removeTransaction(null, TXNCONFIG1);
+        configService.removeTransaction(null, TXNCONFIG2);
 
         // Need to make sure change applied, for cases where non-transactional
         // config repo (e.g. elasticsearch) is used.
         Wait.until(
-                () -> configService.getBusinessTransaction(null, BTXNCONFIG1) == null
-                        && configService.getBusinessTransaction(null, BTXNCONFIG2) == null);
+                () -> configService.getTransaction(null, TXNCONFIG1) == null
+                        && configService.getTransaction(null, TXNCONFIG2) == null);
 
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG1));
-        assertNull(configService.getBusinessTransaction(null, BTXNCONFIG2));
+        assertNull(configService.getTransaction(null, TXNCONFIG1));
+        assertNull(configService.getTransaction(null, TXNCONFIG2));
     }
 
     @Test
     public void testValidateBusinessTxnConfiguration() {
-        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setDescription(DESCRIPTION1);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        BusinessTxnConfig btxnconfig2 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig2 = new TransactionConfig();
         btxnconfig2.setDescription(DESCRIPTION2);
 
-        List<ConfigMessage> messages1 = configService.validateBusinessTransaction(btxnconfig1);
+        List<ConfigMessage> messages1 = configService.validateTransaction(btxnconfig1);
         assertNotNull(messages1);
         assertEquals(0, messages1.size());
 
-        List<ConfigMessage> messages2 = configService.validateBusinessTransaction(btxnconfig2);
+        List<ConfigMessage> messages2 = configService.validateTransaction(btxnconfig2);
         assertNotNull(messages2);
         assertEquals(1, messages2.size());
         assertEquals(Severity.Error, messages2.get(0).getSeverity());

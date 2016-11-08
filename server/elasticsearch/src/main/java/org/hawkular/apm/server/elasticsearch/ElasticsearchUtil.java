@@ -48,7 +48,7 @@ public class ElasticsearchUtil {
     public static final String COMPONENT_TYPE_FIELD = "componentType";
     public static final String HOST_NAME_FIELD = "hostName";
     public static final String HOST_ADDRESS_FIELD = "hostAddress";
-    public static final String BUSINESS_TRANSACTION_FIELD = "businessTransaction";
+    public static final String TRANSACTION_FIELD = "transaction";
     public static final String PROPERTIES_FIELD = "properties";
     public static final String PROPERTIES_NAME_FIELD = "properties.name";
     public static final String PROPERTIES_VALUE_FIELD = "properties.value";
@@ -64,11 +64,11 @@ public class ElasticsearchUtil {
      * criteria.
      *
      * @param criteria the criteria
-     * @param businessTxnProperty The name of the business transaction property
+     * @param txnProperty The name of the transaction property
      * @param targetClass The class being queried
      * @return The query
      */
-    public static BoolQueryBuilder buildQuery(Criteria criteria, String businessTxnProperty, Class<?> targetClass) {
+    public static BoolQueryBuilder buildQuery(Criteria criteria, String txnProperty, Class<?> targetClass) {
         /**
          * Internally all time units are stored in microseconds
          * Criteria API accepts milliseconds, therefore range adjustment is needed
@@ -78,9 +78,9 @@ public class ElasticsearchUtil {
                         .from(TimeUnit.MILLISECONDS.toMicros(criteria.calculateStartTime()))
                         .to(TimeUnit.MILLISECONDS.toMicros(criteria.calculateEndTime())));
 
-        if (criteria.getBusinessTransaction() != null
-                && !criteria.getBusinessTransaction().trim().isEmpty()) {
-            query = query.must(QueryBuilders.termQuery(businessTxnProperty, criteria.getBusinessTransaction()));
+        if (criteria.getTransaction() != null
+                && !criteria.getTransaction().trim().isEmpty()) {
+            query = query.must(QueryBuilders.termQuery(txnProperty, criteria.getTransaction()));
         }
 
         if (!criteria.getProperties().isEmpty()) {
@@ -168,8 +168,8 @@ public class ElasticsearchUtil {
      * @return The filter, or null if not relevant
      */
     public static FilterBuilder buildFilter(Criteria criteria) {
-        if (criteria.getBusinessTransaction() != null && criteria.getBusinessTransaction().trim().isEmpty()) {
-            return FilterBuilders.missingFilter(BUSINESS_TRANSACTION_FIELD);
+        if (criteria.getTransaction() != null && criteria.getTransaction().trim().isEmpty()) {
+            return FilterBuilders.missingFilter(TRANSACTION_FIELD);
         }
         return null;
     }

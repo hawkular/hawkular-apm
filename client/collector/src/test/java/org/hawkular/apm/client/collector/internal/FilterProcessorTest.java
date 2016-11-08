@@ -19,8 +19,8 @@ package org.hawkular.apm.client.collector.internal;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.junit.Test;
 
 /**
@@ -30,7 +30,7 @@ public class FilterProcessorTest {
 
     @Test
     public void testGlobalExclusionFilter() {
-        BusinessTxnConfig btc=new BusinessTxnConfig();
+        TransactionConfig btc=new TransactionConfig();
         Filter f1 = new Filter();
         btc.setFilter(f1);
         f1.getExclusions().add("exclude");
@@ -44,7 +44,7 @@ public class FilterProcessorTest {
 
     @Test
     public void testIncludeFilter() {
-        BusinessTxnConfig btc=new BusinessTxnConfig();
+        TransactionConfig btc=new TransactionConfig();
         Filter f1 = new Filter();
         btc.setFilter(f1);
         f1.getInclusions().add("include");
@@ -60,7 +60,7 @@ public class FilterProcessorTest {
 
     @Test
     public void testIncludeAndExcludeFilter() {
-        BusinessTxnConfig btc=new BusinessTxnConfig();
+        TransactionConfig btc=new TransactionConfig();
         Filter f1 = new Filter();
         btc.setFilter(f1);
         f1.getInclusions().add("include");
@@ -77,7 +77,7 @@ public class FilterProcessorTest {
 
     @Test
     public void testExcludeFilter() {
-        BusinessTxnConfig btc=new BusinessTxnConfig();
+        TransactionConfig btc=new TransactionConfig();
         Filter f1 = new Filter();
         btc.setFilter(f1);
         f1.getExclusions().add("https?://.*/hawkular/apm");

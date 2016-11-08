@@ -31,11 +31,11 @@ module BTM {
 
     $scope.messages = [];
 
-    $http.get('/hawkular/apm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/apm/config/transaction/full/' + $scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
 
-      $http.post('/hawkular/apm/config/businesstxn/validate',$scope.businessTransaction).then(function(resp) {
+      $http.post('/hawkular/apm/config/transaction/validate',$scope.businessTransaction).then(function(resp) {
         $scope.messages = resp.data;
       },function(resp) {
         console.log('Failed to validate business txn \'' + $scope.businessTransactionName + '\': ' +
@@ -203,7 +203,7 @@ module BTM {
     $scope.save = function() {
       $scope.messages = [];
 
-      $http.put('/hawkular/apm/config/businesstxn/full/' + $scope.businessTransactionName, $scope.businessTransaction)
+      $http.put('/hawkular/apm/config/transaction/full/' + $scope.businessTransactionName, $scope.businessTransaction)
         .then(function(resp) {
         $scope.messages = resp.data;
         $scope.original = angular.copy($scope.businessTransaction);
@@ -219,7 +219,7 @@ module BTM {
       });
     };
 
-    $http.get('/hawkular/apm/config/businesstxn/full/' + $scope.businessTransactionName).then(function(resp) {
+    $http.get('/hawkular/apm/config/transaction/full/' + $scope.businessTransactionName).then(function(resp) {
       $scope.businessTransaction = resp.data;
       $scope.original = angular.copy($scope.businessTransaction);
     },function(resp) {

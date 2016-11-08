@@ -22,10 +22,10 @@ import java.util.Map;
 
 import org.hawkular.apm.api.internal.actions.ProcessorActionHandler;
 import org.hawkular.apm.api.internal.actions.ProcessorActionHandlerFactory;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.ProcessorIssue;
 
@@ -39,7 +39,7 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
     private static final String NO_FILTERS = "No inclusion or exclusion filters have been defined";
 
     @Override
-    public List<ConfigMessage> validateBusinessTransaction(BusinessTxnConfig config) {
+    public List<ConfigMessage> validateTransaction(TransactionConfig config) {
         List<ConfigMessage> messages = new ArrayList<ConfigMessage>();
 
         // Check that atleast one filter has been defined
@@ -81,12 +81,12 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
     }
 
     @Override
-    public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+    public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs)
             throws Exception {
         List<ConfigMessage> messages = new ArrayList<ConfigMessage>();
 
-        for (Map.Entry<String, BusinessTxnConfig> stringBusinessTxnConfigEntry : configs.entrySet()) {
-            messages.addAll(setBusinessTransaction(tenantId, stringBusinessTxnConfigEntry.getKey(), stringBusinessTxnConfigEntry.getValue()));
+        for (Map.Entry<String, TransactionConfig> stringBusinessTxnConfigEntry : configs.entrySet()) {
+            messages.addAll(setTransaction(tenantId, stringBusinessTxnConfigEntry.getKey(), stringBusinessTxnConfigEntry.getValue()));
         }
 
         return messages;

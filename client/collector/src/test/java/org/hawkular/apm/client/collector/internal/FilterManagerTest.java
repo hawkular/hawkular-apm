@@ -22,8 +22,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.junit.Test;
 
 /**
@@ -34,10 +34,10 @@ public class FilterManagerTest {
     @Test
     public void testGlobalExclusion() {
         CollectorConfiguration config = new CollectorConfiguration();
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc1", btc1);
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc2", btc2);
+        TransactionConfig btc1 = new TransactionConfig();
+        config.getTransactions().put("btc1", btc1);
+        TransactionConfig btc2 = new TransactionConfig();
+        config.getTransactions().put("btc2", btc2);
 
         // Global exclusion filter
         Filter f1 = new Filter();
@@ -55,10 +55,10 @@ public class FilterManagerTest {
     }
 
     @Test
-    public void testBusinessTransactionInclusion() {
+    public void testTransactionInclusion() {
         CollectorConfiguration config = new CollectorConfiguration();
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc2", btc2);
+        TransactionConfig btc2 = new TransactionConfig();
+        config.getTransactions().put("btc2", btc2);
 
         // Business txn specific
         Filter f2 = new Filter();
@@ -69,14 +69,14 @@ public class FilterManagerTest {
 
         FilterProcessor fp = fm.getFilterProcessor("include and exclude");
         assertNotNull(fp);
-        assertEquals("btc2", fp.getBusinessTransaction());
+        assertEquals("btc2", fp.getTransaction());
     }
 
     @Test
-    public void testBusinessTransactionIncludeExclude() {
+    public void testTransactionIncludeExclude() {
         CollectorConfiguration config = new CollectorConfiguration();
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc2", btc2);
+        TransactionConfig btc2 = new TransactionConfig();
+        config.getTransactions().put("btc2", btc2);
 
         // Business txn specific
         Filter f2 = new Filter();
@@ -92,8 +92,8 @@ public class FilterManagerTest {
     @Test
     public void testExcludeDefaults() {
         CollectorConfiguration config = new CollectorConfiguration();
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc2", btc2);
+        TransactionConfig btc2 = new TransactionConfig();
+        config.getTransactions().put("btc2", btc2);
 
         // Business txn specific
         Filter f2 = new Filter();
@@ -110,10 +110,10 @@ public class FilterManagerTest {
     }
 
     @Test
-    public void testBusinessTransactionIncludedByDefault() {
+    public void testTransactionIncludedByDefault() {
         CollectorConfiguration config = new CollectorConfiguration();
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc2", btc2);
+        TransactionConfig btc2 = new TransactionConfig();
+        config.getTransactions().put("btc2", btc2);
 
         // Business txn specific
         Filter f2 = new Filter();
@@ -124,15 +124,15 @@ public class FilterManagerTest {
 
         FilterProcessor fp = fm.getFilterProcessor("notrecognised");
         assertNotNull(fp);
-        assertNull(fp.getBusinessTransaction());
+        assertNull(fp.getTransaction());
     }
 
     @Test
-    public void testBusinessTransactionExcludedByDefault() {
+    public void testTransactionExcludedByDefault() {
         CollectorConfiguration config = new CollectorConfiguration();
         config.getProperties().put("HAWKULAR_APM_COLLECTOR_ONLYNAMED", "true");
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
-        config.getBusinessTransactions().put("btc2", btc2);
+        TransactionConfig btc2 = new TransactionConfig();
+        config.getTransactions().put("btc2", btc2);
 
         // Business txn specific
         Filter f2 = new Filter();
@@ -146,9 +146,9 @@ public class FilterManagerTest {
 
     public void testInit() {
         CollectorConfiguration config = new CollectorConfiguration();
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        TransactionConfig btc1 = new TransactionConfig();
         btc1.setDescription("Hello");
-        config.getBusinessTransactions().put("btc", btc1);
+        config.getTransactions().put("btc", btc1);
 
         FilterManager fm = new FilterManager(config);
 
@@ -156,9 +156,9 @@ public class FilterManagerTest {
         assertEquals(1, fm.getGlobalExclusionFilters().size());
         assertEquals(0, fm.getBtxnFilters().size());
 
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        TransactionConfig btc2 = new TransactionConfig();
         btc2.setDescription("Changed");
-        config.getBusinessTransactions().put("btc", btc2);
+        config.getTransactions().put("btc", btc2);
 
         Filter f2 = new Filter();
         btc2.setFilter(f2);

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 
 /**
  * This class is responsible for applying a filter to a supplied node.
@@ -30,9 +30,9 @@ import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
  */
 public class FilterProcessor {
 
-    private String businessTransaction;
+    private String transaction;
 
-    private BusinessTxnConfig config;
+    private TransactionConfig config;
 
     private List<Predicate<String>> inclusions = new ArrayList<Predicate<String>>();
     private List<Predicate<String>> exclusions = new ArrayList<Predicate<String>>();
@@ -44,14 +44,14 @@ public class FilterProcessor {
     }
 
     /**
-     * This constructor initialises the processor with the business
+     * This constructor initialises the processor with the
      * transaction name and configuration.
      *
-     * @param btxn The business transaction name
+     * @param transaction The transaction name
      * @param config The configuration
      */
-    public FilterProcessor(String btxn, BusinessTxnConfig config) {
-        this.businessTransaction = btxn;
+    public FilterProcessor(String transaction, TransactionConfig config) {
+        this.transaction = transaction;
         this.config = config;
         init();
     }
@@ -69,30 +69,30 @@ public class FilterProcessor {
     }
 
     /**
-     * @return the businessTransaction
+     * @return the transaction
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public void setBusinessTransaction(String businessTransaction) {
-        this.businessTransaction = businessTransaction;
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
     }
 
     /**
      * @return the config
      */
-    public BusinessTxnConfig getConfig() {
+    public TransactionConfig getConfig() {
         return config;
     }
 
     /**
      * @param config the config to set
      */
-    public void setConfig(BusinessTxnConfig config) {
+    public void setConfig(TransactionConfig config) {
         this.config = config;
     }
 

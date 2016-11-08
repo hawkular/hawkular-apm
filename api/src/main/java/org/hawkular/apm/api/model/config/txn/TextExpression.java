@@ -14,34 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
+package org.hawkular.apm.api.model.config.txn;
 
 /**
- * This class represents the action of extracting properties from
- * a URI, based on a template, and then rewriting the URI to be
- * the template.
+ * This class represents expression that can be applied to Text data.
  *
  * @author gbrown
  */
-public class EvaluateURIAction extends ProcessorAction {
+public class TextExpression extends DataExpression {
 
-    @JsonInclude
-    private String template;
-
-    /**
-     * @return the template
-     */
-    public String getTemplate() {
-        return template;
-    }
-
-    /**
-     * @param template the template to set
-     */
-    public void setTemplate(String template) {
-        this.template = template;
+    @Override
+    public String toString() {
+        return "Text [getSource()=" + getSource() + ", getKey()=" + getKey()
+                + "]";
     }
 
 }

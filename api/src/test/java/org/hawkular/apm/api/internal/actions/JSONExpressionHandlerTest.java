@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.DataSource;
-import org.hawkular.apm.api.model.config.btxn.JSONExpression;
+import org.hawkular.apm.api.model.config.txn.DataSource;
+import org.hawkular.apm.api.model.config.txn.JSONExpression;
 import org.junit.Test;
 
 /**
