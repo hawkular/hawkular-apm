@@ -207,6 +207,8 @@ public class TestScenarioRunner {
 
         switch (type) {
             case APM:
+            case APMAGENT:
+            case APMOTAGENT:
                 objects = apmMockServer.getTraces();
                 break;
             case ZIPKIN:

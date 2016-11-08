@@ -3,7 +3,7 @@
   "environment": {
     "image": "pavolloffay/jboss-ticket-monster",
     "initWaitSeconds": "20",
-    "type": "APM"
+    "type": "APMAGENT"
   },
   "tests": [
     {

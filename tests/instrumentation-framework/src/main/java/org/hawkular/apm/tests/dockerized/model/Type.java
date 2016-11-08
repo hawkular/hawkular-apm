@@ -20,13 +20,31 @@ package org.hawkular.apm.tests.dockerized.model;
 /**
  * @author Pavol Loffay
  */
-public enum  Type {
+public enum Type {
     /**
-     * Hawkular APM environment (requires instrumentation of the application).
+     * Will instrument the application using the Hawkular APM Java agent.
      */
-    APM,
+    APMAGENT("apmagent-env-variables.properties"),
     /**
-     * Zipkin environment (does not require instrumentation).
+     * Will instrument the application using the Hawkular APM Java opentracing agent.
      */
-    ZIPKIN
+    APMOTAGENT("apmotagent-env-variables.properties"),
+    /**
+     * Application will be reporting tracing information in APM format.
+     */
+    APM("apm-env-variables.properties"),
+    /**
+     * Application will be reporting tracing information in Zipkin format.
+     */
+    ZIPKIN("zipkin-env-variables.properties");
+
+    private String propertyFile;
+
+    Type(String propertyFile) {
+        this.propertyFile = propertyFile;
+    }
+
+    public String getPropertyFile() {
+        return propertyFile;
+    }
 }

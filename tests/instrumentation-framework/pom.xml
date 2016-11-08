@@ -84,6 +84,9 @@
             <filtering>true</filtering>
             <includes>
               <include>apm-env-variables.properties</include>
+              <include>apmagent-env-variables.properties</include>
+              <include>apmotagent-env-variables.properties</include>
+              <include>zipkin-env-variables.properties</include>
             </includes>
             <targetPath>${project.build.directory}</targetPath>
           </resource>
