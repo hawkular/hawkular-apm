@@ -66,6 +66,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.commons</groupId>
+      <artifactId>hawkular-rest-status</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>

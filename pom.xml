@@ -125,6 +125,7 @@
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
+    <version.org.hawkular.commons>0.8.0.Final</version.org.hawkular.commons>
     <version.org.jboss.byteman>3.0.6</version.org.jboss.byteman>
     <version.org.jboss.shrinkwrap.resolvers>2.2.2</version.org.jboss.shrinkwrap.resolvers>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
@@ -294,6 +295,18 @@
         <artifactId>hawkular-apm-ui</artifactId>
         <type>war</type>
         <version>${project.version}</version>
+      </dependency>
+
+      <!-- Hawkular Commons -->
+      <dependency>
+        <groupId>org.hawkular.commons</groupId>
+        <artifactId>hawkular-rest-status</artifactId>
+        <version>${version.org.hawkular.commons}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.commons</groupId>
+        <artifactId>hawkular-tenant-jaxrs-filter</artifactId>
+        <version>${version.org.hawkular.commons}</version>
       </dependency>
 
       <!-- Other dependencies -->
