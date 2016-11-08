@@ -69,10 +69,10 @@
         <thead>
           <tr>
             <th class="col-md-2" ></th>
-            <th ng-click="sort('actual')">Actual (secs)
+            <th ng-click="sort('actual')">Actual
               <span class="glyphicon sort-icon" ng-show="sortKey=='actual'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
-            <th ng-click="sort('elapsed')">Elapsed (secs)
+            <th ng-click="sort('elapsed')">Elapsed
               <span class="glyphicon sort-icon" ng-show="sortKey=='elapsed'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
             <th ng-click="sort('count')">Count
@@ -99,8 +99,8 @@
                 </bar>
               </progress>
             </td>
-            <td scope="row">{{(summary.actual / 1000000) | number: 3}}</td>
-            <td scope="row">{{(summary.elapsed / 1000000) | number: 3}}</td>
+            <td scope="row">{{ summary.actual | hkDuration }}</td>
+            <td scope="row">{{ summary.elapsed | hkDuration }}</td>
             <td>{{summary.count}}</td>
             <td>{{summary.componentType}}</td>
             <td>{{summary.uri}}</td>
