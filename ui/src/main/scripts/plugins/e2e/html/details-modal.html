@@ -53,7 +53,7 @@
             <th class="inst-details-properties" ng-click="sort('properties')">Properties
               <span class="glyphicon sort-icon" ng-show="sortKey=='properties'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
-            <th class="inst-details-duration" ng-click="sort('duration')">Duration (ms)
+            <th class="inst-details-duration" ng-click="sort('duration')">Duration
               <span class="glyphicon sort-icon" ng-show="sortKey=='duration'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
             </th>
             <th class="inst-details-details">Details
@@ -69,7 +69,7 @@
                 {{tDataProp.name}}:<span ng-hide="tDataProp.expand">{{ tDataProp.value | limitTo:16}}<span ng-show="!tDataProp.expand && tDataProp.value.length > 16">...</span></span><span ng-show="tDataProp.expand">{{ tDataProp.value }}</span>
               </span>
             </td>
-            <td class="inst-details-duration">{{ tData.duration / 1000 }}</td>
+            <td class="inst-details-duration">{{ tData.duration | hkDuration }}</td>
             <td class="inst-details-details" ng-click="showIVD(tData.id)"><i class="fa fa-sitemap"></i></td>
           </tr>
           <tr dir-paginate-end ng-if="selectedTx === tData.id">

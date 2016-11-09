@@ -95,9 +95,9 @@
                 </div>
                 <div class="col-sm-4 hk-summary-item">
                   <a href="/hawkular-ui/apm/btm/info/{{btxn.name}}">
-                    <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95}}</span>
+                    <span class="hk-data" ng-show="btxn.percentile95 !== undefined">{{btxn.percentile95 * 1000 * 1000 | hkDuration : true}}</span>
                     <span class="hk-data spinner" ng-hide="btxn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                    <span class="hk-item">Completion (secs 95%)</span>
+                    <span class="hk-item">Completion (95th percentile)</span>
                   </a>
                 </div>
                 <div class="col-sm-4 hk-summary-item">
