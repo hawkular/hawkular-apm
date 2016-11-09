@@ -24,7 +24,7 @@ import java.util.Map;
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 
 /**
  * This class manages the filtering of URIs.
@@ -58,8 +58,8 @@ public class FilterManager {
      * @param config The configuration
      */
     protected void init(CollectorConfiguration config) {
-        for (String btxn : config.getBusinessTransactions().keySet()) {
-            BusinessTxnConfig btc = config.getBusinessTransactions().get(btxn);
+        for (String btxn : config.getTransactions().keySet()) {
+            TransactionConfig btc = config.getTransactions().get(btxn);
             init(btxn, btc);
         }
 
@@ -69,21 +69,21 @@ public class FilterManager {
 
     /**
      * This method initialises the filter manager with the supplied
-     * business transaction configuration.
+     * transaction configuration.
      *
-     * @param btxn The business transaction name
+     * @param txn The transaction name
      * @param btc The configuration
      */
-    public void init(String btxn, BusinessTxnConfig btc) {
+    public void init(String txn, TransactionConfig btc) {
         FilterProcessor fp = null;
 
         if (btc.getFilter() != null) {
-            fp = new FilterProcessor(btxn, btc);
+            fp = new FilterProcessor(txn, btc);
         }
 
         synchronized (filterMap) {
             // Check if old filter processor needs to be removed
-            FilterProcessor oldfp = filterMap.get(btxn);
+            FilterProcessor oldfp = filterMap.get(txn);
             if (oldfp != null) {
                 globalExclusionFilters.remove(oldfp);
                 btxnFilters.remove(oldfp);
@@ -91,27 +91,27 @@ public class FilterManager {
 
             if (fp != null) {
                 // Add new filter processor
-                filterMap.put(btxn, fp);
+                filterMap.put(txn, fp);
                 if (fp.isIncludeAll()) {
                     globalExclusionFilters.add(fp);
                 } else {
                     btxnFilters.add(fp);
                 }
             } else {
-                filterMap.remove(btxn);
+                filterMap.remove(txn);
             }
         }
     }
 
     /**
-     * This method removes the business transaction.
+     * This method removes the transaction.
      *
-     * @param btxn The name of the business transaction
+     * @param txn The name of the transaction
      */
-    public void remove(String btxn) {
+    public void remove(String txn) {
         synchronized (filterMap) {
             // Check if old filter processor needs to be removed
-            FilterProcessor oldfp = filterMap.get(btxn);
+            FilterProcessor oldfp = filterMap.get(txn);
             if (oldfp != null) {
                 globalExclusionFilters.remove(oldfp);
                 btxnFilters.remove(oldfp);
@@ -121,11 +121,11 @@ public class FilterManager {
 
     /**
      * This method determines whether the supplied endpoint is associated with
-     * a defined business transaction, or valid due to global inclusion
+     * a defined transaction, or valid due to global inclusion
      * criteria.
      *
      * @param endpoint The endpoint
-     * @return The filter processor, with empty btxn name if endpoint globally valid,
+     * @return The filter processor, with empty txn name if endpoint globally valid,
      *                  or null if endpoint should be excluded
      */
     public FilterProcessor getFilterProcessor(String endpoint) {
@@ -142,7 +142,7 @@ public class FilterManager {
                 }
             }
 
-            // Check if business transaction specific applies
+            // Check if transaction specific applies
             for (int i = 0; i < btxnFilters.size(); i++) {
                 if (btxnFilters.get(i).isIncluded(endpoint)) {
                     if (log.isLoggable(Level.FINEST)) {
@@ -157,7 +157,7 @@ public class FilterManager {
                     ret = btxnFilters.get(i);
 
                     if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Endpoint belongs to business transaction '" + ret + ": endpoint=" + endpoint);
+                        log.finest("Endpoint belongs to transaction '" + ret + ": endpoint=" + endpoint);
                     }
                     break;
                 }

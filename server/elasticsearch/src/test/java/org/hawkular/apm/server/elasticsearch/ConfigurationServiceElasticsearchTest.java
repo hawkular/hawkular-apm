@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.Severity;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.After;
 import org.junit.Before;
@@ -66,97 +66,97 @@ public class ConfigurationServiceElasticsearchTest {
     }
 
     @Test
-    public void testGetBusinessTransactionsUpdated() {
+    public void testGetTransactionsUpdated() {
         long initialTime = clock.millis();
         long midTime = initialTime + 1000;
         when(clock.millis()).thenReturn(initialTime, midTime+1000, midTime+1000);
 
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        TransactionConfig btc1 = new TransactionConfig();
         btc1.setDescription("btc1");
         btc1.setFilter(new Filter());
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.setBusinessTransaction(null, "btc1", btc1);
+            cfgs.setTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
 
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        TransactionConfig btc2 = new TransactionConfig();
         btc2.setDescription("btc2");
         btc2.setFilter(new Filter());
         btc2.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.setBusinessTransaction(null, "btc2", btc2);
+            cfgs.setTransaction(null, "btc2", btc2);
         } catch (Exception e) {
             fail("Failed to update btc2: " + e);
         }
 
-        Wait.until(() -> cfgs.getBusinessTransactions(null, 0).size() == 2);
-        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
+        Wait.until(() -> cfgs.getTransactions(null, 0).size() == 2);
+        Map<String, TransactionConfig> res1 = cfgs.getTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(2, res1.size());
 
-        Wait.until(() -> cfgs.getBusinessTransactions(null, midTime).size() == 1);
-        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midTime);
+        Wait.until(() -> cfgs.getTransactions(null, midTime).size() == 1);
+        Map<String, TransactionConfig> res2 = cfgs.getTransactions(null, midTime);
 
         assertNotNull(res2);
         assertEquals(1, res2.size());
         assertTrue(res2.containsKey("btc2"));
 
         // Check summaries
-        List<BusinessTxnSummary> summaries = cfgs.getBusinessTransactionSummaries(null);
+        List<TransactionSummary> summaries = cfgs.getTransactionSummaries(null);
         assertNotNull(summaries);
         assertEquals(2, summaries.size());
     }
 
     @Test
-    public void testGetBusinessTransactionsInvalid() {
+    public void testGetTransactionsInvalid() {
         long initialTime = clock.millis();
         when(clock.millis()).thenReturn(initialTime, initialTime+1000);
 
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        TransactionConfig btc1 = new TransactionConfig();
         btc1.setDescription("btc1");
 
         try {
             // Updating invalid config
-            cfgs.setBusinessTransaction(null, "btc1", btc1);
+            cfgs.setTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
 
         // Check invalid config can still be retrieved
-        BusinessTxnConfig config = cfgs.getBusinessTransaction(null, "btc1");
+        TransactionConfig config = cfgs.getTransaction(null, "btc1");
 
         assertNotNull(config);
 
         // Make sure not returned in list of updated configs
-        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
+        Map<String, TransactionConfig> res1 = cfgs.getTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(0, res1.size());
 
         // Check summaries - should include invalid config entries
-        List<BusinessTxnSummary> summaries = cfgs.getBusinessTransactionSummaries(null);
+        List<TransactionSummary> summaries = cfgs.getTransactionSummaries(null);
         assertNotNull(summaries);
         assertEquals(1, summaries.size());
     }
 
     @Test
-    public void testGetBusinessTransactionsValidThenInvalid() {
+    public void testGetTransactionsValidThenInvalid() {
         long initialTime = clock.millis();
         when(clock.millis()).thenReturn(initialTime, initialTime+1000, initialTime+2000, initialTime+3000);
 
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        TransactionConfig btc1 = new TransactionConfig();
         btc1.setDescription(VALID_DESCRIPTION);
         btc1.setFilter(new Filter());
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
             // Updating valid config
-            List<ConfigMessage> messages=cfgs.setBusinessTransaction(null, "btc1", btc1);
+            List<ConfigMessage> messages=cfgs.setTransaction(null, "btc1", btc1);
             assertNotNull(messages);
             assertEquals(1, messages.size());
             assertEquals(Severity.Info, messages.get(0).getSeverity());
@@ -169,24 +169,24 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating with invalid config
-            cfgs.setBusinessTransaction(null, "btc1", btc1);
+            cfgs.setTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
 
         // Check invalid config can still be retrieved
-        BusinessTxnConfig invalid = cfgs.getBusinessTransaction(null, "btc1");
+        TransactionConfig invalid = cfgs.getTransaction(null, "btc1");
         assertNotNull(invalid);
 
         assertEquals(INVALID_DESCRIPTION, invalid.getDescription());
 
-        // Get valid business txns
-        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
+        // Get valid transactions
+        Map<String, TransactionConfig> res1 = cfgs.getTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(1, res1.size());
 
-        BusinessTxnConfig valid = res1.get("btc1");
+        TransactionConfig valid = res1.get("btc1");
         assertNotNull(valid);
 
         assertEquals(VALID_DESCRIPTION, valid.getDescription());
@@ -198,7 +198,7 @@ public class ConfigurationServiceElasticsearchTest {
 
         try {
             // Updating with valid config
-            List<ConfigMessage> messages=cfgs.setBusinessTransaction(null, "btc1", btc1);
+            List<ConfigMessage> messages=cfgs.setTransaction(null, "btc1", btc1);
             assertNotNull(messages);
             assertEquals(1, messages.size());
             assertEquals(Severity.Info, messages.get(0).getSeverity());
@@ -206,72 +206,72 @@ public class ConfigurationServiceElasticsearchTest {
             fail("Failed to update btc1: " + e);
         }
 
-        BusinessTxnConfig valid2 = cfgs.getBusinessTransaction(null, "btc1");
+        TransactionConfig valid2 = cfgs.getTransaction(null, "btc1");
         assertNotNull(valid2);
 
         assertEquals(VALID_DESCRIPTION, valid2.getDescription());
     }
 
     @Test
-    public void testGetBusinessTransactionsAfterRemove() {
+    public void testGetTransactionsAfterRemove() {
         long initialTime = clock.millis();
         long midTime = initialTime + 1000;
         when(clock.millis()).thenReturn(initialTime, midTime+1000, midTime+2000);
 
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        TransactionConfig btc1 = new TransactionConfig();
         btc1.setDescription("btc1");
         btc1.setFilter(new Filter());
         btc1.getFilter().getInclusions().add("myfilter");
 
         try {
-            cfgs.setBusinessTransaction(null, "btc1", btc1);
+            cfgs.setTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
 
         try {
-            cfgs.removeBusinessTransaction(null, "btc2");
+            cfgs.removeTransaction(null, "btc2");
         } catch (Exception e) {
             fail("Failed to remove btc2: " + e);
         }
 
-        Map<String, BusinessTxnConfig> res1 = cfgs.getBusinessTransactions(null, 0);
+        Map<String, TransactionConfig> res1 = cfgs.getTransactions(null, 0);
 
         assertNotNull(res1);
         assertEquals(1, res1.size());
         assertTrue(res1.containsKey("btc1"));
 
-        Map<String, BusinessTxnConfig> res2 = cfgs.getBusinessTransactions(null, midTime);
+        Map<String, TransactionConfig> res2 = cfgs.getTransactions(null, midTime);
 
         assertNotNull(res2);
         assertEquals(1, res2.size());
         assertTrue(res2.containsKey("btc2"));
 
-        BusinessTxnConfig btc2 = cfgs.getBusinessTransaction(null, "btc2");
+        TransactionConfig btc2 = cfgs.getTransaction(null, "btc2");
         assertNull(btc2);
     }
 
     @Test
-    public void testGetBusinessTransactionsAfterRemoveInvalid() {
+    public void testGetTransactionsAfterRemoveInvalid() {
         long initialTime = clock.millis();
         when(clock.millis()).thenReturn(initialTime, initialTime+1000, initialTime+2000);
 
-        BusinessTxnConfig btc1 = new BusinessTxnConfig();
+        TransactionConfig btc1 = new TransactionConfig();
         btc1.setDescription("btc1");
 
         try {
-            cfgs.setBusinessTransaction(null, "btc1", btc1);
+            cfgs.setTransaction(null, "btc1", btc1);
         } catch (Exception e) {
             fail("Failed to update btc1: " + e);
         }
 
         try {
-            cfgs.removeBusinessTransaction(null, "btc1");
+            cfgs.removeTransaction(null, "btc1");
         } catch (Exception e) {
             fail("Failed to remove btc1: " + e);
         }
 
-        BusinessTxnConfig btc1again = cfgs.getBusinessTransaction(null, "btc1");
+        TransactionConfig btc1again = cfgs.getTransaction(null, "btc1");
         assertNull(btc1again);
     }
 

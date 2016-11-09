@@ -14,17 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.server.rest.entity;
+
+import javax.ws.rs.PathParam;
+
+import io.swagger.annotations.ApiParam;
 
 /**
- * @author gbrown
+ * @author Juraci Paixão Kröhling
  */
-public enum DataSource {
+public class NamedTransactionRequest extends TenantRequest {
+    @ApiParam(required = true, value = "transaction name")
+    @PathParam("name")
+    String name;
 
-    /* The data source is the content */
-    Content,
+    public String getName() {
+        return name;
+    }
 
-    /* The data source is a header property */
-    Header
-
+    public void setName(String name) {
+        this.name = name;
+    }
 }

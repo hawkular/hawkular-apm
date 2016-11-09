@@ -96,7 +96,7 @@ public class AnalyticsHandler extends BaseHandler {
 
     @GET
     @Path("boundendpoints/{name}")
-    @ApiOperation(value = "Identify the bound endpoints for a business transaction", response = List.class)
+    @ApiOperation(value = "Identify the bound endpoints for a transaction", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })

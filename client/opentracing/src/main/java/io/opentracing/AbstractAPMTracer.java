@@ -81,14 +81,14 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
             // Check if the transaction name has not currently been set, but
             // has been defined in the span tags - if so copy the value to the trace
             // context so that it can be propagated to invoked services
-            if (span.getTraceContext().getBusinessTransaction() == null
+            if (span.getTraceContext().getTransaction() == null
                     && span.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)) {
-                span.getTraceContext().setBusinessTransaction(span.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
+                span.getTraceContext().setTransaction(span.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
             }
 
             // If transaction name defined on trace context, then propagate it
-            if (span.getTraceContext().getBusinessTransaction() != null) {
-                ret.put(Constants.HAWKULAR_APM_TXN, span.getTraceContext().getBusinessTransaction());
+            if (span.getTraceContext().getTransaction() != null) {
+                ret.put(Constants.HAWKULAR_APM_TXN, span.getTraceContext().getTransaction());
             }
 
             if (span.getTraceContext().getReportingLevel() != null) {

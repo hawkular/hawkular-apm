@@ -46,7 +46,7 @@ public class NodeDetails implements ApmEvent {
     private String fragmentId;
 
     @JsonInclude
-    private String businessTransaction;
+    private String transaction;
 
     @JsonInclude
     private NodeType type;
@@ -134,17 +134,17 @@ public class NodeDetails implements ApmEvent {
     }
 
     /**
-     * @return the businessTransaction
+     * @return the transaction
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public void setBusinessTransaction(String businessTransaction) {
-        this.businessTransaction = businessTransaction;
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
     }
 
     /**
@@ -347,7 +347,7 @@ public class NodeDetails implements ApmEvent {
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (actual ^ (actual >>> 32));
-        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
+        result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
@@ -375,10 +375,10 @@ public class NodeDetails implements ApmEvent {
         NodeDetails other = (NodeDetails) obj;
         if (actual != other.actual)
             return false;
-        if (businessTransaction == null) {
-            if (other.businessTransaction != null)
+        if (transaction == null) {
+            if (other.transaction != null)
                 return false;
-        } else if (!businessTransaction.equals(other.businessTransaction))
+        } else if (!transaction.equals(other.transaction))
             return false;
         if (componentType == null) {
             if (other.componentType != null)
@@ -442,7 +442,7 @@ public class NodeDetails implements ApmEvent {
     @Override
     public String toString() {
         return "NodeDetails [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId
-                + ", businessTransaction=" + businessTransaction + ", type=" + type + ", uri=" + uri + ", timestamp="
+                + ", transaction=" + transaction + ", type=" + type + ", uri=" + uri + ", timestamp="
                 + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType=" + componentType
                 + ", operation=" + operation + ", hostName=" + hostName + ", hostAddress=" + hostAddress
                 + ", properties=" + properties + ", correlationIds=" + correlationIds + "]";

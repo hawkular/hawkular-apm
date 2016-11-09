@@ -32,7 +32,7 @@ module BTM {
     $scope.faultValues = [];
 
     $scope.criteria = {
-      businessTransaction: $scope.businessTransactionName,
+      transaction: $scope.businessTransactionName,
       properties: [],
       startTime: '-3600000',
       endTime: '0',

@@ -68,7 +68,7 @@ public class TraceCompletionInformationInitiator extends
                     ct.setEndpointType(((Consumer) n).getEndpointType());
                 }
 
-                ct.setBusinessTransaction(item.getBusinessTransaction());
+                ct.setTransaction(item.getTransaction());
                 ct.setDuration(item.calculateDuration());
                 ct.setProperties(item.allProperties());
                 ct.setTimestamp(item.getTimestamp());

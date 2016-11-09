@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiParam;
  * @author Juraci Paixão Kröhling
  */
 public class BoundEndpointsRequest extends TenantRequest {
-    @ApiParam(required = true, value = "business transaction name")
+    @ApiParam(required = true, value = "transaction name")
     @PathParam("name")
     String name;
 

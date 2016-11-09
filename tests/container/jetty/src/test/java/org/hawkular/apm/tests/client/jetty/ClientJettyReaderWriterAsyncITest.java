@@ -204,7 +204,7 @@ public class ClientJettyReaderWriterAsyncITest extends ClientTestBase {
 
         Wait.until(() -> getApmMockServer().getTraces().size() == 2);
 
-        // Check stored business transactions (including 1 for the test client)
+        // Check stored traces (including 1 for the test client)
         assertEquals(2, getApmMockServer().getTraces().size());
 
         List<Producer> producers = new ArrayList<Producer>();

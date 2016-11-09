@@ -1,5 +1,5 @@
 {
-  "businessTransactions": {
+  "transactions": {
     "abstest": {
       "description": "Absolute path test"
     }

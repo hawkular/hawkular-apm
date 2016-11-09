@@ -21,7 +21,7 @@ import io.opentracing.APMSpan;
 /**
  * This interface represents a processing capability on a span node. A default implementation
  * exists to provide the initial basic mapping, but additional processors may be supplied
- * to perform business transaction specific actions. It is also possible that applications
+ * to perform transaction specific actions. It is also possible that applications
  * may wish to register their own processors.
  *
  * @author gbrown

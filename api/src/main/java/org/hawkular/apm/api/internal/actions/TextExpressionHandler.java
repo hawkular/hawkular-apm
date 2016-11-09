@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.hawkular.apm.api.internal.actions.helpers.Text;
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.Expression;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.Expression;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 

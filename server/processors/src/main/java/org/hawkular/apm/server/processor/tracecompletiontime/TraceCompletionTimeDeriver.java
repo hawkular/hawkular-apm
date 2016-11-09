@@ -24,7 +24,7 @@ import org.hawkular.apm.server.api.task.AbstractProcessor;
 import org.hawkular.apm.server.api.task.RetryAttemptException;
 
 /**
- * This class represents the end to end business transaction completion time deriver.
+ * This class represents the end to end transaction completion time deriver.
  *
  * @author gbrown
  */

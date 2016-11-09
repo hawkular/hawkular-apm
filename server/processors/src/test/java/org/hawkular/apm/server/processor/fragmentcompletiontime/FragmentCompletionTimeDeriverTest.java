@@ -39,7 +39,7 @@ public class FragmentCompletionTimeDeriverTest {
     public void testProcessSingle() {
         Trace trace = new Trace();
         trace.setFragmentId("btxnId");
-        trace.setBusinessTransaction("btxnName");
+        trace.setTransaction("btxnName");
         trace.setTimestamp(100000);
 
         Consumer c = new Consumer();
@@ -64,7 +64,7 @@ public class FragmentCompletionTimeDeriverTest {
         assertNotNull(ct);
 
         assertEquals(trace.getFragmentId(), ct.getId());
-        assertEquals(trace.getBusinessTransaction(), ct.getBusinessTransaction());
+        assertEquals(trace.getTransaction(), ct.getTransaction());
         assertEquals(c.getEndpointType(), ct.getEndpointType());
         assertFalse(ct.isInternal());
         assertEquals(trace.getTimestamp(), ct.getTimestamp());
@@ -77,7 +77,7 @@ public class FragmentCompletionTimeDeriverTest {
     public void testProcessSingleConsumerInternal() {
         Trace trace = new Trace();
         trace.setFragmentId("btxnId");
-        trace.setBusinessTransaction("btxnName");
+        trace.setTransaction("btxnName");
         trace.setTimestamp(100);
 
         Consumer c = new Consumer();

@@ -1,5 +1,5 @@
 {
-  "businessTransactions": {
+  "transactions": {
     "reltest": {
       "description": "Relative path test"
     }

@@ -42,10 +42,10 @@ public class ConfigurationLoaderTest {
         CollectorConfiguration cc = ConfigurationLoader.getConfiguration(null);
 
         assertNotNull(cc);
-        assertNotNull(cc.getBusinessTransactions());
-        assertNotNull(cc.getBusinessTransactions().get("cptest"));
+        assertNotNull(cc.getTransactions());
+        assertNotNull(cc.getTransactions().get("cptest"));
 
-        assertEquals("Classpath test", cc.getBusinessTransactions().get("cptest").getDescription());
+        assertEquals("Classpath test", cc.getTransactions().get("cptest").getDescription());
     }
 
     @Test
@@ -57,10 +57,10 @@ public class ConfigurationLoaderTest {
         assertNotNull(cc);
 
         assertNotNull(cc);
-        assertNotNull(cc.getBusinessTransactions());
-        assertNotNull(cc.getBusinessTransactions().get("reltest"));
+        assertNotNull(cc.getTransactions());
+        assertNotNull(cc.getTransactions().get("reltest"));
 
-        assertEquals("Relative path test", cc.getBusinessTransactions().get("reltest").getDescription());
+        assertEquals("Relative path test", cc.getTransactions().get("reltest").getDescription());
     }
 
     @Test
@@ -74,10 +74,10 @@ public class ConfigurationLoaderTest {
         assertNotNull(cc);
 
         assertNotNull(cc);
-        assertNotNull(cc.getBusinessTransactions());
-        assertNotNull(cc.getBusinessTransactions().get("abstest"));
+        assertNotNull(cc.getTransactions());
+        assertNotNull(cc.getTransactions().get("abstest"));
 
-        assertEquals("Absolute path test", cc.getBusinessTransactions().get("abstest").getDescription());
+        assertEquals("Absolute path test", cc.getTransactions().get("abstest").getDescription());
     }
 
 }

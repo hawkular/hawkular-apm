@@ -44,7 +44,7 @@
           "type": "SetTraceId",
           "valueExpression": "apmtraceid"
         },{
-          "type": "SetBusinessTransaction",
+          "type": "SetTransaction",
           "nameExpression": "btname"
         },{
           "type": "SetLevel",

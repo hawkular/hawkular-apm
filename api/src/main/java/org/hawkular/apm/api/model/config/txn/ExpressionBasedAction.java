@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

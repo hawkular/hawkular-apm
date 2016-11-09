@@ -14,38 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents expression that can be applied to XML data.
+ * This class represents an expression applied to a data source.
  *
  * @author gbrown
  */
-public class XMLExpression extends DataExpression {
+public abstract class DataExpression extends Expression {
 
     @JsonInclude
-    private String xpath;
+    private DataSource source;
+
+    @JsonInclude
+    private String key;
 
     /**
-     * @return the xpath
+     * @return the source
      */
-    public String getXpath() {
-        return xpath;
+    public DataSource getSource() {
+        return source;
     }
 
     /**
-     * @param xpath the xpath to set
+     * @param source the source to set
      */
-    public void setXpath(String xpath) {
-        this.xpath = xpath;
+    public void setSource(DataSource source) {
+        this.source = source;
     }
 
-    @Override
-    public String toString() {
-        return "XMLExpression [xpath=" + xpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()
-                + "]";
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
     }
 
 }

@@ -1,5 +1,5 @@
 {
-  "businessTransactions": {
+  "transactions": {
     "testjms": {
       "description": "Configuration for JMS tests",
       "filter": {

@@ -69,12 +69,12 @@ public class TraceServiceElasticsearchTest {
     public void testQueryBTxnName() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setFragmentId("id1");
-        trace1.setBusinessTransaction("trace1");
+        trace1.setTransaction("trace1");
         trace1.setTimestamp(1000);
 
         Trace trace2 = new Trace();
         trace2.setFragmentId("id2");
-        trace2.setBusinessTransaction("trace2");
+        trace2.setTransaction("trace2");
         trace2.setTimestamp(2000);
 
         Trace trace3 = new Trace();
@@ -85,7 +85,7 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1);
-        criteria.setBusinessTransaction("trace1");
+        criteria.setTransaction("trace1");
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
@@ -93,19 +93,19 @@ public class TraceServiceElasticsearchTest {
         assertNotNull(result1);
         assertEquals(1, result1.size());
         assertEquals("id1", result1.get(0).getFragmentId());
-        assertEquals("trace1", result1.get(0).getBusinessTransaction());
+        assertEquals("trace1", result1.get(0).getTransaction());
     }
 
     @Test
     public void testQueryNoBTxnName() throws StoreException {
         Trace trace1 = new Trace();
         trace1.setFragmentId("id1");
-        trace1.setBusinessTransaction("trace1");
+        trace1.setTransaction("trace1");
         trace1.setTimestamp(1000);
 
         Trace trace2 = new Trace();
         trace2.setFragmentId("id2");
-        trace2.setBusinessTransaction("trace2");
+        trace2.setTransaction("trace2");
         trace2.setTimestamp(2000);
 
         Trace trace3 = new Trace();
@@ -116,7 +116,7 @@ public class TraceServiceElasticsearchTest {
 
         Criteria criteria = new Criteria();
         criteria.setStartTime(1);
-        criteria.setBusinessTransaction("");
+        criteria.setTransaction("");
 
         Wait.until(() -> ts.searchFragments(null, criteria).size() == 1);
         List<Trace> result1 = ts.searchFragments(null, criteria);
@@ -124,7 +124,7 @@ public class TraceServiceElasticsearchTest {
         assertNotNull(result1);
         assertEquals(1, result1.size());
         assertEquals("id3", result1.get(0).getFragmentId());
-        assertNull(result1.get(0).getBusinessTransaction());
+        assertNull(result1.get(0).getTransaction());
     }
 
     @Test

@@ -46,7 +46,7 @@ public class ServiceTest {
 
         serviceA.getCalledServices().put("path1", "serviceB");
 
-        serviceA.getCollector().setBusinessTransaction(null, TXN_NAME);
+        serviceA.getCollector().setTransaction(null, TXN_NAME);
 
         // Check no traces currently reported
         assertTrue(publisher.getTraces().isEmpty());
@@ -58,8 +58,8 @@ public class ServiceTest {
 
         // Check that two traces reported, both with transaction name
         assertEquals(2, publisher.getTraces().size());
-        assertEquals(TXN_NAME, publisher.getTraces().get(0).getBusinessTransaction());
-        assertEquals(TXN_NAME, publisher.getTraces().get(1).getBusinessTransaction());
+        assertEquals(TXN_NAME, publisher.getTraces().get(0).getTransaction());
+        assertEquals(TXN_NAME, publisher.getTraces().get(1).getTransaction());
     }
 
     public class TestServiceRegistry implements ServiceRegistry {

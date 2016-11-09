@@ -28,7 +28,7 @@
           "type": "SetTraceId",
           "valueExpression": "req.getHeader(\"HWKAPMTRACEID\")"
         },{
-          "type": "SetBusinessTransaction",
+          "type": "SetTransaction",
           "nameExpression": "req.getHeader(\"HWKAPMTXN\")"
         },{
           "type": "SetLevel",

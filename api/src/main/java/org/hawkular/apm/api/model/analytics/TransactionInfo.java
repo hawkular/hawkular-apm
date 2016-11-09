@@ -21,7 +21,7 @@ import org.hawkular.apm.api.model.config.ReportingLevel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents information related to a business transaction associated with
+ * This class represents information related to a transaction associated with
  * trace fragments.
  *
  * @author gbrown

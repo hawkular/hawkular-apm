@@ -21,8 +21,8 @@ import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
 import org.hawkular.apm.api.model.config.instrumentation.Instrumentation;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,7 +44,7 @@ public class CollectorConfiguration {
     private Map<String, Instrumentation> instrumentation = new HashMap<String, Instrumentation>();
 
     @JsonInclude
-    private Map<String, BusinessTxnConfig> businessTransactions = new HashMap<String, BusinessTxnConfig>();
+    private Map<String, TransactionConfig> transactions = new HashMap<String, TransactionConfig>();
 
     /**
      * @return the properties
@@ -101,17 +101,17 @@ public class CollectorConfiguration {
     }
 
     /**
-     * @return the businessTransactions
+     * @return the transactions
      */
-    public Map<String, BusinessTxnConfig> getBusinessTransactions() {
-        return businessTransactions;
+    public Map<String, TransactionConfig> getTransactions() {
+        return transactions;
     }
 
     /**
-     * @param businessTransactions the businessTransactions to set
+     * @param transactions the transactions to set
      */
-    public void setBusinessTransactions(Map<String, BusinessTxnConfig> businessTransactions) {
-        this.businessTransactions = businessTransactions;
+    public void setTransactions(Map<String, TransactionConfig> transactions) {
+        this.transactions = transactions;
     }
 
     /**
@@ -131,11 +131,11 @@ public class CollectorConfiguration {
             }
             getInstrumentation().put(key, config.getInstrumentation().get(key));
         }
-        for (String key : config.getBusinessTransactions().keySet()) {
-            if (getBusinessTransactions().containsKey(key) && !overwrite) {
-                throw new IllegalArgumentException("Business Transaction config for '" + key + "' already exists");
+        for (String key : config.getTransactions().keySet()) {
+            if (getTransactions().containsKey(key) && !overwrite) {
+                throw new IllegalArgumentException("Transaction config for '" + key + "' already exists");
             }
-            getBusinessTransactions().put(key, config.getBusinessTransactions().get(key));
+            getTransactions().put(key, config.getTransactions().get(key));
         }
         getProperties().putAll(config.getProperties());
     }

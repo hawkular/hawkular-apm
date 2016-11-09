@@ -28,14 +28,14 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.AddContentAction;
-import org.hawkular.apm.api.model.config.btxn.AddCorrelationIdAction;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.DataSource;
-import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.SetPropertyAction;
-import org.hawkular.apm.api.model.config.btxn.TextExpression;
+import org.hawkular.apm.api.model.config.txn.AddContentAction;
+import org.hawkular.apm.api.model.config.txn.AddCorrelationIdAction;
+import org.hawkular.apm.api.model.config.txn.DataSource;
+import org.hawkular.apm.api.model.config.txn.LiteralExpression;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.SetPropertyAction;
+import org.hawkular.apm.api.model.config.txn.TextExpression;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Content;
@@ -55,8 +55,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoURIFilter() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -77,7 +77,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -88,8 +88,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoURIFilterWithPredicate() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -115,7 +115,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -126,8 +126,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoURIFilterWithPredicateNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -153,7 +153,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -164,8 +164,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeOutNoURIFilterNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -187,7 +187,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.Out, null, "first", "second");
 
@@ -198,8 +198,8 @@ public class ProcessorManagerTest {
     public void testMismatchedNodeTypeInNoURIFilterNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -221,7 +221,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Consumer service = new Consumer();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -232,8 +232,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInWithURIFilter() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -257,7 +257,7 @@ public class ProcessorManagerTest {
         Component service = new Component();
         service.setUri("should include this");
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -268,8 +268,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInWithURIFilterNoAction() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -293,7 +293,7 @@ public class ProcessorManagerTest {
         Component service = new Component();
         service.setUri("should exclude this");
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -304,8 +304,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoURIFilterSetProperty() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -327,7 +327,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -338,8 +338,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoURIFilterSetFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -361,7 +361,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -373,8 +373,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoURIFilterAddContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -397,7 +397,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Consumer service = new Consumer();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -418,8 +418,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInAddCorrelationId() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -441,7 +441,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Consumer service = new Consumer();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -458,8 +458,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInFaultFilterNoFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -482,7 +482,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Consumer service = new Consumer();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -496,8 +496,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInFaultFilterWithMismatchFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -521,7 +521,7 @@ public class ProcessorManagerTest {
         service.getProperties().add(new Property(Constants.PROP_FAULT, "NotSameFault"));
 
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -536,8 +536,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInFaultFilterWithMatchingFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -561,7 +561,7 @@ public class ProcessorManagerTest {
         service.getProperties().add(new Property(Constants.PROP_FAULT, "MyFault"));
 
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -577,8 +577,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInNoOperation() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -600,7 +600,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -611,8 +611,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInWithMismatchOperation() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -636,7 +636,7 @@ public class ProcessorManagerTest {
         service.setOperation("NotSameOperation");
 
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -647,8 +647,8 @@ public class ProcessorManagerTest {
     public void testNodeTypeInWithMatchingFault() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -672,7 +672,7 @@ public class ProcessorManagerTest {
         service.setOperation("MyOp");
 
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -684,8 +684,8 @@ public class ProcessorManagerTest {
     public void testIsProcessedTrue() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -709,7 +709,7 @@ public class ProcessorManagerTest {
         service.setOperation("MyOp");
 
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         assertTrue(pm.isProcessed(trace, service, Direction.In));
     }
@@ -718,8 +718,8 @@ public class ProcessorManagerTest {
     public void testIsProcessedFalse() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -743,7 +743,7 @@ public class ProcessorManagerTest {
         Component service = new Component();
         service.setUri("should exclude this");
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         assertFalse(pm.isProcessed(trace, service, Direction.In));
     }
@@ -752,8 +752,8 @@ public class ProcessorManagerTest {
     public void testIsContentProcessedFalse() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -775,7 +775,7 @@ public class ProcessorManagerTest {
         Consumer service = new Consumer();
 
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -787,8 +787,8 @@ public class ProcessorManagerTest {
     public void testIsContentProcessedTrueForAddContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -811,7 +811,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Consumer service = new Consumer();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -823,8 +823,8 @@ public class ProcessorManagerTest {
     public void testIsContentProcessedTrueForSetProperty() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -846,7 +846,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Consumer service = new Consumer();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Message req = new Message();
         service.setIn(req);
@@ -858,8 +858,8 @@ public class ProcessorManagerTest {
     public void testProcessInNoHeadersOrContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -880,7 +880,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null);
 
@@ -891,8 +891,8 @@ public class ProcessorManagerTest {
     public void testProcessInNoHeaders() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -915,7 +915,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null);
 
@@ -926,8 +926,8 @@ public class ProcessorManagerTest {
     public void testProcessInWithHeaders() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -949,7 +949,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("hello", "world");
@@ -962,8 +962,8 @@ public class ProcessorManagerTest {
     public void testProcessInNoContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -985,7 +985,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null);
 
@@ -996,8 +996,8 @@ public class ProcessorManagerTest {
     public void testProcessInWithContent() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -1019,7 +1019,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "hello");
 
@@ -1030,8 +1030,8 @@ public class ProcessorManagerTest {
     public void testProcessorPredicateTrue() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -1057,7 +1057,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -1068,8 +1068,8 @@ public class ProcessorManagerTest {
     public void testProcessorPredicateFalse() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -1095,7 +1095,7 @@ public class ProcessorManagerTest {
         Trace trace = new Trace();
         Component service = new Component();
         trace.getNodes().add(service);
-        trace.setBusinessTransaction("testapp");
+        trace.setTransaction("testapp");
 
         pm.process(trace, service, Direction.In, null, "first", "second");
 
@@ -1106,8 +1106,8 @@ public class ProcessorManagerTest {
     public void testInit() {
         CollectorConfiguration cc = new CollectorConfiguration();
 
-        BusinessTxnConfig btc = new BusinessTxnConfig();
-        cc.getBusinessTransactions().put("testapp", btc);
+        TransactionConfig btc = new TransactionConfig();
+        cc.getTransactions().put("testapp", btc);
 
         Processor p1 = new Processor();
         btc.getProcessors().add(p1);
@@ -1119,7 +1119,7 @@ public class ProcessorManagerTest {
         assertEquals(p1, pm.getProcessors().get("testapp").get(0).getProcessor());
 
         // Update the configuration
-        BusinessTxnConfig btc2 = new BusinessTxnConfig();
+        TransactionConfig btc2 = new TransactionConfig();
 
         Processor p2 = new Processor();
         btc2.getProcessors().add(p2);

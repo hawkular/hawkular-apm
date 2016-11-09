@@ -22,11 +22,11 @@ import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
-import org.hawkular.apm.api.model.config.btxn.AddContentAction;
-import org.hawkular.apm.api.model.config.btxn.AddCorrelationIdAction;
-import org.hawkular.apm.api.model.config.btxn.EvaluateURIAction;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
-import org.hawkular.apm.api.model.config.btxn.SetPropertyAction;
+import org.hawkular.apm.api.model.config.txn.AddContentAction;
+import org.hawkular.apm.api.model.config.txn.AddCorrelationIdAction;
+import org.hawkular.apm.api.model.config.txn.EvaluateURIAction;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.SetPropertyAction;
 
 /**
  * This class provides a factory for creating handlers associated with processor actions.

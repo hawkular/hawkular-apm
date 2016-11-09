@@ -42,7 +42,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the unbound endpoints (i.e. ones not
-     * associated with a business transaction).
+     * associated with a transaction).
      *
      * @param tenantId The optional tenant id
      * @param startTime The start time in milliseconds
@@ -53,20 +53,20 @@ public interface AnalyticsService {
     List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress);
 
     /**
-     * This method returns the bound endpoints associated with a business
+     * This method returns the bound endpoints associated with a
      * transaction.
      *
      * @param tenantId The optional tenant id
-     * @param businessTransaction The business transaction name
+     * @param transaction The transaction name
      * @param startTime The start time in milliseconds
      * @param endTime The end time (if 0, then current time) in milliseconds
      * @return The bound endpoints
      */
-    List<EndpointInfo> getBoundEndpoints(String tenantId, String businessTransaction, long startTime, long endTime);
+    List<EndpointInfo> getBoundEndpoints(String tenantId, String transaction, long startTime, long endTime);
 
     /**
-     * This method returns the business transactions associated with the specified
-     * criteria. Note: the 'business transaction' property in the criteria will be
+     * This method returns the transactions associated with the specified
+     * criteria. Note: the 'transaction' property in the criteria will be
      * ignored for this method.
      *
      * @param tenantId The optional tenant id
@@ -87,7 +87,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the number of completed transactions, of the specified named
-     * trace, that were executed during the time range. The business
+     * trace, that were executed during the time range. The
      * transaction name must be specified as part of the criteria.
      *
      * @param tenantId The tenant id
@@ -99,7 +99,7 @@ public interface AnalyticsService {
     /**
      * This method returns the number of completed transactions, of the specified named
      * trace, that were executed during the time range and returned
-     * a fault. The business transaction name must be specified as part of the criteria.
+     * a fault. The transaction name must be specified as part of the criteria.
      *
      * @param tenantId The tenant id
      * @param criteria The criteria
@@ -119,7 +119,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the completion time percentiles, for the specified criteria, that were
-     * executed during the time range. The business transaction name must be specified
+     * executed during the time range. The transaction name must be specified
      * as part of the criteria.
      *
      * @param tenantId The tenant id
@@ -130,7 +130,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the completion timeseries statistics, for the specified criteria, that were
-     * executed during the time range. The business transaction name must be specified
+     * executed during the time range. The transaction name must be specified
      * as part of the criteria.
      *
      * @param tenantId The tenant id
@@ -143,7 +143,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the completion time fault details, for the specified criteria, that were
-     * executed during the time range. The business transaction name must be specified
+     * executed during the time range. The transaction name must be specified
      * as part of the criteria.
      *
      * @param tenantId The tenant id
@@ -154,7 +154,7 @@ public interface AnalyticsService {
 
     /**
      * This method returns the completion time property details, for the specified criteria, that were
-     * executed during the time range. The business transaction name must be specified
+     * executed during the time range. The transaction name must be specified
      * as part of the criteria.
      *
      * @param tenantId The tenant id

@@ -14,39 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents a literal.
+ * This class represents the action of extracting properties from
+ * a URI, based on a template, and then rewriting the URI to be
+ * the template.
  *
  * @author gbrown
  */
-public class LiteralExpression extends Expression {
+public class EvaluateURIAction extends ProcessorAction {
 
     @JsonInclude
-    private String value;
+    private String template;
 
     /**
-     * @return the value
+     * @return the template
      */
-    public String getValue() {
-        return value;
+    public String getTemplate() {
+        return template;
     }
 
     /**
-     * @param value the value to set
-     * @return The literal expression
+     * @param template the template to set
      */
-    public LiteralExpression setValue(String value) {
-        this.value = value;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Literal [value=" + value + "]";
+    public void setTemplate(String template) {
+        this.template = template;
     }
 
 }

@@ -1,5 +1,5 @@
 {
-  "businessTransactions": {
+  "transactions": {
     "cptest": {
       "description": "Classpath test"
     }

@@ -78,7 +78,7 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics.NodeCompone
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.events.ApmEvent;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
@@ -124,20 +124,20 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return null;
         }
 
-        if (criteria.getBusinessTransaction() != null) {
-            // Copy criteria and clear the business transaction field to ensure all
-            // business transactions are returned related to the other filter criteria
+        if (criteria.getTransaction() != null) {
+            // Copy criteria and clear the transaction field to ensure all
+            // transactions are returned related to the other filter criteria
             criteria = new Criteria(criteria);
-            criteria.setBusinessTransaction(null);
+            criteria.setTransaction(null);
         }
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
-                .field(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD)
+                .field(ElasticsearchUtil.TRANSACTION_FIELD)
                 .order(Order.aggregation("_count", false))
                 .size(criteria.getMaxResponseSize());
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, Trace.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, Trace.class);
         SearchRequestBuilder request = getBaseSearchRequestBuilder(TRACE_TYPE, index, criteria, query, 0)
                 .addAggregation(cardinalityBuilder);
 
@@ -148,13 +148,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .map(AnalyticsServiceElasticsearch::toTransactionInfo)
                 .collect(Collectors.toList());
 
-        // If config service available, check if there is a business txn config for the list of
+        // If config service available, check if there is a transaction config for the list of
         // transactions being returned
         if (configService != null) {
-            Map<String,BusinessTxnConfig> btcs = configService.getBusinessTransactions(tenantId, 0);
+            Map<String,TransactionConfig> btcs = configService.getTransactions(tenantId, 0);
 
             txnInfo.forEach(ti -> {
-                BusinessTxnConfig btc = btcs.get(ti.getName());
+                TransactionConfig btc = btcs.get(ti.getName());
                 if (btc != null) {
                     ti.setLevel(btc.getLevel());
                     ti.setStaticConfig(true);
@@ -162,7 +162,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 }
             });
 
-            // Add entry for remaining business txn configs
+            // Add entry for remaining transaction configs
             btcs.forEach((k,v) -> txnInfo.add(new TransactionInfo().setName(k).setLevel(v.getLevel()).setStaticConfig(true)));
         }
 
@@ -185,7 +185,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return null;
         }
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
                 .terms("cardinality")
@@ -228,7 +228,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return null;
         }
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, criteria.getMaxResponseSize());
         SearchResponse response = getSearchResponse(request);
         if (response.isTimedOut()) {
@@ -252,7 +252,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .percentiles("percentiles")
                 .field(ElasticsearchUtil.DURATION_FIELD);
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
                 .addAggregation(percentileAgg);
 
@@ -298,7 +298,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(statsBuilder)
                 .subAggregation(nestedFaultCountBuilder);
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0)
                 .addAggregation(histogramBuilder);
 
@@ -325,7 +325,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
                 .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property));
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
 
         TermsBuilder cardinalityBuilder = AggregationBuilders
@@ -382,7 +382,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .field(ElasticsearchUtil.TIMESTAMP_FIELD)
                 .subAggregation(componentsBuilder);
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, NodeDetails.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, NodeDetails.class);
         SearchRequestBuilder request = getNodeSearchRequest(index, criteria, query, 0)
                 .addAggregation(histogramBuilder);
 
@@ -463,7 +463,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(componentsBuilder)
                 .subAggregation(missingComponentsBuilder);
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, NodeDetails.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, NodeDetails.class);
         SearchRequestBuilder request = getNodeSearchRequest(index, criteria, query, 0)
                 .addAggregation(nodesBuilder);
 
@@ -593,7 +593,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         // Don't specify target class, so that query provided that can be used with
         // CommunicationDetails and CompletionTime
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, null);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, null);
 
         // Only want external communications
         query = query.mustNot(QueryBuilders.matchQuery("internal", "true"));
@@ -989,7 +989,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             return 0;
         }
 
-        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, CompletionTime.class);
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, 0);
 
         if (onlyFaulty) {

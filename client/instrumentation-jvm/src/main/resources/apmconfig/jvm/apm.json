@@ -2,7 +2,7 @@
   "properties": {
     "hawkular-apm.collector.onlynamed": "false"
   },
-  "businessTransactions": {
+  "transactions": {
     "apm": {
       "description": "Configuration for the Application Performance Management system",
       "filter": {

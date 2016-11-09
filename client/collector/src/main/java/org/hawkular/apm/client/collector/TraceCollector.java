@@ -45,16 +45,16 @@ public interface TraceCollector {
      * This method sets the name of the trace.
      *
      * @param location The instrumentation location
-     * @param name The business transaction name
+     * @param name The transaction name
      */
-    void setBusinessTransaction(String location, String name);
+    void setTransaction(String location, String name);
 
     /**
-     * This method returns the name of the business transaction.
+     * This method returns the name of the transaction.
      *
-     * @return The business transaction name, or empty string if not defined
+     * @return The transaction name, or empty string if not defined
      */
-    String getBusinessTransaction();
+    String getTransaction();
 
     /**
      * This method sets the reporting level.

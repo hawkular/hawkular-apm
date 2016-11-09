@@ -19,8 +19,8 @@ package org.hawkular.apm.api.internal.actions;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.AddCorrelationIdAction;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.AddCorrelationIdAction;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;

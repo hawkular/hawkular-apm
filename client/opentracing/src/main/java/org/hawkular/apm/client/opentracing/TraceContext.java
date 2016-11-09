@@ -42,7 +42,7 @@ public class TraceContext {
 
     private NodeBuilder rootNode;
 
-    private String businessTransaction;
+    private String transaction;
 
     private String reportingLevel;
 
@@ -96,7 +96,7 @@ public class TraceContext {
             Node node = rootNode.build();
 
             trace.setTimestamp(node.getTimestamp());
-            trace.setBusinessTransaction(getBusinessTransaction());
+            trace.setTransaction(getTransaction());
             trace.getNodes().add(node);
 
             reporter.report(trace);
@@ -122,17 +122,17 @@ public class TraceContext {
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public void setBusinessTransaction(String businessTransaction) {
-        this.businessTransaction = businessTransaction;
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
     }
 
     /**

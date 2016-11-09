@@ -57,7 +57,7 @@ public class Trace {
     private long timestamp;
 
     @JsonInclude(Include.NON_EMPTY)
-    private String businessTransaction;
+    private String transaction;
 
     @JsonInclude(Include.NON_EMPTY)
     private String hostName;
@@ -128,18 +128,18 @@ public class Trace {
     }
 
     /**
-     * @return the business transaction name
+     * @return the transaction name
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param name the business transaction name to set
+     * @param name the transaction name to set
      * @return The trace
      */
-    public Trace setBusinessTransaction(String name) {
-        this.businessTransaction = name;
+    public Trace setTransaction(String name) {
+        this.transaction = name;
         return this;
     }
 
@@ -302,7 +302,7 @@ public class Trace {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((businessTransaction == null) ? 0 : businessTransaction.hashCode());
+        result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
         result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
         result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
@@ -321,10 +321,10 @@ public class Trace {
         if (getClass() != obj.getClass())
             return false;
         Trace other = (Trace) obj;
-        if (businessTransaction == null) {
-            if (other.businessTransaction != null)
+        if (transaction == null) {
+            if (other.transaction != null)
                 return false;
-        } else if (!businessTransaction.equals(other.businessTransaction))
+        } else if (!transaction.equals(other.transaction))
             return false;
         if (fragmentId == null) {
             if (other.fragmentId != null)
@@ -359,7 +359,7 @@ public class Trace {
     @Override
     public String toString() {
         return "Trace [traceId=" + traceId + ", fragmentId=" + fragmentId + ", timestamp=" + timestamp
-                + ", businessTransaction=" + businessTransaction + ", hostName=" + hostName + ", hostAddress="
+                + ", transaction=" + transaction + ", hostName=" + hostName + ", hostAddress="
                 + hostAddress + ", nodes=" + nodes + "]";
     }
 

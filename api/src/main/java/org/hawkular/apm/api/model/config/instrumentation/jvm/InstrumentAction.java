@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiModel;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = InstrumentComponent.class), @Type(value = InstrumentConsumer.class),
     @Type(value = InstrumentProducer.class), @Type(value = FreeFormAction.class),
-    @Type(value = ProcessContent.class), @Type(value = SetBusinessTransaction.class), @Type(value = SetLevel.class),
+    @Type(value = ProcessContent.class), @Type(value = SetTransaction.class), @Type(value = SetLevel.class),
     @Type(value = SetProperty.class), @Type(value = SetState.class), @Type(value = InitiateCorrelation.class),
     @Type(value = CompleteCorrelation.class), @Type(value = Correlate.class),
     @Type(value = Unlink.class), @Type(value = AssertComplete.class), @Type(value = Suppress.class),
@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiModel;
     @Type(value = Deactivate.class), @Type(value = SetTraceId.class) })
 @ApiModel(subTypes = { InstrumentComponent.class, InstrumentConsumer.class,
         InstrumentProducer.class, FreeFormAction.class, ProcessContent.class,
-        SetBusinessTransaction.class, SetLevel.class, SetProperty.class, SetState.class,
+        SetTransaction.class, SetLevel.class, SetProperty.class, SetState.class,
         InitiateCorrelation.class, CompleteCorrelation.class, Correlate.class, Unlink.class,
         AssertComplete.class, Suppress.class, ProcessHeaders.class, IgnoreNode.class,
         Deactivate.class, SetTraceId.class},

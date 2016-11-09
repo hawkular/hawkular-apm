@@ -27,12 +27,12 @@ import java.util.Map;
 import org.hawkular.apm.api.internal.actions.ExpressionBasedActionHandler;
 import org.hawkular.apm.api.internal.actions.SetPropertyActionHandler;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnSummary;
-import org.hawkular.apm.api.model.config.btxn.ConfigMessage;
-import org.hawkular.apm.api.model.config.btxn.Filter;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.SetPropertyAction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.SetPropertyAction;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionSummary;
 import org.junit.Test;
 
 /**
@@ -44,9 +44,9 @@ public class AbstractConfigurationServiceTest {
     public void testValidateNoFilters() {
         TestConfigurationService cs = new TestConfigurationService();
 
-        BusinessTxnConfig config = new BusinessTxnConfig();
+        TransactionConfig config = new TransactionConfig();
 
-        List<ConfigMessage> messages = cs.validateBusinessTransaction(config);
+        List<ConfigMessage> messages = cs.validateTransaction(config);
 
         assertNotNull(messages);
         assertFalse(messages.isEmpty());
@@ -56,11 +56,11 @@ public class AbstractConfigurationServiceTest {
     public void testValidateValid() {
         TestConfigurationService cs = new TestConfigurationService();
 
-        BusinessTxnConfig config = new BusinessTxnConfig();
+        TransactionConfig config = new TransactionConfig();
         config.setFilter(new Filter());
         config.getFilter().getInclusions().add("myfilter");
 
-        List<ConfigMessage> messages = cs.validateBusinessTransaction(config);
+        List<ConfigMessage> messages = cs.validateTransaction(config);
 
         assertNotNull(messages);
         assertTrue(messages.isEmpty());
@@ -70,7 +70,7 @@ public class AbstractConfigurationServiceTest {
     public void testValidateSetPropertyMissingNameAndExpression() {
         TestConfigurationService cs = new TestConfigurationService();
 
-        BusinessTxnConfig config = new BusinessTxnConfig();
+        TransactionConfig config = new TransactionConfig();
         config.setFilter(new Filter());
         config.getFilter().getInclusions().add("myfilter");
 
@@ -82,7 +82,7 @@ public class AbstractConfigurationServiceTest {
         action.setDescription("action1");
         processor.getActions().add(action);
 
-        List<ConfigMessage> messages = cs.validateBusinessTransaction(config);
+        List<ConfigMessage> messages = cs.validateTransaction(config);
 
         assertNotNull(messages);
         assertEquals(2, messages.size());
@@ -104,39 +104,39 @@ public class AbstractConfigurationServiceTest {
         }
 
         @Override
-        public List<ConfigMessage> setBusinessTransaction(String tenantId, String name, BusinessTxnConfig config)
+        public List<ConfigMessage> setTransaction(String tenantId, String name, TransactionConfig config)
                 throws Exception {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public List<ConfigMessage> setBusinessTransactions(String tenantId, Map<String, BusinessTxnConfig> configs)
+        public List<ConfigMessage> setTransactions(String tenantId, Map<String, TransactionConfig> configs)
                 throws Exception {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public BusinessTxnConfig getBusinessTransaction(String tenantId, String name) {
+        public TransactionConfig getTransaction(String tenantId, String name) {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public Map<String, BusinessTxnConfig> getBusinessTransactions(String tenantId, long updated) {
+        public Map<String, TransactionConfig> getTransactions(String tenantId, long updated) {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public List<BusinessTxnSummary> getBusinessTransactionSummaries(String tenantId) {
+        public List<TransactionSummary> getTransactionSummaries(String tenantId) {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public void removeBusinessTransaction(String tenantId, String name) throws Exception {
+        public void removeTransaction(String tenantId, String name) throws Exception {
             // TODO Auto-generated method stub
 
         }

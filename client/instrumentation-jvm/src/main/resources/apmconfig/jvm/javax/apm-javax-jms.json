@@ -19,7 +19,7 @@
           "type": "SetTraceId",
           "valueExpression": "$1.getStringProperty(\"HWKAPMTRACEID\")"
         },{
-          "type": "SetBusinessTransaction",
+          "type": "SetTransaction",
           "nameExpression": "$1.getStringProperty(\"HWKAPMTXN\")"
         },{
           "type": "SetLevel",
@@ -186,7 +186,7 @@
           "action": "$2.setStringProperty(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
+          "action": "$2.setStringProperty(\"HWKAPMTXN\",getTransactionName())"
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HWKAPMLEVEL\",getLevel())"
@@ -266,7 +266,7 @@
           "action": "$2.setStringProperty(\"HWKAPMTRACEID\",getTraceId())"
         },{
           "type": "FreeFormAction",
-          "action": "$2.setStringProperty(\"HWKAPMTXN\",getBusinessTransactionName())"
+          "action": "$2.setStringProperty(\"HWKAPMTXN\",getTransactionName())"
         },{
           "type": "FreeFormAction",
           "action": "$2.setStringProperty(\"HWKAPMLEVEL\",getLevel())"

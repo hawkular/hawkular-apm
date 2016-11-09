@@ -44,7 +44,7 @@ public class CompletionTime implements ApmEvent {
     private String endpointType;
 
     @JsonInclude
-    private String businessTransaction;
+    private String transaction;
 
     /**
      * Timestamp in microseconds
@@ -128,17 +128,17 @@ public class CompletionTime implements ApmEvent {
     }
 
     /**
-     * @return the businessTransaction
+     * @return the transaction
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public void setBusinessTransaction(String businessTransaction) {
-        this.businessTransaction = businessTransaction;
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
     }
 
     /**
@@ -268,7 +268,7 @@ public class CompletionTime implements ApmEvent {
     @Override
     public String toString() {
         return "CompletionTime [id=" + id + ", uri=" + uri + ", operation=" + operation + ", endpointType="
-                + endpointType + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp
+                + endpointType + ", transaction=" + transaction + ", timestamp=" + timestamp
                 + ", duration=" + duration + ", hostName=" + hostName + ", hostAddress=" + hostAddress
                 + ", properties=" + properties + ", internal=" + internal + "]";
     }

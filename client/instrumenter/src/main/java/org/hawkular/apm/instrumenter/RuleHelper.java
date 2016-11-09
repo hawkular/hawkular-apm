@@ -433,12 +433,12 @@ public class RuleHelper extends Helper implements SessionManager {
     }
 
     /**
-     * This method returns the business transaction name.
+     * This method returns the transaction name.
      *
-     * @return The business transaction name
+     * @return The transaction name
      */
-    public String getBusinessTransactionName() {
-        return collector().getBusinessTransaction();
+    public String getTransactionName() {
+        return collector().getTransaction();
     }
 
     /**
@@ -597,7 +597,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * This method returns an instrumented proxy output stream, to wrap
      * the supplied output stream, which will record the written data. The
      * optional link id can be used to initiate a link with the specified
-     * id (and disassociate the business txn from the current thread).
+     * id (and disassociate the trace from the current thread).
      *
      * @param os The original output stream
      * @param linkId The optional link id
@@ -622,7 +622,7 @@ public class RuleHelper extends Helper implements SessionManager {
      * This method returns an instrumented proxy output stream, to wrap
      * the supplied output stream, which will record the written data. The
      * optional link id can be used to initiate a link with the specified
-     * id (and disassociate the business txn from the current thread).
+     * id (and disassociate the trace from the current thread).
      *
      * @param os The original output stream
      * @param linkId The optional link id

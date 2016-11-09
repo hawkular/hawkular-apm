@@ -81,7 +81,7 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_CONFIG_RETRY_INTERVAL = "HAWKULAR_APM_CONFIG_RETRY_INTERVAL";
 
     /**
-     * The refresh interval to check for updates to the business transaction configuration.
+     * The refresh interval to check for updates to the transaction configuration.
      */
     public static final String HAWKULAR_APM_CONFIG_REFRESH = "HAWKULAR_APM_CONFIG_REFRESH";
 

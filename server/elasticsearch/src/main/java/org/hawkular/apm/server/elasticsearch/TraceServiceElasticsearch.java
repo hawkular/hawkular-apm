@@ -236,7 +236,7 @@ public class TraceServiceElasticsearch implements TraceService {
             client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
 
             BoolQueryBuilder query = ElasticsearchUtil.buildQuery(criteria,
-                    ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, Trace.class);
+                    ElasticsearchUtil.TRANSACTION_FIELD, Trace.class);
 
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_TYPE)
@@ -337,7 +337,7 @@ public class TraceServiceElasticsearch implements TraceService {
         public void serialize(Trace trace, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException, JsonProcessingException {
             jgen.writeStartObject();
-            jgen.writeStringField(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD, trace.getBusinessTransaction());
+            jgen.writeStringField(ElasticsearchUtil.TRANSACTION_FIELD, trace.getTransaction());
             jgen.writeStringField(ElasticsearchUtil.HOST_ADDRESS_FIELD, trace.getHostAddress());
             jgen.writeStringField(ElasticsearchUtil.HOST_NAME_FIELD, trace.getHostName());
             jgen.writeStringField(ElasticsearchUtil.FRAGMENT_ID_FIELD, trace.getFragmentId());
@@ -376,8 +376,8 @@ public class TraceServiceElasticsearch implements TraceService {
                     }
 
                     parser.nextValue(); // Consume END_ARRAY
-                } else if (field.equals(ElasticsearchUtil.BUSINESS_TRANSACTION_FIELD)) {
-                    trace.setBusinessTransaction(parser.nextTextValue());
+                } else if (field.equals(ElasticsearchUtil.TRANSACTION_FIELD)) {
+                    trace.setTransaction(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.HOST_ADDRESS_FIELD)) {
                     trace.setHostAddress(parser.nextTextValue());
                 } else if (field.equals(ElasticsearchUtil.HOST_NAME_FIELD)) {

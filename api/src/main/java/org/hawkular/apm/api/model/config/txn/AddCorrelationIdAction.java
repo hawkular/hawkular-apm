@@ -14,38 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.btxn;
+package org.hawkular.apm.api.model.config.txn;
+
+import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This class represents expression that can be applied to JSON data.
+ * This class represents the action of adding a correlation identifier.
  *
  * @author gbrown
  */
-public class JSONExpression extends DataExpression {
+public class AddCorrelationIdAction extends ExpressionBasedAction {
 
-    @JsonInclude
-    private String jsonpath;
+    @JsonInclude(Include.NON_NULL)
+    private CorrelationIdentifier.Scope scope;
 
     /**
-     * @return the jsonpath
+     * @return the scope
      */
-    public String getJsonpath() {
-        return jsonpath;
+    public CorrelationIdentifier.Scope getScope() {
+        return scope;
     }
 
     /**
-     * @param jsonpath the jsonpath to set
+     * @param scope the scope to set
      */
-    public void setJsonpath(String jsonpath) {
-        this.jsonpath = jsonpath;
+    public void setScope(CorrelationIdentifier.Scope scope) {
+        this.scope = scope;
     }
 
     @Override
     public String toString() {
-        return "JSONExpression [jsonpath=" + jsonpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()
-                + "]";
+        return "AddCorrelationIdAction [scope=" + scope + ", getExpression()=" + getExpression()
+                + ", getDescription()=" + getDescription() + ", getPredicate()=" + getPredicate() + "]";
     }
 
 }

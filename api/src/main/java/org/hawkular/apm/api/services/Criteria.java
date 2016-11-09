@@ -44,7 +44,7 @@ public class Criteria {
      * End time in milliseconds
      */
     private long endTime = 0L;
-    private String businessTransaction;
+    private String transaction;
     private Set<PropertyCriteria> properties = new HashSet<PropertyCriteria>();
     private Set<CorrelationIdentifier> correlationIds = new HashSet<CorrelationIdentifier>();
     private String hostName;
@@ -69,7 +69,7 @@ public class Criteria {
     public Criteria(Criteria criteria) {
         this.startTime = criteria.startTime;
         this.endTime = criteria.endTime;
-        this.businessTransaction = criteria.businessTransaction;
+        this.transaction = criteria.transaction;
         this.hostName = criteria.hostName;
         this.upperBound = criteria.upperBound;
         this.lowerBound = criteria.lowerBound;
@@ -147,23 +147,23 @@ public class Criteria {
     }
 
     /**
-     * @return the business transaction
+     * @return the transaction
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
      * If a null name is used, then it will match any transaction whether it has
      * a name or not. If the supplied name is an empty string, then it will match
      * only transactions that don't have a name. If a name is specified, then
-     * only transactions with that business transaction name will be selected.
+     * only transactions with that transaction name will be selected.
      *
-     * @param name the business transaction name to set
+     * @param name the transaction name to set
      * @return The criteria
      */
-    public Criteria setBusinessTransaction(String name) {
-        this.businessTransaction = name;
+    public Criteria setTransaction(String name) {
+        this.transaction = name;
         return this;
     }
 
@@ -326,8 +326,8 @@ public class Criteria {
     public Map<String, String> parameters() {
         Map<String, String> ret = new HashMap<String, String>();
 
-        if (getBusinessTransaction() != null) {
-            ret.put("businessTransaction", getBusinessTransaction());
+        if (getTransaction() != null) {
+            ret.put("transaction", getTransaction());
         }
 
         if (getStartTime() > 0) {
@@ -414,14 +414,14 @@ public class Criteria {
         ret.setEndTime(endTime);
         ret.setProperties(getProperties().stream().filter(p -> p.getName().equals(Constants.PROP_PRINCIPAL))
                 .collect(Collectors.toSet()));
-        ret.setBusinessTransaction(businessTransaction);
+        ret.setTransaction(transaction);
         return ret;
     }
 
     @Override
     public String toString() {
-        return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", businessTransaction="
-                + businessTransaction + ", properties=" + properties + ", correlationIds=" + correlationIds
+        return "Criteria [startTime=" + startTime + ", endTime=" + endTime + ", transaction="
+                + transaction + ", properties=" + properties + ", correlationIds=" + correlationIds
                 + ", hostName=" + hostName + ", upperBound=" + upperBound + ", lowerBound=" + lowerBound + ", uri="
                 + uri + ", operation=" + operation + ", timeout=" + timeout + ", maxResponseSize=" + maxResponseSize
                 + "]";

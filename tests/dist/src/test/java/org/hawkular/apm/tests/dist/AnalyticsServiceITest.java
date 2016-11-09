@@ -43,8 +43,8 @@ import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.config.ReportingLevel;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
-import org.hawkular.apm.api.model.config.btxn.Filter;
+import org.hawkular.apm.api.model.config.txn.Filter;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
@@ -147,7 +147,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction("trace1");
+        trace1.setTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -184,7 +184,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction("trace1");
+        trace1.setTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Component c1 = new Component();
@@ -194,7 +194,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setTraceId("2");
         trace2.setFragmentId("2");
-        trace2.setBusinessTransaction("trace2");
+        trace2.setTransaction("trace2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Component c2 = new Component();
@@ -209,12 +209,12 @@ public class AnalyticsServiceITest extends AbstractITest {
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
 
-        BusinessTxnConfig btxnconfig1 = new BusinessTxnConfig();
+        TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setLevel(ReportingLevel.Ignore);
         btxnconfig1.setFilter(new Filter());
         btxnconfig1.getFilter().getInclusions().add("myfilter");
 
-        configService.setBusinessTransaction(null, "btxn1", btxnconfig1);
+        configService.setTransaction(null, "btxn1", btxnconfig1);
 
         List<TransactionInfo> tis = analyticsService.getTransactionInfo(null, new Criteria());
 
@@ -236,7 +236,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction("trace1");
+        trace1.setTransaction("trace1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -259,7 +259,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria=new Criteria()
-                .setBusinessTransaction("trace1")
+                .setTransaction("trace1")
                 .setStartTime(0)
                 .setEndTime(0);
 
@@ -275,7 +275,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -300,7 +300,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, criteria).size() == 1);
@@ -317,7 +317,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -345,31 +345,31 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         // Get transaction count
         assertEquals(1, analyticsService.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction(TESTAPP)
+                .setTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop1", "1", Operator.GT)));
 
         assertEquals(1, analyticsService.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction(TESTAPP)
+                .setTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop1", "3", Operator.LT)));
 
         assertEquals(0, analyticsService.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction(TESTAPP)
+                .setTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop1", "2.4", Operator.LT)));
 
         assertEquals(1, analyticsService.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction(TESTAPP)
+                .setTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop2", "hello", Operator.HAS)));
 
         assertEquals(0, analyticsService.getTraceCompletionCount(null, new Criteria()
-                .setBusinessTransaction(TESTAPP)
+                .setTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop2", "hello", Operator.HASNOT)));
@@ -380,7 +380,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -406,7 +406,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, criteria).size() == 1);
@@ -423,7 +423,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -448,7 +448,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get trace completion times
         List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, criteria);
@@ -457,7 +457,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals(1, times.size());
 
         CompletionTime ct = times.get(0);
-        assertEquals(TESTAPP, ct.getBusinessTransaction());
+        assertEquals(TESTAPP, ct.getTransaction());
     }
 
     @Test
@@ -465,7 +465,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri1");
@@ -476,7 +476,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setTraceId("2");
         trace2.setFragmentId("2");
-        trace2.setBusinessTransaction(TESTAPP);
+        trace2.setTransaction(TESTAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c2 = new Consumer();
         c2.setUri("testuri2");
@@ -501,7 +501,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         // Get trace completion times
         Criteria criteria = new Criteria()
-                .setBusinessTransaction(TESTAPP)
+                .setTransaction(TESTAPP)
                 .setStartTime(0)
                 .setEndTime(0)
                 .addProperty("prop2", "hello", Operator.HAS);
@@ -522,7 +522,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         Consumer c1 = new Consumer();
         c1.setUri("testuri");
@@ -548,7 +548,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
         List<CompletionTimeseriesStatistics> stats = analyticsService
@@ -563,7 +563,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -575,7 +575,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setTraceId("2");
         trace2.setFragmentId("2");
-        trace2.setBusinessTransaction(ANOAPP);
+        trace2.setTransaction(ANOAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c2 = new Consumer();
@@ -601,7 +601,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         List<Cardinality> cards = analyticsService.getTraceCompletionPropertyDetails(null, criteria, "prop1");
 
@@ -614,7 +614,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -642,7 +642,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletionTimes(null, criteria).size() == 1);
@@ -658,7 +658,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -709,7 +709,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
 
@@ -770,7 +770,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -820,7 +820,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
 
@@ -879,7 +879,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -901,7 +901,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setTraceId("1");
         trace2.setFragmentId("2");
-        trace2.setBusinessTransaction(TESTAPP);
+        trace2.setTransaction(TESTAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c2 = new Consumer();
@@ -965,7 +965,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c1 = new Consumer();
@@ -987,7 +987,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setTraceId("1");
         trace2.setFragmentId("2");
-        trace2.setBusinessTransaction(TESTAPP);
+        trace2.setTransaction(TESTAPP);
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
 
         Consumer c2 = new Consumer();
@@ -1047,7 +1047,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
         trace1.setHostName("hostA");
 
@@ -1086,7 +1086,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace1 = new Trace();
         trace1.setTraceId("1");
         trace1.setFragmentId("1");
-        trace1.setBusinessTransaction(TESTAPP);
+        trace1.setTransaction(TESTAPP);
         trace1.setTimestamp(baseTime);
 
         Consumer c1 = new Consumer();
@@ -1106,7 +1106,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Trace trace2 = new Trace();
         trace2.setTraceId("1");
         trace2.setFragmentId("2");
-        trace2.setBusinessTransaction(TESTAPP);
+        trace2.setTransaction(TESTAPP);
         trace2.setTimestamp(baseTime + 1000);
 
         Consumer c2 = new Consumer();
@@ -1143,7 +1143,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals(2, result.size());
 
         Criteria criteria = new Criteria();
-        criteria.setBusinessTransaction(TESTAPP).setStartTime(0).setEndTime(0);
+        criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
         Wait.until(() -> analyticsService.getTraceCompletionTimeseriesStatistics(null, criteria, 10000).size() == 1);

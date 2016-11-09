@@ -14,32 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.api.model.config.instrumentation.jvm;
+package org.hawkular.apm.api.model.config.txn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This type represents the action for setting the business transaction name.
+ * This class represents expression that can be applied to JSON data.
  *
  * @author gbrown
  */
-public class SetBusinessTransaction extends InstrumentAction {
+public class JSONExpression extends DataExpression {
 
     @JsonInclude
-    private String nameExpression;
+    private String jsonpath;
 
     /**
-     * @return the nameExpression
+     * @return the jsonpath
      */
-    public String getNameExpression() {
-        return nameExpression;
+    public String getJsonpath() {
+        return jsonpath;
     }
 
     /**
-     * @param nameExpression the nameExpression to set
+     * @param jsonpath the jsonpath to set
      */
-    public void setNameExpression(String nameExpression) {
-        this.nameExpression = nameExpression;
+    public void setJsonpath(String jsonpath) {
+        this.jsonpath = jsonpath;
+    }
+
+    @Override
+    public String toString() {
+        return "JSONExpression [jsonpath=" + jsonpath + ", getSource()=" + getSource() + ", getKey()=" + getKey()
+                + "]";
     }
 
 }

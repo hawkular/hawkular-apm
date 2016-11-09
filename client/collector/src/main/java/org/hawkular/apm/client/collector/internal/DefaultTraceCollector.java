@@ -30,7 +30,7 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.ReportingLevel;
-import org.hawkular.apm.api.model.config.btxn.BusinessTxnConfig;
+import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.ContainerNode;
@@ -165,11 +165,11 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                 @Override
                 public void run() {
                     try {
-                        Map<String, BusinessTxnConfig> changed = configurationService.getBusinessTransactions(null,
+                        Map<String, TransactionConfig> changed = configurationService.getTransactions(null,
                                 configLastUpdated);
 
-                        for (Map.Entry<String, BusinessTxnConfig> stringBusinessTxnConfigEntry : changed.entrySet()) {
-                            BusinessTxnConfig btc = stringBusinessTxnConfigEntry.getValue();
+                        for (Map.Entry<String, TransactionConfig> stringBusinessTxnConfigEntry : changed.entrySet()) {
+                            TransactionConfig btc = stringBusinessTxnConfigEntry.getValue();
 
                             if (btc.isDeleted()) {
                                 if (log.isLoggable(Level.FINER)) {
@@ -192,7 +192,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                             }
                         }
                     } catch (Exception e) {
-                        log.log(Level.SEVERE, "Failed to update business transaction configuration", e);
+                        log.log(Level.SEVERE, "Failed to update transaction configuration", e);
                     }
                 }
             }, refresh.intValue(), refresh.intValue(), TimeUnit.SECONDS);
@@ -285,56 +285,56 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
     }
 
     @Override
-    public void setBusinessTransaction(String location, String name) {
+    public void setTransaction(String location, String name) {
         if (name == null || name.trim().isEmpty()) {
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Ignoring attempt to set business transaction name to null");
+                log.finest("Ignoring attempt to set transaction name to null");
             }
             return;
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Set business transaction location=[" + location + "] name=" + name);
+            log.finest("Set transaction location=[" + location + "] name=" + name);
         }
 
         try {
             // Getting the builder will cause it to be created if does not exist.
-            // As this method is setting the name of the business transaction, this
+            // As this method is setting the name of the transaction, this
             // should be permitted, as other activity is likely to follow.
             FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
             if (builder != null) {
-                builder.getTrace().setBusinessTransaction(name);
+                builder.getTrace().setTransaction(name);
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setBusinessTransaction: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "setTransaction: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "setBusinessTransaction failed", t);
+                log.log(warningLogLevel, "setTransaction failed", t);
             }
         }
     }
 
     @Override
-    public String getBusinessTransaction() {
+    public String getTransaction() {
         String ret = null;
 
         try {
             if (fragmentManager.hasFragmentBuilder()) {
                 FragmentBuilder builder = fragmentManager.getFragmentBuilder();
 
-                ret = builder.getTrace().getBusinessTransaction();
+                ret = builder.getTrace().getTransaction();
             } else if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "getBusinessTransaction: No fragment builder for this thread", null);
+                log.log(warningLogLevel, "getTransaction: No fragment builder for this thread", null);
             }
         } catch (Throwable t) {
             if (log.isLoggable(warningLogLevel)) {
-                log.log(warningLogLevel, "getBusinessTransaction failed", t);
+                log.log(warningLogLevel, "getTransaction failed", t);
             }
         }
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get business transaction name=" + ret);
+            log.finest("Get transaction name=" + ret);
         }
 
         if (ret == null) {
@@ -1231,14 +1231,14 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                 log.finest("activate: Already active");
             }
 
-            // Check whether business transaction name should be applied
+            // Check whether transaction name should be applied
             builder = fragmentManager.getFragmentBuilder();
 
-            // If business txn name already defined, or top level node has correlation ids,
+            // If txn name already defined, or top level node has correlation ids,
             // then just return already active
             Trace trace = builder.getTrace();
 
-            if (trace.getBusinessTransaction() != null
+            if (trace.getTransaction() != null
                     || (!trace.getNodes().isEmpty()
                     && !trace.getNodes().get(0).getCorrelationIds().isEmpty())) {
                 if (log.isLoggable(Level.FINEST)) {
@@ -1258,24 +1258,24 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
             } else {
                 FilterProcessor filterProcessor = filterManager.getFilterProcessor(endpoint);
 
-                if (filterProcessor != null && filterProcessor.getBusinessTransaction() != null) {
+                if (filterProcessor != null && filterProcessor.getTransaction() != null) {
                     if (builder == null) {
                         builder = fragmentManager.getFragmentBuilder();
                     }
 
                     if (builder != null) {
-                        builder.getTrace().setBusinessTransaction(filterProcessor.getBusinessTransaction());
+                        builder.getTrace().setTransaction(filterProcessor.getTransaction());
                         builder.setLevel(filterProcessor.getConfig().getLevel());
                     }
                 }
 
                 if (log.isLoggable(Level.FINEST)) {
                     if (filterProcessor != null) {
-                        log.finest("activate: Endpoint[" + endpoint + "] business transaction name="
-                                + filterProcessor.getBusinessTransaction() + " config="
+                        log.finest("activate: Endpoint[" + endpoint + "] transaction name="
+                                + filterProcessor.getTransaction() + " config="
                                 + filterProcessor.getConfig());
                     } else {
-                        log.finest("activate: Endpoint[" + endpoint + "] no business transaction found");
+                        log.finest("activate: Endpoint[" + endpoint + "] no transaction found");
                     }
                 }
                 return filterProcessor != null;
@@ -1546,7 +1546,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
         // Transfer relevant details to the spawned trace and builder
         Trace spawnedTrace = spawnedBuilder.getTrace();
         spawnedTrace.setTraceId(trace.getTraceId());
-        spawnedTrace.setBusinessTransaction(trace.getBusinessTransaction());
+        spawnedTrace.setTransaction(trace.getTransaction());
 
         spawnedBuilder.setLevel(parentBuilder.getLevel());
 

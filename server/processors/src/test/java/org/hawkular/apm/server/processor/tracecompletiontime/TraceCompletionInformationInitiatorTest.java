@@ -63,7 +63,7 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setTraceId("traceId");
         trace.setFragmentId("traceId");
-        trace.setBusinessTransaction("traceName");
+        trace.setTransaction("traceName");
         trace.setTimestamp(100000);
 
         Consumer c = new Consumer();
@@ -84,7 +84,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
 
         assertEquals(trace.getTraceId(), ci.getCompletionTime().getId());
-        assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
+        assertEquals(trace.getTransaction(), ci.getCompletionTime().getTransaction());
         assertEquals(c.getEndpointType(), ci.getCompletionTime().getEndpointType());
         assertFalse(ci.getCompletionTime().isInternal());
         assertEquals(trace.getTimestamp(), ci.getCompletionTime().getTimestamp());
@@ -99,7 +99,7 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setTraceId("traceId");
         trace.setFragmentId("traceId");
-        trace.setBusinessTransaction("traceName");
+        trace.setTransaction("traceName");
         trace.setTimestamp(100000);
 
         Component c = new Component();
@@ -119,7 +119,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
 
         assertEquals(trace.getTraceId(), ci.getCompletionTime().getId());
-        assertEquals(trace.getBusinessTransaction(), ci.getCompletionTime().getBusinessTransaction());
+        assertEquals(trace.getTransaction(), ci.getCompletionTime().getTransaction());
         assertEquals(trace.getTimestamp(), ci.getCompletionTime().getTimestamp());
         assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
         assertEquals(200000, ci.getCompletionTime().getDuration());
@@ -132,7 +132,7 @@ public class TraceCompletionInformationInitiatorTest {
         Trace trace = new Trace();
         trace.setTraceId("traceId");
         trace.setFragmentId("traceId");
-        trace.setBusinessTransaction("traceName");
+        trace.setTransaction("traceName");
         trace.setTimestamp(100);
 
         Consumer c = new Consumer();

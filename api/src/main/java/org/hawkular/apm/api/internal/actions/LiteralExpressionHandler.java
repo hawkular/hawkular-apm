@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
-import org.hawkular.apm.api.model.config.btxn.Expression;
-import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
-import org.hawkular.apm.api.model.config.btxn.Processor;
-import org.hawkular.apm.api.model.config.btxn.ProcessorAction;
+import org.hawkular.apm.api.model.config.txn.Expression;
+import org.hawkular.apm.api.model.config.txn.LiteralExpression;
+import org.hawkular.apm.api.model.config.txn.Processor;
+import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.ProcessorIssue;

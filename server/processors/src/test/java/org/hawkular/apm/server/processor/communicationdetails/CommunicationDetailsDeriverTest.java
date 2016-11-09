@@ -47,7 +47,7 @@ import org.junit.Test;
  */
 public class CommunicationDetailsDeriverTest {
 
-    private static final String BTXN_NAME = "traceName";
+    private static final String TXN_NAME = "traceName";
 
     @Test
     public void testInitialise() throws RetryAttemptException {
@@ -238,7 +238,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000000);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
@@ -270,7 +270,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace2 = new Trace();
         trace2.setTimestamp(2000000000);
 
-        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setTransaction(TXN_NAME);
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
@@ -296,7 +296,7 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(details);
 
         assertEquals("pid1", details.getLinkId());
-        assertEquals(BTXN_NAME, details.getBusinessTransaction());
+        assertEquals(TXN_NAME, details.getTransaction());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
 
@@ -332,7 +332,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000000);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
@@ -364,7 +364,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace2 = new Trace();
         trace2.setTimestamp(2000000000);
 
-        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setTransaction(TXN_NAME);
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
@@ -390,7 +390,7 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(details);
 
         assertEquals("pid1", details.getLinkId());
-        assertEquals(BTXN_NAME, details.getBusinessTransaction());
+        assertEquals(TXN_NAME, details.getTransaction());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
 
@@ -430,7 +430,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces1.add(trace1);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
@@ -465,7 +465,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces2.add(trace2);
 
-        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setTransaction(TXN_NAME);
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
@@ -506,7 +506,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces1.add(trace1);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
@@ -541,7 +541,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces2.add(trace2);
 
-        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setTransaction(TXN_NAME);
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
@@ -582,7 +582,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces1.add(trace1);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
@@ -605,7 +605,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace2 = new Trace();
         traces2.add(trace2);
 
-        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setTransaction(TXN_NAME);
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
@@ -630,7 +630,7 @@ public class CommunicationDetailsDeriverTest {
         assertNotNull(details);
 
         assertEquals("pid1", details.getLinkId());
-        assertEquals(BTXN_NAME, details.getBusinessTransaction());
+        assertEquals(TXN_NAME, details.getTransaction());
         assertEquals(EndpointUtil.encodeClientURI("TheURI"), details.getSource());
         assertEquals("TheURI", details.getTarget());
         assertTrue(c2.getDuration() == details.getConsumerDuration());
@@ -660,7 +660,7 @@ public class CommunicationDetailsDeriverTest {
 
         traces1.add(trace1);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
 
         Consumer c1 = new Consumer();
@@ -735,7 +735,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000);
 
-        trace1.setBusinessTransaction(BTXN_NAME);
+        trace1.setTransaction(TXN_NAME);
         trace1.setFragmentId("trace1");
         trace1.setHostName("host1");
         trace1.setHostAddress("addr1");
@@ -762,7 +762,7 @@ public class CommunicationDetailsDeriverTest {
         Trace trace2 = new Trace();
         trace2.setTimestamp(2000000);
 
-        trace2.setBusinessTransaction(BTXN_NAME);
+        trace2.setTransaction(TXN_NAME);
         trace2.setFragmentId("trace2");
         trace2.setHostName("host2");
         trace2.setHostAddress("addr2");
@@ -787,7 +787,7 @@ public class CommunicationDetailsDeriverTest {
 
         assertNotNull(details);
 
-        assertEquals(BTXN_NAME, details.getBusinessTransaction());
+        assertEquals(TXN_NAME, details.getTransaction());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
 

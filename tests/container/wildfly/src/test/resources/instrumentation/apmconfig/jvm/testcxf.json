@@ -1,5 +1,5 @@
 {
-  "businessTransactions": {
+  "transactions": {
     "testcxf": {
       "description": "Configuration for Wildfly Camel CXF tests",
       "filter": {

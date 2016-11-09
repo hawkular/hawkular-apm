@@ -143,7 +143,7 @@ public interface SessionManager {
     void unlink();
 
     /**
-     * This method suppressed recording of any child nodes under the current business
+     * This method suppressed recording of any child nodes under the current
      * transaction fragment node.
      */
     void suppress();

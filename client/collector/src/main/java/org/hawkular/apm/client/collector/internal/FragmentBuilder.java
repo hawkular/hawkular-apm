@@ -467,7 +467,7 @@ public class FragmentBuilder {
 
     /**
      * This method adds the current node to the list of 'ignored'
-     * nodes. These nodes are irrelant when determining if the business
+     * nodes. These nodes are irrelant when determining if the
      * transaction has completed.
      */
     public void ignoreNode() {

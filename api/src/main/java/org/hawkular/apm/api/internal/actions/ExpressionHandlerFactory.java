@@ -22,11 +22,11 @@ import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
-import org.hawkular.apm.api.model.config.btxn.Expression;
-import org.hawkular.apm.api.model.config.btxn.JSONExpression;
-import org.hawkular.apm.api.model.config.btxn.LiteralExpression;
-import org.hawkular.apm.api.model.config.btxn.TextExpression;
-import org.hawkular.apm.api.model.config.btxn.XMLExpression;
+import org.hawkular.apm.api.model.config.txn.Expression;
+import org.hawkular.apm.api.model.config.txn.JSONExpression;
+import org.hawkular.apm.api.model.config.txn.LiteralExpression;
+import org.hawkular.apm.api.model.config.txn.TextExpression;
+import org.hawkular.apm.api.model.config.txn.XMLExpression;
 
 /**
  * This class provides a factory for creating handlers associated with expressions.

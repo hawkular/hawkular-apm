@@ -47,13 +47,13 @@ public class NotificationDeriver extends AbstractProcessor<Trace, Notification> 
     @Override
     public Notification processOneToOne(String tenantId, Trace item) throws RetryAttemptException {
         // Check if named txn and has nodes
-        if (item.getBusinessTransaction() != null && !item.getBusinessTransaction().trim().isEmpty()
+        if (item.getTransaction() != null && !item.getTransaction().trim().isEmpty()
                 && !item.getNodes().isEmpty()) {
             Notification notification = new Notification();
             notification.setId(UUID.randomUUID().toString());
             notification.setTraceId(item.getTraceId());
             notification.setFragmentId(item.getFragmentId());
-            notification.setBusinessTransaction(item.getBusinessTransaction());
+            notification.setTransaction(item.getTransaction());
             notification.setTimestamp(item.getTimestamp());
             notification.setHostAddress(item.getHostAddress());
             notification.setHostName(item.getHostName());

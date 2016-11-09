@@ -41,7 +41,7 @@ public class Notification implements ApmEvent {
     private String fragmentId;
 
     @JsonInclude
-    private String businessTransaction;
+    private String transaction;
 
     /**
      * Timestamp in microseconds
@@ -102,17 +102,17 @@ public class Notification implements ApmEvent {
     }
 
     /**
-     * @return the businessTransaction
+     * @return the transaction
      */
-    public String getBusinessTransaction() {
-        return businessTransaction;
+    public String getTransaction() {
+        return transaction;
     }
 
     /**
-     * @param businessTransaction the businessTransaction to set
+     * @param transaction the transaction to set
      */
-    public void setBusinessTransaction(String businessTransaction) {
-        this.businessTransaction = businessTransaction;
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
     }
 
     /**
@@ -174,7 +174,7 @@ public class Notification implements ApmEvent {
     @Override
     public String toString() {
         return "Notification [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId
-                + ", businessTransaction=" + businessTransaction + ", timestamp=" + timestamp + ", hostName="
+                + ", transaction=" + transaction + ", timestamp=" + timestamp + ", hostName="
                 + hostName + ", hostAddress=" + hostAddress + ", issues=" + issues + "]";
     }
 
