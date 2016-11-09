@@ -1,13 +1,13 @@
 <div>
 
   <ol class="breadcrumb">
-    <li> <a href="/hawkular-ui/apm/btm">Business Transactions</a> </li>
-    <li ng-hide="btxn.level === 'Ignore'"> <a href="/hawkular-ui/apm/btm">Managed</a> </li>
-    <li ng-show="btxn.level === 'Ignore'"> <a href="/hawkular-ui/apm/btm/ignored">Ignored</a> </li>
-    <li class="active"> <strong>{{businessTransactionName}}</strong> </li>
+    <li> <a href="/hawkular-ui/apm/btm">Transactions</a> </li>
+    <li ng-hide="txn.level === 'Ignore'"> <a href="/hawkular-ui/apm/btm">Managed</a> </li>
+    <li ng-show="txn.level === 'Ignore'"> <a href="/hawkular-ui/apm/btm/ignored">Ignored</a> </li>
+    <li class="active"> <strong>{{transactionName}}</strong> </li>
   </ol>
 
-  <h1 class="hk-top">{{businessTransactionName}}</h1>
+  <h1 class="hk-top">{{transactionName}}</h1>
 
   <div class="row row-cards-pf">
     <div class="col-xs-12">

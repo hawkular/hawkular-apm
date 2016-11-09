@@ -18,18 +18,18 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export var BTMIgnoredController = _module.controller('BTM.BTMIgnoredController', ['$scope', '$http', '$location',
+  export var BTMIgnoredController = _module.controller('BTM.TxnIgnoredController', ['$scope', '$http', '$location',
     '$interval', ($scope, $http, $location, $interval) => {
 
-    $scope.newBTxnName = '';
+    $scope.newTxnName = '';
     $scope.candidateCount = 0;
 
     $scope.reload = function() {
       $http.get('/hawkular/apm/config/transaction/summary').then(function(resp) {
-        $scope.businessTransactions = resp.data;
-        $scope.businessTransactions.$resolved = true;
+        $scope.transactions = resp.data;
+        $scope.transactions.$resolved = true;
       },function(resp) {
-        console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
+        console.log('Failed to get transaction summaries: ' + angular.toJson(resp));
       });
 
       $http.get('/hawkular/apm/analytics/unboundendpoints').then(function(resp) {
@@ -41,13 +41,13 @@ module BTM {
 
     $scope.reload();
 
-    $scope.deleteBusinessTxn = function(btxn) {
-      if (confirm('Are you sure you want to delete business transaction \'' + btxn.name + '\'?')) {
-        $http.delete('/hawkular/apm/config/transaction/full/' + btxn.name).then(function(resp) {
-          console.log('Deleted: ' + btxn.name);
-          $scope.businessTransactions.remove(btxn);
+    $scope.deleteTxn = function(txn) {
+      if (confirm('Are you sure you want to delete transaction \'' + txn.name + '\'?')) {
+        $http.delete('/hawkular/apm/config/transaction/full/' + txn.name).then(function(resp) {
+          console.log('Deleted: ' + txn.name);
+          $scope.transactions.remove(txn);
         },function(resp) {
-          console.log('Failed to delete business txn \'' + btxn.name + '\': ' + angular.toJson(resp));
+          console.log('Failed to delete transaction \'' + txn.name + '\': ' + angular.toJson(resp));
         });
       }
     };

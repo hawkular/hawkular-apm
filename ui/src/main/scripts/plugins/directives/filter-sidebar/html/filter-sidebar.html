@@ -47,10 +47,10 @@
       <label><button class="btn-link" ng-click="showSearchBtxn = !showSearchBtxn"><i class="fa" ng-class="showSearchBtxn ? 'fa-angle-right' : 'fa-angle-down'"></i>Transaction</button></label>
       <div collapse="showSearchBtxn">
         <div class="radio">
-          <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.transaction" value="" checked> All </label>
+          <label><input type="radio" name="txn" ng-model="$root.sbFilter.criteria.transaction" value="" checked> All </label>
         </div>
-        <div class="radio" ng-repeat="btxn in $root.sbFilter.data.transactions">
-          <label><input type="radio" name="btxn" ng-model="$root.sbFilter.criteria.transaction" value="{{btxn}}"> {{btxn}} </label>
+        <div class="radio" ng-repeat="txn in $root.sbFilter.data.transactions">
+          <label><input type="radio" name="txn" ng-model="$root.sbFilter.criteria.transaction" value="{{txn}}"> {{txn}} </label>
         </div>
       </div>
     </div>
