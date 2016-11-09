@@ -49,7 +49,7 @@ public class DefaultNodeProcessor implements NodeProcessor {
                         context.setTransaction(entry.getValue().toString());
                     }
                 } else {
-                    nodeBuilder.addProperty(new Property(entry.getKey(), entry.getValue().toString()));
+                    nodeBuilder.addProperty(new Property(entry.getKey(), entry.getValue()));
                 }
             }
         }

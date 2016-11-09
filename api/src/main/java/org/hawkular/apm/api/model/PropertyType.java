@@ -41,6 +41,24 @@ public enum PropertyType {
     /**
      * This represents a binary value.
      */
-    Binary,
+    Binary;
+
+    /**
+     * This method returns the property type associated with
+     * the supplied value.
+     *
+     * @param obj The property value
+     * @return The property type
+     */
+    public static PropertyType of(Object obj) {
+        if (obj instanceof Number) {
+            return Number;
+        } else if (obj instanceof Boolean) {
+            return Boolean;
+        } else if (obj instanceof byte[]) {
+            return Binary;
+        }
+        return Text;
+    }
 
 }
