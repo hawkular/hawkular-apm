@@ -26,6 +26,7 @@ public class TestEnvironment {
 
     private String image;
     private String dockerCompose;
+    private boolean pull;
     private long initWaitSeconds;
     private Type type;
     private String apmAddress;
@@ -70,11 +71,20 @@ public class TestEnvironment {
         this.apmAddress = apmAddress;
     }
 
+    public boolean isPull() {
+        return pull;
+    }
+
+    public void setPull(boolean pull) {
+        this.pull = pull;
+    }
+
     @Override
     public String toString() {
         return "TestEnvironment{" +
                 "image='" + image + '\'' +
                 ", dockerCompose='" + dockerCompose + '\'' +
+                ", pull=" + pull +
                 ", initWaitSeconds=" + initWaitSeconds +
                 ", type=" + type +
                 ", apmAddress='" + apmAddress + '\'' +

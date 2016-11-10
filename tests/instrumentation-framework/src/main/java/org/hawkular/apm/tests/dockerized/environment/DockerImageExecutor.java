@@ -94,8 +94,11 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
 
         containerBuilder.withEnv(apmEnvVariables(testEnvironment.getType()));
 
-        log.info("Pulling image...");
-        dockerClient.pullImageCmd(testEnvironment.getImage()).exec(new PullImageResultCallback()).awaitSuccess();
+        if (testEnvironment.isPull()) {
+            log.info("Pulling image...");
+            dockerClient.pullImageCmd(testEnvironment.getImage()).exec(new PullImageResultCallback()).awaitSuccess();
+        }
+
         CreateContainerResponse containerResponse = containerBuilder.exec();
         log.info(String.format("Starting docker container: %s", containerResponse));
 
