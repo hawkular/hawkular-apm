@@ -2,6 +2,7 @@
   "name": "Ticket monster test",
   "environment": {
     "image": "pavolloffay/jboss-ticket-monster",
+    "pull": true,
     "initWaitSeconds": "20",
     "type": "APMAGENT"
   },

@@ -53,11 +53,21 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
 
     @Override
     public String run(TestEnvironment testEnvironment) {
-        String[] command = new String[] {
-            "docker-compose", "-f", scenarioDirectory + File.separator + testEnvironment.getDockerCompose(), "up", "-d"
-        };
 
-        runShellCommand(command);
+        if (testEnvironment.isPull()) {
+            runShellCommand(new String[] {
+                    "docker-compose", "-f", scenarioDirectory + File.separator + testEnvironment.getDockerCompose(),
+                    "pull",
+            });
+        }
+
+        /**
+         * Note that if image is not in local cache it will be download from the hub
+         */
+       runShellCommand(new String[] {
+               "docker-compose", "-f", scenarioDirectory + File.separator + testEnvironment.getDockerCompose(), "up",
+               "-d"
+        });
 
         return testEnvironment.getDockerCompose();
     }

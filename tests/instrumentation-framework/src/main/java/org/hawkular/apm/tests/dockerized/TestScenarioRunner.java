@@ -43,14 +43,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Pavol Loffay
  */
 public class TestScenarioRunner {
-
     private static final Logger log = Logger.getLogger(TestScenarioRunner.class.getName());
 
-    /**
-     * Mocked Hawkular APM server to collect information captured by agents.
-     */
     private final ObjectMapper objectMapper;
-
     private int apmServerPort;
 
 
