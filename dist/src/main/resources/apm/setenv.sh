@@ -22,13 +22,19 @@
 
 # Environment script for setting up the JAVA_OPTS property for client instrumentation
 
-if [ "$#" -ne 1 ]; then
-   echo "Wrong number of parameters, expected APM server port number"
+if [[ "$#" -lt 1 || "$#" -gt 2 ]]; then
+   echo "Wrong number of parameters"
+   echo "Usage: setenv.sh port [ 'opentracing' ]"
+   echo "(use 'opentracing' parameter if wanting to use the new prototype agent built upon the Java OpenTracing API)"
    return 1
 else
     number_re='^[0-9]+$'
     if ! [[ "$1" =~ $number_re ]] ; then
        echo "Port is not a number"
+       return 1
+    fi
+    if [[ "$#" -eq 2 && "$2" != "opentracing" ]] ; then
+       echo "Second parameter should be 'opentracing'"
        return 1
     fi
 fi
@@ -38,7 +44,11 @@ echo "APM port set to $APM_PORT"
 
 export HAWKULAR_APM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-export HAWKULAR_APM_AGENT_JAR_PATH=$HAWKULAR_APM_HOME/hawkular-apm-agent.jar
+if [[ "$#" -eq 1  ]]; then
+    export HAWKULAR_APM_AGENT_JAR_PATH=$HAWKULAR_APM_HOME/hawkular-apm-agent.jar
+else
+    export HAWKULAR_APM_AGENT_JAR_PATH=$HAWKULAR_APM_HOME/hawkular-apm-agent-opentracing.jar
+fi
 
 # REST environment variables
 export HAWKULAR_APM_URI=http://localhost:$APM_PORT
@@ -53,4 +63,8 @@ export HAWKULAR_APM_LOG_LEVEL=INFO
 export JAVA_OPTS="-javaagent:$HAWKULAR_APM_AGENT_JAR_PATH"
 
 # Wildfly specific
-export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.collector"
+if [[ "$#" -eq 1  ]]; then
+    export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.collector"
+else
+    export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.agent.opentracing,io.opentracing,org.hawkular.apm.client.opentracing"
+fi

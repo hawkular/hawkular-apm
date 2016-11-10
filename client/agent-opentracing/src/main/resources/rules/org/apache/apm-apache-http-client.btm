@@ -8,9 +8,10 @@ BIND
   uri : java.net.URI = new java.net.URI($2.getRequestLine().getUri());
 IF TRUE
 DO
-  startSpan(getTracer().buildSpan($2.getRequestLine().getMethod())
+  startSpanWithParent(getTracer().buildSpan($2.getRequestLine().getMethod())
   		.withTag("http.uri", uri.getPath())
-  		.withTag("http.query", uri.getQuery()));
+  		.withTag("http.query", uri.getQuery()),
+  		getSpan());
   getTracer().inject(getSpan().context(), textMapFormat(),
         new org.hawkular.apm.agent.opentracing.propagation.apache.HttpMessageInjectAdapter($2));
 ENDRULE

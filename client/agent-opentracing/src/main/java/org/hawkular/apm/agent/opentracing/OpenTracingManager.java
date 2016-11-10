@@ -98,14 +98,14 @@ public class OpenTracingManager extends Helper {
 
     /**
      * This method starts the span associated with the supplied
-     * span builder, and adds the supplied span context as a
+     * span builder, and adds the supplied parent span as a
      * 'child of' relationship.
      *
      * @param spanBuilder The span builder
-     * @param context The span context
+     * @param parent The parent span
      */
-    public void startSpan(SpanBuilder spanBuilder, SpanContext context) {
-        startSpan(spanBuilder, context, null);
+    public void startSpanWithParent(SpanBuilder spanBuilder, Span parent) {
+        startSpanWithParent(spanBuilder, parent, null);
     }
 
     /**
@@ -116,10 +116,41 @@ public class OpenTracingManager extends Helper {
      * The optional id is associated with the started span.
      *
      * @param spanBuilder The span builder
+     * @param parent The parent span
+     * @param id The optional id to associate with the span
+     */
+    public void startSpanWithParent(SpanBuilder spanBuilder, Span parent, String id) {
+        if (parent != null) {
+            spanBuilder.asChildOf(parent.context());
+        }
+
+        doStartSpan(spanBuilder, id);
+    }
+
+    /**
+     * This method starts the span associated with the supplied
+     * span builder, and adds the supplied span context as a
+     * 'child of' relationship.
+     *
+     * @param spanBuilder The span builder
+     * @param context The span context
+     */
+    public void startSpanWithContext(SpanBuilder spanBuilder, SpanContext context) {
+        startSpanWithContext(spanBuilder, context, null);
+    }
+
+    /**
+     * This is a convenience method for situations where we don't know
+     * if a parent span is available. If we try to add a childOf relationship
+     * to a null context, it would cause a null pointer exception.
+     *
+     * The optional id is associated with the started span.
+     *
+     * @param spanBuilder The span builder
      * @param context The span context
      * @param id The optional id to associate with the span
      */
-    public void startSpan(SpanBuilder spanBuilder, SpanContext context, String id) {
+    public void startSpanWithContext(SpanBuilder spanBuilder, SpanContext context, String id) {
         if (context != null) {
             spanBuilder.asChildOf(context);
         }
@@ -375,6 +406,60 @@ public class OpenTracingManager extends Helper {
     }
 
     /**
+     * This method determines if the supplied path should be monitored.
+     *
+     * @param path The path
+     * @return Whether the path is valid for monitoring
+     */
+    public boolean includePath(String path) {
+        // Determine if the path is NOT hawkular-apm related and
+        // the final part of the path is NOT a filename (with extension)
+        return !path.startsWith("/hawkular/apm") && (path.lastIndexOf('.') <= path.lastIndexOf('/'));
+    }
+
+    /**
+     * This method retrieves a variable associated with the
+     * current trace.
+     *
+     * @return The variable value, or null if not found
+     */
+    public String getVariableAsString(String name) {
+        TraceState ts = traceState.get();
+
+        if (ts != null) {
+            Object variable = ts.getVariables().get(name);
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Get variable '" + name + "' = " + variable);
+            }
+            return variable == null ? null : variable.toString();
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get variable '" + name + "' requested, but no trace state");
+        }
+        return null;
+    }
+
+    /**
+     * This method retrieves a variable associated with the
+     * current trace.
+     *
+     * @return The variable value, or null if not found
+     */
+    public void setVariable(String name, Object value) {
+        TraceState ts = traceState.get();
+
+        if (ts != null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Set variable '" + name + "' value = " + value);
+            }
+            ts.getVariables().put(name, value);
+        } else if (log.isLoggable(Level.FINEST)) {
+            log.finest("Set variable '" + name + "' value = " + value + "' requested, but no trace state");
+        }
+    }
+
+    /**
      * This class represents the state information being accumulated for a
      * trace instance.
      *
@@ -384,6 +469,7 @@ public class OpenTracingManager extends Helper {
 
         private Deque<Span> spanStack = new ArrayDeque<>();
         private Deque<String> idStack = new ArrayDeque<>();
+        private Map<String, Object> variables = new HashMap<>();
 
         private long expire;
 
@@ -435,5 +521,14 @@ public class OpenTracingManager extends Helper {
             return expire;
         }
 
+        /**
+         * This method provides access to variables associated with this
+         * trace.
+         *
+         * @return The variables
+         */
+        public Map<String, Object> getVariables() {
+            return variables;
+        }
     }
 }

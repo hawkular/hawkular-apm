@@ -17,8 +17,8 @@
 package io.opentracing;
 
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
+import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;

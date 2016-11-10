@@ -19,8 +19,8 @@ package io.opentracing;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
+import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
