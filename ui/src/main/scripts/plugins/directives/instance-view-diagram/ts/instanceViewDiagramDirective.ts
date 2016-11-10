@@ -28,14 +28,14 @@ module InstanceViewDiagram {
     //private render = new dagreD3.render();
     public link: (scope, elm, attrs, ctrl) => any;
 
-    constructor(public $compile) {
+    constructor(public $compile, hkDurationFilter) {
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
-        return this.doLink(scope, elm, attrs, ctrl, $compile);
+        return this.doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter);
       };
     }
 
-    private doLink(scope, elm, attrs, ctrl, $compile): void {
+    private doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter): void {
 
       // Set up zoom support
       let svg = d3.select('svg#idetails'),
@@ -192,7 +192,7 @@ module InstanceViewDiagram {
             label += '<span class="stats">';
             label += '  <span class="duration pull-left">';
             label += '    <i class="fa fa-clock-o"></i>';
-            label += '    ' + (d.duration / 1000).toFixed(2) + 'ms';
+            label += '    ' + hkDurationFilter(d.duration);
             label += '  </span>';
             label += '</span>';
           }

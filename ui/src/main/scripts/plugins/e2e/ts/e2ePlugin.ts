@@ -57,14 +57,12 @@ module E2E {
           let seconds = input / secondRange;
           return Math.floor(seconds / 60) + 'min ' +
             (hideSecondary ? '' : numberFilter(Math.floor(seconds % 60), 0) + 's');
-        } else if (input > secondRange) {
-          return Math.floor(input / secondRange) + 's ' +
-            (hideSecondary ? '' : limitToFilter(Math.floor(input % secondRange), 3) + 'ms');
-        } else if (input > milliRange) {
-          return Math.floor(input / milliRange) + 'ms ' +
-            (hideSecondary ? '' : limitToFilter(Math.floor(input % milliRange), 3) + 'μs');
+        } else if (input >= secondRange) {
+          let val = input / secondRange;
+          return numberFilter(val, val >= 100 ? 1 : (val >= 10 ? 2 : 3)) + 's';
         } else {
-          return input + 'μs';
+          let val = input / milliRange;
+          return numberFilter(val, val >= 100 ? 1 : (val >= 10 ? 2 : 3)) + 'ms';
         }
       } else {
         return input;

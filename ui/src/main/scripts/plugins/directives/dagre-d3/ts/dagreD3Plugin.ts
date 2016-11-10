@@ -19,8 +19,8 @@
 /// <reference path="dagreD3Globals.ts"/>
 /// <reference path="dagreD3Directive.ts"/>
 module DagreD3 {
-  _module.directive('dagreD3', ['$compile', ($compile) => {
-    return new DagreD3.DagreD3Directive($compile);
+  _module.directive('dagreD3', ['$compile', 'hkDurationFilter', ($compile, hkDurationFilter) => {
+    return new DagreD3.DagreD3Directive($compile, hkDurationFilter);
   }]);
 
   hawtioPluginLoader.addModule(pluginName);
