@@ -176,8 +176,6 @@ public class TestScenarioRunner {
 
         Collection<?> objects = getCapturedData(testScenario.getEnvironment().getType(), apmServer);
 
-        log.info(String.format("Captured objects:\n%s", objects));
-
         String json;
         try {
             json = serialize(objects);
@@ -185,6 +183,8 @@ public class TestScenarioRunner {
             log.severe(String.format("Failed to serialize traces: %s", objects));
             throw new RuntimeException("Failed to serialize traces = " + objects, ex);
         }
+
+        log.info(String.format("Captured objects:\n%s", json));
 
         List<JsonPathVerify> failedJsonPathVerify = new ArrayList<>();
 
