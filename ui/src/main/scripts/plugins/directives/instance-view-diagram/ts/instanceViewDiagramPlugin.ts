@@ -19,8 +19,8 @@
 /// <reference path="instanceViewDiagramGlobals.ts"/>
 /// <reference path="instanceViewDiagramDirective.ts"/>
 module InstanceViewDiagram {
-  _module.directive('instanceViewDiagram', ['$compile', ($compile) => {
-    return new InstanceViewDiagram.InstanceViewDiagramDirective($compile);
+  _module.directive('instanceViewDiagram', ['$compile', 'hkDurationFilter', ($compile, hkDurationFilter) => {
+    return new InstanceViewDiagram.InstanceViewDiagramDirective($compile, hkDurationFilter);
   }]);
 
   hawtioPluginLoader.addModule(pluginName);

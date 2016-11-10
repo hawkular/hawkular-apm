@@ -28,15 +28,14 @@ module DagreD3 {
     //private render = new dagreD3.render();
     public link: (scope, elm, attrs, ctrl) => any;
 
-    constructor(public $compile) {
+    constructor(public $compile, hkDurationFilter) {
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
-        return this.doLink(scope, elm, attrs, ctrl, $compile);
+        return this.doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter);
       };
     }
 
-    private doLink(scope, elm, attrs, ctrl, $compile): void {
-
+    private doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter): void {
       // Set up zoom support
       let svg = d3.select('svg'),
         inner = svg.select('g'),
@@ -73,7 +72,7 @@ module DagreD3 {
         html += '<span class="name">' + d.id + '</span>';
         html += '<span class="stats">';
         html += '  <span class="duration pull-left"><i class="fa fa-clock-o"></i>' +
-               (d.averageDuration / 1000) + 'ms</span>';
+               hkDurationFilter(d.averageDuration) + '</span>';
         html += '  <span class="node-count pull-right">' + d.count + '<i class="fa fa-clone"></i></span>';
         html += '</span>';
         html += '</div>';
