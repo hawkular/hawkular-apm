@@ -1,0 +1,29 @@
+{
+  "name": "Vertx OpenTracing test",
+  "environment": {
+    "image": "hawkular/apm-tests-app-vertx-opentracing",
+    "pull": false,
+    "initWaitSeconds": "20",
+    "type": "APM"
+  },
+  "tests": [
+    {
+      "description" : "Docker image Vertx OpenTracing",
+      "skip": false,
+      "action": "action1.sh",
+      "afterActionWaitSeconds": "10",
+      "verify": {
+        "jsonPath": [
+          {
+            "path": "$.length()",
+            "result": 6
+          },
+          {
+            "path": "$.[0].transaction",
+            "result": "Place Order"
+          }
+        ]
+      }
+    }
+  ]
+}
