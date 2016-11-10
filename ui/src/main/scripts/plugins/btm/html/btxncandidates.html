@@ -21,16 +21,16 @@
 
       <div class="row">
         <div class="col-lg-8 col-md-10 col-sm-12 hk-align-center">
-          <form class="form-inline hk-btm-candidates" name="addBTxnForm" role="form" novalidate="" >
+          <form class="form-inline hk-btm-candidates" name="addTxnForm" role="form" novalidate="" >
             <div class="row hk-align-center">
               <div class="form-group input col-sm-6">
                 <div class="input-group input-group-lg">
-                  <input type="text" class="form-control" name="newBTxnNameField"
-                       ng-model="newBTxnName" ng-model-options="{ updateOn: 'default blur'}"
-                       placeholder="Business transaction name"/>
+                  <input type="text" class="form-control" name="newTxnNameField"
+                       ng-model="newTxnName" ng-model-options="{ updateOn: 'default blur'}"
+                       placeholder="Transaction name"/>
                   <span class="input-group-btn">
-                    <input class="btn btn-primary" type="submit" ng-disabled="!newBTxnName" ng-click="addBusinessTxn()" value="Manage" />
-                    <input class="btn btn-default" type="button" ng-disabled="!newBTxnName" ng-click="ignoreBusinessTxn()" value="Ignore" />
+                    <input class="btn btn-primary" type="submit" ng-disabled="!newTxnName" ng-click="addTxn()" value="Manage" />
+                    <input class="btn btn-default" type="button" ng-disabled="!newTxnName" ng-click="ignoreTxn()" value="Ignore" />
                   </span>
                   <span class="input-group-btn">
                   </span>
@@ -38,12 +38,12 @@
               </div>
               <div class="form-group input col-sm-6">
                 <div class="input-group input-group-lg">
-                  <select id="repeatSelect" class="form-control" ng-model="existingBTxnName" >
+                  <select id="repeatSelect" class="form-control" ng-model="existingTxnName" >
                     <option value="">Select existing ....</option>
-                    <option ng-repeat="btxn in businessTransactions" value="{{btxn.name}}">{{btxn.name}} ({{getLevel(btxn.level)}})</option>
+                    <option ng-repeat="txn in transactions" value="{{txn.name}}">{{txn.name}} ({{getLevel(txn.level)}})</option>
                   </select>
                   <span class="input-group-btn">
-                    <input class="btn btn-primary" type="submit" ng-disabled="!existingBTxnName || selectedendpoints.length == 0" ng-click="updateBusinessTxn()" value="Update" />
+                    <input class="btn btn-primary" type="submit" ng-disabled="!existingTxnName || selectedendpoints.length == 0" ng-click="updateTxn()" value="Update" />
                   </span>
                 </div>
               </div>
@@ -68,9 +68,9 @@
                 value="{{uriinfo.endpoint}}"
                 ng-checked="isSelected(uriinfo)"
                 ng-click="selectionChanged(uriinfo)"
-                ng-disabled="!newBTxnName &amp;&amp; !existingBTxnName"/>
-              <span ng-hide="!newBTxnName &amp;&amp; !existingBTxnName" style="color:black">{{uriinfo.endpoint}} : {{uriinfo.type}}</span>
-              <span ng-show="!newBTxnName &amp;&amp; !existingBTxnName" style="color:grey"><i>{{uriinfo.endpoint}} : {{uriinfo.type}}</i></span>
+                ng-disabled="!newTxnName &amp;&amp; !existingTxnName"/>
+              <span ng-hide="!newTxnName &amp;&amp; !existingTxnName" style="color:black">{{uriinfo.endpoint}} : {{uriinfo.type}}</span>
+              <span ng-show="!newTxnName &amp;&amp; !existingTxnName" style="color:grey"><i>{{uriinfo.endpoint}} : {{uriinfo.type}}</i></span>
             </label>
           </div>
           </div>

@@ -18,18 +18,18 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-  export let BTMCandidatesController = _module.controller('BTM.BTMCandidatesController', ['$scope', '$http',
+  export let BTMCandidatesController = _module.controller('BTM.TxnCandidatesController', ['$scope', '$http',
     '$location', '$interval', ($scope, $http, $location, $interval) => {
 
-    $scope.newBTxnName = '';
-    $scope.existingBTxnName = '';
+    $scope.newTxnName = '';
+    $scope.existingTxnName = '';
     $scope.selectedendpoints = [ ];
     $scope.candidateCount = 0;
 
     $http.get('/hawkular/apm/config/transaction/summary').then(function(resp) {
-      $scope.businessTransactions = resp.data;
+      $scope.transactions = resp.data;
     },function(resp) {
-      console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
+      console.log('Failed to get transaction summaries: ' + angular.toJson(resp));
     });
 
     $scope.reload = function() {
@@ -57,7 +57,7 @@ module BTM {
     let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
-    $scope.addBusinessTxn = function() {
+    $scope.addTxn = function() {
       let defn = {
         filter: {
           inclusions: []
@@ -79,14 +79,14 @@ module BTM {
           });
         }
       }
-      $http.put('/hawkular/apm/config/transaction/full/' + $scope.newBTxnName, defn).then(function(resp) {
-        $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
+      $http.put('/hawkular/apm/config/transaction/full/' + $scope.newTxnName, defn).then(function(resp) {
+        $location.path('/hawkular-ui/apm/btm/config/' + $scope.newTxnName);
       },function(resp) {
-        console.log('Failed to add business txn \'' + $scope.newBTxnName + '\': ' + angular.toJson(resp));
+        console.log('Failed to add transaction \'' + $scope.newTxnName + '\': ' + angular.toJson(resp));
       });
     };
 
-    $scope.ignoreBusinessTxn = function() {
+    $scope.ignoreTxn = function() {
       let defn = {
         level: 'Ignore',
         filter: {
@@ -96,7 +96,7 @@ module BTM {
       };
       for (let i = 0; i < $scope.selectedendpoints.length; i++) {
         defn.filter.inclusions.push($scope.selectedendpoints[i].regex);
-        // Even though ignored, add URI evaluation in case later on we want to manage the btxn
+        // Even though ignored, add URI evaluation in case later on we want to manage the txn
         if ($scope.selectedendpoints[i].uriTemplate !== undefined) {
           defn.processors.push({
             description: 'Process inbound request',
@@ -110,29 +110,29 @@ module BTM {
           });
         }
       }
-      $http.put('/hawkular/apm/config/transaction/full/' + $scope.newBTxnName, defn).then(function(resp) {
-        $location.path('/hawkular-ui/apm/btm/config/' + $scope.newBTxnName);
+      $http.put('/hawkular/apm/config/transaction/full/' + $scope.newTxnName, defn).then(function(resp) {
+        $location.path('/hawkular-ui/apm/btm/config/' + $scope.newTxnName);
       },function(resp) {
-        console.log('Failed to ignore business txn \'' + $scope.newBTxnName + '\': ' + angular.toJson(resp));
+        console.log('Failed to ignore transaction \'' + $scope.newTxnName + '\': ' + angular.toJson(resp));
       });
     };
 
-    $scope.updateBusinessTxn = function() {
-      $http.get('/hawkular/apm/config/transaction/full/' + $scope.existingBTxnName).then(function(resp) {
-        let btxn = resp.data;
+    $scope.updateTxn = function() {
+      $http.get('/hawkular/apm/config/transaction/full/' + $scope.existingTxnName).then(function(resp) {
+        let txn = resp.data;
         for (let i = 0; i < $scope.selectedendpoints.length; i++) {
-          if (btxn.filter.inclusions.indexOf($scope.selectedendpoints[i].regex) === -1) {
-            btxn.filter.inclusions.push($scope.selectedendpoints[i].regex);
+          if (txn.filter.inclusions.indexOf($scope.selectedendpoints[i].regex) === -1) {
+            txn.filter.inclusions.push($scope.selectedendpoints[i].regex);
           }
         }
-        $http.put('/hawkular/apm/config/transaction/full/' + $scope.existingBTxnName,btxn).then(function(resp) {
-          console.log('Saved updated business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
-          $location.path('/hawkular-ui/apm/btm/config/' + $scope.existingBTxnName);
+        $http.put('/hawkular/apm/config/transaction/full/' + $scope.existingTxnName,txn).then(function(resp) {
+          console.log('Saved updated transaction \'' + $scope.existingTxnName + '\': ' + angular.toJson(resp));
+          $location.path('/hawkular-ui/apm/btm/config/' + $scope.existingTxnName);
         },function(resp) {
-          console.log('Failed to save business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
+          console.log('Failed to save transaction \'' + $scope.existingTxnName + '\': ' + angular.toJson(resp));
         });
       },function(resp) {
-        console.log('Failed to get business txn \'' + $scope.existingBTxnName + '\': ' + angular.toJson(resp));
+        console.log('Failed to get transaction \'' + $scope.existingTxnName + '\': ' + angular.toJson(resp));
       });
     };
 

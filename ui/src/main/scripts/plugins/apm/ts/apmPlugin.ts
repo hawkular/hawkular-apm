@@ -62,42 +62,42 @@ module APM {
       }).
       when('/hawkular-ui/apm/btm', {
         templateUrl: 'plugins/btm/html/btm.html',
-        controller: 'BTM.BTMController'
+        controller: 'BTM.TxnController'
       }).
       when('/hawkular-ui/apm/btm/candidates', {
         templateUrl: 'plugins/btm/html/btxncandidates.html',
-        controller: 'BTM.BTMCandidatesController'
+        controller: 'BTM.TxnCandidatesController'
       }).
       when('/hawkular-ui/apm/btm/ignored', {
         templateUrl: 'plugins/btm/html/btxnignored.html',
-        controller: 'BTM.BTMIgnoredController'
+        controller: 'BTM.TxnIgnoredController'
       }).
-      when('/hawkular-ui/apm/btm/config/:businesstransaction', {
+      when('/hawkular-ui/apm/btm/config/:transaction', {
         templateUrl: 'plugins/btm/html/btxnconfig.html',
-        controller: 'BTM.BTxnConfigController',
+        controller: 'BTM.TxnConfigController',
         resolve: {
-          btxn: function($http, $route, $location, toastr) {
+          txn: function($http, $route, $location, toastr) {
             return $http.get('/hawkular/apm/config/transaction/full/' +
-              $route.current.params.businesstransaction).then(function(resp) {
+              $route.current.params.transaction).then(function(resp) {
               if (!resp.data) {
                 $location.path('/hawkular-ui/apm/btm');
-                toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+                toastr.info('You were redirected to this page because you requested an invalid transaction.');
               }
               return resp.data;
             }, function(resp) {
-              toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+              toastr.info('You were redirected to this page because you requested an invalid transaction.');
               $location.path('/hawkular-ui/apm/btm');
             });
           }
         }
       }).
-      when('/hawkular-ui/apm/btm/info/:businesstransaction', {
+      when('/hawkular-ui/apm/btm/info/:transaction', {
         templateUrl: 'plugins/btm/html/btxninfo.html',
-        controller: 'BTM.BTxnInfoController',
+        controller: 'BTM.TxnInfoController',
         resolve: {
-          btxn: function($http, $route, $location, toastr) {
+          txn: function($http, $route, $location, toastr) {
             return $http.get('/hawkular/apm/config/transaction/full/' +
-              $route.current.params.businesstransaction).then(function(resp) {
+              $route.current.params.transaction).then(function(resp) {
               if (!resp.data) {
                 resp.data = {
                   level: 'All'
@@ -105,7 +105,7 @@ module APM {
               }
               return resp.data;
             }, function(resp) {
-              toastr.info('You were redirected to this page because you requested an invalid Business Transaction.');
+              toastr.info('You were redirected to this page because you requested an invalid transaction.');
               $location.path('/hawkular-ui/apm/btm');
             });
           }

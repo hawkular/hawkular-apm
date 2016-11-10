@@ -20,11 +20,11 @@ module BTM {
 
   declare let c3: any;
 
-  export let BTxnInfoController = _module.controller('BTM.BTxnInfoController', ['$scope', '$routeParams', '$http',
-    '$interval', '$timeout', 'btxn', ($scope, $routeParams, $http, $interval, $timeout, btxn) => {
+  export let TxnInfoController = _module.controller('BTM.TxnInfoController', ['$scope', '$routeParams', '$http',
+    '$interval', '$timeout', 'txn', ($scope, $routeParams, $http, $interval, $timeout, txn) => {
 
-    $scope.btxn = btxn;
-    $scope.businessTransactionName = $routeParams.businesstransaction;
+    $scope.txn = txn;
+    $scope.transactionName = $routeParams.transaction;
 
     $scope.properties = [];
 
@@ -32,7 +32,7 @@ module BTM {
     $scope.faultValues = [];
 
     $scope.criteria = {
-      transaction: $scope.businessTransactionName,
+      transaction: $scope.transactionName,
       properties: [],
       startTime: '-3600000',
       endTime: '0',

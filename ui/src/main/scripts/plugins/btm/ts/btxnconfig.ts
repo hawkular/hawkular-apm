@@ -18,12 +18,12 @@
 /// <reference path="btmPlugin.ts"/>
 module BTM {
 
-    export let BTxnConfigController = _module.controller('BTM.BTxnConfigController', ['$scope', '$routeParams',
-      '$http', '$location', '$interval', 'btxn', ($scope, $routeParams, $http, $location, $interval, btxn) => {
+    export let TxnConfigController = _module.controller('BTM.TxnConfigController', ['$scope', '$routeParams',
+      '$http', '$location', '$interval', 'txn', ($scope, $routeParams, $http, $location, $interval, txn) => {
 
-    $scope.btxn = btxn;
+    $scope.txn = txn;
 
-    $scope.businessTransactionName = $routeParams.businesstransaction;
+    $scope.transactionName = $routeParams.transaction;
     $scope.dirty = false;
 
     $scope.newInclusionFilter = '';
@@ -31,18 +31,18 @@ module BTM {
 
     $scope.messages = [];
 
-    $http.get('/hawkular/apm/config/transaction/full/' + $scope.businessTransactionName).then(function(resp) {
-      $scope.businessTransaction = resp.data;
-      $scope.original = angular.copy($scope.businessTransaction);
+    $http.get('/hawkular/apm/config/transaction/full/' + $scope.transactionName).then(function(resp) {
+      $scope.transaction = resp.data;
+      $scope.original = angular.copy($scope.transaction);
 
-      $http.post('/hawkular/apm/config/transaction/validate',$scope.businessTransaction).then(function(resp) {
+      $http.post('/hawkular/apm/config/transaction/validate',$scope.transaction).then(function(resp) {
         $scope.messages = resp.data;
       },function(resp) {
-        console.log('Failed to validate business txn \'' + $scope.businessTransactionName + '\': ' +
+        console.log('Failed to validate transaction \'' + $scope.transactionName + '\': ' +
           angular.toJson(resp));
       });
     },function(resp) {
-      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + angular.toJson(resp));
+      console.log('Failed to get transaction \'' + $scope.transactionName + '\': ' + angular.toJson(resp));
     });
 
     $http.get('/hawkular/apm/analytics/unboundendpoints?compress=true').then(function(resp) {
@@ -57,7 +57,7 @@ module BTM {
     });
 
     $scope.reload = function() {
-      $http.get('/hawkular/apm/analytics/boundendpoints/' + $scope.businessTransactionName).then(function(resp) {
+      $http.get('/hawkular/apm/analytics/boundendpoints/' + $scope.transactionName).then(function(resp) {
         $scope.boundEndpoints = [ ];
         for (let i = 0; i < resp.data.length; i++) {
           if (resp.data[i].uriRegex !== undefined) {
@@ -65,7 +65,7 @@ module BTM {
           }
         }
       },function(resp) {
-        console.log('Failed to get bound URIs for business txn \'' + $scope.businessTransactionName + '\': ' +
+        console.log('Failed to get bound URIs for transaction \'' + $scope.transactionName + '\': ' +
           angular.toJson(resp));
       });
     };
@@ -77,37 +77,37 @@ module BTM {
 
     $scope.addInclusionFilter = function() {
       console.log('Add inclusion filter: ' + $scope.newInclusionFilter);
-      if ($scope.businessTransaction.filter === null) {
-        $scope.businessTransaction.filter = {
+      if ($scope.transaction.filter === null) {
+        $scope.transaction.filter = {
           inclusions: [],
           exclusions: []
         };
       }
-      $scope.businessTransaction.filter.inclusions.add($scope.newInclusionFilter);
+      $scope.transaction.filter.inclusions.add($scope.newInclusionFilter);
       $scope.setDirty();
       $scope.newInclusionFilter = '';
     };
 
     $scope.removeInclusionFilter = function(inclusion) {
-      $scope.businessTransaction.filter.inclusions.remove(inclusion);
+      $scope.transaction.filter.inclusions.remove(inclusion);
       $scope.setDirty();
     };
 
     $scope.addExclusionFilter = function() {
       console.log('Add exclusion filter: ' + $scope.newExclusionFilter);
-      if ($scope.businessTransaction.filter === null) {
-        $scope.businessTransaction.filter = {
+      if ($scope.transaction.filter === null) {
+        $scope.transaction.filter = {
           inclusions: [],
           exclusions: []
         };
       }
-      $scope.businessTransaction.filter.exclusions.add($scope.newExclusionFilter);
+      $scope.transaction.filter.exclusions.add($scope.newExclusionFilter);
       $scope.setDirty();
       $scope.newExclusionFilter = '';
     };
 
     $scope.removeExclusionFilter = function(exclusion) {
-      $scope.businessTransaction.filter.exclusions.remove(exclusion);
+      $scope.transaction.filter.exclusions.remove(exclusion);
       $scope.setDirty();
     };
 
@@ -154,8 +154,8 @@ module BTM {
 
     $scope.addProcessor = function() {
       $scope.setDirty();
-      $scope.businessTransaction.processors.add({
-        description: 'Processor ' + ($scope.businessTransaction.processors.length + 1),
+      $scope.transaction.processors.add({
+        description: 'Processor ' + ($scope.transaction.processors.length + 1),
         nodeType: 'Consumer',
         direction: 'In',
         actions: []
@@ -165,7 +165,7 @@ module BTM {
     $scope.deleteProcessor = function(processor) {
       if (confirm('Are you sure you want to delete the processor?')) {
         $scope.setDirty();
-        $scope.businessTransaction.processors.remove(processor);
+        $scope.transaction.processors.remove(processor);
       }
     };
 
@@ -196,34 +196,34 @@ module BTM {
     };
 
     $scope.reset = function() {
-      $scope.businessTransaction = angular.copy($scope.original);
+      $scope.transaction = angular.copy($scope.original);
       $scope.dirty = false;
     };
 
     $scope.save = function() {
       $scope.messages = [];
 
-      $http.put('/hawkular/apm/config/transaction/full/' + $scope.businessTransactionName, $scope.businessTransaction)
+      $http.put('/hawkular/apm/config/transaction/full/' + $scope.transactionName, $scope.transaction)
         .then(function(resp) {
         $scope.messages = resp.data;
-        $scope.original = angular.copy($scope.businessTransaction);
+        $scope.original = angular.copy($scope.transaction);
         $scope.dirty = false;
       },function(resp) {
-        console.log('Failed to save business txn \'' + $scope.businessTransactionName + '\': ' + angular.toJson(resp));
+        console.log('Failed to save transaction \'' + $scope.transactionName + '\': ' + angular.toJson(resp));
         let message = {
           severity: Error,
-          message: 'Failed to save \'' + $scope.businessTransactionName + '\'',
+          message: 'Failed to save \'' + $scope.transactionName + '\'',
           details: angular.toJson(resp.data)
         };
         $scope.messages.add(message);
       });
     };
 
-    $http.get('/hawkular/apm/config/transaction/full/' + $scope.businessTransactionName).then(function(resp) {
-      $scope.businessTransaction = resp.data;
-      $scope.original = angular.copy($scope.businessTransaction);
+    $http.get('/hawkular/apm/config/transaction/full/' + $scope.transactionName).then(function(resp) {
+      $scope.transaction = resp.data;
+      $scope.original = angular.copy($scope.transaction);
     },function(resp) {
-      console.log('Failed to get business txn \'' + $scope.businessTransactionName + '\': ' + angular.toJson(resp));
+      console.log('Failed to get transaction \'' + $scope.transactionName + '\': ' + angular.toJson(resp));
     });
 
     $scope.closeMessage = function(index) {

@@ -20,23 +20,23 @@ module BTM {
 
   declare let c3: any;
 
-  export let BTMController = _module.controller('BTM.BTMController',['$scope', '$http', '$location', '$interval', '$q',
+  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$http', '$location', '$interval', '$q',
     '$timeout', ($scope, $http, $location, $interval, $q, $timeout) => {
 
     $scope.candidateCount = 0;
 
-    $scope.businessTransactions = [];
+    $scope.transactions = [];
 
-    let redirectToInfo = function(btxn) {
+    let redirectToInfo = function(txn) {
       $timeout(() => {
-        $location.path('/hawkular-ui/apm/btm/info/' + btxn.id);
+        $location.path('/hawkular-ui/apm/btm/info/' + txn.id);
       });
     };
 
     $scope.countChartConfig = {
       data: {
         type: 'pie',
-        columns: $scope.btxnCountData || [],
+        columns: $scope.txnCountData || [],
         onclick: redirectToInfo
       }
     };
@@ -44,7 +44,7 @@ module BTM {
     $scope.faultChartConfig = {
       data: {
         type: 'pie',
-        columns: $scope.btxnFaultData || [],
+        columns: $scope.txnFaultData || [],
         onclick: redirectToInfo
       }
     };
@@ -59,19 +59,19 @@ module BTM {
           + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
 
         let allPromises = [];
-        _.each(resp.data, (btxn: any) => {
-          allPromises = allPromises.concat($scope.getBusinessTxnDetails(btxn));
+        _.each(resp.data, (txn: any) => {
+          allPromises = allPromises.concat($scope.getTxnDetails(txn));
         });
 
         $q.all(allPromises).then(() => {
-          $scope.businessTransactions = resp.data;
-          $scope.businessTransactions.$resolved = true;
+          $scope.transactions = resp.data;
+          $scope.transactions.$resolved = true;
 
           $scope.reloadTxnCountGraph();
           $scope.reloadFaultCountGraph();
         });
       },function(resp) {
-        console.log('Failed to get business txn summaries: ' + angular.toJson(resp));
+        console.log('Failed to get transaction summaries: ' + angular.toJson(resp));
       });
 
       $http.get('/hawkular/apm/analytics/unboundendpoints').then(function(resp) {
@@ -86,30 +86,30 @@ module BTM {
     let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
-    $scope.getBusinessTxnDetails = function(btxn) {
+    $scope.getTxnDetails = function(txn) {
       let promises = [];
 
-      let btxncriteria = angular.copy($scope.criteria);
-      btxncriteria.transaction = btxn.name;
+      let txncriteria = angular.copy($scope.criteria);
+      txncriteria.transaction = txn.name;
 
       let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?criteria='
-          + encodeURI(angular.toJson(btxncriteria)));
+          + encodeURI(angular.toJson(txncriteria)));
       promises.push(countPromise);
       countPromise.then(function(resp) {
-        btxn.count = resp.data;
+        txn.count = resp.data;
       }, function(resp) {
         console.log('Failed to get count: ' + angular.toJson(resp));
       });
 
       let pct95Promise =
         $http.get('/hawkular/apm/analytics/trace/completion/percentiles?criteria='
-          + encodeURI(angular.toJson(btxncriteria)));
+          + encodeURI(angular.toJson(txncriteria)));
       promises.push(pct95Promise);
       pct95Promise.then(function(resp) {
         if (resp.data.percentiles[95] > 0) {
-          btxn.percentile95 = (resp.data.percentiles[95] / 1000000).toFixed(3);
+          txn.percentile95 = (resp.data.percentiles[95] / 1000000).toFixed(3);
         } else {
-          btxn.percentile95 = 0;
+          txn.percentile95 = 0;
         }
       },function(resp) {
         console.log('Failed to get completion percentiles: ' + angular.toJson(resp));
@@ -117,10 +117,10 @@ module BTM {
 
       let faultsPromise =
         $http.get('/hawkular/apm/analytics/trace/completion/faultcount?criteria='
-          + encodeURI(angular.toJson(btxncriteria)));
+          + encodeURI(angular.toJson(txncriteria)));
       promises.push(faultsPromise);
       faultsPromise.then(function(resp) {
-        btxn.faultcount = resp.data;
+        txn.faultcount = resp.data;
       },function(resp) {
         console.log('Failed to get fault count: ' + angular.toJson(resp));
       });
@@ -128,39 +128,39 @@ module BTM {
       return promises;
     };
 
-    $scope.deleteBusinessTxn = function(btxn) {
-      if (confirm('Are you sure you want to delete business transaction \'' + btxn.name + '\'?')) {
-        $http.delete('/hawkular/apm/config/transaction/full/' + btxn.name).then(function(resp) {
-          console.log('Deleted: ' + btxn.name);
-          $scope.businessTransactions.remove(btxn);
+    $scope.deleteTxn = function(txn) {
+      if (confirm('Are you sure you want to delete transaction \'' + txn.name + '\'?')) {
+        $http.delete('/hawkular/apm/config/transaction/full/' + txn.name).then(function(resp) {
+          console.log('Deleted: ' + txn.name);
+          $scope.transactions.remove(txn);
         },function(resp) {
-          console.log('Failed to delete business txn \'' + btxn.name + '\': ' + angular.toJson(resp));
+          console.log('Failed to delete transaction \'' + txn.name + '\': ' + angular.toJson(resp));
         });
       }
     };
 
     $scope.reloadTxnCountGraph = function() {
-      let btxnCountData = [];
-      _.each($scope.businessTransactions, (btxn: any) => {
-        if (btxn.count) {
-          btxnCountData.push([btxn.name, btxn.count]);
+      let txnCountData = [];
+      _.each($scope.transactions, (txn: any) => {
+        if (txn.count) {
+          txnCountData.push([txn.name, txn.count]);
         }
       });
 
-      $scope.countChartConfig.data.columns = btxnCountData;
-      $scope.countChartHasData = btxnCountData.length > 0;
+      $scope.countChartConfig.data.columns = txnCountData;
+      $scope.countChartHasData = txnCountData.length > 0;
     };
 
     $scope.reloadFaultCountGraph = function() {
-      let btxnFaultData = [];
-      _.each($scope.businessTransactions, (btxn: any) => {
-        if (btxn.faultcount) {
-          btxnFaultData.push([btxn.name, btxn.faultcount]);
+      let txnFaultData = [];
+      _.each($scope.transactions, (txn: any) => {
+        if (txn.faultcount) {
+          txnFaultData.push([txn.name, txn.faultcount]);
         }
       });
 
-      $scope.faultChartConfig.data.columns = btxnFaultData;
-      $scope.faultChartHasData = btxnFaultData.length > 0;
+      $scope.faultChartConfig.data.columns = txnFaultData;
+      $scope.faultChartHasData = txnFaultData.length > 0;
     };
 
   }]);
