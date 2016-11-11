@@ -60,6 +60,7 @@ module FilterSidebar {
       $rootScope.sbFilter = $rootScope.sbFilter || {};
       $rootScope.sbFilter.criteria = $rootScope.sbFilter.criteria || this.defaultCriteria;
       $rootScope.sbFilter.data = $rootScope.sbFilter.data || {};
+      $rootScope.sbFilter.defaultStartTime = this.defaultCriteria.startTime;
 
       // FIXME: this should not go into rootScope
       $rootScope.startDTOptions = {
@@ -93,13 +94,13 @@ module FilterSidebar {
 
       if (scope.fsb.showTime) {
         $rootScope.updateCriteriaTimeSpan = function() {
-          if ($rootScope.sbFilter.timeSpan < 0) { // using preset
+          if ($rootScope.sbFilter.timeSpan !== '') { // using preset
             $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.timeSpan;
           } else {
             if ($rootScope.sbFilter.customStartTime) {
               $rootScope.sbFilter.criteria.startTime = +new Date($rootScope.sbFilter.customStartTime);
             } else {
-              $rootScope.sbFilter.criteria.startTime = this.defaultCriteria.startTime;
+              $rootScope.sbFilter.criteria.startTime = $rootScope.sbFilter.defaultStartTime;
             }
             if ($rootScope.sbFilter.customEndTime) {
               $rootScope.sbFilter.criteria.endTime = +new Date($rootScope.sbFilter.customEndTime);
