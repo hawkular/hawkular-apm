@@ -54,9 +54,10 @@ public class Property implements Serializable {
      * @param name The name
      * @param value The value
      */
-    public Property(String name, String value) {
+    public Property(String name, Object value) {
         this.name = name;
-        this.value = value;
+        this.value = (value == null ? null : value.toString());
+        this.type = PropertyType.of(value);
     }
 
     /**
