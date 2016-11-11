@@ -219,8 +219,7 @@ public class ApmMockServer {
                                 traces.addAll(btxns);
                             }
 
-                            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-                            exchange.getResponseSender().send("");
+                            exchange.setResponseCode(204);
                         } else if (exchange.getRequestMethod() == Methods.GET) {
                             // TODO: Currently returns all - support proper query
                             synchronized (traces) {

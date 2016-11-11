@@ -85,7 +85,7 @@ public class TraceHandler extends BaseHandler {
                               @ApiParam(value = "List of traces", required = true) List<Trace> traces) {
         return withErrorHandler(() -> {
             tracePublisher.publish(getTenant(request), traces);
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         });
     }
 

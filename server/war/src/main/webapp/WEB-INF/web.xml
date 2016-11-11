@@ -33,6 +33,8 @@
     <web-resource-collection>
       <web-resource-name>hawkular-apm-server</web-resource-name>
       <url-pattern>/*</url-pattern>
+      <!-- allow OPTIONS for CORS -->
+      <http-method-omission>OPTIONS</http-method-omission>
     </web-resource-collection>
     <auth-constraint>
       <role-name>*</role-name>

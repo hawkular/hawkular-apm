@@ -158,6 +158,17 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_KAFKA_CONSUMER_SESSION_TIMEOUT =
                                     "HAWKULAR_APM_KAFKA_CONSUMER_SESSION_TIMEOUT";
 
+    /**
+     * List of allowed CORS origins.
+     */
+    public static final String HAWKULAR_APM_CORS_ALLOWED_ORIGINS = "HAWKULAR_APM_CORS_ALLOWED_ORIGINS";
+
+    /**
+     * List of extra CORS Access-Control-Allow-Headers, this list is added to predefined list of allowed headers.
+     */
+    public static final String HAWKULAR_APM_CORS_ACCESS_CONTROL_ALLOW_HEADERS =
+            "HAWKULAR_APM_CORS_ACCESS_CONTROL_ALLOW_HEADERS";
+
     /** The URI prefix to denote use of Kafka */
     public static final String KAFKA_PREFIX = "kafka:";
 

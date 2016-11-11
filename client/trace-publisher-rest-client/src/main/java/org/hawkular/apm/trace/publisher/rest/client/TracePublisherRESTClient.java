@@ -59,7 +59,7 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
             handler.published(tenantId, traces, (clock.millis() - startTime));
         }
 
-        if (statusCode != 200) {
+        if (statusCode != 204) {
             if (log.isLoggable(Level.FINER)) {
                 log.finer("Failed to publish trace fragments: status=[" + statusCode + "]");
             }
