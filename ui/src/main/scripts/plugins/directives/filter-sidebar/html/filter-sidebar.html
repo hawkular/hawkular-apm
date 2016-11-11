@@ -111,12 +111,12 @@
       <input type="text" class="form-control" placeholder="Contains text" ng-model="$root.sbFilter.search"/>
     </div>
 
-    <div class="hk-filter-v-block" ng-if="fsb.showHosts">
+    <div class="hk-filter-v-block" ng-class="{'has-error': invalidHostname}" ng-if="fsb.showHosts">
       <label><button class="btn-link" ng-click="showSearchHost = !showSearchHost"><i class="fa" ng-class="showSearchHost ? 'fa-angle-right' : 'fa-angle-down'"></i>Host Name</button></label>
       <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
          ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
-         placeholder="Enter a host name" typeahead-editable="false"
-         typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" />
+         placeholder="Enter a host name" typeahead-editable="false" typeahead-min-length="0"
+         typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" typeahead-no-results="invalidHostname" />
     </div>
 
   </div>
