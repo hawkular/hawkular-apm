@@ -96,6 +96,11 @@
       <groupId>io.swagger</groupId>
       <artifactId>swagger-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.commons</groupId>
+      <artifactId>hawkular-cors-jaxrs-filter</artifactId>
+      <version>${version.org.hawkular.commons}</version>
+    </dependency>
   </dependencies>
 
   <profiles>
