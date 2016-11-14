@@ -1,0 +1,26 @@
+{
+  "name": "OpenTracing polyglot test",
+  "environment": {
+    "dockerCompose": "docker-compose.yml",
+    "initWaitSeconds": "20",
+    "type": "APM",
+    "apmAddress": "172.16.158.1"
+  },
+  "tests": [
+    {
+      "description" : "Docker compose JBoss Ticker Monster",
+      "skip": false,
+      "action": "action.sh",
+      "scriptServiceName": "nodejs",
+      "afterActionWaitSeconds": "20",
+      "verify": {
+        "jsonPath": [
+          {
+            "path": "$.length()",
+            "result": 1
+          }
+        ]
+      }
+    }
+  ]
+}

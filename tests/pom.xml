@@ -33,6 +33,7 @@
 
   <modules>
     <module>app/vertx-opentracing</module>
+    <module>app/polyglot-opentracing/java</module>
     <module>agent-opentracing</module>
     <module>common</module>
     <module>container/jetty</module>
