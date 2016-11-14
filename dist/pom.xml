@@ -55,6 +55,10 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.apm</groupId>
+      <artifactId>hawkular-apm-agent-opentracing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-instrumentation-jvm</artifactId>
     </dependency>
 

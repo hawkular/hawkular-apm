@@ -1,0 +1,159 @@
+RULE java.sql(1) Java JDBC Execute Component Start
+INTERFACE java.sql.Statement
+METHOD execute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  startSpanWithParent(getTracer().buildSpan("execute")
+   		.withTag("database.uri", $0.getConnection().getMetaData().getURL())
+  		.withTag("database.statement", $1),
+  		getSpan());
+ENDRULE
+
+
+RULE java.sql(2) Java JDBC Execute Component End
+INTERFACE java.sql.Statement
+METHOD execute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE
+
+
+RULE java.sql(3) Java JDBC Query Component Start
+INTERFACE java.sql.Statement
+METHOD executeQuery
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  startSpanWithParent(getTracer().buildSpan("query")
+  		.withTag("database.uri", $0.getConnection().getMetaData().getURL())
+  		.withTag("database.statement", $1),
+  		getSpan());
+ENDRULE
+
+
+RULE java.sql(4) Java JDBC Query Component End
+INTERFACE java.sql.Statement
+METHOD executeQuery
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE
+
+
+RULE java.sql(5) Java JDBC Update Component Start
+INTERFACE java.sql.Statement
+METHOD executeUpdate
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  startSpanWithParent(getTracer().buildSpan("update")
+  		.withTag("database.uri", $0.getConnection().getMetaData().getURL())
+  		.withTag("database.statement", $1),
+  		getSpan());
+ENDRULE
+
+
+RULE java.sql(6) Java JDBC Update Component End
+INTERFACE java.sql.Statement
+METHOD executeUpdate
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE
+
+
+RULE java.sql(7) Java JDBC Create Prepared Statement End
+INTERFACE ^java.sql.Connection
+METHOD prepareStatement
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  setVariable("sql-"+$!.hashCode(),$1)
+ENDRULE
+
+
+RULE java.sql(8) Java JDBC Prepared Query Component Start
+INTERFACE java.sql.PreparedStatement
+METHOD executeQuery()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  startSpanWithParent(getTracer().buildSpan("query")
+  		.withTag("database.uri", $0.getConnection().getMetaData().getURL())
+  		.withTag("database.statement", getVariableAsString("sql-"+$0.hashCode())),
+  		getSpan());
+ENDRULE
+
+
+RULE java.sql(9) Java JDBC Prepared Query Component End
+INTERFACE java.sql.PreparedStatement
+METHOD executeQuery()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE
+
+
+RULE java.sql(10) Java JDBC Prepared Update Component Start
+INTERFACE java.sql.PreparedStatement
+METHOD executeUpdate()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  startSpanWithParent(getTracer().buildSpan("update")
+  		.withTag("database.uri", $0.getConnection().getMetaData().getURL())
+  		.withTag("database.statement", getVariableAsString("sql-"+$0.hashCode())),
+  		getSpan());
+ENDRULE
+
+
+RULE java.sql(11) Java JDBC Prepared Update Component End
+INTERFACE java.sql.PreparedStatement
+METHOD executeUpdate()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE
+
+
+RULE java.sql(12) Java JDBC Prepared Execute Component Start
+INTERFACE java.sql.PreparedStatement
+METHOD execute()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  startSpanWithParent(getTracer().buildSpan("execute")
+  		.withTag("database.uri", $0.getConnection().getMetaData().getURL())
+  		.withTag("database.statement", getVariableAsString("sql-"+$0.hashCode())),
+  		getSpan());
+ENDRULE
+
+
+RULE java.sql(13) Java JDBC Prepared Execute Component End
+INTERFACE java.sql.PreparedStatement
+METHOD execute()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan()
+DO
+  finishSpan();
+ENDRULE

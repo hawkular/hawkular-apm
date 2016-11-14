@@ -92,6 +92,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.apm:hawkular-apm-agent:jar</include>
+        <include>org.hawkular.apm:hawkular-apm-agent-opentracing:jar</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>

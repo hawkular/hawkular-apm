@@ -6,11 +6,12 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT ENTRY
 # Need to filter out use of HttpURLConnection by APM, and also only use top level calls to the connection
 # as connect is also called internally
-IF !$0.connected && $0.getURL().getPath().indexOf("hawkular/apm") == -1 && !callerMatches("HttpURLConnection.*",true)
+IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
-  startSpan(getTracer().buildSpan($0.getRequestMethod())
+  startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
   		.withTag("http.uri", $0.getURL().getPath())
-  		.withTag("http.query", $0.getURL().getQuery()), String.valueOf($0.hashCode()));
+  		.withTag("http.query", $0.getURL().getQuery()),
+  		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
         new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
 ENDRULE
@@ -21,11 +22,12 @@ METHOD getInputStream()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT ENTRY
 # Need to filter out use of HttpURLConnection by APM, and also only use top level calls to the connection
-IF !$0.connected && $0.getURL().getPath().indexOf("hawkular/apm") == -1 && !callerMatches("HttpURLConnection.*",true)
+IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
-  startSpan(getTracer().buildSpan($0.getRequestMethod())
+  startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
   		.withTag("http.uri", $0.getURL().getPath())
-  		.withTag("http.query", $0.getURL().getQuery()), String.valueOf($0.hashCode()));
+  		.withTag("http.query", $0.getURL().getQuery()),
+  		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
         new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
 ENDRULE
@@ -36,11 +38,12 @@ METHOD getOutputStream()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT ENTRY
 # Need to filter out use of HttpURLConnection by APM, and also only use top level calls to the connection
-IF !$0.connected && $0.getURL().getPath().indexOf("hawkular/apm") == -1 && !callerMatches("HttpURLConnection.*",true)
+IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
-  startSpan(getTracer().buildSpan($0.getRequestMethod())
+  startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
   		.withTag("http.uri", $0.getURL().getPath())
-  		.withTag("http.query", $0.getURL().getQuery()), String.valueOf($0.hashCode()));
+  		.withTag("http.query", $0.getURL().getQuery()),
+  		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
         new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
 ENDRULE
@@ -50,7 +53,7 @@ CLASS ^java.net.HttpURLConnection
 METHOD getInputStream()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXCEPTION EXIT
-IF hasSpanWithId(String.valueOf($0.hashCode())) && $0.getURL().getPath().indexOf("hawkular/apm") == -1 && !callerMatches("HttpURLConnection.*",true)
+IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   getSpan().setTag("fault.code", String.valueOf($0.responseCode))
     .setTag("fault", $0.responseMessage);
@@ -63,7 +66,7 @@ CLASS ^java.net.HttpURLConnection
 METHOD getResponseCode()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
-IF hasSpanWithId(String.valueOf($0.hashCode())) && $0.getURL().getPath().indexOf("hawkular/apm") == -1 && !callerMatches("HttpURLConnection.*",true)
+IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 		&& $0.responseCode >= 400
 DO
   getSpan().setTag("fault.code", String.valueOf($0.responseCode))
@@ -75,7 +78,7 @@ CLASS ^java.net.HttpURLConnection
 METHOD getResponseCode()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
-IF hasSpanWithId(String.valueOf($0.hashCode())) && $0.getURL().getPath().indexOf("hawkular/apm") == -1 && !callerMatches("HttpURLConnection.*",true)
+IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   finishSpan();
 ENDRULE

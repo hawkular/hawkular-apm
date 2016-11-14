@@ -143,4 +143,18 @@ public class OpenTracingManagerTest {
         assertFalse(otm.hasSpan());
     }
 
+    @Test
+    public void testPathInclude() {
+        OpenTracingManager otm = new OpenTracingManager(null);
+
+        assertTrue(otm.includePath("/path/to/anything"));
+        assertTrue(otm.includePath("/path.to/anything"));
+        assertTrue(otm.includePath("anything"));
+
+        assertFalse(otm.includePath("/hawkular/apm/anything"));
+        assertFalse(otm.includePath("myimage.png"));
+        assertFalse(otm.includePath("/myimage.png"));
+        assertFalse(otm.includePath("/location/myimage.png"));
+    }
+
 }
