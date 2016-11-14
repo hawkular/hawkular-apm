@@ -147,7 +147,7 @@ module FilterSidebar {
 
       if (scope.fsb.showHosts) {
         this.$http.get('/hawkular/apm/analytics/hostnames?criteria=' +
-            encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
+            encodeURI(this.criteriaToJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.hostNames = resp.data || [];
         }, (error) => {
           console.log('Failed to get host names: ' + angular.toJson(error));
@@ -165,5 +165,12 @@ module FilterSidebar {
 
     }
 
+    private criteriaToJson(criteria) {
+      let txncriteria = angular.copy(criteria);
+      if (txncriteria.transaction === '') {
+        delete txncriteria.transaction;
+      }
+      return angular.toJson(txncriteria);
+    }
   }
 }
