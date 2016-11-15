@@ -8,7 +8,7 @@
   },
   "tests": [
     {
-      "description" : "Docker compose JBoss Ticker Monster",
+      "description" : "Context propagation",
       "skip": false,
       "action": "action.sh",
       "scriptServiceName": "nodejs",
@@ -16,8 +16,13 @@
       "verify": {
         "jsonPath": [
           {
-            "path": "$.length()",
-            "result": 1
+            "left": "$[0].traceId",
+            "right": "$[1].traceId",
+            "operator": "EQ"
+          }, {
+            "left": "$.length()",
+            "right": "2",
+            "operator": "EQ"
           }
         ]
       }

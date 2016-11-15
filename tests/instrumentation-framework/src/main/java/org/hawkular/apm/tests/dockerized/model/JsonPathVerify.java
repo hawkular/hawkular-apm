@@ -22,30 +22,57 @@ package org.hawkular.apm.tests.dockerized.model;
  */
 public class JsonPathVerify {
 
-    private String path;
-    private Object result;
+    private String left;
+    private String right;
+    private Operator operator;
 
-    public String getPath() {
-        return path;
+    public String getRight() {
+        return right;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setRight(String right) {
+        this.right = right;
     }
 
-    public Object getResult() {
-        return result;
+    public String getLeft() {
+        return left;
     }
 
-    public void setResult(Object result) {
-        this.result = result;
+    public void setLeft(String left) {
+        this.left = left;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
     }
 
     @Override
     public String toString() {
         return "JsonPathVerify{" +
-                "path='" + path + '\'' +
-                ", result=" + result +
+                "left='" + left + '\'' +
+                ", right='" + right + '\'' +
+                ", operator=" + operator +
                 '}';
+    }
+
+    public enum Operator {
+        EQ("=="),
+        GT(">"),
+        LT("<"),
+        NE("!=");
+
+        private String stringValue;
+
+        Operator(String stringValue) {
+            this.stringValue = stringValue;
+        }
+
+        public String getStringValue() {
+            return stringValue;
+        }
     }
 }

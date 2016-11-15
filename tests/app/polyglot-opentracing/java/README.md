@@ -7,7 +7,7 @@ $ mvn clean install
 $ export HAWKULAR_APM_URI=http://localhost:8080
 $ export HAWKULAR_APM_USERNAME=jdoe
 $ export HAWKULAR_APM_PASSWORD=password
-$ java -jar target/hawkular-apm-tests-app-polyglot-opentracing-swarm-swarm.jar -Dswarm.http.port=3000
+$ java -jar target/hawkular-apm-tests-app-polyglot-opentracing-swarm.jar -Dswarm.http.port=3000
 ```
 
 ## Example Requests
