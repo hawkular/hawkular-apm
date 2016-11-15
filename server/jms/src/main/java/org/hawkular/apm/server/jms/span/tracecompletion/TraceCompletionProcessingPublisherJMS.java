@@ -14,24 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
 
-import org.hawkular.apm.api.model.events.CompletionTime;
-import org.hawkular.apm.server.api.services.TraceCompletionTimePublisher;
+package org.hawkular.apm.server.jms.span.tracecompletion;
+
+import org.hawkular.apm.server.jms.AbstractPublisherJMS;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessing;
+import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessingPublisher;
 
 /**
- * This class represents the trace completion time JMS publisher.
- *
- * @author gbrown
+ * @author Pavol Loffay
  */
-public class TraceCompletionTimePublisherJMS extends AbstractPublisherJMS<CompletionTime>
-                        implements TraceCompletionTimePublisher {
-
-    private static final String DESTINATION = "java:/TraceCompletionTimes";
+public class TraceCompletionProcessingPublisherJMS extends AbstractPublisherJMS<CompletionTimeProcessing>
+        implements CompletionTimeProcessingPublisher {
 
     @Override
     protected String getDestinationURI() {
-        return DESTINATION;
+        return "java:/SpanTraceCompletionProcessing";
     }
-
 }

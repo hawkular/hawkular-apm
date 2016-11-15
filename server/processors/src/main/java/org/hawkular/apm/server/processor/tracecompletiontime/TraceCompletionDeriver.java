@@ -28,14 +28,14 @@ import org.hawkular.apm.server.api.task.RetryAttemptException;
  *
  * @author gbrown
  */
-public class TraceCompletionTimeDeriver extends AbstractProcessor<TraceCompletionInformation, CompletionTime> {
+public class TraceCompletionDeriver extends AbstractProcessor<TraceCompletionInformation, CompletionTime> {
 
-    private static final Logger log = Logger.getLogger(TraceCompletionTimeDeriver.class.getName());
+    private static final Logger log = Logger.getLogger(TraceCompletionDeriver.class.getName());
 
     /**
      * The default constructor.
      */
-    public TraceCompletionTimeDeriver() {
+    public TraceCompletionDeriver() {
         super(ProcessorType.OneToOne);
     }
 

@@ -104,7 +104,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private static final MsgLogger msgLog = MsgLogger.LOGGER;
     private static final String COMMUNICATION_DETAILS_TYPE = "communicationdetails";
     private static final String NODE_DETAILS_TYPE = "nodedetails";
-    private static final String TRACE_COMPLETION_TIME_TYPE = "tracecompletiontime";
+    private static final String TRACE_COMPLETION_TIME_TYPE = "tracecompletion";
     private static final String FRAGMENT_COMPLETION_TIME_TYPE = "fragmentcompletiontime";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static ElasticsearchClient client = ElasticsearchClient.getSingleton();
@@ -222,7 +222,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     @Override
-    public List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria) {
+    public List<CompletionTime> getTraceCompletions(String tenantId, Criteria criteria) {
         String index = client.getIndex(tenantId);
         if (!refresh(index)) {
             return null;
@@ -823,7 +823,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     @Override
-    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
+    public void storeTraceCompletions(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         bulkStoreApmEvents(tenantId, completionTimes, TRACE_COMPLETION_TIME_TYPE);
     }
 

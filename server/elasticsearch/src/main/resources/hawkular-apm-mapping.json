@@ -211,7 +211,7 @@
                 }
             }
         },
-        "tracecompletiontime": {
+        "tracecompletion": {
             "dynamic_templates": [{
                 "notanalyzed": {
                       "match": "*",

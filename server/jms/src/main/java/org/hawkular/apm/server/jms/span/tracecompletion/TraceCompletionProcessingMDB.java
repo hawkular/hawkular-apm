@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.server.jms.span.comletiontime;
+package org.hawkular.apm.server.jms.span.tracecompletion;
 
 import java.util.List;
 
@@ -36,21 +36,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author Pavol Loffay
  */
-@MessageDriven(name = "CompletionTimeProcessing_TraceCompletionTimeProcessingDeriver",
+@MessageDriven(name = "CompletionTimeProcessing_TraceCompletionProcessingDeriver",
         messageListenerInterface = MessageListener.class,
         activationConfig =  {
             @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-            @ActivationConfigProperty(propertyName = "destination", propertyValue ="SpanTraceCompletionTimeProcessing"),
+            @ActivationConfigProperty(propertyName = "destination", propertyValue ="SpanTraceCompletionProcessing"),
             @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-            @ActivationConfigProperty(propertyName = "clientID", propertyValue = CompletionTimeProcessingMDB.SUBSCRIBER),
+            @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionProcessingMDB.SUBSCRIBER),
             @ActivationConfigProperty(propertyName = "subscriptionName",
-                    propertyValue = CompletionTimeProcessingMDB.SUBSCRIBER),
+                    propertyValue = TraceCompletionProcessingMDB.SUBSCRIBER),
             @ActivationConfigProperty(propertyName = "messageSelector",
-                    propertyValue = "subscriber IS NULL OR subscriber = '"+CompletionTimeProcessingMDB.SUBSCRIBER+"'")
+                    propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionProcessingMDB.SUBSCRIBER+"'")
 })
-public class CompletionTimeProcessingMDB extends RetryCapableMDB<CompletionTimeProcessing, CompletionTimeProcessing> {
+public class TraceCompletionProcessingMDB extends RetryCapableMDB<CompletionTimeProcessing, CompletionTimeProcessing> {
 
-    public static final String SUBSCRIBER = "SpanTraceCompletionTimeProcessingDeriver";
+    public static final String SUBSCRIBER = "SpanTraceCompletionProcessingDeriver";
 
     @Inject
     private SpanCache spanCache;
@@ -59,9 +59,9 @@ public class CompletionTimeProcessingMDB extends RetryCapableMDB<CompletionTimeP
     private CompletionTimeProcessingPublisher traceCompletionTimePublisher;
 
     @Inject
-    private CompletionTimeProcessingPublisherJMS processingPublisherJMS;
+    private TraceCompletionProcessingPublisherJMS processingPublisherJMS;
 
-    public CompletionTimeProcessingMDB() {
+    public TraceCompletionProcessingMDB() {
         super(SUBSCRIBER);
     }
 

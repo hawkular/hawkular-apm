@@ -35,16 +35,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author Juraci Paixão Kröhling
  */
-@MessageDriven(name = "TraceCompletionTimes_Alerts", messageListenerInterface = MessageListener.class, activationConfig = {
+@MessageDriven(name = "TraceCompletions_Alerts", messageListenerInterface = MessageListener.class, activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionTimes"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletions"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionTimeAlertsPublisherMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionTimeAlertsPublisherMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionTimeAlertsPublisherMDB.SUBSCRIBER+"'")
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionAlertsPublisherMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionAlertsPublisherMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionAlertsPublisherMDB.SUBSCRIBER+"'")
 })
-public class TraceCompletionTimeAlertsPublisherMDB implements MessageListener {
-    static final String SUBSCRIBER = "TraceCompletionTimeAlertsPublisher";
+public class TraceCompletionAlertsPublisherMDB implements MessageListener {
+    static final String SUBSCRIBER = "TraceCompletionAlertsPublisher";
     private static final MsgLogger logger = MsgLogger.LOGGER;
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -57,7 +57,7 @@ public class TraceCompletionTimeAlertsPublisherMDB implements MessageListener {
         try {
             String data = ((TextMessage) message).getText();
             List<CompletionTime> items = mapper.readValue(data, new TypeReference<List<CompletionTime>>() {});
-            publisher.publish(items, "TraceCompletionTime");
+            publisher.publish(items, "TraceCompletion");
         } catch (IOException | JMSException e) {
             logger.errorPublishingToAlerts(e);
         }

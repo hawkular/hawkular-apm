@@ -446,7 +446,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.getProperties().add(new Property("prop3", "value3"));
         ct2.getProperties().add(new Property("prop2", "value2"));
 
-        analytics.storeTraceCompletionTimes(null,  Arrays.asList(ct1, ct2));
+        analytics.storeTraceCompletions(null,  Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria()
             .setStartTime(1)
@@ -478,7 +478,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.getProperties().add(new Property("prop3", "value3"));
         ct2.getProperties().add(new Property("prop2", "value2"));
 
-        analytics.storeTraceCompletionTimes(null,  Arrays.asList(ct1, ct2));
+        analytics.storeTraceCompletions(null,  Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria()
             .setTransaction("trace1")
@@ -530,12 +530,12 @@ public class AnalyticsServiceElasticsearchTest {
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setUri("uri1");
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria().setStartTime(1).setEndTime(0);
 
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 3);
-        List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
+        Wait.until(() -> analytics.getTraceCompletions(null, criteria).size() == 3);
+        List<CompletionTime> results = analytics.getTraceCompletions(null, criteria);
 
         assertNotNull(results);
         assertEquals(3, results.size());
@@ -563,12 +563,12 @@ public class AnalyticsServiceElasticsearchTest {
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setUri("uri1");
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria().setUri("uri1").setStartTime(1).setEndTime(0);
 
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 2);
-        List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
+        Wait.until(() -> analytics.getTraceCompletions(null, criteria).size() == 2);
+        List<CompletionTime> results = analytics.getTraceCompletions(null, criteria);
 
         assertNotNull(results);
         assertEquals(2, results.size());
@@ -593,12 +593,12 @@ public class AnalyticsServiceElasticsearchTest {
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
         ct3.setOperation(OP1);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria().setOperation(OP1).setStartTime(1).setEndTime(0);
 
-        Wait.until(() -> analytics.getTraceCompletionTimes(null, criteria).size() == 2);
-        List<CompletionTime> results = analytics.getTraceCompletionTimes(null, criteria);
+        Wait.until(() -> analytics.getTraceCompletions(null, criteria).size() == 2);
+        List<CompletionTime> results = analytics.getTraceCompletions(null, criteria);
 
         assertNotNull(results);
         assertEquals(2, results.size());
@@ -614,7 +614,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
@@ -633,7 +633,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(1);
@@ -653,7 +653,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTimestamp(2000);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault", Criteria.Operator.HAS);
@@ -679,7 +679,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault1", Operator.HASNOT);
@@ -708,7 +708,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
         ct3.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS);
@@ -732,7 +732,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct3.setTimestamp(2000);
         ct3.getProperties().add(new Property("num", "3.7", PropertyType.Number));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2, ct3));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2, ct3));
 
         Criteria criteria = new Criteria();
         criteria.addProperty("num", "2", Operator.GTE);
@@ -783,7 +783,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTransaction(TXN);
         ct2.setTimestamp(2000);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(0);
@@ -809,7 +809,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
@@ -858,7 +858,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setLowerBound(200);
@@ -908,7 +908,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTimestamp(2100);
         ct2.setDuration(300);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setUpperBound(400);
@@ -960,7 +960,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setDuration(500);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
@@ -1013,7 +1013,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setDuration(500);
         ct2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
@@ -1061,7 +1061,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.getProperties().add(new Property("prop1", "value2"));
         ct2.getProperties().add(new Property("prop2", "value4"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
@@ -1107,7 +1107,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
         ct1_2.getProperties().add(new Property("prop1", "value2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault", Criteria.Operator.HAS);
@@ -1141,7 +1141,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.getProperties().add(new Property(Constants.PROP_FAULT, "TestFault"));
         ct1_2.getProperties().add(new Property("prop1", "value2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
         criteria.addProperty(Constants.PROP_FAULT, "TestFault", Operator.HASNOT);
@@ -1176,7 +1176,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
         ct1_2.getProperties().add(new Property("prop1", "value2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).addProperty(Constants.PROP_PRINCIPAL, "p1", Operator.HAS)
@@ -1216,7 +1216,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setDuration(500);
         ct2.getProperties().add(new Property(Constants.PROP_FAULT, "fault2"));
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
@@ -1251,7 +1251,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).setStartTime(1).setEndTime(10000);
@@ -1287,7 +1287,7 @@ public class AnalyticsServiceElasticsearchTest {
         ct2.setTimestamp(2100);
         ct2.setDuration(500);
 
-        analytics.storeTraceCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct2));
+        analytics.storeTraceCompletions(null, Arrays.asList(ct1_1, ct1_2, ct2));
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TXN).addProperty(Constants.PROP_PRINCIPAL, "p2", Operator.HAS)

@@ -319,7 +319,7 @@ public abstract class AbstractAnalyticsService implements AnalyticsService {
     }
 
     protected Set<String> getEndpoints(String tenantId, Criteria criteria) {
-        return getTraceCompletionTimes(tenantId, criteria).stream()
+        return getTraceCompletions(tenantId, criteria).stream()
                 .map(ct -> EndpointUtil.encodeEndpoint(ct.getUri(), ct.getOperation())).collect(Collectors.toSet());
     }
 

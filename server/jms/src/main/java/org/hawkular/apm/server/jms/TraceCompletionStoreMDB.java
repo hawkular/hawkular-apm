@@ -36,25 +36,25 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * @author gbrown
  */
-@MessageDriven(name = "TraceCompletionTimes_Store", messageListenerInterface = MessageListener.class, activationConfig = {
+@MessageDriven(name = "TraceCompletions_Store", messageListenerInterface = MessageListener.class, activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletionTimes"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletions"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionTimeStoreMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionTimeStoreMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionTimeStoreMDB.SUBSCRIBER+"'")
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionStoreMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionStoreMDB.SUBSCRIBER+"'")
 })
-public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime, Void> {
+public class TraceCompletionStoreMDB extends RetryCapableMDB<CompletionTime, Void> {
 
     @Inject
-    private TraceCompletionTimePublisherJMS traceCompletionTimePublisher;
+    private TraceCompletionPublisherJMS traceCompletionTimePublisher;
 
     @Inject
     private AnalyticsService analyticsService;
 
-    public static final String SUBSCRIBER = "TraceCompletionTimeStore";
+    public static final String SUBSCRIBER = "TraceCompletionStore";
 
-    public TraceCompletionTimeStoreMDB() {
+    public TraceCompletionStoreMDB() {
         super(SUBSCRIBER);
     }
 
@@ -70,7 +70,7 @@ public class TraceCompletionTimeStoreMDB extends RetryCapableMDB<CompletionTime,
             public List<Void> processManyToMany(String tenantId, List<CompletionTime> items)
                     throws RetryAttemptException {
                 try {
-                    analyticsService.storeTraceCompletionTimes(tenantId, items);
+                    analyticsService.storeTraceCompletions(tenantId, items);
                 } catch (StoreException se) {
                     throw new RetryAttemptException(se);
                 }

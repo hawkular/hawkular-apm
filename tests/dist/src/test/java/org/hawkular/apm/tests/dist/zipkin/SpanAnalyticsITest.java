@@ -110,11 +110,11 @@ public class SpanAnalyticsITest extends AbstractITest {
         post(Server.Zipkin, "/spans", null, Arrays.asList(rootSpan));
 
         Wait.until(() -> {
-            List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletionTimes(null, requestCriteria());
+            List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletions(null, requestCriteria());
             return traceCompletionTimes == null || traceCompletionTimes.size() != 1 ? false : true;
         }, 30, TimeUnit.SECONDS);
 
-        List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletionTimes(null, requestCriteria());
+        List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletions(null, requestCriteria());
         Assert.assertEquals(1, traceCompletionTimes.size());
 
         CompletionTime completionTime = traceCompletionTimes.get(0);
@@ -175,11 +175,11 @@ public class SpanAnalyticsITest extends AbstractITest {
         post(Server.Zipkin, "/spans", null, Arrays.asList(serverSpan));
 
         Wait.until(() -> {
-            List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletionTimes(null, requestCriteria());
+            List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletions(null, requestCriteria());
             return traceCompletionTimes == null || traceCompletionTimes.size() != 1 ? false : true;
         }, 30, TimeUnit.SECONDS);
 
-        List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletionTimes(null, requestCriteria());
+        List<CompletionTime> traceCompletionTimes = analyticsService.getTraceCompletions(null, requestCriteria());
         Assert.assertEquals(1, traceCompletionTimes.size());
 
         CompletionTime completionTime = traceCompletionTimes.get(0);

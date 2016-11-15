@@ -14,21 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.hawkular.apm.server.api.services;
 
-package org.hawkular.apm.server.jms.span.comletiontime;
-
-import org.hawkular.apm.server.jms.AbstractPublisherJMS;
-import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessing;
-import org.hawkular.apm.server.processor.zipkin.CompletionTimeProcessingPublisher;
+import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.api.services.Publisher;
 
 /**
- * @author Pavol Loffay
+ * This interface provides the capability for publishing completion
+ * information for end to end traces.
+ *
+ * @author gbrown
  */
-public class CompletionTimeProcessingPublisherJMS extends AbstractPublisherJMS<CompletionTimeProcessing>
-        implements CompletionTimeProcessingPublisher {
+public interface TraceCompletionPublisher extends Publisher<CompletionTime> {
 
-    @Override
-    protected String getDestinationURI() {
-        return "java:/SpanTraceCompletionTimeProcessing";
-    }
 }
