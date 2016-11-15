@@ -27,6 +27,7 @@ module FilterSidebar {
     public templateUrl = templatePath;
 
     private defaultCriteria;
+    private theScope;
 
     public link: (scope, elm, attrs, ctrl) => any;
 
@@ -79,6 +80,7 @@ module FilterSidebar {
     }
 
     private doLink(scope, elm, attrs, ctrl, $compile, $rootScope, $http): void {
+      this.theScope = scope;
       scope.fsb = {
         showTime: !attrs.hasOwnProperty('noTime'),
         showText: !attrs.hasOwnProperty('noText'),
@@ -124,16 +126,20 @@ module FilterSidebar {
       if (scope.fsb.showProps) {
         scope.$watch('selPropName', (newValue, oldValue) => {
           if (newValue && newValue !== oldValue) {
-            scope.propertyValues = [];
-            let propVal = this.$http.get('/hawkular/apm/analytics/trace/completion/property/' + newValue.name +
-              '?criteria=' + encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria)));
-            propVal.then((resp) => {
-              scope.propertyValues = resp.data;
-            });
+            this.updatePropertyValues(newValue);
           }
         });
       }
     }
+
+    private updatePropertyValues = function(newValue) {
+      this.theScope.propertyValues = [];
+      let propVal = this.$http.get('/hawkular/apm/analytics/trace/completion/property/' + newValue.name +
+        '?criteria=' + encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria)));
+      propVal.then((resp) => {
+        this.theScope.propertyValues = resp.data;
+      });
+    };
 
     private updateSidebarData(scope) {
       if (scope.fsb.showBtxns) {
@@ -158,6 +164,9 @@ module FilterSidebar {
         this.$http.get('/hawkular/apm/analytics/properties?criteria=' +
             encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria))).then((resp) => {
           this.$rootScope.sbFilter.data.properties = resp.data || [];
+          if (scope.selPropName && _.find(resp.data, scope.selPropName)) {
+            this.updatePropertyValues(scope.selPropName);
+          }
         }, (error) => {
             console.log('Failed to get properties: ' + angular.toJson(error));
         });
