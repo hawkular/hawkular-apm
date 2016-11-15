@@ -15,12 +15,14 @@
       "verify": {
         "jsonPath": [
           {
-            "path": "$.length()",
-            "result": 6
+            "left": "$.length()",
+            "right": 6,
+            "operator": "EQ"
           },
           {
-            "path": "$.[0].transaction",
-            "result": "Place Order"
+            "left": "$.[0].transaction",
+            "right": "Place Order",
+            "operator": "EQ"
           }
         ]
       }

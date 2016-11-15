@@ -17,6 +17,10 @@
 
 package org.hawkular.apm.tests.dockerized;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 import org.hawkular.apm.tests.dockerized.model.JsonPathVerify;
 
 import com.jayway.jsonpath.JsonPath;
@@ -28,6 +32,8 @@ import com.jayway.jsonpath.JsonPath;
  */
 public class JsonPathVerifier {
 
+    JsonPathVerifier() {}
+
     /**
      * Verifies that in the input json there is expected element defined as json path.
      *
@@ -37,8 +43,48 @@ public class JsonPathVerifier {
      */
     public static boolean verify(String json, JsonPathVerify jsonPathVerify) {
 
-        Object pathResultObject = JsonPath.read(json, jsonPathVerify.getPath());
+        Object leftObject = jsonPathVerify.getLeft();
+        Object rightObject = jsonPathVerify.getRight();
 
-        return pathResultObject.equals(jsonPathVerify.getResult());
+        if (jsonPathVerify.getLeft().matches("\\$.*")) {
+            leftObject= JsonPath.read(json, jsonPathVerify.getLeft());
+        }
+        if (jsonPathVerify.getRight().matches("\\$.*")) {
+            rightObject = JsonPath.read(json, jsonPathVerify.getRight());
+        }
+
+        boolean result;
+        switch (jsonPathVerify.getOperator()) {
+            case EQ: result = leftObject.toString().equals(rightObject.toString());
+                break;
+            case NE: result = !leftObject.toString().equals(rightObject.toString());
+                break;
+            case LT:
+                result = compareTo(leftObject.toString(), rightObject.toString()) < 0;
+                break;
+            case GT:
+                result = compareTo(leftObject.toString(), rightObject.toString()) > 0;
+                break;
+            default:
+                throw new IllegalStateException("Unsupported operator: " + jsonPathVerify.getOperator());
+        }
+
+        return result;
+    }
+
+    private static int compareTo(String n1, String n2) {
+        BigDecimal b1 = BigDecimal.valueOf(parseNumber(n1).doubleValue());
+        BigDecimal b2 = BigDecimal.valueOf(parseNumber(n2).doubleValue());
+        return b1.compareTo(b2);
+    }
+
+    private static Number parseNumber(String str) {
+        Number number;
+        try {
+            number = NumberFormat.getInstance().parse(str);
+        } catch (ParseException e) {
+            throw new IllegalStateException("Could not parse number: " + str, e);
+        }
+        return number;
     }
 }

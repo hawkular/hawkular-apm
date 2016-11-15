@@ -78,7 +78,7 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
         String[] command;
         try {
             command = new String[]{
-                    "docker-compose", "-f", scenarioDirectory + File.separator + dockerCompose, "down"
+                    "docker-compose", "-f", scenarioDirectory + File.separator + dockerCompose, "down", "--rmi", "local"
             };
             runShellCommand(command);
         } catch (EnvironmentException ex) {

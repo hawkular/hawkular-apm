@@ -5,7 +5,7 @@ Wildfly Swarm application instrumented with zipkin brave library.
 ## Standalone Run & Build
 ```shell
 $ mvn clean install
-$ java -jar target/hawkular-apm-example-zipkin-wildfly-swarm.jar
+$ java -jar target/hawkular-apm-example-zipkin-wildfly-swarm.jar -Dswarm.http.port=3003
 ```
 
 ## Docker
