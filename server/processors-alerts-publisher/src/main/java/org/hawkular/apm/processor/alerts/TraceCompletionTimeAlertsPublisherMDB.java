@@ -57,7 +57,7 @@ public class TraceCompletionTimeAlertsPublisherMDB implements MessageListener {
         try {
             String data = ((TextMessage) message).getText();
             List<CompletionTime> items = mapper.readValue(data, new TypeReference<List<CompletionTime>>() {});
-            publisher.publish(items, "TraceCompletionTime");
+            publisher.publish(items, "TraceCompletion");
         } catch (IOException | JMSException e) {
             logger.errorPublishingToAlerts(e);
         }
