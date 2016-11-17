@@ -125,7 +125,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -162,7 +162,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -207,7 +207,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 2);
 
         TransactionConfig btxnconfig1 = new TransactionConfig();
         btxnconfig1.setLevel(ReportingLevel.Ignore);
@@ -249,7 +249,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -290,7 +290,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -303,7 +303,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, criteria).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, criteria).size() == 1);
 
         // Get transaction count
         Long count = analyticsService.getTraceCompletionCount(null, criteria);
@@ -331,7 +331,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -341,7 +341,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria().setStartTime(0).setEndTime(0)).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria().setStartTime(0).setEndTime(0)).size() == 1);
 
         // Get transaction count
         assertEquals(1, analyticsService.getTraceCompletionCount(null, new Criteria()
@@ -396,7 +396,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -409,7 +409,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, criteria).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, criteria).size() == 1);
 
         // Get transaction count
         Long count = analyticsService.getTraceCompletionFaultCount(null, criteria);
@@ -438,7 +438,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -451,7 +451,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get trace completion times
-        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, criteria);
+        List<CompletionTime> times = analyticsService.getTraceCompletions(null, criteria);
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -489,7 +489,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -497,7 +497,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals(2, result.size());
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 2);
 
         // Get trace completion times
         Criteria criteria = new Criteria()
@@ -506,7 +506,7 @@ public class AnalyticsServiceITest extends AbstractITest {
                 .setEndTime(0)
                 .addProperty("prop2", "hello", Operator.HAS);
 
-        List<CompletionTime> times = analyticsService.getTraceCompletionTimes(null, criteria);
+        List<CompletionTime> times = analyticsService.getTraceCompletions(null, criteria);
 
         assertNotNull(times);
         assertEquals(1, times.size());
@@ -545,7 +545,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals("1", result.get(0).getFragmentId());
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -590,7 +590,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 2);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -598,7 +598,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         assertEquals(2, result.size());
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 2);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 2);
 
         Criteria criteria = new Criteria();
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
@@ -632,7 +632,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -645,7 +645,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, criteria).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, criteria).size() == 1);
 
         List<Cardinality> cards = analyticsService.getTraceCompletionFaultDetails(null, criteria);
 
@@ -685,7 +685,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -737,7 +737,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -797,7 +797,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -848,7 +848,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -922,7 +922,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -1008,7 +1008,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -1060,7 +1060,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());
@@ -1135,7 +1135,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 2);
 
         // Wait to result derived
-        Wait.until(() -> analyticsService.getTraceCompletionTimes(null, new Criteria()).size() == 1);
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
         // Query stored trace
         List<Trace> result = traceService.searchFragments(null, new Criteria());

@@ -167,7 +167,7 @@ public class AnalyticsHandler extends BaseHandler {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
     public Response getTraceCompletionTimes(@BeanParam CriteriaRequest request) {
-        return withCriteria(request, (criteria, tenant) -> analyticsService.getTraceCompletionTimes(tenant, criteria));
+        return withCriteria(request, (criteria, tenant) -> analyticsService.getTraceCompletions(tenant, criteria));
     }
 
     @GET

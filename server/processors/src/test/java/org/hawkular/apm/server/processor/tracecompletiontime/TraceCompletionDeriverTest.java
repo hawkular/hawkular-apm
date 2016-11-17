@@ -27,14 +27,14 @@ import org.junit.Test;
 /**
  * @author gbrown
  */
-public class TraceCompletionTimeDeriverTest {
+public class TraceCompletionDeriverTest {
 
     @Test
     public void testProcessSingleWithCommunications() {
         TraceCompletionInformation ci = new TraceCompletionInformation();
         ci.getCommunications().add(new TraceCompletionInformation.Communication());
 
-        TraceCompletionTimeDeriver deriver = new TraceCompletionTimeDeriver();
+        TraceCompletionDeriver deriver = new TraceCompletionDeriver();
 
         CompletionTime result = null;
 
@@ -54,7 +54,7 @@ public class TraceCompletionTimeDeriverTest {
         ct.setId("ctid");
         ci.setCompletionTime(ct);
 
-        TraceCompletionTimeDeriver deriver = new TraceCompletionTimeDeriver();
+        TraceCompletionDeriver deriver = new TraceCompletionDeriver();
 
         CompletionTime result = null;
 

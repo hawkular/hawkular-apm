@@ -43,13 +43,13 @@
       <pooled-connection-factory name="apmpcf" connectors="in-vm" entries="java:/APMJMSCF" max-pool-size="1000"/>
       <jms-topic name="Traces" entries="java:/Traces"/>
       <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
-      <jms-topic name="TraceCompletionTimes" entries="java:/TraceCompletionTimes"/>
+      <jms-topic name="TraceCompletions" entries="java:/TraceCompletions"/>
       <jms-topic name="TraceCompletionInformation" entries="java:/TraceCompletionInformation"/>
       <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
       <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
       <jms-topic name="Notifications" entries="java:/Notifications"/>
       <jms-topic name="Spans" entries="java:/Spans"/>
-      <jms-topic name="SpanTraceCompletionTimeProcessing" entries="java:/SpanTraceCompletionTimeProcessing"/>
+      <jms-topic name="SpanTraceCompletionProcessing" entries="java:/SpanTraceCompletionProcessing"/>
     </xsl:copy>
   </xsl:template>
 

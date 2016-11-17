@@ -115,7 +115,7 @@ public interface AnalyticsService {
      * @param criteria The criteria
      * @return The list of trace completion times
      */
-    List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria);
+    List<CompletionTime> getTraceCompletions(String tenantId, Criteria criteria);
 
     /**
      * This method returns the completion time percentiles, for the specified criteria, that were
@@ -237,7 +237,7 @@ public interface AnalyticsService {
      * @param completionTimes The completion times
      * @throws StoreException Failed to store
      */
-    void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException;
+    void storeTraceCompletions(String tenantId, List<CompletionTime> completionTimes) throws StoreException;
 
     /**
      * This method stores the supplied list of completion times for individual fragments.

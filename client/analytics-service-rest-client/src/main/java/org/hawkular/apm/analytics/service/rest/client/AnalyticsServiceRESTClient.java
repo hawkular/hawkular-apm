@@ -168,7 +168,7 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
     }
 
     @Override
-    public List<CompletionTime> getTraceCompletionTimes(String tenantId, Criteria criteria) {
+    public List<CompletionTime> getTraceCompletions(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get completion times: tenantId=[" + tenantId + "] criteria="
                     + criteria);
@@ -284,7 +284,7 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
     }
 
     @Override
-    public void storeTraceCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
+    public void storeTraceCompletions(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         throw new UnsupportedOperationException();
     }
 

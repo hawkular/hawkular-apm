@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.hawkular.apm.server.jms.span.comletiontime;
+package org.hawkular.apm.server.jms.span.tracecompletion;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -36,19 +36,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * @author gbrown
  * @author Pavol Loffay
  */
-@MessageDriven(name = "Span_TraceCompletionTimeDeriverInitiator",
+@MessageDriven(name = "Span_TraceCompletionDeriverInitiator",
         messageListenerInterface = MessageListener.class, activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "Spans"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = CompletionTimeProcessingInitiatorMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = CompletionTimeProcessingInitiatorMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionProcessingInitiatorMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionProcessingInitiatorMDB.SUBSCRIBER),
         @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"
-                + CompletionTimeProcessingInitiatorMDB.SUBSCRIBER + "'")
+                + TraceCompletionProcessingInitiatorMDB.SUBSCRIBER + "'")
 })
-public class CompletionTimeProcessingInitiatorMDB extends RetryCapableMDB<Span, CompletionTimeProcessing> {
+public class TraceCompletionProcessingInitiatorMDB extends RetryCapableMDB<Span, CompletionTimeProcessing> {
 
-    public static final String SUBSCRIBER = "SpanTraceCompletionTimeDeriverInitiator";
+    public static final String SUBSCRIBER = "SpanTraceCompletionDeriverInitiator";
 
     @Inject
     private SpanPublisherJMS spanPublisher;
@@ -56,7 +56,7 @@ public class CompletionTimeProcessingInitiatorMDB extends RetryCapableMDB<Span, 
     @Inject
     private CompletionTimeProcessingPublisher completionTimeProcessingPublisher;
 
-    public CompletionTimeProcessingInitiatorMDB() {
+    public TraceCompletionProcessingInitiatorMDB() {
         super(SUBSCRIBER);
     }
 
