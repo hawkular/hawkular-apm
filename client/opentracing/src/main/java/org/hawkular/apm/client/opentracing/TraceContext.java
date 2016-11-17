@@ -18,9 +18,12 @@ package org.hawkular.apm.client.opentracing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.hawkular.apm.api.logging.Logger;
+import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
@@ -35,6 +38,8 @@ import io.opentracing.APMSpan;
  * @author gbrown
  */
 public class TraceContext {
+
+    private static final Logger log = Logger.getLogger(TraceContext.class.getName());
 
     private Trace trace;
 
@@ -176,6 +181,39 @@ public class TraceContext {
      */
     public EndpointRef getSourceEndpoint() {
         return new EndpointRef(TagUtil.getUriPath(topSpan.getTags()), topSpan.getOperationName(), false);
+    }
+
+    /**
+     * Initialise the trace state from the information associated with the supplied context.
+     *
+     * @param source The source trace context to copy state from
+     */
+    public void initTraceState(TraceContext source) {
+        setTraceId(source.getTraceId());
+        setTransaction(source.getTransaction());
+        setReportingLevel(source.getReportingLevel());
+    }
+
+    /**
+     * Initialise the trace state from the supplied state.
+     *
+     * @param state The propagated state
+     */
+    public void initTraceState(Map<String, Object> state) {
+        Object traceId = state.get(Constants.HAWKULAR_APM_TRACEID);
+        Object transaction = state.get(Constants.HAWKULAR_APM_TXN);
+        Object level = state.get(Constants.HAWKULAR_APM_LEVEL);
+        if (traceId != null) {
+            setTraceId(traceId.toString());
+        } else {
+            log.severe("Trace id has not been propagated");
+        }
+        if (transaction != null) {
+            setTransaction(transaction.toString());
+        }
+        if (level != null) {
+            setReportingLevel(level.toString());
+        }
     }
 
 }

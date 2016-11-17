@@ -58,7 +58,8 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     @Override
     public <C> void inject(SpanContext spanContext, Format<C> format, C carrier) {
         if (spanContext instanceof APMSpan) {
-            ((APMSpan) spanContext).setInteractionId(UUID.randomUUID().toString(), NodeType.Producer);
+            ((APMSpan) spanContext).setInteractionId(UUID.randomUUID().toString());
+            ((APMSpan) spanContext).getNodeBuilder().setNodeType(NodeType.Producer);
         }
         super.inject(spanContext, format, carrier);
     }
