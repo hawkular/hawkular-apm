@@ -64,12 +64,17 @@ Folder | Description
 ---- | ----
 **api** | This module contains the Java interfaces for services and processors, as well as the information model for exchanging business transaction information.
 **client** | This folder contains the modules used to collector information from an execution environment.
-**dist** | This module builds a distribution containing a pre-packaged Hawkular server with BTM installed.
+**dist** | This module builds a distribution containing a pre-packaged Hawkular server with APM installed.
 **examples** | This folder contains example applications.
-**processors** | This folder contains the processor implementations that derive higher level information from the raw business transaction fragments reported by execution environments.
 **server** | This folder contains the modules related to the server.
 **tests** | This folder contains the integration tests.
 **ui** | The angularjs based user interface.
+
+Related Repositories
+--------------------
+* [Hawkular-APM OpenTracing JavaScript](https://github.com/hawkular/hawkular-apm-opentracing-javascript)
+* [Docker images](https://github.com/jboss-dockerfiles/hawkular-apm)
+* [Documentation](https://github.com/hawkular/hawkular-apm-user-guide)
 
 License
 -------

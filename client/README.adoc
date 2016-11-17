@@ -1,15 +1,12 @@
-= hawkular-btm
-:source-language: java
-
-== Client
+= Client
 
 The client folder contains components to be used instrument the client environment. Therefore we need to
 minimise dependencies to reduce the footprint on the client. As a result, the following applies:
 
-* Use java.util.logging instead of JBoss logger (although currently there is an issue using JUL in wildfly
-that impacts startup of the JBoss logging module, so use _org.hawkular.btm.api.client.Logger_ which is signature
+* Use java.util.logging instead of JBoss logger (although currently there is an issue using JUL in Wildfly
+that impacts startup of the JBoss logging module, so use `org.hawkular.apm.api.logging.Logger` which is signature
 compatible for a subset of the methods, and can therefore be replaced by JUL when the Wildfly issue is resolved).
 
-* Use the _org.hawkular.btm.api.util.ServiceResolver_ (based on the Java ServiceLoader mechanism) to
-locate service implementations, rather than CDI
+* Use the `org.hawkular.apm.api.services.ServiceResolver` (based on the Java ServiceLoader mechanism) to
+locate service implementations, rather than CDI.
 
