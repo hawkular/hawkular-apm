@@ -37,6 +37,16 @@ or docker:
 $ docker run -it --rm -p 8180:8180 -e HAWKULAR_APM_URI=http://172.17.0.1:8080 -e HAWKULAR_APM_USERNAME=jdoe -e HAWKULAR_APM_PASSWORD=password hawkular/apm-tests-app-vertx-opentracing
 ```
 
+or OpenShift:
+
+```shell
+mvn clean install
+oc new-build --binary --name=vertx-opentracing -l app=vertx-opentracing
+oc start-build vertx-opentracing --from-dir=. --follow
+oc new-app vertx-opentracing HAWKULAR_APM_URI="http://hawkular-apm" HAWKULAR_APM_USERNAME="admin" HAWKULAR_APM_PASSWORD="password" -l app=vertx-opentracing
+oc expose service vertx-opentracing
+```
+
 These commands use the username _jdoe_ and password _password_. These values should be replaced by appropriate credentials
 configured within your APM server.
 
@@ -78,5 +88,3 @@ OR
 
 ./list.sh fred
 ```
-
-

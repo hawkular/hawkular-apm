@@ -21,8 +21,10 @@ MAINTAINER Gary Brown <gbrown@redhat.com>
 
 ENV APP_HOME /app/
 
-COPY hawkular-apm-tests-app-vertx-opentracing-fat.jar $APP_HOME
+COPY target/hawkular-apm-tests-app-vertx-opentracing-fat.jar $APP_HOME
 
 WORKDIR $APP_HOME
+RUN chmod 777 $APP_HOME
+EXPOSE 8180
 
 CMD ["java", "-jar", "hawkular-apm-tests-app-vertx-opentracing-fat.jar"]
