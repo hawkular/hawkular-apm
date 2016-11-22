@@ -18,8 +18,10 @@ package org.hawkular.apm.server.elasticsearch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -33,6 +35,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.apm.api.model.Property;
@@ -132,23 +135,69 @@ public class TraceServiceElasticsearch implements TraceService {
         return ret;
     }
 
+    protected List<Trace> getFragmentsForTraceId(String tenantId, String traceId) {
+        List<Trace> ret = Collections.emptyList();
+
+        String index = client.getIndex(tenantId);
+
+        try {
+            RefreshRequestBuilder refreshRequestBuilder = client.getClient().admin().indices().prepareRefresh(index);
+            client.getClient().admin().indices().refresh(refreshRequestBuilder.request()).actionGet();
+
+            BoolQueryBuilder query = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.termQuery("traceId", traceId));
+
+            SearchRequestBuilder request = client.getClient().prepareSearch(index)
+                    .setTypes(TRACE_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setQuery(query);
+
+            SearchResponse response = request.execute().actionGet();
+            if (response.isTimedOut()) {
+                msgLog.warnQueryTimedOut();
+            }
+
+            ret = new ArrayList<Trace>((int)response.getHits().getTotalHits());
+
+            for (SearchHit searchHitFields : response.getHits()) {
+                try {
+                    ret.add(mapper.readValue(searchHitFields.getSourceAsString(),
+                            Trace.class));
+                } catch (IOException e) {
+                    msgLog.errorFailedToParse(e);
+                }
+            }
+
+            msgLog.tracef("Query fragments with traceId[%s] is: %s", traceId, ret);
+        } catch (org.elasticsearch.indices.IndexMissingException ime) {
+            // Ignore, as means that no traces have
+            // been stored yet
+            msgLog.tracef("No index found, so unable to retrieve traces");
+        } catch (org.elasticsearch.action.search.SearchPhaseExecutionException spee) {
+            // Ignore, as occurs when mapping not established (i.e. empty
+            // repository) and performing query with a sort order
+            msgLog.tracef("Failed to get fragments", spee);
+        }
+
+        return ret;
+    }
+
     @Override
     public Trace getTrace(String tenantId, String id) {
-        Trace ret = getFragment(tenantId, id);
+        List<Trace> fragments = getFragmentsForTraceId(tenantId, id);
+        Trace ret = fragments.stream().filter(f -> f.getTraceId().equals(id)).findFirst().orElse(null);
 
         if (ret != null) {
             for (int i=0; i < ret.getNodes().size(); i++) {
                 Node node = ret.getNodes().get(i);
-                processConnectedNode(tenantId, ret, node, new StringBuilder(ret.getFragmentId()).append(':').append(i));
+                processConnectedNode(fragments, ret, node, new StringBuilder(ret.getFragmentId()).append(':').append(i));
             }
+        } else if (spanService != null) {
+            ret = spanService.getTrace(tenantId, id);
         }
 
         if (msgLog.isTraceEnabled()) {
             msgLog.tracef("Get trace with id[%s] is: %s", id, ret);
-        }
-
-        if (ret == null && spanService != null) {
-            ret = spanService.getTrace(tenantId, id);
         }
 
         return ret;
@@ -159,28 +208,29 @@ public class TraceServiceElasticsearch implements TraceService {
      * other trace fragments that are related, building up the end to
      * end trace as it goes.
      *
-     * @param tenantId The tenant id
+     * @param fragments The list of fragments for the traceId
      * @param trace The trace being constructed
      * @param root The node
      * @param nodePath The node's path
      */
-    protected void processConnectedNode(String tenantId, Trace trace, Node node, StringBuilder nodePath) {
+    protected void processConnectedNode(List<Trace> fragments, Trace trace, Node node, StringBuilder nodePath) {
 
         if (node.containerNode()) {
 
             for (int i=0; i < ((ContainerNode)node).getNodes().size(); i++) {
                 Node n = ((ContainerNode)node).getNodes().get(i);
-                processConnectedNode(tenantId, trace, n, new StringBuilder(nodePath).append(':').append(i));
+                processConnectedNode(fragments, trace, n, new StringBuilder(nodePath).append(':').append(i));
             }
 
             // Check if node has been referenced by one or more 'caused by' links
-            Criteria criteria = new Criteria().setStartTime(100);
-            criteria.getCorrelationIds().add(new CorrelationIdentifier(Scope.CausedBy, nodePath.toString()));
-            List<Trace> fragments = searchFragments(tenantId, criteria);
+            CorrelationIdentifier cid = new CorrelationIdentifier(Scope.CausedBy, nodePath.toString());
+            List<Trace> causedByFragments = fragments.stream().filter(f -> {
+                return !f.getNodes().isEmpty() && f.getNodes().get(0).getCorrelationIds().contains(cid);
+            }).collect(Collectors.toList());
 
             ContainerNode anchor = (ContainerNode)node;
 
-            for (Trace tf : fragments) {
+            for (Trace tf : causedByFragments) {
                 for (int i=0; i < tf.getNodes().size(); i++) {
                     Node n = tf.getNodes().get(i);
                     if (anchor.getClass() != Producer.class) {
@@ -190,23 +240,24 @@ public class TraceServiceElasticsearch implements TraceService {
                     } else {
                         anchor.getNodes().add(n);
                     }
-                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getFragmentId()).append(':').append(i));
+                    processConnectedNode(fragments, trace, n, new StringBuilder(tf.getFragmentId()).append(':').append(i));
                 }
             }
         }
 
         if (node.getClass() == Producer.class && !node.getCorrelationIds().isEmpty()) {
             // Enable unrestricted time search for now - may need to restrict if becomes too inefficient
-            Criteria criteria = new Criteria().setStartTime(100);
-            criteria.getCorrelationIds().addAll(node.getCorrelationIds());
-            List<Trace> fragments = searchFragments(tenantId, criteria);
+            List<Trace> correlatedFragments = fragments.stream().filter(f -> {
+                return !f.getNodes().isEmpty() && f.getNodes().get(0).getCorrelationIds().stream().filter(
+                        cid -> node.getCorrelationIds().contains(cid)).count() > 0;
+            }).collect(Collectors.toList());
 
-            for (Trace tf : fragments) {
+            for (Trace tf : correlatedFragments) {
                 // Ensure we don't process top level trace again, if contains just a Producer
                 for (int i=0; !tf.getFragmentId().equals(trace.getFragmentId()) && i < tf.getNodes().size(); i++) {
                     Node n = tf.getNodes().get(i);
                     ((Producer)node).getNodes().add(n);
-                    processConnectedNode(tenantId, trace, n, new StringBuilder(tf.getFragmentId()).append(':').append(i));
+                    processConnectedNode(fragments, trace, n, new StringBuilder(tf.getFragmentId()).append(':').append(i));
                 }
             }
         }

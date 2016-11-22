@@ -365,6 +365,7 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testStoreAndRetrieveInteractionTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
+        trace1.setTraceId("1");
         trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
@@ -381,6 +382,7 @@ public class TraceServiceElasticsearchTest {
         c1.getNodes().add(p1_2);
 
         Trace trace2 = new Trace();
+        trace2.setTraceId("1");
         trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
@@ -425,6 +427,7 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testStoreAndRetrieveCausedByTraceById() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
+        trace1.setTraceId("1");
         trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c1 = new Consumer();
@@ -436,6 +439,7 @@ public class TraceServiceElasticsearchTest {
         c1.getNodes().add(comp1);
 
         Trace trace2 = new Trace();
+        trace2.setTraceId("1");
         trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c2 = new Consumer();
@@ -449,6 +453,7 @@ public class TraceServiceElasticsearchTest {
         c2.getNodes().add(comp2);
 
         Trace trace3 = new Trace();
+        trace3.setTraceId("1");
         trace3.setFragmentId("3");
         trace3.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer c3 = new Consumer();
@@ -519,6 +524,7 @@ public class TraceServiceElasticsearchTest {
     @Test
     public void testGetTraceByIdJustProducerConsumer() throws StoreException, JsonProcessingException {
         Trace trace1 = new Trace();
+        trace1.setTraceId("1");
         trace1.setFragmentId("1");
         trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Producer producer = new Producer();
@@ -527,6 +533,7 @@ public class TraceServiceElasticsearchTest {
         trace1.getNodes().add(producer);
 
         Trace trace2 = new Trace();
+        trace2.setTraceId("1");
         trace2.setFragmentId("2");
         trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         Consumer consumer = new Consumer();
