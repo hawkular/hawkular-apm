@@ -148,11 +148,11 @@
             </executions>
             <configuration>
               <imageName>hawkular/apm-tests-app-vertx-opentracing</imageName>
-              <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+              <dockerDirectory>${project.basedir}</dockerDirectory>
               <resources>
                 <resource>
-                  <targetPath>/</targetPath>
-                  <directory>${project.build.directory}</directory>
+                  <targetPath>/target</targetPath>
+                  <directory>${project.basedir}</directory>
                   <include>${project.artifactId}-fat.jar</include>
                 </resource>
               </resources>

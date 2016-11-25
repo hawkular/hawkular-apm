@@ -19,6 +19,20 @@ across servers, tiers, on-premises and in the cloud. It also enables detailed
 performance analysis to be performed of the individual components that make up an
 application.
 
+Running the latest version in OpenShift
+---
+
+A Docker image with the latest released version of Hawkular APM is published to Docker Hub. Additionally,
+we keep a set of files that can be used in conjunction with OpenShift, to enable a quick and easy way to
+start a new Hawkular APM instance. If you want to start this way, this is what you'll need:
+
+```shell
+docker-machine create -d virtualbox --virtualbox-memory 8192 --virtualbox-cpu-count 4 --engine-insecure-registry 172.30.0.0/16 openshift
+oc cluster up --docker-machine=openshift
+oc create -f https://raw.githubusercontent.com/jboss-dockerfiles/hawkular-apm/master/openshift-templates/hawkular-apm-server-deployment.yml
+```
+Note: you should be able to start with a simple `oc cluster up`, but allocating more power to the underlying `docker-machine` is a good idea.
+
 Build & Run
 -----------
 
