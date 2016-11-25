@@ -35,7 +35,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.EndpointUtil;
-import org.hawkular.apm.client.api.reporter.TraceReporter;
+import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,16 +64,16 @@ public class APMTracerTest {
 
     @Test
     public void testClient() throws JsonProcessingException, InterruptedException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         ClientService service = new ClientService(tracer, MY_VALUE);
 
         service.handle();
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace = reporter.getTraces().get(0);
+        Trace trace = recorder.getTraces().get(0);
         assertEquals(1, trace.getNodes().size());
         assertEquals(Component.class, trace.getNodes().get(0).getClass());
 
@@ -107,16 +107,16 @@ public class APMTracerTest {
 
     @Test
     public void testClientNullTag() throws JsonProcessingException, InterruptedException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         ClientService service = new ClientService(tracer, null);
 
         service.handle();
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace = reporter.getTraces().get(0);
+        Trace trace = recorder.getTraces().get(0);
         assertEquals(1, trace.getNodes().size());
         assertEquals(Component.class, trace.getNodes().get(0).getClass());
 
@@ -134,8 +134,8 @@ public class APMTracerTest {
 
     @Test
     public void testSync() throws JsonProcessingException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         SyncService service = new SyncService(tracer);
 
@@ -146,9 +146,9 @@ public class APMTracerTest {
 
         service.handle1(message);
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace = reporter.getTraces().get(0);
+        Trace trace = recorder.getTraces().get(0);
 
         assertEquals(TEST_TXN, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
@@ -192,8 +192,8 @@ public class APMTracerTest {
 
     @Test
     public void testSyncSetTxnNameOnConsumer() throws JsonProcessingException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         SyncService service = new SyncService(tracer);
 
@@ -203,9 +203,9 @@ public class APMTracerTest {
 
         service.handle1(message);
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace = reporter.getTraces().get(0);
+        Trace trace = recorder.getTraces().get(0);
 
         assertEquals(SyncService.SYNC_TXN_NAME_1, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
@@ -252,8 +252,8 @@ public class APMTracerTest {
 
     @Test
     public void testSyncSetTxnNameOnProducer() throws JsonProcessingException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         SyncService service = new SyncService(tracer);
 
@@ -264,9 +264,9 @@ public class APMTracerTest {
         // Call alternate 'handle' method that does not set the transaction name straightaway
         service.handle2(message);
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace = reporter.getTraces().get(0);
+        Trace trace = recorder.getTraces().get(0);
 
         assertEquals(SyncService.SYNC_TXN_NAME_2, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
@@ -313,8 +313,8 @@ public class APMTracerTest {
 
     @Test
     public void testAsync() throws JsonProcessingException, InterruptedException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         AsyncService service = new AsyncService(tracer);
 
@@ -330,11 +330,11 @@ public class APMTracerTest {
 
         latch.await(5, TimeUnit.SECONDS);
 
-        Wait.until(() -> reporter.getTraces().size() == 1, 5, TimeUnit.SECONDS);
+        Wait.until(() -> recorder.getTraces().size() == 1, 5, TimeUnit.SECONDS);
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace1 = reporter.getTraces().get(0);
+        Trace trace1 = recorder.getTraces().get(0);
         assertEquals(TEST_TXN, trace1.getTransaction());
         assertEquals(1, trace1.getNodes().size());
         assertEquals(Consumer.class, trace1.getNodes().get(0).getClass());
@@ -367,8 +367,8 @@ public class APMTracerTest {
 
     @Test
     public void testSpawn() throws JsonProcessingException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         SpawnService service = new SpawnService(tracer);
 
@@ -379,11 +379,11 @@ public class APMTracerTest {
 
         service.handle(message);
 
-        Wait.until(() -> reporter.getTraces().size() == 2, 5, TimeUnit.SECONDS);
+        Wait.until(() -> recorder.getTraces().size() == 2, 5, TimeUnit.SECONDS);
 
-        assertEquals(2, reporter.getTraces().size());
+        assertEquals(2, recorder.getTraces().size());
 
-        Trace trace1 = reporter.getTraces().get(0);
+        Trace trace1 = recorder.getTraces().get(0);
         assertEquals(TEST_TXN, trace1.getTransaction());
         assertEquals(1, trace1.getNodes().size());
         assertEquals(Consumer.class, trace1.getNodes().get(0).getClass());
@@ -403,7 +403,7 @@ public class APMTracerTest {
         assertEquals(0, component1.getNodes().size());
 
         // Check trace2
-        Trace trace2 = reporter.getTraces().get(1);
+        Trace trace2 = recorder.getTraces().get(1);
         assertEquals(TEST_TXN, trace2.getTransaction());
         assertEquals(1, trace2.getNodes().size());
         assertEquals(Consumer.class, trace2.getNodes().get(0).getClass());
@@ -441,8 +441,8 @@ public class APMTracerTest {
 
     @Test
     public void testForkJoin() throws JsonProcessingException {
-        TestTraceReporter reporter = new TestTraceReporter();
-        APMTracer tracer = new APMTracer(reporter);
+        TestTraceRecorder recorder = new TestTraceRecorder();
+        APMTracer tracer = new APMTracer(recorder);
 
         ForkJoinService service = new ForkJoinService(tracer);
 
@@ -453,9 +453,9 @@ public class APMTracerTest {
 
         service.handle(message);
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
 
-        Trace trace = reporter.getTraces().get(0);
+        Trace trace = recorder.getTraces().get(0);
         assertEquals(TEST_APM_TRACEID, trace.getTraceId());
         assertEquals(TEST_TXN, trace.getTransaction());
         assertEquals(1, trace.getNodes().size());
@@ -478,7 +478,7 @@ public class APMTracerTest {
         assertEquals(0, service.getMessages().size());
     }
 
-    public static class TestTraceReporter implements TraceReporter {
+    public static class TestTraceRecorder implements TraceRecorder {
 
         private List<Trace> traces = new ArrayList<>();
 

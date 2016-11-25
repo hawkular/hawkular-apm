@@ -35,20 +35,20 @@ public class OpenTracingManagerTest {
     private static final String OP1 = "OP1";
     private static final String OP2 = "OP2";
 
-    private static final TestTraceReporter reporter = new TestTraceReporter();
+    private static final TestTraceRecorder recorder = new TestTraceRecorder();
 
     @BeforeClass
     public static void initClass() {
         System.setProperty(PropertyUtil.HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL, "2000");
 
         APMTracer tracer = (APMTracer) OpenTracingTracer.getSingleton();
-        tracer.setTraceReporter(reporter);
+        tracer.setTraceRecorder(recorder);
     }
 
     @Before
     public void clearTraces() {
         OpenTracingManager.reset();
-        reporter.clear();
+        recorder.clear();
     }
 
     @Test
@@ -66,10 +66,10 @@ public class OpenTracingManagerTest {
 
         assertFalse(otm.hasSpan());
 
-        assertEquals(1, reporter.getTraces().size());
-        assertEquals(1, reporter.getTraces().get(0).getNodes().size());
-        assertEquals(OP1, reporter.getTraces().get(0).getNodes().get(0).getOperation());
-        assertEquals(0, ((ContainerNode) reporter.getTraces().get(0).getNodes().get(0)).getNodes().size());
+        assertEquals(1, recorder.getTraces().size());
+        assertEquals(1, recorder.getTraces().get(0).getNodes().size());
+        assertEquals(OP1, recorder.getTraces().get(0).getNodes().get(0).getOperation());
+        assertEquals(0, ((ContainerNode) recorder.getTraces().get(0).getNodes().get(0)).getNodes().size());
     }
 
     @Test
@@ -80,16 +80,16 @@ public class OpenTracingManagerTest {
         otm.startSpan(otm.getTracer().buildSpan(OP2));
         otm.finishSpan();
 
-        assertEquals(0, reporter.getTraces().size());
+        assertEquals(0, recorder.getTraces().size());
 
         otm.finishSpan();
 
-        assertEquals(1, reporter.getTraces().size());
-        assertEquals(1, reporter.getTraces().get(0).getNodes().size());
-        assertEquals(OP1, reporter.getTraces().get(0).getNodes().get(0).getOperation());
-        assertEquals(1, ((ContainerNode) reporter.getTraces().get(0).getNodes().get(0)).getNodes().size());
+        assertEquals(1, recorder.getTraces().size());
+        assertEquals(1, recorder.getTraces().get(0).getNodes().size());
+        assertEquals(OP1, recorder.getTraces().get(0).getNodes().get(0).getOperation());
+        assertEquals(1, ((ContainerNode) recorder.getTraces().get(0).getNodes().get(0)).getNodes().size());
         assertEquals(OP2,
-                ((ContainerNode) reporter.getTraces().get(0).getNodes().get(0)).getNodes().get(0).getOperation());
+                ((ContainerNode) recorder.getTraces().get(0).getNodes().get(0)).getNodes().get(0).getOperation());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class OpenTracingManagerTest {
 
         assertFalse(otm.hasSpan());
 
-        assertEquals(1, reporter.getTraces().size());
+        assertEquals(1, recorder.getTraces().size());
     }
 
     @Test

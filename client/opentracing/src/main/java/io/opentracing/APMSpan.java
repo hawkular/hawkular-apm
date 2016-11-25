@@ -28,7 +28,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.api.utils.TimeUtil;
-import org.hawkular.apm.client.api.reporter.TraceReporter;
+import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.client.opentracing.NodeBuilder;
 import org.hawkular.apm.client.opentracing.TraceContext;
 
@@ -52,24 +52,24 @@ public class APMSpan extends AbstractSpan {
 
     /**
      * @param builder The span builder
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      */
-    public APMSpan(APMSpanBuilder builder, TraceReporter reporter) {
+    public APMSpan(APMSpanBuilder builder, TraceRecorder recorder) {
         super(builder.operationName, builder.start);
 
-        init(builder, reporter);
+        init(builder, recorder);
     }
 
-    protected void init(APMSpanBuilder builder, TraceReporter reporter) {
+    protected void init(APMSpanBuilder builder, TraceRecorder recorder) {
         
         if (!builder.references.isEmpty()) {
-            initReferences(builder, reporter);
+            initReferences(builder, recorder);
         }
 
         // If no nodebuilder established based on reference information, then create a new
         // one and trace context
         if (nodeBuilder == null) {
-            initTopLevelState(this, reporter);
+            initTopLevelState(this, recorder);
         }
 
         // Initialise node path
@@ -78,7 +78,7 @@ public class APMSpan extends AbstractSpan {
         traceContext.startProcessingNode();
     }
 
-    protected void initReferences(APMSpanBuilder builder, TraceReporter reporter) {
+    protected void initReferences(APMSpanBuilder builder, TraceRecorder recorder) {
         // Find primary reference
         Reference primaryRef = findPrimaryReference(builder.references);
 
@@ -89,21 +89,21 @@ public class APMSpan extends AbstractSpan {
             
             // Process references to extracted trace state
             if (primaryRef.getReferredTo() instanceof APMSpanBuilder) {
-                initFromExtractedTraceState(builder, reporter, primaryRef);
+                initFromExtractedTraceState(builder, recorder, primaryRef);
 
             } else if (primaryRef.getReferredTo() instanceof APMSpan) {
                 
                 // Process references for direct ChildOf
                 if (References.CHILD_OF.equals(primaryRef.getReferenceType())) {
-                    initChildOf(builder, reporter, primaryRef);
+                    initChildOf(builder, recorder, primaryRef);
                 
                 // Process references for direct FollowsFrom
                 } else if (References.FOLLOWS_FROM.equals(primaryRef.getReferenceType())) {
-                    initFollowsFrom(builder, reporter, primaryRef);
+                    initFollowsFrom(builder, recorder, primaryRef);
                 }
             }
         } else {
-            processNoPrimaryReference(builder, reporter);
+            processNoPrimaryReference(builder, recorder);
         }
     }
 
@@ -152,24 +152,24 @@ public class APMSpan extends AbstractSpan {
      * trace fragment.
      *
      * @param topSpan The top level span in the trace
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      */
-    protected void initTopLevelState(APMSpan topSpan, TraceReporter reporter) {
+    protected void initTopLevelState(APMSpan topSpan, TraceRecorder recorder) {
         nodeBuilder = new NodeBuilder();
-        traceContext = new TraceContext(topSpan, nodeBuilder, reporter);
+        traceContext = new TraceContext(topSpan, nodeBuilder, recorder);
     }
 
     /**
      * This method initialises the span based on extracted trace state.
      *
      * @param builder The span builder
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      * @param ref The reference
      */
-    protected void initFromExtractedTraceState(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
+    protected void initFromExtractedTraceState(APMSpanBuilder builder, TraceRecorder recorder, Reference ref) {
         APMSpanBuilder parentBuilder = (APMSpanBuilder) ref.getReferredTo();
 
-        initTopLevelState(this, reporter);
+        initTopLevelState(this, recorder);
 
         // Check for passed state
         if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
@@ -189,10 +189,10 @@ public class APMSpan extends AbstractSpan {
      * This method initialises the span based on a 'child-of' relationship.
      *
      * @param builder The span builder
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      * @param ref The 'child-of' relationship
      */
-    protected void initChildOf(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
+    protected void initChildOf(APMSpanBuilder builder, TraceRecorder recorder, Reference ref) {
         APMSpan parent = (APMSpan) ref.getReferredTo();
 
         if (parent.getNodeBuilder() != null) {
@@ -219,13 +219,13 @@ public class APMSpan extends AbstractSpan {
      * This method initialises the span based on a 'follows-from' relationship.
      *
      * @param builder The span builder
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      * @param ref The 'follows-from' relationship
      */
-    protected void initFollowsFrom(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
+    protected void initFollowsFrom(APMSpanBuilder builder, TraceRecorder recorder, Reference ref) {
         APMSpan referenced = (APMSpan) ref.getReferredTo();
 
-        initTopLevelState(referenced.getTraceContext().getTopSpan(), reporter);
+        initTopLevelState(referenced.getTraceContext().getTopSpan(), recorder);
 
         // Top level node in spawned fragment should be a Consumer with correlation id
         // referencing back to the 'spawned' node
@@ -243,12 +243,12 @@ public class APMSpan extends AbstractSpan {
      * This method initialises the span based on there being no primary reference.
      *
      * @param builder The span builder
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      */
-    protected void processNoPrimaryReference(APMSpanBuilder builder, TraceReporter reporter) {
+    protected void processNoPrimaryReference(APMSpanBuilder builder, TraceRecorder recorder) {
         // No primary reference found, so means that all references will be treated
         // as equal, to provide a join construct within a separate fragment.
-        initTopLevelState(this, reporter);
+        initTopLevelState(this, recorder);
 
         Set<String> traceIds = builder.references.stream().map(ref -> {
             if (ref.getReferredTo() instanceof APMSpan) {

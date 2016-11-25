@@ -23,8 +23,8 @@ import java.util.UUID;
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.NodeType;
-import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
-import org.hawkular.apm.client.api.reporter.TraceReporter;
+import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
+import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.client.opentracing.APMTracer;
 
 import io.opentracing.propagation.Format;
@@ -36,23 +36,23 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     private static final Logger log = Logger.getLogger(APMTracer.class.getName());
 
-    private TraceReporter reporter;
+    private TraceRecorder recorder;
 
     public AbstractAPMTracer() {
-        this.reporter = new BatchTraceReporter();
+        this.recorder = new BatchTraceRecorder();
     }
 
-    public AbstractAPMTracer(TraceReporter reporter) {
-        this.reporter = reporter;
+    public AbstractAPMTracer(TraceRecorder recorder) {
+        this.recorder = recorder;
     }
     
-    public void setTraceReporter(TraceReporter reporter) {
-        this.reporter = reporter;
+    public void setTraceRecorder(TraceRecorder recorder) {
+        this.recorder = recorder;
     }
 
     @Override
     APMSpanBuilder createSpanBuilder(String operationName) {
-        return new APMSpanBuilder(operationName, reporter);
+        return new APMSpanBuilder(operationName, recorder);
     }
 
     @Override

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.api.reporter;
+package org.hawkular.apm.client.api.recorder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +37,13 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  *
  * @author gbrown
  */
-public class BatchTraceReporter implements TraceReporter {
+public class BatchTraceRecorder implements TraceRecorder {
 
     private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
 
     private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANTID";
 
-    private static final Logger log = Logger.getLogger(BatchTraceReporter.class.getName());
+    private static final Logger log = Logger.getLogger(BatchTraceRecorder.class.getName());
 
     private static final int DEFAULT_BATCH_TIME = 500;
 
@@ -76,7 +76,7 @@ public class BatchTraceReporter implements TraceReporter {
     /**
      * The default constructor.
      */
-    public BatchTraceReporter() {
+    public BatchTraceRecorder() {
         init();
     }
 
@@ -97,7 +97,7 @@ public class BatchTraceReporter implements TraceReporter {
     }
 
     /**
-     * This method initialises the reporter.
+     * This method initialises the recorder.
      */
     protected void init() {
         // Get properties

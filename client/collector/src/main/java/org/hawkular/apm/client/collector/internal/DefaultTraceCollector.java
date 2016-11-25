@@ -47,7 +47,7 @@ import org.hawkular.apm.api.services.ServiceResolver;
 import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.apm.client.api.reporter.BatchTraceReporter;
+import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
 import org.hawkular.apm.client.collector.SessionManager;
 import org.hawkular.apm.client.collector.TraceCollector;
 
@@ -69,7 +69,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     private ConfigurationService configurationService;
 
-    private BatchTraceReporter reporter = new BatchTraceReporter();
+    private BatchTraceRecorder recorder = new BatchTraceRecorder();
 
     private Map<String, FragmentBuilder> correlations = new ConcurrentHashMap<String, FragmentBuilder>();
 
@@ -203,28 +203,28 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
      * @return the trace publisher
      */
     protected TracePublisher getTracePublisher() {
-        return reporter.getTracePublisher();
+        return recorder.getTracePublisher();
     }
 
     /**
      * @param tracePublisher the trace publisher to set
      */
     protected void setTracePublisher(TracePublisher tracePublisher) {
-        reporter.setTracePublisher(tracePublisher);
+        recorder.setTracePublisher(tracePublisher);
     }
 
     /**
      * @return the tenantId
      */
     public String getTenantId() {
-        return reporter.getTenantId();
+        return recorder.getTenantId();
     }
 
     /**
      * @param tenantId the tenantId to set
      */
     public void setTenantId(String tenantId) {
-        reporter.setTenantId(tenantId);
+        recorder.setTenantId(tenantId);
     }
 
     @Override
@@ -1184,7 +1184,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                             }
                         }
 
-                        reporter.report(trace);
+                        recorder.report(trace);
                     }
                 }
             }
@@ -1207,9 +1207,9 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     @Override
     public boolean activate(String uri, String operation, String id) {
-        if (!reporter.isEnabled()) {
+        if (!recorder.isEnabled()) {
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Reporter is disabled, so cannot activate");
+                log.finest("Recorder is disabled, so cannot activate");
             }
             return false;
         }
