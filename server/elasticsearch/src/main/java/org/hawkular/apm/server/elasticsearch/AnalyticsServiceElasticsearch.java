@@ -105,7 +105,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     private static final String COMMUNICATION_DETAILS_TYPE = "communicationdetails";
     private static final String NODE_DETAILS_TYPE = "nodedetails";
     private static final String TRACE_COMPLETION_TIME_TYPE = "tracecompletion";
-    private static final String FRAGMENT_COMPLETION_TIME_TYPE = "fragmentcompletiontime";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static ElasticsearchClient client = ElasticsearchClient.getSingleton();
 
@@ -657,8 +656,8 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         // Obtain information about the fragments
         StatsBuilder durationBuilder = AggregationBuilders
-                .stats("duration")
-                .field(ElasticsearchUtil.DURATION_FIELD);
+                .stats("elapsed")
+                .field(ElasticsearchUtil.ELAPSED_FIELD);
 
         TermsBuilder serviceTerm = AggregationBuilders
                 .terms("serviceTerm")
@@ -701,7 +700,9 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(operationsBuilder2)
                 .subAggregation(missingOperationBuilder2);
 
-        SearchRequestBuilder request2 = getBaseSearchRequestBuilder(FRAGMENT_COMPLETION_TIME_TYPE, index, criteria, query, 0);
+        query = query.must(QueryBuilders.matchQuery("initial", "true"));
+
+        SearchRequestBuilder request2 = getBaseSearchRequestBuilder(NODE_DETAILS_TYPE, index, criteria, query, 0);
         request2.addAggregation(urisBuilder2).addAggregation(missingUriBuilder2);
 
         SearchResponse response2 = getSearchResponse(request2);
@@ -709,7 +710,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         for (Terms.Bucket urisBucket : completions.getBuckets()) {
             for (Terms.Bucket operationBucket : urisBucket.getAggregations().<Terms>get("operations").getBuckets()) {
-                Stats duration = operationBucket.getAggregations().get("duration");
+                Stats elapsed = operationBucket.getAggregations().get("elapsed");
                 String id = EndpointUtil.encodeEndpoint(urisBucket.getKey(),
                         operationBucket.getKey());
 
@@ -723,7 +724,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 }
 
                 if (addMetrics) {
-                    doAddMetrics(css, duration, operationBucket.getDocCount());
+                    doAddMetrics(css, elapsed, operationBucket.getDocCount());
                 }
 
                 String serviceName = serviceName(operationBucket.getAggregations()
@@ -738,7 +739,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             Missing missingOp = urisBucket.getAggregations().get("missingOperation");
 
             if (missingOp.getDocCount() > 0) {
-                Stats duration = missingOp.getAggregations().get("duration");
+                Stats elapsed = missingOp.getAggregations().get("elapsed");
                 String id = urisBucket.getKey();
 
                 CommunicationSummaryStatistics css = stats.get(id);
@@ -759,7 +760,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 }
 
                 if (addMetrics) {
-                    doAddMetrics(css, duration, missingOp.getDocCount());
+                    doAddMetrics(css, elapsed, missingOp.getDocCount());
                 }
             }
         }
@@ -770,7 +771,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             Terms operations = missingUri.getAggregations().get("operations");
 
             for (Terms.Bucket operationBucket : operations.getBuckets()) {
-                Stats duration = operationBucket.getAggregations().get("duration");
+                Stats elapsed = operationBucket.getAggregations().get("elapsed");
                 String id = EndpointUtil.encodeEndpoint(null,
                         operationBucket.getKey());
 
@@ -791,7 +792,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 }
 
                 if (addMetrics) {
-                    doAddMetrics(css, duration, operationBucket.getDocCount());
+                    doAddMetrics(css, elapsed, operationBucket.getDocCount());
                 }
             }
         }
@@ -825,11 +826,6 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     @Override
     public void storeTraceCompletions(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         bulkStoreApmEvents(tenantId, completionTimes, TRACE_COMPLETION_TIME_TYPE);
-    }
-
-    @Override
-    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
-        bulkStoreApmEvents(tenantId, completionTimes, FRAGMENT_COMPLETION_TIME_TYPE);
     }
 
     private void bulkStoreApmEvents(String tenantId, List<? extends ApmEvent> events, String type) throws StoreException {

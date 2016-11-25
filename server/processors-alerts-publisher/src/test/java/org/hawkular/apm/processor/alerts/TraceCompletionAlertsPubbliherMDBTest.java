@@ -31,24 +31,14 @@ import org.junit.Test;
 /**
  * @author Juraci Paixão Kröhling
  */
-public class EventTest {
+public class TraceCompletionAlertsPubbliherMDBTest {
     @Test
     public void eventConsumesFault() {
         CompletionTime completionTime = new CompletionTime();
         completionTime.getProperties().add(new Property(Constants.PROP_FAULT, "the fault"));
-        Event event = new Event(completionTime, "eventConsumesFault");
-        assertEquals(event.getTags().get(Constants.PROP_FAULT),
-                completionTime.getProperties().iterator().next().getValue());
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void failsOnNullEventSource() {
-        new Event(new CompletionTime(), null);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void failsOnEmptyEventSource() {
-        new Event(new CompletionTime(), "");
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals(completionTime.getProperties().iterator().next().getValue(),
+                event.getTags().get(Constants.PROP_FAULT));
     }
 
     @Test
@@ -56,49 +46,49 @@ public class EventTest {
         CompletionTime completionTime = new CompletionTime();
         completionTime.setUri("/foo/bar");
         completionTime.setOperation("GET");
-        Event event = new Event(completionTime, "eventGetsProperContext");
-        assertEquals(event.getTags().get("uri"), completionTime.getUri());
-        assertEquals(event.getTags().get("operation"), completionTime.getOperation());
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals(completionTime.getUri(), event.getTags().get("uri"));
+        assertEquals(completionTime.getOperation(), event.getTags().get("operation"));
     }
 
     @Test
     public void eventSetsDataSource() {
         CompletionTime completionTime = new CompletionTime();
         completionTime.setHostName("myhost");
-        Event event = new Event(completionTime, "eventSetsDataSource");
-        assertEquals(event.getDataSource(), completionTime.getHostName());
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals(completionTime.getHostName(), event.getDataSource());
     }
 
     @Test
     public void eventSetsId() {
         CompletionTime completionTime = new CompletionTime();
         completionTime.setId("abc123");
-        Event event = new Event(completionTime, "eventSetsId");
-        assertNotEquals(event.getId(), "eventSetsId-abc123");
-        assertNotEquals(event.getId(), "abc123");
-        assertEquals(event.getContext().get("id"), "abc123");
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertNotEquals("eventSetsId-abc123", event.getId());
+        assertNotEquals("abc123", event.getId());
+        assertEquals("abc123", event.getContext().get("id"));
     }
 
     @Test
     public void eventSetsDataId() {
         CompletionTime completionTime = new CompletionTime();
-        Event event = new Event(completionTime, "eventSetsDataId");
-        assertEquals(event.getDataId(), "eventSetsDataId");
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals("TraceCompletion", event.getDataId());
     }
 
     @Test
     public void eventSetsCategory() {
         CompletionTime completionTime = new CompletionTime();
-        Event event = new Event(completionTime, "eventSource");
-        assertEquals(event.getCategory(), "APM");
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals("APM", event.getCategory());
     }
 
     @Test
     public void eventSetsProperties() {
         CompletionTime completionTime = new CompletionTime();
         completionTime.getProperties().add(new Property("foo", "baz"));
-        Event event = new Event(completionTime, "eventSetsProperties");
-        assertEquals(event.getTags().get("foo"), "baz");
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals("baz", event.getTags().get("foo"));
     }
 
     @Test
@@ -106,7 +96,7 @@ public class EventTest {
         CompletionTime completionTime = new CompletionTime();
         completionTime.getProperties().add(new Property("foo", "baz"));
         completionTime.getProperties().add(new Property("foo", "bar"));
-        Event event = new Event(completionTime, "eventSetsProperties");
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
         String result = event.getTags().get("foo");
         assertNotNull(result);
         assertTrue(result.equals("baz,bar") || result.equals("bar,baz"));
@@ -117,7 +107,7 @@ public class EventTest {
         CompletionTime completionTime = new CompletionTime();
         long now = Clock.systemDefaultZone().millis();
         completionTime.setTimestamp(now);
-        Event event = new Event(completionTime, "eventSetsCreationTime");
-        assertEquals(event.getCtime(), now);
+        Event event = TraceCompletionAlertsPublisherMDB.toEvent(completionTime);
+        assertEquals(now, event.getCtime());
     }
 }

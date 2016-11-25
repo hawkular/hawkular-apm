@@ -19,18 +19,16 @@ package org.hawkular.apm.processor.alerts;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.api.model.events.CompletionTime;
 
 /**
  * @author Juraci Paixão Kröhling
  */
 public class Event {
     private String category;
-    private Map<String, String> context;
-    private Map<String, String> tags;
+    private Map<String, String> context = new HashMap<>(1);
+    private Map<String, String> tags = new HashMap<>();
     private long ctime;
     private String id;
     private String dataId;
@@ -38,39 +36,6 @@ public class Event {
     private String text;
 
     public Event() {
-    }
-
-    public Event(CompletionTime completionTime, String eventSource) {
-        if (null == eventSource || eventSource.isEmpty()) {
-            // TODO: should we instead just degrade the info we have? Like, by putting a generic value?
-            throw new IllegalStateException("Cannot determine the event source");
-        }
-        this.context = new HashMap<>(1);
-        this.context.put("id", completionTime.getId());
-
-        this.tags = new HashMap<>();
-        if (null != completionTime.getUri()) {
-            this.tags.put("uri", completionTime.getUri());
-        }
-        if (null != completionTime.getOperation()) {
-            this.tags.put("operation", completionTime.getOperation());
-        }
-
-        Set<Property> properties = completionTime.getProperties();
-        if (properties != null && properties.size() > 0) {
-            properties.forEach(p -> {
-                String value = this.tags.get(p.getName());
-                this.tags.put(p.getName(), value == null ? p.getValue()
-                        : String.format("%s,%s", value, p.getValue()));
-            });
-        }
-
-        this.dataId = eventSource;
-        this.category = "APM";
-        this.dataSource = completionTime.getHostName();
-        this.id = UUID.randomUUID().toString();
-        this.ctime = completionTime.getTimestamp();
-        this.text = Long.toString(completionTime.getDuration());
     }
 
     public String getCategory() {
@@ -135,6 +100,16 @@ public class Event {
 
     public void setTags(Map<String, String> tags) {
         this.tags = tags;
+    }
+
+    public void initTagsFromProperties(Set<Property> properties) {
+        if (properties != null && properties.size() > 0) {
+            properties.forEach(p -> {
+                String value = getTags().get(p.getName());
+                getTags().put(p.getName(), value == null ? p.getValue()
+                        : String.format("%s,%s", value, p.getValue()));
+            });
+        }
     }
 
     @Override

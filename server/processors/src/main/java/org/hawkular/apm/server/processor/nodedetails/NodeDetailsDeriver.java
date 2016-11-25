@@ -54,7 +54,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
     public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws RetryAttemptException {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
-        deriveNodeDetails(item, item.getNodes(), ret);
+        deriveNodeDetails(item, item.getNodes(), ret, true);
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver [" + ret.size() + "] ret=" + ret);
@@ -70,8 +70,9 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
      * @param trace The trace
      * @param nodes The nodes
      * @param rts The list of node details
+     * @param initial Whether the first node in the list is the initial node
      */
-    protected void deriveNodeDetails(Trace trace, List<Node> nodes, List<NodeDetails> rts) {
+    protected void deriveNodeDetails(Trace trace, List<Node> nodes, List<NodeDetails> rts, boolean initial) {
         for (int i = 0; i < nodes.size(); i++) {
             Node n = nodes.get(i);
 
@@ -121,11 +122,14 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 nd.setUri(n.getUri());
                 nd.setOperation(n.getOperation());
 
+                nd.setInitial(initial);
+                initial = false;
+
                 rts.add(nd);
             }
 
             if (!ignoreChildNodes && n.interactionNode()) {
-                deriveNodeDetails(trace, ((InteractionNode) n).getNodes(), rts);
+                deriveNodeDetails(trace, ((InteractionNode) n).getNodes(), rts, initial);
             }
         }
     }

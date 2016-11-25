@@ -29,7 +29,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.hawkular.apm.api.model.events.CompletionTime;
+import org.hawkular.apm.api.model.events.NodeDetails;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,16 +37,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author Juraci Paixão Kröhling
  */
-@MessageDriven(name = "TraceCompletions_Alerts", messageListenerInterface = MessageListener.class, activationConfig = {
+@MessageDriven(name = "NodeDetails_Alerts", messageListenerInterface = MessageListener.class, activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "TraceCompletions"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "NodeDetails"),
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
-        @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionAlertsPublisherMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionAlertsPublisherMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionAlertsPublisherMDB.SUBSCRIBER+"'")
+        @ActivationConfigProperty(propertyName = "clientID", propertyValue = InvocationAlertsPublisherMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = InvocationAlertsPublisherMDB.SUBSCRIBER),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+ InvocationAlertsPublisherMDB.SUBSCRIBER+"'")
 })
-public class TraceCompletionAlertsPublisherMDB implements MessageListener {
-    static final String SUBSCRIBER = "TraceCompletionAlertsPublisher";
+public class InvocationAlertsPublisherMDB implements MessageListener {
+    static final String SUBSCRIBER = "InvocationAlertsPublisher";
     private static final MsgLogger logger = MsgLogger.LOGGER;
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -55,12 +55,17 @@ public class TraceCompletionAlertsPublisherMDB implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        logger.traceCompletionTimeReceived();
+        logger.invocationDetailsReceived();
         try {
             String data = ((TextMessage) message).getText();
-            List<CompletionTime> items = mapper.readValue(data, new TypeReference<List<CompletionTime>>() {});
-            List<Event> events = items.stream()
-                    .map(TraceCompletionAlertsPublisherMDB::toEvent)
+            List<NodeDetails> items = mapper.readValue(data, new TypeReference<List<NodeDetails>>() {});
+
+            // The list of NodeDetails is filtered to extract the ones with the
+            // 'initial' flag set. These NodeDetails represent the handling of
+            // service requests (from which service response times can be determined)
+            // or the top most component invoked for an application.
+            List<Event> events = items.stream().filter(nd -> nd.isInitial())
+                    .map(InvocationAlertsPublisherMDB::toEvent)
                     .collect(Collectors.toList());
             if (!events.isEmpty()) {
                 publisher.publish(events);
@@ -70,25 +75,25 @@ public class TraceCompletionAlertsPublisherMDB implements MessageListener {
         }
     }
 
-    public static Event toEvent(CompletionTime completionTime) {
+    public static Event toEvent(NodeDetails nodeDetails) {
         Event event = new Event();
-        event.getContext().put("id", completionTime.getId());
+        event.getContext().put("id", nodeDetails.getId());
 
-        if (null != completionTime.getUri()) {
-            event.getTags().put("uri", completionTime.getUri());
+        if (null != nodeDetails.getUri()) {
+            event.getTags().put("uri", nodeDetails.getUri());
         }
-        if (null != completionTime.getOperation()) {
-            event.getTags().put("operation", completionTime.getOperation());
+        if (null != nodeDetails.getOperation()) {
+            event.getTags().put("operation", nodeDetails.getOperation());
         }
 
-        event.initTagsFromProperties(completionTime.getProperties());
+        event.initTagsFromProperties(nodeDetails.getProperties());
 
-        event.setDataId("TraceCompletion");
+        event.setDataId("Invocation");
         event.setCategory("APM");
-        event.setDataSource(completionTime.getHostName());
+        event.setDataSource(nodeDetails.getHostName());
         event.setId(UUID.randomUUID().toString());
-        event.setCtime(completionTime.getTimestamp());
-        event.setText(Long.toString(completionTime.getDuration()));
+        event.setCtime(nodeDetails.getTimestamp());
+        event.setText(Long.toString(nodeDetails.getElapsed()));
 
         return event;
     }

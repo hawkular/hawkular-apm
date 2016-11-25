@@ -293,11 +293,6 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
     }
 
     @Override
-    public void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Set<String> getHostNames(String tenantId, Criteria criteria) {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Get host names: tenantId=[" + tenantId + "] criteria="
