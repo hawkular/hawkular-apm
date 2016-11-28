@@ -16,7 +16,10 @@
  */
 package io.opentracing;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
@@ -58,18 +61,9 @@ public class APMSpan extends AbstractSpan {
     }
 
     protected void init(APMSpanBuilder builder, TraceReporter reporter) {
-        // Check references
-        for (Reference ref : builder.references) {
-            if (ref.getReferenceType() == References.CHILD_OF) {
-                initChildOf(builder, reporter, ref);
-
-            } else if (ref.getReferenceType() == References.FOLLOWS_FROM) {
-                initFollowsFrom(builder, reporter, ref);
-            }
-
-            if (nodeBuilder != null) {
-                break;
-            }
+        
+        if (!builder.references.isEmpty()) {
+            initReferences(builder, reporter);
         }
 
         // If no nodebuilder established based on reference information, then create a new
@@ -82,6 +76,75 @@ public class APMSpan extends AbstractSpan {
         nodePath = nodeBuilder.getNodePath();
 
         traceContext.startProcessingNode();
+    }
+
+    protected void initReferences(APMSpanBuilder builder, TraceReporter reporter) {
+        // Find primary reference
+        Reference primaryRef = findPrimaryReference(builder.references);
+
+        if (primaryRef != null) {
+            // Primary reference found, so it will provide the main 'parent' relationship
+            // to the existing trace instance. Other relationships will be recorded as
+            // correlation identifiers.
+            
+            // Process references to extracted trace state
+            if (primaryRef.getReferredTo() instanceof APMSpanBuilder) {
+                initFromExtractedTraceState(builder, reporter, primaryRef);
+
+            } else if (primaryRef.getReferredTo() instanceof APMSpan) {
+                
+                // Process references for direct ChildOf
+                if (References.CHILD_OF.equals(primaryRef.getReferenceType())) {
+                    initChildOf(builder, reporter, primaryRef);
+                
+                // Process references for direct FollowsFrom
+                } else if (References.FOLLOWS_FROM.equals(primaryRef.getReferenceType())) {
+                    initFollowsFrom(builder, reporter, primaryRef);
+                }
+            }
+        } else {
+            processNoPrimaryReference(builder, reporter);
+        }
+    }
+
+    /**
+     * This method identifies the primary 'parent' reference that should be used
+     * to link the associated span to an existing trace instance.
+     *
+     * @param references The list of references
+     * @return The primary reference, or null if one could not be determined
+     */
+    public static Reference findPrimaryReference(List<Reference> references) {
+        List<Reference> followsFrom = references.stream()
+                .filter(ref -> References.FOLLOWS_FROM.equals(ref.getReferenceType())
+                        && ref.getReferredTo() instanceof APMSpan)
+                .collect(Collectors.toList());
+
+        List<Reference> childOfSpan = references.stream()
+                .filter(ref -> References.CHILD_OF.equals(ref.getReferenceType())
+                        && ref.getReferredTo() instanceof APMSpan)
+                .collect(Collectors.toList());
+
+        List<Reference> extractedTraceState = references.stream()
+                .filter(ref -> ref.getReferredTo() instanceof APMSpanBuilder)
+                .collect(Collectors.toList());
+
+        if (!extractedTraceState.isEmpty()) {
+            if (extractedTraceState.size() == 1) {
+                return extractedTraceState.get(0);
+            }
+            return null;
+        }
+        if (!childOfSpan.isEmpty()) {
+            if (childOfSpan.size() == 1) {
+                return childOfSpan.get(0);
+            }
+            return null;
+        }
+        if (followsFrom.size() == 1) {
+            return followsFrom.get(0);
+        }
+        return null;
     }
 
     /**
@@ -97,6 +160,32 @@ public class APMSpan extends AbstractSpan {
     }
 
     /**
+     * This method initialises the span based on extracted trace state.
+     *
+     * @param builder The span builder
+     * @param reporter The trace reporter
+     * @param ref The reference
+     */
+    protected void initFromExtractedTraceState(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
+        APMSpanBuilder parentBuilder = (APMSpanBuilder) ref.getReferredTo();
+
+        initTopLevelState(this, reporter);
+
+        // Check for passed state
+        if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
+            setInteractionId(parentBuilder.getState().get(Constants.HAWKULAR_APM_ID).toString());
+            
+            traceContext.initTraceState(parentBuilder.getState());
+        }
+
+        // Assume top level consumer, even if no state was provided, as span context
+        // as passed using a 'child of' relationship
+        getNodeBuilder().setNodeType(NodeType.Consumer);
+        
+        processRemainingReferences(builder, ref);
+    }
+
+    /**
      * This method initialises the span based on a 'child-of' relationship.
      *
      * @param builder The span builder
@@ -104,70 +193,28 @@ public class APMSpan extends AbstractSpan {
      * @param ref The 'child-of' relationship
      */
     protected void initChildOf(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
-        // If referring to a APMSpan, then create a direct parent relationship
-        // to the span
-        if (ref.getReferredTo() instanceof APMSpan) {
-            APMSpan parent = (APMSpan) ref.getReferredTo();
+        APMSpan parent = (APMSpan) ref.getReferredTo();
 
-            // TODO: Will need to protect against parent's trace already
-            // being reported - in which case will need to create as
-            // separate trace fragment with a "CausedBy" correlation
-            // to the parent node.
+        if (parent.getNodeBuilder() != null) {
+            nodeBuilder = new NodeBuilder(parent.getNodeBuilder());
+            traceContext = parent.traceContext;
 
-            if (parent.getNodeBuilder() != null) {
-                nodeBuilder = new NodeBuilder(parent.getNodeBuilder());
-                traceContext = parent.traceContext;
-
-                // As it is not possible to know if a tag has been set after span
-                // creation, we use this situation to check if the parent span
-                // has the 'transaction.name' specified, to set on the trace
-                // context. This is required in case a child span is used to invoke
-                // another service (and needs to propagate the transaction
-                // name).
-                if (parent.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)
-                        && traceContext.getTransaction() == null) {
-                    traceContext.setTransaction(
-                            parent.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
-                }
+            // As it is not possible to know if a tag has been set after span
+            // creation, we use this situation to check if the parent span
+            // has the 'transaction.name' specified, to set on the trace
+            // context. This is required in case a child span is used to invoke
+            // another service (and needs to propagate the transaction
+            // name).
+            if (parent.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)
+                    && traceContext.getTransaction() == null) {
+                traceContext.setTransaction(
+                        parent.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
             }
-
-            // If APMSpanBuilder, then implies that the referred to details
-            // represent an id passed by a client, and therefore we are
-            // creating the 'server' span
-        } else if (ref.getReferredTo() instanceof APMSpanBuilder) {
-            APMSpanBuilder parentBuilder = (APMSpanBuilder) ref.getReferredTo();
-
-            initTopLevelState(this, reporter);
-
-            // Check for passed state
-            if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
-                setInteractionId(parentBuilder.getState().get(Constants.HAWKULAR_APM_ID).toString(),
-                        NodeType.Consumer);
-                
-                if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_TRACEID)) {
-                    traceContext.setTraceId(
-                            parentBuilder.getState().get(Constants.HAWKULAR_APM_TRACEID).toString());
-                } else {
-                    log.severe("Trace id has not been propagated");
-                }
-                if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_TXN)) {
-                    traceContext.setTransaction(
-                            parentBuilder.getState().get(Constants.HAWKULAR_APM_TXN).toString());
-                }
-                if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_LEVEL)) {
-                    traceContext.setReportingLevel(
-                            parentBuilder.getState().get(Constants.HAWKULAR_APM_LEVEL).toString());
-                }
-            } else {
-                // Assume top level consumer, even though no state was provider, as span context
-                // as passed using a 'child of' relationship
-                getNodeBuilder().setNodeType(NodeType.Consumer);
-            }
-        } else {
-            log.severe("Unknown parent type = " + ref.getReferredTo());
         }
+        
+        processRemainingReferences(builder, ref);
     }
-
+    
     /**
      * This method initialises the span based on a 'follows-from' relationship.
      *
@@ -176,42 +223,113 @@ public class APMSpan extends AbstractSpan {
      * @param ref The 'follows-from' relationship
      */
     protected void initFollowsFrom(APMSpanBuilder builder, TraceReporter reporter, Reference ref) {
+        APMSpan referenced = (APMSpan) ref.getReferredTo();
 
-        // This reference refers to another span within the same process, but as part of a different
-        // trace
-        if (ref.getReferredTo() instanceof APMSpan) {
-            APMSpan referenced = (APMSpan) ref.getReferredTo();
+        initTopLevelState(referenced.getTraceContext().getTopSpan(), reporter);
 
-            initTopLevelState(referenced.getTraceContext().getTopSpan(), reporter);
+        // Top level node in spawned fragment should be a Consumer with correlation id
+        // referencing back to the 'spawned' node
+        String nodeId = referenced.getNodePath();
+        getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.CausedBy, nodeId));
 
-            // Top level node in spawned fragment should be a Consumer with correlation id
-            // referencing back to the 'spawned' node
-            String nodeId = referenced.getNodePath();
-            getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.CausedBy, nodeId));
-            getNodeBuilder().setNodeType(NodeType.Consumer);
-            getNodeBuilder().setEndpointType(null);
+        // Propagate trace id, transaction name and reporting level as creating a
+        // separate trace fragment to represent the 'follows from' activity
+        traceContext.initTraceState(referenced.getTraceContext());
 
-            EndpointRef epref = referenced.getTraceContext().getSourceEndpoint();
-            getNodeBuilder().setUri(epref.getUri());
-            getNodeBuilder().setOperation(epref.getOperation());
+        makeInternalLink(builder);
+    }
 
-            getNodeBuilder().setTimestamp(TimeUtil.toMicros(builder.start));
+    /**
+     * This method initialises the span based on there being no primary reference.
+     *
+     * @param builder The span builder
+     * @param reporter The trace reporter
+     */
+    protected void processNoPrimaryReference(APMSpanBuilder builder, TraceReporter reporter) {
+        // No primary reference found, so means that all references will be treated
+        // as equal, to provide a join construct within a separate fragment.
+        initTopLevelState(this, reporter);
 
-            // Create new node builder for the actual span, as a child of the 'Consumer' that
-            // is providing the link back to the referenced node
-            nodeBuilder = new NodeBuilder(getNodeBuilder());
+        Set<String> traceIds = builder.references.stream().map(ref -> {
+            if (ref.getReferredTo() instanceof APMSpan) {
+                return ((APMSpan)ref.getReferredTo()).getTraceContext().getTraceId();
+            } else if (ref.getReferredTo() instanceof APMSpanBuilder) {
+                return ((APMSpanBuilder)ref.getReferredTo()).getState().get(Constants.HAWKULAR_APM_TRACEID).toString();
+            }
+            log.warning("Reference refers to an unsupported SpanContext implementation: " + ref.getReferredTo());
+            return null;
+        }).collect(Collectors.toSet());
 
-            // Propagate trace id, transaction name and reporting level as creating a
-            // separate trace fragment to represent the 'follows from' activity
-            traceContext.setTraceId(referenced.getTraceContext().getTraceId());
-            traceContext.setTransaction(referenced.getTraceContext().getTransaction());
-            traceContext.setReportingLevel(referenced.getTraceContext().getReportingLevel());
+        if (traceIds.size() > 0) {
+            if (traceIds.size() > 1) {
+                log.warning("References should all belong to the same 'trace' instance");
+            }
+            if (builder.references.get(0).getReferredTo() instanceof APMSpan) {
+                traceContext.initTraceState(((APMSpan)builder.references.get(0).getReferredTo()).getTraceContext());
+            } else if (builder.references.get(0).getReferredTo() instanceof APMSpanBuilder) {
+                traceContext.initTraceState(((APMSpanBuilder)builder.references.get(0).getReferredTo()).getState());
+            }
+        }
+
+        processRemainingReferences(builder, null);
+        
+        makeInternalLink(builder);
+    }
+
+    /**
+     * This method processes the remaining references by creating appropriate correlation ids
+     * against the current node.
+     *
+     * @param builder The span builder
+     * @param primaryRef The primary reference, if null if one was not found
+     */
+    protected void processRemainingReferences(APMSpanBuilder builder, Reference primaryRef) {
+        // Check if other references
+        for (Reference ref : builder.references) {
+            if (primaryRef == ref) {
+                continue;
+            }
+            // Setup correlation ids for other references
+            if (ref.getReferredTo() instanceof APMSpan) {
+                APMSpan referenced = (APMSpan) ref.getReferredTo();
+    
+                String nodeId = referenced.getNodePath();
+                getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.CausedBy, nodeId));
+
+            } else if (ref.getReferredTo() instanceof APMSpanBuilder
+                    && ((APMSpanBuilder)ref.getReferredTo()).getState().containsKey(Constants.HAWKULAR_APM_ID)) {
+                getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.Interaction,
+                        ((APMSpanBuilder)ref.getReferredTo()).getState().get(Constants.HAWKULAR_APM_ID).toString()));
+            }
         }
     }
 
-    protected void setInteractionId(String id, NodeType nodeType) {
+    /**
+     * This method creates a Consumer node to link the new trace fragment to a
+     * node associated with a referenced Span. This method sets the type of
+     * the current node to be Consumer, initialises its URI/Operation to the
+     * endpoint details of the supplied trace context, and then creates a new
+     * child node upon which subsequent configuration will be performed.
+     *
+     * @param builder The span builder
+     */
+    protected void makeInternalLink(APMSpanBuilder builder) {
+        getNodeBuilder().setNodeType(NodeType.Consumer);
+        getNodeBuilder().setEndpointType(null);
+
+        EndpointRef epref = getTraceContext().getSourceEndpoint();
+        getNodeBuilder().setUri(epref.getUri());
+        getNodeBuilder().setOperation(epref.getOperation());
+
+        getNodeBuilder().setTimestamp(TimeUtil.toMicros(builder.start));
+
+        // Create new node builder for the actual span, as a child of the 'Consumer' that
+        // is providing the link back to the referenced node
+        nodeBuilder = new NodeBuilder(getNodeBuilder());
+    }
+
+    protected void setInteractionId(String id) {
         interactionId = id;
-        getNodeBuilder().setNodeType(nodeType);
         getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.Interaction, id));
     }
 
