@@ -20,8 +20,8 @@ module BTM {
 
   declare let c3: any;
 
-  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$http', '$location', '$interval', '$q',
-    '$timeout', ($scope, $http, $location, $interval, $q, $timeout) => {
+  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$rootScope', '$http', '$location', '$interval', '$q',
+    '$timeout', ($scope, $rootScope, $http, $location, $interval, $q, $timeout) => {
 
     $scope.candidateCount = 0;
 
@@ -53,10 +53,10 @@ module BTM {
       startTime: -3600000
     };
 
-    $scope.reload = function() {
+    $scope.reloadData = function() {
 
       $http.get('/hawkular/apm/analytics/transactions?criteria='
-          + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
+          + encodeURI(angular.toJson($rootScope.sbFilter.criteria))).then(function(resp) {
 
         let allPromises = [];
         _.each(resp.data, (txn: any) => {
@@ -79,11 +79,17 @@ module BTM {
       },function(resp) {
         console.log('Failed to get candidate count: ' + angular.toJson(resp));
       });
+
+      // this informs the sidebar directive, so it'll update it's data as well
+      $scope.$broadcast('dataUpdated');
     };
 
-    $scope.reload();
+    $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
+    $scope.$watch('config', $scope.reloadData, true);
 
-    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    $scope.reloadData();
+
+    let refreshPromise = $interval(() => { $scope.reloadData(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.getTxnDetails = function(txn) {

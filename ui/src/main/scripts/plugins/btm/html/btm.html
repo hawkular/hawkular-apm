@@ -1,119 +1,122 @@
-<div>
-  <div ng-show="transactions" >
+<filter-sidebar></filter-sidebar>
+<div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
+  <div>
+    <div ng-show="transactions" >
 
-    <!-- Txns Tabs -->
-    <hawkular-subtab class="hk-align-center hk-screen-top-nav">
-      <div class="hk-nav-tabs-container">
-        <ul class="nav nav-tabs nav-tabs-pf">
-          <li class="active"><a href="/hawkular-ui/apm/btm" >Managed</a></li>
-          <li><a href="/hawkular-ui/apm/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
-          <li><a href="/hawkular-ui/apm/btm/ignored">Ignored</a></li>
-        </ul>
-      </div>
-    </hawkular-subtab>
-
-    <!-- Loader -->
-    <div class="text-center hk-urls-list hk-spinner-container" ng-hide="transactions.$resolved">
-      <div class="spinner spinner-lg"></div>
-      <p class="hk-spinner-legend-below">Loading...</p>
-    </div>
-
-    <!-- No Txns Slate -->
-    <div class="blank-slate-pf" ng-show="transactions.$resolved && !managedTxn.length">
-      <div class="blank-slate-pf-icon">
-        <i class="fa fa-gears"></i>
-      </div>
-      <h1>No transactions defined.</h1>
-      <h2>Create a new one at the <a href="/hawkular-ui/apm/btm/candidates">Candidates</a> tab.</h2>
-    </div>
-
-    <!-- Txns toolbar -->
-    <section id="active" class="hk-tab-content" ng-show="managedTxn.length">
-      <div class="hk-control-actions-bar pull-left">
-        <div class="hk-container-separator">
-          <input type="text" class="form-control separator" ng-model="query.name" placeholder="Filter by Name...">
+      <!-- Txns Tabs -->
+      <hawkular-subtab class="hk-align-center hk-screen-top-nav">
+        <div class="hk-nav-tabs-container">
+          <ul class="nav nav-tabs nav-tabs-pf">
+            <li class="active"><a href="/hawkular-ui/apm/btm" >Managed</a></li>
+            <li><a href="/hawkular-ui/apm/btm/candidates">Candidates <i class="fa fa-flag" ng-hide="candidateCount === 0"></i></a></li>
+            <li><a href="/hawkular-ui/apm/btm/ignored">Ignored</a></li>
+          </ul>
         </div>
-        <button class="btn btn-default" type="button" ng-click="hideCharts = !hideCharts">
-          <span ng-hide="hideCharts">Hide</span><span ng-show="hideCharts">Show</span> Charts
-        </button>
+      </hawkular-subtab>
+
+      <!-- Loader -->
+      <div class="text-center hk-urls-list hk-spinner-container" ng-hide="transactions.$resolved">
+        <div class="spinner spinner-lg"></div>
+        <p class="hk-spinner-legend-below">Loading...</p>
       </div>
-    </section>
-  </div>
 
-  <div class="row row-cards-pf" ng-show="managedTxn.length">
+      <!-- No Txns Slate -->
+      <div class="blank-slate-pf" ng-show="transactions.$resolved && !managedTxn.length">
+        <div class="blank-slate-pf-icon">
+          <i class="fa fa-gears"></i>
+        </div>
+        <h1>No transactions defined.</h1>
+        <h2>Create a new one at the <a href="/hawkular-ui/apm/btm/candidates">Candidates</a> tab.</h2>
+      </div>
 
-    <div class="col-md-3 col-sm-4" ng-if="transactions.$resolved && !hideCharts">
-      <div class="card-pf">
-        <div class="card-pf-title">Transaction Count</div>
-        <div class="card-pf-body">
-          <div id="txntxncountpiechart" class="chart-card" pf-c3-chart config="countChartConfig" ng-show="countChartHasData"></div>
-          <div id="txntxncountplaceholder" class="text-center chart-card" ng-hide="countChartHasData">
-            <i class="fa fa-pie-chart hk-no-pie-data"></i>
-            <h1> No Data Available </h1>
+      <!-- Txns toolbar -->
+      <section id="active" class="hk-tab-content" ng-show="managedTxn.length">
+        <div class="hk-control-actions-bar pull-left">
+          <div class="hk-container-separator">
+            <input type="text" class="form-control separator" ng-model="query.name" placeholder="Filter by Name...">
           </div>
+          <button class="btn btn-default" type="button" ng-click="hideCharts = !hideCharts">
+            <span ng-hide="hideCharts">Hide</span><span ng-show="hideCharts">Show</span> Charts
+          </button>
         </div>
-      </div>
-      <div class="card-pf">
-        <div class="card-pf-title">Fault Count</div>
+      </section>
+    </div>
+
+    <div class="row row-cards-pf" ng-show="managedTxn.length">
+
+      <div class="col-md-3 col-sm-4" ng-if="transactions.$resolved && !hideCharts">
+        <div class="card-pf">
+          <div class="card-pf-title">Transaction Count</div>
           <div class="card-pf-body">
-          <div id="txnfaultcountpiechart" class="chart-card" pf-c3-chart config="faultChartConfig" ng-show="faultChartHasData"></div>
-            <div id="txnfaultcountplaceholder" class="text-center chart-card" ng-hide="faultChartHasData">
+            <div id="txntxncountpiechart" class="chart-card" pf-c3-chart config="countChartConfig" ng-show="countChartHasData"></div>
+            <div id="txntxncountplaceholder" class="text-center chart-card" ng-hide="countChartHasData">
               <i class="fa fa-pie-chart hk-no-pie-data"></i>
               <h1> No Data Available </h1>
             </div>
           </div>
-      </div>
-    </div><!-- .col-md-3 -->
-
-    <div ng-class="hideCharts ? 'col-md-12' : 'col-md-9 col-sm-8'">
-      <div class="row">
-        <div class="hk-txn-item col-md-12" ng-show="managedTxn.length && !filteredManTxn.length">
-          <div class="card-pf">
+        </div>
+        <div class="card-pf">
+          <div class="card-pf-title">Fault Count</div>
             <div class="card-pf-body">
-              <h2><i class="fa fa-info-circle"></i> No transactions matching the filter criteria.</h2>
+            <div id="txnfaultcountpiechart" class="chart-card" pf-c3-chart config="faultChartConfig" ng-show="faultChartHasData"></div>
+              <div id="txnfaultcountplaceholder" class="text-center chart-card" ng-hide="faultChartHasData">
+                <i class="fa fa-pie-chart hk-no-pie-data"></i>
+                <h1> No Data Available </h1>
+              </div>
+            </div>
+        </div>
+      </div><!-- .col-md-3 -->
+
+      <div ng-class="hideCharts ? 'col-md-12' : 'col-md-9 col-sm-8'">
+        <div class="row">
+          <div class="hk-txn-item col-md-12" ng-show="managedTxn.length && !filteredManTxn.length">
+            <div class="card-pf">
+              <div class="card-pf-body">
+                <h2><i class="fa fa-info-circle"></i> No transactions matching the filter criteria.</h2>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="hk-txn-item col-md-6" ng-repeat="txn in filteredManTxn = (managedTxn = (transactions | filter: {level: '!Ignore'}) | filter:query) track by txn.name" ng-show="txn.level !== 'Ignore'" ng-class="{'disabled-txn-card': txn.level === 'None'}">
-          <div class="card-pf">
-            <div class="card-pf-title">
-              <span tooltip="No data being collected for this service. Activate it to collect." ng-show="txn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
-              <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">{{txn.name}}</a>
-              <span class="hk-settings pull-right" ng-show="txn.staticConfig">
-                <a href="/hawkular-ui/apm/btm/config/{{txn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
-                <a href="#" ng-click="deleteTxn(txn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
-              </span>
-            </div>
-            <div class="card-pf-body hk-summary">
-              <div class="row">
-                <div class="col-sm-4 hk-summary-item">
-                  <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
-                    <span class="hk-data" ng-show="txn.count !== undefined">{{txn.count}}</span>
-                    <span class="hk-data spinner" ng-hide="txn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                    <span class="hk-item">Transactions (per hour)</span>
-                  </a>
-                </div>
-                <div class="col-sm-4 hk-summary-item">
-                  <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
-                    <span class="hk-data" ng-show="txn.percentile95 !== undefined">{{txn.percentile95 * 1000 * 1000 | hkDuration : true}}</span>
-                    <span class="hk-data spinner" ng-hide="txn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                    <span class="hk-item">Completion (95th percentile)</span>
-                  </a>
-                </div>
-                <div class="col-sm-4 hk-summary-item">
-                  <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
-                    <span class="hk-data" ng-show="txn.faultcount !== undefined">{{txn.faultcount}}</span>
-                    <span class="hk-data spinner" ng-hide="txn.faultcount !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                    <span class="hk-item">Faults</span>
-                  </a>
+          <div class="hk-txn-item col-md-6" ng-repeat="txn in filteredManTxn = (managedTxn = (transactions | filter: {level: '!Ignore'}) | filter:$root.sbFilter.criteria.transaction) track by txn.name" ng-show="txn.level !== 'Ignore'" ng-class="{'disabled-txn-card': txn.level === 'None'}">
+            <div class="card-pf">
+              <div class="card-pf-title">
+                <span tooltip="No data being collected for this service. Activate it to collect." ng-show="txn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
+                <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">{{txn.name}}</a>
+                <span class="hk-settings pull-right" ng-show="txn.staticConfig">
+                  <a href="/hawkular-ui/apm/btm/config/{{txn.name}}" tooltip="Configure"><i class="fa fa-cog"></i></a>
+                  <a href="#" ng-click="deleteTxn(txn)" tooltip="Delete"><i class="fa fa-trash-o"></i></a>
+                </span>
+              </div>
+              <div class="card-pf-body hk-summary">
+                <div class="row">
+                  <div class="col-sm-4 hk-summary-item">
+                    <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
+                      <span class="hk-data" ng-show="txn.count !== undefined">{{txn.count}}</span>
+                      <span class="hk-data spinner" ng-hide="txn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+                      <span class="hk-item">Transactions (per hour)</span>
+                    </a>
+                  </div>
+                  <div class="col-sm-4 hk-summary-item">
+                    <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
+                      <span class="hk-data" ng-show="txn.percentile95 !== undefined">{{txn.percentile95 * 1000 * 1000 | hkDuration : true}}</span>
+                      <span class="hk-data spinner" ng-hide="txn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+                      <span class="hk-item">Completion (95th percentile)</span>
+                    </a>
+                  </div>
+                  <div class="col-sm-4 hk-summary-item">
+                    <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
+                      <span class="hk-data" ng-show="txn.faultcount !== undefined">{{txn.faultcount}}</span>
+                      <span class="hk-data spinner" ng-hide="txn.faultcount !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+                      <span class="hk-item">Faults</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
+      </div><!-- .card-md-9 -->
 
-      </div>
-    </div><!-- .card-md-9 -->
-
+    </div>
   </div>
 </div>
