@@ -16,18 +16,23 @@
  */
 package io.opentracing;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.config.ReportingLevel;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
+import org.hawkular.apm.client.api.sampler.Sampler;
 import org.hawkular.apm.client.opentracing.APMTracer;
 
 import io.opentracing.propagation.Format;
+import io.opentracing.tag.Tags;
 
 /**
  * @author gbrown
@@ -37,13 +42,15 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     private static final Logger log = Logger.getLogger(APMTracer.class.getName());
 
     private TraceRecorder recorder;
+    private Sampler sampler;
 
     public AbstractAPMTracer() {
         this.recorder = new BatchTraceRecorder();
     }
 
-    public AbstractAPMTracer(TraceRecorder recorder) {
+    public AbstractAPMTracer(TraceRecorder recorder, Sampler sampler) {
         this.recorder = recorder;
+        this.sampler = sampler;
     }
 
     public void setTraceRecorder(TraceRecorder recorder) {
@@ -52,7 +59,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     @Override
     APMSpanBuilder createSpanBuilder(String operationName) {
-        return new APMSpanBuilder(operationName, recorder);
+        return new APMSpanBuilder(operationName, recorder, sampler);
     }
 
     @Override
@@ -66,7 +73,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     @Override
     Map<String, Object> getTraceState(SpanContext spanContext) {
-        Map<String, Object> ret = new HashMap<String, Object>();
+        Map<String, Object> ret = new HashMap<>();
 
         if (spanContext instanceof APMSpan) {
             APMSpan span = (APMSpan) spanContext;
@@ -92,7 +99,10 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
                 ret.put(Constants.HAWKULAR_APM_TXN, span.getTraceContext().getTransaction());
             }
 
-            if (span.getTraceContext().getReportingLevel() != null) {
+            ReportingLevel reportingLevelFromTags = reportingLevel(span.getTags().get(Tags.SAMPLING_PRIORITY.getKey()));
+            if (reportingLevelFromTags != null) {
+                ret.put(Constants.HAWKULAR_APM_LEVEL, reportingLevelFromTags);
+            } else if (span.getTraceContext().getReportingLevel() != null) {
                 ret.put(Constants.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
             }
         }
@@ -100,4 +110,22 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
         return ret;
     }
 
+    private ReportingLevel reportingLevel(Object samplingPriorityTag) {
+        if (!(samplingPriorityTag instanceof Number)) {
+            return null;
+        }
+
+        int priority;
+        try {
+            priority = NumberFormat.getInstance().parse(samplingPriorityTag.toString()).intValue();
+        } catch (ParseException e) {
+            return null;
+        }
+
+        if (priority >= 1) {
+            return ReportingLevel.All;
+        }
+
+        return ReportingLevel.None;
+    }
 }

@@ -16,21 +16,30 @@
  */
 package org.hawkular.apm.client.opentracing;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
+import org.hawkular.apm.api.model.config.ReportingLevel;
 import org.hawkular.apm.api.model.events.EndpointRef;
+import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
+import org.hawkular.apm.client.api.sampler.ContextSampler;
+import org.hawkular.apm.client.api.sampler.Sampler;
 
 import io.opentracing.APMSpan;
+import io.opentracing.tag.Tags;
 
 /**
  * This class represents the context associated with a trace instance.
@@ -49,11 +58,12 @@ public class TraceContext {
 
     private String transaction;
 
-    private String reportingLevel;
+    private ReportingLevel reportingLevel;
 
     private AtomicInteger nodeCount = new AtomicInteger(0);
 
     private TraceRecorder recorder;
+    private Sampler sampler;
 
     private static List<NodeProcessor> nodeProcessors = new ArrayList<>();
 
@@ -68,10 +78,11 @@ public class TraceContext {
      * @param rootNode The builder for the root node of the trace fragment
      * @param recorder The trace recorder
      */
-    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceRecorder recorder) {
+    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceRecorder recorder, Sampler sampler) {
         this.topSpan = topSpan;
         this.rootNode = rootNode;
         this.recorder = recorder;
+        this.sampler = sampler;
 
         trace = new Trace();
         trace.setFragmentId(UUID.randomUUID().toString());
@@ -81,6 +92,7 @@ public class TraceContext {
 
         // Initialise the root node's path
         rootNode.setNodePath(String.format("%s:0", trace.getFragmentId()));
+
     }
 
     /**
@@ -104,7 +116,18 @@ public class TraceContext {
             trace.setTransaction(getTransaction());
             trace.getNodes().add(node);
 
-            recorder.report(trace);
+            if (checkForSamplingProperties(node)) {
+                reportingLevel = ReportingLevel.All;
+            }
+
+            boolean sampled = ContextSampler.isSampled(sampler, trace, reportingLevel);
+            if (sampled && reportingLevel == null) {
+                reportingLevel = ReportingLevel.All;
+            }
+
+            if (sampled) {
+                recorder.report(trace);
+            }
         }
     }
 
@@ -127,7 +150,7 @@ public class TraceContext {
     }
 
     /**
-     * @param transaction the transaction to set
+     * @return  transaction the transaction to set
      */
     public String getTransaction() {
         return transaction;
@@ -143,14 +166,14 @@ public class TraceContext {
     /**
      * @return the reportingLevel
      */
-    public String getReportingLevel() {
+    public ReportingLevel getReportingLevel() {
         return reportingLevel;
     }
 
     /**
      * @param reportingLevel the reportingLevel to set
      */
-    public void setReportingLevel(String reportingLevel) {
+    public void setReportingLevel(ReportingLevel reportingLevel) {
         this.reportingLevel = reportingLevel;
     }
 
@@ -184,17 +207,6 @@ public class TraceContext {
     }
 
     /**
-     * Initialise the trace state from the information associated with the supplied context.
-     *
-     * @param source The source trace context to copy state from
-     */
-    public void initTraceState(TraceContext source) {
-        setTraceId(source.getTraceId());
-        setTransaction(source.getTransaction());
-        setReportingLevel(source.getReportingLevel());
-    }
-
-    /**
      * Initialise the trace state from the supplied state.
      *
      * @param state The propagated state
@@ -211,9 +223,59 @@ public class TraceContext {
         if (transaction != null) {
             setTransaction(transaction.toString());
         }
-        if (level != null) {
-            setReportingLevel(level.toString());
+
+        ReportingLevel reportingLevelFromTags = reportingLevel(state.get(Tags.SAMPLING_PRIORITY.getKey()));
+        if (reportingLevelFromTags != null) {
+            setReportingLevel(reportingLevelFromTags);
+        } else  if (level != null) {
+            setReportingLevel(ReportingLevel.valueOf(level.toString()));
         }
     }
 
+    private ReportingLevel reportingLevel(Object samplingPriorityTag) {
+        if (!(samplingPriorityTag instanceof Number)) {
+            return null;
+        }
+
+        int priority;
+        try {
+            priority = NumberFormat.getInstance().parse(samplingPriorityTag.toString()).intValue();
+        } catch (ParseException e) {
+            return null;
+        }
+
+        if (priority >= 1) {
+            return ReportingLevel.All;
+        }
+
+        return ReportingLevel.None;
+    }
+
+
+    /**
+     * This method is looking for sampling tag in nodes properties to override current sampling.
+     *
+     * @param node It sh
+     * @return boolean whether trace should be sampled or not
+     */
+    private static boolean checkForSamplingProperties(Node node) {
+        Set<Property> samplingProperties = node instanceof ContainerNode ?
+                ((ContainerNode) node).getPropertiesIncludingDescendants(Tags.SAMPLING_PRIORITY.getKey()) :
+                node.getProperties(Tags.SAMPLING_PRIORITY.getKey());
+
+        for (Property prop: samplingProperties) {
+            int priority = 0;
+            try {
+                priority = Integer.parseInt(prop.getValue());
+            } catch (NumberFormatException ex) {
+                // continue on error
+            }
+
+            if (priority > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
