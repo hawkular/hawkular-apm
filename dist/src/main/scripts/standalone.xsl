@@ -45,7 +45,6 @@
       <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
       <jms-topic name="TraceCompletions" entries="java:/TraceCompletions"/>
       <jms-topic name="TraceCompletionInformation" entries="java:/TraceCompletionInformation"/>
-      <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
       <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
       <jms-topic name="Notifications" entries="java:/Notifications"/>
       <jms-topic name="Spans" entries="java:/Spans"/>

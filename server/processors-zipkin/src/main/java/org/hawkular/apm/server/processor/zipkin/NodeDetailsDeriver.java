@@ -75,6 +75,8 @@ public class NodeDetailsDeriver extends AbstractProcessor<Span, NodeDetails> {
         nd.getProperties().add(new Property(Constants.PROP_FAULT, SpanDeriverUtil.deriveFault(item)));
         nd.setOperation(SpanDeriverUtil.deriveOperation(item));
 
+        nd.setInitial(item.topLevelSpan() || item.serverSpan());
+
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver ret=" + nd);
         }

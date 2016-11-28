@@ -90,10 +90,16 @@ public class CommunicationSummaryTreeBuilder {
             Map<String, CommunicationSummaryStatistics> nodeMap, Set<String> usedIds) {
         for (String id : node.getOutbound().keySet()) {
             if (!usedIds.contains(id)) {
-                if (!nodeMap.containsKey(id)) {
-                    log.severe("Node missing for id = "+id);
+                CommunicationSummaryStatistics orig = nodeMap.get(id);
+                CommunicationSummaryStatistics copy = null;
+                if (orig == null) {
+                    log.fine("Node missing for id = " + id + " keySet = " + nodeMap.keySet());
+                    // Create a placeholder for the invoked service
+                    copy = new CommunicationSummaryStatistics();
+                    copy.setId(id);
+                } else {
+                    copy = new CommunicationSummaryStatistics(orig);
                 }
-                CommunicationSummaryStatistics copy = new CommunicationSummaryStatistics(nodeMap.get(id));
                 ConnectionStatistics cs = node.getOutbound().get(id);
                 cs.setNode(copy);
                 usedIds.add(id);

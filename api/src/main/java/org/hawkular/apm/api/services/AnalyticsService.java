@@ -240,15 +240,6 @@ public interface AnalyticsService {
     void storeTraceCompletions(String tenantId, List<CompletionTime> completionTimes) throws StoreException;
 
     /**
-     * This method stores the supplied list of completion times for individual fragments.
-     *
-     * @param tenantId The tenant id
-     * @param completionTimes The completion times
-     * @throws StoreException Failed to store
-     */
-    void storeFragmentCompletionTimes(String tenantId, List<CompletionTime> completionTimes) throws StoreException;
-
-    /**
      * This method clears the analytics data for the specified tenant.
      *
      * @param tenantId The tenant id

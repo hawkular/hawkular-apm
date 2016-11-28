@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class CommunicationSummaryTreeBuilderTest {
 
         CommunicationSummaryStatistics css2 = new CommunicationSummaryStatistics();
         css2.setId("css2");
+        css2.setCount(1);
         nodes.add(css2);
 
         CommunicationSummaryStatistics css3 = new CommunicationSummaryStatistics();
@@ -81,6 +83,39 @@ public class CommunicationSummaryTreeBuilderTest {
 
         assertNotNull(css1a.getOutbound().get("css2").getNode());
         assertEquals("css2", css1a.getOutbound().get("css2").getNode().getId());
+        assertEquals(1, css1a.getOutbound().get("css2").getNode().getCount());
     }
 
+    @Test
+    public void testBuildCommunicationSummaryTreeMissingTarget() {
+        List<CommunicationSummaryStatistics> nodes = new ArrayList<CommunicationSummaryStatistics>();
+
+        CommunicationSummaryStatistics css1 = new CommunicationSummaryStatistics();
+        css1.setId("css1");
+        nodes.add(css1);
+
+        CommunicationSummaryStatistics.ConnectionStatistics con1 =
+                new CommunicationSummaryStatistics.ConnectionStatistics();
+        css1.getOutbound().put("css2", con1);
+
+        Collection<CommunicationSummaryStatistics> result =
+                CommunicationSummaryTreeBuilder.buildCommunicationSummaryTree(nodes,
+                        new HashSet<>(Collections.singletonList("css1")));
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        CommunicationSummaryStatistics css1result = result.iterator().next();
+
+        assertEquals(css1.getId(), css1result.getId());
+        assertEquals(1, css1.getOutbound().size());
+        assertTrue(css1result.getOutbound().containsKey("css2"));
+
+        assertNotNull(css1result.getOutbound().get("css2").getNode());
+        assertEquals("css2", css1result.getOutbound().get("css2").getNode().getId());
+
+        // Zero because there is no direct information about this endpoint (e.g. it is
+        // not directly monitored)
+        assertEquals(0, css1result.getOutbound().get("css2").getNode().getCount());
+    }
 }

@@ -257,52 +257,6 @@
                 }
             }
         },
-        "fragmentcompletiontime": {
-            "dynamic_templates": [{
-                "notanalyzed": {
-                      "match": "*",
-                      "match_mapping_type": "string",
-                      "mapping": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                      }
-                }
-            }],
-            "date_detection" : false,
-            "numeric_detection": false,
-            "properties": {
-                "transaction": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "duration": {
-                    "type": "long"
-                },
-                "timestamp": {
-                    "type": "long"
-                },
-                "properties": {
-                    "type": "nested",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "value": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "type": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "number": {
-                            "type": "double"
-                        }
-                    }
-                }
-            }
-        },
         "span": {
             "dynamic_templates": [{
                 "notanalyzed": {

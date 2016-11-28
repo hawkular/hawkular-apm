@@ -45,6 +45,14 @@ public class NodeDetails implements ApmEvent {
     @JsonInclude
     private String fragmentId;
 
+    /**
+     * This property indicates whether this is the initial node within an application
+     * or invoked service. This enables the node details associated with handling a
+     * service request (or initial top level application component) to be identified.
+     */
+    @JsonInclude(Include.NON_DEFAULT)
+    private boolean initial = false;
+
     @JsonInclude
     private String transaction;
 
@@ -131,6 +139,20 @@ public class NodeDetails implements ApmEvent {
      */
     public void setFragmentId(String fragmentId) {
         this.fragmentId = fragmentId;
+    }
+
+    /**
+     * @return the initial
+     */
+    public boolean isInitial() {
+        return initial;
+    }
+
+    /**
+     * @param initial the initial to set
+     */
+    public void setInitial(boolean initial) {
+        this.initial = initial;
     }
 
     /**
@@ -347,7 +369,6 @@ public class NodeDetails implements ApmEvent {
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (actual ^ (actual >>> 32));
-        result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
         result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + (int) (elapsed ^ (elapsed >>> 32));
@@ -355,10 +376,12 @@ public class NodeDetails implements ApmEvent {
         result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
         result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (initial ? 1231 : 1237);
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((traceId == null) ? 0 : traceId.hashCode());
+        result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
@@ -374,11 +397,6 @@ public class NodeDetails implements ApmEvent {
             return false;
         NodeDetails other = (NodeDetails) obj;
         if (actual != other.actual)
-            return false;
-        if (transaction == null) {
-            if (other.transaction != null)
-                return false;
-        } else if (!transaction.equals(other.transaction))
             return false;
         if (componentType == null) {
             if (other.componentType != null)
@@ -412,6 +430,8 @@ public class NodeDetails implements ApmEvent {
                 return false;
         } else if (!id.equals(other.id))
             return false;
+        if (initial != other.initial)
+            return false;
         if (operation == null) {
             if (other.operation != null)
                 return false;
@@ -429,6 +449,11 @@ public class NodeDetails implements ApmEvent {
                 return false;
         } else if (!traceId.equals(other.traceId))
             return false;
+        if (transaction == null) {
+            if (other.transaction != null)
+                return false;
+        } else if (!transaction.equals(other.transaction))
+            return false;
         if (type != other.type)
             return false;
         if (uri == null) {
@@ -441,11 +466,11 @@ public class NodeDetails implements ApmEvent {
 
     @Override
     public String toString() {
-        return "NodeDetails [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId
-                + ", transaction=" + transaction + ", type=" + type + ", uri=" + uri + ", timestamp="
-                + timestamp + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType=" + componentType
-                + ", operation=" + operation + ", hostName=" + hostName + ", hostAddress=" + hostAddress
-                + ", properties=" + properties + ", correlationIds=" + correlationIds + "]";
+        return "NodeDetails [id=" + id + ", traceId=" + traceId + ", fragmentId=" + fragmentId + ", initial=" + initial
+                + ", transaction=" + transaction + ", type=" + type + ", uri=" + uri + ", timestamp=" + timestamp
+                + ", elapsed=" + elapsed + ", actual=" + actual + ", componentType=" + componentType + ", operation="
+                + operation + ", hostName=" + hostName + ", hostAddress=" + hostAddress + ", properties=" + properties
+                + ", correlationIds=" + correlationIds + "]";
     }
 
 }

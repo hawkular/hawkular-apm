@@ -21,7 +21,6 @@ import java.util.List;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 
-import org.hawkular.apm.api.model.events.CompletionTime;
 import org.hawkular.apm.api.utils.PropertyUtil;
 
 import feign.Retryer;
@@ -42,12 +41,12 @@ public class AlertsPublisher {
     private static final String TARGET = String.format("%s/hawkular/alerts", BASE_URL);
 
     @Asynchronous
-    public void publish(List<CompletionTime> completionTimeList, String eventSource) {
-        completionTimeList.forEach(completionTime -> publish(completionTime, eventSource));
+    public void publish(List<Event> eventList) {
+        eventList.forEach(completionTime -> publish(completionTime));
     }
 
     @Asynchronous
-    public void publish(final CompletionTime completionTime, String eventSource) {
+    public void publish(final Event event) {
         if (BASE_URL == null || BASE_URL.isEmpty()) {
             logger.hawkularServerNotConfigured();
             return;
@@ -69,6 +68,6 @@ public class AlertsPublisher {
                 .decoder(new JacksonDecoder())
                 .retryer(new Retryer.Default())
                 .target(AlertsService.class, TARGET)
-                .addEvent(new Event(completionTime, eventSource));
+                .addEvent(event);
     }
 }

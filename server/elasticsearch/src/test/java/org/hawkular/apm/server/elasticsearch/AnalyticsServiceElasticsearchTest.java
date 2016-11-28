@@ -1721,43 +1721,49 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsWithoutOps() throws StoreException {
-        CompletionTime ct1_1 = new CompletionTime();
+        NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setUri(IN1);
         ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
-        ct1_1.setDuration(100);
+        ct1_1.setElapsed(100);
+        ct1_1.setInitial(true);
 
-        CompletionTime ct1_2 = new CompletionTime();
+        NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setUri(OUT1_1);
         ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
-        ct1_2.setDuration(300);
+        ct1_2.setElapsed(300);
+        ct1_2.setInitial(true);
 
-        CompletionTime ct1_3 = new CompletionTime();
+        NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setUri(OUT1_2);
         ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
-        ct1_3.setDuration(200);
+        ct1_3.setElapsed(200);
+        ct1_3.setInitial(true);
 
-        CompletionTime ct2_1 = new CompletionTime();
+        NodeDetails ct2_1 = new NodeDetails();
         ct2_1.setUri(IN2);
         ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
-        ct2_1.setDuration(500);
+        ct2_1.setElapsed(500);
+        ct2_1.setInitial(true);
 
-        CompletionTime ct2_2 = new CompletionTime();
+        NodeDetails ct2_2 = new NodeDetails();
         ct2_2.setUri(OUT2_1);
         ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
-        ct2_2.setDuration(400);
+        ct2_2.setElapsed(400);
+        ct2_2.setInitial(true);
 
-        CompletionTime ct2_3 = new CompletionTime();
+        NodeDetails ct2_3 = new NodeDetails();
         ct2_3.setUri(IN2);
         ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
-        ct2_3.setDuration(600);
+        ct2_3.setElapsed(600);
+        ct2_3.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
@@ -1861,43 +1867,49 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsWithoutUri() throws StoreException {
-        CompletionTime ct1_1 = new CompletionTime();
+        NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setOperation(IN1);
         ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
-        ct1_1.setDuration(100);
+        ct1_1.setElapsed(100);
+        ct1_1.setInitial(true);
 
-        CompletionTime ct1_2 = new CompletionTime();
+        NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setOperation(OUT1_1);
         ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
-        ct1_2.setDuration(300);
+        ct1_2.setElapsed(300);
+        ct1_2.setInitial(true);
 
-        CompletionTime ct1_3 = new CompletionTime();
+        NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setOperation(OUT1_2);
         ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
-        ct1_3.setDuration(200);
+        ct1_3.setElapsed(200);
+        ct1_3.setInitial(true);
 
-        CompletionTime ct2_1 = new CompletionTime();
+        NodeDetails ct2_1 = new NodeDetails();
         ct2_1.setOperation(IN2);
         ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
-        ct2_1.setDuration(500);
+        ct2_1.setElapsed(500);
+        ct2_1.setInitial(true);
 
-        CompletionTime ct2_2 = new CompletionTime();
+        NodeDetails ct2_2 = new NodeDetails();
         ct2_2.setOperation(OUT2_1);
         ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
-        ct2_2.setDuration(400);
+        ct2_2.setElapsed(400);
+        ct2_2.setInitial(true);
 
-        CompletionTime ct2_3 = new CompletionTime();
+        NodeDetails ct2_3 = new NodeDetails();
         ct2_3.setOperation(IN2);
         ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
-        ct2_3.setDuration(600);
+        ct2_3.setElapsed(600);
+        ct2_3.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
@@ -2016,49 +2028,55 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsWithOps() throws StoreException {
-        CompletionTime ct1_1 = new CompletionTime();
+        NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
         ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
-        ct1_1.setDuration(100);
+        ct1_1.setElapsed(100);
+        ct1_1.setInitial(true);
 
-        CompletionTime ct1_2 = new CompletionTime();
+        NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
         ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
-        ct1_2.setDuration(300);
+        ct1_2.setElapsed(300);
+        ct1_2.setInitial(true);
 
-        CompletionTime ct1_3 = new CompletionTime();
+        NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setUri(OUT1_2);
         ct1_3.setOperation(OP1_2);
         ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
-        ct1_3.setDuration(200);
+        ct1_3.setElapsed(200);
+        ct1_3.setInitial(true);
 
-        CompletionTime ct2_1 = new CompletionTime();
+        NodeDetails ct2_1 = new NodeDetails();
         ct2_1.setUri(IN2);
         ct2_1.setOperation(OP2);
         ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
-        ct2_1.setDuration(500);
+        ct2_1.setElapsed(500);
+        ct2_1.setInitial(true);
 
-        CompletionTime ct2_2 = new CompletionTime();
+        NodeDetails ct2_2 = new NodeDetails();
         ct2_2.setUri(OUT2_1);
         ct2_2.setOperation(OP2_1);
         ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
-        ct2_2.setDuration(400);
+        ct2_2.setElapsed(400);
+        ct2_2.setInitial(true);
 
-        CompletionTime ct2_3 = new CompletionTime();
+        NodeDetails ct2_3 = new NodeDetails();
         ct2_3.setUri(IN2);
         ct2_3.setOperation(OP2);
         ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
-        ct2_3.setDuration(600);
+        ct2_3.setElapsed(600);
+        ct2_3.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
@@ -2162,56 +2180,62 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsWithOpsAndInternalLinks() throws StoreException {
-        CompletionTime ct1_1 = new CompletionTime();
+        NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
         ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
-        ct1_1.setDuration(50);
+        ct1_1.setElapsed(50);
+        ct1_1.setInitial(true);
 
-        CompletionTime ct1_1_internal = new CompletionTime();
+        NodeDetails ct1_1_internal = new NodeDetails();
         ct1_1_internal.setUri(IN1);
         ct1_1_internal.setOperation(OP1);
         ct1_1_internal.setTransaction(TXN);
         ct1_1_internal.setTimestamp(1550);
-        ct1_1_internal.setDuration(100);
+        ct1_1_internal.setElapsed(100);
 
-        CompletionTime ct1_2 = new CompletionTime();
+        NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
         ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
-        ct1_2.setDuration(300);
+        ct1_2.setElapsed(300);
+        ct1_2.setInitial(true);
 
-        CompletionTime ct1_3 = new CompletionTime();
+        NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setUri(OUT1_2);
         ct1_3.setOperation(OP1_2);
         ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
-        ct1_3.setDuration(200);
+        ct1_3.setElapsed(200);
+        ct1_3.setInitial(true);
 
-        CompletionTime ct2_1 = new CompletionTime();
+        NodeDetails ct2_1 = new NodeDetails();
         ct2_1.setUri(IN2);
         ct2_1.setOperation(OP2);
         ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
-        ct2_1.setDuration(500);
+        ct2_1.setElapsed(500);
+        ct2_1.setInitial(true);
 
-        CompletionTime ct2_2 = new CompletionTime();
+        NodeDetails ct2_2 = new NodeDetails();
         ct2_2.setUri(OUT2_1);
         ct2_2.setOperation(OP2_1);
         ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
-        ct2_2.setDuration(400);
+        ct2_2.setElapsed(400);
+        ct2_2.setInitial(true);
 
-        CompletionTime ct2_3 = new CompletionTime();
+        NodeDetails ct2_3 = new NodeDetails();
         ct2_3.setUri(IN2);
         ct2_3.setOperation(OP2);
         ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
-        ct2_3.setDuration(600);
+        ct2_3.setElapsed(600);
+        ct2_3.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_1_internal,
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_1_internal,
                 ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1internal = new CommunicationDetails();
@@ -2290,7 +2314,7 @@ public class AnalyticsServiceElasticsearchTest {
         // stats across the top level and internal fragments - but at this stage would be difficult
         // to accumulate all spawned fragments for a single call to the service, to get an
         // overall value.
-        assertEquals(2, results.get(EP_INOP1).getCount());
+        assertEquals(1, results.get(EP_INOP1).getCount());
         assertEquals(2, results.get(EP_INOP2).getCount());
         assertEquals(1, results.get(EP_OUTOP1_1).getCount());
         assertEquals(1, results.get(EP_OUTOP1_2).getCount());
@@ -2328,55 +2352,61 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticForPrincipal() throws StoreException {
-        CompletionTime ct1_1 = new CompletionTime();
+        NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
         ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
-        ct1_1.setDuration(100);
+        ct1_1.setElapsed(100);
         ct1_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
+        ct1_1.setInitial(true);
 
-        CompletionTime ct1_2 = new CompletionTime();
+        NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
         ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
-        ct1_2.setDuration(300);
+        ct1_2.setElapsed(300);
         ct1_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
+        ct1_2.setInitial(true);
 
-        CompletionTime ct1_3 = new CompletionTime();
+        NodeDetails ct1_3 = new NodeDetails();
         ct1_3.setUri(OUT1_2);
         ct1_3.setOperation(OP1_2);
         ct1_3.setTransaction(TXN);
         ct1_3.setTimestamp(1600);
-        ct1_3.setDuration(200);
+        ct1_3.setElapsed(200);
         ct1_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
+        ct1_3.setInitial(true);
 
-        CompletionTime ct2_1 = new CompletionTime();
+        NodeDetails ct2_1 = new NodeDetails();
         ct2_1.setUri(IN2);
         ct2_1.setOperation(OP2);
         ct2_1.setTransaction(TXN);
         ct2_1.setTimestamp(1600);
-        ct2_1.setDuration(500);
+        ct2_1.setElapsed(500);
         ct2_1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
+        ct2_1.setInitial(true);
 
-        CompletionTime ct2_2 = new CompletionTime();
+        NodeDetails ct2_2 = new NodeDetails();
         ct2_2.setUri(OUT2_1);
         ct2_2.setOperation(OP2_1);
         ct2_2.setTransaction(TXN);
         ct2_2.setTimestamp(1700);
-        ct2_2.setDuration(400);
+        ct2_2.setElapsed(400);
         ct2_2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
+        ct2_2.setInitial(true);
 
-        CompletionTime ct2_3 = new CompletionTime();
+        NodeDetails ct2_3 = new NodeDetails();
         ct2_3.setUri(IN2);
         ct2_3.setOperation(OP2);
         ct2_3.setTransaction(TXN);
         ct2_3.setTimestamp(1700);
-        ct2_3.setDuration(600);
+        ct2_3.setElapsed(600);
         ct2_3.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p2"));
+        ct2_3.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2, ct1_3, ct2_1, ct2_2, ct2_3));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
@@ -2467,23 +2497,25 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticForHost() throws StoreException {
-        CompletionTime ct1_1 = new CompletionTime();
+        NodeDetails ct1_1 = new NodeDetails();
         ct1_1.setUri(IN1);
         ct1_1.setOperation(OP1);
         ct1_1.setTransaction(TXN);
         ct1_1.setTimestamp(1500);
-        ct1_1.setDuration(100);
+        ct1_1.setElapsed(100);
         ct1_1.setHostName("hostA");
+        ct1_1.setInitial(true);
 
-        CompletionTime ct1_2 = new CompletionTime();
+        NodeDetails ct1_2 = new NodeDetails();
         ct1_2.setUri(OUT1_1);
         ct1_2.setOperation(OP1_1);
         ct1_2.setTransaction(TXN);
         ct1_2.setTimestamp(1600);
-        ct1_2.setDuration(300);
+        ct1_2.setElapsed(300);
         ct1_2.setHostName("hostB");
+        ct1_2.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1_1, ct1_2));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1_1, ct1_2));
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setLinkId("cd1");
@@ -2525,19 +2557,20 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsServiceName() throws StoreException {
-        CompletionTime ct1 = new CompletionTime();
+        NodeDetails ct1 = new NodeDetails();
         ct1.setTransaction("testapp");
         ct1.setUri("in1");
         ct1.setOperation("op1");
         ct1.getProperties().add(new Property("prop", "val"));
         ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
+        ct1.setInitial(true);
 
         CommunicationDetails cd1 = new CommunicationDetails();
         cd1.setTransaction("testapp");
         cd1.setSource("in1[op1]");
         cd1.setTarget("out1.1[op1.1]");
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1));
         analytics.storeCommunicationDetails(null, Arrays.asList(cd1));
 
         Criteria criteria = new Criteria()
@@ -2558,13 +2591,14 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsServiceNameMissingOperation() throws StoreException {
-        CompletionTime ct1 = new CompletionTime();
+        NodeDetails ct1 = new NodeDetails();
         ct1.setUri("in1");
         ct1.setTransaction("testapp");
         ct1.getProperties().add(new Property("prop", "val"));
         ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
+        ct1.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1));
 
         Criteria criteria = new Criteria()
                 .setStartTime(0)
@@ -2583,11 +2617,12 @@ public class AnalyticsServiceElasticsearchTest {
 
     @Test
     public void testGetCommunicationSummaryStatisticsServiceNameMissingURI() throws StoreException {
-        CompletionTime ct1 = new CompletionTime();
+        NodeDetails ct1 = new NodeDetails();
         ct1.setOperation("op1");
         ct1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "wildfly"));
+        ct1.setInitial(true);
 
-        analytics.storeFragmentCompletionTimes(null, Arrays.asList(ct1));
+        analytics.storeNodeDetails(null, Arrays.asList(ct1));
 
         Criteria criteria = new Criteria()
                 .setStartTime(0)

@@ -50,7 +50,7 @@ public interface MsgLogger extends BasicLogger {
     void hawkularServerPasswordNotConfigured();
 
     @LogMessage(level = Logger.Level.DEBUG)
-    @Message(id = 600205, value = "Received a fragment completion time information. Publishing to Hawkular Alerts.")
-    void fragmentCompletionTimeReceived();
+    @Message(id = 600205, value = "Received a invocation details. Publishing to Hawkular Alerts.")
+    void invocationDetailsReceived();
 
 }

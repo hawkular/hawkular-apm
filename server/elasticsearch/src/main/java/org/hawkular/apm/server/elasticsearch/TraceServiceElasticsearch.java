@@ -185,7 +185,7 @@ public class TraceServiceElasticsearch implements TraceService {
     @Override
     public Trace getTrace(String tenantId, String id) {
         List<Trace> fragments = getFragmentsForTraceId(tenantId, id);
-        Trace ret = fragments.stream().filter(f -> f.getTraceId().equals(id)).findFirst().orElse(null);
+        Trace ret = fragments.stream().filter(f -> f.getFragmentId().equals(id)).findFirst().orElse(null);
 
         if (ret != null) {
             for (int i=0; i < ret.getNodes().size(); i++) {

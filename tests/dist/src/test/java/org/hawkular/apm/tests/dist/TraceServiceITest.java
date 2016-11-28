@@ -18,9 +18,7 @@ package org.hawkular.apm.tests.dist;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +27,6 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
-import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.Criteria.Operator;
@@ -106,76 +103,6 @@ public class TraceServiceITest extends AbstractITest {
 
         assertNotNull(result);
         assertEquals("1", result.getFragmentId());
-    }
-
-    @Test
-    public void testStoreAndRetrieveComplexTraceById() throws Exception {
-        Trace trace1 = new Trace();
-        trace1.setTraceId("1");
-        trace1.setFragmentId("1");
-        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
-        Consumer c1 = new Consumer();
-        c1.setUri("uri1");
-        c1.getProperties().add(new Property("prop1","value1"));
-        trace1.getNodes().add(c1);
-        Producer p1_1 = new Producer();
-        p1_1.addInteractionCorrelationId("id1_1");
-        c1.getNodes().add(p1_1);
-        Producer p1_2 = new Producer();
-        p1_2.addInteractionCorrelationId("id1_2");
-        p1_2.setUri("uri2");
-        c1.getNodes().add(p1_2);
-
-        Trace trace2 = new Trace();
-        trace2.setTraceId(trace1.getTraceId());
-        trace2.setFragmentId("2");
-        trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
-        Consumer c2 = new Consumer();
-        c2.setUri("uri2");
-        c2.addInteractionCorrelationId("id1_2");
-        c2.getProperties().add(new Property("prop1","value1"));
-        c2.getProperties().add(new Property("prop2","value2"));
-        trace2.getNodes().add(c2);
-        Producer p2_1 = new Producer();
-        p2_1.addInteractionCorrelationId("id2_1");
-        c2.getNodes().add(p2_1);
-        Producer p2_2 = new Producer();
-        p2_2.addInteractionCorrelationId("id2_2");
-        c2.getNodes().add(p2_2);
-
-        tracePublisher.publish(null, Arrays.asList(trace1, trace2));
-
-        // Wait to ensure record persisted
-        Wait.until(() -> {
-            try {
-                // see https://issues.jboss.org/browse/HWKAPM-584
-                Trace t = traceService.getTrace(null, "1");
-                return t != null;
-            } catch (Throwable t) {
-                return false;
-            }
-        });
-
-        // Retrieve stored trace
-        Trace result = traceService.getTrace(null, "1");
-
-        assertNotNull(result);
-        assertEquals("1", result.getFragmentId());
-
-        assertEquals(2, result.allProperties().size());
-        assertEquals(1, result.getNodes().size());
-        assertEquals(Consumer.class, result.getNodes().get(0).getClass());
-        assertEquals("uri1", result.getNodes().get(0).getUri());
-        assertEquals(2, ((Consumer)result.getNodes().get(0)).getNodes().size());
-        assertEquals(Producer.class, ((Consumer)result.getNodes().get(0)).getNodes().get(0).getClass());
-        assertTrue(((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(0)).getNodes().isEmpty());
-        assertEquals(Producer.class, ((Consumer)result.getNodes().get(0)).getNodes().get(1).getClass());
-        assertEquals("uri2", ((Consumer)result.getNodes().get(0)).getNodes().get(1).getUri());
-        assertEquals(1, ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes().size());
-        assertEquals(Consumer.class, ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes()
-                .get(0).getClass());
-        assertEquals("uri2", ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes()
-                .get(0).getUri());
     }
 
     @Test
