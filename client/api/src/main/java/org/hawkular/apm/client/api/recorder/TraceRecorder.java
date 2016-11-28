@@ -14,31 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.agent.opentracing;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.hawkular.apm.client.api.recorder;
 
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.client.api.reporter.TraceReporter;
 
 /**
+ * This interface represents a component for reporting Trace fragments.
+ *
  * @author gbrown
  */
-public class TestTraceReporter implements TraceReporter {
+public interface TraceRecorder {
 
-    private List<Trace> traces = new ArrayList<>();
+    /**
+     * This method reports a trace fragment.
+     *
+     * @param trace The trace fragment
+     */
+    void report(Trace trace);
 
-    @Override
-    public void report(Trace trace) {
-        traces.add(trace);
-    }
-
-    public List<Trace> getTraces() {
-        return traces;
-    }
-
-    public void clear() {
-        traces.clear();
-    }
 }

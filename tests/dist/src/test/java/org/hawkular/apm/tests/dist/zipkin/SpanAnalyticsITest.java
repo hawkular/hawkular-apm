@@ -49,9 +49,7 @@ public class SpanAnalyticsITest extends AbstractITest {
 
     @BeforeClass
     public static void beforeClass() {
-        analyticsService = new AnalyticsServiceRESTClient();
-        analyticsService.setUsername(HAWKULAR_APM_USERNAME);
-        analyticsService.setPassword(HAWKULAR_APM_PASSWORD);
+        analyticsService = new AnalyticsServiceRESTClient(HAWKULAR_APM_USERNAME, HAWKULAR_APM_PASSWORD, HAWKULAR_APM_URI);
     }
 
     @Before

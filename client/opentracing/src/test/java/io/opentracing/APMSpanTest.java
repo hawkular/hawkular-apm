@@ -50,7 +50,7 @@ public class APMSpanTest {
     public void testFindPrimaryReferenceSingleChildOfSpan() {
         Tracer tracer = new APMTracer();
         Span span = tracer.buildSpan("test").start();
-        
+
         Reference ref = new Reference(References.CHILD_OF, span.context());
         assertEquals(ref, APMSpan.findPrimaryReference(Arrays.asList(ref)));
     }
@@ -58,9 +58,9 @@ public class APMSpanTest {
     @Test
     public void testFindPrimaryReferenceMultipleChildOfSpan() {
         Tracer tracer = new APMTracer();
-        Span span1 = tracer.buildSpan("test1").start();        
+        Span span1 = tracer.buildSpan("test1").start();
         Reference ref1 = new Reference(References.CHILD_OF, span1.context());
-        Span span2 = tracer.buildSpan("test2").start();        
+        Span span2 = tracer.buildSpan("test2").start();
         Reference ref2 = new Reference(References.CHILD_OF, span2.context());
         assertNull(APMSpan.findPrimaryReference(Arrays.asList(ref1, ref2)));
     }
@@ -68,7 +68,7 @@ public class APMSpanTest {
     @Test
     public void testFindPrimaryReferenceSingleChildOfSpanContext() {
         Tracer tracer = new APMTracer();
-        
+
         SpanContext spanCtx = extractSpanContext(tracer, TEST_APM_ID1);
 
         Reference ref = new Reference(References.CHILD_OF, spanCtx);
@@ -78,7 +78,7 @@ public class APMSpanTest {
     @Test
     public void testFindPrimaryReferenceMultipleChildOfSpanContext() {
         Tracer tracer = new APMTracer();
-        
+
         SpanContext spanCtx1 = extractSpanContext(tracer, TEST_APM_ID1);
         SpanContext spanCtx2 = extractSpanContext(tracer, TEST_APM_ID2);
 
@@ -91,7 +91,7 @@ public class APMSpanTest {
     public void testFindPrimaryReferenceSingleFollowsFrom() {
         Tracer tracer = new APMTracer();
         Span span = tracer.buildSpan("test").start();
-        
+
         Reference ref = new Reference(References.FOLLOWS_FROM, span.context());
         assertEquals(ref, APMSpan.findPrimaryReference(Arrays.asList(ref)));
     }
@@ -99,9 +99,9 @@ public class APMSpanTest {
     @Test
     public void testFindPrimaryReferenceMultipleFollowsFrom() {
         Tracer tracer = new APMTracer();
-        Span span1 = tracer.buildSpan("test1").start();        
+        Span span1 = tracer.buildSpan("test1").start();
         Reference ref1 = new Reference(References.FOLLOWS_FROM, span1.context());
-        Span span2 = tracer.buildSpan("test2").start();        
+        Span span2 = tracer.buildSpan("test2").start();
         Reference ref2 = new Reference(References.FOLLOWS_FROM, span2.context());
         assertNull(APMSpan.findPrimaryReference(Arrays.asList(ref1, ref2)));
     }
@@ -109,17 +109,17 @@ public class APMSpanTest {
     @Test
     public void testFindPrimaryReferenceSingleChildOfSpanContextWithOtherRefs() {
         Tracer tracer = new APMTracer();
-        
+
         SpanContext spanCtx1 = extractSpanContext(tracer, TEST_APM_ID1);
 
         Reference ref1 = new Reference(References.CHILD_OF, spanCtx1);
 
-        Span span2 = tracer.buildSpan("test2").start();        
+        Span span2 = tracer.buildSpan("test2").start();
         Reference ref2 = new Reference(References.FOLLOWS_FROM, span2.context());
 
-        Span span3 = tracer.buildSpan("test3").start();        
+        Span span3 = tracer.buildSpan("test3").start();
         Reference ref3 = new Reference(References.CHILD_OF, span3.context());
-        Span span4 = tracer.buildSpan("test4").start();        
+        Span span4 = tracer.buildSpan("test4").start();
         Reference ref4 = new Reference(References.CHILD_OF, span4.context());
 
         assertEquals(ref1, APMSpan.findPrimaryReference(Arrays.asList(ref1, ref2, ref3, ref4)));

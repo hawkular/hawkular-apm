@@ -57,17 +57,9 @@ public class TraceCompletionTimeITest extends AbstractITest {
 
     @BeforeClass
     public static void initClass() {
-        analyticsService = new AnalyticsServiceRESTClient();
-        analyticsService.setUsername(HAWKULAR_APM_USERNAME);
-        analyticsService.setPassword(HAWKULAR_APM_PASSWORD);
-
-        traceService = new TraceServiceRESTClient();
-        traceService.setUsername(HAWKULAR_APM_USERNAME);
-        traceService.setPassword(HAWKULAR_APM_PASSWORD);
-
-        tracePublisher = new TracePublisherRESTClient();
-        tracePublisher.setUsername(HAWKULAR_APM_USERNAME);
-        tracePublisher.setPassword(HAWKULAR_APM_PASSWORD);
+        analyticsService = new AnalyticsServiceRESTClient(HAWKULAR_APM_USERNAME, HAWKULAR_APM_PASSWORD, HAWKULAR_APM_URI);
+        traceService = new TraceServiceRESTClient(HAWKULAR_APM_USERNAME, HAWKULAR_APM_PASSWORD, HAWKULAR_APM_URI);
+        tracePublisher = new TracePublisherRESTClient(HAWKULAR_APM_USERNAME, HAWKULAR_APM_PASSWORD, HAWKULAR_APM_URI);
     }
 
     @Before

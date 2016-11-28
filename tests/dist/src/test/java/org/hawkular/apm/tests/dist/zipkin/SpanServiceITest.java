@@ -45,9 +45,7 @@ public class SpanServiceITest extends AbstractITest {
 
     @BeforeClass
     public static void beforeClass() {
-        traceService = new TraceServiceRESTClient();
-        traceService.setUsername(HAWKULAR_APM_USERNAME);
-        traceService.setPassword(HAWKULAR_APM_PASSWORD);
+        traceService = new TraceServiceRESTClient(HAWKULAR_APM_USERNAME, HAWKULAR_APM_PASSWORD, HAWKULAR_APM_URI);
     }
 
     @Before

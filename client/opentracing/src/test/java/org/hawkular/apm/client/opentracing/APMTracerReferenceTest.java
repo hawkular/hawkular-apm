@@ -29,7 +29,6 @@ import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
 import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.client.opentracing.APMTracerTest.TestTraceReporter;
 import org.junit.Test;
 
 import io.opentracing.References;
@@ -52,7 +51,7 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testNoReferences() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         Span span = tracer.buildSpan("NoReferences")
@@ -70,7 +69,7 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testSingleExtractedChildOf() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         SpanContext spanCtx = extractedTraceState(tracer, TEST_APM_ID1);
@@ -92,7 +91,7 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testSingleExtractedFollowsFrom() {
-        TestTraceReporter testTraceReporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder testTraceReporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(testTraceReporter);
 
         SpanContext spanCtx = extractedTraceState(tracer, TEST_APM_ID1);
@@ -114,7 +113,7 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testSingleChildOfSpan() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         Span parentSpan = tracer.buildSpan("ParentSpan")
@@ -147,7 +146,7 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testSingleChildOfSpanUsingContext() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         Span parentSpan = tracer.buildSpan("ParentSpan")
@@ -180,8 +179,8 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testSingleFollowsFromRef() {
-        TestTraceReporter reporter = new TestTraceReporter();
-        Tracer tracer = new APMTracer(reporter);
+        APMTracerTest.TestTraceRecorder recorder = new APMTracerTest.TestTraceRecorder();
+        Tracer tracer = new APMTracer(recorder);
 
         Span parentSpan = tracer.buildSpan("ParentSpan")
                 .withTag("http.url", "http://localhost:8080/hello")
@@ -194,9 +193,9 @@ public class APMTracerReferenceTest {
                 .start();
         followsFromSpan.finish();
 
-        assertEquals(2, reporter.getTraces().size());
+        assertEquals(2, recorder.getTraces().size());
 
-        Trace parentTrace = reporter.getTraces().get(0);
+        Trace parentTrace = recorder.getTraces().get(0);
 
         assertEquals(1, parentTrace.getNodes().size());
         assertEquals(Component.class, parentTrace.getNodes().get(0).getClass());
@@ -206,7 +205,7 @@ public class APMTracerReferenceTest {
         assertTrue(parentComponent.getCorrelationIds().isEmpty());
         assertEquals(0, parentComponent.getNodes().size());
 
-        Trace followsFromTrace = reporter.getTraces().get(1);
+        Trace followsFromTrace = recorder.getTraces().get(1);
 
         assertEquals(parentTrace.getTraceId(), followsFromTrace.getTraceId());
 
@@ -235,7 +234,7 @@ public class APMTracerReferenceTest {
      */
     @Test
     public void testSingleChildOfSpanContextWithOtherFollowsFromRefs() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         SpanContext spanCtx1 = extractedTraceState(tracer, TEST_APM_ID1);
@@ -285,7 +284,7 @@ public class APMTracerReferenceTest {
      */
     @Test
     public void testSingleChildOfSpanWithOtherFollowsFromRefs() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         Span rootSpan = tracer.buildSpan("root")
@@ -344,7 +343,7 @@ public class APMTracerReferenceTest {
      */
     @Test
     public void testSingleExtractedSpanContextWithOtherChildOfSpanAndFollowsFromRefs() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         SpanContext spanCtx1 = extractedTraceState(tracer, TEST_APM_ID1);
@@ -394,7 +393,7 @@ public class APMTracerReferenceTest {
 
     @Test
     public void testMultipleVariousChildOfAndFollowsFromRefsSameTraceInstance() {
-        TestTraceReporter reporter = new TestTraceReporter();
+        APMTracerTest.TestTraceRecorder reporter = new APMTracerTest.TestTraceRecorder();
         Tracer tracer = new APMTracer(reporter);
 
         SpanContext parentSpanCtx = extractedTraceState(tracer, TEST_APM_ID0);

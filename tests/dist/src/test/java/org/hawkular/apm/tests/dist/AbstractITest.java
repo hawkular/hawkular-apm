@@ -41,6 +41,7 @@ public abstract class AbstractITest {
 
     public static final String HAWKULAR_APM_USERNAME = "jdoe";
     public static final String HAWKULAR_APM_PASSWORD = "password";
+    public static final String HAWKULAR_APM_URI = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
     public static final String HAWKULAR_TENANT_HEADER = "Hawkular-Tenant";
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 

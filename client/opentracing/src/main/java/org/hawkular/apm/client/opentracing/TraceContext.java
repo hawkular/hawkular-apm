@@ -28,7 +28,7 @@ import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.apm.client.api.reporter.TraceReporter;
+import org.hawkular.apm.client.api.recorder.TraceRecorder;
 
 import io.opentracing.APMSpan;
 
@@ -53,7 +53,7 @@ public class TraceContext {
 
     private AtomicInteger nodeCount = new AtomicInteger(0);
 
-    private TraceReporter reporter;
+    private TraceRecorder recorder;
 
     private static List<NodeProcessor> nodeProcessors = new ArrayList<>();
 
@@ -66,12 +66,12 @@ public class TraceContext {
      *
      * @param topSpan The top level span in the trace
      * @param rootNode The builder for the root node of the trace fragment
-     * @param reporter The trace reporter
+     * @param recorder The trace recorder
      */
-    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceReporter reporter) {
+    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceRecorder recorder) {
         this.topSpan = topSpan;
         this.rootNode = rootNode;
-        this.reporter = reporter;
+        this.recorder = recorder;
 
         trace = new Trace();
         trace.setFragmentId(UUID.randomUUID().toString());
@@ -97,14 +97,14 @@ public class TraceContext {
      * the trace will be reported.
      */
     public void endProcessingNode() {
-        if (nodeCount.decrementAndGet() == 0 && reporter != null) {
+        if (nodeCount.decrementAndGet() == 0 && recorder != null) {
             Node node = rootNode.build();
 
             trace.setTimestamp(node.getTimestamp());
             trace.setTransaction(getTransaction());
             trace.getNodes().add(node);
 
-            reporter.report(trace);
+            recorder.report(trace);
         }
     }
 
