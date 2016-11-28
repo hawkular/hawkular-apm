@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.hawkular.apm.client.api.recorder;
 
 import java.util.ArrayList;
@@ -38,85 +39,35 @@ import org.hawkular.apm.api.utils.PropertyUtil;
  * @author gbrown
  */
 public class BatchTraceRecorder implements TraceRecorder {
-
-    private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
-
-    private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANTID";
-
     private static final Logger log = Logger.getLogger(BatchTraceRecorder.class.getName());
 
+    private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
     private static final int DEFAULT_BATCH_TIME = 500;
-
     private static final int DEFAULT_BATCH_SIZE = 1000;
+    private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANTID";
 
     private TracePublisher tracePublisher;
 
-    private int batchSize = DEFAULT_BATCH_SIZE;
-    private int batchTime = DEFAULT_BATCH_TIME;
-
-    private String tenantId = PropertyUtil.getProperty(HAWKULAR_APM_TENANT_ID);
+    private List<Trace> traces;
+    private int batchSize;
+    private String tenantId;
 
     private ExecutorService executor;
-    private final ReentrantLock lock=new ReentrantLock();
-    private List<Trace> traces = new ArrayList<Trace>();
+    private final ReentrantLock lock = new ReentrantLock();
 
-    {
-        executor = Executors.newFixedThreadPool(DEFAULT_BATCH_THREAD_POOL_SIZE,
-                                new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                Thread t = Executors.defaultThreadFactory().newThread(r);
-                t.setDaemon(true);
-                return t;
-            }
-        });
-
-        setTracePublisher(ServiceResolver.getSingletonService(TracePublisher.class));
-    }
-
-    /**
-     * The default constructor.
-     */
     public BatchTraceRecorder() {
-        init();
+        this(BatchTraceRecorderBuilder.fromEnvProperties());
     }
 
-    /**
-     * This method sets the trace publisher.
-     *
-     * @param tp The trace publisher
-     */
-    public void setTracePublisher(TracePublisher tp) {
-        this.tracePublisher = tp;
+    public BatchTraceRecorder(BatchTraceRecorderBuilder recorderBuilder) {
+        init(recorderBuilder);
     }
 
-    /**
-     * @return the trace publisher
-     */
-    public TracePublisher getTracePublisher() {
-        return tracePublisher;
-    }
-
-    /**
-     * This method initialises the recorder.
-     */
-    protected void init() {
-        // Get properties
-        String size = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHSIZE, null);
-        if (size != null) {
-            batchSize = Integer.parseInt(size);
-        }
-
-        String time = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTIME, null);
-        if (time != null) {
-            batchTime = Integer.parseInt(time);
-        }
-
-        tenantId = PropertyUtil.getProperty(HAWKULAR_APM_TENANT_ID, null);
-
-        String pool = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTHREADS, null);
-        if (pool != null) {
-            executor = Executors.newFixedThreadPool(Integer.parseInt(pool));
-        }
+    protected void init(BatchTraceRecorderBuilder builder) {
+        this.tracePublisher = builder.tracePublisher;
+        this.tenantId = builder.tenantId;
+        this.batchSize = builder.batchSize;
+        this.traces = new ArrayList<>(batchSize + 1);
 
         // Create scheduled task
         Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
@@ -139,7 +90,16 @@ public class BatchTraceRecorder implements TraceRecorder {
                     }
                 }
             }
-        }, batchTime, batchTime, TimeUnit.MILLISECONDS);
+        }, builder.batchTime, builder.batchTime, TimeUnit.MILLISECONDS);
+
+        executor = Executors.newFixedThreadPool(builder.threadPoolSize,
+                new ThreadFactory() {
+                    public Thread newThread(Runnable r) {
+                        Thread t = Executors.defaultThreadFactory().newThread(r);
+                        t.setDaemon(true);
+                        return t;
+                    }
+                });
     }
 
     /**
@@ -187,8 +147,8 @@ public class BatchTraceRecorder implements TraceRecorder {
     protected void submitTraces() {
         if (!traces.isEmpty()) {
             // Locally store list and create new list for subsequent traces
-            List<Trace> toSend=traces;
-            traces = new ArrayList<Trace>();
+            List<Trace> toSend = traces;
+            traces = new ArrayList<>(batchSize + 1);
 
             executor.execute(new Runnable() {
                 @Override
@@ -204,4 +164,67 @@ public class BatchTraceRecorder implements TraceRecorder {
         }
     }
 
+    public static class BatchTraceRecorderBuilder {
+        private int batchSize = DEFAULT_BATCH_SIZE;
+        private int batchTime = DEFAULT_BATCH_TIME;
+        private int threadPoolSize = DEFAULT_BATCH_THREAD_POOL_SIZE;
+        private String tenantId;
+
+        private TracePublisher tracePublisher;
+
+        public BatchTraceRecorderBuilder() {
+            tracePublisher = ServiceResolver.getSingletonService(TracePublisher.class);
+        }
+
+        public BatchTraceRecorderBuilder withTracePublisher(TracePublisher tracePublisher) {
+            this.tracePublisher = tracePublisher;
+            return this;
+        }
+
+        public BatchTraceRecorderBuilder withBatchSize(int batchSize) {
+            this.batchSize = batchSize;
+            return this;
+        }
+
+        public BatchTraceRecorderBuilder withBatchTime(int batchTimeMillis) {
+            this.batchTime = batchTimeMillis;
+            return this;
+        }
+
+        public BatchTraceRecorderBuilder withBatchPoolSize(int threadPoolSize) {
+            this.threadPoolSize = threadPoolSize;
+            return this;
+        }
+
+        public BatchTraceRecorderBuilder withTenantId(String tenantId) {
+            this.tenantId = tenantId;
+            return this;
+        }
+
+        public BatchTraceRecorder build() {
+            return new BatchTraceRecorder(this);
+        }
+
+        private static BatchTraceRecorderBuilder fromEnvProperties() {
+            BatchTraceRecorderBuilder builder = new BatchTraceRecorderBuilder();
+
+            if (PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHSIZE, null) != null) {
+                String batchSize = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHSIZE, null);
+                builder.withBatchSize(Integer.parseInt(batchSize));
+            }
+            if (PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTIME, null) != null) {
+                String batchTime = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTIME, null);
+                builder.withBatchTime(Integer.parseInt(batchTime));
+            }
+
+            if (PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTHREADS, null) != null) {
+                String threadPoolSize = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_COLLECTOR_BATCHTHREADS, null);
+                builder.withBatchPoolSize(Integer.parseInt(threadPoolSize));
+            }
+
+            builder.withTenantId(PropertyUtil.getProperty(HAWKULAR_APM_TENANT_ID, null));
+
+            return builder;
+        }
+    }
 }

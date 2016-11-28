@@ -45,7 +45,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     public AbstractAPMTracer(TraceRecorder recorder) {
         this.recorder = recorder;
     }
-    
+
     public void setTraceRecorder(TraceRecorder recorder) {
         this.recorder = recorder;
     }

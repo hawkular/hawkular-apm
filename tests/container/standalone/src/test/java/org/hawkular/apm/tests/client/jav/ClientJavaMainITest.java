@@ -93,9 +93,7 @@ public class ClientJavaMainITest {
 
         assertEquals(mesg + ":" + num, new String(b));
 
-        TraceServiceRESTClient service = new TraceServiceRESTClient();
-        service.setUsername(TEST_USERNAME);
-        service.setPassword(TEST_PASSWORD);
+        TraceServiceRESTClient service = new TraceServiceRESTClient(TEST_USERNAME, TEST_PASSWORD, testAPMServerUri);
 
         // Retrieve stored traces
         Criteria criteria = new Criteria();

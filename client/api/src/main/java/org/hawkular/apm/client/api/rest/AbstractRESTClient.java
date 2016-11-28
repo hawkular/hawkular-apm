@@ -46,25 +46,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class AbstractRESTClient implements ServiceStatus {
     private static final Logger log = Logger.getLogger(AbstractRESTClient.class.getName());
+
     private static final String HAWKULAR_TENANT = "Hawkular-Tenant";
     protected static final ObjectMapper mapper = new ObjectMapper();
-
-    private String username = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME);
-    private String password = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD);
-
-    private String authorization = null;
-
-    private String uri;
-
     private static final Base64.Encoder encoder = Base64.getEncoder();
 
-    public AbstractRESTClient(String uriProperty) {
-        uri = PropertyUtil.getProperty(uriProperty,
-                PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI));
+    private String authorization;
+    private String uri;
 
-        if (uri != null && !uri.isEmpty() && uri.charAt(uri.length() - 1) != '/') {
-            uri = uri + '/';
+    /**
+     * By default rest client tries to find username and password in environmental variables.
+     * @param uriProperty
+     */
+    public AbstractRESTClient(String uriProperty) {
+        this(PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_USERNAME),
+                PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_PASSWORD),
+                PropertyUtil.getProperty(uriProperty, PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI)));
+    }
+
+    public AbstractRESTClient(String username, String password, String url) {
+        if (url != null && !url.isEmpty() && url.charAt(url.length() - 1) != '/') {
+            url += '/';
         }
+
+        this.authorization = basicAuthorization(username, password);
+        this.uri = url;
     }
 
     @Override
@@ -73,52 +79,8 @@ public class AbstractRESTClient implements ServiceStatus {
         return uri != null && uri.startsWith("http");
     }
 
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-
-        // Clear any previously computed authorization string
-        this.authorization = null;
-    }
-
-    /**
-     * @return the uri
-     */
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * @param uri the uri to set
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setAuthorization(String username, String password) {
+        this.authorization = basicAuthorization(username, password);
     }
 
     /**
@@ -137,13 +99,6 @@ public class AbstractRESTClient implements ServiceStatus {
             connection.setRequestProperty(HAWKULAR_TENANT, tenantId);
         }
 
-        if (authorization == null && username != null) {
-            String authString = username + ":" + password;
-            String encoded = encoder.encodeToString(authString.getBytes());
-
-            authorization = "Basic " + encoded;
-        }
-
         if (authorization != null) {
             connection.setRequestProperty("Authorization", authorization);
         }
@@ -155,7 +110,7 @@ public class AbstractRESTClient implements ServiceStatus {
 
     public URL getUrl(String path) {
         try {
-            return new URL(getUri() + "hawkular/apm/" + path);
+            return new URL(uri + "hawkular/apm/" + path);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -310,5 +265,12 @@ public class AbstractRESTClient implements ServiceStatus {
             }
             return null;
         });
+    }
+
+    private String basicAuthorization(String username, String password) {
+        if (username == null || password == null) {
+            return null;
+        }
+        return "Basic " + encoder.encodeToString((username + ":" + password).getBytes());
     }
 }

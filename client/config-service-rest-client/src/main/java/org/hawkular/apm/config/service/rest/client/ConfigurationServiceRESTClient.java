@@ -57,6 +57,10 @@ public class ConfigurationServiceRESTClient extends AbstractRESTClient implement
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
+    public ConfigurationServiceRESTClient(String username, String password, String url) {
+        super(username, password, url);
+    }
+
     @Override
     public CollectorConfiguration getCollector(String tenantId, String type, String host, String server) {
 

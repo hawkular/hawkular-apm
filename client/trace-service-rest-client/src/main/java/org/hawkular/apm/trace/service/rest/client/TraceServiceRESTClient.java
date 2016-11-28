@@ -45,6 +45,10 @@ public class TraceServiceRESTClient extends AbstractRESTClient implements TraceS
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
+    public TraceServiceRESTClient(String username, String password, String url) {
+        super(username, password, url);
+    }
+
     @Override
     public Trace getFragment(String tenantId, String id) {
         return getResultsForUrl(tenantId, TRACE, "traces/fragments/%s", id);

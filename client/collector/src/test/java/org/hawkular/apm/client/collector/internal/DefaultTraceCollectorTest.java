@@ -43,11 +43,9 @@ import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationService;
-import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.PublisherMetricHandler;
-import org.hawkular.apm.api.services.StoreException;
 import org.hawkular.apm.api.services.TracePublisher;
-import org.hawkular.apm.api.services.TraceService;
+import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
@@ -65,9 +63,12 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testSetStartTimeAndDuration() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                    .withTracePublisher(traceService)
+                    .build());
+
         collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, URI, TYPE, OP, null);
@@ -101,11 +102,13 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testTenantIdSystemProperty() {
-        System.setProperty("HAWKULAR_APM_TENANTID", TEST_TENANT);
-
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                    .withTracePublisher(traceService)
+                    .withTenantId(TEST_TENANT)
+                    .build());
+
         collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, URI, TYPE, OP, null);
@@ -123,9 +126,12 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testIncludeHeaders() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                    .withTracePublisher(traceService)
+                    .build());
+
         collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
@@ -158,9 +164,12 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testIncludeHeadersNotProcessedAgain() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                    .withTracePublisher(traceService)
+                    .build());
+
         collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
@@ -195,9 +204,12 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testIncludeHeadersSuppliedSecondCall() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
+
         collector.setConfigurationService(new TestConfigurationService());
 
         Map<String, String> reqHeaders = new HashMap<String, String>();
@@ -226,9 +238,12 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testIncludeID() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
+
         collector.setConfigurationService(new TestConfigurationService());
 
         collector.consumerStart(null, null, null, null, "myid");
@@ -255,9 +270,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testReportingLevelNoneByFilter() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -285,9 +302,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testReportingWithOpLevelNoneByFilter() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -315,9 +334,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testReportingLevelNoneBySetter() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -346,9 +367,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testReportingWithOpLevelNoneBySetter() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -377,9 +400,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testReportingLevelAll() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -407,9 +432,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testReportingWithOpLevelAll() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService tcs = new TestConfigurationService();
 
@@ -558,9 +585,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testNamedOnInitialNode() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -588,9 +617,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testNamedOnSubsequentNodeInitialFragment() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -622,9 +653,11 @@ public class DefaultTraceCollectorTest {
 
     @Test
     public void testNamedOnSubsequentNodeInitialFragmentWithOp() {
-        DefaultTraceCollector collector = new DefaultTraceCollector();
         TestTraceService traceService = new TestTraceService();
-        collector.setTracePublisher(traceService);
+        DefaultTraceCollector collector = new DefaultTraceCollector(
+                new BatchTraceRecorder.BatchTraceRecorderBuilder()
+                        .withTracePublisher(traceService)
+                        .build());
 
         TestConfigurationService cs = new TestConfigurationService();
 
@@ -929,9 +962,9 @@ public class DefaultTraceCollectorTest {
         assertEquals(TXN_NAME, spawnedTrace.getTransaction());
     }
 
-    public static class TestTraceService implements TraceService, TracePublisher {
+    public static class TestTraceService implements TracePublisher {
 
-        private List<Trace> traces = new ArrayList<Trace>();
+        private List<Trace> traces = new ArrayList<>();
         private String tenantId;
 
         @Override
@@ -949,21 +982,6 @@ public class DefaultTraceCollectorTest {
         @Override
         public void retry(String tenantId, List<Trace> items, String subscriber, int retryCount, long delay)
                 throws Exception {
-        }
-
-        @Override
-        public Trace getFragment(String tenantId, String id) {
-            return null;
-        }
-
-        @Override
-        public Trace getTrace(String tenantId, String id) {
-            return null;
-        }
-
-        @Override
-        public List<Trace> searchFragments(String tenantId, Criteria criteria) {
-            return null;
         }
 
         /**
@@ -985,24 +1003,6 @@ public class DefaultTraceCollectorTest {
          */
         public String getTenantId() {
             return tenantId;
-        }
-
-        /**
-         * @param tenantId the tenantId to set
-         */
-        public void setTenantId(String tenantId) {
-            this.tenantId = tenantId;
-        }
-
-        @Override
-        public void storeFragments(String tenantId, List<Trace> traces)
-                throws StoreException {
-        }
-
-        @Override
-        public void clear(String tenantId) {
-            // TODO Auto-generated method stub
-
         }
 
         @Override

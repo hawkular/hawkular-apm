@@ -28,11 +28,9 @@
   </parent>
 
   <artifactId>hawkular-apm-collector</artifactId>
-  <packaging>jar</packaging>
   <name>Hawkular APM::Client::Collector</name>
 
   <dependencies>
-
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-api</artifactId>
@@ -68,7 +66,5 @@
       <artifactId>hawkular-apm-tests-common</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
 </project>

@@ -103,6 +103,10 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         super(PropertyUtil.HAWKULAR_APM_URI_SERVICES);
     }
 
+    public AnalyticsServiceRESTClient(String username, String password, String url) {
+        super(username, password, url);
+    }
+
     @Override
     public List<EndpointInfo> getUnboundEndpoints(String tenantId, long startTime, long endTime, boolean compress) {
         if (log.isLoggable(Level.FINEST)) {

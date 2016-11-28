@@ -44,7 +44,6 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.services.ConfigurationService;
 import org.hawkular.apm.api.services.ServiceResolver;
-import org.hawkular.apm.api.services.TracePublisher;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
@@ -69,7 +68,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     private ConfigurationService configurationService;
 
-    private BatchTraceRecorder recorder = new BatchTraceRecorder();
+    private BatchTraceRecorder recorder;
 
     private Map<String, FragmentBuilder> correlations = new ConcurrentHashMap<String, FragmentBuilder>();
 
@@ -88,6 +87,14 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
 
     {
         setConfigurationService(ServiceResolver.getSingletonService(ConfigurationService.class));
+    }
+
+    public DefaultTraceCollector() {
+        this(new BatchTraceRecorder());
+    }
+
+    public DefaultTraceCollector(BatchTraceRecorder batchTraceRecorder) {
+        this.recorder = batchTraceRecorder;
     }
 
     /**
@@ -197,20 +204,6 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                 }
             }, refresh.intValue(), refresh.intValue(), TimeUnit.SECONDS);
         }
-    }
-
-    /**
-     * @return the trace publisher
-     */
-    protected TracePublisher getTracePublisher() {
-        return recorder.getTracePublisher();
-    }
-
-    /**
-     * @param tracePublisher the trace publisher to set
-     */
-    protected void setTracePublisher(TracePublisher tracePublisher) {
-        recorder.setTracePublisher(tracePublisher);
     }
 
     /**

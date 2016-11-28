@@ -28,11 +28,9 @@
   </parent>
 
   <artifactId>hawkular-apm-instrumenter</artifactId>
-  <packaging>jar</packaging>
   <name>Hawkular APM::Client::Instrumenter</name>
 
   <dependencies>
-
     <dependency>
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-api</artifactId>
@@ -55,6 +53,11 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
 
     <!-- Dependencies required for header factories -->
     <dependency>
@@ -68,7 +71,5 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
 </project>

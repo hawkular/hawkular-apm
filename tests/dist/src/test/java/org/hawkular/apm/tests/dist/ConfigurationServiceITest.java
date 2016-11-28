@@ -52,9 +52,7 @@ public class ConfigurationServiceITest extends AbstractITest {
 
     @BeforeClass
     public static void initClass() {
-        configService = new ConfigurationServiceRESTClient();
-        configService.setUsername(HAWKULAR_APM_USERNAME);
-        configService.setPassword(HAWKULAR_APM_PASSWORD);
+        configService = new ConfigurationServiceRESTClient(HAWKULAR_APM_USERNAME, HAWKULAR_APM_PASSWORD, HAWKULAR_APM_URI);
     }
 
     @Before

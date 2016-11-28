@@ -42,6 +42,10 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
         super(PropertyUtil.HAWKULAR_APM_URI_PUBLISHER);
     }
 
+    public TracePublisherRESTClient(String username, String password, String url) {
+        super(username, password, url);
+    }
+
     @Override
     public int getInitialRetryCount() {
         return 0;
