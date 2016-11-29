@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2015 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 set -x
 
 # generate the docs
-mvn clean compile -Pdocgen -DskipTests -Dcheckstyle.skip -Dlicense.skip
+./mvnw clean compile -Pdocgen -DskipTests -Dcheckstyle.skip -Dlicense.skip
 
 FILE_NAME="rest-btm.adoc"
 FILE_PATH="server/rest/target/generated/$FILE_NAME"
