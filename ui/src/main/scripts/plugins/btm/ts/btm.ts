@@ -20,8 +20,8 @@ module BTM {
 
   declare let c3: any;
 
-  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$rootScope', '$http', '$location', '$interval', '$q',
-    '$timeout', ($scope, $rootScope, $http, $location, $interval, $q, $timeout) => {
+  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$rootScope', '$http', '$location',
+     '$interval', '$q', '$timeout', ($scope, $rootScope, $http, $location, $interval, $q, $timeout) => {
 
     $scope.candidateCount = 0;
 
@@ -95,7 +95,7 @@ module BTM {
     $scope.getTxnDetails = function(txn) {
       let promises = [];
 
-      let txncriteria = angular.copy($scope.criteria);
+      let txncriteria = angular.copy($rootScope.sbFilter.criteria);
       txncriteria.transaction = txn.name;
 
       let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?criteria='
@@ -167,6 +167,24 @@ module BTM {
 
       $scope.faultChartConfig.data.columns = txnFaultData;
       $scope.faultChartHasData = txnFaultData.length > 0;
+    };
+
+    $scope.addPropertyToFilter = function(pName, pValue, operator) {
+      let newProp = {name: pName, value: pValue, operator: operator};
+      $rootScope.sbFilter.criteria.properties.push(newProp);
+      delete $scope.selPropValue;
+    };
+
+    $scope.remPropertyFromFilter = function(property) {
+      $rootScope.sbFilter.criteria.properties.splice($rootScope.sbFilter.criteria.properties.indexOf(property), 1);
+    };
+
+    $scope.toggleExcludeInclude = function(propOrFault) {
+      if (propOrFault.operator === undefined || propOrFault.operator === 'HAS') {
+        propOrFault.operator = 'HASNOT';
+      } else if (propOrFault.operator === 'HASNOT') {
+        propOrFault.operator = 'HAS';
+      }
     };
 
   }]);

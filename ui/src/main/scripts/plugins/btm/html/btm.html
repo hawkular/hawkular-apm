@@ -1,4 +1,4 @@
-<filter-sidebar></filter-sidebar>
+<filter-sidebar no-btxns no-hosts></filter-sidebar>
 <div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
   <div>
     <div ng-show="transactions" >
@@ -32,9 +32,6 @@
       <!-- Txns toolbar -->
       <section id="active" class="hk-tab-content" ng-show="managedTxn.length">
         <div class="hk-control-actions-bar pull-left">
-          <div class="hk-container-separator">
-            <input type="text" class="form-control separator" ng-model="query.name" placeholder="Filter by Name...">
-          </div>
           <button class="btn btn-default" type="button" ng-click="hideCharts = !hideCharts">
             <span ng-hide="hideCharts">Hide</span><span ng-show="hideCharts">Show</span> Charts
           </button>
@@ -76,7 +73,7 @@
               </div>
             </div>
           </div>
-          <div class="hk-txn-item col-md-6" ng-repeat="txn in filteredManTxn = (managedTxn = (transactions | filter: {level: '!Ignore'}) | filter:$root.sbFilter.criteria.transaction) track by txn.name" ng-show="txn.level !== 'Ignore'" ng-class="{'disabled-txn-card': txn.level === 'None'}">
+          <div class="hk-txn-item col-md-6" ng-repeat="txn in filteredManTxn = (managedTxn = (transactions | filter: {level: '!Ignore'}) | filter:$root.sbFilter.criteria.transaction | filter: { name: $root.sbFilter.search }) track by txn.name" ng-show="txn.level !== 'Ignore'" ng-class="{'disabled-txn-card': txn.level === 'None'}">
             <div class="card-pf">
               <div class="card-pf-title">
                 <span tooltip="No data being collected for this service. Activate it to collect." ng-show="txn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>
@@ -92,14 +89,14 @@
                     <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
                       <span class="hk-data" ng-show="txn.count !== undefined">{{txn.count}}</span>
                       <span class="hk-data spinner" ng-hide="txn.count !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                      <span class="hk-item">Transactions (per hour)</span>
+                      <span class="hk-item">Transactions</span>
                     </a>
                   </div>
                   <div class="col-sm-4 hk-summary-item">
                     <a href="/hawkular-ui/apm/btm/info/{{txn.name}}">
                       <span class="hk-data" ng-show="txn.percentile95 !== undefined">{{txn.percentile95 * 1000 * 1000 | hkDuration : true}}</span>
                       <span class="hk-data spinner" ng-hide="txn.percentile95 !== undefined" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-                      <span class="hk-item">Completion (95th percentile)</span>
+                      <span class="hk-item" tooltip="95th percentile" tooltip-append-to-body="true" tooltip-placement="bottom">Duration<span></span>
                     </a>
                   </div>
                   <div class="col-sm-4 hk-summary-item">
