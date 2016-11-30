@@ -34,8 +34,9 @@
     <failOnMissingWebXml>false</failOnMissingWebXml>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.io.zipkin.brave>3.10.0</version.io.zipkin.brave>
-    <version.wildfly.swarm>2016.9</version.wildfly.swarm>
+    <version.io.zipkin.brave>3.16.0</version.io.zipkin.brave>
+    <version.io.zipkin.reporter>0.6.9</version.io.zipkin.reporter>
+    <version.wildfly.swarm>2016.11.0</version.wildfly.swarm>
     <version.com.datastax.cassandra-cassandra-driver-core>3.1.0</version.com.datastax.cassandra-cassandra-driver-core>
   </properties>
 
@@ -65,6 +66,11 @@
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-spancollector-http</artifactId>
       <version>${version.io.zipkin.brave}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.reporter</groupId>
+      <artifactId>zipkin-sender-okhttp3</artifactId>
+      <version>${version.io.zipkin.reporter}</version>
     </dependency>
     <dependency>
       <groupId>io.zipkin.brave</groupId>

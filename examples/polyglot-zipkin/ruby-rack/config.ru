@@ -26,6 +26,7 @@ zipkin_config = {
     service_name: 'roda',
     service_port: 3002,
     sample_rate: 1,
+    sampled_as_boolean: false,
     log_tracing: true,
     json_api_host: 'http://tracing-server:' + ENV['TRACING_PORT']
     }

@@ -34,8 +34,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <version.com.smoketurner.dropwizard-zipkin>1.0.0-1</version.com.smoketurner.dropwizard-zipkin>
-    <version.io.zipkin.brave>3.11.0</version.io.zipkin.brave>
+    <version.com.smoketurner.dropwizard-zipkin>1.0.5-3</version.com.smoketurner.dropwizard-zipkin>
+    <version.io.zipkin.brave>3.16.0</version.io.zipkin.brave>
     <!-- 6.x does not work -->
     <version.mysql-mysql-connector-java>5.1.39</version.mysql-mysql-connector-java>
     <version.ch.vorburger.mariaDB4j-mariaDB4j>2.2.2</version.ch.vorburger.mariaDB4j-mariaDB4j>

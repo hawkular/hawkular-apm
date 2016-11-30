@@ -72,11 +72,10 @@ public class App extends Application<AppConfiguration> {
 
     @Override
     public void run(AppConfiguration configuration, Environment environment) throws Exception {
-
         configuration.getZipkinClient().setTimeout(Duration.seconds(50));
         configuration.getZipkinClient().setConnectionRequestTimeout(Duration.seconds(50));
 
-        final Brave brave = configuration.getZipkinFactory().build(environment);
+        Brave brave = configuration.getZipkinFactory().build(environment).get();
 
         final Client client = new ZipkinClientBuilder(environment, brave)
                 .build(configuration.getZipkinClient());
