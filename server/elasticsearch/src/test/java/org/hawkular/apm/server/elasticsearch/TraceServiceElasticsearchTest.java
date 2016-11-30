@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -615,6 +616,55 @@ public class TraceServiceElasticsearchTest {
                 .get(0).getClass());
         assertEquals("uri2", ((Producer)((Consumer)result.getNodes().get(0)).getNodes().get(1)).getNodes()
                 .get(0).getUri());
+    }
+
+    @Test
+    public void testGetTraceWithMoreThan10Fragments() throws StoreException, JsonProcessingException {
+        List<Trace> traces = new ArrayList<>();
+
+        Trace trace1 = new Trace();
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+        Consumer c1 = new Consumer();
+        trace1.getNodes().add(c1);
+        Component comp1 = new Component();
+        c1.getNodes().add(comp1);
+        traces.add(trace1);
+
+        int childNumber = 20;
+
+        for (int i=0; i < childNumber; i++) {
+            Trace trace2 = new Trace();
+            trace2.setTraceId("1");
+            trace2.setFragmentId("2-"+i);
+            trace2.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
+            Consumer c2 = new Consumer();
+            c2.addCausedByCorrelationId(trace1.getFragmentId()+":0:0");
+            trace2.getNodes().add(c2);
+            traces.add(trace2);
+        }
+
+        ts.storeFragments(null, traces);
+
+        // Retrieve stored trace
+        Wait.until(() -> ts.getTrace(null, "1") != null);
+        Trace result = ts.getTrace(null, "1");
+
+        assertNotNull(result);
+        assertEquals("1", result.getFragmentId());
+
+        assertEquals(1, result.getNodes().size());
+        assertEquals(Consumer.class, result.getNodes().get(0).getClass());
+
+        Consumer resultconsumer1 = (Consumer) result.getNodes().get(0);
+
+        assertEquals(1, resultconsumer1.getNodes().size());
+        assertEquals(Component.class, resultconsumer1.getNodes().get(0).getClass());
+
+        Component resultcomp1 = (Component)resultconsumer1.getNodes().get(0);
+
+        assertEquals(childNumber, resultcomp1.getNodes().size());
     }
 
 }
