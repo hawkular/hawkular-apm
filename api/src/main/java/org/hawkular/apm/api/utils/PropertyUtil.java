@@ -178,6 +178,21 @@ public class PropertyUtil {
     private static final String ENV_HOSTNAME = "HOSTNAME";
 
     /**
+     * Property specifying the service name, to be used in a client-side library
+     */
+    public static final String HAWKULAR_APM_SERVICE_NAME = "HAWKULAR_APM_SERVICE_NAME";
+
+    /**
+     * Property specifying the env var name for the OpenShift build name.
+     */
+    public static final String OPENSHIFT_BUILD_NAME = "OPENSHIFT_BUILD_NAME";
+
+    /**
+     * Property specifying the env var name for the OpenShift build namespace.
+     */
+    public static final String OPENSHIFT_BUILD_NAMESPACE = "OPENSHIFT_BUILD_NAMESPACE";
+
+    /**
      * Environmental variable representing Kafka host address e.g. 127.0.0.1:2181.
      * If the port is not specified it will use default 2181.
      */

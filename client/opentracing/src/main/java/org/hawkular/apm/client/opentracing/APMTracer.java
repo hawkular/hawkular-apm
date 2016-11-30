@@ -33,14 +33,18 @@ import io.opentracing.AbstractAPMTracer;
 public class APMTracer extends AbstractAPMTracer {
 
     public APMTracer() {
-        this(new BatchTraceRecorder(), Sampler.ALWAYS_SAMPLE);
+        this(new BatchTraceRecorder(), Sampler.ALWAYS_SAMPLE, DeploymentMetaData.getInstance());
     }
 
     public APMTracer(TraceRecorder recorder) {
-        this(recorder, Sampler.ALWAYS_SAMPLE);
+        this(recorder, Sampler.ALWAYS_SAMPLE, DeploymentMetaData.getInstance());
     }
 
     public APMTracer(TraceRecorder recorder, Sampler sampler) {
-        super(recorder, sampler);
+        this(recorder, sampler, DeploymentMetaData.getInstance());
+    }
+
+    public APMTracer(TraceRecorder recorder, Sampler sampler, DeploymentMetaData deploymentMetaData) {
+        super(new EnvironmentAwareTraceRecorder(recorder, deploymentMetaData), sampler);
     }
 }
