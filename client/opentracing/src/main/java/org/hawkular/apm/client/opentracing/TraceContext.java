@@ -16,8 +16,6 @@
  */
 package org.hawkular.apm.client.opentracing;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -223,34 +221,10 @@ public class TraceContext {
         if (transaction != null) {
             setTransaction(transaction.toString());
         }
-
-        ReportingLevel reportingLevelFromTags = reportingLevel(state.get(Tags.SAMPLING_PRIORITY.getKey()));
-        if (reportingLevelFromTags != null) {
-            setReportingLevel(reportingLevelFromTags);
-        } else  if (level != null) {
+        if (level != null) {
             setReportingLevel(ReportingLevel.valueOf(level.toString()));
         }
     }
-
-    private ReportingLevel reportingLevel(Object samplingPriorityTag) {
-        if (!(samplingPriorityTag instanceof Number)) {
-            return null;
-        }
-
-        int priority;
-        try {
-            priority = NumberFormat.getInstance().parse(samplingPriorityTag.toString()).intValue();
-        } catch (ParseException e) {
-            return null;
-        }
-
-        if (priority >= 1) {
-            return ReportingLevel.All;
-        }
-
-        return ReportingLevel.None;
-    }
-
 
     /**
      * This method is looking for sampling tag in nodes properties to override current sampling.

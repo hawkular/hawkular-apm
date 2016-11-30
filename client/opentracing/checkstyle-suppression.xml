@@ -30,5 +30,7 @@
             files="APMSpanBuilder.java"/>
   <suppress checks="PackageName"
             files="APMSpanTest.java"/>
+  <suppress checks="PackageName"
+            files="PropagableState.java"/>
 </suppressions>
 

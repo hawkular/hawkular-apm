@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.config.ReportingLevel;
 import org.hawkular.apm.api.model.events.EndpointRef;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.CorrelationIdentifier.Scope;
@@ -36,13 +37,14 @@ import org.hawkular.apm.client.opentracing.NodeBuilder;
 import org.hawkular.apm.client.opentracing.TraceContext;
 
 import io.opentracing.AbstractSpanBuilder.Reference;
+import io.opentracing.tag.Tags;
 
 /**
  * The APM span.
  *
  * @author gbrown
  */
-public class APMSpan extends AbstractSpan {
+public class APMSpan extends AbstractSpan implements PropagableState {
 
     private static final Logger log = Logger.getLogger(APMSpan.class.getName());
 
@@ -178,10 +180,10 @@ public class APMSpan extends AbstractSpan {
         initTopLevelState(this, recorder, sampler);
 
         // Check for passed state
-        if (parentBuilder.getState().containsKey(Constants.HAWKULAR_APM_ID)) {
-            setInteractionId(parentBuilder.getState().get(Constants.HAWKULAR_APM_ID).toString());
+        if (parentBuilder.state().containsKey(Constants.HAWKULAR_APM_ID)) {
+            setInteractionId(parentBuilder.state().get(Constants.HAWKULAR_APM_ID).toString());
 
-            traceContext.initTraceState(parentBuilder.getState());
+            traceContext.initTraceState(parentBuilder.state());
         }
 
         // Assume top level consumer, even if no state was provided, as span context
@@ -261,7 +263,7 @@ public class APMSpan extends AbstractSpan {
             if (ref.getReferredTo() instanceof APMSpan) {
                 return ((APMSpan) ref.getReferredTo()).getTraceContext().getTraceId();
             } else if (ref.getReferredTo() instanceof APMSpanBuilder) {
-                return ((APMSpanBuilder) ref.getReferredTo()).getState().get(Constants.HAWKULAR_APM_TRACEID).toString();
+                return ((APMSpanBuilder) ref.getReferredTo()).state().get(Constants.HAWKULAR_APM_TRACEID).toString();
             }
             log.warning("Reference refers to an unsupported SpanContext implementation: " + ref.getReferredTo());
             return null;
@@ -273,8 +275,6 @@ public class APMSpan extends AbstractSpan {
             }
             if (builder.references.get(0).getReferredTo() instanceof APMSpan) {
                 traceContext.initTraceState(((APMSpan) builder.references.get(0).getReferredTo()).state());
-            } else if (builder.references.get(0).getReferredTo() instanceof APMSpanBuilder) {
-                traceContext.initTraceState(((APMSpanBuilder) builder.references.get(0).getReferredTo()).getState());
             }
         }
 
@@ -304,9 +304,9 @@ public class APMSpan extends AbstractSpan {
                 getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.CausedBy, nodeId));
 
             } else if (ref.getReferredTo() instanceof APMSpanBuilder
-                    && ((APMSpanBuilder) ref.getReferredTo()).getState().containsKey(Constants.HAWKULAR_APM_ID)) {
+                    && ((APMSpanBuilder) ref.getReferredTo()).state().containsKey(Constants.HAWKULAR_APM_ID)) {
                 getNodeBuilder().addCorrelationId(new CorrelationIdentifier(Scope.Interaction,
-                        ((APMSpanBuilder) ref.getReferredTo()).getState().get(Constants.HAWKULAR_APM_ID).toString()));
+                        ((APMSpanBuilder) ref.getReferredTo()).state().get(Constants.HAWKULAR_APM_ID).toString()));
             }
         }
     }
@@ -411,11 +411,24 @@ public class APMSpan extends AbstractSpan {
         return traceContext;
     }
 
-    Map<String, Object> state() {
-        Map<String, Object> state = new HashMap<>(getTags());
+    @Override
+    public Map<String, Object> state() {
+        Map<String, Object> state = new HashMap<>();
         state.put(Constants.HAWKULAR_APM_TRACEID, traceContext.getTraceId());
-        state.put(Constants.HAWKULAR_APM_LEVEL, traceContext.getReportingLevel());
-        state.put(Constants.HAWKULAR_APM_TXN, traceContext.getTransaction());
+
+        Object reportingLevelFromTags = ReportingLevel.parse(getTags().get(Tags.SAMPLING_PRIORITY.getKey()));
+        if (reportingLevelFromTags != null) {
+            state.put(Constants.HAWKULAR_APM_LEVEL, reportingLevelFromTags);
+        } else  if (traceContext.getReportingLevel() != null) {
+            state.put(Constants.HAWKULAR_APM_LEVEL, traceContext.getReportingLevel().toString());
+        }
+
+        Object transactionFromTags = getTags().get(Constants.PROP_TRANSACTION_NAME);
+        if (traceContext.getTransaction() != null) {
+            state.put(Constants.HAWKULAR_APM_TXN, traceContext.getTransaction());
+        } else if (transactionFromTags != null) {
+            state.put(Constants.HAWKULAR_APM_TXN, transactionFromTags);
+        }
         return state;
     }
 }

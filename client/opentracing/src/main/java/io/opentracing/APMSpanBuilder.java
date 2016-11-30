@@ -28,7 +28,7 @@ import org.hawkular.apm.client.api.sampler.Sampler;
  *
  * @author gbrown
  */
-public class APMSpanBuilder extends AbstractSpanBuilder {
+public class APMSpanBuilder extends AbstractSpanBuilder implements PropagableState {
 
     private Map<String, Object> state = new HashMap<>();
 
@@ -61,7 +61,8 @@ public class APMSpanBuilder extends AbstractSpanBuilder {
         return key.startsWith(Constants.HAWKULAR_APM_PREFIX);
     }
 
-    protected Map<String, Object> getState() {
+    @Override
+    public Map<String, Object> state() {
         return state;
     }
 
