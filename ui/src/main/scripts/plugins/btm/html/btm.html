@@ -73,7 +73,7 @@
               </div>
             </div>
           </div>
-          <div class="hk-txn-item col-md-6" ng-repeat="txn in filteredManTxn = (managedTxn = (transactions | filter: {level: '!Ignore'}) | filter:$root.sbFilter.criteria.transaction | filter: { name: $root.sbFilter.search }) track by txn.name" ng-show="txn.level !== 'Ignore'" ng-class="{'disabled-txn-card': txn.level === 'None'}">
+          <div class="hk-txn-item col-md-6" ng-repeat="txn in filteredManTxn = (managedTxn = (transactions | filter: {level: '!Ignore'}) | filter: { name: $root.sbFilter.search }) track by txn.name" ng-show="txn.level !== 'Ignore'" ng-class="{'disabled-txn-card': txn.level === 'None'}">
             <div class="card-pf">
               <div class="card-pf-title">
                 <span tooltip="No data being collected for this service. Activate it to collect." ng-show="txn.level === 'None'"><i class="glyphicon glyphicon-remove-sign"></i></span>

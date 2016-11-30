@@ -55,8 +55,13 @@ module BTM {
 
     $scope.reloadData = function() {
 
+      // adjust criteria to remove "hostname" and "transaction" as they are hidden from sidebar
+      let adjCriteria = angular.copy($rootScope.sbFilter.criteria);
+      adjCriteria.transaction = '';
+      adjCriteria.hostName = '';
+
       $http.get('/hawkular/apm/analytics/transactions?criteria='
-          + encodeURI(angular.toJson($rootScope.sbFilter.criteria))).then(function(resp) {
+          + encodeURI(angular.toJson(adjCriteria))).then(function(resp) {
 
         let allPromises = [];
         _.each(resp.data, (txn: any) => {
@@ -97,6 +102,7 @@ module BTM {
 
       let txncriteria = angular.copy($rootScope.sbFilter.criteria);
       txncriteria.transaction = txn.name;
+      txncriteria.hostName = ''; // as we don't show it on sidebar
 
       let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?criteria='
           + encodeURI(angular.toJson(txncriteria)));
