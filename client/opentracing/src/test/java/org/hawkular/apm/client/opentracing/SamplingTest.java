@@ -99,7 +99,7 @@ public class SamplingTest {
                 .asChildOf(extractedTraceState(tracer, ReportingLevel.All))
                 .start();
 
-        Span descendant = tracer.buildSpan("bar")
+        Span descendant = tracer.buildSpan("foo")
                 .asChildOf(rootSpan)
                 .start();
 
@@ -107,7 +107,7 @@ public class SamplingTest {
         tracer.inject(descendant.context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(carrier));
         Assert.assertEquals(ReportingLevel.All.name(), carrier.get(Constants.HAWKULAR_APM_LEVEL));
 
-        Span descendantZeroSampling = tracer.buildSpan("bar")
+        Span descendantZeroSampling = tracer.buildSpan("foo")
                 .asChildOf(rootSpan)
                 .start();
 
@@ -123,7 +123,7 @@ public class SamplingTest {
         Assert.assertEquals(1, traceRecorder.getTraces().size());
         traceRecorder.clear();
 
-        Span descendantDescendantZeroSampling = tracer.buildSpan("bar")
+        Span descendantDescendantZeroSampling = tracer.buildSpan("foo")
                 .addReference(References.FOLLOWS_FROM, descendantZeroSampling.context())
                 .start();
 
@@ -144,7 +144,7 @@ public class SamplingTest {
                 .asChildOf(extractedTraceState(tracer, ReportingLevel.None))
                 .start();
 
-        Span descendant = tracer.buildSpan("bar")
+        Span descendant = tracer.buildSpan("foo")
                 .asChildOf(rootSpan)
                 .start();
 
@@ -152,28 +152,28 @@ public class SamplingTest {
         tracer.inject(descendant.context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(carrier));
         Assert.assertEquals(ReportingLevel.None.name(), carrier.get(Constants.HAWKULAR_APM_LEVEL));
 
-        Span descendantZeroSampling = tracer.buildSpan("bar")
+        Span descendantOneSampling = tracer.buildSpan("foo")
                 .asChildOf(rootSpan)
                 .start();
 
-        descendantZeroSampling.setTag(Tags.SAMPLING_PRIORITY.getKey(), 1);
+        descendantOneSampling.setTag(Tags.SAMPLING_PRIORITY.getKey(), 1);
         carrier.clear();
-        tracer.inject(descendantZeroSampling.context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(carrier));
+        tracer.inject(descendantOneSampling.context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(carrier));
         Assert.assertEquals(ReportingLevel.All.name(), carrier.get(Constants.HAWKULAR_APM_LEVEL));
 
-        descendantZeroSampling.finish();
+        descendantOneSampling.finish();
         descendant.finish();
         rootSpan.finish();
 
-        Span descendantDescendantZeroSampling = tracer.buildSpan("bar")
-                .addReference(References.FOLLOWS_FROM, descendantZeroSampling.context())
+        Span descendantDescendantOneSampling = tracer.buildSpan("foo")
+                .addReference(References.FOLLOWS_FROM, descendantOneSampling.context())
                 .start();
 
         carrier.clear();
-        tracer.inject(descendantDescendantZeroSampling.context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(carrier));
+        tracer.inject(descendantDescendantOneSampling.context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(carrier));
         Assert.assertEquals(ReportingLevel.All.name(), carrier.get(Constants.HAWKULAR_APM_LEVEL));
 
-        descendantDescendantZeroSampling.finish();
+        descendantDescendantOneSampling.finish();
         Assert.assertEquals(2, traceRecorder.getTraces().size());
     }
 
