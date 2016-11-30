@@ -20,8 +20,8 @@ module BTM {
 
   declare let c3: any;
 
-  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$http', '$location', '$interval', '$q',
-    '$timeout', ($scope, $http, $location, $interval, $q, $timeout) => {
+  export let BTMController = _module.controller('BTM.TxnController',['$scope', '$rootScope', '$http', '$location',
+     '$interval', '$q', '$timeout', ($scope, $rootScope, $http, $location, $interval, $q, $timeout) => {
 
     $scope.candidateCount = 0;
 
@@ -53,10 +53,15 @@ module BTM {
       startTime: -3600000
     };
 
-    $scope.reload = function() {
+    $scope.reloadData = function() {
+
+      // adjust criteria to remove "hostname" and "transaction" as they are hidden from sidebar
+      let adjCriteria = angular.copy($rootScope.sbFilter.criteria);
+      adjCriteria.transaction = '';
+      adjCriteria.hostName = '';
 
       $http.get('/hawkular/apm/analytics/transactions?criteria='
-          + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
+          + encodeURI(angular.toJson(adjCriteria))).then(function(resp) {
 
         let allPromises = [];
         _.each(resp.data, (txn: any) => {
@@ -79,18 +84,25 @@ module BTM {
       },function(resp) {
         console.log('Failed to get candidate count: ' + angular.toJson(resp));
       });
+
+      // this informs the sidebar directive, so it'll update it's data as well
+      $scope.$broadcast('dataUpdated');
     };
 
-    $scope.reload();
+    $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
+    $scope.$watch('config', $scope.reloadData, true);
 
-    let refreshPromise = $interval(() => { $scope.reload(); }, 10000);
+    $scope.reloadData();
+
+    let refreshPromise = $interval(() => { $scope.reloadData(); }, 10000);
     $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
 
     $scope.getTxnDetails = function(txn) {
       let promises = [];
 
-      let txncriteria = angular.copy($scope.criteria);
+      let txncriteria = angular.copy($rootScope.sbFilter.criteria);
       txncriteria.transaction = txn.name;
+      txncriteria.hostName = ''; // as we don't show it on sidebar
 
       let countPromise = $http.get('/hawkular/apm/analytics/trace/completion/count?criteria='
           + encodeURI(angular.toJson(txncriteria)));
@@ -161,6 +173,24 @@ module BTM {
 
       $scope.faultChartConfig.data.columns = txnFaultData;
       $scope.faultChartHasData = txnFaultData.length > 0;
+    };
+
+    $scope.addPropertyToFilter = function(pName, pValue, operator) {
+      let newProp = {name: pName, value: pValue, operator: operator};
+      $rootScope.sbFilter.criteria.properties.push(newProp);
+      delete $scope.selPropValue;
+    };
+
+    $scope.remPropertyFromFilter = function(property) {
+      $rootScope.sbFilter.criteria.properties.splice($rootScope.sbFilter.criteria.properties.indexOf(property), 1);
+    };
+
+    $scope.toggleExcludeInclude = function(propOrFault) {
+      if (propOrFault.operator === undefined || propOrFault.operator === 'HAS') {
+        propOrFault.operator = 'HASNOT';
+      } else if (propOrFault.operator === 'HASNOT') {
+        propOrFault.operator = 'HAS';
+      }
     };
 
   }]);
