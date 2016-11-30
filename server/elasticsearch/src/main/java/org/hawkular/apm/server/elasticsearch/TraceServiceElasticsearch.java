@@ -74,6 +74,8 @@ public class TraceServiceElasticsearch implements TraceService {
 
     public static final String TRACE_TYPE = "trace";
 
+    private static final int MAX_FRAGMENTS_PER_TRACE = 1000;
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private SpanService spanService;
@@ -150,6 +152,7 @@ public class TraceServiceElasticsearch implements TraceService {
             SearchRequestBuilder request = client.getClient().prepareSearch(index)
                     .setTypes(TRACE_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setSize(MAX_FRAGMENTS_PER_TRACE)
                     .setQuery(query);
 
             SearchResponse response = request.execute().actionGet();
