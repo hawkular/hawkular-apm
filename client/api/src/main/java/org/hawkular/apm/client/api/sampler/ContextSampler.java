@@ -29,9 +29,13 @@ import org.hawkular.apm.api.model.trace.Trace;
  */
 public final class ContextSampler {
 
-    private ContextSampler() {}
+    private Sampler delegate;
 
-    public static boolean isSampled(Sampler sampler, Trace trace, ReportingLevel reportingLevel) {
+    public ContextSampler(Sampler sampler) {
+        this.delegate = sampler;
+    }
+
+    public boolean isSampled(Trace trace, ReportingLevel reportingLevel) {
         if (reportingLevel != null) {
             switch (reportingLevel) {
                 case Ignore:
@@ -43,6 +47,6 @@ public final class ContextSampler {
             }
         }
 
-        return sampler.isSampled(trace);
+        return delegate.isSampled(trace);
     }
 }

@@ -35,8 +35,8 @@ public class PercentageSampler implements Sampler {
     private BitSet bitSet;
     private int i;
 
-    protected PercentageSampler(int rate) {
-        bitSet = randomBitSet(100, rate, new Random());
+    protected PercentageSampler(int percentage) {
+        bitSet = randomBitSet(100, percentage, new Random());
     }
 
     /**
@@ -59,6 +59,9 @@ public class PercentageSampler implements Sampler {
         return sample;
     }
 
+    /**
+     * Algorithm from http://stackoverflow.com/a/12822025/4158442
+     */
     private static BitSet randomBitSet(int size, int cardinality, Random random) {
         BitSet result = new BitSet(size);
         int[] chosen = new int[cardinality];

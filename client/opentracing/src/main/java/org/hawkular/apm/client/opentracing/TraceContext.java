@@ -34,7 +34,6 @@ import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.client.api.sampler.ContextSampler;
-import org.hawkular.apm.client.api.sampler.Sampler;
 
 import io.opentracing.APMSpan;
 import io.opentracing.tag.Tags;
@@ -61,7 +60,7 @@ public class TraceContext {
     private AtomicInteger nodeCount = new AtomicInteger(0);
 
     private TraceRecorder recorder;
-    private Sampler sampler;
+    private ContextSampler sampler;
 
     private static List<NodeProcessor> nodeProcessors = new ArrayList<>();
 
@@ -76,7 +75,7 @@ public class TraceContext {
      * @param rootNode The builder for the root node of the trace fragment
      * @param recorder The trace recorder
      */
-    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceRecorder recorder, Sampler sampler) {
+    public TraceContext(APMSpan topSpan, NodeBuilder rootNode, TraceRecorder recorder, ContextSampler sampler) {
         this.topSpan = topSpan;
         this.rootNode = rootNode;
         this.recorder = recorder;
@@ -118,7 +117,7 @@ public class TraceContext {
                 reportingLevel = ReportingLevel.All;
             }
 
-            boolean sampled = ContextSampler.isSampled(sampler, trace, reportingLevel);
+            boolean sampled = sampler.isSampled(trace, reportingLevel);
             if (sampled && reportingLevel == null) {
                 reportingLevel = ReportingLevel.All;
             }

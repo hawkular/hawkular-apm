@@ -25,6 +25,7 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
+import org.hawkular.apm.client.api.sampler.ContextSampler;
 import org.hawkular.apm.client.api.sampler.Sampler;
 import org.hawkular.apm.client.opentracing.APMTracer;
 
@@ -38,7 +39,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     private static final Logger log = Logger.getLogger(APMTracer.class.getName());
 
     private TraceRecorder recorder;
-    private Sampler sampler;
+    private ContextSampler sampler;
 
     public AbstractAPMTracer() {
         this.recorder = new BatchTraceRecorder();
@@ -46,7 +47,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     public AbstractAPMTracer(TraceRecorder recorder, Sampler sampler) {
         this.recorder = recorder;
-        this.sampler = sampler;
+        this.sampler = new ContextSampler(sampler);
     }
 
     public void setTraceRecorder(TraceRecorder recorder) {

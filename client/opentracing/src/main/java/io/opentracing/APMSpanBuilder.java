@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
-import org.hawkular.apm.client.api.sampler.Sampler;
+import org.hawkular.apm.client.api.sampler.ContextSampler;
 
 /**
  * This class is used to build the information used to create a Trace node.
@@ -33,13 +33,13 @@ public class APMSpanBuilder extends AbstractSpanBuilder implements PropagableSta
     private Map<String, Object> state = new HashMap<>();
 
     private TraceRecorder recorder;
-    private Sampler sampler;
+    private ContextSampler sampler;
 
     /**
      * @param operationName The operation name
      * @param recorder The trace recorder
      */
-    APMSpanBuilder(String operationName, TraceRecorder recorder, Sampler sampler) {
+    APMSpanBuilder(String operationName, TraceRecorder recorder, ContextSampler sampler) {
         super(operationName);
         this.recorder = recorder;
         this.sampler = sampler;

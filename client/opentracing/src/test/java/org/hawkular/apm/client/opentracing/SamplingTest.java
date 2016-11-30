@@ -120,6 +120,9 @@ public class SamplingTest {
         descendant.finish();
         rootSpan.finish();
 
+        Assert.assertEquals(1, traceRecorder.getTraces().size());
+        traceRecorder.clear();
+
         Span descendantDescendantZeroSampling = tracer.buildSpan("bar")
                 .addReference(References.FOLLOWS_FROM, descendantZeroSampling.context())
                 .start();
@@ -129,7 +132,7 @@ public class SamplingTest {
         Assert.assertEquals(ReportingLevel.None.name(), carrier.get(Constants.HAWKULAR_APM_LEVEL));
 
         descendantDescendantZeroSampling.finish();
-        Assert.assertEquals(1, traceRecorder.getTraces().size());
+        Assert.assertEquals(0, traceRecorder.getTraces().size());
     }
 
     @Test
