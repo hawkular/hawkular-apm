@@ -14,32 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.opentracing;
 
-import javax.inject.Singleton;
+package org.hawkular.apm.client.api.sampler;
 
-import org.hawkular.apm.client.api.recorder.TraceRecorder;
-import org.hawkular.apm.client.api.sampler.Sampler;
-
-import io.opentracing.AbstractAPMTracer;
+import org.hawkular.apm.api.model.trace.Trace;
 
 /**
- * The opentracing compatible Tracer implementation for Hawkular APM.
- *
- * @author gbrown
+ * @author Pavol Loffay
  */
-@Singleton
-public class APMTracer extends AbstractAPMTracer {
+public interface Sampler {
 
-    public APMTracer() {
-        this(null, Sampler.ALWAYS_SAMPLE);
-    }
+    boolean isSampled(Trace trace);
 
-    public APMTracer(TraceRecorder recorder) {
-        this(recorder, Sampler.ALWAYS_SAMPLE);
-    }
-
-    public APMTracer(TraceRecorder recorder, Sampler sampler) {
-        super(recorder, sampler);
-    }
+    Sampler ALWAYS_SAMPLE = trace -> true;
+    Sampler NEVER_SAMPLE = trace -> false;
 }

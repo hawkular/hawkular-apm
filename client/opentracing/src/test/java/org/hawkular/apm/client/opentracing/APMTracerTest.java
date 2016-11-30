@@ -494,6 +494,9 @@ public class APMTracerTest {
             return traces;
         }
 
+        public void clear() {
+            traces.clear();
+        }
     }
 
 }

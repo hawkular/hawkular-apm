@@ -25,6 +25,8 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
+import org.hawkular.apm.client.api.sampler.ContextSampler;
+import org.hawkular.apm.client.api.sampler.Sampler;
 import org.hawkular.apm.client.opentracing.APMTracer;
 
 import io.opentracing.propagation.Format;
@@ -37,13 +39,15 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     private static final Logger log = Logger.getLogger(APMTracer.class.getName());
 
     private TraceRecorder recorder;
+    private ContextSampler sampler;
 
     public AbstractAPMTracer() {
         this.recorder = new BatchTraceRecorder();
     }
 
-    public AbstractAPMTracer(TraceRecorder recorder) {
+    public AbstractAPMTracer(TraceRecorder recorder, Sampler sampler) {
         this.recorder = recorder;
+        this.sampler = new ContextSampler(sampler);
     }
 
     public void setTraceRecorder(TraceRecorder recorder) {
@@ -52,7 +56,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     @Override
     APMSpanBuilder createSpanBuilder(String operationName) {
-        return new APMSpanBuilder(operationName, recorder);
+        return new APMSpanBuilder(operationName, recorder, sampler);
     }
 
     @Override
@@ -66,7 +70,7 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
 
     @Override
     Map<String, Object> getTraceState(SpanContext spanContext) {
-        Map<String, Object> ret = new HashMap<String, Object>();
+        Map<String, Object> ret = new HashMap<>();
 
         if (spanContext instanceof APMSpan) {
             APMSpan span = (APMSpan) spanContext;
@@ -76,28 +80,9 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
                 // Not sure if issue - but just logging as warning for now
                 log.warning("No id available to include in trace state for context = " + spanContext);
             }
-
-            ret.put(Constants.HAWKULAR_APM_TRACEID, span.getTraceContext().getTraceId());
-
-            // Check if the transaction name has not currently been set, but
-            // has been defined in the span tags - if so copy the value to the trace
-            // context so that it can be propagated to invoked services
-            if (span.getTraceContext().getTransaction() == null
-                    && span.getTags().containsKey(Constants.PROP_TRANSACTION_NAME)) {
-                span.getTraceContext().setTransaction(span.getTags().get(Constants.PROP_TRANSACTION_NAME).toString());
-            }
-
-            // If transaction name defined on trace context, then propagate it
-            if (span.getTraceContext().getTransaction() != null) {
-                ret.put(Constants.HAWKULAR_APM_TXN, span.getTraceContext().getTransaction());
-            }
-
-            if (span.getTraceContext().getReportingLevel() != null) {
-                ret.put(Constants.HAWKULAR_APM_LEVEL, span.getTraceContext().getReportingLevel());
-            }
+            ret.putAll(span.state());
         }
 
         return ret;
     }
-
 }

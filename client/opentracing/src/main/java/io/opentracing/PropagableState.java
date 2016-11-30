@@ -14,32 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.client.opentracing;
 
-import javax.inject.Singleton;
+package io.opentracing;
 
-import org.hawkular.apm.client.api.recorder.TraceRecorder;
-import org.hawkular.apm.client.api.sampler.Sampler;
-
-import io.opentracing.AbstractAPMTracer;
+import java.util.Map;
 
 /**
- * The opentracing compatible Tracer implementation for Hawkular APM.
- *
- * @author gbrown
+ * @author Pavol Loffay
  */
-@Singleton
-public class APMTracer extends AbstractAPMTracer {
+public interface PropagableState {
 
-    public APMTracer() {
-        this(null, Sampler.ALWAYS_SAMPLE);
-    }
-
-    public APMTracer(TraceRecorder recorder) {
-        this(recorder, Sampler.ALWAYS_SAMPLE);
-    }
-
-    public APMTracer(TraceRecorder recorder, Sampler sampler) {
-        super(recorder, sampler);
-    }
+    /**
+     * State properties defining span(or APM trace fragment) state.
+     *
+     * @return map containing state objects which should be propagated between called services.
+     */
+    Map<String, Object> state();
 }

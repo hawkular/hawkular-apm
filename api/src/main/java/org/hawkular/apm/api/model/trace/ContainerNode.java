@@ -17,6 +17,7 @@
 package org.hawkular.apm.api.model.trace;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -115,6 +116,20 @@ public abstract class ContainerNode extends Node {
         for (Node child : getNodes()) {
             child.findCorrelatedNodes(cid, nodes);
         }
+    }
+
+    public Set<Property> getPropertiesIncludingDescendants(String name) {
+        Set<Property> result = new HashSet<>(this.getProperties(name));
+
+        for (Node node : nodes) {
+            if (node instanceof ContainerNode) {
+                result.addAll(((ContainerNode)node).getPropertiesIncludingDescendants(name));
+            } else {
+                result.addAll(node.getProperties(name));
+            }
+        }
+
+        return result;
     }
 
     @Override

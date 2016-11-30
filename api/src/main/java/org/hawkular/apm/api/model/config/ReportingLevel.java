@@ -16,6 +16,9 @@
  */
 package org.hawkular.apm.api.model.config;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 /**
  * This enumerated type defines the reporting levels for trace
  * instance information.
@@ -34,6 +37,32 @@ public enum ReportingLevel {
     None,
 
     /* Report all information related to instances of this transaction */
-    All
+    All;
+
+    public static ReportingLevel parse(Object obj) {
+        if (obj instanceof ReportingLevel) {
+            return (ReportingLevel) obj;
+        }
+
+        if (obj instanceof String) {
+            return ReportingLevel.valueOf((String)obj);
+        } else if (!(obj instanceof Number)) {
+            return null;
+        }
+
+        int priority;
+        try {
+            priority = NumberFormat.getInstance().parse(obj.toString()).intValue();
+        } catch (ParseException e) {
+            return null;
+        }
+
+        if (priority >= 1) {
+            return ReportingLevel.All;
+        }
+
+        return ReportingLevel.None;
+    }
+
 
 }
