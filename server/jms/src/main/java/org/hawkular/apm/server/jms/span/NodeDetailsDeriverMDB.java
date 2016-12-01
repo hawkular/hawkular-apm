@@ -24,6 +24,7 @@ import javax.jms.MessageListener;
 
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.server.api.model.zipkin.Span;
+import org.hawkular.apm.server.api.services.SpanCache;
 import org.hawkular.apm.server.jms.NodeDetailsPublisherJMS;
 import org.hawkular.apm.server.jms.RetryCapableMDB;
 import org.hawkular.apm.server.processor.zipkin.NodeDetailsDeriver;
@@ -49,6 +50,9 @@ public class NodeDetailsDeriverMDB extends RetryCapableMDB<Span, NodeDetails> {
     private SpanPublisherJMS spanPublisher;
 
     @Inject
+    private SpanCache spanCache;
+
+    @Inject
     private NodeDetailsPublisherJMS nodeDetailsPublisher;
 
     public static final String SUBSCRIBER = "SpanNodeDetailsDeriver";
@@ -59,7 +63,7 @@ public class NodeDetailsDeriverMDB extends RetryCapableMDB<Span, NodeDetails> {
 
     @PostConstruct
     public void init() {
-        setProcessor(new NodeDetailsDeriver());
+        setProcessor(new NodeDetailsDeriver(spanCache));
         setRetryPublisher(spanPublisher);
         setPublisher(nodeDetailsPublisher);
         setTypeReference(new TypeReference<java.util.List<Span>>() {
