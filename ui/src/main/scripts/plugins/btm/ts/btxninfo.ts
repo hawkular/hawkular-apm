@@ -99,13 +99,28 @@ module BTM {
       $scope.faultsChart = theChart;
     };
 
+    let chartOnClick = function(name, value) {
+      $timeout(() => {
+        let wasToggled = false;
+        _.forEach($rootScope.sbFilter.criteria.properties, function(prop) {
+          if (prop.name === name && prop.value === value) {
+            $scope.toggleExcludeInclude(prop);
+            wasToggled = true;
+          }
+        });
+        if (!wasToggled) {
+          $scope.addPropertyToFilter(name, value);
+        }
+      }, 0);
+    };
+
     $scope.faultData = [];
     $scope.ctFaultChartConfig = {
       data: {
         columns: $scope.faultData,
         type: 'pie',
         onclick: function(d, i) {
-          $timeout(() => { $scope.addPropertyToFilter('fault', d.id); }, 0);
+          chartOnClick('fault', d.id);
         }
       }
     };
@@ -116,7 +131,7 @@ module BTM {
         columns: $scope.propertyData,
         type: 'pie',
         onclick: function(d, i) {
-          $timeout(() => { $scope.addPropertyToFilter($scope.config.selectedProperty, d.id); }, 0);
+          chartOnClick($scope.config.selectedProperty, d.id);
         }
       }
     };
