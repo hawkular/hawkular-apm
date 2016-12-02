@@ -42,6 +42,12 @@ public class Constants {
     public static final String PROP_SERVICE_NAME = "service";
 
     /**
+     * Property key representing the build stamp, like a build serial number
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_BUILD_STAMP = "buildStamp";
+
+    /**
      * Property key representing the transaction name
      * {@link org.hawkular.apm.api.model.Property#name}
      */

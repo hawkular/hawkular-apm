@@ -173,8 +173,7 @@ public class APMSpan extends AbstractSpan implements PropagableState {
      * @param ref      The reference
      * @param sampler The sampler
      */
-    protected void initFromExtractedTraceState(APMSpanBuilder builder, TraceRecorder recorder, Reference ref,
-                                                ContextSampler sampler) {
+    protected void initFromExtractedTraceState(APMSpanBuilder builder, TraceRecorder recorder, Reference ref, ContextSampler sampler) {
         APMSpanBuilder parentBuilder = (APMSpanBuilder) ref.getReferredTo();
 
         initTopLevelState(this, recorder, sampler);
