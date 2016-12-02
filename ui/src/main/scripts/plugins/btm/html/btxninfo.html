@@ -1,4 +1,5 @@
-<div>
+<filter-sidebar no-btxns no-hosts no-text></filter-sidebar>
+<div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
 
   <ol class="breadcrumb">
     <li> <a href="/hawkular-ui/apm/btm">Transactions</a> </li>
@@ -14,32 +15,10 @@
       <div class="card-pf">
         <div class="card-pf-body">
 
-          <div class="form-group" >
-            <span ng-repeat="property in criteria.properties">
-              <span ng-show="property.operator === undefined || property.operator === 'HAS'">
-                <a class="btn btn-success" ng-click="toggleExclusion(property)">
-                  <i>{{property.name}}</i>: {{property.value}}
-                  <a class="btn btn-default" ng-click="removeProperty(property)">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                  </a>
-                </a>
-              </span>
-              <span ng-show="property.operator === 'HASNOT'">
-                <a class="btn btn-danger" ng-click="toggleExclusion(property)">
-                  <i>{{property.name}}</i>: {{property.value}}
-                  <a class="btn btn-default" ng-click="removeProperty(property)">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                  </a>
-                </a>
-              </span>
-              <label style="width: 1%" ></label> <!-- TODO: Must be a better way -->
-            </span>
-          </div>
-
           <form class="form-inline">
             <div class="form-group">
               <label for="intervalField">Aggregation Interval:</label>
-              <select name="intervalField" ng-model="config.interval" ng-change="selectAction()" class="form-control">
+              <select name="intervalField" ng-model="config.interval" ng-change="reloadData()" class="form-control">
                 <option value="1000000">1 Second</option>
                 <option value="10000000">10 Second</option>
                 <option value="30000000">30 Second</option>
@@ -52,25 +31,6 @@
             </div>
 
             <div class="form-group">
-              <label for="timeSpanField">Time Span:</label>
-              <select name="timeSpanField" ng-model="criteria.startTime" ng-change="selectAction()" class="form-control">
-                <option value="-60000">1 Minute</option>
-                <option value="-600000">10 Minutes</option>
-                <option value="-1800000">30 Minutes</option>
-                <option value="-3600000">1 Hour</option>
-                <option value="-14400000">4 Hours</option>
-                <option value="-28800000">8 Hours</option>
-                <option value="-43200000">12 Hours</option>
-                <option value="-86400000">Day</option>
-                <option value="-604800000">Week</option>
-                <option value="-2419200000">Month</option>
-                <option value="-15768000000">6 Months</option>
-                <option value="-31536000000">Year</option>
-                <option value="1">All</option>
-              </select>
-            </div>
-
-            <div class="form-group">
               <label for="lowerBoundField">Lower Bound(%):</label>
               <input type="number" ng-model="config.lowerBoundDisplay"
                     name="lowerBoundField" ng-change="updatedBounds()"
@@ -79,14 +39,14 @@
 
             <div class="form-group">
               <label>Last Update:</label>
-              <span class="hk-input-text">{{ (criteria.endTime !== '0' ? criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</span>
+              <span class="hk-input-text">{{ (sbFilter.criteria.endTime !== '0' ? sbFilter.criteria.endTime : currentDateTime()) | date:'dd MMM yyyy HH:mm:ss'}}</span>
             </div>
 
             <div class="pull-right">
-              <button class="btn" ng-class="criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-click="pauseLiveData()">
-                <i class="glyphicon" ng-class="criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
-                <span ng-show="criteria.endTime === '0'">Pause Live Data</span>
-                <span ng-hide="criteria.endTime === '0'">Resume Live Data</span>
+              <button class="btn" ng-class="sbFilter.criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-disabled="sbFilter.timeSpan === ''" ng-click="pauseLiveData()">
+                <i class="glyphicon" ng-class="sbFilter.criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
+                <span ng-show="sbFilter.criteria.endTime === '0'">Pause Live Data</span>
+                <span ng-hide="sbFilter.criteria.endTime === '0'">Resume Live Data</span>
               </button>
               <br>
             </div>

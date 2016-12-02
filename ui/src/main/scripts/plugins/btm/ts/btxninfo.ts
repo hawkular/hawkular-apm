@@ -20,8 +20,11 @@ module BTM {
 
   declare let c3: any;
 
-  export let TxnInfoController = _module.controller('BTM.TxnInfoController', ['$scope', '$routeParams', '$http',
-    '$interval', '$timeout', 'txn', ($scope, $routeParams, $http, $interval, $timeout, txn) => {
+  export let TxnInfoController = _module.controller('BTM.TxnInfoController', ['$scope', '$rootScope', '$routeParams',
+    '$http', '$interval', '$timeout', 'txn', ($scope, $rootScope, $routeParams, $http, $interval, $timeout, txn) => {
+
+    let oldSidebarTX = $rootScope.sbFilter.criteria.transaction;
+    $rootScope.sbFilter.criteria.transaction = $routeParams.transaction;
 
     $scope.txn = txn;
     $scope.transactionName = $routeParams.transaction;
@@ -30,14 +33,6 @@ module BTM {
 
     $scope.propertyValues = [];
     $scope.faultValues = [];
-
-    $scope.criteria = {
-      transaction: $scope.transactionName,
-      properties: [],
-      startTime: '-3600000',
-      endTime: '0',
-      lowerBound: 0
-    };
 
     $scope.config = {
       interval: '60000000',
@@ -104,17 +99,19 @@ module BTM {
       $scope.faultsChart = theChart;
     };
 
-    let addIfAbsent = function(filterList, newPropName, newPropValue) {
-      let found = false;
-      _.each(filterList, (prop: any) => {
-        if (prop.name === newPropName && prop.value === newPropValue) {
-          found = true;
+    let chartOnClick = function(name, value) {
+      $timeout(() => {
+        let wasToggled = false;
+        _.forEach($rootScope.sbFilter.criteria.properties, function(prop) {
+          if (prop.name === name && prop.value === value) {
+            $scope.toggleExcludeInclude(prop);
+            wasToggled = true;
+          }
+        });
+        if (!wasToggled) {
+          $scope.addPropertyToFilter(name, value);
         }
-      });
-      if (!found) {
-        filterList.push({name: newPropName, value: newPropValue});
-      }
-      return !found;
+      }, 0);
     };
 
     $scope.faultData = [];
@@ -123,10 +120,7 @@ module BTM {
         columns: $scope.faultData,
         type: 'pie',
         onclick: function(d, i) {
-          let added = addIfAbsent($scope.criteria.properties, 'fault', d.id);
-          if (added) {
-            $scope.reload();
-          }
+          chartOnClick('fault', d.id);
         }
       }
     };
@@ -137,17 +131,18 @@ module BTM {
         columns: $scope.propertyData,
         type: 'pie',
         onclick: function(d, i) {
-          let added = addIfAbsent($scope.criteria.properties, $scope.config.selectedProperty, d.id);
-          if (added) {
-            $scope.reload();
-          }
+          chartOnClick($scope.config.selectedProperty, d.id);
         }
       }
     };
 
-    $scope.reload = function() {
+    $scope.reloadData = function() {
+      let txnCriteria = angular.copy($rootScope.sbFilter.criteria);
+      txnCriteria.transaction = $scope.transactionName; // adjust sidebar criteria with txn name
+      txnCriteria.hostName = ''; // as we don't show it on sidebar
+
       $http.get('/hawkular/apm/analytics/trace/completion/statistics?interval=' + $scope.config.interval +
-          '&criteria=' + encodeURI(angular.toJson($scope.criteria))).then(function(resp) {
+          '&criteria=' + encodeURI(angular.toJson(txnCriteria))).then(function(resp) {
         _.forEach(resp.data, (datapoint: any) => {
             datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
         });
@@ -158,7 +153,7 @@ module BTM {
         console.log('Failed to get statistics: ' + angular.toJson(resp));
       });
 
-      let faultCriteria = angular.copy($scope.criteria);
+      let faultCriteria = angular.copy(txnCriteria);
       faultCriteria.maxResponseSize = $scope.config.maxFaultValues;
 
       $http.get('/hawkular/apm/analytics/trace/completion/faults?criteria=' +
@@ -194,8 +189,8 @@ module BTM {
         console.log('Failed to get statistics: ' + angular.toJson(resp));
       });
 
-      $http.get('/hawkular/apm/analytics/properties?criteria=' +
-          encodeURI(angular.toJson($scope.criteria))).then(
+      $http.get('/hawkular/apm/analytics/properties?from=ch&criteria=' +
+          encodeURI(angular.toJson(faultCriteria))).then(
       function(resp) {
         $scope.properties = resp.data;
       },
@@ -206,6 +201,8 @@ module BTM {
       if ($scope.config.selectedProperty !== undefined) {
         $scope.reloadProperty();
       }
+      // this informs the sidebar directive, so it'll update it's data as well
+      $scope.$broadcast('dataUpdated');
     };
 
     $scope.redrawLineChart = function() {
@@ -213,7 +210,7 @@ module BTM {
     };
 
     $scope.reloadProperty = function() {
-      let propertyCriteria = angular.copy($scope.criteria);
+      let propertyCriteria = angular.copy($rootScope.sbFilter.criteria);
       propertyCriteria.maxResponseSize = $scope.config.maxPropertyValues;
 
       $http.get('/hawkular/apm/analytics/trace/completion/property/' + $scope.config.selectedProperty +
@@ -250,59 +247,60 @@ module BTM {
       });
     };
 
-    $scope.reload();
-
     let refreshPromise = $interval(() => {
-      if ($scope.criteria.endTime === '0' || $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
-        $scope.reload();
+      if ($rootScope.sbFilter.criteria.endTime === '0' ||
+        $scope.config.prevLowerBoundDisplay !== $scope.config.lowerBoundDisplay) {
+
+        $scope.reloadData();
 
         $scope.config.prevLowerBoundDisplay = $scope.config.lowerBoundDisplay;
       }
     }, 10000);
-    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
-
-    $scope.removeProperty = function(property) {
-      $scope.criteria.properties.remove(property);
-      $scope.reload();
-    };
-
-    $scope.removeFault = function(fault) {
-      $scope.criteria.faults.remove(fault);
-      $scope.reload();
-    };
-
-    $scope.toggleExclusion = function(element) {
-      if (element.operator === undefined || element.operator === 'HAS') {
-        element.operator = 'HASNOT';
-      } else if (element.operator === 'HASNOT') {
-        element.operator = 'HAS';
-      }
-      $scope.reload();
-    };
+    $scope.$on('$destroy', () => {
+      $rootScope.sbFilter.criteria.transaction = oldSidebarTX;
+      delete $rootScope.sbFilter.criteria.lowerBound;
+      $interval.cancel(refreshPromise);
+    });
 
     $scope.updatedBounds = function() {
       if ($scope.config.lowerBoundDisplay === 0) {
-        $scope.criteria.lowerBound = 0;
+        $rootScope.sbFilter.criteria.lowerBound = 0;
       } else {
         let maxDuration: any = (_.max($scope.statistics, 'max') as any).max;
         if (maxDuration > 0) {
-          $scope.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
+          $rootScope.sbFilter.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
         }
       }
     };
 
-    $scope.selectAction = function() {
-      $scope.reload();
-    };
-
     $scope.pauseLiveData = function() {
-      $scope.criteria.endTime = $scope.criteria.endTime === '0' ? ('' + +new Date()) : '0';
-      $scope.reload();
+      $rootScope.sbFilter.criteria.endTime = $rootScope.sbFilter.criteria.endTime === '0' ? ('' + +new Date()) : '0';
+      $scope.reloadData();
     };
 
     $scope.currentDateTime = function() {
       return new Date();
     };
+
+    $scope.addPropertyToFilter = function(pName, pValue, operator) {
+      let newProp = {name: pName, value: pValue, operator: operator};
+      $rootScope.sbFilter.criteria.properties.push(newProp);
+      delete $scope.selPropValue;
+    };
+
+    $scope.remPropertyFromFilter = function(property) {
+      $rootScope.sbFilter.criteria.properties.splice($rootScope.sbFilter.criteria.properties.indexOf(property), 1);
+    };
+
+    $scope.toggleExcludeInclude = function(propOrFault) {
+      if (propOrFault.operator === undefined || propOrFault.operator === 'HAS') {
+        propOrFault.operator = 'HASNOT';
+      } else if (propOrFault.operator === 'HASNOT') {
+        propOrFault.operator = 'HAS';
+      }
+    };
+
+    $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
 
   }]);
 }
