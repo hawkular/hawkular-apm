@@ -654,6 +654,25 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
             }
         }
 
+        addNodeInformation(stats, index, criteria, addMetrics, false);
+        addNodeInformation(stats, index, criteria, addMetrics, true);
+    }
+
+    /**
+     * This method adds node information to the communication summary nodes constructed based on the
+     * communication details.
+     *
+     * @param stats The communication summary stats
+     * @param index The index
+     * @param criteria The query criteria
+     * @param addMetrics Whether to add metrics or just discover any missing nodes
+     * @param clients Whether node information should be located for clients (i.e. fragments with
+     *                                  top level Producer node)
+     */
+    protected void addNodeInformation(Map<String, CommunicationSummaryStatistics> stats, String index,
+            Criteria criteria, boolean addMetrics, boolean clients) {
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, null);
+
         // Obtain information about the fragments
         StatsBuilder durationBuilder = AggregationBuilders
                 .stats("elapsed")
@@ -702,6 +721,13 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         query = query.must(QueryBuilders.matchQuery("initial", "true"));
 
+        // If interested in clients, then need to identify node details for Producers
+        if (clients) {
+            query = query.must(QueryBuilders.matchQuery("type", "Producer"));
+        } else {
+            query = query.mustNot(QueryBuilders.matchQuery("type", "Producer"));
+        }
+
         SearchRequestBuilder request2 = getBaseSearchRequestBuilder(NODE_DETAILS_TYPE, index, criteria, query, 0);
         request2.addAggregation(urisBuilder2).addAggregation(missingUriBuilder2);
 
@@ -709,16 +735,21 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         Terms completions = response2.getAggregations().get("uris");
 
         for (Terms.Bucket urisBucket : completions.getBuckets()) {
+            String uri = urisBucket.getKey();
+            if (clients) {
+                uri = EndpointUtil.encodeClientURI(uri);
+            }
+
             for (Terms.Bucket operationBucket : urisBucket.getAggregations().<Terms>get("operations").getBuckets()) {
                 Stats elapsed = operationBucket.getAggregations().get("elapsed");
-                String id = EndpointUtil.encodeEndpoint(urisBucket.getKey(),
+                String id = EndpointUtil.encodeEndpoint(uri,
                         operationBucket.getKey());
 
                 CommunicationSummaryStatistics css = stats.get(id);
                 if (css == null) {
                     css = new CommunicationSummaryStatistics();
                     css.setId(id);
-                    css.setUri(urisBucket.getKey());
+                    css.setUri(uri);
                     css.setOperation(operationBucket.getKey());
                     stats.put(id, css);
                 }
@@ -740,27 +771,25 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
             if (missingOp.getDocCount() > 0) {
                 Stats elapsed = missingOp.getAggregations().get("elapsed");
-                String id = urisBucket.getKey();
 
-                CommunicationSummaryStatistics css = stats.get(id);
+                CommunicationSummaryStatistics css = stats.get(uri);
                 if (css == null) {
                     css = new CommunicationSummaryStatistics();
-                    css.setId(id);
-                    css.setUri(id);
-
-                    String serviceName = serviceName(missingOp.getAggregations()
-                            .<Nested>get("nestedProperties").getAggregations()
-                            .<Filter>get("propertiesServiceFilter")
-                            .getAggregations().get("serviceTerm"));
-                    if (serviceName != null) {
-                        css.setServiceName(serviceName);
-                    }
-
-                    stats.put(id, css);
+                    css.setId(uri);
+                    css.setUri(uri);
+                    stats.put(uri, css);
                 }
 
                 if (addMetrics) {
                     doAddMetrics(css, elapsed, missingOp.getDocCount());
+                }
+
+                String serviceName = serviceName(missingOp.getAggregations()
+                        .<Nested>get("nestedProperties").getAggregations()
+                        .<Filter>get("propertiesServiceFilter")
+                        .getAggregations().get("serviceTerm"));
+                if (serviceName != null) {
+                    css.setServiceName(serviceName);
                 }
             }
         }
