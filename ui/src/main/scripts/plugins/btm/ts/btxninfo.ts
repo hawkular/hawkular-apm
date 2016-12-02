@@ -23,6 +23,9 @@ module BTM {
   export let TxnInfoController = _module.controller('BTM.TxnInfoController', ['$scope', '$rootScope', '$routeParams',
     '$http', '$interval', '$timeout', 'txn', ($scope, $rootScope, $routeParams, $http, $interval, $timeout, txn) => {
 
+    let oldSidebarTX = $rootScope.sbFilter.criteria.transaction;
+    $rootScope.sbFilter.criteria.transaction = $routeParams.transaction;
+
     $scope.txn = txn;
     $scope.transactionName = $routeParams.transaction;
 
@@ -238,36 +241,21 @@ module BTM {
         $scope.config.prevLowerBoundDisplay = $scope.config.lowerBoundDisplay;
       }
     }, 10000);
-    $scope.$on('$destroy', () => { $interval.cancel(refreshPromise); });
-
-    $scope.removeProperty = function(property) {
-      $scope.criteria.properties.remove(property);
-      $scope.reloadData();
-    };
-
-    $scope.removeFault = function(fault) {
-      $scope.criteria.faults.remove(fault);
-      $scope.reloadData();
-    };
-
-    $scope.toggleExclusion = function(element) {
-      if (element.operator === undefined || element.operator === 'HAS') {
-        element.operator = 'HASNOT';
-      } else if (element.operator === 'HASNOT') {
-        element.operator = 'HAS';
-      }
-      $scope.reloadData();
-    };
+    $scope.$on('$destroy', () => {
+      $rootScope.sbFilter.criteria.transaction = oldSidebarTX;
+      delete $rootScope.sbFilter.criteria.lowerBound;
+      $interval.cancel(refreshPromise);
+    });
 
     $scope.updatedBounds = function() {
-      // if ($scope.config.lowerBoundDisplay === 0) {
-      //   $scope.criteria.lowerBound = 0;
-      // } else {
-      //   let maxDuration: any = (_.max($scope.statistics, 'max') as any).max;
-      //   if (maxDuration > 0) {
-      //     $scope.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
-      //   }
-      // }
+      if ($scope.config.lowerBoundDisplay === 0) {
+        $rootScope.sbFilter.criteria.lowerBound = 0;
+      } else {
+        let maxDuration: any = (_.max($scope.statistics, 'max') as any).max;
+        if (maxDuration > 0) {
+          $rootScope.sbFilter.criteria.lowerBound = ( $scope.config.lowerBoundDisplay * maxDuration ) / 100;
+        }
+      }
     };
 
     $scope.pauseLiveData = function() {
@@ -298,7 +286,6 @@ module BTM {
     };
 
     $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
-    $scope.$watch('config', $scope.reloadData, true);
 
   }]);
 }
