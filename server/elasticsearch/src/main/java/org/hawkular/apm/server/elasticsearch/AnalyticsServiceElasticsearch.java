@@ -662,7 +662,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
      * This method adds node information to the communication summary nodes constructed based on the
      * communication details.
      *
-     * @param stats The communication summary stats
+     * @param stats The map of endpoint (uri[op]) to communication summary stat nodes
      * @param index The index
      * @param criteria The query criteria
      * @param addMetrics Whether to add metrics or just discover any missing nodes
