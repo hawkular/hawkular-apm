@@ -17,14 +17,20 @@
 
 package org.hawkular.apm.tests.dist;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.zip.GZIPOutputStream;
 
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.junit.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -68,8 +74,22 @@ public abstract class AbstractITest {
     }
 
     protected Response post(Server server, String path, String tenant, Object payload) throws IOException {
+        return post(server, path, tenant, payload, Collections.emptyMap());
+    }
+
+    protected Response post(Server server, String path, String tenant, Object payload, Map<String, String> headers)
+            throws IOException {
+
+        byte[] payloadBytes = serialize(server, payload);
+        Map<String, String> caseInsensitiveMap = new TreeMap<>((s1, s2) -> s1.compareToIgnoreCase(s2));
+        caseInsensitiveMap.putAll(headers);
+        if ("gzip".equalsIgnoreCase(caseInsensitiveMap.get("Content-Encoding"))) {
+            payloadBytes = gzipCompression(payloadBytes);
+        }
+
         Request.Builder request = new Request.Builder()
-                .post(RequestBody.create(MEDIA_TYPE_JSON, serialize(server, payload)))
+                .post(RequestBody.create(MEDIA_TYPE_JSON, payloadBytes))
+                .headers(Headers.of(headers))
                 .url(server.getURL() + path);
 
         if (tenant != null) {
@@ -107,5 +127,18 @@ public abstract class AbstractITest {
         }
 
         return json;
+    }
+
+    public byte[] gzipCompression(byte[] bytes) throws IOException {
+        if (bytes == null) {
+            return null;
+        }
+
+        ByteArrayOutputStream obj = new ByteArrayOutputStream();
+        GZIPOutputStream gzip = new GZIPOutputStream(obj);
+
+        gzip.write(bytes);
+        gzip.close();
+        return obj.toByteArray();
     }
 }

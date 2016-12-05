@@ -18,11 +18,7 @@ package org.hawkular.apm.server.zipkin.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -42,7 +38,7 @@ import zipkin.Codec;
  * REST interface for reporting zipkin spans.
  *
  * @author gbrown
- *
+ * @author Pavol Loffay
  */
 @Path("v1")
 @Produces(APPLICATION_JSON)
@@ -71,17 +67,6 @@ public class ZipkinV1Handler {
     }
 
     private Response acceptSpans(String encoding, Codec codec, byte[] body) {
-        if (encoding != null && "gzip".equals(encoding)) {
-            try {
-                body = gunzip(body);
-            } catch (IOException e) {
-                log.error("Could not gunzip spans", e);
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Cannot gunzip spans: " + e.getMessage() + "\n")
-                        .build();
-            }
-        }
-
         List<zipkin.Span> spans;
         try {
             spans = codec.readSpans(body);
@@ -102,24 +87,5 @@ public class ZipkinV1Handler {
         }
 
         return Response.status(Response.Status.ACCEPTED).build();
-    }
-
-    private static final ThreadLocal<byte[]> GZIP_BUFFER = new ThreadLocal<byte[]>() {
-        @Override
-        protected byte[] initialValue() {
-            return new byte[1024];
-        }
-    };
-
-    static byte[] gunzip(byte[] input) throws IOException {
-        GZIPInputStream in = new GZIPInputStream(new ByteArrayInputStream(input));
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(input.length)) {
-            byte[] buf = GZIP_BUFFER.get();
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                outputStream.write(buf, 0, len);
-            }
-            return outputStream.toByteArray();
-        }
     }
 }

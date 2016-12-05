@@ -28,7 +28,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import com.github.kristofa.brave.Brave;
-import com.github.kristofa.brave.http.DefaultSpanNameProvider;
 import com.github.kristofa.brave.servlet.BraveServletFilter;
 
 @WebListener
@@ -39,10 +38,8 @@ public class BraveListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent contextEvent) {
-        FilterRegistration.Dynamic servletFilter = contextEvent.getServletContext().addFilter("BraveServletFilter",
-                new BraveServletFilter(brave.serverRequestInterceptor(),
-                        brave.serverResponseInterceptor(),
-                        new DefaultSpanNameProvider()));
+        FilterRegistration.Dynamic servletFilter = contextEvent.getServletContext()
+                .addFilter("BraveServletFilter", BraveServletFilter.create(brave));
 
         servletFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "*");
     }

@@ -19,7 +19,9 @@ package org.hawkular.apm.tests.dist.zipkin;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +79,26 @@ public class SpanServiceITest extends AbstractITest {
         CorrelationIdentifier correlationIdentifier = node.getCorrelationIds().get(0);
         Assert.assertEquals(traceStringId, correlationIdentifier.getValue());
         Assert.assertEquals(CorrelationIdentifier.Scope.Interaction, correlationIdentifier.getScope());
+    }
+
+    @Test
+    public void testGZIPEncodedSpans() throws IOException {
+        final long traceId = UUID.randomUUID().getMostSignificantBits();
+        final String traceStringId = ZipkinSpanConvertor.parseSpanId(traceId);
+        zipkin.Span span = zipkin.Span.builder()
+                .traceId(traceId)
+                .id(traceId)
+                .name("get")
+                .build();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Encoding", "gzip");
+
+        post(Server.Zipkin, "/spans", null, Arrays.asList(span), headers);
+        Wait.until(() -> traceService.getTrace(null, traceStringId) != null);
+
+        Trace trace = traceService.getTrace(null, traceStringId);
+        Assert.assertEquals(traceStringId, trace.getTraceId());
     }
 
     static List<zipkin.Annotation> clientAnnotation(Long timestampCS, Long timestampCR) {

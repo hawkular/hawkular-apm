@@ -21,8 +21,9 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
 import com.github.kristofa.brave.Brave;
-import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
-import com.github.kristofa.brave.http.HttpSpanCollector;
+
+import zipkin.reporter.AsyncReporter;
+import zipkin.reporter.okhttp3.OkHttpSender;
 
 /**
  * @author Pavol Loffay
@@ -38,10 +39,11 @@ public class BraveProducer {
         }
 
         return new Brave.Builder("wildfly-swarm")
-                .spanCollector(HttpSpanCollector.create("http://tracing-server:" + port,
-                        new EmptySpanCollectorMetricsHandler()))
+                .reporter(AsyncReporter.builder(OkHttpSender.builder()
+                        .endpoint("http://tracing-server:" + port + "/api/v1/spans")
+                        .build())
+                    .build())
                 .build();
     }
-
 }
 

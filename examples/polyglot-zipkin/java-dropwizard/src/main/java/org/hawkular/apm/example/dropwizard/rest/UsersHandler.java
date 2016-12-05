@@ -61,8 +61,6 @@ public class UsersHandler {
         this.client = Objects.requireNonNull(client);
         this.braveExecutorService = new BraveExecutorService(Executors.newFixedThreadPool(10),
                 brave.serverSpanThreadBinder());
-
-        this.client.register(ZipkinB3SampledHeaderFilter.class);
     }
 
     @GET

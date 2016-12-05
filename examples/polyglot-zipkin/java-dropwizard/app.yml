@@ -17,10 +17,12 @@
 
 # Zipkin-specific options.
 zipkin:
-  collector: http
-  baseUrl: http://tracing-server:${TRACING_PORT}/
+  enabled: true
   serviceHost: 127.0.0.1
   servicePort: 3000
+
+  collector: http
+  baseUrl: http://tracing-server:${TRACING_PORT}/
 
 zipkinClient:
   serviceName: hello-world
