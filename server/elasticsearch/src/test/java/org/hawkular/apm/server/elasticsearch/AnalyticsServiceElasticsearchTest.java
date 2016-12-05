@@ -2638,6 +2638,56 @@ public class AnalyticsServiceElasticsearchTest {
         Assert.assertEquals("wildfly", communicationSummaryStatistics.getServiceName());
     }
 
+    @Test // HWKAPM-771
+    public void testGetCommunicationSummaryStatisticsServiceNameOnClientNode() throws StoreException {
+        NodeDetails nd1 = new NodeDetails();
+        nd1.setUri("/call");
+        nd1.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "A"));
+        nd1.setInitial(true);
+        nd1.setType(NodeType.Producer);
+        nd1.setElapsed(1000);
+
+        NodeDetails nd2 = new NodeDetails();
+        nd2.setUri("/call");
+        nd2.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, "B"));
+        nd2.setInitial(true);
+        nd2.setType(NodeType.Consumer);
+        nd2.setElapsed(500);
+
+        CommunicationDetails cd = new CommunicationDetails();
+        cd.setSource("client:/call");
+        cd.setTarget("/call");
+
+        analytics.storeNodeDetails(null, Arrays.asList(nd1, nd2));
+        analytics.storeCommunicationDetails(null, Collections.singletonList(cd));
+
+        Criteria criteria = new Criteria()
+                .setStartTime(0)
+                .setEndTime(100000);
+
+        Collection<CommunicationSummaryStatistics> communicationSummaryStatisticsList =
+                analytics.getCommunicationSummaryStatistics(null, criteria, false);
+
+        Assert.assertEquals(2, communicationSummaryStatisticsList.size());
+        CommunicationSummaryStatistics producer =
+                communicationSummaryStatisticsList.stream().filter(cs -> cs.getUri()
+                        .startsWith("client:")).findFirst().orElse(null);
+        CommunicationSummaryStatistics consumer =
+                communicationSummaryStatisticsList.stream().filter(cs -> !cs.getUri()
+                        .startsWith("client:")).findFirst().orElse(null);
+
+        assertNotNull(consumer);
+        assertNotNull(producer);
+
+        assertEquals(1, producer.getOutbound().size());
+
+        assertEquals("B", consumer.getServiceName());
+        assertEquals("A", producer.getServiceName());
+
+        assertEquals(nd2.getElapsed(), consumer.getAverageDuration());
+        assertEquals(nd1.getElapsed(), producer.getAverageDuration());
+    }
+
     @Test
     public void testHostNames() throws StoreException {
         Trace trace1 = new Trace();
