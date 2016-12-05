@@ -771,13 +771,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
             if (missingOp.getDocCount() > 0) {
                 Stats elapsed = missingOp.getAggregations().get("elapsed");
+                String id = EndpointUtil.encodeEndpoint(uri, null);
 
-                CommunicationSummaryStatistics css = stats.get(uri);
+                CommunicationSummaryStatistics css = stats.get(id);
                 if (css == null) {
                     css = new CommunicationSummaryStatistics();
-                    css.setId(uri);
+                    css.setId(id);
                     css.setUri(uri);
-                    stats.put(uri, css);
+                    stats.put(id, css);
                 }
 
                 if (addMetrics) {
