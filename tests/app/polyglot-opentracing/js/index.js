@@ -29,7 +29,7 @@ const CONTEXT_PATH = '/nodejs';
 
 opentracing.initGlobalTracer(new hawkularAPM.APMTracer({
     recorder: new hawkularAPM.HttpRecorder('http://hawkular-apm:9080', 'jdoe', 'password'),
-    sampler: new hawkularAPM.AlwaysSampledSampler(),
+    sampler: new hawkularAPM.AlwaysSample(),
 }));
 
 // /hello handler
