@@ -1,0 +1,4 @@
+{
+  "http.port" : 8180,
+  "bridge.port" : 7000
+}
