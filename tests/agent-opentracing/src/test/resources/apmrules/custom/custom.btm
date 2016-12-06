@@ -1,0 +1,20 @@
+
+RULE My Custom Rule Stsrt
+CLASS org.hawkular.apm.tests.agent.opentracing.custom.CustomComponent
+METHOD exampleCall(String)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF TRUE
+DO
+  startSpan(getTracer().buildSpan("exampleCall").withTag("message",$1));
+ENDRULE
+
+RULE My Custom Rule End
+CLASS org.hawkular.apm.tests.agent.opentracing.custom.CustomComponent
+METHOD exampleCall(String)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF TRUE
+DO
+  finishSpan();
+ENDRULE
