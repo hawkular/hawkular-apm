@@ -95,6 +95,29 @@ public class TraceCompletionInformationInitiatorTest {
     }
 
     @Test
+    public void testProcessSingleInitialFragmentProducer() throws RetryAttemptException {
+        Trace trace = new Trace();
+        trace.setTraceId("traceId");
+        trace.setFragmentId(trace.getTraceId());
+
+        Producer p = new Producer();
+        p.setUri("uri");
+        p.addInteractionCorrelationId("pid");
+
+        trace.getNodes().add(p);
+
+        TraceCompletionInformationInitiator initiator = new TraceCompletionInformationInitiator();
+
+        TraceCompletionInformation ci = initiator.processOneToOne(null, trace);
+
+        assertNotNull(ci);
+        assertEquals(2, ci.getCommunications().size());
+        assertTrue(ci.getCommunications().get(0).getIds().contains("traceId:0"));
+        assertTrue(ci.getCommunications().get(1).getIds().contains("pid"));
+        assertEquals(EndpointUtil.encodeClientURI(p.getUri()), ci.getCompletionTime().getUri());
+    }
+
+    @Test
     public void testProcessSingleInitialFragmentComponent() throws RetryAttemptException {
         Trace trace = new Trace();
         trace.setTraceId("traceId");
@@ -121,7 +144,7 @@ public class TraceCompletionInformationInitiatorTest {
         assertEquals(trace.getTraceId(), ci.getCompletionTime().getId());
         assertEquals(trace.getTransaction(), ci.getCompletionTime().getTransaction());
         assertEquals(trace.getTimestamp(), ci.getCompletionTime().getTimestamp());
-        assertEquals(EndpointUtil.encodeClientURI(c.getUri()), ci.getCompletionTime().getUri());
+        assertEquals(c.getUri(), ci.getCompletionTime().getUri());
         assertEquals(200000, ci.getCompletionTime().getDuration());
         assertEquals(c.getProperties(Constants.PROP_FAULT), ci.getCompletionTime().getProperties(Constants.PROP_FAULT));
         assertEquals(1, ci.getCompletionTime().getProperties(Constants.PROP_FAULT).size());

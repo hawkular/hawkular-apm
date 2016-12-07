@@ -96,6 +96,8 @@ public class EndpointUtilTest {
     @Test
     public void testGetSourceEndpointConsumer() {
         Trace trace = new Trace();
+        trace.setTraceId("1");
+        trace.setFragmentId(trace.getTraceId());
         Consumer consumer = new Consumer();
         consumer.setUri(URI);
         consumer.setOperation(OPERATION);
@@ -110,6 +112,8 @@ public class EndpointUtilTest {
     @Test
     public void testGetSourceEndpointClientProducer() {
         Trace trace = new Trace();
+        trace.setTraceId("1");
+        trace.setFragmentId(trace.getTraceId());
         Producer producer = new Producer();
         producer.setUri(URI);
         producer.setOperation(OPERATION);
@@ -122,39 +126,25 @@ public class EndpointUtilTest {
     }
 
     @Test
-    public void testGetSourceEndpointClientComponent() {
+    public void testGetSourceEndpointNotClientComponentProducer() {
+        // As this initial fragment does not have a single Producer node,
+        // its endpoint ref will be based on the component's URI and operation
         Trace trace = new Trace();
+        trace.setTraceId("1");
+        trace.setFragmentId(trace.getTraceId());
         Component component = new Component();
         component.setUri(URI);
         component.setOperation(OPERATION);
         trace.getNodes().add(component);
 
-        EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
-
-        assertNotNull(ep);
-        assertEquals(new EndpointRef(URI, OPERATION, true), ep);
-    }
-
-    @Test
-    public void testGetSourceEndpointClientComponentProducer() {
-
-        // Currently the 'source endpoint' for this fragment will be based on the producer
-        // URI and operation, although this may be changed following discussion in HWKAPM-660
-
-        Trace trace = new Trace();
-        Component component = new Component();
-        component.setUri("otheruri");
-        component.setOperation("otherop");
-        trace.getNodes().add(component);
-
         Producer producer = new Producer();
-        producer.setUri(URI);
-        producer.setOperation(OPERATION);
+        producer.setUri("otheruri");
+        producer.setOperation("otherop");
         component.getNodes().add(producer);
 
         EndpointRef ep = EndpointUtil.getSourceEndpoint(trace);
 
         assertNotNull(ep);
-        assertEquals(new EndpointRef(URI, OPERATION, true), ep);
+        assertEquals(new EndpointRef(URI, OPERATION, false), ep);
     }
 }

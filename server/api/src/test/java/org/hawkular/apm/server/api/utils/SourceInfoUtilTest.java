@@ -53,7 +53,8 @@ public class SourceInfoUtilTest {
     @Test
     public void testInitialiseIds() throws RetryAttemptException {
         Trace trace = new Trace();
-        trace.setFragmentId("trace1");
+        trace.setTraceId("trace1");
+        trace.setFragmentId(trace.getTraceId());
 
         Consumer consumer1 = new Consumer();
         consumer1.setUri("uri1");
@@ -100,19 +101,18 @@ public class SourceInfoUtilTest {
     @Test
     public void testInitialiseFragmentOrigins() throws RetryAttemptException {
         Trace trace1 = new Trace();
-        trace1.setFragmentId("trace1");
-
-        Component component1 = new Component();
-        trace1.getNodes().add(component1);
+        trace1.setTraceId("1");
+        trace1.setFragmentId(trace1.getTraceId());
 
         Producer producer1 = new Producer();
         producer1.setUri("uri1");
         producer1.setOperation("op1");
         producer1.addInteractionCorrelationId("in1");
-        component1.getNodes().add(producer1);
+        trace1.getNodes().add(producer1);
 
         Trace trace2 = new Trace();
-        trace2.setFragmentId("trace2");
+        trace2.setTraceId(trace1.getTraceId());
+        trace2.setFragmentId("2");
 
         Consumer consumer1 = new Consumer();
         consumer1.setUri("uri1");
@@ -126,24 +126,21 @@ public class SourceInfoUtilTest {
         List<SourceInfo> sourceInfoList = SourceInfoUtil.getSourceInfo(null, Arrays.asList(trace1, trace2));
 
         assertNotNull(sourceInfoList);
-        assertEquals(5, sourceInfoList.size());
+        assertEquals(4, sourceInfoList.size());
 
         SourceInfo si1 = sourceInfoList.get(0);
         SourceInfo si2 = sourceInfoList.get(1);
         SourceInfo si3 = sourceInfoList.get(2);
         SourceInfo si4 = sourceInfoList.get(3);
-        SourceInfo si5 = sourceInfoList.get(4);
 
         assertEquals(EndpointUtil.encodeClientURI("uri1"), si1.getEndpoint().getUri());
         assertEquals("op1", si1.getEndpoint().getOperation());
         assertEquals(EndpointUtil.encodeClientURI("uri1"), si2.getEndpoint().getUri());
         assertEquals("op1", si2.getEndpoint().getOperation());
-        assertEquals(EndpointUtil.encodeClientURI("uri1"), si3.getEndpoint().getUri());
+        assertEquals("uri1", si3.getEndpoint().getUri());
         assertEquals("op1", si3.getEndpoint().getOperation());
         assertEquals("uri1", si4.getEndpoint().getUri());
         assertEquals("op1", si4.getEndpoint().getOperation());
-        assertEquals("uri1", si5.getEndpoint().getUri());
-        assertEquals("op1", si5.getEndpoint().getOperation());
     }
 
     @Test
