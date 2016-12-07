@@ -123,7 +123,7 @@ public class TraceContext {
             }
 
             if (sampled) {
-                recorder.report(trace);
+                recorder.record(trace);
             }
         }
     }

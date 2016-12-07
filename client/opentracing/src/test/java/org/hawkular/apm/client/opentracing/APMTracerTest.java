@@ -483,7 +483,7 @@ public class APMTracerTest {
         private List<Trace> traces = new ArrayList<>();
 
         @Override
-        public void report(Trace trace) {
+        public void record(Trace trace) {
             traces.add(trace);
         }
 

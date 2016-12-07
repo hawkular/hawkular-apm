@@ -1177,7 +1177,7 @@ public class DefaultTraceCollector implements TraceCollector, SessionManager {
                             }
                         }
 
-                        recorder.report(trace);
+                        recorder.record(trace);
                     }
                 }
             }

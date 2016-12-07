@@ -30,7 +30,7 @@ public class TestTraceRecorder implements TraceRecorder {
     private List<Trace> traces = new ArrayList<>();
 
     @Override
-    public void report(Trace trace) {
+    public void record(Trace trace) {
         traces.add(trace);
     }
 

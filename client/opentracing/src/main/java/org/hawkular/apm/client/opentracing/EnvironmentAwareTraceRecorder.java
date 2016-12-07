@@ -34,7 +34,7 @@ public class EnvironmentAwareTraceRecorder implements TraceRecorder {
         this.backingTraceRecorder = backingTraceRecorder;
     }
 
-    public void report(Trace trace) {
+    public void record(Trace trace) {
         if (trace.getNodes() != null && trace.getNodes().size() > 0) {
             Node rootNode = trace.getNodes().get(0);
             if (this.deploymentMetaData != null) {
@@ -47,7 +47,7 @@ public class EnvironmentAwareTraceRecorder implements TraceRecorder {
             }
         }
 
-        backingTraceRecorder.report(trace);
+        backingTraceRecorder.record(trace);
     }
 
     public DeploymentMetaData getDeploymentMetaData() {
