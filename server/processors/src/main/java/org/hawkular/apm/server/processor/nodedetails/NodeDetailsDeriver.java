@@ -18,10 +18,13 @@ package org.hawkular.apm.server.processor.nodedetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.NodeDetails;
 import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
@@ -54,7 +57,9 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
     public List<NodeDetails> processOneToMany(String tenantId, Trace item) throws RetryAttemptException {
         List<NodeDetails> ret = new ArrayList<NodeDetails>();
 
-        deriveNodeDetails(item, item.getNodes(), ret, true);
+        Set<Property> commonProperties = obtainCommonProperties(item);
+
+        deriveNodeDetails(item, item.getNodes(), ret, true, commonProperties);
 
         if (log.isLoggable(Level.FINEST)) {
             log.finest("NodeDetailsDeriver [" + ret.size() + "] ret=" + ret);
@@ -71,8 +76,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
      * @param nodes The nodes
      * @param rts The list of node details
      * @param initial Whether the first node in the list is the initial node
+     * @param commonProperties A set of properties to be applied to all derived NodeDetail objects
      */
-    protected void deriveNodeDetails(Trace trace, List<Node> nodes, List<NodeDetails> rts, boolean initial) {
+    protected void deriveNodeDetails(Trace trace, List<Node> nodes, List<NodeDetails> rts,
+            boolean initial, Set<Property> commonProperties) {
         for (int i = 0; i < nodes.size(); i++) {
             Node n = nodes.get(i);
 
@@ -116,21 +123,45 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                     nd.setHostName(trace.getHostName());
                 }
 
-                nd.setProperties(trace.allProperties());
+                // Interim solution before discussion HWKAPM-778 resolved. Previously
+                // all NodeDetails derived from a fragment had all of the properties in the
+                // fragment, but this has now been changed so that only the initial node
+                // associated with a fragment will have all the properties for the fragment,
+                // to add filtering for construction of the service dependency diagram.
+                if (initial) {
+                    nd.setProperties(trace.allProperties());
+                    nd.setInitial(true);
+                } else {
+                    nd.getProperties().addAll(n.getProperties());
+                    nd.getProperties().addAll(commonProperties);
+                }
                 nd.setTimestamp(n.getTimestamp());
                 nd.setType(n.getType());
                 nd.setUri(n.getUri());
                 nd.setOperation(n.getOperation());
 
-                nd.setInitial(initial);
                 initial = false;
 
                 rts.add(nd);
             }
 
             if (!ignoreChildNodes && n.interactionNode()) {
-                deriveNodeDetails(trace, ((InteractionNode) n).getNodes(), rts, initial);
+                deriveNodeDetails(trace, ((InteractionNode) n).getNodes(), rts, initial,
+                        commonProperties);
             }
         }
+    }
+
+    /**
+     * Obtain any properties from the trace that should be applied to all derived NodeDetails.
+     *
+     * @param trace The trace
+     * @return The set of properties to be applied to all derived NodeDetails
+     */
+    protected Set<Property> obtainCommonProperties(Trace trace) {
+        Set<Property> commonProperties = trace.getProperties(Constants.PROP_SERVICE_NAME);
+        commonProperties.addAll(trace.getProperties(Constants.PROP_BUILD_STAMP));
+        commonProperties.addAll(trace.getProperties(Constants.PROP_PRINCIPAL));
+        return commonProperties;
     }
 }

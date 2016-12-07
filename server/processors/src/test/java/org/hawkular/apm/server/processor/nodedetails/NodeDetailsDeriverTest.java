@@ -20,12 +20,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
+import org.hawkular.apm.api.model.Constants;
+import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.events.NodeDetails;
+import org.hawkular.apm.api.model.trace.Component;
 import org.hawkular.apm.api.model.trace.Consumer;
 import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
+import org.hawkular.apm.server.api.task.RetryAttemptException;
 import org.junit.Test;
 
 /**
@@ -93,6 +99,42 @@ public class NodeDetailsDeriverTest {
         assertEquals(1, details.size());
 
         assertEquals(TEST_URI, details.get(0).getUri());
+    }
+
+    @Test
+    public void testProcessCommonProperties() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Trace trace = new Trace();
+
+        Property p1 = new Property(Constants.PROP_BUILD_STAMP, "myBuild");
+        Property p2 = new Property(Constants.PROP_PRINCIPAL, "jdoe");
+        Property p3 = new Property(Constants.PROP_SERVICE_NAME, "myService");
+        Property p4 = new Property("LocalProp", "LocalValue");
+
+        Consumer consumer = new Consumer();
+        consumer.setEndpointType("HTTP");
+        consumer.getProperties().add(p1);
+        consumer.getProperties().add(p2);
+        trace.getNodes().add(consumer);
+
+        Component component1 = new Component();
+        component1.getProperties().add(p3);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.getProperties().add(p4);
+        component1.getNodes().add(component2);
+
+        List<NodeDetails> details = deriver.processOneToMany(null, trace);
+
+        assertEquals(3, details.size());
+        // Has all properties
+        assertEquals(new HashSet<>(Arrays.asList(p1,p2,p3,p4)), details.get(0).getProperties());
+        // Has three properties, the common ones
+        assertEquals(new HashSet<>(Arrays.asList(p1,p2,p3)), details.get(1).getProperties());
+        // Has one extra due to a local property on the component
+        assertEquals(new HashSet<>(Arrays.asList(p1,p2,p3,p4)), details.get(2).getProperties());
     }
 
 }
