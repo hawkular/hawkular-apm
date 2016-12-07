@@ -419,8 +419,6 @@ public class CommunicationDetailsDeriverTest {
         trace1.setTransaction(TXN_NAME);
         trace1.setTraceId("abc");
         trace1.setFragmentId(trace1.getTraceId());
-        trace1.setHostName("host1");
-        trace1.setHostAddress("addr1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -455,14 +453,11 @@ public class CommunicationDetailsDeriverTest {
         trace2.setTransaction(TXN_NAME);
         trace2.setTraceId(trace1.getTraceId());
         trace2.setFragmentId("def");
-        trace2.setHostName("host2");
-        trace2.setHostAddress("addr2");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setDuration(1200000000);
         c2.getProperties().add(new Property(Consumer.PROPERTY_PUBLISH, "true"));
-        c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -494,11 +489,8 @@ public class CommunicationDetailsDeriverTest {
 
         traces1.add(trace1);
 
-        trace1.setTransaction(TXN_NAME);
         trace1.setTraceId("abc");
         trace1.setFragmentId(trace1.getTraceId());
-        trace1.setHostName("host1");
-        trace1.setHostAddress("addr1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
@@ -530,17 +522,13 @@ public class CommunicationDetailsDeriverTest {
 
         traces2.add(trace2);
 
-        trace2.setTransaction(TXN_NAME);
         trace2.setTraceId(trace1.getTraceId());
         trace2.setFragmentId("def");
-        trace2.setHostName("host2");
-        trace2.setHostAddress("addr2");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setDuration(1200000000);
         c2.getProperties().add(new Property(Consumer.PROPERTY_PUBLISH, "true"));
-        c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.ControlFlow);
@@ -576,14 +564,11 @@ public class CommunicationDetailsDeriverTest {
         trace1.setTransaction(TXN_NAME);
         trace1.setTraceId("1");
         trace1.setFragmentId(trace1.getTraceId());
-        trace1.setHostName("host1");
-        trace1.setHostAddress("addr1");
 
         Producer p1 = new Producer();
         p1.setUri("TheURI");
         p1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()));
         p1.setDuration(2000000);
-        p1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CorrelationIdentifier pid1 = new CorrelationIdentifier();
         pid1.setScope(Scope.Interaction);
@@ -600,14 +585,10 @@ public class CommunicationDetailsDeriverTest {
         trace2.setTransaction(TXN_NAME);
         trace2.setTraceId(trace1.getTraceId());
         trace2.setFragmentId("2");
-        trace2.setHostName("host2");
-        trace2.setHostAddress("addr2");
 
         Consumer c2 = new Consumer();
         c2.setUri("TheURI");
         c2.setDuration(1200000);
-        c2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
-        c2.getProperties().add(new Property("prop1", "value1"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.Interaction);
@@ -629,14 +610,8 @@ public class CommunicationDetailsDeriverTest {
         assertTrue(c2.getDuration() == details.getConsumerDuration());
         assertTrue(p1.getDuration() == details.getProducerDuration());
         assertEquals(400000, details.getLatency());
-        assertTrue(details.hasProperty("prop1"));
         assertEquals(trace1.getFragmentId(), details.getSourceFragmentId());
-        assertEquals("host1", details.getSourceHostName());
-        assertEquals("addr1", details.getSourceHostAddress());
         assertEquals(trace2.getFragmentId(), details.getTargetFragmentId());
-        assertEquals("host2", details.getTargetHostName());
-        assertEquals("addr2", details.getTargetHostAddress());
-        assertEquals("p1", details.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
     }
 
     @Test
@@ -730,16 +705,12 @@ public class CommunicationDetailsDeriverTest {
         Trace trace1 = new Trace();
         trace1.setTimestamp(1000000);
 
-        trace1.setTransaction(TXN_NAME);
         trace1.setTraceId("abc");
         trace1.setFragmentId(trace1.getTraceId());
-        trace1.setHostName("host1");
-        trace1.setHostAddress("addr1");
 
         Consumer c1 = new Consumer();
         c1.setUri("FirstURI");
         c1.setTimestamp(trace1.getTimestamp());
-        c1.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
 
         CorrelationIdentifier cid1 = new CorrelationIdentifier();
         cid1.setScope(Scope.Interaction);
@@ -751,25 +722,19 @@ public class CommunicationDetailsDeriverTest {
         Component comp1 = new Component();
         comp1.setTimestamp(trace1.getTimestamp() + 1000000);
         comp1.setDuration(2000000000);
-        comp1.getProperties().add(new Property("prop1", "value1"));
 
         c1.getNodes().add(comp1);
 
         Trace trace2 = new Trace();
         trace2.setTimestamp(2000000);
 
-        trace2.setTransaction(TXN_NAME);
         trace2.setTraceId(trace1.getTraceId());
         trace2.setFragmentId("def");
-        trace2.setHostName("host2");
-        trace2.setHostAddress("addr2");
 
         Consumer c2 = new Consumer();
         c2.setUri("SecondURI");
         c2.setTimestamp(trace2.getTimestamp());
         c2.setDuration(1200000000);
-        c2.getProperties().add(new Property(Constants.PROP_PRINCIPAL, "p1"));
-        c2.getProperties().add(new Property("prop2", "value2"));
 
         CorrelationIdentifier cid2 = new CorrelationIdentifier();
         cid2.setScope(Scope.CausedBy);
@@ -784,7 +749,6 @@ public class CommunicationDetailsDeriverTest {
 
         assertNotNull(details);
 
-        assertEquals(TXN_NAME, details.getTransaction());
         assertEquals("FirstURI", details.getSource());
         assertEquals("SecondURI", details.getTarget());
 
@@ -796,15 +760,8 @@ public class CommunicationDetailsDeriverTest {
         long latency = comp1.getTimestamp() - trace2.getTimestamp();
 
         assertEquals(latency, details.getLatency());
-        assertTrue(details.hasProperty("prop1"));
-        assertTrue(details.hasProperty("prop2"));
         assertEquals(trace1.getFragmentId(), details.getSourceFragmentId());
-        assertEquals("host1", details.getSourceHostName());
-        assertEquals("addr1", details.getSourceHostAddress());
         assertEquals(trace2.getFragmentId(), details.getTargetFragmentId());
-        assertEquals("host2", details.getTargetHostName());
-        assertEquals("addr2", details.getTargetHostAddress());
-        assertEquals("p1", details.getProperties(Constants.PROP_PRINCIPAL).iterator().next().getValue());
 
         assertEquals(comp1.getTimestamp(), details.getTimestamp());
     }
