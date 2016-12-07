@@ -30,6 +30,6 @@ public interface TraceRecorder {
      *
      * @param trace The trace fragment
      */
-    void report(Trace trace);
+    void record(Trace trace);
 
 }

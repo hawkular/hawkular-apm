@@ -29,18 +29,10 @@ public class Logger {
 
     private static Level level = Level.valueOf(PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_LOG_LEVEL, Level.INFO.name()));
 
-    private static boolean logToJUL = Boolean.getBoolean(PropertyUtil.HAWKULAR_APM_LOG_JUL);
-
-    private static java.util.logging.Logger logger = null;
+    private final java.util.logging.Logger julLogger;
 
     private String className;
     private String simpleClassName = null;
-
-    static {
-        if (logToJUL) {
-            logger = java.util.logging.Logger.getLogger(Logger.class.getName());
-        }
-    }
 
     /**
      * This construct is initialised with the class name.
@@ -48,7 +40,12 @@ public class Logger {
      * @param className The class name
      */
     protected Logger(String className) {
+        this(className, Boolean.getBoolean(PropertyUtil.HAWKULAR_APM_LOG_JUL));
+    }
+
+    protected Logger(String className, boolean logToJUL) {
         this.className = className;
+        this.julLogger =  logToJUL ? java.util.logging.Logger.getLogger(Logger.class.getName()) : null;
 
         int index = className.lastIndexOf('.');
         if (index != -1) {
@@ -64,6 +61,38 @@ public class Logger {
      */
     public static Logger getLogger(String className) {
         return new Logger(className);
+    }
+
+    /**
+     * This method returns a logger associated with the supplied class name.
+     *
+     * @param clazz The class
+     * @return The logger
+     */
+    public static Logger getLogger(Class clazz) {
+        return getLogger(clazz.getName());
+    }
+
+    /**
+     * This method returns a logger associated with the supplied class name.
+     *
+     * @param clazz The class
+     * @param logToJUL Whether to log to java.util.logging or not
+     * @return The logger
+     */
+    public static Logger getLogger(Class clazz, boolean logToJUL) {
+        return new Logger(clazz.getName(), logToJUL);
+    }
+
+    /**
+     * This method returns a logger associated with the supplied class name.
+     *
+     * @param className The class
+     * @param logToJUL Whether to log to java.util.logging or not
+     * @return The logger
+     */
+    public static Logger getLogger(String className, boolean logToJUL) {
+        return new Logger(className, logToJUL);
     }
 
     /**
@@ -86,12 +115,32 @@ public class Logger {
     }
 
     /**
+     * This method logs a message at the FINEST level.
+     *
+     * @param mesg The message
+     * @param  t exception to log
+     */
+    public void finest(String mesg, Throwable t) {
+        log(Level.FINEST, mesg, t);
+    }
+
+    /**
      * This method logs a message at the FINER level.
      *
      * @param mesg The message
      */
     public void finer(String mesg) {
         log(Level.FINER, mesg, null);
+    }
+
+    /**
+     * This method logs a message at the FINER level.
+     *
+     * @param mesg The message
+     * @param  t exception to log
+     */
+    public void finer(String mesg, Throwable t) {
+        log(Level.FINER, mesg, t);
     }
 
     /**
@@ -104,12 +153,32 @@ public class Logger {
     }
 
     /**
+     * This method logs a message at the FINE level.
+     *
+     * @param mesg The message
+     * @param  t exception to log
+     */
+    public void fine(String mesg, Throwable t) {
+        log(Level.FINE, mesg, t);
+    }
+
+    /**
      * This method logs a message at the INFO level.
      *
      * @param mesg The message
      */
     public void info(String mesg) {
         log(Level.INFO, mesg, null);
+    }
+
+    /**
+     * This method logs a message at the INFO level.
+     *
+     * @param mesg The message
+     * @param  t exception to log
+     */
+    public void info(String mesg, Throwable t) {
+        log(Level.INFO, mesg, t);
     }
 
     /**
@@ -122,12 +191,32 @@ public class Logger {
     }
 
     /**
+     * This method logs a message at the WARNING level.
+     *
+     * @param mesg The message
+     * @param  t exception to log
+     */
+    public void warning(String mesg, Throwable t) {
+        log(Level.WARNING, mesg, t);
+    }
+
+    /**
      * This method logs a message at the SEVERE level.
      *
      * @param mesg The message
      */
     public void severe(String mesg) {
         log(Level.SEVERE, mesg, null);
+    }
+
+    /**
+     * This method logs a message at the SEVERE level.
+     *
+     * @param mesg The message
+     * @param  t exception to log
+     */
+    public void severe(String mesg, Throwable t) {
+        log(Level.SEVERE, mesg, t);
     }
 
     /**
@@ -150,14 +239,14 @@ public class Logger {
             builder.append(mesg);
 
             if (mesgLevel == Level.SEVERE) {
-                if (logger != null) {
-                    logger.log(java.util.logging.Level.SEVERE, builder.toString(), t);
+                if (julLogger != null) {
+                    julLogger.log(java.util.logging.Level.SEVERE, builder.toString(), t);
                 } else {
                     System.err.println(builder.toString());
                 }
             } else {
-                if (logger != null) {
-                    logger.info(builder.toString());
+                if (julLogger != null) {
+                    julLogger.info(builder.toString());
                 } else {
                     System.out.println(builder.toString());
                 }
