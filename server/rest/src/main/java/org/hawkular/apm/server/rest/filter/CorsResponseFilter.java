@@ -14,31 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hawkular.apm.server.rest.filter;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.jaxrs.filter.cors.AbstractCorsResponseFilter;
-import org.hawkular.jaxrs.filter.cors.AbstractOriginValidation;
-import org.hawkular.jaxrs.filter.cors.Headers;
+import org.hawkular.jaxrs.filter.cors.CorsFilters;
 
 /**
  * @author Pavol Loffay
  */
 @Provider
-public class CorsFilter extends AbstractCorsResponseFilter {
+public class CorsResponseFilter implements ContainerResponseFilter {
 
-    private OriginValidation originValidation;
     private String extraAllowedHeaders;
 
     @PostConstruct
-    public void initAllowedOrigins() {
-        originValidation = new OriginValidation(
-                PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_CORS_ALLOWED_ORIGINS));
-
+    public void init() {
         extraAllowedHeaders = "authorization";
         String headers = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_CORS_ACCESS_CONTROL_ALLOW_HEADERS);
         if (headers != null) {
@@ -46,26 +44,8 @@ public class CorsFilter extends AbstractCorsResponseFilter {
         }
     }
 
-    @Override
-    protected boolean isAllowedOrigin(String origin) {
-        return originValidation.isAllowedOrigin(origin);
-    }
-
-    @Override
-    protected String getExtraAccessControlAllowHeaders() {
-        return extraAllowedHeaders;
-    }
-
-    private static final class OriginValidation extends AbstractOriginValidation {
-        private final String allowedCorsOrigins;
-
-        OriginValidation(String allowedCorsOrigins) {
-            this.allowedCorsOrigins = allowedCorsOrigins == null ? Headers.ALLOW_ALL_ORIGIN : allowedCorsOrigins;
-            init();
-        }
-
-        @Override protected String getAllowedCorsOrigins() {
-            return allowedCorsOrigins;
-        }
+    @Override public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+            throws IOException {
+        CorsFilters.filterResponse(requestContext, responseContext, extraAllowedHeaders);
     }
 }
