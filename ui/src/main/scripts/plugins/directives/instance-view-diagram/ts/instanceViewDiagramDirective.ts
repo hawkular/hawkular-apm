@@ -180,7 +180,9 @@ module InstanceViewDiagram {
 
           let nodeTT = '<ul>';
           _.each(d.properties, (property) => {
-            nodeTT += ('<li class=\'tt-prop\'><strong>' + property.name + '</strong> ' + property.value + '</li>');
+            if (!!property.value) {
+              nodeTT += ('<li class=\'tt-prop\'><strong>' + property.name + '</strong> ' + property.value + '</li>');
+            }
           });
           nodeTT += '</ul>';
 

@@ -65,7 +65,7 @@
             <td class="inst-details-timestamp">{{ tData.timestamp | date:'medium' }}</td>
             <!--<td>{{ tData.uri }}</td>-->
             <td class="inst-details-properties">
-              <span class="label label-default" ng-repeat="tDataProp in tData.propertiesGrouped" ng-click="tDataProp.expand = !tDataProp.expand" tooltip="{{tDataProp.name}} : {{tDataProp.value}}">
+              <span class="label label-default" ng-repeat="tDataProp in tData.propertiesGrouped" ng-click="tDataProp.expand = !tDataProp.expand" tooltip="{{tDataProp.name}} : {{tDataProp.value}}"  ng-if="!!tDataProp.value">
                 {{tDataProp.name}}:<span ng-hide="tDataProp.expand">{{ tDataProp.value | limitTo:16}}<span ng-show="!tDataProp.expand && tDataProp.value.length > 16">...</span></span><span ng-show="tDataProp.expand">{{ tDataProp.value }}</span>
               </span>
             </td>
