@@ -38,10 +38,12 @@ public class EnvironmentAwareTraceRecorder implements TraceRecorder {
         if (trace.getNodes() != null && trace.getNodes().size() > 0) {
             Node rootNode = trace.getNodes().get(0);
             if (this.deploymentMetaData != null) {
-                if (!rootNode.hasProperty(Constants.PROP_SERVICE_NAME)) {
+                if (this.deploymentMetaData.getServiceName() != null
+                        && !rootNode.hasProperty(Constants.PROP_SERVICE_NAME)) {
                     rootNode.getProperties().add(new Property(Constants.PROP_SERVICE_NAME, this.deploymentMetaData.getServiceName()));
                 }
-                if (!rootNode.hasProperty(Constants.PROP_BUILD_STAMP)) {
+                if (this.deploymentMetaData.getBuildStamp() != null
+                        && !rootNode.hasProperty(Constants.PROP_BUILD_STAMP)) {
                     rootNode.getProperties().add(new Property(Constants.PROP_BUILD_STAMP, this.deploymentMetaData.getBuildStamp()));
                 }
             }
