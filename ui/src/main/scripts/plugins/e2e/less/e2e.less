@@ -210,19 +210,33 @@ th {
     }
     .entity {
         stroke-width: 1.5px;
-        stroke: #bbb;
+        fill: #72767B;
+    }
+    .entity .node-label {
+        margin-left: 1.5em;
+    }
+    .entity.circle .node-label {
+        margin-left: 0;
+    }
+    .entity.producer .node-label {
+        margin-left: 1.0em;
     }
     .entity.consumer {
-        fill: #6e929a;
         .duration {
-            margin-left: 1.5em;
+            margin-left: 0.5em;
         }
     }
-    .entity.producer {
-        fill: #af9c3e;
+    .entity.severity0 {
+        stroke: #6ec664;
     }
-    .entity.component {
-        fill: #9a6e6e;
+    .entity.severity1 {
+        stroke: #f0ab00;
+    }
+    .entity.severity2 {
+        stroke: #ec7a08;
+    }
+    .entity.severity3 {
+        stroke: #cc0000;
     }
     i.spawn {
         color: #ddd;

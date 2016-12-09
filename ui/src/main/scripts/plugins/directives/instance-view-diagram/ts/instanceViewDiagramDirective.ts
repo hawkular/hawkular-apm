@@ -37,6 +37,9 @@ module InstanceViewDiagram {
 
     private doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter): void {
 
+      // Severity strip width (must be pair)
+      let stripeWidth = 12;
+
       // Set up zoom support
       let svg = d3.select('svg#idetails'),
         inner = svg.select('g'),
@@ -51,14 +54,18 @@ module InstanceViewDiagram {
       render.shapes().producer = function(parent, bbox, node) {
         let w = bbox.width + 10,
             h = bbox.height + 10,
-            points = [
-              { x:     0,      y:     0 },
-              { x:     w,      y:     0 },
-              { x:     w + 10, y:     -h / 2 },
-              { x:     w,      y:     -h },
-              { x:     0,      y:     -h },
-              { x:     0,      y:     0 }
-            ];
+            points = [{ x: 0, y: 0 }];
+            for (let i = 0; i < stripeWidth; i++) {
+              points.push({'x': i, y: (i % 2 === 0 ? 0 : -h)});
+              points.push({'x': i, y: (i % 2 !== 0 ? 0 : -h)});
+            }
+            points = points.concat([
+              { x: w,      y: 0 },
+              { x: w + 10, y: -h / 2 },
+              { x: w,      y: -h },
+              { x: 0,      y: -h },
+              { x: 0,      y: 0 }
+            ]);
             let shapeSvg = parent.insert('polygon', ':first-child')
               .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
               .attr('transform', 'translate(' + (-w / 1.85) + ',' + (h * 4 / 8) + ')');
@@ -73,14 +80,17 @@ module InstanceViewDiagram {
       render.shapes().consumer = function(parent, bbox, node) {
         let w = bbox.width + 20,
             h = bbox.height + 10,
-            points = [
-              { x:     0, y:          0 },
-              { x:     w, y:          0 },
-              { x:     w, y:          -h },
-              { x:     0, y:          -h },
-              { x:     10, y:         -h / 2 },
-              { x:     0, y:          0 }
-            ];
+            points = [{ x: 0, y: 0 }];
+            for (let i = 0; i < stripeWidth + 1; i++) {
+              points.push({'x': i, y: (i % 2 === 0 ? 0 : -h)});
+              points.push({'x': i + 10, y: -h / 2});
+              points.push({'x': i, y: (i % 2 !== 0 ? 0 : -h)});
+            }
+            points = points.concat([
+              { x:  w, y: -h },
+              { x:  w, y: 0 },
+              { x: 10, y: 0 },
+            ]);
             let shapeSvg = parent.insert('polygon', ':first-child')
               .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
               .attr('transform', 'translate(' + (-w / 2.15) + ',' + (h * 4 / 8) + ')');
@@ -95,15 +105,20 @@ module InstanceViewDiagram {
       render.shapes().component = function(parent, bbox, node) {
         let w = bbox.width + 20,
             h = bbox.height + 8,
-            points = [
-              { x:     -10,    y:     -h / 2 },
-              { x:     0,      y:     -h },
-              { x:     w - 10, y:     -h },
-              { x:     w,      y:     -h / 2 },
-              { x:     w - 10, y:     0 },
-              { x:     0,      y:     0 },
-              { x:     -10,    y:     -h / 2 }
-            ];
+            points = [];
+            for (let i = stripeWidth; i >= 0; i--) {
+              points.push({'x': i, y: (i % 2 === 0 ? 0 : -h)});
+              points.push({'x': i - stripeWidth, y: -h / 2});
+              points.push({'x': i, y: (i % 2 !== 0 ? 0 : -h)});
+            }
+            points = points.concat([
+              { x: 10,     y: -h  },
+              { x: w - 10, y: -h },
+              { x: w,      y: -h / 2 },
+              { x: w - 10, y: 0 },
+              { x: 10,     y: 0 },
+              { x: 0,      y: -h / 2 }
+            ]);
             let shapeSvg = parent.insert('polygon', ':first-child')
               .attr('points', points.map(function(d) { return d.x + ',' + d.y; }).join(' '))
               .attr('transform', 'translate(' + (-w / 2.1) + ',' + (h * 4 / 8) + ')');
@@ -175,7 +190,7 @@ module InstanceViewDiagram {
 
           let uri = (d.uri || '') + (d.operation ? ('[' + d.operation + ']') : '');
 
-          let label = '<span class="name service-name">' + (serviceName || '') + '</span>';
+          let label = '<span class="name service-name">' + (serviceName || '&nbsp;') + '</span>';
           label += '<div class="name">' + uri + '</div>';
 
           let nodeTT = '<ul>';
@@ -186,8 +201,8 @@ module InstanceViewDiagram {
           });
           nodeTT += '</ul>';
 
-          let html = '<div' + ((nodeTT.length > 9) ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
-            'tooltip-html-unsafe="' + nodeTT + '"') : '') + '>';
+          let html = '<div class="node-label"' + ((nodeTT.length > 9) ? (' tooltip-append-to-body="true" ' +
+            'tooltip-class="graph-tooltip" tooltip-html-unsafe="' + nodeTT + '"') : '') + '>';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt spawn"></i></div>';
           } else {
@@ -212,7 +227,7 @@ module InstanceViewDiagram {
             shape: theShape,
             labelType: 'html',
             label: html,
-            class: 'entity ' + theShape,
+            class: 'entity severity' + d.severity + ' ' + theShape,
             rx: 5,
             ry: 5,
             padding: 0
