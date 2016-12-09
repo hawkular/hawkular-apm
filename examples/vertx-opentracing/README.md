@@ -27,14 +27,19 @@ To setup the whole infra needed for this example, just run the following command
 
     ansible-playbook vertx-opentracing.yml
 
-This will create an OpenShift cluster, deploy a Hawkular APM server, build the examples and install them as
-services into OpenShift. At the end of the process, you should be able to get a JSON as response to this command:
+This might take a while to finish, specially on the first run. It creates an OpenShift cluster, deploys a Hawkular APM server,
+builds the examples and install them as services into OpenShift.
 
-    curl -X POST -d '{"accountId":"fred","itemId":"laptop","quantity":2}' http://order-manager-order-manager.<your OpenShift IP>.xip.io/orders
-
-You can see the actual hostname for the `order-manager` service by running:
+You'll need to make note of the hostname for the `order-manager` service, or you can run this command:
 
     oc get route order-manager
+
+To access the OpenShift console, type in `oc status` and check the address on the first line of the output. The username and
+password is `developer` / `developer`
+
+At the end of the process, you should be able to get a JSON as response to this command:
+
+    curl -X POST -d '{"accountId":"fred","itemId":"laptop","quantity":2}' http://order-manager-order-manager.<your OpenShift IP>.xip.io/orders
 
 ## Setting it up - Option 2 - Manual
 
