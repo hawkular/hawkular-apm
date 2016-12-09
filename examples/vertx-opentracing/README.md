@@ -135,7 +135,7 @@ See [Example Requests](#example-requests) for further commands.
 
 ## Example requests
 
-For the following examples, we'll use `${ORDER_MANAGER_SERVER}` to refer to the Hawkular URI. It might be a simple hostname,
+For the following examples, we'll use `${ORDER_MANAGER_SERVER}` to refer to the example's server. It might be a simple hostname,
 like when it's deployed on OpenShift, or `hostname:port`, like when it's deployed locally (`localhost:8080`, for instance).
 
 Valid account ids are `fred`, `joe`, `jane`, `steve` and `brian`.
