@@ -22,15 +22,16 @@
     - vars.yml
   tasks:
     - name: Flush iptables rules
-      become: true
-      shell: "iptables -F"
+      shell: "sudo iptables -F"
 
     - name: Create OpenShift Cluster
       shell: "oc cluster up --version={{ openshift_version }} --metrics={{ openshift_use_metrics }}"
+      register: command_result
       when: "create_openshift_cluster"
+      failed_when: "'OpenShift is already running' not in command_result.stdout and command_result.rc != 0"
 
     - name: Compile Example
-      shell: "mvn clean install"
+      shell: "mvn clean install -Dlicense.skip=true"
 
     - name: Create a new OpenShift project
       shell: "oc new-project {{ project_name }}"
