@@ -191,11 +191,13 @@ module E2E {
       let calcSeverity = function(nodes, maxDuration) {
         _.forEach(nodes, (node: any) => {
           let percentage = node.duration / maxDuration;
-          if (percentage >= 0.9) {
+          if (percentage >= 0.8) {
+            node.severity = 4;
+          } else if (percentage >= 0.6) {
             node.severity = 3;
-          } else if (percentage >= 0.7) {
+          } else if (percentage >= 0.4) {
             node.severity = 2;
-          } else if (percentage >= 0.5) {
+          } else if (percentage >= 0.2) {
             node.severity = 1;
           } else {
             node.severity = 0;
