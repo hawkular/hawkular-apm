@@ -20,7 +20,7 @@ echo "List orders for account=$1"
 
 data="{\"accountId\":\"$1\"}"
 
-curl -X GET -H "Content-Type: application/json" -d "$data" http://localhost:8080/orders
+curl -X GET -H "Content-Type: application/json" -d "$data" http://localhost:8180/orders
 
 echo
 echo
