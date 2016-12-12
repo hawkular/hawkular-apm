@@ -1,0 +1,33 @@
+{
+  "name": "Vertx OpenTracing test",
+  "environment": {
+    "dockerCompose": "docker-compose.yml",
+    "pull": false,
+    "initWaitSeconds": "20",
+    "type": "APM",
+    "apmAddress": "172.16.158.1"
+  },
+  "tests": [
+    {
+      "description" : "Docker image Vertx OpenTracing",
+      "skip": false,
+      "action": "action1.sh",
+      "scriptServiceName": "order-manager",
+      "afterActionWaitSeconds": "10",
+      "verify": {
+        "jsonPath": [
+          {
+            "left": "$.length()",
+            "right": 6,
+            "operator": "EQ"
+          },
+          {
+            "left": "$.[0].transaction",
+            "right": "Place Order",
+            "operator": "EQ"
+          }
+        ]
+      }
+    }
+  ]
+}

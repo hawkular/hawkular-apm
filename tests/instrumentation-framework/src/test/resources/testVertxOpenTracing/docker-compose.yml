@@ -1,0 +1,61 @@
+#
+# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: '2'
+services:
+  account-manager:
+    build: ../../../../../examples/vertx-opentracing/account-manager/
+    env_file: ../../apm-env-variables.properties
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=account-manager
+    extra_hosts:
+      - "hawkular-apm:172.16.158.1"
+    volumes:
+      - .:/opt/hawkular-apm-test:ro,z
+  inventory-manager:
+    build: ../../../../../examples/vertx-opentracing/inventory-manager/
+    env_file: ../../apm-env-variables.properties
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=inventory-manager
+    extra_hosts:
+      - "hawkular-apm:172.16.158.1"
+    volumes:
+      - .:/opt/hawkular-apm-test:ro,z
+  order-log:
+    build: ../../../../../examples/vertx-opentracing/order-log/
+    env_file: ../../apm-env-variables.properties
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=order-log
+    extra_hosts:
+      - "hawkular-apm:172.16.158.1"
+    volumes:
+      - .:/opt/hawkular-apm-test:ro,z
+  order-manager:
+    build: ../../../../../examples/vertx-opentracing/order-manager/
+    env_file: ../../apm-env-variables.properties
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=order-manager
+    extra_hosts:
+      - "hawkular-apm:172.16.158.1"
+    volumes:
+      - .:/opt/hawkular-apm-test:ro,z
+    ports:
+      - "8080:8080"
+networks:
+  default:
+    external:
+      name: hawkular-apm

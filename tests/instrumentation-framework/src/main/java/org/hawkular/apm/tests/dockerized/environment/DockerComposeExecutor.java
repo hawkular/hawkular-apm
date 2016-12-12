@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.hawkular.apm.tests.dockerized.exception.EnvironmentException;
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
@@ -128,6 +129,9 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
 
             if (process == null || exitVal != 0) {
                 log.severe(String.format("`%s` did not return 0", Arrays.toString(commands)));
+                log.severe("-------- stderr ");
+                log.severe(new BufferedReader(new InputStreamReader(process.getErrorStream())).lines().collect(Collectors.joining("\n")));
+                log.severe("-------- /stderr ");
                 throw new EnvironmentException(Arrays.toString(commands) + " did not return 0, actual = " +
                         (process != null ? process.exitValue(): ""));
             }

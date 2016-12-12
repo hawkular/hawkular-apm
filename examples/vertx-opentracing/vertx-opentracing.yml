@@ -1,0 +1,85 @@
+#
+# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+---
+- name: Install vert.x OpenTracing example
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Flush iptables rules
+      shell: "sudo iptables -F"
+
+    - name: Create OpenShift Cluster (this might take a while)
+      shell: "oc cluster up --version={{ openshift_version }} --metrics={{ openshift_use_metrics }}"
+      register: command_result
+      when: "create_openshift_cluster"
+      failed_when: "'OpenShift is already running' not in command_result.stdout and command_result.rc != 0"
+
+    - name: Compile Example (this might take a while)
+      shell: "mvn clean install -Dlicense.skip=true"
+
+    - name: Create a new OpenShift project
+      shell: "oc new-project {{ project_name }}"
+      register: command_result
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
+    - name: Define OpenShift project
+      shell: "oc project {{ project_name }}"
+
+    - name: Install Hawkular APM (this might take a while)
+      shell: "oc create -f https://raw.githubusercontent.com/jboss-dockerfiles/hawkular-apm/master/openshift-templates/hawkular-apm-server-deployment.yml"
+      register: command_result
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
+    - name: Create OpenShift new-build
+      shell: "oc new-build --binary --name={{ item.name }} -l app={{ item.name }}"
+      register: command_result
+      with_items: "{{ services }}"
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
+    - name: Build and Deploy OpenShift images from the sources (this might take a while)
+      shell: "oc start-build {{ item.name }} --from-dir={{ item.name }}/ --follow"
+      with_items: "{{ services }}"
+
+    - name: Create OpenShift applications from previously created images
+      shell: "oc new-app {{ item.name }} -l app={{ item.name }} HAWKULAR_APM_URI='http://hawkular-apm' HAWKULAR_APM_USERNAME='admin' HAWKULAR_APM_PASSWORD='password'"
+      args:
+        chdir: "{{ item.name }}"
+      register: command_result
+      with_items: "{{ services }}"
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
+    - name: Expose OpenShift applications
+      shell: "oc expose service {{ item.name }}"
+      register: command_result
+      with_items: "{{ services }}"
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+      when: "item.exposed"
+
+    - name: Print out the order-manager address
+      shell: "oc get route order-manager | grep order-manager-order | awk '{print $2}'"
+      register: route_order_manager
+
+    - name: Print out the order-manager address
+      debug:
+        msg: "The hostname for the Order Manager service is: http://{{ route_order_manager.stdout }}"

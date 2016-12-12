@@ -70,6 +70,7 @@
     <module>client/opentracing</module>
     <module>client/trace-publisher-rest-client</module>
     <module>client/trace-service-rest-client</module>
+    <module>examples/vertx-opentracing</module>
     <module>server/api</module>
     <module>server/elasticsearch</module>
     <module>server/infinispan</module>
@@ -198,6 +199,11 @@
       <dependency>
         <groupId>org.hawkular.apm</groupId>
         <artifactId>hawkular-apm-agent</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hawkular.apm</groupId>
+        <artifactId>hawkular-apm-examples-vertx-opentracing-common</artifactId>
         <version>${project.version}</version>
       </dependency>
 
