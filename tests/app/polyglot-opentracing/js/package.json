@@ -17,6 +17,6 @@
     "babel-preset-es2015": "^6.13.2",
     "httpdispatcher": "^1.1.0",
     "opentracing": "0.13.0",
-    "hawkular-apm-opentracing": "0.1.4"
+    "hawkular-apm-opentracing": "0.1.5"
   }
 }
