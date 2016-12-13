@@ -140,10 +140,10 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 nd.setUri(n.getUri());
                 nd.setOperation(n.getOperation());
 
-                initial = false;
-
                 rts.add(nd);
             }
+
+            initial = false;
 
             if (!ignoreChildNodes && n.interactionNode()) {
                 deriveNodeDetails(trace, ((InteractionNode) n).getNodes(), rts, initial,
