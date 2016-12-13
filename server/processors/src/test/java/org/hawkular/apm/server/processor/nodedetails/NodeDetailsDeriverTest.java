@@ -17,8 +17,9 @@
 package org.hawkular.apm.server.processor.nodedetails;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,7 +45,7 @@ public class NodeDetailsDeriverTest {
     private static final String TEST_URI = "testUri";
 
     @Test
-    public void testProcessMultipleNotInternalConsumer() {
+    public void testProcessMultipleNotInternalConsumer() throws RetryAttemptException {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
         Trace trace = new Trace();
@@ -58,13 +59,7 @@ public class NodeDetailsDeriverTest {
         producer.setUri(TEST_URI);
         consumer.getNodes().add(producer);
 
-        List<NodeDetails> details = null;
-
-        try {
-            details = deriver.processOneToMany(null, trace);
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        List<NodeDetails> details = deriver.processOneToMany(null, trace);
 
         assertNotNull(details);
         assertEquals(1, details.size());
@@ -73,7 +68,7 @@ public class NodeDetailsDeriverTest {
     }
 
     @Test
-    public void testProcessMultipleNotInternalProducer() {
+    public void testProcessMultipleNotInternalProducer() throws RetryAttemptException {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
         Trace trace = new Trace();
@@ -87,18 +82,14 @@ public class NodeDetailsDeriverTest {
         producer.setUri(INTERNAL_URI);
         consumer.getNodes().add(producer);
 
-        List<NodeDetails> details = null;
-
-        try {
-            details = deriver.processOneToMany(null, trace);
-        } catch (Exception e) {
-            fail("Failed: " + e);
-        }
+        List<NodeDetails> details = deriver.processOneToMany(null, trace);
 
         assertNotNull(details);
         assertEquals(1, details.size());
 
         assertEquals(TEST_URI, details.get(0).getUri());
+        // NodeDetails for Consumer, which is initial node of the fragment
+        assertTrue(details.get(0).isInitial());
     }
 
     @Test
@@ -135,6 +126,48 @@ public class NodeDetailsDeriverTest {
         assertEquals(new HashSet<>(Arrays.asList(p1,p2,p3)), details.get(1).getProperties());
         // Has one extra due to a local property on the component
         assertEquals(new HashSet<>(Arrays.asList(p1,p2,p3,p4)), details.get(2).getProperties());
+    }
+
+    @Test
+    public void testNotInitial() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Trace trace = new Trace();
+
+        Consumer consumer = new Consumer();
+        trace.getNodes().add(consumer);
+
+        Producer producer = new Producer();
+        producer.setEndpointType("HTTP");
+        consumer.getNodes().add(producer);
+
+        List<NodeDetails> details = deriver.processOneToMany(null, trace);
+
+        assertNotNull(details);
+        assertEquals(1, details.size());
+        // Should not be initial, as connected via internal link from another fragment
+        assertFalse(details.get(0).isInitial());
+    }
+
+    @Test
+    public void testInitial() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Trace trace = new Trace();
+
+        Consumer consumer = new Consumer();
+        consumer.setEndpointType("HTTP");
+        trace.getNodes().add(consumer);
+
+        Component component = new Component();
+        consumer.getNodes().add(component);
+
+        List<NodeDetails> details = deriver.processOneToMany(null, trace);
+
+        assertNotNull(details);
+        assertEquals(2, details.size());
+        assertTrue(details.get(0).isInitial());
+        assertFalse(details.get(1).isInitial());
     }
 
 }
