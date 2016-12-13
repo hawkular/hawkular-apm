@@ -133,11 +133,11 @@ module FilterSidebar {
     }
 
     private updatePropertyValues = function(newValue) {
-      this.theScope.propertyValues = [];
+      this.theScope.sbPropertyValues = [];
       let propVal = this.$http.get('/hawkular/apm/analytics/trace/completion/property/' + newValue.name +
         '?criteria=' + encodeURI(angular.toJson(this.$rootScope.sbFilter.criteria)));
       propVal.then((resp) => {
-        this.theScope.propertyValues = resp.data;
+        this.theScope.sbPropertyValues = resp.data;
       });
     };
 

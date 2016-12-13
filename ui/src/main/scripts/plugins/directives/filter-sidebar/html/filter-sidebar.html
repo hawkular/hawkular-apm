@@ -89,7 +89,7 @@
               <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
                 ng-model="selPropValue" ng-model-options="{ updateOn: 'default blur' }"
                 placeholder="Type '{{selPropName.name}}' value" typeahead-editable="false"
-                typeahead="propValue.value for propValue in propertyValues | filter:$viewValue | limitTo:12" />
+                typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" />
               <div class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
                   ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HAS')">
