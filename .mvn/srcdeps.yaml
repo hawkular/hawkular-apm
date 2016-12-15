@@ -36,3 +36,13 @@ repositories:
     - -Dcheckstyle.skip=true
     - -Dlicense.skip=true
     - -Drevapi.skip=true
+
+  org.hawkular.commons:
+    selectors:
+    - org.hawkular.commons
+    urls:
+    - git:https://github.com/hawkular/hawkular-commons.git
+    buildArguments:
+    - -Dcheckstyle.skip=true
+    - -Dlicense.skip=true
+    - -Drevapi.skip=true
