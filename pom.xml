@@ -126,7 +126,7 @@
     <version.org.apache.lucene>4.10.4</version.org.apache.lucene>
     <version.org.eclipse.jetty>8.1.15.v20140411</version.org.eclipse.jetty>
     <version.org.elasticsearch>1.7.1</version.org.elasticsearch>
-    <version.org.hawkular.commons>0.9.1.Final-SRC-revision-cca1a8e40526c5c577b25a39b94ea0a52c178fd6</version.org.hawkular.commons>
+    <version.org.hawkular.commons>0.9.1.Final</version.org.hawkular.commons>
     <version.org.jboss.byteman>3.0.6</version.org.jboss.byteman>
     <version.org.jboss.shrinkwrap.resolvers>2.2.2</version.org.jboss.shrinkwrap.resolvers>
     <version.org.mvel>2.2.6.Final</version.org.mvel>
