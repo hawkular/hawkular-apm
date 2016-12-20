@@ -194,9 +194,13 @@ module InstanceViewDiagram {
           label += '<div class="name">' + uri + '</div>';
 
           let nodeTT = '<ul>';
+          let hasFault = false;
           _.each(d.properties, (property) => {
             if (!!property.value) {
               nodeTT += ('<li class=\'tt-prop\'><strong>' + property.name + '</strong> ' + property.value + '</li>');
+              if (property.name === 'fault') {
+                hasFault = true;
+              }
             }
           });
           nodeTT += '</ul>';
@@ -212,6 +216,11 @@ module InstanceViewDiagram {
             label += '    ' + hkDurationFilter(d.duration);
             label += '  </span>';
             label += '</span>';
+            if (hasFault) {
+              label += '<span class="pull-right fault-indicator">';
+              label += '  <i class="fa fa-warning"></i>';
+              label += '</span>';
+            }
           }
           label += '</div>';
           html += label;
