@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.opentracing;
+
+package io.opentracing.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,8 @@ import java.util.Map;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.client.api.sampler.ContextSampler;
+
+import io.opentracing.PropagableState;
 
 /**
  * This class is used to build the information used to create a Trace node.

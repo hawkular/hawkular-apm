@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.opentracing;
 
-import static org.junit.Assert.*;
+package io.opentracing.impl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +29,11 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.client.opentracing.APMTracer;
 import org.junit.Test;
 
-import io.opentracing.AbstractSpanBuilder.Reference;
+import io.opentracing.References;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.impl.AbstractSpanBuilder.Reference;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 
