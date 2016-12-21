@@ -15,46 +15,28 @@
 # limitations under the License.
 #
 
+# Paths in this file are relative to first docker-compose in test.json
+
 version: '2'
 services:
   account-manager:
-    build: ../../../../../examples/vertx-opentracing/account-manager/
-    env_file: ../../apm-env-variables.properties
-    environment:
-      - HAWKULAR_APM_SERVICE_NAME=account-manager
+    env_file: ../../tests/instrumentation-framework/src/test/resources/apm-env-variables.properties
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    volumes:
-      - .:/opt/hawkular-apm-test:ro,z
   inventory-manager:
-    build: ../../../../../examples/vertx-opentracing/inventory-manager/
-    env_file: ../../apm-env-variables.properties
-    environment:
-      - HAWKULAR_APM_SERVICE_NAME=inventory-manager
+    env_file: ../../tests/instrumentation-framework/src/test/resources/apm-env-variables.properties
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    volumes:
-      - .:/opt/hawkular-apm-test:ro,z
   order-log:
-    build: ../../../../../examples/vertx-opentracing/order-log/
-    env_file: ../../apm-env-variables.properties
-    environment:
-      - HAWKULAR_APM_SERVICE_NAME=order-log
+    env_file: ../../tests/instrumentation-framework/src/test/resources/apm-env-variables.properties
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    volumes:
-      - .:/opt/hawkular-apm-test:ro,z
   order-manager:
-    build: ../../../../../examples/vertx-opentracing/order-manager/
-    env_file: ../../apm-env-variables.properties
-    environment:
-      - HAWKULAR_APM_SERVICE_NAME=order-manager
+    env_file: ../../tests/instrumentation-framework/src/test/resources/apm-env-variables.properties
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
     volumes:
-      - .:/opt/hawkular-apm-test:ro,z
-    ports:
-      - "8080:8080"
+      - ../../tests/instrumentation-framework/src/test/resources/testVertxOpenTracing:/opt/hawkular-apm-test:ro,z
 networks:
   default:
     external:

@@ -15,21 +15,23 @@
 # limitations under the License.
 #
 
-version: "2"
-
+version: '2'
 services:
-  ticket-monster:
-    image: pavolloffay/jboss-ticket-monster
-# Hawkular APM specific
-    extra_hosts:
-      - "hawkular-apm:172.16.158.1"
-    env_file: ../apmagent-env-variables.properties
-    volumes:
-      - .:/opt/hawkular-apm-test:ro,z
-      - ../..:/opt/hawkular-apm-agent:ro,z
-
-# Hwakular APM specific
-networks:
-  default:
-    external:
-      name: hawkular-apm
+  account-manager:
+    build: account-manager
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=account-manager
+  inventory-manager:
+    build: inventory-manager
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=inventory-manager
+  order-log:
+    build: order-log
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=order-log
+  order-manager:
+    build: order-manager
+    environment:
+      - HAWKULAR_APM_SERVICE_NAME=order-manager
+    ports:
+      - "8180:8080"

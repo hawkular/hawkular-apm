@@ -17,6 +17,8 @@
 
 package org.hawkular.apm.tests.dockerized.model;
 
+import java.util.List;
+
 /**
  * Test environment
  *
@@ -25,7 +27,7 @@ package org.hawkular.apm.tests.dockerized.model;
 public class TestEnvironment {
 
     private String image;
-    private String dockerCompose;
+    private List<String> dockerCompose;
     private boolean pull;
     private long initWaitSeconds;
     private Type type;
@@ -55,11 +57,11 @@ public class TestEnvironment {
         this.type = type;
     }
 
-    public String getDockerCompose() {
+    public List<String> getDockerCompose() {
         return dockerCompose;
     }
 
-    public void setDockerCompose(String dockerCompose) {
+    public void setDockerCompose(List<String> dockerCompose) {
         this.dockerCompose = dockerCompose;
     }
 

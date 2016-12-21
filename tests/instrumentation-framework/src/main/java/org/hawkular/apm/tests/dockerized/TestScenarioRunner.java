@@ -118,7 +118,7 @@ public class TestScenarioRunner {
 
         log.info(String.format("Executing test case: %s", testCase));
 
-        String environmentId = null;
+        List<String> environmentId = null;
         ApmMockServer apmServer = new ApmMockServer();
         apmServer.setHost("0.0.0.0");
         apmServer.setPort(apmServerPort);
