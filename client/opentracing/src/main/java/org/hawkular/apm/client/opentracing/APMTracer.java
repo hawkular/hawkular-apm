@@ -22,7 +22,7 @@ import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.client.api.sampler.Sampler;
 
-import io.opentracing.AbstractAPMTracer;
+import io.opentracing.impl.AbstractAPMTracer;
 
 /**
  * The opentracing compatible Tracer implementation for Hawkular APM.

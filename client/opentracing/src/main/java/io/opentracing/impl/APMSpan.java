@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.opentracing;
+
+package io.opentracing.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,9 @@ import org.hawkular.apm.client.api.sampler.ContextSampler;
 import org.hawkular.apm.client.opentracing.NodeBuilder;
 import org.hawkular.apm.client.opentracing.TraceContext;
 
-import io.opentracing.AbstractSpanBuilder.Reference;
+import io.opentracing.PropagableState;
+import io.opentracing.References;
+import io.opentracing.impl.AbstractSpanBuilder.Reference;
 import io.opentracing.tag.Tags;
 
 /**

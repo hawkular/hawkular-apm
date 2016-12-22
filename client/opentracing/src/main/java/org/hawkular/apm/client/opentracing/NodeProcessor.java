@@ -16,7 +16,7 @@
  */
 package org.hawkular.apm.client.opentracing;
 
-import io.opentracing.APMSpan;
+import io.opentracing.impl.APMSpan;
 
 /**
  * This interface represents a processing capability on a span node. A default implementation

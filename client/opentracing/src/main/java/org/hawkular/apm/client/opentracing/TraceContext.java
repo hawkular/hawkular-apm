@@ -35,7 +35,7 @@ import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
 import org.hawkular.apm.client.api.sampler.ContextSampler;
 
-import io.opentracing.APMSpan;
+import io.opentracing.impl.APMSpan;
 import io.opentracing.tag.Tags;
 
 /**
