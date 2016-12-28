@@ -151,6 +151,26 @@ module BTM {
       }
     };
 
+    $scope.getTxnsChart = function(theChart) {
+      $scope.txnsChart = theChart;
+    };
+
+    $scope.getFaultsChart = function(theChart) {
+      $scope.faultsChart = theChart;
+    };
+
+    // watch for sidebar changes, to redraw the charts
+    $scope.$watch('hideSidebar', function() {
+      $timeout(function() {
+        if ($scope.txnsChart) {
+          $scope.txnsChart.flush();
+        }
+        if ($scope.faultsChart) {
+          $scope.faultsChart.flush();
+        }
+      });
+    });
+
     $scope.reloadTxnCountGraph = function() {
       let txnCountData = [];
       _.each($scope.transactions, (txn: any) => {
