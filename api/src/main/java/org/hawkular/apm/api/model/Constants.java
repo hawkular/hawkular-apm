@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,12 +70,6 @@ public class Constants {
      * {@link org.hawkular.apm.api.model.Property#name}
      */
     public static final String PROP_FAULT_CODE = "fault.code";
-
-    /**
-     * Property key representing the fault description
-     * {@link org.hawkular.apm.api.model.Property#name}
-     */
-    public static final String PROP_FAULT_DESCRIPTION = "fault.description";
 
     /**
      * Property key representing the database statement

@@ -139,10 +139,6 @@
         "actions": [{
           "type": "SetProperty",
           "name": "fault",
-          "valueExpression": "faultName(content)"
-        },{
-          "type": "SetProperty",
-          "name": "fault.description",
           "valueExpression": "faultDescription(content)"
         },{
           "type": "ProcessContent",
