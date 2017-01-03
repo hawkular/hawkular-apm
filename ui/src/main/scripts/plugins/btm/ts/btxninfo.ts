@@ -99,6 +99,10 @@ module BTM {
       $scope.faultsChart = theChart;
     };
 
+    $scope.getCompTimeChart = function(theChart) {
+      $scope.compTimeChart = theChart;
+    };
+
     let chartOnClick = function(name, value) {
       $timeout(() => {
         let wasToggled = false;
@@ -301,6 +305,21 @@ module BTM {
     };
 
     $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
+
+    // watch for sidebar changes, to redraw the charts
+    $scope.$watch('hideSidebar', function() {
+      $timeout(function() {
+        if ($scope.compTimeChart) {
+          $scope.compTimeChart.flush();
+        }
+        if ($scope.propsChart) {
+          $scope.propsChart.flush();
+        }
+        if ($scope.faultsChart) {
+          $scope.faultsChart.flush();
+        }
+      });
+    });
 
   }]);
 }
