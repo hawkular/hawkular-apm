@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ MAINTAINER Pavol Loffay <ploffay@redhat.com>
 
 ENV APP_HOME /app/
 
-COPY hawkular-apm-tests-app-polyglot-opentracing-swarm.jar $APP_HOME
+COPY target/hawkular-apm-tests-app-polyglot-opentracing-swarm.jar $APP_HOME
 
 WORKDIR $APP_HOME
 
