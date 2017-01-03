@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@
 /// <reference path="dagreD3Globals.ts"/>
 /// <reference path="dagreD3Directive.ts"/>
 module DagreD3 {
-  _module.directive('dagreD3', ['$compile', 'hkDurationFilter', ($compile, hkDurationFilter) => {
-    return new DagreD3.DagreD3Directive($compile, hkDurationFilter);
+  _module.directive('dagreD3', ['$compile', '$sce', 'hkDurationFilter', ($compile, $sce, hkDurationFilter) => {
+    return new DagreD3.DagreD3Directive($compile, $sce, hkDurationFilter);
   }]);
 
   hawtioPluginLoader.addModule(pluginName);

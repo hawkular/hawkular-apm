@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,14 +28,14 @@ module DagreD3 {
     //private render = new dagreD3.render();
     public link: (scope, elm, attrs, ctrl) => any;
 
-    constructor(public $compile, hkDurationFilter) {
+    constructor(public $compile, $sce, hkDurationFilter) {
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
-        return this.doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter);
+        return this.doLink(scope, elm, attrs, ctrl, $compile, $sce, hkDurationFilter);
       };
     }
 
-    private doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter): void {
+    private doLink(scope, elm, attrs, ctrl, $compile, $sce, hkDurationFilter): void {
       // Set up zoom support
       let svg = d3.select('svg'),
         inner = svg.select('g'),
@@ -65,8 +65,10 @@ module DagreD3 {
         let nodeTooltip = '<strong>' + d.id + '</strong><hr/><strong>Duration</strong> (avg/min/max) <br>' +
           (d.averageDuration / 1000);
         nodeTooltip += ' / ' + (d.minimumDuration / 1000) + ' / ' + (d.maximumDuration / 1000);
+        let tooltipId = d.id.replace(/\W+/g, '_');
+        scope[tooltipId] = $sce.trustAsHtml(nodeTooltip);
         let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
-          'tooltip-html-unsafe="' + nodeTooltip + '"') : '') + '>';
+          'tooltip-html="' + tooltipId + '" ') : '') + '>';
         html += '<span class="status"></span>';
         html += '<span class="name service-name">' + (d.serviceName || '&nbsp;') + '</span>';
         html += '<span class="name">' + d.id + '</span>';
@@ -92,8 +94,10 @@ module DagreD3 {
             let edge = d.outbound[nd];
             let linkTooltip = '<strong>Latency</strong> (avg/min/max) <br>' + (edge.averageLatency / 1000);
             linkTooltip += ' / ' + (edge.minimumLatency / 1000) + ' / ' + (edge.maximumLatency / 1000);
+            let tooltipId = d.id.replace(/\W+/g, '_') + '___' + edge.node.id.replace(/\W+/g, '_');
+            scope[tooltipId] = $sce.trustAsHtml(linkTooltip);
             let linkHtml = '<span' + (edge.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
-              'tooltip-placement="bottom" tooltip-html-unsafe="' + linkTooltip + '"') : '') +
+              'tooltip-placement="bottom" tooltip-html="' + tooltipId + '"') : '') +
               '>' + edge.count + '</span>';
             g.setEdge(d.id, nd, {
               labelType: 'html',
