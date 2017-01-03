@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.opentracing.impl;
 
 import java.util.HashMap;
@@ -61,7 +60,7 @@ public class APMSpanBuilder extends AbstractSpanBuilder implements PropagableSta
 
     @Override
     boolean isTraceState(String key, Object value) {
-        return key.startsWith(Constants.HAWKULAR_APM_PREFIX);
+        return key.toUpperCase().startsWith(Constants.HAWKULAR_APM_PREFIX.toUpperCase());
     }
 
     @Override
