@@ -1,7 +1,7 @@
 {
   "name": "Ticket monster test docker-compose test",
   "environment": {
-    "dockerCompose": "docker-compose.yml",
+    "dockerCompose": ["docker-compose.yml"],
     "pull": true,
     "initWaitSeconds": "20",
     "type": "APMAGENT",

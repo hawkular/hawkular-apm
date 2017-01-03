@@ -15,26 +15,24 @@
 # limitations under the License.
 #
 
-version: "2"
+# Paths in this file are relative to first docker-compose in test.json
 
+version: "2"
 services:
   wildfly-swarm:
-    image: hawkular/apm-tests-app-polyglot-opentracing-java
     # Hawkular APM specific
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    env_file: ../../apm-env-variables.properties
+    env_file: ../../instrumentation-framework/src/test/resources/apm-env-variables.properties
     volumes:
-      - .:/opt/hawkular-apm-test:ro,z
+      - ../../instrumentation-framework/src/test/testOpenTracingPolyglot:/opt/hawkular-apm-test:ro,z
   nodejs:
-    build:
-      context: ../../../../app/polyglot-opentracing/js
     # Hawkular APM specific
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    env_file: ../../apm-env-variables.properties
+    env_file: ../../instrumentation-framework/src/test/resources/apm-env-variables.properties
     volumes:
-      - .:/opt/hawkular-apm-test:ro,z
+      - ../../instrumentation-framework/src/test/resources/testOpenTracingPolyglot:/opt/hawkular-apm-test:ro,z
 
 # Hwakular APM specific
 networks:

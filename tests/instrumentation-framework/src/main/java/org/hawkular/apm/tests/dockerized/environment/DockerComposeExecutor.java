@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -53,35 +55,29 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
     }
 
     @Override
-    public String run(TestEnvironment testEnvironment) {
-
+    public List<String> run(TestEnvironment testEnvironment) {
         if (testEnvironment.isPull()) {
-            runShellCommand(new String[] {
-                    "docker-compose", "-f", scenarioDirectory + File.separator + testEnvironment.getDockerCompose(),
-                    "pull",
-            });
+            List<String> cmd = composeCommandWithFiles(testEnvironment.getDockerCompose());
+            cmd.add("pull");
+            runShellCommand(cmd);
         }
 
         /**
          * Note that if image is not in local cache it will be download from the hub
          */
-       runShellCommand(new String[] {
-               "docker-compose", "-f", scenarioDirectory + File.separator + testEnvironment.getDockerCompose(), "up",
-               "-d"
-        });
+        List<String> cmd = composeCommandWithFiles(testEnvironment.getDockerCompose());
+        cmd.addAll(Arrays.asList("up", "-d"));
+        runShellCommand(cmd);
 
         return testEnvironment.getDockerCompose();
     }
 
     @Override
-    public void stopAndRemove(String dockerCompose) {
-
-        String[] command;
+    public void stopAndRemove(List<String> ids) {
+        List<String> cmd = composeCommandWithFiles(ids);
+        cmd.addAll(Arrays.asList("down", "--rmi", "local"));
         try {
-            command = new String[]{
-                    "docker-compose", "-f", scenarioDirectory + File.separator + dockerCompose, "down", "--rmi", "local"
-            };
-            runShellCommand(command);
+            runShellCommand(cmd);
         } catch (EnvironmentException ex) {
             log.severe(String.format("docker-compose down failed %s", ex.getMessage()));
             ex.printStackTrace();
@@ -94,22 +90,18 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
      * @param script Script to execute
      */
     @Override
-    public void execScript(String id, String serviceName, String script) {
-
-        String[] command = new String[] {
-                "docker-compose", "-f", scenarioDirectory + File.separator + id, "exec", serviceName, "bash", "-c",
-                scriptExecCommand(script),
-        };
-
-        runShellCommand(command);
+    public void execScript(List<String> id, String serviceName, String script) {
+        List<String> cmd = composeCommandWithFiles(id);
+        cmd.addAll(Arrays.asList("exec", serviceName, "bash", "-c", scriptExecCommand(script)));
+        runShellCommand(cmd);
     }
 
-    private void runShellCommand(String[] commands) {
+    private void runShellCommand(List<String> commands) {
 
-        log.info(String.format("Executing command on host OS: `%s`", Arrays.toString(commands)));
+        log.info(String.format("Executing command on host OS: `%s`", commands));
 
         try {
-            Process process = Runtime.getRuntime().exec(commands);
+            Process process = Runtime.getRuntime().exec(commands.toArray(new String[0]));
 
             /**
              * Output
@@ -128,19 +120,30 @@ public class DockerComposeExecutor extends AbstractDockerBasedEnvironment {
             log.info(String.format("Process exit value: %d", exitVal));
 
             if (process == null || exitVal != 0) {
-                log.severe(String.format("`%s` did not return 0", Arrays.toString(commands)));
+                log.severe(String.format("`%s` did not return 0", commands));
                 log.severe("-------- stderr ");
                 log.severe(new BufferedReader(new InputStreamReader(process.getErrorStream())).lines().collect(Collectors.joining("\n")));
                 log.severe("-------- /stderr ");
-                throw new EnvironmentException(Arrays.toString(commands) + " did not return 0, actual = " +
+                throw new EnvironmentException(commands + " did not return 0, actual = " +
                         (process != null ? process.exitValue(): ""));
             }
 
         } catch (IOException | InterruptedException ex) {
-            System.out.println(String.format("Could not run: %s", Arrays.toString(commands)));
-            throw new EnvironmentException("Could not run: " + Arrays.toString(commands), ex);
+            log.severe(String.format("Could not run: %s", commands));
+            throw new EnvironmentException("Could not run: " + commands, ex);
         }
 
-        log.info(String.format("Command `%s`, successfully executed", Arrays.toString(commands)));
+        log.info(String.format("Command `%s`, successfully executed", commands));
+    }
+
+    private List<String> composeCommandWithFiles(List<String> composeFiles) {
+        List<String> composeCmdWithArgs = new ArrayList<>(composeFiles.size()*2 + 1);
+        composeCmdWithArgs.add("docker-compose");
+
+        for (String composeFile: composeFiles) {
+            composeCmdWithArgs.add("-f");
+            composeCmdWithArgs.add(scenarioDirectory + File.separator + composeFile);
+        }
+        return composeCmdWithArgs;
     }
 }
