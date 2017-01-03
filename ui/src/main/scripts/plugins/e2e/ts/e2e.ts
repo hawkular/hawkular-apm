@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -163,11 +163,14 @@ module E2E {
 
       // Table sorting
       $scope.sortKey = 'timestamp';
-      $scope.reverse = false;
+      $scope.reverse = true;
 
       $scope.sort = function(keyname) {
-        $scope.sortKey = keyname; // set the sortKey to the param passed
-        $scope.reverse = !$scope.reverse; // if true make it false and vice versa
+        if ($scope.sortKey === keyname) {
+          $scope.reverse = !$scope.reverse; // if true make it false and vice versa
+        } else {
+          $scope.sortKey = keyname; // set the sortKey to the param passed
+        }
       };
 
       $scope.durationRange = function (entry) {
