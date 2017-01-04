@@ -32,15 +32,12 @@ import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.config.txn.TransactionConfig;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.hawkular.apm.api.model.trace.Trace;
 
 /**
@@ -259,8 +256,6 @@ public class ProcessorManager {
         private boolean usesHeaders = false;
         private boolean usesContent = false;
 
-        private List<Issue> issues;
-
         /**
          * This constructor is initialised with the processor.
          *
@@ -299,16 +294,6 @@ public class ProcessorManager {
                     log.log(Level.FINE, "Failed to initialise processor predicate '"
                             + processor.getPredicate() + "'", t);
                 }
-
-                ProcessorIssue pi = new ProcessorIssue();
-                pi.setProcessor(processor.getDescription());
-                pi.setSeverity(Severity.Error);
-                pi.setDescription(t.getMessage());
-
-                if (issues == null) {
-                    issues = new ArrayList<Issue>();
-                }
-                issues.add(pi);
             }
 
             for (int i = 0; i < processor.getActions().size(); i++) {

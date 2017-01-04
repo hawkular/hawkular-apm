@@ -24,8 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.apm.api.internal.actions.ExpressionBasedActionHandler;
-import org.hawkular.apm.api.internal.actions.SetPropertyActionHandler;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Filter;
@@ -83,16 +81,11 @@ public class AbstractConfigurationServiceTest {
         processor.getActions().add(action);
 
         List<ConfigMessage> messages = cs.validateTransaction(config);
-
-        assertNotNull(messages);
         assertEquals(2, messages.size());
-
         assertEquals(processor.getDescription(), messages.get(0).getProcessor());
         assertEquals(processor.getDescription(), messages.get(1).getProcessor());
         assertEquals(action.getDescription(), messages.get(0).getAction());
         assertEquals(action.getDescription(), messages.get(1).getAction());
-        assertEquals(SetPropertyActionHandler.NAME_MUST_BE_SPECIFIED, messages.get(0).getMessage());
-        assertEquals(ExpressionBasedActionHandler.EXPRESSION_HAS_NOT_BEEN_DEFINED, messages.get(1).getMessage());
     }
 
     public class TestConfigurationService extends AbstractConfigurationService {
