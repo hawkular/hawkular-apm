@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,6 +67,7 @@ import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
@@ -229,6 +230,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, criteria.getMaxResponseSize());
+        request.addSort(ElasticsearchUtil.TIMESTAMP_FIELD, SortOrder.DESC);
         SearchResponse response = getSearchResponse(request);
         if (response.isTimedOut()) {
             return null;

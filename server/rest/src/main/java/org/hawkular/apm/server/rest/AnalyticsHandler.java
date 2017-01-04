@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -162,7 +162,8 @@ public class AnalyticsHandler extends BaseHandler {
 
     @GET
     @Path("trace/completion/times")
-    @ApiOperation(value = "Get the trace completion times associated with criteria", response = List.class)
+    @ApiOperation(value = "Get the trace completion times associated with criteria (in descending time order)",
+        response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
