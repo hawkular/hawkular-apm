@@ -171,7 +171,7 @@ public class NodeDetailsDeriverTest {
     }
 
     @Test
-    public void testCalculateElapsedTimeSync() throws RetryAttemptException {
+    public void testCalculateActualTimeSync() throws RetryAttemptException {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
         Consumer consumer = new Consumer();
@@ -188,11 +188,11 @@ public class NodeDetailsDeriverTest {
         component2.setDuration(200);
         consumer.getNodes().add(component2);
 
-        assertEquals(400, deriver.calculateChildElapsedTime(consumer));
+        assertEquals(100, deriver.calculateActualTime(consumer));
     }
 
     @Test
-    public void testCalculateElapsedTimeForkJoin() throws RetryAttemptException {
+    public void testCalculateActualTimeForkJoin() throws RetryAttemptException {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
         Consumer consumer = new Consumer();
@@ -209,11 +209,11 @@ public class NodeDetailsDeriverTest {
         component2.setDuration(300);
         consumer.getNodes().add(component2);
 
-        assertEquals(300, deriver.calculateChildElapsedTime(consumer));
+        assertEquals(200, deriver.calculateActualTime(consumer));
     }
 
     @Test
-    public void testCalculateElapsedTimeAsync() throws RetryAttemptException {
+    public void testCalculateActualTimeAsync() throws RetryAttemptException {
         NodeDetailsDeriver deriver = new NodeDetailsDeriver();
 
         Consumer consumer = new Consumer();
@@ -230,7 +230,7 @@ public class NodeDetailsDeriverTest {
         component2.setDuration(700);
         consumer.getNodes().add(component2);
 
-        assertEquals(0, deriver.calculateChildElapsedTime(consumer));
+        assertEquals(consumer.getDuration(), deriver.calculateActualTime(consumer));
     }
 
 }

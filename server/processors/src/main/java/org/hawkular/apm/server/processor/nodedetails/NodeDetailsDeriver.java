@@ -105,7 +105,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 nd.setCorrelationIds(n.getCorrelationIds());
                 nd.setElapsed(n.getDuration());
 
-                nd.setActual(n.getDuration() - calculateChildElapsedTime(n));
+                nd.setActual(calculateActualTime(n));
 
                 if (n.getType() == NodeType.Component) {
                     nd.setComponentType(((Component) n).getComponentType());
@@ -160,21 +160,19 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
     }
 
     /**
-     * This method calculates the elapsed time associated with the child nodes of the
-     * supplied parent node. If the supplied node is not a parent, or if the child nodes are
-     * performed concurrently and therefore not impacting the time spent in the parent node
-     * then this method will return an elapsed time of 0.
+     * This method calculates the actual time associated with the
+     * supplied node.
      *
-     * @param n The parent node
-     * @return The elapsed time of the child nodes
+     * @param n The node
+     * @return The actual time spent in the node
      */
-    protected long calculateChildElapsedTime(Node n) {
+    protected long calculateActualTime(Node n) {
         long childElapsed = 0;
         if (n.containerNode()) {
             long startTime=n.getTimestamp() + n.getDuration();
             long endTime = n.getTimestamp();
-            for (int j = 0; j < ((ContainerNode) n).getNodes().size(); j++) {
-                Node child = ((ContainerNode) n).getNodes().get(j);
+            for (int i = 0; i < ((ContainerNode) n).getNodes().size(); i++) {
+                Node child = ((ContainerNode) n).getNodes().get(i);
                 if (child.getTimestamp() < startTime) {
                     startTime = child.getTimestamp();
                 }
@@ -196,6 +194,6 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 }
             }
         }
-        return childElapsed;
+        return n.getDuration() - childElapsed;
     }
 }
