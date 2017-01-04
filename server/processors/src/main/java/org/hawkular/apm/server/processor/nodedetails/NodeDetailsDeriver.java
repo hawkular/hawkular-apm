@@ -105,13 +105,7 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                 nd.setCorrelationIds(n.getCorrelationIds());
                 nd.setElapsed(n.getDuration());
 
-                long childElapsed = 0;
-                if (n.containerNode()) {
-                    for (int j = 0; j < ((ContainerNode) n).getNodes().size(); j++) {
-                        childElapsed += ((ContainerNode) n).getNodes().get(j).getDuration();
-                    }
-                }
-                nd.setActual(n.getDuration() - childElapsed);
+                nd.setActual(n.getDuration() - calculateChildElapsedTime(n));
 
                 if (n.getType() == NodeType.Component) {
                     nd.setComponentType(((Component) n).getComponentType());
@@ -163,5 +157,45 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
         commonProperties.addAll(trace.getProperties(Constants.PROP_BUILD_STAMP));
         commonProperties.addAll(trace.getProperties(Constants.PROP_PRINCIPAL));
         return commonProperties;
+    }
+
+    /**
+     * This method calculates the elapsed time associated with the child nodes of the
+     * supplied parent node. If the supplied node is not a parent, or if the child nodes are
+     * performed concurrently and therefore not impacting the time spent in the parent node
+     * then this method will return an elapsed time of 0.
+     *
+     * @param n The parent node
+     * @return The elapsed time of the child nodes
+     */
+    protected long calculateChildElapsedTime(Node n) {
+        long childElapsed = 0;
+        if (n.containerNode()) {
+            long startTime=n.getTimestamp() + n.getDuration();
+            long endTime = n.getTimestamp();
+            for (int j = 0; j < ((ContainerNode) n).getNodes().size(); j++) {
+                Node child = ((ContainerNode) n).getNodes().get(j);
+                if (child.getTimestamp() < startTime) {
+                    startTime = child.getTimestamp();
+                }
+                if (endTime < (child.getTimestamp() + child.getDuration())) {
+                    endTime = child.getTimestamp() + child.getDuration();
+                }
+                childElapsed += child.getDuration();
+            }
+            // Check if child accumulated elapsed time is greater than parent duration
+            // indicating that some/all of the children were concurrently performed.
+            if (childElapsed > n.getDuration()) {
+                // Set child elapsed time to zero, so parent time
+                childElapsed = endTime - startTime;
+                if (childElapsed < 0 || childElapsed > n.getDuration()) {
+                    // If child durations are greater than the parent, then
+                    // just set actual time to same as parent (i.e. so child
+                    // elapsed is considered as 0).
+                    childElapsed = 0;
+                }
+            }
+        }
+        return childElapsed;
     }
 }

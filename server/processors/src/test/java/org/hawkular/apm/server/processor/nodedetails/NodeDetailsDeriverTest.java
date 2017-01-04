@@ -170,4 +170,67 @@ public class NodeDetailsDeriverTest {
         assertFalse(details.get(1).isInitial());
     }
 
+    @Test
+    public void testCalculateElapsedTimeSync() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1100);
+        component1.setDuration(200);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.setTimestamp(1300);
+        component2.setDuration(200);
+        consumer.getNodes().add(component2);
+
+        assertEquals(400, deriver.calculateChildElapsedTime(consumer));
+    }
+
+    @Test
+    public void testCalculateElapsedTimeForkJoin() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1100);
+        component1.setDuration(250);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.setTimestamp(1100);
+        component2.setDuration(300);
+        consumer.getNodes().add(component2);
+
+        assertEquals(300, deriver.calculateChildElapsedTime(consumer));
+    }
+
+    @Test
+    public void testCalculateElapsedTimeAsync() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1100);
+        component1.setDuration(550);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.setTimestamp(1100);
+        component2.setDuration(700);
+        consumer.getNodes().add(component2);
+
+        assertEquals(0, deriver.calculateChildElapsedTime(consumer));
+    }
+
 }
