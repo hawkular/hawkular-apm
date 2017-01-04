@@ -160,11 +160,6 @@ public abstract class ProcessorActionHandler {
     public boolean process(Trace trace, Node node, Direction direction,
             Map<String, ?> headers, Object[] values) {
 
-        // Associate any initialisation issues with the node
-        if (issues != null) {
-            node.getIssues().addAll(issues);
-        }
-
         if (predicate != null) {
             return predicate.test(trace, node, direction, headers, values);
         }

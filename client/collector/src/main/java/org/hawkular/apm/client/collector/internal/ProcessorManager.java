@@ -437,12 +437,6 @@ public class ProcessorManager {
                     return;
                 }
 
-                // Associate any issues created during initialisation with
-                // the node
-                if (issues != null) {
-                    node.getIssues().addAll(issues);
-                }
-
                 if (predicateHandler != null) {
                     try {
                         if (!predicateHandler.test(trace, node, direction, headers, values)) {
@@ -452,12 +446,7 @@ public class ProcessorManager {
                             return;
                         }
                     } catch (Throwable t) {
-                        ProcessorIssue pi = new ProcessorIssue();
-                        pi.setProcessor(processor.getDescription());
-                        pi.setSeverity(Severity.Error);
-                        pi.setDescription(t.getMessage());
-                        node.getIssues().add(pi);
-
+                        log.severe(processor.getDescription(), t);
                         return;
                     }
                 }
@@ -566,12 +555,7 @@ public class ProcessorManager {
             try {
                 handler.process(trace, node, direction, headers, values);
             } catch (Throwable t) {
-                ProcessorIssue pi = new ProcessorIssue();
-                pi.setProcessor(processorDescription);
-                pi.setAction(actionDescription);
-                pi.setSeverity(Severity.Error);
-                pi.setDescription(t.getMessage());
-                node.getIssues().add(pi);
+                log.severe(processorDescription + ":" + actionDescription, t);
             }
         }
     }

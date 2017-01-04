@@ -94,8 +94,7 @@ public class Component extends InteractionNode {
                 + ", getNodes()=" + getNodes() + ", getType()=" + getType() + ", getUri()=" + getUri()
                 + ", getOperation()=" + getOperation() + ", getTimestamp()=" + getTimestamp() + ", getDuration()="
                 + getDuration() + ", getProperties()=" + getProperties()
-                + ", getCorrelationIds()=" + getCorrelationIds() + ", getIssues()="
-                + getIssues() + "]";
+                + ", getCorrelationIds()=" + getCorrelationIds() + "]";
     }
 
 }
