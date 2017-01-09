@@ -3,7 +3,7 @@
   <div class="card-pf dt-card" ng-class="{ 'no-sidebar': hideSidebar }">
     <div class="card-pf-body">
       <form class="form-horizontal form-inline row">
-        <div class="form-group col-md-5">
+        <div class="form-group col-md-5 col-xs-7">
           <label class="control-label col-md-3" for="rootnode">Initial Endpoint </label>
           <div class="col-md-9">
             <select pf-select="{noneSelectedText: 'No Nodes Available' }" class="form-control" id="rootnode"
@@ -13,7 +13,7 @@
             </select>
           </div>
         </div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-3 col-xs-4">
           <button class="btn btn-default" ng-click="showInstanceDetails()" ng-disabled="instanceCount === 0">Show {{ instanceCount }} Instance(s) Details</button>
         </div>
         <div class="form-group pull-right">

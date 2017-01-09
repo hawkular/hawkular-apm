@@ -124,7 +124,7 @@ module FilterSidebar {
       }
 
       if (scope.fsb.showProps) {
-        scope.$watch('selPropName', (newValue, oldValue) => {
+        $rootScope.$watch('sbFilter.selPropName', (newValue, oldValue) => {
           if (newValue && newValue !== oldValue) {
             this.updatePropertyValues(newValue);
           }

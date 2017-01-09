@@ -2571,6 +2571,25 @@ body {
   position: relative;
 }
 
+
+#main {
+  @media (max-width: @screen-xs-max) {
+    margin-top: 7em;
+  }
+}
+
+.hk-sidebar-xs {
+  display: none;
+
+  @media (max-width: @screen-xs-max) {
+    display: block;
+  }
+
+  .panel {
+    border: 1px solid #bbb;
+  }
+}
+
 .hk-sidebar {
   background-color: white;
   bottom: 0;
