@@ -80,6 +80,17 @@ th {
             height: calc(~"100vh - 220px");
         }
     }
+
+    @media (max-width: @screen-xs-max) {
+        position: static;
+        top: auto;
+        width: inherit;
+        margin-top: 0;
+
+        .card-pf-body {
+            position: static;
+        }
+    }
 }
 
 .dt-card.no-sidebar {

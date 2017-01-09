@@ -1,3 +1,4 @@
+<div>
 <div class="hk-sidebar" ng-class="{ 'hk-sidebar-collapsed': hideSidebar }">
   <div>
     <div class="pull-right" ng-click="hideSidebar = !hideSidebar">
@@ -76,27 +77,26 @@
         <div class="sb-prop-input">
           <div class="input-group">
             <span class="input-group-addon">Name</span>
-            <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="selPropName"
-              ng-change="getPropertyValues(selPropName)"></select>
+            <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="$root.sbFilter.selPropName"></select>
           </div>
           <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
             ng-model="$root.testFilter">
           </select-->
-          <div ng-show="selPropName" class="hk-properties-value">
+          <div ng-show="$root.sbFilter.selPropName" class="hk-properties-value">
             <label> Value </label>
             <div class="input-group">
               <!-- <span class="input-group-addon">Value</span> -->
               <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
-                ng-model="selPropValue" ng-model-options="{ updateOn: 'default blur' }"
-                placeholder="Type '{{selPropName.name}}' value" typeahead-editable="false"
+                ng-model="$root.sbFilter.selPropValue" ng-model-options="{ updateOn: 'default blur' }"
+                placeholder="Type '{{$root.sbFilter.selPropName.name}}' value" typeahead-editable="false"
                 typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" />
               <div class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
-                  ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HAS')">
+                <button type="button" class="btn btn-default" ng-disabled="!$root.sbFilter.selPropValue"
+                  ng-click="addPropertyToFilter($root.sbFilter.selPropName.name, $root.sbFilter.selPropValue, 'HAS')">
                   <i class="fa fa-plus sb-prop-incexc"></i>
                 </button>
-                <button type="button" class="btn btn-default" ng-disabled="!selPropValue"
-                  ng-click="addPropertyToFilter(selPropName.name, selPropValue, 'HASNOT')">
+                <button type="button" class="btn btn-default" ng-disabled="!$root.sbFilter.selPropValue"
+                  ng-click="addPropertyToFilter($root.sbFilter.selPropName.name, $root.sbFilter.selPropValue, 'HASNOT')">
                   <i class="fa fa-minus sb-prop-incexc"></i>
                 </button>
               </div>
@@ -120,4 +120,123 @@
     </div>
 
   </div>
+</div>
+
+<div class="hk-sidebar-xs">
+  <div><h4>Filter by</h4></div>
+  <uib-accordion  close-others="true">
+    <uib-accordion-group is-open="false" ng-show="fsb.showTime">
+      <uib-accordion-heading>
+        Time Span <span class="pull-right">{{(timeSpans|filter:$root.sbFilter.timeSpan:true)[0].text}}</span>
+      </uib-accordion-heading>
+      <select pf-select class="form-control" id="timeSpanField" ng-options="t.time as t.text for t in timeSpans"
+        ng-model="$root.sbFilter.timeSpan">
+      </select>
+      <div ng-show="$root.sbFilter.timeSpan === ''">
+        <hr style="margin: 5px">
+
+        <div>
+          <div class="input-group input-group-sm date" options="startDTOptions"
+            datetime-picker max-date="$root.sbFilter.customEndTime" ng-model="$root.sbFilter.customStartTime" style="display: table;">
+            <span class="input-group-addon">From</span>
+            <input type="text" class="form-control" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+        <div>
+          <div class="input-group input-group-sm date" options="endDTOptions"
+            datetime-picker min-date="$root.sbFilter.customStartTime" ng-model="$root.sbFilter.customEndTime" style="display: table;">
+            <span class="input-group-addon" style="width: 40px;">To</span>
+            <input type="text" class="form-control" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </uib-accordion-group>
+
+    <uib-accordion-group is-open="false" ng-show="fsb.showBtxns">
+      <uib-accordion-heading>
+        Transaction <span class="pull-right">{{ $root.sbFilter.criteria.transaction || "All" }}</span>
+      </uib-accordion-heading>
+      <div collapse="showSearchBtxn">
+        <div class="radio">
+          <label><input type="radio" name="txn-msb" ng-model="$root.sbFilter.criteria.transaction" value="" checked> All </label>
+        </div>
+        <div class="radio" ng-repeat="txn in $root.sbFilter.data.transactions">
+          <label><input type="radio" name="txn-msb" ng-model="$root.sbFilter.criteria.transaction" value="{{txn}}"> {{txn}} </label>
+        </div>
+      </div>
+    </uib-accordion-group>
+
+    <uib-accordion-group is-open="false" ng-show="fsb.showProps">
+      <uib-accordion-heading>
+        Properties <span class="pull-right">Inc. {{ ($root.sbFilter.criteria.properties|filter:{"operator":"HAS"}:true).length }} / Exc. {{ ($root.sbFilter.criteria.properties|filter:{"operator":"HASNOT"}:true).length }}</span>
+      </uib-accordion-heading>
+      <ul ng-repeat="(type, value) in $root.sbFilter.criteria.properties | groupBy: 'name'" class="fa-ul">
+        <label class="sb-prop-title">{{ type }}</label>
+        <li class="sb-prop" ng-repeat="prop in value" ng-click="toggleExcludeInclude(prop)">
+          <span class="hk-cursor-pointer">
+            <i class="fa-li fa" aria-hidden="true"
+              ng-class="prop.operator === 'HASNOT' ? 'fa-minus-square sb-toggle-exc' : 'fa-plus-square sb-toggle-inc'"></i>
+          </span>
+          {{ prop.value }}
+          <span class="hk-cursor-pointer pull-right sb-prop-remove" ng-click="remPropertyFromFilter(prop)">
+            <i class="fa fa-remove"></i>
+          </span>
+        </li>
+      </ul>
+      <hr class="sb-prop-hr" ng-show="$root.sbFilter.criteria.properties.length">
+      <div class="sb-prop-input">
+        <div class="input-group" style="display: table;">
+          <span class="input-group-addon">Name</span>
+          <select class="form-control" ng-options="p.name for p in $root.sbFilter.data.properties track by p.name" ng-model="$root.sbFilter.selPropName"></select>
+        </div>
+        <!--select pf-select class="form-control" id="timeSpanField" ng-options="p.name for p in properties track by p.name"
+          ng-model="$root.testFilter">
+        </select-->
+        <div ng-show="$root.sbFilter.selPropName" class="hk-properties-value">
+          <label> Value </label>
+          <div class="input-group" style="display: table; width: 100%;">
+            <!-- <span class="input-group-addon">Value</span> -->
+            <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
+              ng-model="$root.sbFilter.selPropValue" ng-model-options="{ updateOn: 'default blur' }"
+              placeholder="Type '{{$root.sbFilter.selPropName.name}}' value" typeahead-editable="false"
+              typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" style="width: calc(100% - 45px);" />
+            <div class="input-group-btn" style="clear: initial;">
+              <button type="button" class="btn btn-default" ng-disabled="!$root.sbFilter.selPropValue"
+                ng-click="addPropertyToFilter($root.sbFilter.selPropName.name, $root.sbFilter.selPropValue, 'HAS')">
+                <i class="fa fa-plus sb-prop-incexc"></i>
+              </button>
+              <button type="button" class="btn btn-default" ng-disabled="!$root.sbFilter.selPropValue"
+                ng-click="addPropertyToFilter($root.sbFilter.selPropName.name, $root.sbFilter.selPropValue, 'HASNOT')">
+                <i class="fa fa-minus sb-prop-incexc"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </uib-accordion-group>
+    <uib-accordion-group is-open="false" ng-if="fsb.showText">
+      <uib-accordion-heading>
+        Text <span class="pull-right">{{ $root.sbFilter.search | limitTo: 20 }}<span ng-show="$root.sbFilter.search.length > 20">...</span></span>
+      </uib-accordion-heading>
+      <input type="text" class="form-control" placeholder="Contains text" ng-model="$root.sbFilter.search"/>
+    </uib-accordion-group>
+    <uib-accordion-group is-open="false" ng-if="fsb.showHosts">
+      <uib-accordion-heading>
+        Host Name <span class="pull-right">{{ $root.sbFilter.criteria.hostName | limitTo: 20 }}<span ng-show="$root.sbFilter.search.length > 20">...</span></span>
+      </uib-accordion-heading>
+      <div class="hk-filter-v-block" ng-class="{'has-error': invalidHostname}">
+        <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
+         ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
+         placeholder="Enter a host name" typeahead-editable="false" typeahead-min-length="0"
+         typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" typeahead-no-results="invalidHostname" />
+      </div>
+    </uib-accordion-group>
+  </uib-accordion>
+</div>
 </div>
