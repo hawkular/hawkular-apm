@@ -162,7 +162,8 @@ public class AnalyticsHandler extends BaseHandler {
 
     @GET
     @Path("trace/completion/times")
-    @ApiOperation(value = "Get the trace completion times associated with criteria", response = List.class)
+    @ApiOperation(value = "Get the trace completion times associated with criteria (in descending time order)",
+        response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
