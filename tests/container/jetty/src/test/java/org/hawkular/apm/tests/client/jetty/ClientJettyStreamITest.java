@@ -202,9 +202,7 @@ public class ClientJettyStreamITest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(path, testProducer.getUri());
-        assertEquals("ConnectException", producers.get(0).getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-        assertEquals("Connection refused", producers.get(0).getProperties(Constants.PROP_FAULT_DESCRIPTION)
-                .iterator().next().getValue());
+        assertEquals("Connection refused", producers.get(0).getProperties(Constants.PROP_FAULT).iterator().next().getValue());
     }
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,

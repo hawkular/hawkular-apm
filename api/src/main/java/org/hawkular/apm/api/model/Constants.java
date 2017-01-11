@@ -72,12 +72,6 @@ public class Constants {
     public static final String PROP_FAULT_CODE = "fault.code";
 
     /**
-     * Property key representing the fault description
-     * {@link org.hawkular.apm.api.model.Property#name}
-     */
-    public static final String PROP_FAULT_DESCRIPTION = "fault.description";
-
-    /**
      * Property key representing the database statement
      * {@link org.hawkular.apm.api.model.Property#name}
      */

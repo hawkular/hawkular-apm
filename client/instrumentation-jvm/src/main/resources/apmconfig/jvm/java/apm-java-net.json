@@ -80,10 +80,6 @@
         },{
           "type": "SetProperty",
           "name": "fault",
-          "valueExpression": "simpleClassName($^)"
-        },{
-          "type": "SetProperty",
-          "name": "fault.description",
           "valueExpression": "$^.getMessage()"
         },{
           "type": "InstrumentProducer",
