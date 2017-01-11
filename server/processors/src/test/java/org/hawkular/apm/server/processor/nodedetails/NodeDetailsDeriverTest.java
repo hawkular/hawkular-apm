@@ -170,4 +170,83 @@ public class NodeDetailsDeriverTest {
         assertFalse(details.get(1).isInitial());
     }
 
+    @Test
+    public void testCalculateActualTimeSync() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1100);
+        component1.setDuration(200);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.setTimestamp(1300);
+        component2.setDuration(200);
+        consumer.getNodes().add(component2);
+
+        assertEquals(100, deriver.calculateActualTime(consumer));
+    }
+
+    @Test
+    public void testCalculateActualTimeForkJoin() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1100);
+        component1.setDuration(250);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.setTimestamp(1100);
+        component2.setDuration(300);
+        consumer.getNodes().add(component2);
+
+        assertEquals(200, deriver.calculateActualTime(consumer));
+    }
+
+    @Test
+    public void testCalculateActualTimeAsync() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1100);
+        component1.setDuration(550);
+        consumer.getNodes().add(component1);
+
+        Component component2 = new Component();
+        component2.setTimestamp(1100);
+        component2.setDuration(700);
+        consumer.getNodes().add(component2);
+
+        assertEquals(consumer.getDuration(), deriver.calculateActualTime(consumer));
+    }
+
+    @Test
+    public void testCalculateActualTimeAsync2() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1200);
+        component1.setDuration(400);
+        consumer.getNodes().add(component1);
+
+        assertEquals(consumer.getDuration(), deriver.calculateActualTime(consumer));
+    }
+
 }
