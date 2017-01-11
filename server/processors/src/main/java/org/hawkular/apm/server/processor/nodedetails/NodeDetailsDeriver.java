@@ -192,6 +192,9 @@ public class NodeDetailsDeriver extends AbstractProcessor<Trace, NodeDetails> {
                     // elapsed is considered as 0).
                     childElapsed = 0;
                 }
+            } else if (endTime > n.getTimestamp() + n.getDuration()) {
+                // Child end time after parent end time, so must be async
+                childElapsed = 0;
             }
         }
         return n.getDuration() - childElapsed;

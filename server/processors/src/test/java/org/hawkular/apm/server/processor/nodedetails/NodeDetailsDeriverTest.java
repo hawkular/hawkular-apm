@@ -233,4 +233,20 @@ public class NodeDetailsDeriverTest {
         assertEquals(consumer.getDuration(), deriver.calculateActualTime(consumer));
     }
 
+    @Test
+    public void testCalculateActualTimeAsync2() throws RetryAttemptException {
+        NodeDetailsDeriver deriver = new NodeDetailsDeriver();
+
+        Consumer consumer = new Consumer();
+        consumer.setTimestamp(1000);
+        consumer.setDuration(500);
+
+        Component component1 = new Component();
+        component1.setTimestamp(1200);
+        component1.setDuration(400);
+        consumer.getNodes().add(component1);
+
+        assertEquals(consumer.getDuration(), deriver.calculateActualTime(consumer));
+    }
+
 }
