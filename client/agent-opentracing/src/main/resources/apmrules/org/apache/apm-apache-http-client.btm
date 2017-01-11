@@ -13,7 +13,7 @@ DO
   		.withTag("http.query", uri.getQuery()),
   		getSpan());
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.apache.HttpMessageInjectAdapter($2));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpMessageInjectAdapter($2));
 ENDRULE
 
 RULE org.apache.http.client(2) Apache HttpClient Producer Sync Response Check Fault

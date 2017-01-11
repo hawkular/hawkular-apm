@@ -7,7 +7,7 @@ AT ENTRY
 BIND req : javax.servlet.http.HttpServletRequest = $1;
      uri : java.net.URI = java.net.URI.create(req.getRequestURI());
      spanCtx:SpanContext = getTracer().extract(textMapFormat(),
-  		new org.hawkular.apm.agent.opentracing.propagation.jax.HttpServletRequestExtractAdapter($1));
+  		new org.hawkular.apm.agent.opentracing.propagation.HttpServletRequestExtractAdapter($1));
 IF includePath(uri.getPath())
 DO
   startSpanWithContext(getTracer().buildSpan(req.getMethod())

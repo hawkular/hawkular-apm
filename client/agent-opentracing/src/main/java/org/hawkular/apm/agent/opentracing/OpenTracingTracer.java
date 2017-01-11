@@ -44,6 +44,8 @@ public class OpenTracingTracer {
                 tracer = tracers.next();
                 if (tracers.hasNext()) {
                     log.severe("Multiple tracers found, selected: " + tracer);
+                } else {
+                    log.fine("Tracer: " + tracer);
                 }
             }
         }
