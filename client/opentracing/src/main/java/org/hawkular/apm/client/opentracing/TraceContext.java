@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hawkular.apm.api.logging.Logger;
+import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.config.ReportingLevel;
@@ -123,6 +124,9 @@ public class TraceContext {
             }
 
             if (sampled) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Record trace: " + trace);
+                }
                 recorder.record(trace);
             }
         }

@@ -120,6 +120,10 @@ public class OpenTracingManager extends Helper {
      * @param id The optional id to associate with the span
      */
     public void startSpanWithParent(SpanBuilder spanBuilder, Span parent, String id) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Start span as child of span = " + parent);
+        }
+
         if (parent != null) {
             spanBuilder.asChildOf(parent.context());
         }
@@ -151,6 +155,10 @@ public class OpenTracingManager extends Helper {
      * @param id The optional id to associate with the span
      */
     public void startSpanWithContext(SpanBuilder spanBuilder, SpanContext context, String id) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Start span as child of context = " + context);
+        }
+
         if (context != null) {
             spanBuilder.asChildOf(context);
         }
@@ -188,6 +196,10 @@ public class OpenTracingManager extends Helper {
     protected void doStartSpanWithParent(SpanBuilder spanBuilder, String id) {
         Span parentSpan = getSpan();
 
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Start span as child of = " + parentSpan);
+        }
+
         if (parentSpan != null) {
             spanBuilder.asChildOf(parentSpan);
         }
@@ -203,14 +215,14 @@ public class OpenTracingManager extends Helper {
             traceState.set(ts);
 
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Create trace state = " + ts);
+                log.finest("Created trace state = " + ts);
             }
         }
 
         Span span = spanBuilder.start();
 
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Start span = " + span + " id = " + id + " trace state = " + ts);
+            log.finest("Started span = " + span + " id = " + id + " trace state = " + ts);
         }
 
         ts.pushSpan(span, id);
@@ -286,9 +298,6 @@ public class OpenTracingManager extends Helper {
             return span;
         }
 
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest("Get span requested, but no trace state");
-        }
         return null;
     }
 
@@ -457,6 +466,33 @@ public class OpenTracingManager extends Helper {
         } else if (log.isLoggable(Level.FINEST)) {
             log.finest("Set variable '" + name + "' value = " + value + "' requested, but no trace state");
         }
+    }
+
+    /**
+     * This method removes the end part of a string beginning
+     * at a specified delimiter.
+     *
+     * @param original The original string
+     * @param delim The delimiter identifying the point to truncate
+     * @return The modified string
+     */
+    public String truncateAtDelimiter(String original, String delim) {
+        int index = original.indexOf(delim);
+        if (index != -1) {
+            return original.substring(0, index);
+        }
+        return original;
+    }
+
+    /**
+     * This method returns the simple class name of the supplied
+     * object.
+     *
+     * @param obj The object
+     * @return The simple class name
+     */
+    public String simpleClassName(Object obj) {
+        return obj.getClass().getSimpleName();
     }
 
     /**

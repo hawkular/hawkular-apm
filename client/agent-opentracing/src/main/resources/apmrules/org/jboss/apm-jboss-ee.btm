@@ -1,0 +1,23 @@
+# Exclude 'onMessage' method as will conflict with instrumentation of JMS/MDB
+
+RULE org.jboss.ee(1) EE Component Start
+CLASS org.jboss.as.ee.component.ProxyInvocationHandler
+METHOD invoke(Object,Method,Object[])
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF !$2.getName().equals("onMessage")
+DO
+  startSpanWithParent(getTracer().buildSpan($2.getName())
+  		.withTag("EJB.uri", truncateAtDelimiter(simpleClassName($1),"$$$")),
+  		getSpan());
+ENDRULE
+
+RULE org.jboss.ee(1) EE Component Finish
+CLASS org.jboss.as.ee.component.ProxyInvocationHandler
+METHOD invoke(Object,Method,Object[])
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF !$2.getName().equals("onMessage") && hasSpan()
+DO
+  finishSpan();
+ENDRULE
