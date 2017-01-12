@@ -43,6 +43,8 @@ import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
+import io.opentracing.tag.Tags;
+
 /**
  * @author gbrown
  */
@@ -162,8 +164,7 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
         }
 
         if (fault) {
-            assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE)
+            assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey())
                     .iterator().next().getValue());
         }
     }

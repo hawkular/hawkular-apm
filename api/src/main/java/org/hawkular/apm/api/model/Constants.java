@@ -60,16 +60,14 @@ public class Constants {
     public static final String PROP_PRINCIPAL = "principal";
 
     /**
-     * Property key representing the fault
+     * Property key representing the fault. A 'fault' will represent
+     * the non-normal result of a call to a business service. For example,
+     * if requesting a user's account, then a fault may be "Account Not Found".
+     * Communication protocol errors will be recorded in protocol specific
+     * tags, such as "http.status_code".
      * {@link org.hawkular.apm.api.model.Property#name}
      */
     public static final String PROP_FAULT = "fault";
-
-    /**
-     * Property key representing the fault code
-     * {@link org.hawkular.apm.api.model.Property#name}
-     */
-    public static final String PROP_FAULT_CODE = "fault.code";
 
     /**
      * Property key representing the database statement

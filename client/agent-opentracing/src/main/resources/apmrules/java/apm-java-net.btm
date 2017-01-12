@@ -55,8 +55,7 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXCEPTION EXIT
 IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
-  getSpan().setTag("fault.code", String.valueOf($0.responseCode))
-    .setTag("fault", $0.responseMessage);
+  getSpan().setTag("http.status_code", String.valueOf($0.responseCode));
   finishSpan();
 ENDRULE
 
@@ -69,8 +68,7 @@ AT EXIT
 IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 		&& $0.responseCode >= 400
 DO
-  getSpan().setTag("fault.code", String.valueOf($0.responseCode))
-    .setTag("fault", $0.responseMessage);
+  getSpan().setTag("http.status_code", String.valueOf($0.responseCode));
 ENDRULE
 
 RULE java.net(6) Java HttpUrlConnection getResponseCode End
