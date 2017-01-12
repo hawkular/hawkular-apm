@@ -46,6 +46,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.opentracing.tag.Tags;
+
 /**
  * @author gbrown
  */
@@ -205,9 +207,8 @@ public class JavaxServletAsyncServerITest extends ClientTestBase {
         assertEquals(method, testConsumer.getOperation());
 
         if (fault) {
-            assertEquals("Unauthorized", testConsumer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
             assertEquals("401",
-                    testConsumer.getProperties(Constants.PROP_FAULT_CODE).iterator().next().getValue());
+                    testConsumer.getProperties(Tags.HTTP_STATUS.getKey()).iterator().next().getValue());
         }
     }
 

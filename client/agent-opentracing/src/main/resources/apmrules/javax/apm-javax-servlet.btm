@@ -24,8 +24,7 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT ENTRY
 IF hasSpan()
 DO
-  getSpan().setTag("fault.code",String.valueOf($1))
-    .setTag("fault",String.valueOf($1));
+  getSpan().setTag("http.status_code",String.valueOf($1));
 ENDRULE
 
 RULE javax.servlet(3) Javax Servlet Consumer End Sync Fault Code Message
@@ -35,8 +34,7 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT ENTRY
 IF hasSpan()
 DO
-  getSpan().setTag("fault.code",String.valueOf($1))
-    .setTag("fault",$2);
+  getSpan().setTag("http.status_code",String.valueOf($1));
 ENDRULE
 
 RULE javax.servlet(4) Javax Servlet Consumer End Sync

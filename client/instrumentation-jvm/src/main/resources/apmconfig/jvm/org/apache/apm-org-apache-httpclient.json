@@ -102,12 +102,8 @@
         "condition": "isActive() && $1.getStatusCode() >= 400",
         "actions": [{
           "type": "SetProperty",
-          "name": "fault.code",
+          "name": "http.status_code",
           "valueExpression": "$1.getStatusCode()"
-        },{
-          "type": "SetProperty",
-          "name": "fault",
-          "valueExpression": "$1.getReasonPhrase()"
         }]
       },{
         "ruleName": "Apache HttpClient Producer Check Fault Or No Content End",

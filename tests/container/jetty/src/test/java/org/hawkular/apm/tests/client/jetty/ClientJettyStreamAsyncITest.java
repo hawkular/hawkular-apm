@@ -51,6 +51,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.opentracing.tag.Tags;
+
 /**
  * @author gbrown
  */
@@ -252,9 +254,7 @@ public class ClientJettyStreamAsyncITest extends ClientTestBase {
                 testConsumer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         if (fault) {
-            assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
-            assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE)
+            assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey())
                     .iterator().next().getValue());
         } else {
 

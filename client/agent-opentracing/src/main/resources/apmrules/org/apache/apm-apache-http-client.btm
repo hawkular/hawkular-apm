@@ -23,8 +23,7 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
 IF hasSpan() && $!.getStatusLine().getStatusCode() >= 400
 DO
-  getSpan().setTag("fault.code",String.valueOf($!.getStatusLine().getStatusCode()))
-	.setTag("fault",$!.getStatusLine().getReasonPhrase());
+  getSpan().setTag("http.status_code",String.valueOf($!.getStatusLine().getStatusCode()));
 ENDRULE
 
 RULE org.apache.http.client(3) Apache HttpClient Producer Sync Response
