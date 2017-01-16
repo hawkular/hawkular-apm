@@ -104,7 +104,7 @@ public class Event {
 
     public void initTagsFromProperties(Set<Property> properties) {
         if (properties != null && properties.size() > 0) {
-            properties.forEach(p -> {
+            properties.stream().filter(p -> p.getValue() != null).forEach(p -> {
                 String value = getTags().get(p.getName());
                 getTags().put(p.getName(), value == null ? p.getValue()
                         : String.format("%s,%s", value, p.getValue()));
