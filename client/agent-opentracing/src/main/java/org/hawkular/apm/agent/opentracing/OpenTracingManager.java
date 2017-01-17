@@ -414,7 +414,13 @@ public class OpenTracingManager extends Helper {
     public boolean includePath(String path) {
         // Determine if the path is NOT hawkular-apm related and
         // the final part of the path is NOT a filename (with extension)
-        return !path.startsWith("/hawkular/apm") && (path.lastIndexOf('.') <= path.lastIndexOf('/'));
+        if (!path.startsWith("/hawkular/apm") && (path.lastIndexOf('.') <= path.lastIndexOf('/'))) {
+            return true;
+        }
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Path " + path + " skipped");
+        }
+        return false;
     }
 
     /**
