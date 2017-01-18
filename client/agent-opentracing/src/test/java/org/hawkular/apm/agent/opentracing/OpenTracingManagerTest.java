@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.hawkular.apm.api.model.trace.ContainerNode;
 import org.hawkular.apm.api.utils.PropertyUtil;
-import org.hawkular.apm.client.opentracing.APMTracer;
+import org.hawkular.apm.client.opentracing.refactor.HawkularTracer;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class OpenTracingManagerTest {
     public static void initClass() {
         System.setProperty(PropertyUtil.HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL, "2000");
 
-        APMTracer tracer = (APMTracer) OpenTracingTracer.getSingleton();
+        HawkularTracer tracer =  (HawkularTracer) OpenTracingTracer.getSingleton();
         tracer.setTraceRecorder(recorder);
     }
 

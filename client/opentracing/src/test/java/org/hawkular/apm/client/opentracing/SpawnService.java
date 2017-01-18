@@ -28,6 +28,7 @@ import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 import io.opentracing.propagation.TextMapInjectAdapter;
+import io.opentracing.tag.Tags;
 
 /**
  * This service results in two trace instances, the first handling the initial client
@@ -49,17 +50,14 @@ public class SpawnService extends AbstractService {
         // Top level, so create Tracer and root span
         Span serverSpan = getTracer().buildSpan("Server")
                 .asChildOf(spanCtx)
-                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/inbound?orderId=123&verbose=true")
+                .withTag(Tags.HTTP_URL.getKey(), "http://localhost:8080/inbound?orderId=123&verbose=true")
                 .withTag("orderId", "1243343456455")
                 .start();
 
         delay(500);
 
         component1(serverSpan);
-
         serverSpan.finish();
-
-        serverSpan.close();
     }
 
     public void component1(Span span) {
@@ -71,10 +69,7 @@ public class SpawnService extends AbstractService {
             delay(500);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(() -> {
-                component2(component1Span);
-            });
-
+            executor.submit(() -> component2(component1Span));
         }
     }
 
@@ -83,7 +78,7 @@ public class SpawnService extends AbstractService {
         try (Span component2Span = getTracer().buildSpan("Component2")
                 .addReference(References.FOLLOWS_FROM, span.context())
                 .withTag("sql", "INSERT order INTO Orders")
-                .withTag("component", Constants.COMPONENT_DATABASE)
+                .withTag(Tags.COMPONENT.getKey(), Constants.COMPONENT_DATABASE)
                 .start()) {
 
             delay(500);
@@ -96,12 +91,11 @@ public class SpawnService extends AbstractService {
 
     public void callService(Span span) {
         try (Span clientSpan = getTracer().buildSpan("Client")
-                .withTag(Constants.ZIPKIN_BIN_ANNOTATION_HTTP_URL, "http://localhost:8080/outbound")
+                .withTag(Tags.HTTP_URL.getKey(), "http://localhost:8080/outbound")
                 .withTag(Constants.PROP_TRANSACTION_NAME, "AnotherTxnName")     // Should not overwrite the existing name
                 .asChildOf(span).start()) {
-            Message mesg = createMessage();
             getTracer().inject(clientSpan.context(), Format.Builtin.TEXT_MAP,
-                    new TextMapInjectAdapter(mesg.getHeaders()));
+                    new TextMapInjectAdapter(createMessage().getHeaders()));
 
             delay(500);
 

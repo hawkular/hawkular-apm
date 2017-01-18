@@ -36,6 +36,7 @@ import org.hawkular.apm.api.model.trace.Producer;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.EndpointUtil;
 import org.hawkular.apm.client.api.recorder.TraceRecorder;
+import org.hawkular.apm.client.opentracing.refactor.HawkularTracer;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,6 +44,8 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import io.opentracing.Tracer;
 
 /**
  * @author gbrown
@@ -65,7 +68,7 @@ public class APMTracerTest {
     @Test
     public void testClient() throws JsonProcessingException, InterruptedException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         ClientService service = new ClientService(tracer, MY_VALUE);
 
@@ -108,7 +111,7 @@ public class APMTracerTest {
     @Test
     public void testClientNullTag() throws JsonProcessingException, InterruptedException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         ClientService service = new ClientService(tracer, null);
 
@@ -135,7 +138,7 @@ public class APMTracerTest {
     @Test
     public void testSync() throws JsonProcessingException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         SyncService service = new SyncService(tracer);
 
@@ -193,7 +196,7 @@ public class APMTracerTest {
     @Test
     public void testSyncSetTxnNameOnConsumer() throws JsonProcessingException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         SyncService service = new SyncService(tracer);
 
@@ -253,7 +256,7 @@ public class APMTracerTest {
     @Test
     public void testSyncSetTxnNameOnProducer() throws JsonProcessingException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         SyncService service = new SyncService(tracer);
 
@@ -314,7 +317,7 @@ public class APMTracerTest {
     @Test
     public void testAsync() throws JsonProcessingException, InterruptedException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         AsyncService service = new AsyncService(tracer);
 
@@ -368,7 +371,7 @@ public class APMTracerTest {
     @Test
     public void testSpawn() throws JsonProcessingException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         SpawnService service = new SpawnService(tracer);
 
@@ -442,7 +445,7 @@ public class APMTracerTest {
     @Test
     public void testForkJoin() throws JsonProcessingException {
         TestTraceRecorder recorder = new TestTraceRecorder();
-        APMTracer tracer = new APMTracer(recorder);
+        Tracer tracer = new HawkularTracer(recorder);
 
         ForkJoinService service = new ForkJoinService(tracer);
 
