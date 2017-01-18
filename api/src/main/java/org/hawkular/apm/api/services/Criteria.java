@@ -67,17 +67,19 @@ public class Criteria {
      * @param criteria The criteria to copy
      */
     public Criteria(Criteria criteria) {
-        this.startTime = criteria.startTime;
-        this.endTime = criteria.endTime;
-        this.transaction = criteria.transaction;
-        this.hostName = criteria.hostName;
-        this.upperBound = criteria.upperBound;
-        this.lowerBound = criteria.lowerBound;
-        this.uri = criteria.uri;
-        this.operation = criteria.operation;
+        if (null != criteria) {
+            this.startTime = criteria.startTime;
+            this.endTime = criteria.endTime;
+            this.transaction = criteria.transaction;
+            this.hostName = criteria.hostName;
+            this.upperBound = criteria.upperBound;
+            this.lowerBound = criteria.lowerBound;
+            this.uri = criteria.uri;
+            this.operation = criteria.operation;
 
-        criteria.properties.forEach(pc -> this.properties.add(new PropertyCriteria(pc)));
-        criteria.correlationIds.forEach(cid -> this.correlationIds.add(new CorrelationIdentifier(cid)));
+            criteria.properties.forEach(pc -> this.properties.add(new PropertyCriteria(pc)));
+            criteria.correlationIds.forEach(cid -> this.correlationIds.add(new CorrelationIdentifier(cid)));
+        }
     }
 
     /**
