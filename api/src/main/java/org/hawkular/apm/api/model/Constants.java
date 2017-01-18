@@ -82,6 +82,12 @@ public class Constants {
     public static final String PROP_HTTP_QUERY = "http.query";
 
     /**
+     * Property key representing the HTTP URL template string
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_HTTP_URL_TEMPLATE = "http.url_template";
+
+    /**
      * Represents database component type of
      * {@link org.hawkular.apm.api.model.trace.Component#componentType}
      */
