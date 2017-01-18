@@ -80,6 +80,10 @@ public class OpenTracingRuleLoader {
 
     private static void loadRules(URI uri, List<String> scriptNames,
                     List<String> scripts) throws IOException {
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Load rules from URI = " + uri);
+        }
+
         FileSystem fs = null;
         String entryName = uri.toString();
 
@@ -99,6 +103,9 @@ public class OpenTracingRuleLoader {
 
                 Files.walk(rules).filter(f -> f.toString().endsWith(RULE_FILE_EXTENSION)).forEach(f -> {
                     try {
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("Loading rules: " + f.toString());
+                        }
                         scripts.add(new String(Files.readAllBytes(f)));
                         scriptNames.add(f.toString());
                     } catch (IOException ioe) {
