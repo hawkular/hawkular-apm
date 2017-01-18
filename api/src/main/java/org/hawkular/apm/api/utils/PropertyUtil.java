@@ -183,6 +183,11 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_SERVICE_NAME = "HAWKULAR_APM_SERVICE_NAME";
 
     /**
+     * Property specifying the build stamp (or service version), to be used in a client-side library
+     */
+    public static final String HAWKULAR_APM_BUILDSTAMP = "HAWKULAR_APM_BUILDSTAMP";
+
+    /**
      * Property specifying the env var name for the OpenShift build name.
      */
     public static final String OPENSHIFT_BUILD_NAME = "OPENSHIFT_BUILD_NAME";
