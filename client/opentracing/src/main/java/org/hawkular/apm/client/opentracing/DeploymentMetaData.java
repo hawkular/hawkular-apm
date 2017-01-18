@@ -78,6 +78,10 @@ public class DeploymentMetaData {
     }
 
     static String getBuildStampFromEnv() {
+        String buildStamp = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_BUILDSTAMP);
+        if (null != buildStamp && !buildStamp.isEmpty()) {
+            return buildStamp;
+        }
         String buildName = PropertyUtil.getProperty(PropertyUtil.OPENSHIFT_BUILD_NAME);
         if (null != buildName && !buildName.isEmpty()) {
             // it seems we are inside an openshift environment, as we do have the OPENSHIFT_BUILD_NAME env var set!
