@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.hawkular.apm.api.logging.Logger;
+import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;
@@ -83,6 +84,10 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
                 log.warning("No id available to include in trace state for context = " + spanContext);
             }
             ret.putAll(span.state());
+        }
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Trace state = " + ret);
         }
 
         return ret;

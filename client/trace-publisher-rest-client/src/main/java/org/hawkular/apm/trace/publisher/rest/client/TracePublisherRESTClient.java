@@ -54,6 +54,9 @@ public class TracePublisherRESTClient extends AbstractRESTClient implements Trac
     @Override
     public void publish(String tenantId, List<Trace> traces) throws Exception {
         long startTime = clock.millis();
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Publish traces: " + traces);
+        }
         int statusCode = postAsJsonTo(tenantId, "traces/fragments", traces);
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Status code is: " + statusCode);

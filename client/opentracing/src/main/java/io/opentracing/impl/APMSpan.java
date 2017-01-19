@@ -435,4 +435,8 @@ public class APMSpan extends AbstractSpan implements PropagableState {
         }
         return state;
     }
+
+    public String toString() {
+        return super.toString() + "[operationName=" + getOperationName() + " state=" + state() + "]";
+    }
 }
