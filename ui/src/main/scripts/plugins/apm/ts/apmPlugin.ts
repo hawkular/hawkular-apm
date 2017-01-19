@@ -25,6 +25,7 @@ module APM {
   let apmTab = undefined;
   let trcTab = undefined;
   let btmTab = undefined;
+  let svcTab = undefined;
 
   _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
@@ -46,10 +47,17 @@ module APM {
       .href(() => '/hawkular-ui/apm/btm')
       .rank(10)
       .build();
+    svcTab = builder.create()
+      .id('services')
+      .title(() => 'Services')
+      .href(() => '/hawkular-ui/apm/services')
+      .rank(5)
+      .build();
 
     builder.configureRouting($routeProvider, apmTab);
     builder.configureRouting($routeProvider, trcTab);
     builder.configureRouting($routeProvider, btmTab);
+    builder.configureRouting($routeProvider, svcTab);
     $locationProvider.html5Mode(true);
     $routeProvider.
       when('/hawkular-ui/apm/components', {
@@ -59,6 +67,10 @@ module APM {
       when('/hawkular-ui/apm/tracing', {
         templateUrl: 'plugins/e2e/html/e2e.html',
         controller: 'E2E.E2EController'
+      }).
+      when('/hawkular-ui/apm/services', {
+        templateUrl: 'plugins/services/html/services.html',
+        controller: 'Services.ServicesController'
       }).
       when('/hawkular-ui/apm/btm', {
         templateUrl: 'plugins/btm/html/btm.html',
@@ -121,6 +133,7 @@ module APM {
     HawtioNav.add(apmTab);
     HawtioNav.add(trcTab);
     HawtioNav.add(btmTab);
+    HawtioNav.add(svcTab);
     log.debug('loaded');
   }]);
 

@@ -1,0 +1,53 @@
+<filter-sidebar></filter-sidebar>
+<div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
+  <div class="card-pf dt-card" ng-class="{ 'no-sidebar': hideSidebar }">
+    <div class="card-pf-body">
+      <form class="form-horizontal form-inline row">
+        <div class="form-group col-md-5 col-xs-4">
+          <label class="control-label col-md-3" for="rootnode">Service </label>
+          <div class="col-md-9">
+            <select pf-select="{noneSelectedText: 'No Services Available' }" class="form-control" id="service-select"
+              ng-options="service.name for service in services" ng-disabled="services.length === 0" ng-model="service"
+              ng-change="getBuildStamps()">
+              <option value="" ng-if="services.length" disabled>Select a Service</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group col-md-4 col-xs-4">
+          <div ng-show="service">
+            <label class="control-label col-md-3" for="rootnode">Version</label>
+            <div class="col-md-9">
+              <select pf-select="{noneSelectedText: 'No Versions Available' }" class="form-control" id="buildstamp-select"
+                ng-options="buildStamp.value for buildStamp in buildStamps" ng-model="buildStamp">
+                <option value="">All Versions</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-md-1 col-xs-2">
+          <button class="btn btn-default" ng-click="addService()" ng-show="service"><i class="fa fa-plus"></i> Add</button>
+        </div>
+        <div class="form-group col-md-2 col-xs-2">
+          <button class="btn" ng-class="sbFilter.criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-disabled="sbFilter.timeSpan === ''" ng-click="pauseLiveData()">
+            <i class="glyphicon" ng-class="sbFilter.criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
+            <span ng-show="sbFilter.criteria.endTime === '0'">Pause Live Data</span>
+            <span ng-hide="sbFilter.criteria.endTime === '0'">Resume Live Data</span>
+          </button>
+        </div>
+      </form>
+      <hr>
+      <div ng-show="selectedServices.length">
+        <span class="label label-default" ng-repeat="(index, selService) in selectedServices" style="margin-right: 10px;">
+          {{selService.service.name}} : {{selService.buildStamp.value || "All"}}
+          <a href="#" ng-click="remService(index)"><span class="pficon pficon-close" style="vertical-align: bottom; color: #fff; font-size: 1.2em; margin-left: 5px;"></span></a>
+        </span>
+      </div>
+      <h3>Completion Time</h3>
+      <div id="comp-rt-chart" class="chart-card" pf-c3-chart config="rtChartConfig" get-chart-callback="getCompRTChart"></div>
+
+      <h3>Transactions/Faults</h3>
+      <div id="comp-tf-chart" class="chart-card" pf-c3-chart config="tfChartConfig" get-chart-callback="getCompTFChart"></div>
+
+    </div>
+  </div>
+</div>
