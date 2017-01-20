@@ -7,7 +7,7 @@
           <label class="control-label col-md-3" for="rootnode">Service </label>
           <div class="col-md-9">
             <select pf-select="{noneSelectedText: 'No Services Available' }" class="form-control" id="service-select"
-              ng-options="service.name for service in services" ng-disabled="services.length === 0" ng-model="service"
+              ng-options="service.name for service in services track by service.name" ng-disabled="services.length === 0" ng-model="service"
               ng-change="getBuildStamps()">
               <option value="" ng-if="services.length" disabled>Select a Service</option>
             </select>
