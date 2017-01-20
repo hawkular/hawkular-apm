@@ -37,11 +37,11 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
-import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TimeseriesStatistics;
 import org.hawkular.apm.api.model.config.CollectorConfiguration;
 import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Filter;
@@ -817,7 +817,7 @@ public class AnalyticsServiceElasticsearchTest {
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
         );
-        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
+        List<TimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -867,7 +867,7 @@ public class AnalyticsServiceElasticsearchTest {
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
         );
-        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
+        List<TimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -917,7 +917,7 @@ public class AnalyticsServiceElasticsearchTest {
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
         );
-        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
+        List<TimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -968,7 +968,7 @@ public class AnalyticsServiceElasticsearchTest {
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 2
         );
-        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
+        List<TimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -1022,7 +1022,7 @@ public class AnalyticsServiceElasticsearchTest {
         Wait.until(() ->
             analytics.getTraceCompletionTimeseriesStatistics(null, criteria, 1000).size() == 1
         );
-        List<CompletionTimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
+        List<TimeseriesStatistics> stats = analytics.getTraceCompletionTimeseriesStatistics(null, criteria,
                 1000);
 
         assertNotNull(stats);
@@ -2708,6 +2708,45 @@ public class AnalyticsServiceElasticsearchTest {
 
         assertTrue(hostnames.contains("hostA"));
         assertTrue(hostnames.contains("hostB"));
+    }
+
+    @Test
+    public void testGetEndpointResponseTimeseriesStatistics() throws StoreException {
+        NodeDetails nd1 = new NodeDetails();
+        nd1.setTimestamp(1500);
+        nd1.setActual(100);
+        nd1.setElapsed(400);
+        nd1.setType(NodeType.Consumer);
+
+        // Should not be included in the aggregation as not a Consumer
+        NodeDetails nd2 = new NodeDetails();
+        nd2.setTimestamp(1500);
+        nd2.setActual(100);
+        nd2.setElapsed(200);
+        nd2.setType(NodeType.Component);
+        nd2.setComponentType(Constants.COMPONENT_DATABASE);
+
+        analytics.storeNodeDetails(null, Arrays.asList(nd1, nd2));
+
+        Criteria criteria = new Criteria().setStartTime(1).setEndTime(10000);
+
+        Wait.until(() ->
+            analytics.getEndpointResponseTimeseriesStatistics(null, criteria, 1000).size() == 1
+        );
+        List<TimeseriesStatistics> stats = analytics.getEndpointResponseTimeseriesStatistics(null, criteria,
+                1000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+
+        assertEquals(1000, stats.get(0).getTimestamp());
+        assertEquals(1, stats.get(0).getCount());
+
+        assertTrue(stats.get(0).getMin() == 400);
+        assertTrue(stats.get(0).getAverage() == 400);
+        assertTrue(stats.get(0).getMax() == 400);
+
+        assertEquals(0, stats.get(0).getFaultCount());
     }
 
 }
