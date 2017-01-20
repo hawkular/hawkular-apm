@@ -198,7 +198,8 @@ module InstanceViewDiagram {
           _.each(d.properties, (property) => {
             if (!!property.value) {
               nodeTT += ('<li class=\'tt-prop\'><strong>' + property.name + '</strong> ' + property.value + '</li>');
-              if (property.name === 'fault') {
+              if (property.name === 'fault' ||
+                (property.name === 'error' && property.value.toLowerCase() !== 'false')) {
                 hasFault = true;
               }
             }
