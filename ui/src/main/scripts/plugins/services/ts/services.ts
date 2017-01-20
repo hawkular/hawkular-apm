@@ -37,62 +37,59 @@ module Services {
       $scope.selectedServices.push({'service': $scope.service, 'buildStamp': $scope.buildStamp});
       delete $scope.service;
       delete $scope.buildStamp;
+      $scope.reloadData();
     };
 
     $scope.remService = function(index) {
       $scope.selectedServices.splice(index, 1);
-    };
-
-    let config = {
-      headers: { 'Hawkular-Tenant': 'hawkular' }
+      $scope.reloadData();
     };
 
     $scope.getServices = function() {
       $http.get('/hawkular/apm/services?interval=' + $scope.config.interval +
-        '&criteria=' + encodeURI(angular.toJson($rootScope.sbFilter.criteria)), config).then((resp) => {
+        '&criteria=' + encodeURI(angular.toJson($rootScope.sbFilter.criteria))).then((resp) => {
           $scope.services = resp.data;
         }, (resp) => {
           console.log('Failed to get services list: ' + angular.toJson(resp));
         });
     };
 
-    $scope.getServices();
-
     $scope.getServiceData = function(service) {
       let txnCriteria = angular.copy($rootScope.sbFilter.criteria);
-      // txnCriteria.transaction = $scope.transactionName; // adjust sidebar criteria with txn name
 
       let tmpStatistics = [];
       let tmpTxFaultData = [];
-
-      let txList = ['List My Orders', 'Place Order'];
 
       let successFn = function(txn, resp) {
         _.forEach(resp.data, (datapoint: any) => {
           datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
         });
 
-        let chtDT = _.map(resp.data, 'average');
-        chtDT.splice(0, 0, txn);
+        // completion time
+        let chtCT = _.map(resp.data, 'average');
+        chtCT.splice(0, 0, txn);
+
         if (tmpStatistics.length === 0) {
           let chtTS = _.map(resp.data, 'timestamp');
           chtTS.splice(0, 0, 'timestamp');
-          tmpStatistics.push(chtTS, chtDT);
-        } else {
-          tmpStatistics.push(chtDT);
+          tmpStatistics.push(chtTS);
         }
+        tmpStatistics.push(chtCT);
 
+        // transaction count
         let chtTC = _.map(resp.data, 'count');
         chtTC.splice(0, 0, txn + ' Count');
+
+        // fault count
         let chtFC = _.map(resp.data, 'faultCount');
         chtFC.splice(0, 0, txn + ' Faults');
+
         if (tmpTxFaultData.length === 0) {
           let chtTS = _.map(resp.data, 'timestamp');
           chtTS.splice(0, 0, 'timestamp');
-          tmpTxFaultData.push(chtTS, chtTC, chtFC);
-        } else {
-          tmpTxFaultData.push(chtTC, chtFC);
+          tmpTxFaultData.push(chtTS);
         }
+        tmpTxFaultData.push(chtTC, chtFC);
       };
 
       let errorFn = function(resp) {
@@ -100,12 +97,17 @@ module Services {
       };
 
       let promises = [];
-      _.forEach(txList, (txn) => {
-        txnCriteria.transaction = txn;
+      _.forEach($scope.selectedServices, (ss) => {
+        txnCriteria.properties.push({name: 'service', value: ss.service.name, operator: 'HAS'});
+        let buildStamp = 'All';
+        if (ss.buildStamp && ss.buildStamp.value) {
+          txnCriteria.properties.push({name: 'buildStamp', value: ss.buildStamp.value});
+          buildStamp = ss.buildStamp.value;
+        }
         promises.push(
           $http.get('/hawkular/apm/analytics/trace/completion/statistics?interval=' + $scope.config.interval +
-          '&criteria=' + encodeURI(angular.toJson(txnCriteria))).then(successFn.bind(null, txn),
-          errorFn));
+          '&criteria=' + encodeURI(angular.toJson(txnCriteria))).then(
+          successFn.bind(null, ss.service.name + '/' + buildStamp), errorFn));
       });
 
       $q.all(promises).then(() => {
@@ -204,7 +206,7 @@ module Services {
 
     $scope.reloadData = function() {
       $rootScope.updateCriteriaTimeSpan();
-
+      $scope.getServices();
       $scope.getServiceData();
 
       // this informs the sidebar directive, so it'll update it's data as well
@@ -271,8 +273,5 @@ module Services {
         propOrFault.operator = 'HAS';
       }
     };
-
-    $scope.getServiceData();
-
   }]);
 }

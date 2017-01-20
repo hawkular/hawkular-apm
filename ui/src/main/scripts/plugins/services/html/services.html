@@ -1,6 +1,6 @@
 <filter-sidebar></filter-sidebar>
 <div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
-  <div class="card-pf dt-card" ng-class="{ 'no-sidebar': hideSidebar }">
+  <div class="card-pf dt-card" ng-class="{ 'no-sidebar': hideSidebar }" style="{{ selectedServices.length ? 'height: calc(100vh - 60px)' : ''}}">
     <div class="card-pf-body">
       <form class="form-horizontal form-inline row">
         <div class="form-group col-md-5 col-xs-4">
@@ -27,7 +27,7 @@
         <div class="form-group col-md-1 col-xs-2">
           <button class="btn btn-default" ng-click="addService()" ng-show="service"><i class="fa fa-plus"></i> Add</button>
         </div>
-        <div class="form-group col-md-2 col-xs-2">
+        <div class="form-group col-md-2 col-xs-2" ng-show="selectedServices.length">
           <button class="btn" ng-class="sbFilter.criteria.endTime !== '0' ? 'btn-primary' : 'btn-default'" ng-disabled="sbFilter.timeSpan === ''" ng-click="pauseLiveData()">
             <i class="glyphicon" ng-class="sbFilter.criteria.endTime !== '0' ? 'glyphicon-play' : 'glyphicon-pause'" ></i>
             <span ng-show="sbFilter.criteria.endTime === '0'">Pause Live Data</span>
@@ -36,18 +36,24 @@
         </div>
       </form>
       <hr>
-      <div ng-show="selectedServices.length">
-        <span class="label label-default" ng-repeat="(index, selService) in selectedServices" style="margin-right: 10px;">
-          {{selService.service.name}} : {{selService.buildStamp.value || "All"}}
-          <a href="#" ng-click="remService(index)"><span class="pficon pficon-close" style="vertical-align: bottom; color: #fff; font-size: 1.2em; margin-left: 5px;"></span></a>
-        </span>
+
+      <div class="blank-slate-pf" ng-hide="selectedServices.length">
+        <div class="blank-slate-pf-icon"><i class="fa fa-cubes"></i></div>
+        <h1>No Services selected.</h1>
       </div>
-      <h3>Completion Time</h3>
-      <div id="comp-rt-chart" class="chart-card" pf-c3-chart config="rtChartConfig" get-chart-callback="getCompRTChart"></div>
+      <div ng-show="selectedServices.length">
+        <div>
+          <span class="label label-default" ng-repeat="(index, selService) in selectedServices" style="margin-right: 10px;">
+            {{selService.service.name}} : {{selService.buildStamp.value || "All"}}
+            <a href="#" ng-click="remService(index)"><span class="pficon pficon-close" style="vertical-align: bottom; color: #fff; font-size: 1.2em; margin-left: 5px;"></span></a>
+          </span>
+        </div>
+        <h3>Completion Time</h3>
+        <div id="comp-rt-chart" class="chart-card" pf-c3-chart config="rtChartConfig" get-chart-callback="getCompRTChart"></div>
 
-      <h3>Transactions/Faults</h3>
-      <div id="comp-tf-chart" class="chart-card" pf-c3-chart config="tfChartConfig" get-chart-callback="getCompTFChart"></div>
-
+        <h3>Transactions/Faults</h3>
+        <div id="comp-tf-chart" class="chart-card" pf-c3-chart config="tfChartConfig" get-chart-callback="getCompTFChart"></div>
+      </div>
     </div>
   </div>
 </div>
