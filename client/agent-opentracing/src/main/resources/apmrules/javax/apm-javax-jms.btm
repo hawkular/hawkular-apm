@@ -1,0 +1,47 @@
+# Does not include monitoring for temporary queues/topics currently
+
+RULE javax.jms(1) Javax JMS Consumer Async Start
+INTERFACE ^javax.jms.MessageListener
+METHOD onMessage(javax.jms.Message)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+BIND spanCtx:SpanContext = getTracer().extract(textMapFormat(),
+  		new org.hawkular.apm.agent.opentracing.propagation.JMSMessageExtractAdapter($1));
+IF !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)
+DO
+  startSpanWithContext(getTracer().buildSpan("send").withTag("mom.url",$1.getJMSDestination().toString()),
+    spanCtx);
+ENDRULE
+
+RULE javax.jms(2) Javax JMS Consumer Async Finish
+INTERFACE ^javax.jms.MessageListener
+METHOD onMessage(javax.jms.Message)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF hasSpan() && !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)
+DO
+  finishSpan();
+ENDRULE
+
+RULE javax.jms(3) Javax JMS Client Start
+INTERFACE ^javax.jms.MessageProducer
+METHOD send(javax.jms.Destination,javax.jms.Message,int,int,long)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF !isInstanceOf($1,javax.jms.TemporaryQueue.class)
+DO
+  startSpanWithParent(getTracer().buildSpan("send").withTag("mom.url",$1.toString()),
+  		getSpan());
+  getTracer().inject(getSpan().context(), textMapFormat(),
+        new org.hawkular.apm.agent.opentracing.propagation.JMSMessageInjectAdapter($2));
+ENDRULE
+
+RULE javax.jms(4) Javax JMS Client Finish
+INTERFACE ^javax.jms.MessageProducer
+METHOD send(javax.jms.Destination,javax.jms.Message,int,int,long)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXIT
+IF !isInstanceOf($1,javax.jms.TemporaryQueue.class)
+DO
+  finishSpan();
+ENDRULE

@@ -13,7 +13,7 @@ DO
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
 RULE java.net(2) Java HttpUrlConnection connect Producer Start getInputStream
@@ -29,7 +29,7 @@ DO
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
 RULE java.net(3) Java HttpUrlConnection connect Producer Start getOutputStream
@@ -45,7 +45,7 @@ DO
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
 RULE java.net(4) Java HttpUrlConnection getInputStream Producer End With Exception

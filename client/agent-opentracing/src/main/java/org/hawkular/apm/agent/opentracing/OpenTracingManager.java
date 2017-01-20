@@ -466,6 +466,24 @@ public class OpenTracingManager extends Helper {
     }
 
     /**
+     * This method determines whether the supplied object is an
+     * instance of the supplied class/interface.
+     *
+     * @param obj The object
+     * @param clz The class
+     * @return Whether the object is an instance of the class
+     */
+    public boolean isInstanceOf(Object obj, Class<?> clz) {
+        if (obj == null || clz == null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("isInstanceOf error: obj=" + obj + " clz=" + clz);
+            }
+            return false;
+        }
+        return clz.isInstance(obj);
+    }
+
+    /**
      * This class represents the state information being accumulated for a
      * trace instance.
      *

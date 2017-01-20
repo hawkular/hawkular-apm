@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.agent.opentracing.propagation.jav;
+package org.hawkular.apm.agent.opentracing.propagation;
 
 import java.net.HttpURLConnection;
 import java.util.Iterator;

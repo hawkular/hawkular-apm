@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.agent.opentracing.propagation.apache;
+package org.hawkular.apm.agent.opentracing.propagation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,33 +29,32 @@ import io.opentracing.propagation.TextMap;
 /**
  * @author gbrown
  */
-public final class HttpMessageInjectAdapter implements TextMap {
+public final class JMSMessageInjectAdapter implements TextMap {
 
-    private static final Logger log = Logger.getLogger(HttpMessageInjectAdapter.class.getName());
+    private static final Logger log = Logger.getLogger(JMSMessageInjectAdapter.class.getName());
 
     private final Object message;
 
-    private static Method method;
+    private static Method setStringProperty;
 
-    public HttpMessageInjectAdapter(Object message) {
+    public JMSMessageInjectAdapter(Object message) {
         this.message = message;
     }
 
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
-        throw new UnsupportedOperationException("HttpMessageInjectAdapter should only be used with Tracer.inject()");
+        throw new UnsupportedOperationException("JMSMessageInjectAdapter should only be used with Tracer.inject()");
     }
 
     @Override
     public void put(String key, String value) {
         try {
-            if (method == null) {
-                Class<?> cls = message.getClass();
-                method = cls.getMethod("addHeader", String.class, String.class);
+            if (setStringProperty == null) {
+                setStringProperty = message.getClass().getMethod("setStringProperty", String.class, String.class);
             }
-            method.invoke(message, key, value);
+            setStringProperty.invoke(message, key, value);
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException t) {
-            log.log(Level.WARNING, "Failed to add header key="+key+" value="+value, t);
+            log.log(Level.WARNING, "Failed to set header '" + key + "'", t);
         }
     }
 }
