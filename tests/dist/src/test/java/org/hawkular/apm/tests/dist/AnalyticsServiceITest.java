@@ -1168,6 +1168,13 @@ public class AnalyticsServiceITest extends AbstractITest {
         // Wait to result derived
         Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
 
+        // Query stored trace
+        List<Trace> result = traceService.searchFragments(null, new Criteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getFragmentId());
+
         Criteria criteria = new Criteria().setStartTime(0).setEndTime(0);
 
         // Get transaction count
