@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import org.hawkular.apm.api.model.analytics.ServiceDeployment;
 import org.hawkular.apm.api.services.ServiceDeploymentService;
 import org.hawkular.apm.server.rest.entity.CriteriaRequest;
+import org.hawkular.jaxrs.filter.tenant.TenantRequired;
 import org.jboss.logging.Logger;
 
 import io.swagger.annotations.Api;
@@ -50,6 +51,7 @@ import io.swagger.annotations.ApiResponses;
 @Path("services")
 @Produces(APPLICATION_JSON)
 @Api(value = "services", description = "Service Deployments")
+@TenantRequired(false)
 public class ServiceDeploymentHandler extends BaseHandler {
     private static final Logger log = Logger.getLogger(ServiceDeploymentHandler.class);
 
