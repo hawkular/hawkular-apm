@@ -877,6 +877,51 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .collect(Collectors.toList());
     }
 
+    protected List<Cardinality> getEndpointPropertyDetails(String tenantId, Criteria criteria, String property) {
+        String index = client.getIndex(tenantId);
+        if (!refresh(index)) {
+            return null;
+        }
+
+        BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
+                .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property));
+
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
+        // Only interested in the initial node within a service invocation
+        query = query.must(QueryBuilders.matchQuery("initial", "true"));
+        query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
+
+        TermsBuilder cardinalityBuilder = AggregationBuilders
+                .terms("cardinality")
+                .field(ElasticsearchUtil.PROPERTIES_VALUE_FIELD)
+                .order(Order.aggregation("_count", false))
+                .size(criteria.getMaxResponseSize());
+
+        FilterAggregationBuilder filterAggBuilder = AggregationBuilders
+                .filter("nestedfilter")
+                .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property))))
+                .subAggregation(cardinalityBuilder);
+
+        NestedBuilder nestedBuilder = AggregationBuilders
+                .nested("nested")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
+                .subAggregation(filterAggBuilder);
+
+        SearchRequestBuilder request = getNodeDetailsRequest(index, criteria, query, 0)
+                .addAggregation(nestedBuilder);
+
+        SearchResponse response = getSearchResponse(request);
+        Nested nested = response.getAggregations().get("nested");
+        InternalFilter filteredAgg = nested.getAggregations().get("nestedfilter");
+        Terms terms = filteredAgg.getAggregations().get("cardinality");
+
+        return terms.getBuckets().stream()
+                .map(AnalyticsServiceElasticsearch::toCardinality)
+                .sorted((one, another) -> one.getValue().compareTo(another.getValue()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public Set<String> getHostNames(String tenantId, Criteria criteria) {
         String index = client.getIndex(tenantId);

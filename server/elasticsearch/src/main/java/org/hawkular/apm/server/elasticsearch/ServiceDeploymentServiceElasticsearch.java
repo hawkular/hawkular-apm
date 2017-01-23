@@ -25,7 +25,6 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.analytics.BuildStamp;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.ServiceDeployment;
-import org.hawkular.apm.api.services.AnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.api.services.ServiceDeploymentService;
 
@@ -36,7 +35,7 @@ import org.hawkular.apm.api.services.ServiceDeploymentService;
  */
 public class ServiceDeploymentServiceElasticsearch implements ServiceDeploymentService {
     @Inject
-    AnalyticsService analyticsService;
+    AnalyticsServiceElasticsearch analyticsService;
 
     /**
      * @see ServiceDeploymentService#getServiceDeployments(String, Criteria)
@@ -73,7 +72,7 @@ public class ServiceDeploymentServiceElasticsearch implements ServiceDeploymentS
 
         buildStampCriteria.addProperty(Constants.PROP_SERVICE_NAME, serviceName, Criteria.Operator.EQ);
         List<BuildStamp> buildStamps = analyticsService
-                .getTraceCompletionPropertyDetails(tenantId, buildStampCriteria, Constants.PROP_BUILD_STAMP)
+                .getEndpointPropertyDetails(tenantId, buildStampCriteria, Constants.PROP_BUILD_STAMP)
                 .stream()
                 .map(this::toBuildStamp)
                 .collect(Collectors.toList());
