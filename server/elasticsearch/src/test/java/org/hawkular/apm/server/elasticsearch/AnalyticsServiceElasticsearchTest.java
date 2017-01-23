@@ -2749,4 +2749,33 @@ public class AnalyticsServiceElasticsearchTest {
         assertEquals(0, stats.get(0).getFaultCount());
     }
 
+    @Test
+    public void testEndpointPropertyDetails() throws StoreException {
+        NodeDetails nd1 = new NodeDetails();
+        nd1.setTimestamp(1500);
+        nd1.setInitial(true);
+        nd1.getProperties().add(new Property("buildStamp", "v1", PropertyType.Text));
+
+        // Should not be included in the aggregation as not a Consumer
+        NodeDetails nd2 = new NodeDetails();
+        nd2.setTimestamp(1500);
+        nd2.getProperties().add(new Property("buildStamp", "v2", PropertyType.Text));
+
+        analytics.storeNodeDetails(null, Arrays.asList(nd1, nd2));
+
+        Criteria criteria = new Criteria().setStartTime(1).setEndTime(10000);
+
+        Wait.until(() ->
+            analytics.getEndpointPropertyDetails(null, criteria, "buildStamp").size() == 1
+        );
+        List<Cardinality> cards1 = analytics.getEndpointPropertyDetails(null, criteria,
+                "buildStamp");
+
+        assertNotNull(cards1);
+        assertEquals(1, cards1.size());
+
+        assertEquals("v1", cards1.get(0).getValue());
+        assertEquals(1, cards1.get(0).getCount());
+    }
+
 }
