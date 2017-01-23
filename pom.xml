@@ -109,7 +109,7 @@
     <version.com.github.docker-java.docker-java>3.0.6</version.com.github.docker-java.docker-java>
     <version.com.jayway.jsonpath>2.2.0</version.com.jayway.jsonpath>
     <version.commons-io>2.1</version.commons-io>
-    <version.io.opentracing>0.20.4</version.io.opentracing>
+    <version.io.opentracing>0.20.7</version.io.opentracing>
     <version.io.undertow>1.1.0.Final</version.io.undertow>
     <version.io.zipkin.java>1.13.1</version.io.zipkin.java>
     <version.javaee.spec>7.0</version.javaee.spec>
