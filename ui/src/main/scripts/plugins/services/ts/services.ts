@@ -98,15 +98,16 @@ module Services {
 
       let promises = [];
       _.forEach($scope.selectedServices, (ss) => {
-        txnCriteria.properties.push({name: 'service', value: ss.service.name, operator: 'HAS'});
+        let serviceCriteria = angular.copy(txnCriteria);
+        serviceCriteria.properties.push({name: 'service', value: ss.service.name, operator: 'HAS'});
         let buildStamp = 'All';
         if (ss.buildStamp && ss.buildStamp.value) {
-          txnCriteria.properties.push({name: 'buildStamp', value: ss.buildStamp.value});
+          serviceCriteria.properties.push({name: 'buildStamp', value: ss.buildStamp.value});
           buildStamp = ss.buildStamp.value;
         }
         promises.push(
-          $http.get('/hawkular/apm/analytics/trace/completion/statistics?interval=' + $scope.config.interval +
-          '&criteria=' + encodeURI(angular.toJson(txnCriteria))).then(
+          $http.get('/hawkular/apm/analytics/endpoint/response/statistics?interval=' + $scope.config.interval +
+          '&criteria=' + encodeURI(angular.toJson(serviceCriteria))).then(
           successFn.bind(null, ss.service.name + '/' + buildStamp), errorFn));
       });
 
