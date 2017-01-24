@@ -244,10 +244,8 @@ public class JavaxServletSyncServerITest extends ClientTestBase {
 
         assertEquals(method, testConsumer.getOperation());
 
-        if (fault) {
-            assertEquals("401",
+        assertEquals(fault ? "401" : "200",
                     testConsumer.getProperties(Tags.HTTP_STATUS.getKey()).iterator().next().getValue());
-        }
     }
 
     public static class EmbeddedServlet extends HttpServlet {
