@@ -37,7 +37,17 @@ DO
   getSpan().setTag("http.status_code",String.valueOf($1));
 ENDRULE
 
-RULE javax.servlet(4) Javax Servlet Consumer End Sync
+RULE javax.servlet(4) Javax Servlet Consumer End Sync Set Status Code
+INTERFACE ^javax.servlet.http.HttpServletResponse
+METHOD setStatus(int)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+IF hasSpan()
+DO
+  getSpan().setTag("http.status_code",String.valueOf($1));
+ENDRULE
+
+RULE javax.servlet(5) Javax Servlet Consumer End Sync
 INTERFACE ^javax.servlet.Servlet
 METHOD service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
@@ -47,7 +57,7 @@ DO
   finishSpan();
 ENDRULE
 
-RULE javax.servlet(5) Javax Servlet Consumer StartAsync
+RULE javax.servlet(6) Javax Servlet Consumer StartAsync
 INTERFACE ^javax.servlet.AsyncContext
 METHOD start(java.lang.Runnable)
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
@@ -58,7 +68,7 @@ DO
   suspend(String.valueOf($1.hashCode()));
 ENDRULE
 
-RULE javax.servlet(6) Javax Servlet Consumer End Async
+RULE javax.servlet(7) Javax Servlet Consumer End Async
 INTERFACE ^javax.servlet.AsyncContext
 METHOD complete()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
