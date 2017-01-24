@@ -70,7 +70,11 @@ public class OpenTracingRuleLoader {
         }
 
         try (PrintWriter writer = new PrintWriter(new StringWriter())) {
-            transformer.installScript(scripts, scriptNames, writer);
+            try {
+                transformer.installScript(scripts, scriptNames, writer);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to install scripts", e);
+            }
         }
 
         if (log.isLoggable(Level.FINE)) {
