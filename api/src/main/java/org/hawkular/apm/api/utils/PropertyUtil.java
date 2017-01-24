@@ -116,6 +116,11 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL = "HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL";
 
     /**
+     * Comma separated list of whitelisted file extensions. All others will be ignored by the agent.
+     */
+    public static final String HAWKULAR_APM_AGENT_FILE_EXTENSION_WHITELIST = "HAWKULAR_APM_AGENT_FILE_EXTENSION_WHITELIST";
+
+    /**
      * The maximum number of retry attempts when processing a batch of events.
      */
     public static final String HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT = "HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT";

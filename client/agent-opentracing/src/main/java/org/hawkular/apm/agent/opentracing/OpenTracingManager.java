@@ -19,8 +19,10 @@ package org.hawkular.apm.agent.opentracing;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +59,20 @@ public class OpenTracingManager extends Helper {
 
     private static long expiryInterval = 60000;
 
+    // allow access from test
+    protected static Set<String> fileExtensionWhitelist = new HashSet<>();
+
     static {
+        String whitelist = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_AGENT_FILE_EXTENSION_WHITELIST, "jsp");
+        if (whitelist != null) {
+            for(String item : whitelist.split(",")) {
+                fileExtensionWhitelist.add(item);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Added file extension whitelist item: " + item);
+                }
+            }
+        }
+
         String time = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL);
         if (time != null) {
             expiryInterval = Long.parseLong(time);
@@ -412,11 +427,26 @@ public class OpenTracingManager extends Helper {
      * @return Whether the path is valid for monitoring
      */
     public boolean includePath(String path) {
-        // Determine if the path is NOT hawkular-apm related and
-        // the final part of the path is NOT a filename (with extension)
-        if (!path.startsWith("/hawkular/apm") && (path.lastIndexOf('.') <= path.lastIndexOf('/'))) {
+        if (path.startsWith("/hawkular/apm")) {
+            return false;
+        }
+
+        int dotPos = path.lastIndexOf('.');
+        int slashPos = path.lastIndexOf('/');
+        if (dotPos <= slashPos) {
             return true;
         }
+
+        if (!fileExtensionWhitelist.isEmpty()) {
+            String extension = path.substring(dotPos + 1);
+            if (fileExtensionWhitelist.contains(extension)) {
+                if (log.isLoggable(Level.FINER)) {
+                    log.finer("Path " + path + " not skipped, because of whitelist");
+                }
+                return true;
+            }
+        }
+
         if (log.isLoggable(Level.FINER)) {
             log.finer("Path " + path + " skipped");
         }
