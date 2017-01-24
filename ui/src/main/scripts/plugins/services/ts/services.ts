@@ -57,24 +57,18 @@ module Services {
     $scope.getServiceData = function(service) {
       let txnCriteria = angular.copy($rootScope.sbFilter.criteria);
 
-      let tmpStatistics = [];
-      let tmpTxFaultData = [];
-
       let successFn = function(txn, resp) {
         _.forEach(resp.data, (datapoint: any) => {
           datapoint.timestamp = datapoint.timestamp / 1000; // Convert from micro to milliseconds
         });
 
+        // timestamp
+        let chtTS = _.map(resp.data, 'timestamp');
+        chtTS.splice(0, 0, 'timestamp');
+
         // completion time
         let chtCT = _.map(resp.data, 'average');
         chtCT.splice(0, 0, txn);
-
-        if (tmpStatistics.length === 0) {
-          let chtTS = _.map(resp.data, 'timestamp');
-          chtTS.splice(0, 0, 'timestamp');
-          tmpStatistics.push(chtTS);
-        }
-        tmpStatistics.push(chtCT);
 
         // transaction count
         let chtTC = _.map(resp.data, 'count');
@@ -84,12 +78,7 @@ module Services {
         let chtFC = _.map(resp.data, 'faultCount');
         chtFC.splice(0, 0, txn + ' Faults');
 
-        if (tmpTxFaultData.length === 0) {
-          let chtTS = _.map(resp.data, 'timestamp');
-          chtTS.splice(0, 0, 'timestamp');
-          tmpTxFaultData.push(chtTS);
-        }
-        tmpTxFaultData.push(chtTC, chtFC);
+        return [chtTS, chtCT, chtTC, chtFC];
       };
 
       let errorFn = function(resp) {
@@ -111,7 +100,22 @@ module Services {
           successFn.bind(null, ss.service.name + '/' + buildStamp), errorFn));
       });
 
-      $q.all(promises).then(() => {
+      $q.all(promises).then((data) => {
+        let tmpStatistics = [];
+        let tmpTxFaultData = [];
+
+        _.forEach(data, (d) => {
+          if (tmpStatistics.length === 0) {
+            tmpStatistics.push(d[0]);
+          }
+          tmpStatistics.push(d[1]);
+
+          if (tmpTxFaultData.length === 0) {
+            tmpTxFaultData.push(d[0]);
+          }
+          tmpTxFaultData.push(d[2]);
+          tmpTxFaultData.push(d[3]);
+        });
         $scope.statistics = tmpStatistics;
         $scope.tfData = tmpTxFaultData;
         $scope.redrawCompRTChart();
@@ -202,6 +206,7 @@ module Services {
 
     $scope.config = {
       interval: '60000000',
+      lowerBoundDisplay: 0,
       maxRows: 10
     };
 
@@ -246,6 +251,10 @@ module Services {
 
     $scope.getCompTFChart = function(theChart) {
       $scope.tfChart = theChart;
+    };
+
+    $scope.currentDateTime = function() {
+      return new Date();
     };
 
     $scope.pauseLiveData = function() {

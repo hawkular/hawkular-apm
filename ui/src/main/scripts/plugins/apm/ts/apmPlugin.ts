@@ -41,23 +41,23 @@ module APM {
       .href(() => '/hawkular-ui/apm/tracing')
       .rank(20)
       .build();
+    svcTab = builder.create()
+      .id('services')
+      .title(() => 'Services')
+      .href(() => '/hawkular-ui/apm/services')
+      .rank(15)
+      .build();
     btmTab = builder.create()
       .id('btm')
       .title(() => 'Transactions')
       .href(() => '/hawkular-ui/apm/btm')
       .rank(10)
       .build();
-    svcTab = builder.create()
-      .id('services')
-      .title(() => 'Services')
-      .href(() => '/hawkular-ui/apm/services')
-      .rank(5)
-      .build();
 
     builder.configureRouting($routeProvider, apmTab);
     builder.configureRouting($routeProvider, trcTab);
-    builder.configureRouting($routeProvider, btmTab);
     builder.configureRouting($routeProvider, svcTab);
+    builder.configureRouting($routeProvider, btmTab);
     $locationProvider.html5Mode(true);
     $routeProvider.
       when('/hawkular-ui/apm/components', {
@@ -132,8 +132,8 @@ module APM {
   _module.run(['HawtioNav', (HawtioNav: HawtioMainNav.Registry) => {
     HawtioNav.add(apmTab);
     HawtioNav.add(trcTab);
-    HawtioNav.add(btmTab);
     HawtioNav.add(svcTab);
+    HawtioNav.add(btmTab);
     log.debug('loaded');
   }]);
 
