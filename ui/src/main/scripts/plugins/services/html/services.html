@@ -1,6 +1,6 @@
 <filter-sidebar></filter-sidebar>
 <div class="hk-content-sidebar" ng-class="{ 'hk-content-sidebar-expanded': hideSidebar }">
-  <div class="card-pf dt-card" ng-class="{ 'no-sidebar': hideSidebar }" style="{{ selectedServices.length ? 'height: calc(100vh - 60px)' : ''}}">
+  <div class="card-pf dt-card" ng-class="{ 'no-sidebar': hideSidebar }" style="{{ selectedServices.length ? 'height: calc(100vh - 40px)' : ''}}">
     <div class="card-pf-body">
       <form class="form-horizontal form-inline row">
         <div class="form-group col-md-5 col-xs-4">
@@ -30,7 +30,7 @@
       </form>
       <form class="form-horizontal form-inline row" style="margin-top: 15px;">
         <div class="col-md-12">
-          <span class="label label-default" ng-repeat="(index, selService) in selectedServices" style="margin-right: 10px; background-color: {{tfChartConfig.color.pattern[index * 2]}}">
+          <span class="label label-default" ng-repeat="(index, selService) in selectedServices" style="margin-right: 10px;">
             {{selService.service.name}} : {{selService.buildStamp.value || "All"}}
             <a href="#" ng-click="remService(index)"><span class="pficon pficon-close" style="vertical-align: bottom; color: #fff; font-size: 1.2em; margin-left: 5px;"></span></a>
           </span>
@@ -59,12 +59,14 @@
               </select>
             </div>
 
+            <!--
             <div class="form-group">
               <label for="lowerBoundField">Lower Bound(%):</label>
               <input type="number" ng-model="config.lowerBoundDisplay"
                     name="lowerBoundField" ng-change="updatedBounds()"
                     min="0" max="100"/>
             </div>
+            -->
 
             <div class="form-group">
               <label>Last Update:</label>

@@ -64,7 +64,7 @@ module Services {
 
         // timestamp
         let chtTS = _.map(resp.data, 'timestamp');
-        chtTS.splice(0, 0, 'timestamp');
+        chtTS.splice(0, 0, 'timestamp_' + txn);
 
         // completion time
         let chtCT = _.map(resp.data, 'average');
@@ -105,14 +105,10 @@ module Services {
         let tmpTxFaultData = [];
 
         _.forEach(data, (d) => {
-          if (tmpStatistics.length === 0) {
-            tmpStatistics.push(d[0]);
-          }
+          tmpStatistics.push(d[0]);
           tmpStatistics.push(d[1]);
 
-          if (tmpTxFaultData.length === 0) {
-            tmpTxFaultData.push(d[0]);
-          }
+          tmpTxFaultData.push(d[0]);
           tmpTxFaultData.push(d[2]);
           tmpTxFaultData.push(d[3]);
         });
@@ -126,7 +122,6 @@ module Services {
     $scope.statistics = [];
     $scope.rtChartConfig = {
       data: {
-        x: 'timestamp',
         columns: [],
         type: 'area'
       },
@@ -155,7 +150,6 @@ module Services {
 
     $scope.tfChartConfig = {
       data: {
-        x: 'timestamp',
         columns: [],
         type: 'bar',
         groups: []
@@ -191,15 +185,27 @@ module Services {
       }
     };
 
+    let getChartXsAxis = function(data, setSize) {
+      let xs = {};
+      let headers = _.map(data, (arr) => { return arr[0]; });
+      for (let i = 0; i < headers.length; i += setSize) {
+        for (let j = setSize - 1; j > 0; j--) {
+          xs[headers[(i + setSize - j)]] = headers[i];
+        }
+      }
+      return xs;
+    };
+
     $scope.redrawCompRTChart = function() {
+      $scope.rtChartConfig.data.xs = getChartXsAxis($scope.statistics, 2);
       $scope.rtChartConfig.data.columns = $scope.statistics;
     };
 
     $scope.redrawCompTFChart = function() {
-      let txGroups = _.values(_.groupBy(_.map($scope.tfData.slice(1), (arr) => { return arr[0]; }), (item, i) => {
-        return Math.floor(i / 2);
+      let txGroups = _.values(_.groupBy(_.map($scope.tfData, (arr) => { return arr[0]; }), (item, i) => {
+        return Math.floor(i / 3);
       }));
-
+      $scope.tfChartConfig.data.xs = getChartXsAxis($scope.tfData, 3);
       $scope.tfChartConfig.data.columns = $scope.tfData;
       $scope.tfChartConfig.data.groups = txGroups;
     };
