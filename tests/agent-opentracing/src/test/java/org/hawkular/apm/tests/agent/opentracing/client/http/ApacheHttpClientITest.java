@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.ConnectException;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -51,6 +51,7 @@ import io.opentracing.tag.Tags;
 public class ApacheHttpClientITest extends AbstractBaseHttpITest {
 
     private static final String SAY_HELLO_URL = "http://localhost:8180/sayHello";
+    private static final String BAD_URL = "http://localhost:8280/notthere";
     private static final String QUERY_STRING = "to=me";
     private static final String SAY_HELLO_URL_WITH_QS = SAY_HELLO_URL + "?" + QUERY_STRING;
     private static final String SAY_HELLO = "Say Hello";
@@ -59,6 +60,11 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
     @Test
     public void testHttpClientWithoutResponseHandlerGET() throws IOException {
         testHttpClientWithoutResponseHandler(new HttpGet(SAY_HELLO_URL), null, false, true);
+    }
+
+    @Test
+    public void testHttpClientWithoutResponseHandlerGETBadURL() throws IOException {
+        testHttpClientWithoutResponseHandler(new HttpGet(BAD_URL), null, false, true);
     }
 
     @Test
@@ -107,6 +113,7 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
     protected void testHttpClientWithoutResponseHandler(HttpUriRequest request, String data,
             boolean fault, boolean respexpected) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
+        boolean badUrl = false;
         try {
             request.addHeader("test-header", "test-value");
             if (fault) {
@@ -140,6 +147,9 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
                 assertEquals("Unexpected fault response code", 401, status);
             }
 
+        } catch (ConnectException ce) {
+            assertEquals(BAD_URL, request.getURI().toString());
+            badUrl = true;
         } finally {
             httpclient.close();
         }
@@ -155,16 +165,19 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
 
         Producer testProducer = producers.get(0);
 
-        String path = URI.create(SAY_HELLO_URL).getPath();
+        assertEquals(request.getURI().getPath(), testProducer.getUri());
 
-        assertEquals(path, testProducer.getUri());
+        if (!badUrl) {
+            if (request.getURI().toString().endsWith(QUERY_STRING)) {
+                assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
+            }
 
-        if (request.getURI().toString().endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
-        }
-
-        if (fault) {
-            assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey())
+            if (fault) {
+                assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey())
+                        .iterator().next().getValue());
+            }
+        } else {
+            assertEquals("true", testProducer.getProperties(Tags.ERROR.getKey())
                     .iterator().next().getValue());
         }
     }
@@ -172,6 +185,11 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
     @Test
     public void testHttpClientWithResponseHandlerGET() throws IOException {
         testHttpClientWithResponseHandler(new HttpGet(SAY_HELLO_URL), null, false);
+    }
+
+    @Test
+    public void testHttpClientWithResponseHandlerGETBadURL() throws IOException {
+        testHttpClientWithResponseHandler(new HttpGet(BAD_URL), null, false);
     }
 
     @Test
@@ -210,6 +228,7 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
     protected void testHttpClientWithResponseHandler(HttpUriRequest request, String data,
             boolean fault) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
+        boolean badUrl = false;
         try {
             request.addHeader("test-header", "test-value");
             if (fault) {
@@ -242,6 +261,9 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
 
             assertEquals(HELLO_WORLD, responseBody);
 
+        } catch (ConnectException ce) {
+            assertEquals(BAD_URL, request.getURI().toString());
+            badUrl = true;
         } finally {
             httpclient.close();
         }
@@ -257,12 +279,15 @@ public class ApacheHttpClientITest extends AbstractBaseHttpITest {
 
         Producer testProducer = producers.get(0);
 
-        String path = URI.create(SAY_HELLO_URL).getPath();
+        assertEquals(request.getURI().getPath(), testProducer.getUri());
 
-        assertEquals(path, testProducer.getUri());
-
-        if (request.getURI().toString().endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
+        if (!badUrl) {
+            if (request.getURI().toString().endsWith(QUERY_STRING)) {
+                assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
+            }
+        } else {
+            assertEquals("true", testProducer.getProperties(Tags.ERROR.getKey())
+                    .iterator().next().getValue());
         }
     }
 
