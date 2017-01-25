@@ -32,6 +32,24 @@ DO
         new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
+# conn.getResponseCode() on an unconnected connection will trigger a getInputStream call
+# which we skip because of the callerMatch. So we need a explicit rule.
+RULE java.net(2a) Java HttpUrlConnection connect Producer Start getResponseCode
+CLASS ^java.net.HttpURLConnection
+METHOD getResponseCode()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+# Need to filter out use of HttpURLConnection by APM, and also only use top level calls to the connection
+IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
+DO
+  startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
+  		.withTag("http.uri", $0.getURL().getPath())
+  		.withTag("http.query", $0.getURL().getQuery()),
+  		getSpan(), String.valueOf($0.hashCode()));
+  getTracer().inject(getSpan().context(), textMapFormat(),
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
+ENDRULE
+
 RULE java.net(3) Java HttpUrlConnection connect Producer Start getOutputStream
 CLASS ^java.net.HttpURLConnection
 METHOD getOutputStream()
