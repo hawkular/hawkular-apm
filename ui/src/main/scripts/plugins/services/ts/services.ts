@@ -123,7 +123,8 @@ module Services {
     $scope.rtChartConfig = {
       data: {
         columns: [],
-        type: 'area'
+        type: 'area',
+        empty: { label: { text: 'No Data Available' } }
       },
       // color: {
       //   pattern: ['#ff0000', '#33cc33', '#e5e600', '#99ccff', '#ffb3b3']
@@ -142,8 +143,8 @@ module Services {
           label: 'Seconds',
           padding: { bottom: 0 },
           tick: {
-            format: function(y) { return y / 1000000; }
-          },
+            format: function(y) { return y > 1 ? y / 1000000 : y; }
+          }
         },
       }
     };
@@ -152,7 +153,8 @@ module Services {
       data: {
         columns: [],
         type: 'bar',
-        groups: []
+        groups: [],
+        empty: { label: { text: 'No Data Available' } }
       },
       color: {
         pattern: [
