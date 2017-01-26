@@ -149,12 +149,26 @@ public class OpenTracingManagerTest {
 
         assertTrue(otm.includePath("/path/to/anything"));
         assertTrue(otm.includePath("/path.to/anything"));
+        assertTrue(otm.includePath("/path.to/anything.jsp"));
         assertTrue(otm.includePath("anything"));
 
         assertFalse(otm.includePath("/hawkular/apm/anything"));
+        assertFalse(otm.includePath("/path.to/anything.xjsp"));
         assertFalse(otm.includePath("myimage.png"));
         assertFalse(otm.includePath("/myimage.png"));
         assertFalse(otm.includePath("/location/myimage.png"));
+    }
+
+    @Test
+    public void testPathIncludeWhitelist() {
+        OpenTracingManager.fileExtensionWhitelist.add("foo");
+
+        OpenTracingManager otm = new OpenTracingManager(null);
+
+        assertTrue(otm.includePath("/quux/test.foo"));
+        assertFalse(otm.includePath("/my/image.bar"));
+
+        OpenTracingManager.fileExtensionWhitelist.clear();
     }
 
 }
