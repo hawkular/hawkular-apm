@@ -48,8 +48,10 @@ module Services {
     };
 
     $scope.getServices = function() {
+      let svcCriteria = angular.copy($rootScope.sbFilter.criteria);
+      svcCriteria.properties = [];
       $http.get('/hawkular/apm/services?interval=' + $scope.config.interval +
-        '&criteria=' + encodeURI(angular.toJson($rootScope.sbFilter.criteria))).then((resp) => {
+        '&criteria=' + encodeURI(angular.toJson(svcCriteria))).then((resp) => {
           $scope.services = resp.data;
           $scope.getBuildStamps();
         }, (resp) => {
@@ -91,7 +93,7 @@ module Services {
       let promises = [];
       _.forEach($scope.selectedServices, (ss) => {
         let serviceCriteria = angular.copy(txnCriteria);
-        serviceCriteria.properties.push({name: 'service', value: ss.service.name, operator: 'HAS'});
+        serviceCriteria.properties = [{name: 'service', value: ss.service.name, operator: 'HAS'}];
         let buildStamp = 'All';
         if (ss.buildStamp && ss.buildStamp.value) {
           serviceCriteria.properties.push({name: 'buildStamp', value: ss.buildStamp.value});
