@@ -27,8 +27,10 @@ module Services {
     $scope.buildStamps = [];
 
     $scope.getBuildStamps = function() {
-      $scope.buildStamp = undefined;
-      $scope.buildStamps = _.find($scope.services, 'name', $scope.service.name)['buildStamps'];
+      if ($scope.service && $scope.service.name) {
+        $scope.buildStamp = undefined;
+        $scope.buildStamps = _.find($scope.services, 'name', $scope.service.name)['buildStamps'];
+      }
     };
 
     $scope.selectedServices = [];
@@ -49,6 +51,7 @@ module Services {
       $http.get('/hawkular/apm/services?interval=' + $scope.config.interval +
         '&criteria=' + encodeURI(angular.toJson($rootScope.sbFilter.criteria))).then((resp) => {
           $scope.services = resp.data;
+          $scope.getBuildStamps();
         }, (resp) => {
           console.log('Failed to get services list: ' + angular.toJson(resp));
         });
