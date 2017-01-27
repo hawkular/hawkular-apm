@@ -266,20 +266,40 @@ public class OpenTracingManager extends Helper {
     }
 
     /**
-     * This method determines whether there is a current span available
+     * This method determines whether there is a span available
      * associated with the supplied id.
      *
-     * @return Whether a current span exists with the id
+     * @return Whether a span exists with the id
      */
     public boolean hasSpanWithId(String id) {
         TraceState ts = traceState.get();
 
-        if (ts != null) {
-            String currentId = ts.peekId();
+        if (id != null && ts != null) {
+            boolean spanFound = ts.getSpanForId(id) != null;
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Has span with id = " + id + "? " + currentId.equals(id));
+                log.finest("Has span with id = " + id + "? " + spanFound);
             }
-            return currentId.equals(id);
+            return spanFound;
+        }
+
+        return false;
+    }
+
+    /**
+     * This method determines whether the current span is
+     * associated with the supplied id.
+     *
+     * @return Whether the current span is associated with the id
+     */
+    public boolean isCurrentSpan(String id) {
+        TraceState ts = traceState.get();
+
+        if (id != null && ts != null) {
+            boolean spanFound = ts.peekId().equals(id);
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Is current span id = " + id + "? " + spanFound);
+            }
+            return spanFound;
         }
 
         return false;
@@ -524,12 +544,16 @@ public class OpenTracingManager extends Helper {
         private Deque<Span> spanStack = new ArrayDeque<>();
         private Deque<String> idStack = new ArrayDeque<>();
         private Map<String, Object> variables = new HashMap<>();
+        private Map<String, Span> identifiedSpans = new HashMap<>();
 
         private long expire;
 
         public void pushSpan(Span span, String id) {
             spanStack.push(span);
             idStack.push(id == null ? "" : id);
+            if (id != null) {
+                identifiedSpans.put(id, span);
+            }
         }
 
         public Span popSpan() {
@@ -549,6 +573,10 @@ public class OpenTracingManager extends Helper {
                 return null;
             }
             return idStack.peek();
+        }
+
+        public Span getSpanForId(String id) {
+            return identifiedSpans.get(id);
         }
 
         public boolean isFinished() {
