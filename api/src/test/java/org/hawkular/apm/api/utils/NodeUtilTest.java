@@ -80,6 +80,28 @@ public class NodeUtilTest {
     }
 
     @Test
+    public void testRewriteURITemplateWithSpec() {
+        Consumer consumer = new Consumer();
+        consumer.setUri("/service/helloworld");
+        consumer.getProperties().add(new Property(Constants.PROP_HTTP_URL_TEMPLATE, "/service/{serviceName:.+}"));
+        assertTrue(NodeUtil.rewriteURI(consumer));
+        assertEquals("/service/{serviceName:.+}", consumer.getUri());
+        assertTrue(consumer.hasProperty("serviceName"));
+        assertEquals("helloworld", consumer.getProperties("serviceName").iterator().next().getValue());
+    }
+
+    @Test
+    public void testRewriteURITemplateWithMultipleSlashes() {
+        Consumer consumer = new Consumer();
+        consumer.setUri("/download/aa/bb/cc");
+        consumer.getProperties().add(new Property(Constants.PROP_HTTP_URL_TEMPLATE, "/download/{file:.+}"));
+        assertTrue(NodeUtil.rewriteURI(consumer));
+        assertEquals("/download/{file:.+}", consumer.getUri());
+        assertTrue(consumer.hasProperty("file"));
+        assertEquals("aa/bb/cc", consumer.getProperties("file").iterator().next().getValue());
+    }
+
+    @Test
     public void testRewriteURITemplateNoQuery2() {
         Consumer consumer = new Consumer();
         consumer.setUri("/service/helloworld/123");
@@ -104,6 +126,15 @@ public class NodeUtilTest {
         assertEquals("fred", consumer.getProperties("param1").iterator().next().getValue());
         assertTrue(consumer.hasProperty("param2"));
         assertEquals("joe", consumer.getProperties("param2").iterator().next().getValue());
+    }
+
+    @Test
+    public void dontFailOnMisconfiguration() {
+        Consumer consumer = new Consumer();
+        consumer.setUri("/service/helloworld");
+        consumer.getProperties().add(new Property(Constants.PROP_HTTP_QUERY, "param1=fred&param2=joe"));
+        consumer.getProperties().add(new Property(Constants.PROP_HTTP_URL_TEMPLATE, null));
+        assertFalse(NodeUtil.rewriteURI(consumer));
     }
 
 }
