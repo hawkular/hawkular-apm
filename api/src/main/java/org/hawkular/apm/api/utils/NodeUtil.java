@@ -104,9 +104,12 @@ public class NodeUtil {
         if (node.getUri() != null && node.hasProperty(Constants.PROP_HTTP_URL_TEMPLATE)) {
             List<String> queryParameters = new ArrayList<String>();
             String template = node.getProperties(Constants.PROP_HTTP_URL_TEMPLATE).iterator().next().getValue();
+            if (template == null) {
+                return false;
+            }
 
             // If template contains a query string component, then separate the details
-            if (template != null && template.indexOf('?') != -1) {
+            if (template.indexOf('?') != -1) {
                 int index = template.indexOf('?');
                 String queryString = template.substring(index + 1);
 
@@ -125,44 +128,51 @@ public class NodeUtil {
                 }
             }
 
-            StringTokenizer uriTokens = new StringTokenizer(node.getUri(), "/");
-            StringTokenizer templateTokens = new StringTokenizer(template, "/");
+            String[] templateTokensArray = template.split("/");
+            String[] uriTokensArray = node.getUri().split("/", templateTokensArray.length);
 
-            if (uriTokens.countTokens() == templateTokens.countTokens()) {
-                Set<Property> props = null;
-                while (uriTokens.hasMoreTokens()) {
-                    String uriToken = uriTokens.nextToken();
-                    String templateToken = templateTokens.nextToken();
+            if (templateTokensArray.length != uriTokensArray.length) {
+                return false;
+            }
 
-                    if (templateToken.charAt(0) == '{' && templateToken.charAt(templateToken.length() - 1) == '}') {
-                        String name = templateToken.substring(1, templateToken.length() - 1);
-                        if (props == null) {
-                            props = new HashSet<Property>();
-                        }
-                        try {
-                            props.add(new Property(URLDecoder.decode(name, "UTF-8"), URLDecoder.decode(uriToken, "UTF-8")));
-                        } catch (UnsupportedEncodingException e) {
-                            if (log.isLoggable(Level.FINEST)) {
-                                log.finest("Failed to decode value '" + uriToken + "': " + e);
-                            }
-                        }
-                    } else if (!uriToken.equals(templateToken)) {
-                        // URI template mismatch
-                        return false;
+            Set<Property> props = null;
+            for (int i = 1 ; i < uriTokensArray.length ; i++) {
+                String uriToken = uriTokensArray[i];
+                String templateToken = templateTokensArray[i];
+
+                if (templateToken.charAt(0) == '{' && templateToken.charAt(templateToken.length() - 1) == '}') {
+                    int lastPosition = templateToken.length() - 1;
+                    int positionColon = templateToken.indexOf(':');
+                    if (positionColon > 0) {
+                        lastPosition = positionColon;
                     }
+                    String name = templateToken.substring(1, lastPosition);
+                    if (props == null) {
+                        props = new HashSet<Property>();
+                    }
+                    try {
+                        props.add(new Property(name, URLDecoder.decode(uriToken, "UTF-8")));
+                    } catch (UnsupportedEncodingException e) {
+                        if (log.isLoggable(Level.FINEST)) {
+                            log.finest("Failed to decode value '" + uriToken + "': " + e);
+                        }
+                    }
+                } else if (!uriToken.equals(templateToken)) {
+                    // URI template mismatch
+                    return false;
                 }
+            }
 
-                // If properties extracted, then add to txn properties, and set the node's
-                // URI to the template, to make it stable/consistent - to make analytics easier
-                if (props != null) {
-                    node.setUri(template);
-                    node.getProperties().addAll(props);
-                    processed = true;
-                }
+            // If properties extracted, then add to txn properties, and set the node's
+            // URI to the template, to make it stable/consistent - to make analytics easier
+            if (props != null) {
+                node.setUri(template);
+                node.getProperties().addAll(props);
+                processed = true;
+            }
 
-                if (rewriteURIQueryParameters(node, queryParameters)) {
-                    processed = true;
-                }
+            if (rewriteURIQueryParameters(node, queryParameters)) {
+                processed = true;
             }
         }
 
