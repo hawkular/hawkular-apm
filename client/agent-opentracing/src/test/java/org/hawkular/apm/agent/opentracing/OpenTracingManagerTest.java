@@ -18,6 +18,7 @@ package org.hawkular.apm.agent.opentracing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.hawkular.apm.api.model.trace.ContainerNode;
@@ -26,6 +27,9 @@ import org.hawkular.apm.client.opentracing.APMTracer;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+import io.opentracing.Span;
 
 /**
  * @author gbrown
@@ -169,6 +173,23 @@ public class OpenTracingManagerTest {
         assertFalse(otm.includePath("/my/image.bar"));
 
         OpenTracingManager.fileExtensionWhitelist.clear();
+    }
+
+    @Test
+    public void testCurrentSpanId() {
+        OpenTracingManager.TraceState ts = new OpenTracingManager.TraceState();
+        ts.pushSpan(Mockito.mock(Span.class), "1");
+        assertEquals("1", ts.peekId());
+    }
+
+    @Test
+    public void testHasSpanForId() {
+        OpenTracingManager.TraceState ts = new OpenTracingManager.TraceState();
+        Span span = Mockito.mock(Span.class);
+        ts.pushSpan(span, "1");
+        ts.popSpan();
+        assertNull(ts.peekId());
+        assertEquals(span, ts.getSpanForId("1"));
     }
 
 }

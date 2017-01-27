@@ -50,8 +50,13 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
     }
 
     @Test
+    public void testHttpURLConnectionGetStatusCodeGET() throws IOException {
+        testHttpRequestGetStatusCode(new URL(SAY_HELLO_URL), "GET", false);
+    }
+
+    @Test
     public void testHttpURLConnectionInputStreamGET() throws IOException {
-        testHttpRequestInputStream(new URL(SAY_HELLO_URL), "GET", false);
+        sendRequestUsingInputStream(new URL(SAY_HELLO_URL), "GET", false);
     }
 
     @Test
@@ -61,7 +66,7 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
 
     @Test
     public void testHttpURLConnectionInputStreamGETWithFault() throws IOException {
-        testHttpRequestInputStream(new URL(SAY_HELLO_URL), "GET", true);
+        sendRequestUsingInputStream(new URL(SAY_HELLO_URL), "GET", true);
     }
 
     @Test
@@ -71,7 +76,7 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
 
     @Test
     public void testHttpURLConnectionInputStreamGETWithQS() throws IOException {
-        testHttpRequestInputStream(new URL(SAY_HELLO_URL_WITH_QS), "GET", false);
+        sendRequestUsingInputStream(new URL(SAY_HELLO_URL_WITH_QS), "GET", false);
     }
 
     @Test
@@ -81,7 +86,7 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
 
     @Test
     public void testHttpURLConnectionInputStreamPUT() throws IOException {
-        testHttpRequestInputStream(new URL(SAY_HELLO_URL), "PUT", false);
+        sendRequestUsingInputStream(new URL(SAY_HELLO_URL), "PUT", false);
     }
 
     @Test
@@ -91,10 +96,18 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
 
     @Test
     public void testHttpURLConnectionInputStreamPOST() throws IOException {
-        testHttpRequestInputStream(new URL(SAY_HELLO_URL), "POST", false);
+        sendRequestUsingInputStream(new URL(SAY_HELLO_URL), "POST", false);
     }
 
     protected void testHttpRequestConnect(URL url, String method, boolean fault) throws IOException {
+        sendRequest(url, method, fault, true);
+    }
+
+    protected void testHttpRequestGetStatusCode(URL url, String method, boolean fault) throws IOException {
+        sendRequest(url, method, fault, false);
+    }
+
+    protected void sendRequest(URL url, String method, boolean fault, boolean connect) throws IOException {
         // Create a fake span
         OpenTracingManager otm = new OpenTracingManager(null);
         otm.startSpan(otm.getTracer().buildSpan("TEST"));
@@ -111,7 +124,9 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
             connection.addRequestProperty("test-fault", "true");
         }
 
-        connection.connect();
+        if (connect) {
+            connection.connect();
+        }
 
         int status = connection.getResponseCode();
 
@@ -133,7 +148,7 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
         verifyTrace(url, method, fault);
     }
 
-    protected void testHttpRequestInputStream(URL url, String method, boolean fault) throws IOException {
+    protected void sendRequestUsingInputStream(URL url, String method, boolean fault) throws IOException {
         // Create a fake span
         OpenTracingManager otm = new OpenTracingManager(null);
         otm.startSpan(otm.getTracer().buildSpan("TEST"));
