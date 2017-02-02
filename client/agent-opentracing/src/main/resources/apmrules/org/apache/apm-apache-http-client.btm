@@ -35,3 +35,14 @@ IF hasSpan()
 DO
   finishSpan();
 ENDRULE
+
+RULE org.apache.http.client(4) Apache HttpClient Producer Sync Exception
+CLASS ^org.apache.http.impl.client.CloseableHttpClient
+METHOD doExecute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXCEPTION EXIT
+IF hasSpan()
+DO
+  getSpan().setTag("error",true);
+  finishSpan();
+ENDRULE
