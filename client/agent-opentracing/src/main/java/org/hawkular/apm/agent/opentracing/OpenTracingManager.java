@@ -534,6 +534,23 @@ public class OpenTracingManager extends Helper {
     }
 
     /**
+     * Helper to remove duplicate slashes
+     * @param baseUri      the base URI, usually in the format "/context/restapp/"
+     * @param resourcePath the resource path, usually in the format "/resource/method/record"
+     * @return The two parameters joined, with the double slash between them removed, like "/context/restapp/resource/method/record"
+     */
+    public String sanitizePaths(String baseUri, String resourcePath) {
+        if (baseUri.endsWith("/") && resourcePath.startsWith("/")) {
+            return baseUri.substring(0, baseUri.length()-1) + resourcePath;
+        }
+
+        if ((!baseUri.endsWith("/")) && (!resourcePath.startsWith("/"))) {
+            return baseUri + "/" + resourcePath;
+        }
+        return baseUri + resourcePath;
+    }
+
+    /**
      * This class represents the state information being accumulated for a
      * trace instance.
      *

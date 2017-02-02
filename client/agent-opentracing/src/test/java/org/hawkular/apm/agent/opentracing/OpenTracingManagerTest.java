@@ -192,4 +192,27 @@ public class OpenTracingManagerTest {
         assertEquals(span, ts.getSpanForId("1"));
     }
 
+    @Test
+    public void joinedPathsHaveSingleSlash() {
+        OpenTracingManager otm = new OpenTracingManager(null);
+        String result = otm.sanitizePaths("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app/", "/download/file/{path:.+}");
+        assertEquals("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app/download/file/{path:.+}", result);
+    }
+
+    @Test
+    public void noopWhenJoinedPathsAreOk() {
+        OpenTracingManager otm = new OpenTracingManager(null);
+        String result = otm.sanitizePaths("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app", "/download/file/{path:.+}");
+        assertEquals("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app/download/file/{path:.+}", result);
+
+        result = otm.sanitizePaths("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app", "download/file/{path:.+}");
+        assertEquals("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app/download/file/{path:.+}", result);
+    }
+
+    @Test
+    public void slashIsAddedWhenNoneExists() {
+        OpenTracingManager otm = new OpenTracingManager(null);
+        String result = otm.sanitizePaths("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app", "download/file/{path:.+}");
+        assertEquals("http://localhost:8080/jaxrs-uri-template-1.0-SNAPSHOT/app/download/file/{path:.+}", result);
+    }
 }
