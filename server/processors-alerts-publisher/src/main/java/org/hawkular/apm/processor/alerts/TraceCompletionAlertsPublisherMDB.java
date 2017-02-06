@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
         @ActivationConfigProperty(propertyName = "clientID", propertyValue = TraceCompletionAlertsPublisherMDB.SUBSCRIBER),
         @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = TraceCompletionAlertsPublisherMDB.SUBSCRIBER),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '"+TraceCompletionAlertsPublisherMDB.SUBSCRIBER+"'")
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "subscriber IS NULL OR subscriber = '" + TraceCompletionAlertsPublisherMDB.SUBSCRIBER + "'")
 })
 public class TraceCompletionAlertsPublisherMDB implements MessageListener {
     static final String SUBSCRIBER = "TraceCompletionAlertsPublisher";
@@ -58,7 +58,8 @@ public class TraceCompletionAlertsPublisherMDB implements MessageListener {
         logger.traceCompletionTimeReceived();
         try {
             String data = ((TextMessage) message).getText();
-            List<CompletionTime> items = mapper.readValue(data, new TypeReference<List<CompletionTime>>() {});
+            List<CompletionTime> items = mapper.readValue(data, new TypeReference<List<CompletionTime>>() {
+            });
             List<Event> events = items.stream()
                     .map(TraceCompletionAlertsPublisherMDB::toEvent)
                     .collect(Collectors.toList());
@@ -79,6 +80,10 @@ public class TraceCompletionAlertsPublisherMDB implements MessageListener {
         }
         if (null != completionTime.getOperation()) {
             event.getTags().put("operation", completionTime.getOperation());
+        }
+        // 增加时间的标签
+        if (completionTime.getDuration() > 0) {
+            event.getTags().put("duration", String.valueOf(completionTime.getDuration()));
         }
 
         event.initTagsFromProperties(completionTime.getProperties());
