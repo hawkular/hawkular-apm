@@ -44,12 +44,15 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
     private ContextSampler sampler;
 
     public AbstractAPMTracer() {
-        this.recorder = new BatchTraceRecorder();
+        this(new BatchTraceRecorder(), Sampler.ALWAYS_SAMPLE);
     }
 
     public AbstractAPMTracer(TraceRecorder recorder, Sampler sampler) {
         this.recorder = recorder;
         this.sampler = new ContextSampler(sampler);
+
+        register(Format.Builtin.HTTP_HEADERS, new TextMapExtractorImpl(this));
+        register(Format.Builtin.HTTP_HEADERS, new TextMapInjectorImpl(this));
     }
 
     public void setTraceRecorder(TraceRecorder recorder) {
